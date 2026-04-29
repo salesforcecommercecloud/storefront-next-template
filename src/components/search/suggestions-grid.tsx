@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import type React from 'react';
 import { ImageOff } from 'lucide-react';
 import { Link } from '@/components/link';
@@ -25,7 +23,7 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 
 interface Suggestion {
     name: string;
@@ -48,7 +46,7 @@ const SearchSuggestionsPopup: React.FC<SearchSuggestionsPopupProps> = ({
     const analytics = useAnalytics();
     const config = useConfig<AppConfig>();
     const { t, i18n } = useTranslation('common');
-    const currency = useCurrency();
+    const { currency } = useSite();
     if (!suggestions || suggestions.length === 0) {
         return null;
     }

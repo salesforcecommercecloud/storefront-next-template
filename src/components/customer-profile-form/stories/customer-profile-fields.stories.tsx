@@ -25,9 +25,9 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { Form } from '@/components/ui/form';
 import { CustomerProfileFields } from '../customer-profile-fields';
 import { createCustomerProfileFormSchema, type CustomerProfileFormData } from '../index';
-import type { CustomerProfileFetcherData } from '../types';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import { getTranslation } from '@/lib/i18next';
+import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -112,12 +112,12 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 }
 
 // Helper function to create a mock fetcher
-function createMockFetcher<TData = unknown>(
+function createMockFetcher<TData = unknown, TSubmitPayload = unknown>(
     initialState: 'idle' | 'loading' | 'submitting' = 'idle',
     initialData?: TData,
     initialSuccess: boolean = false,
     initialErrors?: string[]
-): ScapiFetcher<TData> {
+): ScapiFetcher<TData, TSubmitPayload> {
     return {
         state: initialState,
         data: initialData,
@@ -220,7 +220,10 @@ export const Default: Story = {
             },
         });
 
-        const updateFetcher = createMockFetcher<CustomerProfileFetcherData>('idle');
+        const updateFetcher = createMockFetcher<
+            ShopperCustomers.schemas['Customer'],
+            ShopperCustomers.schemas['Customer']
+        >('idle');
 
         const handleSubmit = form.handleSubmit(() => {
             // Form submission handled by story
@@ -289,7 +292,10 @@ export const WithInitialValues: Story = {
             },
         });
 
-        const updateFetcher = createMockFetcher<CustomerProfileFetcherData>('idle');
+        const updateFetcher = createMockFetcher<
+            ShopperCustomers.schemas['Customer'],
+            ShopperCustomers.schemas['Customer']
+        >('idle');
 
         const handleSubmit = form.handleSubmit(() => {
             // Form submission handled by story
@@ -347,7 +353,10 @@ export const WithCancelButton: Story = {
             },
         });
 
-        const updateFetcher = createMockFetcher<CustomerProfileFetcherData>('idle');
+        const updateFetcher = createMockFetcher<
+            ShopperCustomers.schemas['Customer'],
+            ShopperCustomers.schemas['Customer']
+        >('idle');
 
         const handleSubmit = form.handleSubmit(() => {
             // Form submission handled by story
@@ -397,7 +406,10 @@ export const Submitting: Story = {
             },
         });
 
-        const updateFetcher = createMockFetcher<CustomerProfileFetcherData>('submitting');
+        const updateFetcher = createMockFetcher<
+            ShopperCustomers.schemas['Customer'],
+            ShopperCustomers.schemas['Customer']
+        >('submitting');
 
         const handleSubmit = form.handleSubmit(() => {
             // Form submission handled by story
@@ -446,7 +458,10 @@ export const Interactive: Story = {
             },
         });
 
-        const updateFetcher = createMockFetcher<CustomerProfileFetcherData>('idle');
+        const updateFetcher = createMockFetcher<
+            ShopperCustomers.schemas['Customer'],
+            ShopperCustomers.schemas['Customer']
+        >('idle');
 
         const handleSubmit = form.handleSubmit(() => {
             // Form submission handled by story

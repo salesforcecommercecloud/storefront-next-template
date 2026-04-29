@@ -19,7 +19,7 @@ import { createActionArgs, createTestContext } from '@/lib/test-utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 const mockUpdateSubscriptionsBulk = vi.fn();
-vi.mock('@/lib/api/consent', () => ({
+vi.mock('@/lib/api/consent.server', () => ({
     updateSubscriptionsBulk: (...args: unknown[]) => mockUpdateSubscriptionsBulk(...args),
 }));
 
@@ -74,7 +74,10 @@ describe('action.update-marketing-consent', () => {
             expect(response).toBeInstanceOf(Response);
             expect(response.status).toBe(405);
             const json = await response.json();
-            expect(json).toEqual({ success: false, error: 'Method not allowed' });
+            expect(json).toEqual({
+                success: false,
+                error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' },
+            });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
 
@@ -85,7 +88,10 @@ describe('action.update-marketing-consent', () => {
             );
             expect(response.status).toBe(400);
             const json = await response.json();
-            expect(json).toEqual({ success: false, error: 'updates is required and must not be empty' });
+            expect(json).toEqual({
+                success: false,
+                error: { code: 'INVALID_INPUT', message: 'updates is required and must not be empty' },
+            });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
 
@@ -99,7 +105,10 @@ describe('action.update-marketing-consent', () => {
                 createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
             );
             expect(response.status).toBe(400);
-            expect(await response.json()).toEqual({ success: false, error: 'subscriptionId is required' });
+            expect(await response.json()).toEqual({
+                success: false,
+                error: { code: 'INVALID_INPUT', message: 'subscriptionId is required' },
+            });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
 
@@ -114,7 +123,10 @@ describe('action.update-marketing-consent', () => {
                 createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
             );
             expect(response.status).toBe(400);
-            expect(await response.json()).toEqual({ success: false, error: 'subscriptionId is required' });
+            expect(await response.json()).toEqual({
+                success: false,
+                error: { code: 'INVALID_INPUT', message: 'subscriptionId is required' },
+            });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
 
@@ -131,7 +143,7 @@ describe('action.update-marketing-consent', () => {
             expect(response.status).toBe(400);
             const json = await response.json();
             expect(json.success).toBe(false);
-            expect(json.error).toContain('channel must be one of');
+            expect(json.error.message).toContain('channel must be one of');
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
 
@@ -145,7 +157,10 @@ describe('action.update-marketing-consent', () => {
                 createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
             );
             expect(response.status).toBe(400);
-            expect(await response.json()).toEqual({ success: false, error: 'contactPointValue is required' });
+            expect(await response.json()).toEqual({
+                success: false,
+                error: { code: 'INVALID_INPUT', message: 'contactPointValue is required' },
+            });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
 
@@ -160,7 +175,10 @@ describe('action.update-marketing-consent', () => {
                 createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
             );
             expect(response.status).toBe(400);
-            expect(await response.json()).toEqual({ success: false, error: 'contactPointValue is required' });
+            expect(await response.json()).toEqual({
+                success: false,
+                error: { code: 'INVALID_INPUT', message: 'contactPointValue is required' },
+            });
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
 
@@ -177,7 +195,7 @@ describe('action.update-marketing-consent', () => {
             expect(response.status).toBe(400);
             const json = await response.json();
             expect(json.success).toBe(false);
-            expect(json.error).toContain('status must be one of');
+            expect(json.error.message).toContain('status must be one of');
             expect(mockUpdateSubscriptionsBulk).not.toHaveBeenCalled();
         });
     });
@@ -293,7 +311,7 @@ describe('action.update-marketing-consent', () => {
             const json = await response.json();
             expect(json).toEqual({
                 success: false,
-                error: '1 of 2 update(s) failed',
+                error: { code: 'OPERATION_FAILED', message: '1 of 2 update(s) failed' },
                 partialSuccess: true,
             });
         });
@@ -331,14 +349,14 @@ describe('action.update-marketing-consent', () => {
             const json = await response.json();
             expect(json).toEqual({
                 success: false,
-                error: 'All updates failed',
+                error: { code: 'OPERATION_FAILED', message: 'All updates failed' },
                 partialSuccess: false,
             });
         });
     });
 
     describe('error handling', () => {
-        it('returns ApiError status and message when updateSubscriptionsBulk throws ApiError', async () => {
+        it('returns 500 and structured error when updateSubscriptionsBulk throws ApiError', async () => {
             const apiError = new ApiError({
                 status: 403,
                 statusText: 'Forbidden',
@@ -354,13 +372,15 @@ describe('action.update-marketing-consent', () => {
             const response = await action(
                 createActionArgs(request, mockContext, { unstable_pattern: '/action/update-marketing-consent' })
             );
-            expect(response.status).toBe(403);
+            expect(response.status).toBe(500);
             const json = await response.json();
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
+            expect(json.error.code).toBeDefined();
+            expect(json.error.message).toBeDefined();
         });
 
-        it('returns 500 and message when updateSubscriptionsBulk throws generic Error', async () => {
+        it('returns 500 and structured error when updateSubscriptionsBulk throws generic Error', async () => {
             mockUpdateSubscriptionsBulk.mockRejectedValueOnce(new Error('Network error'));
 
             const request = createJsonRequest(validBody);
@@ -370,7 +390,7 @@ describe('action.update-marketing-consent', () => {
             expect(response.status).toBe(500);
             const json = await response.json();
             expect(json.success).toBe(false);
-            expect(json.error).toBe('Network error');
+            expect(json.error).toEqual({ code: 'OPERATION_FAILED', message: 'Network error' });
         });
     });
 });

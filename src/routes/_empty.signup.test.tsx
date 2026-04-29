@@ -18,16 +18,16 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRoutesStub, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import Signup, { loader, action } from './_empty.signup';
-import { registerCustomer } from '@/lib/api/auth/register';
+import { registerCustomer } from '@/lib/api/auth/register.server';
 import { isPasswordValid } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const { t } = getTranslation();
 
 // Mock the auth API
-vi.mock('@/lib/api/auth/register', () => ({
+vi.mock('@/lib/api/auth/register.server', () => ({
     registerCustomer: vi.fn(),
 }));
 

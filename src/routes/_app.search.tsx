@@ -16,12 +16,10 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
 import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchSearchProducts } from '@/lib/api/search';
+import { fetchSearchProducts } from '@/lib/api/search.server';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
@@ -36,7 +34,7 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import {
     getInitialFiltersOpen,
     getSearchWithoutClientOnlyParams,
@@ -75,7 +73,7 @@ export type SearchPageData = {
     searchTerm: string;
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData>;
+    page: ReturnType<typeof fetchPageWithComponentData>;
     pageUrl: string;
     refine: string[];
     currency: string;
@@ -88,7 +86,6 @@ export type SearchPageData = {
  * This function runs on the server during SSR and prepares data for the search page.
  * @returns Object containing search results, refinements, and page metadata
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> {
     const { context, request } = args;
     const requestUrl = new URL(request.url);
@@ -98,37 +95,44 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
     const initialFiltersOpen = getInitialFiltersOpen(searchParams);
-    const currency = context.get(currencyContext) as string;
-
     const config = getConfig<AppConfig>(context);
-    const locale = (context.get(siteContext) as SiteContext).locale.id;
+    const logger = getLogger(context);
+
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        logger.error('Search: site context is not available');
+        throw new Response('Site context is not available', { status: 500 });
+    }
+    const { currency } = siteCtx;
+    const locale = siteCtx.locale.id;
 
     const limit = config.search.products.hits.limit;
 
+    // Ensure criticalCount doesn't exceed limit to prevent negative non-critical limit
     const criticalCount = config.search.products.hits.critical ?? 2;
+    const safeCriticalCount = Math.min(criticalCount, limit);
 
-    const logger = getLogger(context);
     logger.debug('Search: loader starting', { q, offset, sort, refineCount: refine.length });
-
     const searchResultCritical = await fetchSearchProducts(context, {
         q,
-        limit: criticalCount,
+        limit: safeCriticalCount,
         offset,
         sort,
         refine,
         currency,
     });
-
     logger.info('Search: results loaded', { query: q, total: searchResultCritical.total, offset });
+
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+    const effectiveCriticalCount = searchResultCritical.hits?.length ?? 0;
 
     return {
         searchTerm: q,
         searchResultCritical,
         searchResultNonCritical: fetchSearchProducts(context, {
             q,
-            limit: limit - criticalCount,
-            offset: offset + criticalCount,
+            limit: limit - effectiveCriticalCount,
+            offset: offset + effectiveCriticalCount,
             sort,
             refine,
             currency,
@@ -144,7 +148,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> 
     };
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
     const clientOnlyParamsChanged =
         currentUrl.pathname === nextUrl.pathname &&
@@ -179,11 +182,14 @@ export default function SearchPage({
 
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
 
-    // Determine the maximum number of skeletons to display in the product grid
+    // Determine the maximum number of skeletons to display in the product grid.
     // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
+    // Wrap in Math.max(0, ...) to prevent negative values when criticalCount is high(er).
     const criticalCount = searchResultCritical.hits?.length ?? 0;
-    const nonCriticalCount =
-        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount;
+    const nonCriticalCount = Math.max(
+        0,
+        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount
+    );
 
     const analytics = useAnalytics();
     const lastTrackedSearchRef = useRef<string | null>(null);
@@ -275,7 +281,7 @@ export default function SearchPage({
                 openGraph={{ type: 'website', url: pageUrl }}
             />
             <div className="pb-16">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="section-container">
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <p>{t('results')}</p>

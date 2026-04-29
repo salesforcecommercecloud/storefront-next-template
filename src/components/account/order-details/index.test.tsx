@@ -17,10 +17,13 @@ import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { OrderDetails } from './index';
-import { getTranslation } from '@/lib/i18next';
-import { ConfigWrapper } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import ProductContentProvider from '@/providers/product-content';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 const { t } = getTranslation();
 
@@ -77,9 +80,11 @@ function OrderDetailsWithProviders({ order = defaultOrder }: { order?: ShopperOr
     return (
         <MemoryRouter>
             <ConfigWrapper>
-                <CurrencyWrapper>
-                    <OrderDetails order={order} productsById={defaultProductsById} />
-                </CurrencyWrapper>
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                    <ProductContentProvider>
+                        <OrderDetails order={order} productsById={defaultProductsById} />
+                    </ProductContentProvider>
+                </SiteProvider>
             </ConfigWrapper>
         </MemoryRouter>
     );
@@ -147,7 +152,7 @@ describe('OrderDetails', () => {
         renderOrderDetails();
         expect(screen.getByTestId('sf-order-summary')).toBeInTheDocument();
         expect(screen.getByText(t('cart:summary.subtotal'))).toBeInTheDocument();
-        expect(screen.getByText(t('cart:summary.orderTotal'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:summary.total'))).toBeInTheDocument();
         expect(screen.getByText(/71\.38/)).toBeInTheDocument();
     });
 

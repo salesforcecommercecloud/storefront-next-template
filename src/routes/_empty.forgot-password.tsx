@@ -25,7 +25,7 @@ import { Card } from '@/components/ui/card';
 import { ForgotPasswordForm } from '@/components/forgot-password-form';
 
 // Lib
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { buildUrlFromContext } from '@/lib/url.server';
 
 // Middleware
@@ -38,7 +38,6 @@ type ForgotPasswordActionData = {
     email?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): Response | void {
     // If user is already logged in as registered user, redirect to login page
     const session = getAuth(context);
@@ -49,7 +48,6 @@ export function loader({ context }: LoaderFunctionArgs): Response | void {
 
 // Server action required for authentication - password reset token generation must be handled
 // server-side to maintain security and proper integration with SFCC's authentication system
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ForgotPasswordActionData> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
@@ -78,7 +76,7 @@ export default function ForgotPassword(): ReactElement {
 
     if (actionData?.success && actionData?.email) {
         return (
-            <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
                         <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('checkEmailTitle')}</h2>
@@ -87,7 +85,7 @@ export default function ForgotPassword(): ReactElement {
                         </p>
                     </div>
 
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         <div className="space-y-6">
                             <Link to="/login">
                                 <Button className="w-full cursor-pointer">{t('backToSignIn')}</Button>
@@ -101,14 +99,14 @@ export default function ForgotPassword(): ReactElement {
 
     // Initial form state
     return (
-        <div className="flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center bg-background py-12 section-container">
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                     <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                 </div>
 
-                <Card className="p-8">
+                <Card className="p-8 rounded-none shadow-none">
                     <ForgotPasswordForm error={actionData?.error} />
                 </Card>
             </div>

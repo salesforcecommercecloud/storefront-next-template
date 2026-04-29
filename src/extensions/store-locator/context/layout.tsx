@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
 
 /**
  * Store Locator Layout Context
@@ -25,7 +24,6 @@
  * forced mobile layout when embedded in constrained surfaces (e.g. a sheet),
  * while maintaining normal responsive behavior by default on the full page.
  */
-
 import { createContext, type PropsWithChildren, useContext } from 'react';
 
 /**

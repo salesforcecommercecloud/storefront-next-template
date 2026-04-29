@@ -44,6 +44,10 @@ export const mockBuildConfig: Config = {
     },
     app: {
         pages: {
+            navigation: {
+                rootCategoryId: 'root',
+                maxDepth: 2,
+            },
             home: { featuredProductsCount: 12 },
             cart: {
                 quantityUpdateDebounce: 750,
@@ -53,6 +57,7 @@ export const mockBuildConfig: Config = {
                 removeAction: '/action/cart-item-remove',
                 ruleBasedProductLimit: 4,
                 confirmDescription: 'Are you sure you want to remove this item from your cart?',
+                showLineItemDescription: false,
                 miniCart: {
                     enableViewCartButton: true,
                 },
@@ -123,6 +128,7 @@ export const mockBuildConfig: Config = {
             shopperContext: {
                 enabled: false,
             },
+            mrtBasedPageDesignerResolution: false,
         },
         hybrid: {
             enabled: false,
@@ -232,6 +238,7 @@ export const mockBuildConfig: Config = {
                         checkout_step: true,
                         view_search_suggestion: true,
                         click_search_suggestion: true,
+                        commerce_agent_engagement: true,
                     },
                 },
                 dataCloud: {
@@ -253,6 +260,7 @@ export const mockBuildConfig: Config = {
                         checkout_step: true,
                         view_search_suggestion: true,
                         click_search_suggestion: true,
+                        commerce_agent_engagement: true,
                     },
                 },
                 activeData: {
@@ -275,6 +283,7 @@ export const mockBuildConfig: Config = {
                         checkout_step: false,
                         view_search_suggestion: false,
                         click_search_suggestion: false,
+                        commerce_agent_engagement: true,
                     },
                 },
             },
@@ -320,6 +329,13 @@ export const mockConfig = createAppConfig(mockBuildConfig);
  */
 const defaultSite = mockBuildConfig.app.commerce.sites[0];
 export const SITE_PREFIX = `/${defaultSite.id}/${defaultSite.defaultLocale}`;
+
+/**
+ * The default mock locale derived from the first configured site's default locale.
+ * Use when providing `locale` to `SiteProvider` in tests.
+ */
+export const mockLocale =
+    defaultSite.supportedLocales.find((l) => l.id === defaultSite.defaultLocale) ?? defaultSite.supportedLocales[0];
 
 /**
  * React Testing Library wrapper component that provides ConfigProvider context

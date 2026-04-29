@@ -26,8 +26,10 @@ import emptyBasketSnapshot from '@/components/__mocks__/empty-basket-snapshot';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
 import basketWithOneItemSnapshot from '@/components/__mocks__/basket-with-dress-snapshot';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function CartSheetStoryHarness({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -123,7 +125,7 @@ Cart Sheet component that displays a mini cart flyout with cart contents.
 - Continue Shopping button (secondary with light gray background)
 - Optional View Cart button (ghost variant)
 - Opens automatically when loaded
-- Matches Odyssey Design System specifications
+- Matches Storefront Next Design System specifications
 
 **Note**: This component uses \`useBasketWithProducts\` which loads product details via \`/resource/basket-products\`.
 In Storybook, this route returns mock product data for demonstration purposes.
@@ -134,13 +136,13 @@ In Storybook, this route returns mock product data for demonstration purposes.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <CartSheetStoryHarness>
                         <div className="p-8">
                             <Story />
                         </div>
                     </CartSheetStoryHarness>
-                </CurrencyWrapper>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

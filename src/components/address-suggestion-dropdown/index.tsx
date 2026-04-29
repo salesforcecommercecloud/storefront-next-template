@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useEffect, useRef, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, MapPin } from 'lucide-react';
@@ -139,7 +136,8 @@ export default function AddressSuggestionDropdown({
                 className={cn(
                     positionClasses[position],
                     'top-full left-0 right-0 z-[1000] mt-1 gap-0 py-4',
-                    className
+                    className,
+                    'rounded-none shadow-none'
                 )}>
                 <CardContent className="flex items-center justify-center gap-2 p-4">
                     <Spinner size="sm" />
@@ -155,7 +153,12 @@ export default function AddressSuggestionDropdown({
         <Card
             ref={dropdownRef}
             data-testid="address-suggestion-dropdown"
-            className={cn(positionClasses[position], 'top-full left-0 right-0 z-[1000] mt-1 gap-0 py-0', className)}>
+            className={cn(
+                positionClasses[position],
+                'top-full left-0 right-0 z-[1000] mt-1 gap-0 py-0',
+                className,
+                'rounded-none shadow-none'
+            )}>
             {/* Header - aligned with suggestion items */}
             <div className="flex flex-row items-center justify-between pl-4 pr-2 py-2">
                 <Typography variant="muted" as="span" className="font-medium">

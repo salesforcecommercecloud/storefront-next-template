@@ -124,10 +124,10 @@ export const Empty: Story = {
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
 
-        // Component should render but not show recent searches title when empty
-        const container = canvasElement.querySelector('.p-6');
-        await expect(container).toBeInTheDocument();
+        await expect(canvas.queryByText(/recent searches/i)).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('button')).not.toBeInTheDocument();
     },
 };
 

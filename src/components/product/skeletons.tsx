@@ -95,7 +95,7 @@ export function ProductMainSkeleton() {
             {/* Product Information Accordion */}
             <div className="mt-16 space-y-4">
                 {Array.from({ length: config.global.skeleton.accordionSections }, (_, index) => (
-                    <div key={`accordion-${index}`} className="border rounded-lg p-4">
+                    <div key={`accordion-${index}`} className="border rounded-none p-4">
                         <Skeleton className="h-6 w-48" />
                     </div>
                 ))}
@@ -139,7 +139,7 @@ export function ProductRecommendationSkeleton({
  *
  * Use this for standard product pages where you want:
  * - Automatic synchronization with recommendation configuration
- * - Correct item counts matching API limits (from odyssey.config.ts)
+ * - Correct item counts matching API limits (from storefront config)
  * - Proper titles from the configuration
  * - Zero maintenance when recommendation config changes
  *

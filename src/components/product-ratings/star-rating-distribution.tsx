@@ -63,7 +63,7 @@ export const StarRatingDistribution = forwardRef<HTMLElement, StarRatingDistribu
         const isClickable = onRatingClick != null;
 
         const rowClassName = cn(
-            'flex items-center gap-2 text-sm rounded-md py-1 px-1 -mx-1',
+            'flex items-center gap-2 text-sm rounded-none py-1 px-1 -mx-1',
             isClickable && 'cursor-pointer hover:bg-[#f0f0f0]'
         );
 

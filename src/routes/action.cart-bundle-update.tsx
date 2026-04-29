@@ -16,22 +16,16 @@
 // React Router
 import type { ActionFunctionArgs } from 'react-router';
 
-// Commerce SDK
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
-
 // Middlewares
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 
 // API
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 
 // Utils
-import {
-    type BasketActionResponse,
-    createBasketSuccessResponse,
-    createBasketErrorResponse,
-} from './types/action-responses';
-import { getTranslation } from '@/lib/i18next';
+import { createBasketSuccessResponse } from './types/action-responses';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 // Constants
@@ -68,19 +62,27 @@ import { getLogger } from '@/lib/logger.server';
  * @throws Error if items data is invalid or missing
  * @throws Error if no basket is found in the session
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartBundleUpdate: action starting');
 
     if (request.method !== 'PATCH') {
-        throw new Response(t('errors:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
+            },
+            { status: 405 }
+        );
     }
 
     const basketId = await ensureBasketId(context);
     if (!basketId) {
         logger.warn('CartBundleUpdate: no basket found');
-        return createBasketErrorResponse(t('errors:noBasketFound'));
+        return Response.json(
+            { success: false, error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }) },
+            { status: 404 }
+        );
     }
 
     try {
@@ -89,7 +91,13 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         if (!itemsJson) {
             logger.warn('CartBundleUpdate: missing items data in form data');
-            return createBasketErrorResponse('Items data is required');
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Items data is required' }),
+                },
+                { status: 400 }
+            );
         }
 
         // Parse the items array
@@ -97,14 +105,32 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         if (!Array.isArray(items) || items.length === 0) {
             logger.warn('CartBundleUpdate: items must be a non-empty array');
-            return createBasketErrorResponse('Items must be a non-empty array');
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.INVALID_INPUT,
+                        message: 'Items must be a non-empty array',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         // Validate each item has required fields
         for (const item of items) {
             if (!item.itemId || !item.quantity || item.quantity <= 0) {
                 logger.warn('CartBundleUpdate: invalid item data', { itemId: item.itemId, quantity: item.quantity });
-                return createBasketErrorResponse('Each item must have valid itemId and quantity');
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.INVALID_INPUT,
+                            message: 'Each item must have valid itemId and quantity',
+                        }),
+                    },
+                    { status: 400 }
+                );
             }
         }
 
@@ -123,13 +149,9 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         updateBasketResource(context, updatedBasket);
 
         logger.info('CartBundleUpdate: bundle updated successfully');
-        return createBasketSuccessResponse(updatedBasket);
+        return Response.json(createBasketSuccessResponse(updatedBasket));
     } catch (error) {
-        if (error instanceof ApiError) {
-            logger.error('CartBundleUpdate: API error updating bundle', { error });
-            return createBasketErrorResponse(error.body?.detail || error.statusText);
-        }
         logger.error('CartBundleUpdate: failed', { error });
-        return createBasketErrorResponse(error instanceof Error ? error.message : 'An unexpected error occurred');
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

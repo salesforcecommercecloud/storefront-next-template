@@ -18,7 +18,7 @@ function MyComponent() {
 **For Everything Else (loaders, actions, utilities, helpers, tests):**
 
 ```typescript
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Client-side or non-component code
 const { t } = getTranslation();
@@ -32,6 +32,12 @@ export function loader(args: LoaderFunctionArgs) {
 ```
 
 ## Architecture Overview
+
+The i18n layer is split between the **SDK** and the **template**:
+
+- **SDK (`@salesforce/storefront-next-runtime/i18n`)** — generic infrastructure: middleware factory, context, shared interpolation config
+- **SDK (`@salesforce/storefront-next-runtime/i18n/client`)** — browser-only client initialization
+- **Template** — translations (`src/locales/`), configuration, type augmentation, root.tsx wiring
 
 We maintain 2 separate instances of i18next:
 
@@ -86,23 +92,13 @@ i18n: {
 }
 ```
 
-**2. `src/middlewares/i18next.server.ts`** - i18next middleware configuration:
-
-```typescript
-detection: {
-    cookie: localeCookie,
-    fallbackLanguage: 'en-GB',
-    supportedLanguages: ['es-MX', 'en-GB'], // Must match config.server.ts
-}
-```
+**2. `src/middlewares/i18next.server.ts`** reads `supportedLngs` and `fallbackLng` from config automatically — no additional middleware configuration is needed.
 
 > **⚠️ IMPORTANT**: These configurations must be kept in sync:
 >
 > - The locales in `i18n.supportedLngs` should match the `id` values in `site.supportedLocales`
-> - The `supportedLanguages` in the middleware should match both arrays above
 > - Each locale in `site.supportedLocales` should have a `preferredCurrency` that matches one of the `site.supportedCurrencies`
-> - If you add a new language, update all three places
-> - If the arrays don't match, you may get partial translations or locale/currency mismatches
+> - If you add a new language, update both places
 
 **Currency System:**
 
@@ -290,19 +286,14 @@ src/components/
 └── locale-switcher/
     └── index.tsx           # Client component for switching languages
 
-src/lib/
-├── i18next.ts              # getTranslation() utility for non-components
-└── i18next.client.ts       # Client-side i18next initialization
-
 src/middlewares/
-└── i18next.server.ts       # Server-side i18next setup and middleware
+└── i18next.server.ts       # Thin wrapper around SDK's createI18nMiddleware()
 
 src/routes/
 └── action.set-locale.ts    # Server action to persist locale preference
-
-scripts/
-└── aggregate-extension-locales.js  # Auto-aggregates extension translations
 ```
+
+The i18n utilities (`getTranslation`, `i18nextContext`, `initI18next`, `createI18nMiddleware`) are provided by `@salesforce/storefront-next-runtime/i18n` and `@salesforce/storefront-next-runtime/i18n/client`. They do not live in `src/lib/` anymore.
 
 ## Usage Examples
 
@@ -369,7 +360,7 @@ const text2 = t('summary.itemsInCart', { count: 3 }); // "3 items in cart"
 Use the `getTranslation` utility for tests, utilities, or any non-React code:
 
 ```typescript
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // In tests
 describe('ActionCard', () => {
@@ -399,7 +390,7 @@ const schema = z.object({
 Use `getTranslation` with the context parameter for server-side translations:
 
 ```typescript
-import { getTranslation, i18nextContext } from '@/lib/i18next';
+import { getTranslation, i18nextContext } from '@salesforce/storefront-next-runtime/i18n';
 import type { LoaderFunctionArgs } from 'react-router';
 
 export function loader(args: LoaderFunctionArgs) {
@@ -424,7 +415,7 @@ export function loader(args: LoaderFunctionArgs) {
 
 ```typescript
 import type { ActionFunctionArgs } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 export async function action(args: ActionFunctionArgs) {
     const { t } = getTranslation(args.context);
@@ -549,14 +540,14 @@ This convention prevents namespace collisions between extensions and core applic
 
 ### How Locale Discovery Works
 
-**Important**: The locale aggregation script (`aggregate-extension-locales.js`) is specifically for **extension translations only**. Main app translations in `/src/locales/` are NOT aggregated by this script—they are imported directly.
+**Important**: The locale aggregation command (`sfnext locales aggregate-extensions`) is specifically for **extension translations only**. Main app translations in `/src/locales/` are NOT aggregated by this command—they are imported directly.
 
-The script scans **two locations** to discover all supported locales:
+The command scans **two locations** to discover all supported locales:
 
 1. **Main app locales**: `/src/locales/{locale}/`
 2. **Extension locales**: `/src/extensions/{extension-name}/locales/{locale}/`
 
-The script merges locales from both sources and generates **extension-only** aggregation files under `/src/extensions/locales/` for each discovered locale. This means:
+The command merges locales from both sources and generates **extension-only** aggregation files under `/src/extensions/locales/` for each discovered locale. This means:
 
 - If your main app supports Spanish (`es-MX`) but none of your extensions have Spanish translations, an empty aggregation file is still generated for `es-MX`
 - If an extension provides translations for a locale not in the main app, those translations are still aggregated (though the main app won't use them unless configured)
@@ -635,7 +626,7 @@ export function DeliveryOptions() {
 **In Non-Component Code:**
 
 ```typescript
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 export function getDeliveryMessage() {
     const { t } = getTranslation();
@@ -647,7 +638,7 @@ export function getDeliveryMessage() {
 **In Route Loaders/Actions:**
 
 ```typescript
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { LoaderFunctionArgs } from 'react-router';
 
 export function loader(args: LoaderFunctionArgs) {
@@ -657,6 +648,19 @@ export function loader(args: LoaderFunctionArgs) {
     };
 }
 ```
+
+## Using a Different i18n Library
+
+The SDK's i18n support (`@salesforce/storefront-next-runtime/i18n`) is built on i18next. If you prefer a different library (e.g., `next-intl`, `formatjs`, `lingui`), you can replace the i18n layer entirely:
+
+1. **Skip the SDK's i18n subpath** — do not import from `@salesforce/storefront-next-runtime/i18n` or `@salesforce/storefront-next-runtime/i18n/client`
+2. **Locale resolution still works** — the site-context system (`createSiteContextMiddleware`, locale detection from URL/cookie/header, `SiteProvider`) is i18n-library-agnostic and handles determining the active locale
+3. **Write your own middleware** — replace `src/middlewares/i18next.server.ts` with a middleware that initializes your chosen library, reading the resolved locale from `requestToLocaleMap` (exported from `@salesforce/storefront-next-runtime/site-context`)
+4. **Write your own client init** — replace the `initI18next()` call in `root.tsx` with your library's initialization
+5. **Bridge to SiteProvider** — pass the current language string to `SiteProvider`'s `language` prop (it accepts a plain `string`, no i18next dependency)
+6. **Chunk splitting still works** — the Vite `i18nPlugin` splits any files matching `/src/locales/([^/]+)/` into per-language chunks, regardless of i18n library
+
+The SDK separates **locale resolution** (which locale is active) from **translation** (turning keys into strings). Only the translation layer is i18next-specific.
 
 ## Best Practices
 
@@ -691,12 +695,12 @@ t('cart:empty.title');
 t('nonexistent.key');
 ```
 
-Type definitions are generated from the English locale (`resources.en`) in `src/middlewares/i18next.server.ts`:
+Type definitions are generated from the English locale (`resources['en-GB']`) in `src/middlewares/i18next.server.ts`:
 
 ```typescript
 declare module 'i18next' {
     interface CustomTypeOptions {
-        resources: typeof resources.en; // Use `en` as source of truth for the types
+        resources: (typeof resources)['en-GB']; // Use `en-GB` as source of truth for the types
     }
 }
 ```
@@ -713,7 +717,7 @@ During the migration to i18next translations in PR [#447](https://github.com/Sal
 
 **Symptom**: Validation messages show as keys (e.g., `checkout:contactInfo.emailRequired`) instead of translated text.
 
-**Root Cause**: Zod schemas created at module load time execute before i18next initializes in RSC apps, where client-side i18next initialization is separate from server-side.
+**Root Cause**: Zod schemas created at module load time execute before i18next initializes in server-rendered apps, where client-side i18next initialization is separate from server-side.
 
 ### Solution: Factory Pattern
 

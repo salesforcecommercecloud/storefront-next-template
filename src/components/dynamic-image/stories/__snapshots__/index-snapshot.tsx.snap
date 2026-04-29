@@ -765,7 +765,7 @@ exports[`DynamicImage stories snapshot > ShadowHoverEffect story renders and mat
 exports[`DynamicImage stories snapshot > WithCustomComponent story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-muted rounded-lg p-4"
+    class="bg-muted rounded-none p-4"
   >
     <picture>
       <source

@@ -5,7 +5,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -15,13 +15,13 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit"
             class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -70,12 +70,11 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M"
           tabindex="-1"
-          to="/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -107,8 +106,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -116,7 +114,6 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -126,9 +123,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -136,10 +131,10 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
           >
             <img
               alt=""
@@ -152,9 +147,9 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
@@ -166,7 +161,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -174,9 +169,9 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -291,6 +286,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
             class="sr-only"
           >
             Charcoal Single Pleat Wool Suit
+             
             Price range from £143.99 to £191.99
           </span>
            
@@ -315,7 +311,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -325,13 +321,13 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top"
             class="block w-full h-full flex-1"
-            href="/product/25518101M?color=JJ908XX"
-            to="/product/25518101M?color=JJ908XX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -380,9 +376,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         <a
           aria-label="View Long Sleeve Embellished Boat Neck Top"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M"
           tabindex="-1"
-          to="/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M"
         />
         <div
           class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -394,12 +390,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           </span>
         </div>
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
-          <div
-            class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          >
+          <div>
             <div
               class="group/pickup relative"
               data-testid="pickup-available-indicator"
@@ -462,8 +455,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Long Sleeve Embellished Boat Neck Top"
@@ -471,7 +463,6 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -481,9 +472,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -491,9 +480,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25518101M?color=JJ5QZXX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
             tabindex="-1"
-            to="/product/25518101M?color=JJ5QZXX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
           >
             <img
               alt=""
@@ -506,9 +495,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
             aria-current="true"
             aria-label="View Long Sleeve Embellished Boat Neck Top in Grey Heather"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25518101M?color=JJ908XX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
             tabindex="-1"
-            to="/product/25518101M?color=JJ908XX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
           >
             <img
               alt=""
@@ -520,7 +509,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -533,9 +522,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25518101M"
-          to="/product/25518101M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M"
         >
           Long Sleeve Embellished Boat Neck Top
         </a>
@@ -547,12 +536,6 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         SKU:
          
         25518101M
-      </p>
-      <p
-        class="text-xs text-muted-foreground mb-2"
-        data-testid="product-tile-description"
-      >
-        Premium master product with multiple color variants and full tile features.
       </p>
       <div
         class="mb-2"
@@ -656,6 +639,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
             class="sr-only"
           >
             Long Sleeve Embellished Boat Neck Top
+             
             Current price: £18.55
           </span>
            
@@ -671,6 +655,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
             class="sr-only"
           >
             Long Sleeve Embellished Boat Neck Top
+             
             List price: £31.36
           </span>
         </div>
@@ -694,7 +679,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -704,13 +689,13 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit"
             class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -759,9 +744,9 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M"
           tabindex="-1"
-          to="/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
           class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -778,7 +763,6 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           </span>
         </div>
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -810,8 +794,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -819,7 +802,6 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -829,9 +811,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -839,10 +819,10 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
           >
             <img
               alt=""
@@ -855,9 +835,9 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
@@ -869,7 +849,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -877,9 +857,9 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -994,322 +974,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
             class="sr-only"
           >
             Charcoal Single Pleat Wool Suit
-            Price range from £143.99 to £191.99
-          </span>
-           
-        </div>
-        <div
-          class="items-center gap-2 text-xs text-active-foreground mt-1"
-        >
-          <span
-            class="line-clamp-2 text-[inherit] font-medium"
-          >
-            25% off.
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ProductTile stories snapshot > WithLongDescription story renders and matches snapshot 1`] = `
-<div
-  class="w-64"
->
-  <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
-    data-slot="card"
-  >
-    <div
-      class="product-image relative"
-    >
-      <div
-        class="relative w-full overflow-hidden"
-      >
-        <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-        >
-          <a
-            aria-label="View Charcoal Single Pleat Wool Suit"
-            class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
-          >
-            <div
-              class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
-            >
-              <picture>
-                <source
-                  media="(min-width: 1280px)"
-                  sizes="15vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=230&q=70&sfrm=jpg 230w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=461&q=70&sfrm=jpg 461w"
-                  type="image/webp"
-                />
-                <source
-                  media="(min-width: 1024px)"
-                  sizes="15vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=192&q=70&sfrm=jpg 192w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=384&q=70&sfrm=jpg 384w"
-                  type="image/webp"
-                />
-                <source
-                  media="(min-width: 768px)"
-                  sizes="15vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=154&q=70&sfrm=jpg 154w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=307&q=70&sfrm=jpg 307w"
-                  type="image/webp"
-                />
-                <source
-                  media="(min-width: 640px)"
-                  sizes="50vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=384&q=70&sfrm=jpg 384w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=768&q=70&sfrm=jpg 768w"
-                  type="image/webp"
-                />
-                <source
-                  sizes="50vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=320&q=70&sfrm=jpg 320w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=640&q=70&sfrm=jpg 640w"
-                  type="image/webp"
-                />
-                <img
-                  alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
-                  class="object-cover"
-                  fetchpriority="auto"
-                  loading="lazy"
-                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
-                />
-              </picture>
-            </div>
-          </a>
-        </div>
-        <a
-          aria-label="View Charcoal Single Pleat Wool Suit"
-          class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
-          tabindex="-1"
-          to="/product/25686571M"
-        />
-        <div
-          aria-hidden="true"
-          class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
-        >
-          <div
-            class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          >
-            <button
-              aria-label="Add to Wishlist"
-              class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
-              tabindex="-1"
-            >
-              <svg
-                aria-hidden="true"
-                class="w-4 h-4 transition-all duration-200 ease-in-out text-muted-foreground scale-100"
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div
-          class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
-        />
-        <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
-        >
-          <button
-            aria-label="Quick Add Charcoal Single Pleat Wool Suit"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
-            data-size="default"
-            data-slot="button"
-            data-variant="outline"
-            tabindex="-1"
-          >
-            Quick Add
-          </button>
-        </div>
-      </div>
-    </div>
-    <div
-      class="relative p-4"
-    >
-      <div
-        aria-hidden="true"
-      >
-        <div
-          aria-label="Available colors"
-          class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
-        >
-          <a
-            aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
-            style="background-color: navy;"
-            tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
-          >
-            <img
-              alt=""
-              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
-              loading="lazy"
-              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
-            />
-          </a>
-          <a
-            aria-current="true"
-            aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
-            tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
-          >
-            <img
-              alt=""
-              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
-              loading="lazy"
-              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
-            />
-          </a>
-        </div>
-      </div>
-      <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
-      >
-        Test Store
-      </p>
-      <h3
-        class="text-sm font-medium text-card-foreground mb-2"
-      >
-        <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
-        >
-          Charcoal Single Pleat Wool Suit
-        </a>
-      </h3>
-      <p
-        class="text-xs text-muted-foreground mb-1"
-        data-testid="product-tile-sku"
-      >
-        SKU:
-         
-        25686571M
-      </p>
-      <p
-        class="text-xs text-muted-foreground mb-2"
-        data-testid="product-tile-description"
-      >
-        This premium athletic shoe features advanced cushioning technology, breathable mesh upper, reinforced toe cap, and a durable outsole designed for all-terrain performance in any weather condition.
-      </p>
-      <div
-        class="mb-2"
-      >
-        <div
-          class="flex flex-col gap-1"
-        >
-          <div
-            class="flex items-center gap-2"
-          >
-            <div
-              aria-label="4 out of 5 stars, 218 reviews"
-              class="flex items-center gap-0.5"
-              role="group"
-            >
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="white"
-                  stroke="var(--color-border-subtle)"
-                  stroke-width="1"
-                />
-              </svg>
-            </div>
-            <button
-              aria-label="(218)"
-              class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
-              type="button"
-            >
-              (218)
-            </button>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div
-          class="items-center gap-2 text-sm"
-        >
-          <span
-            aria-label="Price range from £143.99 to £191.99"
-            aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
-          >
-            £143.99 – £191.99
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
+             
             Price range from £143.99 to £191.99
           </span>
            
@@ -1334,7 +999,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -1344,13 +1009,13 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit"
             class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1399,17 +1064,14 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M"
           tabindex="-1"
-          to="/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
-          <div
-            class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          >
+          <div>
             <div
               class="group/pickup relative"
               data-testid="pickup-available-indicator"
@@ -1472,8 +1134,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -1481,7 +1142,6 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -1491,9 +1151,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -1501,10 +1159,10 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
           >
             <img
               alt=""
@@ -1517,9 +1175,9 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
@@ -1531,7 +1189,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -1539,9 +1197,9 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -1656,6 +1314,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
             class="sr-only"
           >
             Charcoal Single Pleat Wool Suit
+             
             Price range from £143.99 to £191.99
           </span>
            
@@ -1680,7 +1339,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -1690,13 +1349,13 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit"
             class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1745,12 +1404,11 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M"
           tabindex="-1"
-          to="/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -1782,8 +1440,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -1791,7 +1448,6 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -1801,9 +1457,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -1811,10 +1465,10 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
           >
             <img
               alt=""
@@ -1827,9 +1481,9 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
@@ -1841,7 +1495,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -1849,9 +1503,9 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -1966,322 +1620,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
             class="sr-only"
           >
             Charcoal Single Pleat Wool Suit
-            Price range from £143.99 to £191.99
-          </span>
-           
-        </div>
-        <div
-          class="items-center gap-2 text-xs text-active-foreground mt-1"
-        >
-          <span
-            class="line-clamp-2 text-[inherit] font-medium"
-          >
-            25% off.
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ProductTile stories snapshot > WithShortDescription story renders and matches snapshot 1`] = `
-<div
-  class="w-64"
->
-  <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
-    data-slot="card"
-  >
-    <div
-      class="product-image relative"
-    >
-      <div
-        class="relative w-full overflow-hidden"
-      >
-        <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
-        >
-          <a
-            aria-label="View Charcoal Single Pleat Wool Suit"
-            class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
-          >
-            <div
-              class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
-            >
-              <picture>
-                <source
-                  media="(min-width: 1280px)"
-                  sizes="15vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=230&q=70&sfrm=jpg 230w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=461&q=70&sfrm=jpg 461w"
-                  type="image/webp"
-                />
-                <source
-                  media="(min-width: 1024px)"
-                  sizes="15vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=192&q=70&sfrm=jpg 192w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=384&q=70&sfrm=jpg 384w"
-                  type="image/webp"
-                />
-                <source
-                  media="(min-width: 768px)"
-                  sizes="15vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=154&q=70&sfrm=jpg 154w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=307&q=70&sfrm=jpg 307w"
-                  type="image/webp"
-                />
-                <source
-                  media="(min-width: 640px)"
-                  sizes="50vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=384&q=70&sfrm=jpg 384w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=768&q=70&sfrm=jpg 768w"
-                  type="image/webp"
-                />
-                <source
-                  sizes="50vw"
-                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=320&q=70&sfrm=jpg 320w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.webp?sw=640&q=70&sfrm=jpg 640w"
-                  type="image/webp"
-                />
-                <img
-                  alt="Charcoal Single Pleat Wool Suit, Charcoal, medium"
-                  class="object-cover"
-                  fetchpriority="auto"
-                  loading="lazy"
-                  src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw23283a20/images/medium/PG.33698RUBN4Q.CHARCWL.PZ.jpg"
-                />
-              </picture>
-            </div>
-          </a>
-        </div>
-        <a
-          aria-label="View Charcoal Single Pleat Wool Suit"
-          class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
-          tabindex="-1"
-          to="/product/25686571M"
-        />
-        <div
-          aria-hidden="true"
-          class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
-        >
-          <div
-            class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          >
-            <button
-              aria-label="Add to Wishlist"
-              class="w-9 h-9 p-2 border-0 flex items-center justify-center transition-all duration-200 ease-in-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"
-              tabindex="-1"
-            >
-              <svg
-                aria-hidden="true"
-                class="w-4 h-4 transition-all duration-200 ease-in-out text-muted-foreground scale-100"
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div
-          class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
-        />
-        <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
-        >
-          <button
-            aria-label="Quick Add Charcoal Single Pleat Wool Suit"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 w-full shadow-sm cursor-pointer"
-            data-size="default"
-            data-slot="button"
-            data-variant="outline"
-            tabindex="-1"
-          >
-            Quick Add
-          </button>
-        </div>
-      </div>
-    </div>
-    <div
-      class="relative p-4"
-    >
-      <div
-        aria-hidden="true"
-      >
-        <div
-          aria-label="Available colors"
-          class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
-        >
-          <a
-            aria-label="View Charcoal Single Pleat Wool Suit in Navy"
-            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
-            style="background-color: navy;"
-            tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
-          >
-            <img
-              alt=""
-              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
-              loading="lazy"
-              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw7fabf1ff/images/swatch/PG.52002RUBN4Q.NAVYWL.CP.webp?sfrm=jpg&q=70"
-            />
-          </a>
-          <a
-            aria-current="true"
-            aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
-            class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
-            tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
-          >
-            <img
-              alt=""
-              class="absolute inset-0 w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-150"
-              loading="lazy"
-              src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5cb61ec2/images/swatch/PG.33698RUBN4Q.CHARCWL.CP.webp?sfrm=jpg&q=70"
-            />
-          </a>
-        </div>
-      </div>
-      <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
-      >
-        Test Store
-      </p>
-      <h3
-        class="text-sm font-medium text-card-foreground mb-2"
-      >
-        <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
-        >
-          Charcoal Single Pleat Wool Suit
-        </a>
-      </h3>
-      <p
-        class="text-xs text-muted-foreground mb-1"
-        data-testid="product-tile-sku"
-      >
-        SKU:
-         
-        25686571M
-      </p>
-      <p
-        class="text-xs text-muted-foreground mb-2"
-        data-testid="product-tile-description"
-      >
-        Lightweight running shoe with cushioned sole.
-      </p>
-      <div
-        class="mb-2"
-      >
-        <div
-          class="flex flex-col gap-1"
-        >
-          <div
-            class="flex items-center gap-2"
-          >
-            <div
-              aria-label="4 out of 5 stars, 218 reviews"
-              class="flex items-center gap-0.5"
-              role="group"
-            >
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="var(--color-rating)"
-                  stroke="var(--color-rating)"
-                  stroke-width="1"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="shrink-0 w-3 h-3 text-foreground"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  fill="white"
-                  stroke="var(--color-border-subtle)"
-                  stroke-width="1"
-                />
-              </svg>
-            </div>
-            <button
-              aria-label="(218)"
-              class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded text-xs text-muted-foreground"
-              type="button"
-            >
-              (218)
-            </button>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div
-          class="items-center gap-2 text-sm"
-        >
-          <span
-            aria-label="Price range from £143.99 to £191.99"
-            aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
-          >
-            £143.99 – £191.99
-          </span>
-          <span
-            aria-atomic="true"
-            aria-live="polite"
-            class="sr-only"
-          >
-            Charcoal Single Pleat Wool Suit
+             
             Price range from £143.99 to £191.99
           </span>
            
@@ -2306,7 +1645,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -2316,13 +1655,13 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit"
             class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -2371,12 +1710,11 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M"
           tabindex="-1"
-          to="/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -2408,8 +1746,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -2417,7 +1754,6 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -2427,9 +1763,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -2437,10 +1771,10 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
           >
             <img
               alt=""
@@ -2453,9 +1787,9 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
@@ -2467,7 +1801,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -2475,9 +1809,9 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -2592,6 +1926,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
             class="sr-only"
           >
             Charcoal Single Pleat Wool Suit
+             
             Price range from £143.99 to £191.99
           </span>
            
@@ -2616,7 +1951,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -2626,13 +1961,13 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top"
             class="block w-full h-full flex-1"
-            href="/product/25518101M?color=JJ908XX"
-            to="/product/25518101M?color=JJ908XX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -2681,12 +2016,11 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         <a
           aria-label="View Long Sleeve Embellished Boat Neck Top"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M"
           tabindex="-1"
-          to="/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -2718,8 +2052,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Long Sleeve Embellished Boat Neck Top"
@@ -2727,7 +2060,6 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -2737,9 +2069,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -2747,9 +2077,9 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25518101M?color=JJ5QZXX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
             tabindex="-1"
-            to="/product/25518101M?color=JJ5QZXX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
           >
             <img
               alt=""
@@ -2761,10 +2091,10 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           <a
             aria-label="View all 2 colors for Long Sleeve Embellished Boat Neck Top"
             class="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
-            href="/product/25518101M"
+            href="/RefArchGlobal/en-GB/product/25518101M"
             tabindex="-1"
             title="+1 more"
-            to="/product/25518101M"
+            to="/RefArchGlobal/en-GB/product/25518101M"
           >
             <svg
               class="shrink-0"
@@ -2782,7 +2112,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -2790,9 +2120,9 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25518101M"
-          to="/product/25518101M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M"
         >
           Long Sleeve Embellished Boat Neck Top
         </a>
@@ -2907,6 +2237,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
             class="sr-only"
           >
             Long Sleeve Embellished Boat Neck Top
+             
             Current price: £18.55
           </span>
            
@@ -2922,6 +2253,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
             class="sr-only"
           >
             Long Sleeve Embellished Boat Neck Top
+             
             List price: £31.36
           </span>
         </div>
@@ -2945,7 +2277,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -2955,13 +2287,13 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top"
             class="block w-full h-full flex-1"
-            href="/product/25518101M?color=JJ908XX"
-            to="/product/25518101M?color=JJ908XX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -3010,12 +2342,11 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         <a
           aria-label="View Long Sleeve Embellished Boat Neck Top"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M"
           tabindex="-1"
-          to="/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -3047,8 +2378,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Long Sleeve Embellished Boat Neck Top"
@@ -3056,7 +2386,6 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -3066,9 +2395,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -3076,9 +2403,9 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25518101M?color=JJ5QZXX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
             tabindex="-1"
-            to="/product/25518101M?color=JJ5QZXX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
           >
             <img
               alt=""
@@ -3091,9 +2418,9 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
             aria-current="true"
             aria-label="View Long Sleeve Embellished Boat Neck Top in Grey Heather"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25518101M?color=JJ908XX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
             tabindex="-1"
-            to="/product/25518101M?color=JJ908XX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
           >
             <img
               alt=""
@@ -3105,7 +2432,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -3113,9 +2440,9 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25518101M"
-          to="/product/25518101M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M"
         >
           Long Sleeve Embellished Boat Neck Top
         </a>
@@ -3230,6 +2557,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
             class="sr-only"
           >
             Long Sleeve Embellished Boat Neck Top
+             
             Current price: £18.55
           </span>
            
@@ -3245,6 +2573,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
             class="sr-only"
           >
             Long Sleeve Embellished Boat Neck Top
+             
             List price: £31.36
           </span>
         </div>
@@ -3268,7 +2597,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -3278,13 +2607,13 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit"
             class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -3333,12 +2662,11 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M"
           tabindex="-1"
-          to="/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -3370,8 +2698,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -3379,7 +2706,6 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -3389,9 +2715,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -3399,10 +2723,10 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
           >
             <img
               alt=""
@@ -3415,9 +2739,9 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
@@ -3429,7 +2753,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -3442,9 +2766,9 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -3559,6 +2883,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
             class="sr-only"
           >
             Charcoal Single Pleat Wool Suit
+             
             Price range from £143.99 to £191.99
           </span>
            
@@ -3583,7 +2908,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
   class="w-64"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl"
+    class="bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none"
     data-slot="card"
   >
     <div
@@ -3593,13 +2918,13 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         class="relative w-full overflow-hidden"
       >
         <div
-          class="relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
+          class="relative overflow-hidden bg-secondary/20 flex flex-col aspect-square w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit"
             class="block w-full h-full flex-1"
-            href="/product/25686571M?color=CHARCWL"
-            to="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <div
               class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -3648,12 +2973,11 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M"
           tabindex="-1"
-          to="/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         />
         <div
-          aria-hidden="true"
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
         >
           <div
@@ -3685,8 +3009,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none"
         />
         <div
-          aria-hidden="true"
-          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          class="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20"
         >
           <button
             aria-label="Quick Add Charcoal Single Pleat Wool Suit"
@@ -3694,7 +3017,6 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
             data-size="default"
             data-slot="button"
             data-variant="outline"
-            tabindex="-1"
           >
             Quick Add
           </button>
@@ -3704,9 +3026,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
     <div
       class="relative p-4"
     >
-      <div
-        aria-hidden="true"
-      >
+      <div>
         <div
           aria-label="Available colors"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
@@ -3714,10 +3034,10 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
             style="background-color: navy;"
             tabindex="-1"
-            to="/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
           >
             <img
               alt=""
@@ -3730,9 +3050,9 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
             tabindex="-1"
-            to="/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
           >
             <img
               alt=""
@@ -3744,7 +3064,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-xs text-muted-foreground mb-1"
       >
         Test Store
       </p>
@@ -3752,9 +3072,9 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         class="text-sm font-medium text-card-foreground mb-2"
       >
         <a
-          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-          href="/product/25686571M"
-          to="/product/25686571M"
+          class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+          href="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -3869,6 +3189,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
             class="sr-only"
           >
             Charcoal Single Pleat Wool Suit
+             
             Price range from £143.99 to £191.99
           </span>
            

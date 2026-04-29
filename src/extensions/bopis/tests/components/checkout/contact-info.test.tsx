@@ -73,10 +73,7 @@ vi.mock('@/lib/customer-profile-utils', () => ({
     getContactInfoFromCustomer: (customerProfile?: unknown) => mockGetContactInfoFromCustomer(customerProfile),
 }));
 
-const mockGetCommonPhoneCountryCodes = vi.fn(() => [
-    { dialingCode: '+1', countryName: 'United States' },
-    { dialingCode: '+44', countryName: 'United Kingdom' },
-]);
+const mockGetCommonPhoneCountryCodes = vi.fn(() => [{ dialingCode: '+1', countryName: 'United States' }]);
 vi.mock('@/lib/country-codes', () => ({
     getCommonPhoneCountryCodes: () => mockGetCommonPhoneCountryCodes(),
 }));
@@ -124,10 +121,7 @@ describe('ContactInfo - Multiship-BOPIS Scenarios', () => {
     beforeEach(async () => {
         vi.clearAllMocks();
         mockGetContactInfoFromCustomer.mockReturnValue({});
-        mockGetCommonPhoneCountryCodes.mockReturnValue([
-            { dialingCode: '+1', countryName: 'United States' },
-            { dialingCode: '+44', countryName: 'United Kingdom' },
-        ]);
+        mockGetCommonPhoneCountryCodes.mockReturnValue([{ dialingCode: '+1', countryName: 'United States' }]);
 
         mockUseCheckoutContext.mockReturnValue(buildCheckoutContext());
 

@@ -16,7 +16,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { CurrencyProvider } from '@/providers/currency';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 import { EstimatedDeliveryModalContent } from '../estimated-delivery-modal-content';
 import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
 
@@ -41,7 +44,7 @@ const mockDeliveryData: EstimatedDeliveryData = {
             'We ship to over 50 countries worldwide. International shipping rates and delivery times vary by destination.',
             'Customs & Duties: International orders may be subject to customs fees and import duties, which are the responsibility of the customer.',
         ],
-        note: 'For specific international shipping rates, please proceed to checkout and enter your shipping address.',
+        note: 'For specific international shipping rates, please continue to checkout and enter your shipping address.',
     },
     orderTracking: {
         heading: 'Order Tracking',
@@ -54,11 +57,11 @@ const mockDeliveryData: EstimatedDeliveryData = {
 
 function Wrapper({ deliveryData, currency }: { deliveryData: EstimatedDeliveryData; currency: string }) {
     return (
-        <CurrencyProvider value={currency}>
+        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency={currency}>
             <div className="max-w-2xl p-6 space-y-6">
                 <EstimatedDeliveryModalContent deliveryData={deliveryData} currency={currency} />
             </div>
-        </CurrencyProvider>
+        </SiteProvider>
     );
 }
 

@@ -100,29 +100,6 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
 
     return (
         <div className="space-y-4">
-            {/* Address Title Field */}
-            <FormField
-                control={form.control}
-                name="addressId"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-sm font-medium text-foreground">
-                            {t('addressForm.addressTitleLabel')}
-                        </FormLabel>
-                        <FormControl>
-                            <Input
-                                type="text"
-                                maxLength={256}
-                                placeholder={t('addressForm.addressTitlePlaceholder')}
-                                className="rounded-md"
-                                {...field}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-
             {/* First Name and Last Name Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* First Name Field */}
@@ -135,7 +112,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                                 {t('addressForm.firstNameLabel')}
                             </FormLabel>
                             <FormControl>
-                                <Input type="text" autoComplete="given-name" className="rounded-md" {...field} />
+                                <Input type="text" autoComplete="given-name" className="rounded-none" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -152,7 +129,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                                 {t('addressForm.lastNameLabel')}
                             </FormLabel>
                             <FormControl>
-                                <Input type="text" autoComplete="family-name" className="rounded-md" {...field} />
+                                <Input type="text" autoComplete="family-name" className="rounded-none" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -175,7 +152,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                                 autoComplete="tel"
                                 maxLength={32}
                                 placeholder={t('addressForm.phonePlaceholder')}
-                                className="rounded-md"
+                                className="rounded-none"
                                 {...field}
                                 value={field.value || ''}
                                 onChange={(e) => {
@@ -208,7 +185,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                                     form.setValue('stateCode', '');
                                     form.setValue('postalCode', '');
                                 }}
-                                className="rounded-md">
+                                className="rounded-none">
                                 {countries.map((country) => (
                                     <option key={country.code} value={country.code}>
                                         {country.name}
@@ -231,7 +208,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                             {t('addressForm.addressLabel')}
                         </FormLabel>
                         <FormControl>
-                            <Input type="text" autoComplete="address-line1" className="rounded-md" {...field} />
+                            <Input type="text" autoComplete="address-line1" className="rounded-none" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -252,7 +229,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                                 type="text"
                                 autoComplete="address-line2"
                                 placeholder={t('addressForm.address2Placeholder')}
-                                className="rounded-md"
+                                className="rounded-none"
                                 {...field}
                             />
                         </FormControl>
@@ -271,7 +248,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                         <FormItem>
                             <FormLabel className="text-sm font-medium text-foreground">{postalCodeLabel}</FormLabel>
                             <FormControl>
-                                <Input type="text" autoComplete="postal-code" className="rounded-md" {...field} />
+                                <Input type="text" autoComplete="postal-code" className="rounded-none" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -288,7 +265,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                                 {t('addressForm.cityLabel')}
                             </FormLabel>
                             <FormControl>
-                                <Input type="text" autoComplete="address-level2" className="rounded-md" {...field} />
+                                <Input type="text" autoComplete="address-level2" className="rounded-none" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -307,7 +284,7 @@ export function CustomerAddressFields({ form }: CustomerAddressFieldsProps) {
                                     name={field.name}
                                     value={field.value || ''}
                                     onChange={(e) => field.onChange(e.target.value)}
-                                    className="rounded-md">
+                                    className="rounded-none">
                                     <option value="">{statePlaceholder}</option>
                                     {stateOptions.map((state) => (
                                         <option key={state.code} value={state.code}>

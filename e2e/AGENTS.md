@@ -34,7 +34,7 @@
 
 ## Project Context
 
-This is the **storefront-next-e2e** package, focused on E2E testing for Salesforce Commerce Cloud storefront built with React Server Components.
+This is the **storefront-next-e2e** package, focused on E2E testing for Salesforce Commerce Cloud storefront built with React Router v7.
 
 **Stack:**
 - CodeceptJS 3.7.5 with Playwright engine

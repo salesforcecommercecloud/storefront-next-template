@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useCallback, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,6 +26,10 @@ import { useChangePickupStore } from '@/extensions/bopis/hooks/use-change-pickup
 interface CartPickupProps {
     /** Store object containing store information */
     store: ShopperStores.schemas['Store'];
+    /** Number of basket line items in this pickup group (same basis as delivery heading). */
+    pickupCount: number;
+    /** Total basket line items (pickup + delivery) for “out of” copy. */
+    totalCount: number;
 }
 
 /**
@@ -38,12 +40,14 @@ interface CartPickupProps {
  * button that opens the store locator.
  *
  * @param store - Store object returned by Shopper Stores API
+ * @param pickupCount - Pickup line-item count for this section
+ * @param totalCount - Total line items in the basket
  * @returns ReactElement
  *
  * @example
- * <CartPickup store={store} />
+ * <CartPickup store={store} pickupCount={2} totalCount={5} />
  */
-export default function CartPickup({ store }: CartPickupProps): ReactElement {
+export default function CartPickup({ store, pickupCount, totalCount }: CartPickupProps): ReactElement {
     const { t } = useTranslation('extBopis');
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
     const isStoreLocatorOpen = useStoreLocator((s) => s.isOpen);
@@ -83,19 +87,18 @@ export default function CartPickup({ store }: CartPickupProps): ReactElement {
                 <div className="flex-1 space-y-2">
                     {/* Store Icon and Pickup Label */}
                     <div className="flex items-center gap-2">
-                        <Store className="size-4" />
-                        <Typography variant="large" as="div" className="font-normal">
-                            {(() => {
-                                const template = t('cart.pickupStoreInfo.pickupInStore', { storeName: '{storeName}' });
-                                const [before, after] = template.split('{storeName}');
-                                return (
-                                    <>
-                                        {before}
-                                        <span className="font-semibold">{store.name}</span>
-                                        {after}
-                                    </>
-                                );
-                            })()}
+                        <Store className="size-4 shrink-0" aria-hidden />
+                        <Typography variant="h5" as="h2" className="leading-none font-normal">
+                            <Trans
+                                ns="extBopis"
+                                i18nKey="cart.pickupStoreInfo.pickupHeadingWithCounts"
+                                values={{
+                                    storeName: store.name ?? store.id ?? '',
+                                    pickupCount,
+                                    count: totalCount,
+                                }}
+                                components={[<span className="font-semibold" key="pickup-store-name" />]}
+                            />
                         </Typography>
                     </div>
 

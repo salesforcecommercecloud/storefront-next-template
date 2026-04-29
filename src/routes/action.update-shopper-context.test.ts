@@ -17,14 +17,12 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.update-shopper-context';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
-import { updateShopperContext } from '@/lib/shopper-context-utils';
+import { updateShopperContext } from '@/lib/shopper-context-utils.server';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/i18next');
-vi.mock('@/lib/shopper-context-utils', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/shopper-context-utils')>();
+vi.mock('@/lib/shopper-context-utils.server', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/shopper-context-utils.server')>();
     return { ...actual, updateShopperContext: vi.fn() };
 });
 vi.mock('@/lib/logger.server', () => ({
@@ -37,7 +35,6 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 const mockGetAuth = vi.mocked(getAuth);
-const mockGetTranslation = vi.mocked(getTranslation);
 const mockUpdateShopperContext = vi.mocked(updateShopperContext);
 
 const ACTION_URL = 'http://localhost/action/update-shopper-context';
@@ -57,7 +54,6 @@ describe('action.update-shopper-context', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockGetAuth.mockReturnValue({ usid: 'test-usid' } as never);
-        mockGetTranslation.mockReturnValue({ t: (s: string) => s } as never);
         mockUpdateShopperContext.mockResolvedValue({ setCookieHeaders: [] });
     });
 
@@ -71,7 +67,7 @@ describe('action.update-shopper-context', () => {
             const data = await res.json();
             expect(res.status).toBe(400);
             expect(data.success).toBe(false);
-            expect(data.error).toContain('At least one qualifier');
+            expect(data.error.message).toContain('At least one qualifier');
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
@@ -213,18 +209,22 @@ describe('action.update-shopper-context', () => {
             const res = await action(createArgs('{"src":"email"}'));
             const data = await res.json();
             expect(res.status).toBe(401);
-            expect(data.error).toContain("Usid isn't available");
+            expect(data.error.message).toContain("Usid isn't available");
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
-        test('throws 405 when request method is not PUT', async () => {
+        test('returns 405 when request method is not PUT', async () => {
             const args: ActionFunctionArgs = {
                 request: createFormDataRequest(ACTION_URL, 'POST', { qualifiers: '{"src":"email"}' }),
                 params: {},
                 context: mockContext,
                 unstable_pattern: 'action/update-shopper-context',
             };
-            await expect(action(args)).rejects.toThrow(Response);
+            const res = await action(args);
+            const data = await res.json();
+            expect(res.status).toBe(405);
+            expect(data.success).toBe(false);
+            expect(data.error.message).toContain('not allowed');
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
     });

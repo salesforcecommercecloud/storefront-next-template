@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AnalyticsEvent, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
-import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
+import type { AnalyticsEvent, ConsentPreferences, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
+import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
 import { getBasePath } from '@/lib/utils';
@@ -320,6 +320,11 @@ function extractActiveDataParamsFromEvent(event: AnalyticsEvent): ActiveDataPara
             break;
         }
 
+        case 'commerce_agent_engagement': {
+            params.baseParams.set('sfn-cagent-surface', event.surface);
+            break;
+        }
+
         default:
             // For other event types, just send base params
             break;
@@ -467,7 +472,16 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
 
     return {
         name: 'active-data',
-        sendEvent: async (event: AnalyticsEvent, siteInfo?: EventSiteInfo): Promise<unknown> => {
+        sendEvent: async (
+            event: AnalyticsEvent,
+            siteInfo?: EventSiteInfo,
+            consentPreferences?: ConsentPreferences
+        ): Promise<unknown> => {
+            // Don't send events if adapter lacks required consent
+            if (!hasConsent(config.consentCategory, consentPreferences)) {
+                return Promise.resolve({});
+            }
+
             if (!siteInfo?.siteId || !siteInfo?.localeId) {
                 // eslint-disable-next-line no-console
                 console.warn(
@@ -480,13 +494,14 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
             // Don't send events that are not enabled for this adapter
             if (!config.eventToggles[event.eventType]) return Promise.resolve({});
 
-            // Only handle view_page, view_product, view_search, view_category, and view_recommender for now
+            // view_page-style and catalog events, plus commerce agent engagement (same beacon path as view_page)
             if (
                 event.eventType !== 'view_page' &&
                 event.eventType !== 'view_product' &&
                 event.eventType !== 'view_search' &&
                 event.eventType !== 'view_category' &&
-                event.eventType !== 'view_recommender'
+                event.eventType !== 'view_recommender' &&
+                event.eventType !== 'commerce_agent_engagement'
             ) {
                 return Promise.resolve({});
             }

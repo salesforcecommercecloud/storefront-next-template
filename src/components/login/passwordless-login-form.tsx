@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
-import { Form } from 'react-router';
+import { type ReactElement, useMemo, useState, useCallback } from 'react';
+import { Form, useLocation } from 'react-router';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';
+import { getLoginModeHref } from './get-login-mode-href';
+import { TurnstileWidget } from '@/components/security/turnstile-widget';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 interface PasswordlessLoginFormProps {
     error?: string;
@@ -31,7 +36,41 @@ export default function PasswordlessLoginForm({
     isPasswordlessEnabled,
     redirectPath,
 }: PasswordlessLoginFormProps): ReactElement {
+    const location = useLocation();
     const { t } = useTranslation('login');
+    const config = useConfig<AppConfig>();
+
+    // Turnstile bot protection - gracefully degrades if token generation fails
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+    const turnstileEnabled = config ? isTurnstileEnabled(config) : false;
+    const turnstileSiteKey = useMemo(() => {
+        if (!config || !turnstileEnabled) return null;
+        // Get base URL from window location (client-side)
+        if (typeof window !== 'undefined') {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            return getTurnstileSiteKey(config, baseUrl);
+        }
+        return null;
+    }, [config, turnstileEnabled]);
+
+    const handleTurnstileSuccess = useCallback((token: string) => {
+        setTurnstileToken(token);
+    }, []);
+
+    const handleTurnstileError = useCallback(() => {
+        // Widget no longer calls this (graceful degradation), but keep for API compatibility
+        setTurnstileToken(null);
+    }, []);
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
+    const passwordModeHref = useMemo(() => {
+        return getLoginModeHref(location.search, 'password');
+    }, [location.search]);
+
     return (
         <Form method="post" className="space-y-6">
             {error && (
@@ -55,18 +94,32 @@ export default function PasswordlessLoginForm({
                 />
             </div>
 
+            {/* Turnstile bot protection - gracefully degrades if load fails */}
+            {turnstileEnabled && turnstileSiteKey && (
+                <TurnstileWidget
+                    siteKey={turnstileSiteKey}
+                    onSuccess={handleTurnstileSuccess}
+                    onError={handleTurnstileError}
+                    onExpire={handleTurnstileExpire}
+                    enabled={turnstileEnabled}
+                />
+            )}
+
             {/* Hidden input to track login mode */}
             <input type="hidden" name="loginMode" value="passwordless" />
 
             {/* Hidden input to pass redirect URL */}
             {redirectPath && <input type="hidden" name="redirectPath" value={redirectPath} />}
 
+            {/* Hidden input for Turnstile token */}
+            {turnstileToken && <input type="hidden" name="turnstileToken" value={turnstileToken} />}
+
             <FormSubmitButton defaultText={t('sendLoginLink')} submittingText={t('sendingLoginLink')} />
 
             {/* Toggle to password login if enabled */}
             {isPasswordlessEnabled && (
                 <div className="text-center">
-                    <Link to="/login?mode=password" className="text-primary hover:text-primary/80 text-sm">
+                    <Link to={passwordModeHref} className="text-primary hover:text-primary/80 text-sm">
                         {t('loginWithPassword')}
                     </Link>
                 </div>

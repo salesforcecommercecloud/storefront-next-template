@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StarRating } from '@/components/product-ratings/star-rating';
@@ -39,9 +37,12 @@ function FieldError({ id, message }: { id?: string; message: string }): ReactEle
 export function WriteReviewModalContent({
     onClose,
     formConfig,
+    onAfterSubmit,
 }: {
     onClose?: () => void;
     formConfig?: WriteReviewFormData;
+    /** Invoked after a successful submit, after `addReview` (e.g. order line UI). PDP omits. */
+    onAfterSubmit?: (review: ReviewItem) => void;
 }): ReactElement | null {
     const [selectedRating, setSelectedRating] = useState(0);
     const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -124,10 +125,12 @@ export function WriteReviewModalContent({
                 reportLabel: tProduct('report'),
             };
             addReview(newReview);
+            onAfterSubmit?.(newReview);
             onClose?.();
         },
         [
             addReview,
+            onAfterSubmit,
             location,
             onClose,
             reviewBodyTrimmed,
@@ -237,7 +240,7 @@ export function WriteReviewModalContent({
                 {validationErrors.length > 0 && (
                     <div
                         role="alert"
-                        className="rounded-md border border-status-critical-border bg-status-critical-bg p-4">
+                        className="rounded-none border border-status-critical-border bg-status-critical-bg p-4">
                         <p className="text-sm font-medium text-status-critical-foreground">
                             {t('validation.pleaseFixFollowing')}
                         </p>
@@ -363,7 +366,7 @@ export function WriteReviewModalContent({
                         aria-invalid={reviewBodyInvalid || showReviewValidation}
                         aria-describedby={showReviewValidation ? 'review-validation-message' : undefined}
                         className={cn(
-                            'flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+                            'flex w-full rounded-none border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
                             (reviewBodyInvalid || showReviewValidation) && 'border-status-critical'
                         )}
                     />
@@ -448,7 +451,7 @@ export function WriteReviewModalContent({
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
                         className={cn(
-                            'mt-2 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-8 transition-colors cursor-pointer',
+                            'mt-2 flex flex-col items-center justify-center gap-2 rounded-none border-2 border-dashed p-8 transition-colors cursor-pointer',
                             isUploadZoneHovered || isDragging
                                 ? 'border-primary bg-primary/5'
                                 : 'border-muted-foreground/40'
@@ -482,7 +485,7 @@ export function WriteReviewModalContent({
                                 {selectedFiles.map((file) => (
                                     <li
                                         key={`${file.name}-${file.size}-${file.lastModified}`}
-                                        className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-2 py-1.5 text-sm">
+                                        className="flex items-center gap-2 rounded-none border border-border bg-muted/30 px-2 py-1.5 text-sm">
                                         <span className="truncate max-w-[180px]" title={file.name}>
                                             {file.name}
                                         </span>

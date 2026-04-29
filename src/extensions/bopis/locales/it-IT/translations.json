@@ -53,8 +53,11 @@
         "pickupLastName": "Ritiro"
     },
     "cart": {
-        "deliveryItemsHeading": "Consegna - {{deliveryCount}} di {{totalCount}} articoli",
+        "deliveryItemsHeading_one": "Consegna - {{deliveryCount}} di {{count}} articolo",
+        "deliveryItemsHeading_other": "Consegna - {{deliveryCount}} di {{count}} articoli",
         "pickupStoreInfo": {
+            "pickupHeadingWithCounts_one": "Ritira presso <0>{{storeName}}</0> - {{pickupCount}} di {{count}} articolo",
+            "pickupHeadingWithCounts_other": "Ritira presso <0>{{storeName}}</0> - {{pickupCount}} di {{count}} articoli",
             "pickupInStore": "Ritira presso {{storeName}}",
             "changeStore": "Cambia negozio",
             "storeChanged": "Il negozio di ritiro è stato cambiato.",

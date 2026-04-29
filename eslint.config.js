@@ -84,7 +84,16 @@ const baseConfig = defineConfig([
     jsonc.configs['flat/recommended-with-json'],
     {
         // Ignore generated SCAPI client files, ejected shadcn/ui components, and Claude settings
-        ignores: ['**/src/scapi-client/generated/**', '**/src/components/ui/**', '.claude/**', '**/lighthouserc.cjs'],
+       ignores: [
+        '**/src/scapi-client/generated/**',
+        '**/src/scapi/generated/**',
+        '**/src/scapi/custom-clients.ts',
+        '**/src/components/ui/**',
+        '**/src/dashboard/components/ui/**',
+        '.claude/**',
+        '**/lighthouserc.cjs',
+        '**/generate-config.cjs'
+      ]
     },
     {
         files: ['**/*.js'],
@@ -238,7 +247,7 @@ const baseConfig = defineConfig([
     },
     {
         // Ejected/generated shadcn/ui components
-        files: ['src/components/ui/**/*.{ts,tsx}'],
+        files: ['src/components/ui/**/*.{ts,tsx}', '**/src/dashboard/components/ui/**/*.{ts,tsx}'],
         rules: {
             '@typescript-eslint/consistent-type-imports': 'off',
             '@typescript-eslint/no-shadow': 'off',
@@ -246,10 +255,13 @@ const baseConfig = defineConfig([
         },
     },
     {
-        // Multi-site navigation wrappers — these legitimately import from react-router
-        files: ['**/src/components/link/index.tsx', '**/src/hooks/use-navigate.ts'],
+        // Multi-site navigation wrappers — these legitimately import from react-router.
+        // Also covers flat link.tsx used in packages without multi-site routing (e.g. storefront-next-ci).
+        files: ['**/src/components/link/index.tsx', '**/src/components/link.tsx', '**/src/dashboard/components/link.tsx', '**/src/hooks/use-navigate.ts'],
         rules: {
             'no-restricted-imports': 'off',
+            // These files export hooks/functions alongside any components
+            'react-refresh/only-export-components': 'off',
         },
     },
     {
@@ -290,11 +302,25 @@ const baseConfig = defineConfig([
     },
     {
         // Route files - apply custom loader rules
+        // react-refresh/only-export-components is off because React Router requires co-exporting
+        // loader/action/meta/links alongside the component in the same file.
         files: ['**/routes/**/!(*.test).{ts,tsx}'],
         rules: {
             '@typescript-eslint/only-throw-error': ['error', { allow: [{ from: 'lib', name: ['Response'] }] }],
             'custom/no-client-actions': 'error',
             'custom/no-client-loaders': 'error',
+            'react-refresh/only-export-components': 'off',
+        },
+    },
+    {
+        // root.tsx — React Router app shell file.
+        // Exports Layout/ErrorBoundary/loader/links/middleware alongside the default App component
+        // by framework convention. dangerouslySetInnerHTML is used only for controlled inline scripts
+        // (dark mode init, app config injection) — not user input.
+        files: ['**/root.tsx'],
+        rules: {
+            'react-refresh/only-export-components': 'off',
+            'react/no-danger': 'off',
         },
     },
     {

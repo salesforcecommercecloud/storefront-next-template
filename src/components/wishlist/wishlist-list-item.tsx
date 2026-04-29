@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
-import { type ReactElement, useEffect, useRef } from 'react';
+import { lazy, Suspense, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useFetcher } from 'react-router';
 import { Link } from '@/components/link';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { findImageGroupBy } from '@/lib/image-groups-utils';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { createProductUrl, getDisplayVariationValues, requiresVariantSelection } from '@/lib/product-utils';
@@ -32,8 +30,15 @@ import ProductPrice from '@/components/product-price';
 import { Button } from '@/components/ui/button';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 
+// Lazy-load the modal so it only enters the bundle when a shopper actually opens it
+const CartItemModal = lazy(() =>
+    import('@/components/cart-item-modal').then((module) => ({ default: module.CartItemModal }))
+);
+
 type Product = ShopperProducts.schemas['Product'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
+
+const CTA_BUTTON_CLASS = 'w-full md:w-auto md:min-w-28';
 
 interface WishlistListItemProps {
     product: Product;
@@ -49,9 +54,9 @@ interface WishlistListItemProps {
 export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistListItemProps): ReactElement {
     const { t } = useTranslation('product');
     const config = useConfig<AppConfig>();
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { addToast } = useToast();
-    const removeFetcher = useFetcher<{ success: boolean; error?: string }>();
+    const removeFetcher = useFetcher<{ success: boolean; error?: { code: string; message: string } }>();
     const hasHandledRemoveResponse = useRef(false);
 
     // When SCAPI returns the product by its variant ID, the product itself has type.variant = true
@@ -66,14 +71,22 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
         : undefined;
 
     // Determine the current variant to pass to useProductActions:
-    // - If product IS a variant, use the product itself (cast to Variant type)
+    // - If product IS a variant, build a minimal Variant object from the product's fields
     // - If product is a master, use the matched variant (or undefined if not found)
-    const currentVariant = isProductVariant ? (product as ShopperProducts.schemas['Variant']) : matchedVariant;
+    const currentVariant: ShopperProducts.schemas['Variant'] | undefined = isProductVariant
+        ? {
+              productId: product.id ?? '',
+              price: product.price,
+              orderable: product.inventory?.orderable,
+              variationValues: product.variationValues as Record<string, string> | undefined,
+          }
+        : matchedVariant;
 
-    // Use the product actions hook for cart operations
-    // Skip inventory validation for wishlist - users should be able to attempt adding
-    // out-of-stock items (the cart action will handle the error)
-    const { handleAddToCart, isAddingToOrUpdatingCart, canAddToCart } = useProductActions({
+    // Use the product actions hook for cart operations.
+    // `skipInventoryValidation` keeps canAddToCart permissive for wishlist rows; the orderability
+    // of the selection is surfaced separately via `isOrderable` so we can render a disabled
+    // "Out of stock" button for items that can't currently be ordered.
+    const { handleAddToCart, isAddingToOrUpdatingCart, canAddToCart, isOrderable } = useProductActions({
         product,
         currentVariant,
         initialQuantity: 1,
@@ -81,6 +94,8 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
     });
     const isSpecificVariant = isProductVariant || Boolean(matchedVariant);
     const needsVariantSelection = !isSpecificVariant && requiresVariantSelection(product);
+    // Variant resolved && not orderable (e.g., out of stock).
+    const isResolvedVariantOutOfStock = isSpecificVariant && !isOrderable;
 
     // Variation values used for image group selection:
     // – for variant products returned directly by SCAPI, use the product's own variationValues
@@ -124,7 +139,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                 }
             } else if (result?.success === false || result?.error) {
                 hasHandledRemoveResponse.current = true;
-                addToast(result.error ?? t('failedToRemoveFromWishlist'), 'error');
+                addToast(t('failedToRemoveFromWishlist'), 'error');
             }
         }
         if (removeFetcher.state === 'submitting') {
@@ -139,9 +154,21 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
 
     const isRemoving = removeFetcher.state !== 'idle';
 
+    // Variant-selection modal state. When a master product is saved to the wishlist without a
+    // specific variant chosen, we open the same CartItemModal the PDP quick-add uses so the
+    // shopper can pick size/color and add to cart without leaving the wishlist.
+    // Two flags: `Loaded` stays true after close so the lazy chunk + modal state persist
+    // across reopens; `Open` drives the modal's visibility.
+    const [isSelectOptionsModalLoaded, setIsSelectOptionsModalLoaded] = useState(false);
+    const [isSelectOptionsModalOpen, setIsSelectOptionsModalOpen] = useState(false);
+    const handleOpenSelectOptions = useCallback(() => {
+        setIsSelectOptionsModalLoaded(true);
+        setIsSelectOptionsModalOpen(true);
+    }, []);
+
     return (
         <div data-testid={`wishlist-item-${wishlistItem.id}`}>
-            <div className="flex gap-4 p-4 border border-border rounded-lg bg-card">
+            <div className="flex gap-4 p-4 border border-border rounded-none bg-card">
                 {/* Product Image */}
                 <Link to={pdpUrl} className="flex-shrink-0 self-start" aria-label={product.name}>
                     <div className="w-20 h-20 md:w-28 md:h-28 rounded overflow-hidden bg-muted flex items-center justify-center">
@@ -199,7 +226,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                             type="button"
                             onClick={handleRemove}
                             disabled={isRemoving}
-                            className="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+                            className="block text-sm text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2 cursor-pointer"
                             aria-label={t('removeFromWishlist')}>
                             {t('remove')}
                         </button>
@@ -208,23 +235,45 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
                     {/* Price */}
                     <div className="flex flex-col gap-2 flex-shrink-0 md:items-end md:text-right">
                         <ProductPrice type="unit" product={product} currency={currency} />
-                        {canAddToCart ? (
+                        {isResolvedVariantOutOfStock ? (
+                            <Button type="button" disabled size="sm" variant="default" className={CTA_BUTTON_CLASS}>
+                                {t('outOfStockLabel')}
+                            </Button>
+                        ) : needsVariantSelection ? (
+                            <Button
+                                type="button"
+                                onClick={handleOpenSelectOptions}
+                                size="sm"
+                                variant="outline"
+                                className={CTA_BUTTON_CLASS}>
+                                {t('selectOptions')}
+                            </Button>
+                        ) : canAddToCart ? (
                             <Button
                                 onClick={() => void handleAddToCart()}
                                 disabled={isAddingToOrUpdatingCart}
                                 size="sm"
                                 variant="default"
-                                className="w-full md:w-auto md:min-w-28">
+                                className={CTA_BUTTON_CLASS}>
                                 {isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
-                            </Button>
-                        ) : needsVariantSelection ? (
-                            <Button asChild size="sm" variant="outline" className="w-full md:w-auto md:min-w-28">
-                                <Link to={pdpUrl}>{t('selectOptions')}</Link>
                             </Button>
                         ) : null}
                     </div>
                 </div>
             </div>
+
+            {/* Variant-selection modal
+             * Reuses the PDP quick-add modal flow. Lazy loads.
+             * Uses master product id to load all variation attributes and inventory. */}
+            {isSelectOptionsModalLoaded && masterId && (
+                <Suspense fallback={null}>
+                    <CartItemModal
+                        productId={masterId}
+                        open={isSelectOptionsModalOpen}
+                        onOpenChange={setIsSelectOptionsModalOpen}
+                    />
+                </Suspense>
+            )}
         </div>
     );
 }

@@ -20,7 +20,7 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();
 
-export type DynamicImageWidths = Array<number | string> | Record<string, number | string>;
+export type DynamicImageDimensions = Array<number | string> | Record<string, number | string>;
 
 // Pre-compiled regex patterns for better performance (compiled once at module load)
 /** Matches DIS path and captures the realm: /dw/image/v2/REALM_ID/... */
@@ -28,7 +28,7 @@ const DIS_PATH_REALM_REGEX = /\/dw\/image\/v\d+\/([^/]+)/i;
 /** Matches DIS path prefix and captures the remaining path */
 const DIS_PATH_STRIP_REGEX = /\/dw\/image\/v\d+\/[^/]+(\/.*)/i;
 /** Matches DynamicImage placeholder syntax: [?sw={width}], [_{width}], etc. */
-const PLACEHOLDER_REGEX = /\[[^\]]*\]/g;
+const PLACEHOLDER_REGEX = /\[[^\]]*]/g;
 /** Matches file extension at end of path: .jpg, .png, etc. */
 const FILE_EXTENSION_REGEX = /\.([^.]+)$/;
 /** Tests if URL contains DIS path structure */
@@ -50,6 +50,7 @@ export type DisImageOptions = {
     disHost?: string;
     format?: 'avif' | 'gif' | 'jp2' | 'jpg' | 'jpeg' | 'jxr' | 'png' | 'webp';
     width?: number;
+    height?: number;
     quality?: number;
     sourceFormat?: string;
 };
@@ -153,6 +154,9 @@ export function toDisImageUrl({ src, options = {}, config }: ImageUrlParams): st
         if (options.width) {
             search.set('sw', String(options.width));
         }
+        if (options.height) {
+            search.set('sh', String(options.height));
+        }
         const quality = options.quality ?? config?.images?.quality;
         search.set('q', String(quality));
 
@@ -245,6 +249,48 @@ export function toImageUrl({ src, options = {}, config, image }: ImageUrlParams)
         // On any error, return the original URL
         return imageUrl;
     }
+}
+
+/**
+ * Transforms all image URLs in HTML content to use Dynamic Imaging Service (DIS).
+ *
+ * This function parses HTML content, finds all `<img>` tags, and transforms their
+ * `src` attributes to use DIS URLs with WebP format optimization.
+ *
+ * @param html - HTML string containing image tags
+ * @param config - Application configuration for DIS settings
+ * @returns HTML string with transformed image URLs
+ *
+ * @example
+ * const html = '<img src="/on/demandware.static/.../image.jpg" alt="Banner">';
+ * const transformed = transformHtmlImageUrls(html, config);
+ * // Returns: '<img src="https://edge.disstg.../image.webp?sfrm=jpg&q=70" alt="Banner">'
+ */
+export function transformHtmlImageUrls(html: string, config: AppConfig): string {
+    // Return empty string for null/undefined to maintain type safety
+    if (!html) {
+        return '';
+    }
+
+    // Short-circuit if no image tags present (performance optimization)
+    if (!html.includes('<img')) return html;
+
+    // Regular expression to match <img> tags with src attributes
+    const imgTagRegex = /<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi;
+
+    return html.replace(imgTagRegex, (match, srcValue: string) => {
+        // Transform the src URL using toImageUrl
+        const transformedSrc = toImageUrl({ src: srcValue, config });
+
+        // If transformation succeeded, replace only the src attribute value
+        if (transformedSrc && transformedSrc !== srcValue) {
+            // Use targeted regex to replace only src attribute, preserving quotes
+            return match.replace(/src=(["'])([^"']+)\1/i, (_, quote) => `src=${quote}${transformedSrc}${quote}`);
+        }
+
+        // If transformation failed or URL unchanged, return original match
+        return match;
+    });
 }
 
 /**
@@ -387,44 +433,72 @@ export const replaceImageFormat = (
 /**
  * @example
  * // returns https://example.com/image_720.webp?sw=720&q=60&sfrm=jpg
- * getSrc('https://example.com/image[_{width}].jpg', 720, 60)
+ * getSrc('https://example.com/image[_{width}].jpg', { w: 720, q: 60 })
  */
 export const getSrc = (
     dynamicSrc: string,
-    imageWidth: number,
-    quality?: number,
-    targetFormat?: 'webp' | 'avif' | 'gif' | 'jp2' | 'jpg' | 'jpeg' | 'jxr' | 'png'
+    {
+        w,
+        h,
+        q,
+        f,
+    }: {
+        /** Image width in px — maps to DIS `sw` parameter */
+        w?: number;
+        /** Image height in px — maps to DIS `sh` parameter */
+        h?: number;
+        /** Image quality (1-100) — maps to DIS `q` parameter */
+        q?: number;
+        /** Target image format — triggers format conversion via `sfrm` */
+        f?: 'webp' | 'avif' | 'gif' | 'jp2' | 'jpg' | 'jpeg' | 'jxr' | 'png';
+    } = {}
 ): string => {
     const getSep = (res: string): '?' | '&' => (res.includes('?') ? '&' : '?');
     const hasUrlParam = (url: string, param: string) => new RegExp(`[?&]${param}=`).test(url);
 
-    // 1. Remove eventual surrounding brackets, i.e., []
-    // 2. Make sure that invalid edge cases, where the DIS instructions like `[?sw={width}]` are added to an already
-    // parameterized URL, are handled correctly
-    // 3. Replace eventual `{width}` placeholder with actual `imageWidth`
+    // 1. Remove surrounding brackets from placeholder syntax
+    // 2. Handle edge cases where DIS instructions are added to an already parameterized URL
+    // 3. Replace named placeholders: {width} → w, {height} → h
+    // 4. Replace any remaining unnamed placeholders with primary dimension (backward compat)
+    const widthStr = w != null ? w.toString() : '';
+    const heightStr = h != null ? h.toString() : widthStr;
+    const fallbackStr = widthStr || heightStr;
     let result = dynamicSrc
         .replace(/\[([?&]?)([^\]]+)]/g, (_match, _sep, content, offset, fullString) => {
             const beforeMatch = fullString?.slice?.(0, offset);
             return `${getSep(beforeMatch)}${content}`;
         })
-        .replace(/\{[^}]+}/g, imageWidth.toString());
+        .replace(/\{width}/g, widthStr)
+        .replace(/\{height}/g, heightStr)
+        .replace(/\{[^}]+}/g, fallbackStr);
 
-    // Handle URLs that already have sw= parameter
-    if (hasUrlParam(result, 'sw')) {
-        result = result.replace(/([?&])sw=\d+/, `$1sw=${imageWidth}`);
-    } else {
-        result = `${result}${getSep(result)}sw=${imageWidth}`;
+    // Handle sw= parameter - only added when width is explicitly provided
+    if (w != null) {
+        if (hasUrlParam(result, 'sw')) {
+            result = result.replace(/([?&])sw=\d+/, `$1sw=${w}`);
+        } else {
+            result = `${result}${getSep(result)}sw=${w}`;
+        }
+    }
+
+    // Handle sh= parameter - only added when height is explicitly provided
+    if (h != null) {
+        if (hasUrlParam(result, 'sh')) {
+            result = result.replace(/([?&])sh=\d+/, `$1sh=${h}`);
+        } else {
+            result = `${result}${getSep(result)}sh=${h}`;
+        }
     }
 
     // Handle quality parameter - existing q= in URL takes priority
-    if (typeof quality === 'number' && Number.isInteger(quality) && !hasUrlParam(result, 'q')) {
-        result = `${result}${getSep(result)}q=${quality}`;
+    if (typeof q === 'number' && Number.isInteger(q) && !hasUrlParam(result, 'q')) {
+        result = `${result}${getSep(result)}q=${q}`;
     }
 
     // If no target format specified, don't convert format (keep original)
     // This is important for environments where DIS format conversion isn't available
-    if (targetFormat) {
-        return replaceImageFormat(result, targetFormat);
+    if (f) {
+        return replaceImageFormat(result, f);
     }
     return result;
 };
@@ -531,38 +605,56 @@ const getResponsiveSourcesAndLinks = (
     src: string,
     {
         widths,
+        heights,
         formats,
         quality,
-    }: { widths: Array<number | string>; formats: Array<DynamicImageFormat>; quality?: number }
+    }: {
+        widths?: Array<number | string>;
+        heights?: Array<number | string>;
+        formats: Array<DynamicImageFormat>;
+        quality?: number;
+    }
 ): ResponsiveData => {
+    // Use widths as the primary sizing dimension; fall back to heights for the `sizes` attribute
+    // when only heights are provided (heights-only mode).
+    const sizingDimension = widths ?? heights ?? [];
+
     // By default, unitless value is interpreted as px
-    const sizesWidths = widths.map((width) => (typeof width === 'number' ? `${width}px` : width));
-    const l = sizesWidths.length;
+    const sizeValues = sizingDimension.map((dim) => (typeof dim === 'number' ? `${dim}px` : dim));
+    const l = sizeValues.length;
 
     const _sizes = breakpointLabels.map((bp, i) => {
         return i === 0
             ? {
                   media: '',
                   mediaLink: obtainImageLinkMedia(i),
-                  sizes: sizesWidths[i],
+                  sizes: sizeValues[i],
               }
             : {
                   media: `(min-width: ${themeBreakpoints[bp as BreakpointKey]})`,
                   mediaLink: obtainImageLinkMedia(i),
-                  sizes: sizesWidths.at(i >= l ? l - 1 : i),
+                  sizes: sizeValues.at(i >= l ? l - 1 : i),
               };
     });
 
-    const sourcesWidths = convertToPxNumbers(padArray(widths));
-    const sourcesLength = sourcesWidths.length;
+    const sourcesWidths = widths ? convertToPxNumbers(padArray(widths)) : undefined;
+    const sourcesHeights = heights ? convertToPxNumbers(padArray(heights)) : undefined;
+    const sourcesLength = sourcesWidths?.length ?? sourcesHeights?.length ?? 0;
+    const sourcesHeightsLength = sourcesHeights?.length ?? 0;
     // Use first format for srcSet generation (when DIS is disabled, formats is empty so no conversion occurs)
     const targetFormat = formats[0];
     const { sources, links } = breakpointLabels.reduce(
         (acc: { sources: Source[]; links: ImageLink[] }, _bp, idx) => {
-            // To support higher-density devices, request all images in 1x and 2x widths
-            const width = sourcesWidths[idx >= sourcesLength ? sourcesLength - 1 : idx];
+            const width = sourcesWidths
+                ? sourcesWidths[idx >= sourcesWidths.length ? sourcesWidths.length - 1 : idx]
+                : undefined;
+            const height = sourcesHeights
+                ? sourcesHeights[idx >= sourcesHeightsLength ? sourcesHeightsLength - 1 : idx]
+                : undefined;
+            // The descriptor dimension used for the `w` descriptor in srcSet
+            const descriptorDimension = width ?? height;
             const sizeData = _sizes[idx];
-            if (!sizeData || !width) {
+            if (!sizeData || !descriptorDimension) {
                 return acc;
             }
 
@@ -571,10 +663,11 @@ const getResponsiveSourcesAndLinks = (
             const lastLink = acc.links[acc.links.length - 1];
             const srcSet = [1, 2]
                 .map((factor) => {
-                    const effectiveWidth = Math.round(width * factor);
-                    const effectiveSize = Math.round(width * factor);
+                    const effectiveWidth = width != null ? Math.round(width * factor) : undefined;
+                    const effectiveHeight = height != null ? Math.round(height * factor) : undefined;
+                    const descriptorValue = Math.round(descriptorDimension * factor);
 
-                    return `${getSrc(src, effectiveSize, quality, targetFormat)} ${effectiveWidth}w`;
+                    return `${getSrc(src, { w: effectiveWidth, h: effectiveHeight, q: quality, f: targetFormat })} ${descriptorValue}w`;
                 })
                 .join(', ');
 
@@ -608,6 +701,7 @@ const getResponsiveSourcesAndLinks = (
 export const getResponsivePictureAttributes = ({
     src,
     widths,
+    heights,
     formats = defaultImageFormats,
     breakpoints = defaultBreakpoints,
     quality,
@@ -620,7 +714,14 @@ export const getResponsivePictureAttributes = ({
      * - Object with breakpoint keys: {base: 100, sm: 360, md: 720} (unitless, interpreted as px)
      * - Object with breakpoint keys and units: {base: '100vw', sm: '50vw', md: '500px'}
      */
-    widths?: DynamicImageWidths;
+    widths?: DynamicImageDimensions;
+    /**
+     * Image heights relative to the breakpoints, used for DIS server-side cropping via
+     * the `sh` parameter. Supports the same formats as `widths`. When provided alongside
+     * `widths`, defines the exact crop box on the DIS server. When omitted, DIS preserves
+     * the original aspect ratio based on `sw` alone.
+     */
+    heights?: DynamicImageDimensions;
     formats?: Array<DynamicImageFormat>;
     breakpoints?: Record<string, string>;
     /**
@@ -633,7 +734,7 @@ export const getResponsivePictureAttributes = ({
     links: ConvertedImageLink[];
     src: string;
 } => {
-    if (!widths) {
+    if (!widths && !heights) {
         return {
             sources: [],
             links: [],
@@ -646,11 +747,19 @@ export const getResponsivePictureAttributes = ({
         breakpointLabels = getBreakpointLabels(themeBreakpoints);
     }
 
-    const _widths = isObject(widths)
-        ? widthsAsArray(widths as Record<string, number | string>)
-        : (widths as Array<number | string>).slice(0);
+    const _widths = widths
+        ? isObject(widths)
+            ? widthsAsArray(widths as Record<string, number | string>)
+            : (widths as Array<number | string>).slice(0)
+        : undefined;
+    const _heights = heights
+        ? isObject(heights)
+            ? widthsAsArray(heights as Record<string, number | string>)
+            : (heights as Array<number | string>).slice(0)
+        : undefined;
     const { sources, links } = getResponsiveSourcesAndLinks(src, {
         widths: _widths,
+        heights: _heights,
         formats,
         quality,
     });

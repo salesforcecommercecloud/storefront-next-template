@@ -33,7 +33,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from 'vitest';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import {
     buildBonusPromotionMap,
     getAttachedBonusPromotions,
@@ -719,7 +718,7 @@ describe('getBonusProductCountsForPromotion', () => {
     });
 
     it('should return zero counts when promotionId is empty', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'basket-1',
             bonusDiscountLineItems: [],
         };
@@ -733,7 +732,7 @@ describe('getBonusProductCountsForPromotion', () => {
     });
 
     it('should calculate counts for single bonus discount line item', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'basket-1',
             bonusDiscountLineItems: [
                 {
@@ -762,7 +761,7 @@ describe('getBonusProductCountsForPromotion', () => {
     });
 
     it('should sum counts across multiple bonus discount line items for same promotion', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'basket-1',
             bonusDiscountLineItems: [
                 {
@@ -803,7 +802,7 @@ describe('getBonusProductCountsForPromotion', () => {
     });
 
     it('should ignore bonus items from different promotions', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'basket-1',
             bonusDiscountLineItems: [
                 {
@@ -844,7 +843,7 @@ describe('getBonusProductCountsForPromotion', () => {
     });
 
     it('should handle basket with no product items', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'basket-1',
             bonusDiscountLineItems: [
                 {
@@ -865,7 +864,7 @@ describe('getBonusProductCountsForPromotion', () => {
     });
 
     it('should handle undefined maxBonusItems gracefully', () => {
-        const basket: ShopperBasketsTypes.Basket = {
+        const basket: ShopperBasketsV2.schemas['Basket'] = {
             basketId: 'basket-1',
             bonusDiscountLineItems: [
                 {
@@ -887,7 +886,7 @@ describe('getBonusProductCountsForPromotion', () => {
 });
 
 describe('calculateMaxQuantityForBonusProduct', () => {
-    const mockBonusDiscountLineItems: ShopperBasketsTypes.BonusDiscountLineItem[] = [
+    const mockBonusDiscountLineItems: ShopperBasketsV2.schemas['BonusDiscountLineItem'][] = [
         {
             id: 'bonus-slot-1',
             promotionId: 'promo-1',
@@ -913,7 +912,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     ];
 
     it('should return undefined for non-bonus products', () => {
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'regular-product',
             bonusProductLineItem: false,
@@ -926,7 +925,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return undefined when bonusDiscountLineItemId is missing', () => {
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product',
             bonusProductLineItem: true,
@@ -940,7 +939,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return undefined when itemId is missing', () => {
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             // itemId is missing
             productId: 'bonus-product',
             bonusProductLineItem: true,
@@ -954,7 +953,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return undefined for auto bonus products (no bonusProducts array)', () => {
-        const autoBonusDiscountLineItems: ShopperBasketsTypes.BonusDiscountLineItem[] = [
+        const autoBonusDiscountLineItems: ShopperBasketsV2.schemas['BonusDiscountLineItem'][] = [
             {
                 id: 'bonus-slot-auto',
                 promotionId: 'promo-auto',
@@ -963,7 +962,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             },
         ];
 
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'auto-bonus-product',
             bonusProductLineItem: true,
@@ -977,7 +976,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return undefined when bonusDiscountLineItems is undefined', () => {
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product',
             bonusProductLineItem: true,
@@ -991,7 +990,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return undefined when bonus discount line item not found', () => {
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product',
             bonusProductLineItem: true,
@@ -1005,7 +1004,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return undefined when maxBonusItems is missing from slot', () => {
-        const bonusDiscountLineItems: ShopperBasketsTypes.BonusDiscountLineItem[] = [
+        const bonusDiscountLineItems: ShopperBasketsV2.schemas['BonusDiscountLineItem'][] = [
             {
                 id: 'bonus-slot-1',
                 promotionId: 'promo-1',
@@ -1014,7 +1013,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             },
         ];
 
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product',
             bonusProductLineItem: true,
@@ -1028,7 +1027,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return max quantity when slot is empty (no other products)', () => {
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1044,7 +1043,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should calculate max quantity excluding current product', () => {
-        const productItem1: ShopperBasketsTypes.ProductItem = {
+        const productItem1: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1052,7 +1051,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 2,
         };
 
-        const productItem2: ShopperBasketsTypes.ProductItem = {
+        const productItem2: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-2',
             productId: 'bonus-product-2',
             bonusProductLineItem: true,
@@ -1069,7 +1068,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return correct max when multiple products in same slot', () => {
-        const productItem1: ShopperBasketsTypes.ProductItem = {
+        const productItem1: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1077,7 +1076,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 2,
         };
 
-        const productItem2: ShopperBasketsTypes.ProductItem = {
+        const productItem2: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-2',
             productId: 'bonus-product-2',
             bonusProductLineItem: true,
@@ -1094,7 +1093,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return 0 when slot is full from other products', () => {
-        const productItem1: ShopperBasketsTypes.ProductItem = {
+        const productItem1: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1102,7 +1101,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 1,
         };
 
-        const productItem2: ShopperBasketsTypes.ProductItem = {
+        const productItem2: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-2',
             productId: 'bonus-product-2',
             bonusProductLineItem: true,
@@ -1119,7 +1118,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should return 0 when slot is overfilled (edge case)', () => {
-        const productItem1: ShopperBasketsTypes.ProductItem = {
+        const productItem1: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1127,7 +1126,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 1,
         };
 
-        const productItem2: ShopperBasketsTypes.ProductItem = {
+        const productItem2: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-2',
             productId: 'bonus-product-2',
             bonusProductLineItem: true,
@@ -1144,7 +1143,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should ignore products from different slots', () => {
-        const productItem1: ShopperBasketsTypes.ProductItem = {
+        const productItem1: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1152,7 +1151,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 2,
         };
 
-        const productItem2: ShopperBasketsTypes.ProductItem = {
+        const productItem2: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-2',
             productId: 'bonus-product-2',
             bonusProductLineItem: true,
@@ -1169,7 +1168,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should handle undefined quantity in other products gracefully', () => {
-        const productItem1: ShopperBasketsTypes.ProductItem = {
+        const productItem1: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1177,7 +1176,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 1,
         };
 
-        const productItem2: ShopperBasketsTypes.ProductItem = {
+        const productItem2: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-2',
             productId: 'bonus-product-2',
             bonusProductLineItem: true,
@@ -1194,7 +1193,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should handle empty allProductItems array', () => {
-        const productItem: ShopperBasketsTypes.ProductItem = {
+        const productItem: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1208,7 +1207,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
     });
 
     it('should correctly handle complex scenario with multiple products and slots', () => {
-        const productItem1: ShopperBasketsTypes.ProductItem = {
+        const productItem1: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-1',
             productId: 'bonus-product-1',
             bonusProductLineItem: true,
@@ -1216,7 +1215,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 1,
         };
 
-        const productItem2: ShopperBasketsTypes.ProductItem = {
+        const productItem2: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-2',
             productId: 'bonus-product-2',
             bonusProductLineItem: true,
@@ -1224,7 +1223,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 2,
         };
 
-        const productItem3: ShopperBasketsTypes.ProductItem = {
+        const productItem3: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-3',
             productId: 'bonus-product-3',
             bonusProductLineItem: true,
@@ -1232,7 +1231,7 @@ describe('calculateMaxQuantityForBonusProduct', () => {
             quantity: 1,
         };
 
-        const productItem4: ShopperBasketsTypes.ProductItem = {
+        const productItem4: ShopperBasketsV2.schemas['ProductItem'] = {
             itemId: 'item-4',
             productId: 'bonus-product-4',
             bonusProductLineItem: true,

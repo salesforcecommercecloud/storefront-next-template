@@ -15,12 +15,13 @@
  */
 
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ActionError } from '@/lib/error-codes';
 
 // Generic response types for actions
 export interface ActionResponse<T = unknown> {
     success: boolean;
     data?: T;
-    error?: string;
+    error?: ActionError;
 }
 
 // Specific response types for common actions
@@ -34,17 +35,7 @@ export const createSuccessResponse = <T>(data: T): ActionResponse<T> => ({
     data,
 });
 
-export const createErrorResponse = (error: string): ActionResponse => ({
-    success: false,
-    error,
-});
-
 export const createBasketSuccessResponse = (basket: ShopperBasketsV2.schemas['Basket']): BasketActionResponse => ({
     success: true,
     basket,
-});
-
-export const createBasketErrorResponse = (error: string): BasketActionResponse => ({
-    success: false,
-    error,
 });

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-const { I, signupFlow, accountAddressesPage, accountDetailsPage, accountPaymentMethodsPage } = inject();
+const { I, signupFlow, storefrontPage, accountAddressesPage, accountDetailsPage, accountPaymentMethodsPage } = inject();
 import type { SignupData } from '../types/auth.types';
 import { TEST_PAYMENT } from '../test-data/checkout.data';
+import { credentialStore } from '../utils/credential-store';
+import { getScapiConfig, createRegisteredShopperViaApi, type RegisteredShopperApiResult } from '../utils/scapi-helper';
+import { getStorefrontOrigin } from '../utils/cookie-utils';
 
 interface RegisteredShopperSetupResult {
     signupData: SignupData;
     addressData: {
-        addressId: string;
         firstName: string;
         lastName: string;
         phone: string;
@@ -41,13 +43,13 @@ interface RegisteredShopperSetupResult {
  * 3. Update profile with phone on /account
  * 4. Add payment method on /account/payment-methods
  *
- * The shopper will have all data needed for prefilled checkout.
+ * When SCAPI config is available, all four steps are performed via direct API
+ * calls and the registered session is injected into the browser via cookies.
+ * This avoids four page navigations and multiple form fills, significantly
+ * reducing setup time. Falls back to the UI-based flow when SCAPI config is
+ * missing or the API path fails.
  */
 class RegisteredShopperSetupFlow {
-    /**
-     * Get the billing address option text for the payment method dropdown.
-     * Matches the format: "FirstName LastName - address1, city..."
-     */
     private getBillingAddressOptionText(addressData: {
         firstName: string;
         lastName: string;
@@ -58,21 +60,112 @@ class RegisteredShopperSetupFlow {
     }
 
     /**
-     * Execute the complete registered shopper setup flow
-     *
-     * @returns Promise<RegisteredShopperSetupResult> - Signup data and address data for validation
+     * Execute the complete registered shopper setup flow.
+     * Tries API-based setup first, falls back to UI when unavailable.
      */
     async execute(): Promise<RegisteredShopperSetupResult> {
+        const config = getScapiConfig();
+
+        if (config) {
+            try {
+                return await this.executeViaApi(config);
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                // eslint-disable-next-line no-console
+                console.warn(`API registered shopper setup failed (${message}), falling back to UI flow`);
+            }
+        }
+
+        return this.executeViaUi();
+    }
+
+    private async executeViaApi(
+        config: NonNullable<ReturnType<typeof getScapiConfig>>
+    ): Promise<RegisteredShopperSetupResult> {
+        const result = await createRegisteredShopperViaApi(config);
+
+        await this.injectRegisteredSessionCookies(config.siteId, result);
+
+        credentialStore.store({
+            email: result.signupData.email,
+            password: result.signupData.password,
+            firstName: result.signupData.firstName,
+            lastName: result.signupData.lastName,
+            createdAt: Date.now(),
+        });
+
+        return {
+            signupData: {
+                ...result.signupData,
+                confirmPassword: result.signupData.password,
+            },
+            addressData: {
+                firstName: result.addressData.firstName,
+                lastName: result.addressData.lastName,
+                phone: result.addressData.phone,
+                address1: result.addressData.address1,
+                city: result.addressData.city,
+                stateCode: result.addressData.stateCode,
+                postalCode: result.addressData.postalCode,
+            },
+        };
+    }
+
+    private async injectRegisteredSessionCookies(siteId: string, result: RegisteredShopperApiResult): Promise<void> {
+        const origin = getStorefrontOrigin();
+        const url = new URL(origin);
+        const domain = url.hostname;
+
+        const cookieDefaults = {
+            domain,
+            path: '/',
+            secure: url.protocol === 'https:',
+            sameSite: 'Lax' as const,
+        };
+
+        await (I.usePlaywrightTo('inject registered session cookies', async ({ page }) => {
+            await page.context().addCookies([
+                {
+                    ...cookieDefaults,
+                    name: `cc-at_${siteId}`,
+                    value: result.tokens.accessToken,
+                    httpOnly: true,
+                },
+                {
+                    ...cookieDefaults,
+                    name: `cc-nx_${siteId}`,
+                    value: result.tokens.refreshToken,
+                    httpOnly: true,
+                },
+                {
+                    ...cookieDefaults,
+                    name: `usid_${siteId}`,
+                    value: result.tokens.usid,
+                    httpOnly: true,
+                },
+                {
+                    ...cookieDefaults,
+                    name: `customerId_${siteId}`,
+                    value: result.tokens.customerId,
+                    httpOnly: true,
+                },
+            ]);
+        }) as unknown as Promise<void>);
+
+        const siteAlias = process.env.SITE_ALIAS || 'us';
+        const locale = process.env.LOCALE || 'en-US';
+        I.amOnPage(`/${siteAlias}/${locale}/`);
+        await storefrontPage.waitForSessionCookies('registered', siteId, 15);
+    }
+
+    private async executeViaUi(): Promise<RegisteredShopperSetupResult> {
         try {
-            // Step 1: Register new shopper
             const { signupData } = await signupFlow.execute();
             accountAddressesPage.navigate();
             accountAddressesPage.validatePageLoaded();
 
-            // Step 2: Add shipping address
             const addressData = accountAddressesPage.createTestAddress();
 
-            // Step 3: Update profile with phone (email is readonly for registered users, so we only update phone)
             accountDetailsPage.navigate();
             accountDetailsPage.validatePageLoaded();
             accountDetailsPage.clickEditProfile();
@@ -80,7 +173,6 @@ class RegisteredShopperSetupFlow {
             accountDetailsPage.clickSaveProfile();
             accountDetailsPage.validateSuccessToast();
 
-            // Step 4: Add payment method (requires address to exist)
             accountPaymentMethodsPage.navigate();
             accountPaymentMethodsPage.validatePageLoaded();
             const billingAddressOptionText = this.getBillingAddressOptionText(addressData);
@@ -90,7 +182,6 @@ class RegisteredShopperSetupFlow {
             return {
                 signupData,
                 addressData: {
-                    addressId: addressData.addressId,
                     firstName: addressData.firstName,
                     lastName: addressData.lastName,
                     phone: addressData.phone,

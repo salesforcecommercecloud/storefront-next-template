@@ -18,16 +18,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 
 import { action } from './action.verify-otp';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
-import { mergeBasket } from '@/lib/api/basket';
-import { getTranslation } from '@/lib/i18next';
+import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 
-vi.mock('@/lib/api-clients');
+vi.mock('@/lib/api-clients.server');
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/api/basket');
-vi.mock('@/lib/i18next');
+vi.mock('@/lib/api/basket.server');
+vi.mock('@/middlewares/basket.server');
+vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/middlewares/auth.utils');
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
@@ -37,6 +39,10 @@ const mockCreateApiClients = vi.mocked(createApiClients);
 const mockGetAuth = vi.mocked(getAuth);
 const mockUpdateAuth = vi.mocked(updateAuth);
 const mockMergeBasket = vi.mocked(mergeBasket);
+const mockCalculateBasket = vi.mocked(calculateBasket);
+const mockGetBasketCurrency = vi.mocked(getBasketCurrency);
+const mockGetBasket = vi.mocked(getBasket);
+const mockUpdateBasketResource = vi.mocked(updateBasketResource);
 const mockGetTranslation = vi.mocked(getTranslation);
 const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
 
@@ -88,6 +94,11 @@ describe('action.verify-otp', () => {
 
         mockGetAuth.mockReturnValue({ usid: 'test-usid' } as any);
         mockMergeBasket.mockResolvedValue(undefined as any);
+        mockGetBasket.mockResolvedValue({
+            current: { basketId: 'basket-1', currency: 'USD' },
+        } as any);
+        mockGetBasketCurrency.mockReturnValue('USD');
+        mockCalculateBasket.mockResolvedValue({ basketId: 'basket-1', currency: 'USD' } as any);
     });
 
     afterEach(() => {
@@ -95,21 +106,25 @@ describe('action.verify-otp', () => {
     });
 
     it('returns error when otpCode is missing', async () => {
-        const result = await action(createActionArgs(undefined, 'test@example.com'));
+        const response = await action(createActionArgs(undefined, 'test@example.com'));
 
+        expect(response.status).toBe(400);
+        const result = await response.json();
         expect(result).toEqual({
             success: false,
-            error: 'checkout:passwordlessLogin.otpRequired',
+            error: { code: 'REQUIRED_FIELD', message: 'OTP code is required' },
         });
         expect(mockExchangeToken).not.toHaveBeenCalled();
     });
 
     it('returns error when email is missing', async () => {
-        const result = await action(createActionArgs('12345678', undefined));
+        const response = await action(createActionArgs('12345678', undefined));
 
+        expect(response.status).toBe(400);
+        const result = await response.json();
         expect(result).toEqual({
             success: false,
-            error: 'errors:customer.emailRequired',
+            error: { code: 'REQUIRED_FIELD', message: 'Email is required' },
         });
         expect(mockExchangeToken).not.toHaveBeenCalled();
     });
@@ -131,7 +146,7 @@ describe('action.verify-otp', () => {
 
         mockExchangeToken.mockResolvedValue(mockTokenResponse);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const response = await action(createActionArgs('12345678', 'test@example.com'));
 
         expect(mockExchangeToken).toHaveBeenCalledTimes(1);
         expect(mockExchangeToken).toHaveBeenCalledWith({
@@ -147,11 +162,48 @@ describe('action.verify-otp', () => {
 
         expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
 
+        expect(mockGetBasket).toHaveBeenCalledWith(mockContext);
+        expect(mockGetBasketCurrency).toHaveBeenCalledWith(mockContext, { basketId: 'basket-1', currency: 'USD' });
+        expect(mockCalculateBasket).toHaveBeenCalledWith(mockContext, 'basket-1', 'USD');
+        expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, { basketId: 'basket-1', currency: 'USD' });
+
+        const result = await response.json();
         expect(result).toEqual({
             success: true,
-            message: 'checkout:passwordlessLogin.loginSuccess',
+            message: 'Login successful',
             tokenResponse: mockTokenResponse,
         });
+    });
+
+    it('updates basket from merge then recalculates when merge returns a basket', async () => {
+        const mockTokenResponse = {
+            access_token: 'access-token',
+            id_token: 'id-token',
+            refresh_token: 'refresh-token',
+            expires_in: 3600,
+            refresh_token_expires_in: 7200,
+            token_type: 'Bearer' as const,
+            usid: 'test-usid',
+            customer_id: 'customer-id',
+            enc_user_id: 'enc-user-id',
+            idp_access_token: 'idp-token',
+            dwsid: 'dwsid',
+        } as any;
+
+        const merged = { basketId: 'merged-basket', currency: 'USD' } as any;
+        const recalculated = { basketId: 'merged-basket', currency: 'USD', orderTotal: 99 } as any;
+
+        mockExchangeToken.mockResolvedValue(mockTokenResponse);
+        mockMergeBasket.mockResolvedValue(merged);
+        mockGetBasket.mockResolvedValue({
+            current: merged,
+        } as any);
+        mockCalculateBasket.mockResolvedValue(recalculated);
+
+        await action(createActionArgs('12345678', 'test@example.com'));
+
+        expect(mockUpdateBasketResource).toHaveBeenNthCalledWith(1, mockContext, merged);
+        expect(mockUpdateBasketResource).toHaveBeenNthCalledWith(2, mockContext, recalculated);
     });
 
     it('extracts error message from ApiError.rawBody JSON', async () => {
@@ -161,10 +213,12 @@ describe('action.verify-otp', () => {
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const response = await action(createActionArgs('12345678', 'test@example.com'));
 
+        expect(response.status).toBe(500);
+        const result = await response.json();
         expect(result.success).toBe(false);
-        expect(result.error).toBe('Invalid or expired OTP code');
+        expect(result.error.message).toBe('Invalid or expired OTP code');
     });
 
     it('falls back to error.message when rawBody is not present', async () => {
@@ -174,35 +228,41 @@ describe('action.verify-otp', () => {
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const response = await action(createActionArgs('12345678', 'test@example.com'));
 
+        expect(response.status).toBe(500);
+        const result = await response.json();
         expect(result.success).toBe(false);
-        expect(result.error).toBe('Some plain error from backend');
+        expect(result.error.message).toBe('Some plain error from backend');
     });
 
-    it('uses default invalidOtp message when rawBody is not valid JSON', async () => {
+    it('uses default error message when rawBody is not valid JSON', async () => {
         const apiError = {
             rawBody: 'not-json',
         } as any;
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const response = await action(createActionArgs('12345678', 'test@example.com'));
 
+        expect(response.status).toBe(500);
+        const result = await response.json();
         expect(result.success).toBe(false);
-        expect(result.error).toBe('checkout:passwordlessLogin.invalidOtp');
+        expect(result.error.message).toBe('Unknown error');
     });
 
-    it('extracts message from error.message when it contains JSON', async () => {
+    it('uses error.message as-is when it contains JSON', async () => {
         const apiError = {
             message: JSON.stringify({ message: 'OTP service temporarily unavailable' }),
         } as any;
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const response = await action(createActionArgs('12345678', 'test@example.com'));
 
+        expect(response.status).toBe(500);
+        const result = await response.json();
         expect(result.success).toBe(false);
-        expect(result.error).toBe('OTP service temporarily unavailable');
+        expect(result.error.message).toBe('{"message":"OTP service temporarily unavailable"}');
     });
 });

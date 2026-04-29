@@ -17,7 +17,7 @@ import { type FormEvent, type ReactElement, useCallback, useRef, useState, useEf
 import { useNavigate } from '@/hooks/use-navigate';
 import debounce from 'lodash.debounce';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import { Search as SearchIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Suggestions from '@/components/search/suggestions';
@@ -28,16 +28,18 @@ import type { AppConfig } from '@/types/config';
 import { getSessionJSONItem, setSessionJSONItem, clearSessionJSONItem } from '@/lib/utils';
 import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
+import { UITarget } from '@/targets/ui-target';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 const RECENT_SEARCH_LIMIT = 5;
 const RECENT_SEARCH_KEY = 'recent-search-key';
 const RECENT_SEARCH_MIN_LENGTH = 3;
-const POPOVER_CONTENT_OFFSET = 12;
 
 export default function SearchBar(): ReactElement {
     const { t } = useTranslation('header');
     const navigate = useNavigate();
     const config = useConfig<AppConfig>();
+    const { trackCommerceAgentEngagement } = useAnalytics();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [query, setQuery] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -156,59 +158,66 @@ export default function SearchBar(): ReactElement {
 
     const onShopperAgentClick = useCallback(() => {
         const searchText = inputRef.current?.value?.trim() ?? query.trim();
+        void trackCommerceAgentEngagement({ surface: 'search' });
         setShowSuggestions(false);
         setQuery('');
         if (inputRef.current) {
             inputRef.current.value = '';
         }
         openShopperAgentAndSendMessage(searchText);
-    }, [query]);
+    }, [query, trackCommerceAgentEngagement]);
 
     useEffect(() => {
         shouldOpenPopover();
     }, [query, suggestions, shouldOpenPopover]);
 
     return (
-        <Popover open={showSuggestions}>
-            <form onSubmit={handleSubmit} className="relative z-10">
-                <div className="relative">
-                    <PopoverTrigger asChild>
-                        <Input
-                            ref={inputRef}
-                            type="text"
-                            placeholder={t('searchPlaceholder')}
-                            className="w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground"
-                            onChange={handleInputChange}
-                            onFocus={shouldOpenPopover}
-                            onBlur={() => setShowSuggestions(false)}
-                            aria-label={t('searchPlaceholder')}
-                            aria-autocomplete="list"
-                            aria-expanded={showSuggestions}
-                            aria-haspopup="listbox"
-                            role="combobox"
-                            data-testid="header-search"
+        <UITarget targetId="sfcc.header.search.input">
+            <Popover open={showSuggestions}>
+                <form onSubmit={handleSubmit} className="relative z-10">
+                    <div className="relative">
+                        <PopoverTrigger asChild>
+                            <Input
+                                ref={inputRef}
+                                type="text"
+                                placeholder={t('searchPlaceholder')}
+                                className="w-full pl-10 focus-visible:border-header-foreground focus-visible:ring-1 focus-visible:ring-header-foreground"
+                                onChange={handleInputChange}
+                                onFocus={shouldOpenPopover}
+                                onBlur={() => setShowSuggestions(false)}
+                                aria-label={t('searchPlaceholder')}
+                                aria-autocomplete="list"
+                                aria-expanded={showSuggestions}
+                                aria-haspopup="listbox"
+                                role="combobox"
+                                data-testid="header-search"
+                            />
+                        </PopoverTrigger>
+                        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2" />
+                    </div>
+                </form>
+                {/* Note: Using a fixed div instead of PopoverContent because the search
+                    suggestions panel is designed to span the full page width while the trigger is input with limited width in the header.
+                    Using w-screen on Radix PopoverContent will include the scrollbar width, while the rest of page does not aware of scrollbar width
+                    this causing the content in Popover to completely miss aligned with the rest of the layout despite using the same section gutter class.
+                    Therefore, we go with traditional div to get control over styling for search result area*/}
+                {showSuggestions && (
+                    <div
+                        className="fixed left-0 right-0 z-50 border-b shadow-[0px_1px_12px_rgba(0,0,0,0.25)] max-h-[min(70vh,32rem)] overflow-y-auto bg-popover text-popover-foreground"
+                        style={{ top: 'var(--header-height)' }}
+                        role="listbox"
+                        aria-label={t('searchSuggestions')}>
+                        <Suggestions
+                            searchSuggestions={transformedSuggestions}
+                            recentSearches={getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || []}
+                            closeAndNavigate={closeAndNavigate}
+                            clearRecentSearches={clearRecentSearches}
+                            showShopperAgent={showShopperAgent}
+                            onShopperAgentClick={onShopperAgentClick}
                         />
-                    </PopoverTrigger>
-                    <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2" />
-                </div>
-            </form>
-            <PopoverContent
-                className="w-screen p-0 border shadow-[0px_1px_12px_rgba(0,0,0,0.25)] max-h-[min(70vh,32rem)] overflow-y-auto"
-                align="start"
-                side="bottom"
-                sideOffset={POPOVER_CONTENT_OFFSET}
-                onOpenAutoFocus={(e) => e.preventDefault()}
-                role="listbox"
-                aria-label="Search suggestions">
-                <Suggestions
-                    searchSuggestions={transformedSuggestions}
-                    recentSearches={getSessionJSONItem<string[]>(RECENT_SEARCH_KEY) || []}
-                    closeAndNavigate={closeAndNavigate}
-                    clearRecentSearches={clearRecentSearches}
-                    showShopperAgent={showShopperAgent}
-                    onShopperAgentClick={onShopperAgentClick}
-                />
-            </PopoverContent>
-        </Popover>
+                    </div>
+                )}
+            </Popover>
+        </UITarget>
     );
 }

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useLocation, useNavigation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
@@ -24,6 +22,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Plus, Minus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/components/typography';
+import { UITarget } from '@/targets/ui-target';
 import type { FilterValue, RefinementProps } from './types';
 import RefineDefault from './refine-default';
 import RefineColor from './refine-color';
@@ -153,43 +152,45 @@ export default function CategoryRefinements({
     // No refinements available
     if (refinements.length === 0) {
         return (
-            <div className="border rounded-md p-4">
+            <div className="border rounded-none p-4">
                 <p className="text-muted-foreground text-sm">{t('categoryRefinements:noFilterOptionsAvailable')}</p>
             </div>
         );
     }
 
     return (
-        <div className={isPending ? 'pointer-events-none opacity-50 transition-opacity' : ''}>
-            {/*  @sfdc-extension-block-start SFDC_EXT_BOPIS */}
-            <RefineInventory
-                isFilterSelected={isFilterSelected}
-                hasActiveFilter={hasActiveFilter}
-                toggleFilter={toggleFilter}
-            />
-            {/*  @sfdc-extension-block-end SFDC_EXT_BOPIS */}
+        <UITarget targetId="sfcc.plp.search.filters">
+            <div className={isPending ? 'pointer-events-none opacity-50 transition-opacity' : ''}>
+                {/*  @sfdc-extension-block-start SFDC_EXT_BOPIS */}
+                <RefineInventory
+                    isFilterSelected={isFilterSelected}
+                    hasActiveFilter={hasActiveFilter}
+                    toggleFilter={toggleFilter}
+                />
+                {/*  @sfdc-extension-block-end SFDC_EXT_BOPIS */}
 
-            {/* Individual collapsible sections for each refinement category */}
-            {refinements.map((refinement) => {
-                const { values, attributeId, label } = refinement;
-                if (!Array.isArray(values) || !values.length) {
-                    return null;
-                }
+                {/* Individual collapsible sections for each refinement category */}
+                {refinements.map((refinement) => {
+                    const { values, attributeId, label } = refinement;
+                    if (!Array.isArray(values) || !values.length) {
+                        return null;
+                    }
 
-                return (
-                    <FilterSection
-                        key={attributeId}
-                        label={label || attributeId}
-                        defaultOpen={hasActiveFilter(attributeId)}>
-                        {renderFilterValues(
-                            refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
-                                values: FilterValue[];
-                            }
-                        )}
-                    </FilterSection>
-                );
-            })}
-        </div>
+                    return (
+                        <FilterSection
+                            key={attributeId}
+                            label={label || attributeId}
+                            defaultOpen={hasActiveFilter(attributeId)}>
+                            {renderFilterValues(
+                                refinement as ShopperSearch.schemas['ProductSearchRefinement'] & {
+                                    values: FilterValue[];
+                                }
+                            )}
+                        </FilterSection>
+                    );
+                })}
+            </div>
+        </UITarget>
     );
 }
 
@@ -210,9 +211,9 @@ function FilterSection({
 
     return (
         <section>
-            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border rounded-md mb-4">
+            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border rounded-none mb-4">
                 <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer">
                         <Typography variant="small" as="span" className="font-medium">
                             {label}
                         </Typography>

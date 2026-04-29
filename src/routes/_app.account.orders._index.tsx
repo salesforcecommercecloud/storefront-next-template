@@ -18,19 +18,20 @@ import { type ReactElement, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Await, useLoaderData, type LoaderFunctionArgs, redirect } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
-import { OrderListHeader, OrderListBody } from '@/components/account/order-list';
+import { OrderListHeader, OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
 import {
     fetchCustomerOrders,
     DEFAULT_ORDERS_OFFSET,
     DEFAULT_ORDERS_LIMIT,
     type CustomerOrdersResult,
-} from '@/lib/api/order';
+} from '@/lib/api/order.server';
 import { Card, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
 import { getAuth } from '@/middlewares/auth.server';
+import { UITarget } from '@/targets/ui-target';
 
 type OrderListLoaderData = {
     ordersPromise: Promise<CustomerOrdersResult>;
@@ -40,7 +41,6 @@ type OrderListLoaderData = {
  * Loader fetches all customer orders via SCAPI getCustomerOrders endpoint.
  * Returns a deferred promise for streaming/suspense support.
  */
-// eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
 export function loader({ context, request }: LoaderFunctionArgs): OrderListLoaderData {
     const logger = getLogger(context);
     logger.debug('OrderList: loader starting');
@@ -65,45 +65,12 @@ export function loader({ context, request }: LoaderFunctionArgs): OrderListLoade
 }
 
 /**
- * Loading skeleton for order list items (header renders separately).
- */
-function OrderListSkeleton(): ReactElement {
-    return (
-        <>
-            <div className="space-y-4 m-0 border-x border-t border-border">
-                {[1, 2, 3].map((i) => (
-                    <Card key={i} className="py-0 rounded-none border-0 border-border shadow-none">
-                        <CardContent className="p-6 space-y-4 border-b border-border animate-pulse">
-                            <div className="flex flex-wrap items-start justify-between border-b border-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
-                                <div className="flex flex-wrap gap-x-8 gap-y-2">
-                                    <div className="h-10 w-24 bg-muted-foreground/20 rounded" />
-                                    <div className="h-10 w-20 bg-muted-foreground/20 rounded" />
-                                    <div className="h-10 w-16 bg-muted-foreground/20 rounded" />
-                                </div>
-                                <div className="h-8 w-24 bg-muted-foreground/20 rounded-full" />
-                            </div>
-                            <div className="flex gap-2">
-                                <div className="w-16 h-16 bg-muted-foreground/20 rounded-lg" />
-                                <div className="w-16 h-16 bg-muted-foreground/20 rounded-lg" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-            <div className="p-6 m-0 border-b border-x border-border rounded-b-xl">
-                <div className="h-5 w-32 bg-muted-foreground/20 rounded" />
-            </div>
-        </>
-    );
-}
-
-/**
  * Error state for order list.
  */
 function OrderListError(): ReactElement {
     const { t } = useTranslation('account');
     return (
-        <Card className="border-border">
+        <Card className="border-border rounded-none shadow-none">
             <CardContent className="p-12 text-center space-y-4">
                 <Typography variant="p" className="text-muted-foreground">
                     {t('orders.errorDescription')}
@@ -144,6 +111,7 @@ export default function OrderListPage(): ReactElement {
                     )}
                 </Await>
             </Suspense>
+            <UITarget targetId="sfcc.myAccount.orders.tracking" />
         </div>
     );
 }

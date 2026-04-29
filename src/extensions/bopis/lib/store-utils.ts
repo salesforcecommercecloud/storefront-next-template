@@ -18,7 +18,7 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
 import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import type { RouterContextProvider } from 'react-router';
 import { isAddressEqual } from '@/lib/address-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 /**
  * Gets a display-friendly store name, falling back to the store ID if name is not available.

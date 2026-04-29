@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense, useEffect } from 'react';
+import { UITarget } from '@/targets/ui-target';
 import AddressDisplay from '@/components/address-display';
 import { Await, type LoaderFunctionArgs } from 'react-router';
 import { Link } from '@/components/link';
@@ -23,9 +24,9 @@ import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import ProductImage from '@/components/product-image/product-image';
 import { formatCurrency } from '@/lib/currency';
-import { fetchOrderWithProducts } from '@/lib/api/order';
-import { useCurrency } from '@/providers/currency';
+import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { useBasketReset } from '@/providers/basket';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import type {
@@ -42,7 +43,7 @@ import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores';
+import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores.server';
 import { getOrderDeliveryShipments, getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
 import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import StoreDetails from '@/extensions/store-locator/components/store-locator/details';
@@ -99,7 +100,6 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
  * @param args - Loader function arguments containing context and parameters
  * @returns Promise that resolves to an object containing the order data promise
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
     const logger = getLogger(context);
@@ -144,8 +144,8 @@ export function ErrorBoundary() {
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Card>
+            <div className="max-w-4xl mx-auto section-container py-8">
+                <Card className="rounded-none shadow-none">
                     <CardHeader>
                         <CardTitle className="text-center">{t('confirmation.orderNotFound')}</CardTitle>
                     </CardHeader>
@@ -180,7 +180,7 @@ function OrderConfirmationContent({
 }: OrderConfirmationData): ReactElement {
     const config = useConfig<AppConfig>();
     const { t, i18n } = useTranslation('checkout');
-    const currency = useCurrency();
+    const { currency } = useSite();
     const resetBasket = useBasketReset();
     let deliveryShipments = order.shipments;
 
@@ -204,12 +204,11 @@ function OrderConfirmationContent({
         { label: t('confirmation.helpLinks.contact'), href: '#' },
         { label: t('confirmation.helpLinks.returns'), href: '#' },
     ];
-
     const productItems = order.productItems ?? [];
-    const promotionsTotal = (order.orderPriceAdjustments ?? []).reduce(
-        (sum, adjustment) => sum + (adjustment.price ?? 0),
-        0
-    );
+    const promotionsTotal = [
+        ...(order.orderPriceAdjustments ?? []),
+        ...(order.productItems ?? []).flatMap((item) => item.priceAdjustments ?? []),
+    ].reduce((sum, adjustment) => sum + (adjustment.price ?? 0), 0);
     const totals = {
         subtotal: order.productTotal ?? order.productSubTotal ?? 0,
         promotions: promotionsTotal,
@@ -244,9 +243,9 @@ function OrderConfirmationContent({
 
     return (
         <div data-testid="order-confirmation-container" className="min-h-screen bg-muted/30">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+            <div className="max-w-5xl mx-auto section-container py-10 space-y-6">
                 {/* Thank You and Order Confirmation section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardContent className="p-8 space-y-6">
                         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                             <div className="space-y-2">
@@ -295,7 +294,7 @@ function OrderConfirmationContent({
                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                 {/* Pickup Details */}
                 {store && (
-                    <Card className="mb-8">
+                    <Card className="mb-8 rounded-none shadow-none">
                         <CardHeader>
                             <CardTitle>{tBopis('storePickup.title')}</CardTitle>
                         </CardHeader>
@@ -323,7 +322,7 @@ function OrderConfirmationContent({
                         shipment.shippingMethod?.description ||
                         t('confirmation.summaryLabels.estimatedDatePlaceholder');
                     return (
-                        <Card key={shipment.shipmentId} className="border border-border/70 shadow-sm">
+                        <Card key={shipment.shipmentId} className="border border-border/70 rounded-none shadow-none">
                             <CardContent className="grid gap-6 p-6 md:grid-cols-3">
                                 <div>
                                     <p className="text-md font-semibold tracking-wide text-foreground">
@@ -355,13 +354,14 @@ function OrderConfirmationContent({
                                         {shippingMethodName}
                                     </p>
                                 </div>
+                                <UITarget targetId="sfcc.orderConfirmation.shipping.tracking" />
                             </CardContent>
                         </Card>
                     );
                 })}
 
                 {/* Product Items Summary section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
                     </CardHeader>
@@ -399,9 +399,9 @@ function OrderConfirmationContent({
                                     return (
                                         <div
                                             key={productKey}
-                                            className="rounded-2xl border border-border/70 bg-card shadow-sm p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
+                                            className="rounded-none border border-border/70 bg-card p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
                                             <div className="flex items-center justify-center">
-                                                <div className="h-24 w-24 rounded-xl bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-lg font-semibold">
+                                                <div className="h-24 w-24 rounded-none bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-lg font-semibold">
                                                     {imageSrc ? (
                                                         <ProductImage
                                                             src={toImageUrl({ src: imageSrc, config }) ?? imageSrc}
@@ -451,7 +451,7 @@ function OrderConfirmationContent({
                         <div className="space-y-2 border-t pt-4">
                             {summaryRows.map((row) => {
                                 const isPromotion = row.key === 'promotions' && row.value !== 0;
-                                return (
+                                const rowEl = (
                                     <div key={row.key} className="flex items-center justify-between text-sm">
                                         <span
                                             className={
@@ -473,13 +473,20 @@ function OrderConfirmationContent({
                                         </span>
                                     </div>
                                 );
+                                return row.key === 'tax' ? (
+                                    <UITarget key={row.key} targetId="sfcc.orderConfirmation.tax.summary">
+                                        {rowEl}
+                                    </UITarget>
+                                ) : (
+                                    rowEl
+                                );
                             })}
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Credit Card Details section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-4">
                             <span className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -498,7 +505,7 @@ function OrderConfirmationContent({
                 </Card>
 
                 {/* Newsletter subscription section */}
-                <Card className="border border-border/70 shadow-sm">
+                <Card className="border border-border/70 rounded-none shadow-none">
                     <CardContent className="space-y-4 p-6">
                         <div>
                             <p className="font-medium text-foreground">{t('confirmation.newsletter.title')}</p>

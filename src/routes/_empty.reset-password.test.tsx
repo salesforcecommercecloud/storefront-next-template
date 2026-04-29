@@ -21,7 +21,7 @@ import { createActionArgs, createLoaderArgs } from '@/lib/test-utils';
 import ResetPassword, { loader, action } from './_empty.reset-password';
 import { resetPasswordWithToken } from '@/middlewares/auth.server';
 import { isPasswordValid } from '@/lib/utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const { t } = getTranslation();

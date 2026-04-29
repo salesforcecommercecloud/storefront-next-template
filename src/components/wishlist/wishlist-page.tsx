@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useEffect, useState, useCallback, useMemo } from 'react';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createLogger } from '@/lib/logger';
@@ -83,7 +81,7 @@ export function WishlistSkeleton(): ReactElement {
     return (
         <div className="space-y-6">
             {/* Header card skeleton */}
-            <Card className="px-6 py-3 gap-0 bg-card border-border">
+            <Card className="px-6 py-3 gap-0 bg-card border-border rounded-none shadow-none">
                 <h1
                     className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
                     tabIndex={0}>
@@ -93,19 +91,19 @@ export function WishlistSkeleton(): ReactElement {
             </Card>
 
             {/* Items card skeleton */}
-            <Card className="py-0 gap-0">
+            <Card className="py-0 gap-0 rounded-none shadow-none">
                 <div className="p-4 border-b border-border">
                     <Skeleton className="h-6 w-36" />
                 </div>
                 <div className="p-4 space-y-4">
                     <Skeleton className="h-5 w-36" />
                     {(['skeleton-1', 'skeleton-2', 'skeleton-3'] as const).map((key) => (
-                        <div key={key} className="flex gap-4 p-4 border border-border rounded-lg">
+                        <div key={key} className="flex gap-4 p-4 border border-border rounded-none">
                             <Skeleton className="w-20 h-20 md:w-28 md:h-28 flex-shrink-0 rounded" />
                             <div className="flex-1 space-y-2">
                                 <Skeleton className="h-4 w-3/4" />
                                 <Skeleton className="h-3 w-1/2" />
-                                <Skeleton className="h-5 w-16 rounded-md" />
+                                <Skeleton className="h-5 w-16 rounded-none" />
                             </div>
                             <Skeleton className="w-20 h-6 flex-shrink-0" />
                         </div>
@@ -199,7 +197,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
     return (
         <div className="space-y-5">
             {/* Page Header Card */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <h1
                         className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
@@ -211,7 +209,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
             </Card>
 
             {/* Saved Items Card */}
-            <Card className="py-0 gap-0">
+            <Card className="py-0 gap-0 rounded-none shadow-none">
                 {/* Header: title + item count + sort/filter — separator (border-b) sits below */}
                 <div className="p-4 space-y-3 border-b border-border">
                     <div className="space-y-1">

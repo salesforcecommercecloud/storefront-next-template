@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link } from '@/components/link';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { createProductUrl, getImagesForColor } from '@/lib/product-utils';
@@ -47,7 +45,10 @@ const ProductImageContainer = ({
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     // Get all images for the selected color variant
-    const allImages = getImagesForColor(product, selectedColorValue, 'medium');
+    const allImages = useMemo(
+        () => getImagesForColor(product, selectedColorValue, 'medium'),
+        [product, selectedColorValue]
+    );
 
     const currentImage = allImages[selectedImageIndex] ?? allImages[0] ?? product.image;
     const currentImageUrl = currentImage?.disBaseLink || currentImage?.link;
@@ -61,24 +62,15 @@ const ProductImageContainer = ({
         handleProductClick?.(product);
     }, [handleProductClick, product]);
 
-    // Calculate height based on aspect ratio
-    // imgAspectRatio = width / height, so height = width / imgAspectRatio
-    // We use CSS calc with viewport units to compute height dynamically
-    const heightStyle =
-        imgAspectRatio !== 1
-            ? {
-                  // Use padding-bottom trick for aspect ratio, but calculate based on viewport width
-                  // For responsive widths, we need to calculate height for each breakpoint
-                  // Using aspect-ratio CSS property with calc for viewport-based calculation
-                  aspectRatio: `${imgAspectRatio}`,
-                  // Fallback: use padding-bottom percentage trick
-                  paddingBottom: imgAspectRatio !== 1 ? `${(1 / imgAspectRatio) * 100}%` : undefined,
-              }
-            : {};
+    // When a non-square aspect ratio is requested, apply it via the native CSS
+    // `aspect-ratio` property. The legacy padding-bottom percentage trick is not
+    // used here because it conflicts with the native property and collapses the
+    // image height to zero.
+    const heightStyle = imgAspectRatio !== 1 ? { aspectRatio: `${imgAspectRatio}` } : {};
 
     return (
         <div
-            className={`${showNavigationArrows ? 'group/image ' : ''}relative overflow-hidden rounded-lg bg-secondary/20 border-secondary flex flex-col ${
+            className={`${showNavigationArrows ? 'group/image ' : ''}relative overflow-hidden bg-secondary/20 flex flex-col ${
                 imgAspectRatio === 1 ? 'aspect-square' : ''
             } ${className || ''}`}
             style={heightStyle}>

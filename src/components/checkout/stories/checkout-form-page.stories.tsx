@@ -18,7 +18,7 @@ import { expect, userEvent, within } from 'storybook/test';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 import { checkoutWithOneItem, checkoutWithMultipleItems } from '@/components/__mocks__/checkout-data';
 import emptyBasket from '@/components/__mocks__/empty-basket';
@@ -206,7 +206,7 @@ function MockCheckoutFormPage({
     if (!cart || !cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
-                <Card className="w-full max-w-md">
+                <Card className="w-full max-w-md rounded-none shadow-none">
                     <CardContent className="pt-6">
                         <Typography variant="muted" className="text-center">
                             {t('cart:empty.title')}
@@ -232,7 +232,7 @@ function MockCheckoutFormPage({
 
     return (
         <div className="min-h-screen bg-muted">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="section-container py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Checkout Content */}
                     <div className="lg:col-span-2 space-y-6">
@@ -401,7 +401,7 @@ function MockCheckoutFormPage({
                                 <ToggleCardSummary>
                                     <div className="space-y-3">
                                         {cart.shipments?.[0]?.shippingAddress && (
-                                            <div className="rounded-lg p-3 space-y-2 bg-muted/50">
+                                            <div className="rounded-none p-3 space-y-2 bg-muted/50">
                                                 <Typography variant="p" className="font-medium">
                                                     {cart.shipments[0].shippingAddress.firstName}{' '}
                                                     {cart.shipments[0].shippingAddress.lastName}
@@ -459,7 +459,7 @@ function MockCheckoutFormPage({
                                                 {shippingMethodsList.map((method) => (
                                                     <div
                                                         key={method.id}
-                                                        className="flex items-center space-x-4 p-4 border-2 rounded-lg transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
+                                                        className="flex items-center space-x-4 p-4 border-2 rounded-none transition-all duration-200 hover:border-primary/50 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:shadow-md">
                                                         <RadioGroupItem
                                                             value={method.id}
                                                             id={method.id}
@@ -614,19 +614,19 @@ function MockCheckoutFormPage({
 
                                         {/* Billing Address Section */}
                                         <div className="space-y-4">
-                                            <div className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
+                                            <div className="rounded-none border border-border bg-card p-4 transition-colors hover:bg-accent/50">
                                                 <div className="flex items-start space-x-3">
                                                     <Checkbox
                                                         checked={true}
                                                         className="mt-0.5"
-                                                        aria-label={t('checkout:payment.billingSameAsShipping')}
+                                                        aria-label={t('checkout:payment.useDifferentBilling')}
                                                     />
                                                     <div className="space-y-1 leading-none">
                                                         <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                                            {t('checkout:payment.billingSameAsShipping')}
+                                                            {t('checkout:payment.useDifferentBilling')}
                                                         </label>
                                                         <Typography variant="small" className="text-muted-foreground">
-                                                            {t('checkout:payment.billingSameAsShippingDescription')}
+                                                            {t('checkout:payment.useDifferentBillingDescription')}
                                                         </Typography>
                                                     </div>
                                                 </div>
@@ -672,7 +672,7 @@ function MockCheckoutFormPage({
 
                         {/* Place Order */}
                         {(step === STEPS.PAYMENT || step >= STEPS.PLACE_ORDER) && (
-                            <Card>
+                            <Card className="rounded-none shadow-none">
                                 <CardHeader>
                                     <CardTitle>
                                         <Typography variant="h4" as="h2">
@@ -698,7 +698,7 @@ function MockCheckoutFormPage({
                     {/* Order Summary Sidebar */}
                     <div className="lg:col-span-1">
                         <div className="sticky top-8">
-                            <Card>
+                            <Card className="rounded-none shadow-none">
                                 <CardHeader>
                                     <CardTitle>
                                         <Typography variant="h4" as="h2">

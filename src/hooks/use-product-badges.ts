@@ -60,7 +60,7 @@ export const useProductBadges = ({ product, badgeDetails, maxBadges = 3 }: UsePr
                     return;
                 }
 
-                const customProp = product.customProperties?.find(
+                const customProp = (product.customProperties as Array<{ id?: string; value?: unknown }>)?.find(
                     (prop: { id?: string; value?: unknown }) =>
                         prop.id === badge.propertyName || prop.id?.toLowerCase() === badge.propertyName.toLowerCase()
                 );
@@ -72,7 +72,7 @@ export const useProductBadges = ({ product, badgeDetails, maxBadges = 3 }: UsePr
         }
 
         // Check promotions for sale badge (if not already found)
-        if (product.promotions && product.promotions.length > 0) {
+        if (product.promotions && (product.promotions as unknown as Array<unknown>).length > 0) {
             const saleBadge = defaultBadgeDetails.find((badge) => badge.propertyName === 'c_isSale');
             if (saleBadge && !activeBadges.find((badge) => badge.propertyName === 'c_isSale')) {
                 activeBadges.push(saleBadge);

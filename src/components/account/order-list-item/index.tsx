@@ -22,11 +22,13 @@ import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { Check, ChevronRight, MapPin, X } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { cn } from '@/lib/utils';
 import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
 
-const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
+const ON_MUTED_CAPTION_CLASS = 'text-xs font-normal text-muted-foreground';
+const ORDER_HEADER_LABEL_CLASS = 'text-xs font-medium text-muted-foreground';
 
 /**
  * Product item in an order for thumbnail display.
@@ -36,6 +38,8 @@ export interface OrderProductItem {
     quantity: number;
     imageUrl?: string;
     imageAlt?: string;
+    /** Display name from catalog or SCAPI line item when available */
+    productName?: string;
 }
 
 /**
@@ -129,7 +133,7 @@ function OrderStatusBadge({ status, label }: { status: string; label?: string })
 function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
     return (
         <div className="relative">
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border">
+            <div className="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border">
                 {item.imageUrl ? (
                     <img
                         src={item.imageUrl}
@@ -157,7 +161,7 @@ function ProductThumbnail({ item }: { item: OrderProductItem }): ReactElement {
  */
 function OverflowIndicator({ count }: { count: number }): ReactElement {
     return (
-        <div className="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center">
+        <div className="w-16 h-16 rounded-none bg-muted border border-border flex items-center justify-center">
             <Typography variant="small" as="span" className="text-muted-foreground">
                 +{count}
             </Typography>
@@ -173,10 +177,10 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
     const fullAddress = `${location.address}, ${location.city}, ${location.state} ${location.postalCode}`;
 
     return (
-        <Card className="bg-muted border-border p-0">
+        <Card className="bg-muted border-border p-0 rounded-none shadow-none">
             <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2">
-                    <MapPin className="size-4 text-muted-foreground" />
+                    <MapPin className="size-4 text-muted-foreground" aria-hidden />
                     <Typography variant="small" as="span" className="font-semibold text-foreground">
                         {t('orders.pickupLocation')}
                     </Typography>
@@ -184,7 +188,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
 
                 <div className="space-y-1 pl-6">
                     <div>
-                        <Typography variant="muted" as="p" className="text-xs">
+                        <Typography variant="small" as="p" className={ON_MUTED_CAPTION_CLASS}>
                             {t('orders.location')}
                         </Typography>
                         <Typography variant="small" as="p" className="text-foreground">
@@ -193,7 +197,7 @@ function PickupLocationCard({ location }: { location: PickupLocation }): ReactEl
                     </div>
 
                     <div>
-                        <Typography variant="muted" as="p" className="text-xs">
+                        <Typography variant="small" as="p" className={ON_MUTED_CAPTION_CLASS}>
                             {t('orders.address')}
                         </Typography>
                         <Typography variant="small" as="p" className="text-foreground font-normal">
@@ -249,7 +253,7 @@ export function OrderListItem({
 }: OrderListItemProps): ReactElement {
     const { t, i18n } = useTranslation('account');
     const invalidDateLabel = t('orders.invalidDate');
-    const siteCurrency = useCurrency();
+    const { currency: siteCurrency } = useSite();
 
     const productItems = order.productItems ?? [];
     const visibleProducts = productItems.slice(0, maxThumbnails);
@@ -268,7 +272,7 @@ export function OrderListItem({
                     <div className="flex flex-wrap items-start justify-between -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 border-b border-separator bg-muted">
                         <div className="flex flex-wrap gap-x-8 gap-y-2">
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.tableHeaders.orderNumber')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground font-medium">
@@ -276,7 +280,7 @@ export function OrderListItem({
                                 </Typography>
                             </div>
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.orderDate')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground">
@@ -284,7 +288,7 @@ export function OrderListItem({
                                 </Typography>
                             </div>
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.total')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground">
@@ -292,7 +296,7 @@ export function OrderListItem({
                                 </Typography>
                             </div>
                             <div className="space-y-2">
-                                <Typography variant="muted" as="p" className="text-xs">
+                                <Typography variant="small" as="p" className={ORDER_HEADER_LABEL_CLASS}>
                                     {t('orders.items')}
                                 </Typography>
                                 <Typography variant="small" as="p" className="text-foreground font-semibold">

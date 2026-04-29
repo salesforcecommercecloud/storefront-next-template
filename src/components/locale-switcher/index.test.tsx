@@ -19,7 +19,7 @@ import userEvent from '@testing-library/user-event';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import i18next from 'i18next';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
@@ -47,6 +47,9 @@ const mockSite: Site = {
     supportedCurrencies: ['GBP', 'EUR'],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 const mockFetcherSubmit = vi.fn();
 const mockFetcher = {
     submit: mockFetcherSubmit,
@@ -73,7 +76,7 @@ const renderWithRouter = ({ initialLanguage = 'en-GB' }: { initialLanguage?: str
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider value={mockSite}>
+                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                             <LocaleSwitcher />
                         </SiteProvider>
                     </ConfigProvider>
@@ -183,10 +186,12 @@ describe('LocaleSwitcher', () => {
         const formData = submitCall[0] as FormData;
         const options = submitCall[1];
 
-        expect(formData.get('locale')).toBe('it-IT');
+        expect(formData.get('type')).toBe('locale');
+        const payload = JSON.parse(formData.get('payload') as string);
+        expect(payload.locale).toBe('it-IT');
         expect(options).toEqual({
             method: 'POST',
-            action: '/action/set-locale',
+            action: '/action/set-site-context',
         });
     });
 
@@ -270,7 +275,7 @@ describe('LocaleSwitcher', () => {
                         path: '/',
                         element: (
                             <ConfigProvider config={mockConfig}>
-                                <SiteProvider value={mockSite}>
+                                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                                     <LocaleSwitcher />
                                 </SiteProvider>
                             </ConfigProvider>

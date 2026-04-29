@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { Form } from 'react-router';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
@@ -27,7 +25,7 @@ export function ForgotPasswordForm({ error }: ForgotPasswordFormProps) {
     return (
         <Form method="post" className="space-y-6">
             {error && (
-                <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-none">
                     <p className="text-sm text-destructive">{error}</p>
                 </div>
             )}

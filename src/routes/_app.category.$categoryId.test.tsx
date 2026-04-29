@@ -27,13 +27,13 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 import CategoryPage, { loader, ProductListingPageMetadata, shouldRevalidate } from './_app.category.$categoryId';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchCategory } from '@/lib/api/categories';
-import { fetchSearchProducts } from '@/lib/api/search';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchCategory } from '@/lib/api/categories.server';
+import { fetchSearchProducts } from '@/lib/api/search.server';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
-import { ConfigWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { useAnalytics } from '@/hooks/use-analytics';
 
@@ -125,9 +125,15 @@ vi.mock('@/components/region', () => ({
 
 // Mock ProductGrid component
 vi.mock('@/components/product-grid', () => ({
-    default: function ProductGridMock({ critical, handleProductClick }: any) {
+    default: function ProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
         return (
             <div data-testid="product-grid">
+                <div data-testid="critical-count" style={{ display: 'none' }}>
+                    {critical?.length ?? 0}
+                </div>
+                <div data-testid="non-critical-skeleton-count" style={{ display: 'none' }}>
+                    {nonCriticalCount ?? 0}
+                </div>
                 {critical?.map((product: any) => (
                     <div
                         key={product.productId}
@@ -183,15 +189,15 @@ vi.mock('@/components/json-ld', () => ({
 }));
 
 // Mock API functions
-vi.mock('@/lib/api/categories', () => ({
+vi.mock('@/lib/api/categories.server', () => ({
     fetchCategory: vi.fn(),
 }));
 
-vi.mock('@/lib/api/search', () => ({
+vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(),
 }));
 
-vi.mock('@/lib/util/pageLoader', () => ({
+vi.mock('@/lib/util/pageLoader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 
@@ -259,6 +265,16 @@ describe('CategoryPage', () => {
         },
     } as AppConfig;
 
+    const createLoaderArgs = (
+        url: string,
+        overrides?: Partial<Pick<LoaderFunctionArgs, 'params'>>
+    ): LoaderFunctionArgs => ({
+        request: new Request(url),
+        context: mockContext,
+        params: { categoryId: 'electronics', ...overrides?.params },
+        unstable_pattern: '/category/:categoryId',
+    });
+
     beforeEach(() => {
         vi.clearAllMocks();
         (getConfig as any).mockReturnValue(mockConfig);
@@ -305,12 +321,7 @@ describe('CategoryPage', () => {
 
     describe('loader', () => {
         test('should fetch category data and search results with correct parameters', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
+            const args = createLoaderArgs('https://example.com/category/electronics');
 
             const result = await loader(args);
 
@@ -339,16 +350,11 @@ describe('CategoryPage', () => {
         });
 
         test('should handle query parameters correctly', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request(
+            await loader(
+                createLoaderArgs(
                     'https://example.com/category/electronics?offset=20&sort=price-low-to-high&refine=color:red&refine=size:large'
-                ),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
-            await loader(args);
+                )
+            );
 
             expect(fetchSearchProducts).toHaveBeenCalledWith(
                 mockContext,
@@ -361,16 +367,9 @@ describe('CategoryPage', () => {
         });
 
         test('should honor existing cgid refinement from query params', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request(
-                    'https://example.com/category/electronics?refine=cgid%3Dwomens&refine=color%3Dblue'
-                ),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
-            const result = await loader(args);
+            const result = await loader(
+                createLoaderArgs('https://example.com/category/electronics?refine=cgid%3Dwomens&refine=color%3Dblue')
+            );
 
             // Existing cgid should be preserved so quick-filter category selection is respected.
             expect(fetchSearchProducts).toHaveBeenCalledWith(
@@ -383,34 +382,16 @@ describe('CategoryPage', () => {
         });
 
         test('should return effectiveRefine as refine in loader result', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs('https://example.com/category/electronics'));
 
             expect(result.refine).toEqual(['cgid=electronics']);
         });
 
         test('should parse filters query param into initialFiltersOpen', async () => {
-            const openArgs: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics?filters=open'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-            const closedArgs: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics?filters=closed'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
-            const openResult = await loader(openArgs);
-            const closedResult = await loader(closedArgs);
+            const openResult = await loader(createLoaderArgs('https://example.com/category/electronics?filters=open'));
+            const closedResult = await loader(
+                createLoaderArgs('https://example.com/category/electronics?filters=closed')
+            );
 
             expect(openResult.initialFiltersOpen).toBe(true);
             expect(closedResult.initialFiltersOpen).toBe(false);
@@ -437,15 +418,12 @@ describe('CategoryPage', () => {
 
             (fetchCategory as any).mockRejectedValue(mockApiError);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/invalid'),
-                context: mockContext,
-                params: { categoryId: 'invalid' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(
+                    createLoaderArgs('https://example.com/category/invalid', {
+                        params: { categoryId: 'invalid' },
+                    })
+                );
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -476,15 +454,8 @@ describe('CategoryPage', () => {
 
             (fetchCategory as any).mockRejectedValue(mockApiError);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(createLoaderArgs('https://example.com/category/electronics'));
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -515,15 +486,12 @@ describe('CategoryPage', () => {
 
             (fetchCategory as any).mockRejectedValue(mockApiError);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/restricted'),
-                context: mockContext,
-                params: { categoryId: 'restricted' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(
+                    createLoaderArgs('https://example.com/category/restricted', {
+                        params: { categoryId: 'restricted' },
+                    })
+                );
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -550,15 +518,12 @@ describe('CategoryPage', () => {
 
             (fetchCategory as any).mockRejectedValue(mockApiError);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/invalid'),
-                context: mockContext,
-                params: { categoryId: 'invalid' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(
+                    createLoaderArgs('https://example.com/category/invalid', {
+                        params: { categoryId: 'invalid' },
+                    })
+                );
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -584,15 +549,12 @@ describe('CategoryPage', () => {
 
             (fetchCategory as any).mockRejectedValue(mockApiError);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/invalid'),
-                context: mockContext,
-                params: { categoryId: 'invalid' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(
+                    createLoaderArgs('https://example.com/category/invalid', {
+                        params: { categoryId: 'invalid' },
+                    })
+                );
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -603,15 +565,12 @@ describe('CategoryPage', () => {
         test('should throw 500 when category fetch fails with generic error', async () => {
             (fetchCategory as any).mockRejectedValue(new Error('Unexpected error'));
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/invalid'),
-                context: mockContext,
-                params: { categoryId: 'invalid' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(
+                    createLoaderArgs('https://example.com/category/invalid', {
+                        params: { categoryId: 'invalid' },
+                    })
+                );
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -623,15 +582,8 @@ describe('CategoryPage', () => {
         test('should throw 500 when category fetch fails with network error', async () => {
             (fetchCategory as any).mockRejectedValue(new TypeError('Network request failed'));
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(createLoaderArgs('https://example.com/category/electronics'));
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -667,15 +619,12 @@ describe('CategoryPage', () => {
 
             (fetchCategory as any).mockRejectedValue(mockApiError);
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/invalid'),
-                context: mockContext,
-                params: { categoryId: 'invalid' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
             try {
-                await loader(args);
+                await loader(
+                    createLoaderArgs('https://example.com/category/invalid', {
+                        params: { categoryId: 'invalid' },
+                    })
+                );
                 expect.fail('Expected loader to throw');
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
@@ -686,14 +635,7 @@ describe('CategoryPage', () => {
         });
 
         test('should split search results into critical and non-critical', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
-            await loader(args);
+            await loader(createLoaderArgs('https://example.com/category/electronics'));
 
             expect(fetchSearchProducts).toHaveBeenCalledTimes(2);
             expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
@@ -713,14 +655,7 @@ describe('CategoryPage', () => {
         });
 
         test('should generate category schema promise', async () => {
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs('https://example.com/category/electronics'));
             const categorySchema = await result.categorySchema;
 
             expect(categorySchema).toBeDefined();
@@ -741,17 +676,151 @@ describe('CategoryPage', () => {
                 throw new Error('Schema generation failed');
             });
 
-            const args: LoaderFunctionArgs = {
-                request: new Request('https://example.com/category/electronics'),
-                context: mockContext,
-                params: { categoryId: 'electronics' },
-                unstable_pattern: '/category/:categoryId',
-            };
-
-            const result = await loader(args);
+            const result = await loader(createLoaderArgs('https://example.com/category/electronics'));
             const categorySchema = await result.categorySchema;
 
             expect(categorySchema).toBeNull();
+        });
+
+        test('should prevent negative non-critical limit when API returns fewer items than requested', async () => {
+            // Setup: Config requests 4 critical, but API only returns 2
+            const mockConfigWithCritical = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 24, critical: 4 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigWithCritical);
+
+            // Mock API returning only 2 items instead of 4
+            const partialResult = { ...mockSearchResult, hits: mockSearchResult.hits?.slice(0, 2) };
+            (fetchSearchProducts as any).mockResolvedValue(partialResult);
+
+            await loader(createLoaderArgs('https://example.com/category/electronics'));
+
+            // Verify: Critical request asks for 4
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                limit: 4,
+                offset: 0,
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request uses actual returned count (2), not config (4)
+            // This prevents gaps: offset should be 2 (actual), not 4 (config)
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                limit: 22, // 24 - 2 (actual) = 22
+                offset: 2, // Starts at 2, not 4 - prevents gap!
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+        });
+
+        test('should cap critical limit when config.critical > config.limit', async () => {
+            // Setup: Config has critical=30 but limit=24
+            const mockConfigHighCritical = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 24, critical: 30 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigHighCritical);
+            (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
+
+            await loader(createLoaderArgs('https://example.com/category/electronics'));
+
+            // Verify: Critical request is capped at limit (24), not using config.critical (30)
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                limit: 24, // Capped at limit, not 30
+                offset: 0,
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request limit should not be negative
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                limit: 22, // 24 - 2 (actual hits) = 22 (not negative!)
+                offset: 2,
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+        });
+
+        test('should handle API returning zero items', async () => {
+            // Setup: API returns empty result
+            const emptyResult = { ...mockSearchResult, hits: [], total: 0 };
+            (fetchSearchProducts as any).mockResolvedValue(emptyResult);
+
+            await loader(createLoaderArgs('https://example.com/category/electronics'));
+
+            // Verify: Critical request
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                limit: 2,
+                offset: 0,
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request uses full limit since no critical items returned
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                limit: 10, // 10 - 0 = 10 (full limit)
+                offset: 0, // Starts at 0 since no critical items
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+        });
+
+        test('should handle small limits correctly', async () => {
+            // Setup: Small limit config
+            const mockConfigSmallLimit = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 4, critical: 2 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigSmallLimit);
+            (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
+
+            await loader(createLoaderArgs('https://example.com/category/electronics'));
+
+            // Verify: Critical request
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                limit: 2,
+                offset: 0,
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request with small remaining limit
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                limit: 2, // 4 - 2 = 2
+                offset: 2,
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
+        });
+
+        test('should never request negative limits', async () => {
+            // Setup: Config where critical equals limit
+            const mockConfigCriticalEqualsLimit = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 10, critical: 10 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigCriticalEqualsLimit);
+            (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
+
+            await loader(createLoaderArgs('https://example.com/category/electronics'));
+
+            // Verify: Non-critical limit should be 0 or positive, never negative
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                limit: 8, // 10 - 2 (actual returned) = 8 (not negative)
+                offset: 2,
+                sort: '',
+                refine: ['cgid=electronics'],
+                currency: 'GBP',
+            });
         });
     });
 
@@ -778,9 +847,9 @@ describe('CategoryPage', () => {
 
             const { unmount } = render(
                 <MemoryRouter initialEntries={['/category/electronics?filters=open']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={openLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -792,9 +861,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={closedLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -821,9 +890,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -860,9 +929,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -904,9 +973,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -932,9 +1001,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -960,9 +1029,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -987,9 +1056,9 @@ describe('CategoryPage', () => {
 
             const { rerender } = render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData1} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1000,9 +1069,9 @@ describe('CategoryPage', () => {
 
             rerender(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData2} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1028,15 +1097,252 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
             await waitFor(() => {
                 expect(screen.getByText('Electronics (0)')).toBeInTheDocument();
                 expect(screen.getByTestId('product-grid')).toBeInTheDocument();
+            });
+        });
+
+        test('should show 0 skeletons when total is 0 (empty results)', async () => {
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: { ...mockSearchResult, hits: [], total: 0, offset: 0 },
+                searchResultNonCritical: Promise.resolve({ ...mockSearchResult, hits: [], total: 0 }),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
+            });
+        });
+
+        test('should show 0 skeletons when criticalCount >= 8', async () => {
+            // Create 8 critical hits
+            const manyHits = Array.from({ length: 8 }, (_, i) => ({
+                productId: `product-${i}`,
+                productName: `Product ${i}`,
+                price: 29.99,
+                currency: 'USD',
+            }));
+
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: { ...mockSearchResult, hits: manyHits as any, total: 100, offset: 0 },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('8');
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
+            });
+        });
+
+        test('should cap at 8 total tiles when many products remain', async () => {
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: {
+                    ...mockSearchResult,
+                    hits: mockSearchResult.hits?.slice(0, 2),
+                    total: 100,
+                    offset: 0,
+                },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('2');
+                // Math.max(0, Math.min(8, 10, 100) - 2) = 6
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('6');
+            });
+        });
+
+        test('should respect remaining products when fewer than 8 available', async () => {
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: {
+                    ...mockSearchResult,
+                    hits: mockSearchResult.hits?.slice(0, 2),
+                    total: 6,
+                    offset: 0,
+                },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('2');
+                // Math.max(0, Math.min(8, 10, 6) - 2) = 4
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('4');
+            });
+        });
+
+        test('should handle pagination offset correctly', async () => {
+            const fourHits = Array.from({ length: 4 }, (_, i) => ({
+                productId: `product-${i}`,
+                productName: `Product ${i}`,
+                price: 29.99,
+                currency: 'USD',
+            }));
+
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: { ...mockSearchResult, hits: fourHits as any, total: 30, offset: 20 },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('4');
+                // Math.max(0, Math.min(8, 10, 30-20) - 4) = Math.max(0, 8-4) = 4
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('4');
+            });
+        });
+
+        test('should show 0 skeletons when offset >= total', async () => {
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: {
+                    ...mockSearchResult,
+                    hits: mockSearchResult.hits?.slice(0, 2),
+                    total: 24,
+                    offset: 24,
+                },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('2');
+                // Math.max(0, Math.min(8, 10, 24-24) - 2) = Math.max(0, 0-2) = 0
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
+            });
+        });
+
+        test('should never show negative skeleton count', async () => {
+            const tenHits = Array.from({ length: 10 }, (_, i) => ({
+                productId: `product-${i}`,
+                productName: `Product ${i}`,
+                price: 29.99,
+                currency: 'USD',
+            }));
+
+            const loaderData: CategoryPageData = {
+                category: mockCategory,
+                searchResultCritical: { ...mockSearchResult, hits: tenHits as any, total: 5, offset: 0 },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                categoryId: 'electronics',
+                refine: ['cgid=electronics'],
+                currency: 'USD',
+                locale: 'en-US',
+                pageUrl: 'http://localhost/category/test',
+                categorySchema: Promise.resolve(null),
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <CategoryPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('10');
+                // Math.max(0, Math.min(8, 10, 5) - 10) = Math.max(0, 5-10) = 0
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
             });
         });
     });
@@ -1062,9 +1368,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1095,9 +1401,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1129,9 +1435,9 @@ describe('CategoryPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -1169,9 +1475,9 @@ describe('CategoryPage', () => {
             // Should render without errors even when analytics is null
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <CategoryPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 

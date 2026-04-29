@@ -141,7 +141,7 @@ describe('PromoCallout', () => {
                             calloutMsg: 'Variant promotion message',
                         },
                     ],
-                },
+                } as any,
             ],
         };
 

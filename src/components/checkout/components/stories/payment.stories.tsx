@@ -310,47 +310,6 @@ export const CompletedState: Story = {
     },
 };
 
-export const WithFormError: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: {
-            step: 'payment',
-            formError: 'Failed to save payment information. Please try again.',
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form with a form-level error message displayed above the input fields.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-    },
-};
-
 export const WithValidationErrors: Story = {
     args: {
         onSubmit: () => {
@@ -382,11 +341,9 @@ export const WithValidationErrors: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test form interaction
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // Test basic interactions
         if (inputs.length > 0) {
             await userEvent.click(inputs[0]);
         }

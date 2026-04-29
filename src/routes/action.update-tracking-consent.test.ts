@@ -80,17 +80,11 @@ describe('action.update-tracking-consent', () => {
         };
     };
 
-    // Helper type for DataWithResponseInit returned by data()
-    type DataWithResponseInit<T> = { type: 'DataWithResponseInit'; data: T; init: unknown };
-
     describe('successful updates', () => {
         it('should successfully update tracking consent to Accepted', async () => {
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
-            const result = (await action(createActionArgs(TrackingConsent.Accepted))) as DataWithResponseInit<{
-                success: boolean;
-                trackingConsent: TrackingConsent;
-            }>;
+            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
 
             expect(mockIsTrackingConsentEnabled).toHaveBeenCalledWith(mockContextProvider);
             expect(mockGetAuth).toHaveBeenCalledWith(mockContextProvider);
@@ -103,8 +97,10 @@ describe('action.update-tracking-consent', () => {
             const updaterFn = mockUpdateAuth.mock.calls[1][1] as (session: unknown) => unknown;
             const updatedSession = updaterFn({});
             expect(updatedSession).toEqual({ userType: 'guest', trackingConsent: TrackingConsent.Accepted });
-            // The data() function returns a DataWithResponseInit wrapper
-            expect(result.data).toEqual({
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json).toEqual({
                 success: true,
                 trackingConsent: TrackingConsent.Accepted,
             });
@@ -114,10 +110,7 @@ describe('action.update-tracking-consent', () => {
             mockGetAuth.mockReturnValue({ userType: 'registered', refreshToken: 'test-refresh-token' } as never);
             mockRefreshAccessToken.mockResolvedValue(mockTokenResponse);
 
-            const result = (await action(createActionArgs(TrackingConsent.Declined))) as DataWithResponseInit<{
-                success: boolean;
-                trackingConsent: TrackingConsent;
-            }>;
+            const response = (await action(createActionArgs(TrackingConsent.Declined))) as Response;
 
             expect(mockRefreshAccessToken).toHaveBeenCalledWith(mockContextProvider, 'test-refresh-token', {
                 trackingConsent: TrackingConsent.Declined,
@@ -126,8 +119,10 @@ describe('action.update-tracking-consent', () => {
             const updaterFn = mockUpdateAuth.mock.calls[1][1] as (session: unknown) => unknown;
             const updatedSession = updaterFn({});
             expect(updatedSession).toEqual({ userType: 'registered', trackingConsent: TrackingConsent.Declined });
-            // The data() function returns a DataWithResponseInit wrapper
-            expect(result.data).toEqual({
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json).toEqual({
                 success: true,
                 trackingConsent: TrackingConsent.Declined,
             });
@@ -135,37 +130,29 @@ describe('action.update-tracking-consent', () => {
     });
 
     describe('error handling', () => {
-        it('should throw error when tracking consent feature is disabled', async () => {
+        it('should return structured error when tracking consent feature is disabled', async () => {
             mockIsTrackingConsentEnabled.mockReturnValue(false);
 
-            await expect(action(createActionArgs(TrackingConsent.Accepted))).rejects.toThrow(Response);
+            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
 
-            try {
-                await action(createActionArgs(TrackingConsent.Accepted));
-            } catch (error) {
-                expect(error).toBeInstanceOf(Response);
-                const response = error as Response;
-                expect(response.status).toBe(400);
-                expect(await response.text()).toBe('Tracking consent feature is not enabled');
-            }
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(400);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error.message).toBe('Tracking consent feature is not enabled');
 
             expect(mockRefreshAccessToken).not.toHaveBeenCalled();
             expect(mockUpdateAuth).not.toHaveBeenCalled();
         });
 
-        it('should throw error when trackingConsent value is invalid', async () => {
-            await expect(action(createActionArgs('invalid-value'))).rejects.toThrow(Response);
+        it('should return structured error when trackingConsent value is invalid', async () => {
+            const response = (await action(createActionArgs('invalid-value'))) as Response;
 
-            try {
-                await action(createActionArgs('invalid-value'));
-            } catch (error) {
-                expect(error).toBeInstanceOf(Response);
-                const response = error as Response;
-                expect(response.status).toBe(400);
-                expect(await response.text()).toBe(
-                    'Invalid tracking consent value. Must be "0" (accepted) or "1" (declined)'
-                );
-            }
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(400);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error.message).toBe('Invalid tracking consent value. Must be "0" (accepted) or "1" (declined)');
 
             expect(mockRefreshAccessToken).not.toHaveBeenCalled();
             expect(mockUpdateAuth).not.toHaveBeenCalled();
@@ -174,10 +161,7 @@ describe('action.update-tracking-consent', () => {
         it('should update tracking consent without refresh when no refresh token', async () => {
             mockGetAuth.mockReturnValue({ userType: 'guest' } as never); // No refreshToken
 
-            const result = (await action(createActionArgs(TrackingConsent.Accepted))) as DataWithResponseInit<{
-                success: boolean;
-                trackingConsent: TrackingConsent;
-            }>;
+            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
 
             expect(mockRefreshAccessToken).not.toHaveBeenCalled();
             expect(mockUpdateAuth).toHaveBeenCalledTimes(1);
@@ -187,7 +171,10 @@ describe('action.update-tracking-consent', () => {
             const updatedSession = updaterFn({});
             expect(updatedSession).toEqual({ trackingConsent: TrackingConsent.Accepted });
 
-            expect(result.data).toEqual({
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json).toEqual({
                 success: true,
                 trackingConsent: TrackingConsent.Accepted,
             });
@@ -201,13 +188,17 @@ describe('action.update-tracking-consent', () => {
             expect(mockUpdateAuth).toHaveBeenCalledTimes(1);
         });
 
-        it('should propagate error when refresh token operation fails', async () => {
+        it('should catch refresh token error and still update session', async () => {
             const mockError = new Error('Token refresh failed');
             mockRefreshAccessToken.mockRejectedValue(mockError);
 
-            await expect(action(createActionArgs(TrackingConsent.Accepted))).rejects.toThrow('Token refresh failed');
+            const response = (await action(createActionArgs(TrackingConsent.Accepted))) as Response;
 
-            expect(mockUpdateAuth).not.toHaveBeenCalled();
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json).toEqual({ success: true, trackingConsent: TrackingConsent.Accepted });
+            expect(mockUpdateAuth).toHaveBeenCalledTimes(1);
         });
     });
 

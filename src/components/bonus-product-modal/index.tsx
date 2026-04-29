@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactElement } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useFetcher } from 'react-router';
@@ -121,7 +118,7 @@ export function BonusProductModal({
     });
 
     // === TOAST NOTIFICATIONS ===
-    // Pattern from Odyssey: Check isAddingToCart flag first to prevent toast fatigue
+    // Check isAddingToCart flag first to prevent toast fatigue
     useEffect(() => {
         if (!isAddingToCart) {
             // Prevent toast fatigue - only show toast when we're actively adding to cart
@@ -147,7 +144,7 @@ export function BonusProductModal({
                 setIsAddingToCart(false);
                 // Show error toast with error details
                 const errorMessage = t('product:failedToAddToCart', {
-                    error: addToCartFetcher.data.error || 'Unknown error',
+                    error: addToCartFetcher.data.error?.message || 'Unknown error',
                 });
                 addToast(errorMessage, 'error');
                 // Note: Modal stays open on error so user can retry
@@ -330,7 +327,7 @@ export function BonusProductModal({
                                 </div>
                                 <div className="lg:order-2">
                                     <div
-                                        className="lg:border lg:border-gray-200 lg:rounded-lg lg:p-6 lg:overflow-y-auto"
+                                        className="lg:border lg:border-gray-200 lg:rounded-none lg:p-6 lg:overflow-y-auto"
                                         style={{ maxHeight: `${BONUS_MODAL_CONTENT_MAX_HEIGHT}px` }}>
                                         <ProductInfo
                                             product={currentProduct}

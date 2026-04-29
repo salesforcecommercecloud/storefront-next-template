@@ -21,10 +21,14 @@ import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { WishlistListItem } from './wishlist-list-item';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { useProductActions } from '@/hooks/product/use-product-actions';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 const { t } = getTranslation();
 
@@ -54,11 +58,6 @@ vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: mockAddToast,
     }),
-}));
-
-// Mock currency provider
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
 }));
 
 // Mock config
@@ -138,7 +137,16 @@ const masterWishlistItem: ShopperCustomers.schemas['CustomerProductListItem'] = 
 };
 
 function renderWithRouter(component: React.ReactElement) {
-    const router = createMemoryRouter([{ path: '/', element: component }]);
+    const router = createMemoryRouter([
+        {
+            path: '/',
+            element: (
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                    {component}
+                </SiteProvider>
+            ),
+        },
+    ]);
     return render(<RouterProvider router={router} />);
 }
 
@@ -162,6 +170,7 @@ describe('WishlistListItem', () => {
             handleAddToCart: mockHandleAddToCart,
             isAddingToOrUpdatingCart: false,
             canAddToCart: true, // Default to true for most tests
+            isOrderable: true, // Default to orderable (in stock)
         } as any);
     });
 
@@ -353,11 +362,11 @@ describe('WishlistListItem', () => {
             });
         });
 
-        test('shows error toast with server message when remove fails with an error', async () => {
+        test('shows translated error toast when remove fails with an error', async () => {
             vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue({
                 ...mockFetcher,
                 state: 'idle',
-                data: { success: false, error: 'Item not found' },
+                data: { success: false, error: { code: 'NOT_FOUND', message: 'Item not found' } },
             } as any);
 
             renderWithRouter(
@@ -365,7 +374,7 @@ describe('WishlistListItem', () => {
             );
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith('Item not found', 'error');
+                expect(mockAddToast).toHaveBeenCalledWith(t('product:failedToRemoveFromWishlist'), 'error');
             });
         });
 
@@ -414,6 +423,7 @@ describe('WishlistListItem', () => {
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: false,
                 canAddToCart: false, // Master without variant cannot add to cart
+                isOrderable: true, // Orderability irrelevant when no variant selected
             } as any);
 
             renderWithRouter(
@@ -458,11 +468,41 @@ describe('WishlistListItem', () => {
             });
         });
 
+        test('useProductActions receives a defined currentVariant with correct price and variationValues for a variant-type product (type.variant = true)', () => {
+            // When SCAPI returns a variant product directly (product.type.variant = true),
+            // currentVariant must be defined (so the skipInventoryValidation branch allows
+            // add-to-cart) and carry the correct price and variationValues from the product.
+            // We use objectContaining so the assertion covers the fields that drive observable
+            // behavior without being sensitive to the exact shape of the currentVariant object.
+            const wishlistItem: ShopperCustomers.schemas['CustomerProductListItem'] = {
+                id: 'item-variant-product',
+                productId: variantProduct.id, // '640188017041M', type.variant = true
+                priority: 0,
+                public: false,
+                quantity: 1,
+            };
+
+            renderWithRouter(
+                <WishlistListItem product={variantProduct} wishlistItem={wishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(useProductActions).toHaveBeenCalledWith({
+                product: variantProduct,
+                currentVariant: expect.objectContaining({
+                    price: variantProduct.price,
+                    variationValues: variantProduct.variationValues,
+                }),
+                initialQuantity: 1,
+                skipInventoryValidation: true,
+            });
+        });
+
         test('"Add to Cart" button is disabled while adding to cart', () => {
             vi.mocked(useProductActions).mockReturnValue({
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: true,
                 canAddToCart: true,
+                isOrderable: true,
             } as any);
 
             renderWithRouter(
@@ -473,34 +513,85 @@ describe('WishlistListItem', () => {
         });
     });
 
-    describe('select options button', () => {
-        test('renders "Select Options" link for master product without variant selection', () => {
+    describe('out of stock button', () => {
+        test('renders disabled "Out of stock" button for a specific variant that is not orderable', () => {
+            // Specific variant resolved but inventory reports not orderable → OOS button takes
+            // precedence over Add to Cart. Button is rendered but disabled (matches PDP behavior).
             vi.mocked(useProductActions).mockReturnValue({
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: false,
-                canAddToCart: false, // Master without variant cannot add to cart
+                canAddToCart: false,
+                isOrderable: false,
             } as any);
 
             renderWithRouter(
-                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+                <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
             );
 
-            expect(screen.getByRole('link', { name: t('product:selectOptions') })).toBeInTheDocument();
+            const oosButton = screen.getByRole('button', { name: t('product:outOfStockLabel') });
+            expect(oosButton).toBeInTheDocument();
+            expect(oosButton).toBeDisabled();
+            // Add to Cart must not render when we're in the OOS state
+            expect(screen.queryByRole('button', { name: t('product:addToCart') })).not.toBeInTheDocument();
         });
 
-        test('"Select Options" link navigates to PDP', () => {
+        test('does not render "Out of stock" button when master product has no variant resolved', () => {
+            // Master without a resolved variant should fall through to "Select Options",
+            // not show OOS — we don't know orderability until a variant is chosen.
             vi.mocked(useProductActions).mockReturnValue({
                 handleAddToCart: mockHandleAddToCart,
                 isAddingToOrUpdatingCart: false,
-                canAddToCart: false, // Master without variant cannot add to cart
+                canAddToCart: false,
+                isOrderable: false,
             } as any);
 
             renderWithRouter(
                 <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
             );
 
-            const link = screen.getByRole('link', { name: t('product:selectOptions') });
-            expect(link).toHaveAttribute('href', expect.stringContaining('/product/'));
+            expect(screen.queryByRole('button', { name: t('product:outOfStockLabel') })).not.toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('product:selectOptions') })).toBeInTheDocument();
+        });
+    });
+
+    describe('select options button', () => {
+        test('renders "Select Options" button for master product without variant selection', () => {
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false, // Master without variant cannot add to cart
+                isOrderable: true, // Orderability irrelevant when no variant selected
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+            );
+
+            expect(screen.getByRole('button', { name: t('product:selectOptions') })).toBeInTheDocument();
+        });
+
+        test('"Select Options" button opens the variant-selection modal (not a PDP link)', () => {
+            // The button now triggers an in-page CartItemModal rather than navigating to the PDP.
+            // We only assert that clicking the button does not produce link-navigation semantics
+            // (no href) and that the button is enabled — the modal's internals are covered by
+            // CartItemModal's own tests.
+            vi.mocked(useProductActions).mockReturnValue({
+                handleAddToCart: mockHandleAddToCart,
+                isAddingToOrUpdatingCart: false,
+                canAddToCart: false,
+                isOrderable: true,
+            } as any);
+
+            renderWithRouter(
+                <WishlistListItem product={masterProduct} wishlistItem={masterWishlistItem} onRemove={vi.fn()} />
+            );
+
+            const button = screen.getByRole('button', { name: t('product:selectOptions') });
+            expect(button).toBeEnabled();
+            expect(button).not.toHaveAttribute('href');
+            // Clicking should not throw and should keep the user on the wishlist page
+            fireEvent.click(button);
+            expect(button).toBeInTheDocument();
         });
 
         test('does not render "Select Options" button when specific variant is selected', () => {
@@ -508,7 +599,7 @@ describe('WishlistListItem', () => {
                 <WishlistListItem product={masterProduct} wishlistItem={variantWishlistItem} onRemove={vi.fn()} />
             );
 
-            expect(screen.queryByRole('link', { name: t('product:selectOptions') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: t('product:selectOptions') })).not.toBeInTheDocument();
         });
     });
 });

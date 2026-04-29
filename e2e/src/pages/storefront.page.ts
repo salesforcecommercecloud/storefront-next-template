@@ -74,6 +74,16 @@ class StorefrontPage {
     }
 
     /**
+     * Navigate to an already-prefixed URL path (e.g., '/us/en-US/category/jackets').
+     * Use for multi-site tests that construct explicit site/locale prefixes
+     * instead of relying on buildSitePath().
+     * @param prefixedPath - Full path including any site/locale prefix
+     */
+    navigateToUrl(prefixedPath: string): void {
+        I.amOnPage(prefixedPath);
+    }
+
+    /**
      * Validate the page title contains expected text
      * @param expectedTitle - Expected title text (can be partial match)
      */

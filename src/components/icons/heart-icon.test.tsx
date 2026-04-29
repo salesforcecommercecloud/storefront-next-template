@@ -186,4 +186,13 @@ describe('HeartIcon', () => {
         render(<HeartIcon tabIndex={-1} />);
         expect(screen.getByRole('button')).toHaveAttribute('tabindex', '-1');
     });
+
+    test('forwards rest props to the button element', async () => {
+        const user = userEvent.setup();
+        const onPointerEnter = vi.fn();
+        render(<HeartIcon data-testid="heart" onPointerEnter={onPointerEnter} />);
+        const button = screen.getByTestId('heart');
+        await user.hover(button);
+        expect(onPointerEnter).toHaveBeenCalledOnce();
+    });
 });

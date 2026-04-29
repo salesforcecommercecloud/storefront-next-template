@@ -11,7 +11,6 @@ import BasketProvider from '../src/providers/basket';
 import AuthProvider from '../src/providers/auth';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { CurrencyProvider } from '../src/providers/currency';
 import { mockConfig } from '../src/test-utils/config';
 import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
 
@@ -32,21 +31,20 @@ export function StoryTestWrapper({ children }: { children: ReactNode }): ReactEl
     // CheckoutProvider needs BasketProvider, which needs AuthProvider
     const site = mockConfig.commerce.sites[0];
     const siteWithAlias = { ...site, alias: mockConfig.siteAliasMap?.[site.id] };
+    const locale = site.supportedLocales.find((l) => l.id === site.defaultLocale) ?? site.supportedLocales[0];
 
     const content = (
         <ConfigProvider config={mockConfig}>
-            <SiteProvider value={siteWithAlias}>
-                <CurrencyProvider value={site.defaultCurrency}>
-                    <AuthProvider value={{ userType: 'guest', customerId: undefined }}>
-                        <BasketProvider basket={undefined}>
-                            <StoreLocatorProvider>
-                                <CheckoutOneClickProvider customerProfile={undefined} shippingDefaultSet={Promise.resolve(undefined)}>
-                                    {children}
-                                </CheckoutOneClickProvider>
-                            </StoreLocatorProvider>
-                        </BasketProvider>
-                    </AuthProvider>
-                </CurrencyProvider>
+            <SiteProvider site={siteWithAlias} locale={locale} language={site.defaultLocale} currency={site.defaultCurrency}>
+                <AuthProvider value={{ userType: 'guest', customerId: undefined }}>
+                    <BasketProvider basket={undefined}>
+                        <StoreLocatorProvider>
+                            <CheckoutOneClickProvider customerProfile={undefined} shippingDefaultSet={Promise.resolve(undefined)}>
+                                {children}
+                            </CheckoutOneClickProvider>
+                        </StoreLocatorProvider>
+                    </BasketProvider>
+                </AuthProvider>
             </SiteProvider>
         </ConfigProvider>
     );

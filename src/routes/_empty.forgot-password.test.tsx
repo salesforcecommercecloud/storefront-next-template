@@ -18,7 +18,7 @@ import { render, screen } from '@testing-library/react';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { MemoryRouter, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 import ForgotPassword, { loader, action } from './_empty.forgot-password';

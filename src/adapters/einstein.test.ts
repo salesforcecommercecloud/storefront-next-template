@@ -23,12 +23,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createEinsteinAdapter, type EinsteinConfig } from './einstein';
 import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
+import type { AnalyticsEvent, ConsentPreferences } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapter } from '@/lib/adapters';
 
 // Helper type that guarantees sendEvent is implemented (Einstein adapter implements it)
 type EinsteinAdapter = EngagementAdapter & {
-    sendEvent: (event: AnalyticsEvent) => Promise<unknown>;
+    sendEvent: (event: AnalyticsEvent, siteInfo?: any, consentPreferences?: ConsentPreferences) => Promise<unknown>;
 };
 
 // Mock navigator.sendBeacon
@@ -80,6 +80,7 @@ const mockConfig: EinsteinConfig = {
         checkout_step: true,
         view_search_suggestion: true,
         click_search_suggestion: true,
+        commerce_agent_engagement: true,
     },
 };
 
@@ -166,6 +167,10 @@ const mockCheckoutStartEvent: AnalyticsEvent = {
     basket: mockBasket,
 } as AnalyticsEvent;
 
+// Default consent preferences for non-consent tests — provides sufficient consent
+// so tests can focus on event transformation and payload correctness
+const defaultConsent: ConsentPreferences = ['necessary', 'analytics', 'marketing', 'personalization'];
+
 describe('Einstein Adapter', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -174,7 +179,7 @@ describe('Einstein Adapter', () => {
     describe('sendEvent', () => {
         it('should send page view event with correct payload', async () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(mockPageViewEvent);
+            await adapter.sendEvent(mockPageViewEvent, undefined, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalledWith(
                 'https://api.cquotient.com/v3/activities/realm-siteId/viewPage?clientId=test-einstein-id',
@@ -194,7 +199,7 @@ describe('Einstein Adapter', () => {
 
         it('should send product view event with correct payload', async () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(mockProductViewEvent);
+            await adapter.sendEvent(mockProductViewEvent, undefined, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalledWith(
                 'https://api.cquotient.com/v3/activities/realm-siteId/viewProduct?clientId=test-einstein-id',
@@ -216,7 +221,7 @@ describe('Einstein Adapter', () => {
 
         it('should send search event with correct payload', async () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(mockSearchEvent);
+            await adapter.sendEvent(mockSearchEvent, undefined, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalledWith(
                 'https://api.cquotient.com/v3/activities/realm-siteId/viewSearch?clientId=test-einstein-id',
@@ -243,7 +248,7 @@ describe('Einstein Adapter', () => {
 
         it('should send cart item add event with correct payload', async () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(mockCartItemAddEvent);
+            await adapter.sendEvent(mockCartItemAddEvent, undefined, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalledWith(
                 'https://api.cquotient.com/v3/activities/realm-siteId/addToCart?clientId=test-einstein-id',
@@ -269,7 +274,7 @@ describe('Einstein Adapter', () => {
 
         it('should send checkout start event with correct payload', async () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(mockCheckoutStartEvent);
+            await adapter.sendEvent(mockCheckoutStartEvent, undefined, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalledWith(
                 'https://api.cquotient.com/v3/activities/realm-siteId/beginCheckout?clientId=test-einstein-id',
@@ -299,7 +304,7 @@ describe('Einstein Adapter', () => {
             const guestUser = { ...mockUser, userType: 'guest' as const };
             const guestEvent = { ...mockPageViewEvent, payload: guestUser };
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(guestEvent);
+            await adapter.sendEvent(guestEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -315,7 +320,7 @@ describe('Einstein Adapter', () => {
         it('should use production instance type when configured', async () => {
             const prodConfig = { ...mockConfig, isProduction: true };
             const adapter = createEinsteinAdapter(prodConfig) as EinsteinAdapter;
-            await adapter.sendEvent(mockPageViewEvent);
+            await adapter.sendEvent(mockPageViewEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -326,16 +331,38 @@ describe('Einstein Adapter', () => {
             const userWithoutUsid = { ...mockUser, usid: undefined };
             const eventWithoutUsid = { ...mockPageViewEvent, payload: userWithoutUsid };
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(eventWithoutUsid);
+            await adapter.sendEvent(eventWithoutUsid, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
             expect(payload.cookieId).toBe('');
         });
 
+        it('should send commerce_agent_engagement as viewPage with synthetic currentLocation', async () => {
+            const commerceAgentEvent: AnalyticsEvent = {
+                eventType: 'commerce_agent_engagement',
+                surface: 'search',
+                payload: mockUser,
+            } as AnalyticsEvent;
+            const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
+            await adapter.sendEvent(commerceAgentEvent, undefined, defaultConsent);
+
+            expect(mockSendBeacon).toHaveBeenCalledWith(
+                'https://api.cquotient.com/v3/activities/realm-siteId/viewPage?clientId=test-einstein-id',
+                expect.any(Blob)
+            );
+            const payload = await getBeaconPayload();
+            expect(payload).toEqual({
+                userId: 'test-enc-user-id',
+                cookieId: 'test-usid',
+                instanceType: 'sbx',
+                realm: 'realm',
+                currentLocation: '/__sfnext/commerce-agent/search',
+            });
+        });
+
         it('should throw error for unsupported event types', async () => {
             const unsupportedEvent = { ...mockPageViewEvent, eventType: 'unsupported' };
-            // Enable the unsupported event type so it bypasses the early return and reaches the error check
             const configWithUnsupported = {
                 ...mockConfig,
                 eventToggles: {
@@ -345,9 +372,55 @@ describe('Einstein Adapter', () => {
             };
             const adapter = createEinsteinAdapter(configWithUnsupported) as EinsteinAdapter;
 
-            await expect(adapter.sendEvent(unsupportedEvent)).rejects.toThrow(
+            await expect(adapter.sendEvent(unsupportedEvent as any, undefined, defaultConsent)).rejects.toThrow(
                 'Unsupported event type in Einstein adapter'
             );
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('consent category filtering', () => {
+        it('should send event when adapter consentCategory is in consentPreferences', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createEinsteinAdapter(configWithConsent) as EinsteinAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, undefined, ['necessary', 'analytics']);
+
+            expect(mockSendBeacon).toHaveBeenCalled();
+        });
+
+        it('should not send event when adapter consentCategory is not in consentPreferences', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createEinsteinAdapter(configWithConsent) as EinsteinAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, undefined, ['necessary']);
+
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+
+        it('should not send event when consentPreferences is an empty array (all declined)', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createEinsteinAdapter(configWithConsent) as EinsteinAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, undefined, []);
+
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+
+        it('should send event when no consentCategory is configured on adapter', async () => {
+            const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, undefined, ['necessary']);
+
+            expect(mockSendBeacon).toHaveBeenCalled();
+        });
+
+        it('should not send event when consentPreferences is undefined (consent not yet determined)', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createEinsteinAdapter(configWithConsent) as EinsteinAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, undefined, undefined);
+
             expect(mockSendBeacon).not.toHaveBeenCalled();
         });
     });
@@ -363,7 +436,7 @@ describe('Einstein Adapter', () => {
                 searchResults: [mockSearchResult],
             } as AnalyticsEvent;
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(categoryViewEvent);
+            await adapter.sendEvent(categoryViewEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -394,7 +467,7 @@ describe('Einstein Adapter', () => {
                 products: [mockSearchResult],
             } as AnalyticsEvent;
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(recommenderViewEvent);
+            await adapter.sendEvent(recommenderViewEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -419,7 +492,7 @@ describe('Einstein Adapter', () => {
                 product: mockSearchResult,
             } as AnalyticsEvent;
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(clickProductInCategoryEvent);
+            await adapter.sendEvent(clickProductInCategoryEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -446,7 +519,7 @@ describe('Einstein Adapter', () => {
                 product: mockSearchResult,
             } as AnalyticsEvent;
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(clickProductInSearchEvent);
+            await adapter.sendEvent(clickProductInSearchEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -472,7 +545,7 @@ describe('Einstein Adapter', () => {
                 product: mockSearchResult,
             } as AnalyticsEvent;
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(clickProductInRecommenderEvent);
+            await adapter.sendEvent(clickProductInRecommenderEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -499,7 +572,7 @@ describe('Einstein Adapter', () => {
                 basket: mockBasket,
             } as AnalyticsEvent;
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(checkoutStepEvent);
+            await adapter.sendEvent(checkoutStepEvent, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -522,7 +595,7 @@ describe('Einstein Adapter', () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
 
             // This should throw because the adapter expects product data for product_view events
-            await expect(adapter.sendEvent(eventWithoutProduct)).rejects.toThrow();
+            await expect(adapter.sendEvent(eventWithoutProduct as any, undefined, defaultConsent)).rejects.toThrow();
         });
 
         it('should handle missing cart items gracefully', async () => {
@@ -530,7 +603,7 @@ describe('Einstein Adapter', () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
 
             // This should throw because the adapter expects cartItems for cart_item_add events
-            await expect(adapter.sendEvent(eventWithoutCartItems)).rejects.toThrow();
+            await expect(adapter.sendEvent(eventWithoutCartItems as any, undefined, defaultConsent)).rejects.toThrow();
         });
 
         it('should handle missing basket data gracefully', async () => {
@@ -538,7 +611,7 @@ describe('Einstein Adapter', () => {
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
 
             // This should throw because the adapter expects basket for checkout_start events
-            await expect(adapter.sendEvent(eventWithoutBasket)).rejects.toThrow();
+            await expect(adapter.sendEvent(eventWithoutBasket as any, undefined, defaultConsent)).rejects.toThrow();
         });
 
         it('should handle products with missing master data', async () => {
@@ -552,7 +625,7 @@ describe('Einstein Adapter', () => {
                 product: productWithoutMaster,
             } as AnalyticsEvent;
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(productViewEventWithoutMaster);
+            await adapter.sendEvent(productViewEventWithoutMaster, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -573,7 +646,7 @@ describe('Einstein Adapter', () => {
                 cartItems: [cartItemWithMissingData],
             };
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(cartEventWithMissingData);
+            await adapter.sendEvent(cartEventWithMissingData, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 
@@ -594,7 +667,7 @@ describe('Einstein Adapter', () => {
                 basket: basketWithoutSubtotal,
             };
             const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(checkoutEventWithoutSubtotal);
+            await adapter.sendEvent(checkoutEventWithoutSubtotal, undefined, defaultConsent);
 
             const payload = await getBeaconPayload();
 

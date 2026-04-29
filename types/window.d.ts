@@ -15,7 +15,7 @@
  */
 
 /**
- * Global window object extensions for SFCC Odyssey
+ * Global window object extensions for SFCC Storefront Next
  */
 declare global {
     interface Window {

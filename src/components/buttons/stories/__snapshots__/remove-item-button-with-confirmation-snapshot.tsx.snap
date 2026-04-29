@@ -44,7 +44,7 @@ exports[`RemoveItemButtonWithConfirmation stories snapshot > DifferentItemTypes 
     class="space-y-4"
   >
     <div
-      class="p-4 border rounded-lg"
+      class="p-4 border rounded-none"
     >
       <h4
         class="font-medium mb-2"
@@ -69,7 +69,7 @@ exports[`RemoveItemButtonWithConfirmation stories snapshot > DifferentItemTypes 
       </button>
     </div>
     <div
-      class="p-4 border rounded-lg"
+      class="p-4 border rounded-none"
     >
       <h4
         class="font-medium mb-2"
@@ -94,7 +94,7 @@ exports[`RemoveItemButtonWithConfirmation stories snapshot > DifferentItemTypes 
       </button>
     </div>
     <div
-      class="p-4 border rounded-lg"
+      class="p-4 border rounded-none"
     >
       <h4
         class="font-medium mb-2"

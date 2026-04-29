@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -98,7 +96,7 @@ export default function CartDeliveryOption({ product }: CartDeliveryOptionProps)
                   interpolation: { escapeValue: false },
               })
             : tExtBopis('cart.deliveryOptionChangeError', {
-                  error: result.error || 'Unknown error',
+                  error: result.error?.message || 'Unknown error',
                   interpolation: { escapeValue: false },
               });
         addToast(errorMessage, 'error');

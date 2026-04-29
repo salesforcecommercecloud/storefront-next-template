@@ -20,8 +20,8 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { PaymentScheduleModalContent } from '../../payment-schedule-modal-content';
 import type { PaymentSchedule, StepInfo } from '../../../types';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { CurrencyProvider } from '@/providers/currency';
-import { mockConfig } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import type { ReactElement } from 'react';
 
 function PaymentScheduleModalContentWrapper({
@@ -38,7 +38,7 @@ function PaymentScheduleModalContentWrapper({
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={mockConfig}>
-            <CurrencyProvider value={currency}>
+            <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency={currency}>
                 <div className="max-w-md p-6">
                     <PaymentScheduleModalContent
                         paymentSchedule={paymentSchedule}
@@ -47,7 +47,7 @@ function PaymentScheduleModalContentWrapper({
                         currency={currency}
                     />
                 </div>
-            </CurrencyProvider>
+            </SiteProvider>
         </ConfigProvider>
     );
 

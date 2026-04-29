@@ -89,7 +89,7 @@ export const Materials: Story = {
         await expect(canvas.getByText('Materials')).toBeInTheDocument();
 
         // Body content loads after adapter resolves
-        await waitFor(() => expect(canvas.getByText('Premium full-grain leather upper')).toBeInTheDocument(), {
+        await waitFor(() => expect(canvas.getByText('High-density composite resin')).toBeInTheDocument(), {
             timeout: 2000,
         });
     },
@@ -114,7 +114,7 @@ export const UsageInstructions: Story = {
 
         await expect(canvas.getByText('Usage Instructions')).toBeInTheDocument();
 
-        await waitFor(() => expect(canvas.getByText(/Condition leather regularly/i)).toBeInTheDocument(), {
+        await waitFor(() => expect(canvas.getByText(/Place on any flat, stable surface/i)).toBeInTheDocument(), {
             timeout: 2000,
         });
     },
@@ -139,7 +139,7 @@ export const CareInstructions: Story = {
 
         await expect(canvas.getByText('Care Instructions')).toBeInTheDocument();
 
-        await waitFor(() => expect(canvas.getByText('Clean with a soft, dry cloth')).toBeInTheDocument(), {
+        await waitFor(() => expect(canvas.getByText('Hand wash cold')).toBeInTheDocument(), {
             timeout: 2000,
         });
     },
@@ -164,7 +164,7 @@ export const Specifications: Story = {
 
         await expect(canvas.getByText('Specifications')).toBeInTheDocument();
 
-        await waitFor(() => expect(canvas.getByText('Full-grain leather')).toBeInTheDocument(), { timeout: 2000 });
+        await waitFor(() => expect(canvas.getByText('Premium composite')).toBeInTheDocument(), { timeout: 2000 });
     },
 };
 

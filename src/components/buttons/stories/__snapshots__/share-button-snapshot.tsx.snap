@@ -77,7 +77,7 @@ exports[`ShareButton stories snapshot > InProductCard story renders and matches 
   data-share-harness="true"
 >
   <div
-    class="w-64 p-4 border rounded-lg shadow-sm"
+    class="w-64 p-4 border rounded-none"
   >
     <div
       class="mb-4"

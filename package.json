@@ -1,6 +1,6 @@
 {
     "name": "template-retail-rsc-app",
-    "version": "0.3.1",
+    "version": "0.4.0-alpha.1",
     "description": "Production-ready React storefront template for Salesforce Commerce Cloud.",
     "private": true,
     "type": "module",
@@ -11,18 +11,21 @@
         "dev": "pnpm locales:aggregate-extensions && sfnext dev",
         "dev:debug": "cross-env NODE_OPTIONS=--inspect sfnext dev",
         "dev:log": "cross-env SFCC_LOG_LEVEL=debug sfnext dev",
+        "dev:ui-targets": "cross-env VITE_UI_TARGET_DEV_MODE=true pnpm dev",
+        "smoke-test:generate": "node src/lib/ui-target-dev-mode/smoke-test/generate-config.cjs",
         "deploy:cartridge": "sfnext deploy-cartridge",
         "deploy:cartridge:clean": "sfnext deploy-cartridge --delete",
         "generate:cartridge": "sfnext generate-cartridge",
         "validate:cartridge": "sfnext validate-cartridge",
         "generate:eslint": "node scripts/generate-eslint-config.js",
-        "locales:aggregate-extensions": "node scripts/aggregate-extension-locales.js",
-        "start": "sfnext preview",
+        "locales:aggregate-extensions": "sfnext locales aggregate-extensions",
+        "start": "cross-env SFNEXT_DATA_STORE_ALLOW_LOCAL=true sfnext preview",
         "preview": "pnpm start",
         "push": "sfnext push --project-directory .",
-        "typecheck": "node scripts/typecheck-ratchet.js",
+        "typecheck": "react-router typegen && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit",
         "generate:story-tests": "node scripts/generate-story-tests.js",
-        "test": "vitest run --coverage",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
         "test:agent": "bash -c 'vitest run --reporter=verbose 2>&1 | { grep -E \"(Test Files|Tests|Duration|PASS|FAIL|✓|✖)\" || true; } | tail -30; exit ${PIPESTATUS[0]}'",
         "test:agent:coverage": "bash -c 'vitest run --coverage --reporter=verbose 2>&1 | { grep -E \"(Test Files|Tests|Duration|Coverage|PASS|FAIL|✓|✖)\" || true; } | tail -40; exit ${PIPESTATUS[0]}'",
         "generate:story-tests:coverage": "pnpm generate:story-tests && vitest run --coverage --config .storybook/vite.config.ts",
@@ -53,7 +56,10 @@
         "a11y": "pnpm --filter ./e2e a11y",
         "a11y:headless": "pnpm --filter ./e2e a11y:headless",
         "a11y:report": "pnpm --filter ./e2e a11y:report",
-        "a11y:update-baseline": "pnpm --filter ./e2e a11y:update-baseline"
+        "a11y:update-baseline": "pnpm --filter ./e2e a11y:update-baseline",
+        "config:inspect": "sfnext config inspect",
+        "config:push-env": "b2c mrt env var push",
+        "b2c": "b2c"
     },
     "dependencies": {
         "@hookform/resolvers": "5.2.2",
@@ -76,14 +82,14 @@
         "@radix-ui/react-switch": "1.2.2",
         "@radix-ui/react-tooltip": "1.2.8",
         "@react-router/node": "7.12.0",
-        "@salesforce/storefront-next-dev": "0.3.1",
-        "@salesforce/storefront-next-runtime": "0.3.1",
+        "@salesforce/storefront-next-dev": "0.4.0-alpha.1",
+        "@salesforce/storefront-next-runtime": "0.4.0-alpha.1",
         "@vis.gl/react-google-maps": "1.7.1",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
         "core-js": "3.45.1",
         "embla-carousel-react": "8.6.0",
-        "express": "5.2.1",
+        "express": "5.1.0",
         "i18next": "25.5.3",
         "i18next-browser-languagedetector": "8.2.0",
         "input-otp": "1.4.2",
@@ -119,6 +125,7 @@
         "@react-router/dev": "7.12.0",
         "@react-router/express": "7.12.0",
         "@react-router/fs-routes": "7.12.0",
+        "@salesforce/b2c-cli": "^1.4.0",
         "@storybook/addon-a11y": "10.0.6",
         "@storybook/addon-docs": "10.0.6",
         "@storybook/addon-vitest": "10.0.6",
@@ -184,7 +191,7 @@
         "server": [
             {
                 "name": "**/*",
-                "limit": "5 mB"
+                "limit": "5.3 mB"
             }
         ],
         "client": [
@@ -234,14 +241,24 @@
                 "comment": "Cart item modal bundles full product editing UI: image gallery, swatches, cart actions (incl. ShareButton → @radix-ui/react-dropdown-menu), and ChildProducts"
             },
             {
+                "name": "assets/\\(locales\\)-\\(en-US\\|en-GB\\)-index.*.js",
+                "limit": "75 kB",
+                "comment": "English locale chunks (all locale translations, includes checkout registration strings). Uncompressed; en-US ~62 kB baseline. Increased to 69 kB (+5%) for maintenancePage translations."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(it-IT\\)-index.*.js",
+                "limit": "82 kB",
+                "comment": "Italian locale chunk. Italian translations are ~10% more verbose than English due to language characteristics (longer words, articles, formal address forms). Baseline: it-IT ~80 kB vs en-US ~73 kB."
+            },
+            {
                 "name": "assets/\\(locales\\)-*-index.*.js",
-                "limit": "66 kB",
-                "comment": "Locales chunks (all locale translations, includes checkout registration strings). Uncompressed; en-US ~62 kB baseline."
+                "limit": "75 kB",
+                "comment": "Default limit for other locale chunks. Update individually if Romance languages (es-ES, fr-FR, pt-PT) exceed this."
             },
             {
                 "name": "assets/\\(components\\)-\\(checkout\\)-*.js",
-                "limit": "560 kB",
-                "comment": "Checkout components with dependencies. Lazy loaded on /checkout route only. @see W-21553426"
+                "limit": "590 kB",
+                "comment": "Checkout components with dependencies (incl. express-payments lazy chunk). Lazy on /checkout. @see W-21553426"
             },
             {
                 "name": "assets/\\(package\\)-\\(fast-deep-equal\\)-*.js",

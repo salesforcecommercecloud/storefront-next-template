@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
@@ -29,21 +27,22 @@ export default function SiteSwitcher(): ReactElement {
     const { t } = useTranslation('sitePicker');
     const fetcher = useFetcher();
     const config = useConfig<AppConfig>();
-    const site = useSite();
+    const { site } = useSite();
     const sites = config.commerce.sites;
 
     const handleSiteChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const siteId = e.target.value;
 
         const formData = new FormData();
-        formData.append('siteId', siteId);
+        formData.append('type', 'site');
+        formData.append('payload', JSON.stringify({ siteId }));
 
         // Set the cookie server-side, then do a full page reload so all
         // server-rendered content (loaders, Suspense boundaries, i18n) re-runs
         // with the new site.
         await fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-site',
+            action: '/action/set-site-context',
         });
         // go back to home page bc not all pages are guaranteed the same for all sites.
         window.location.href = '/';

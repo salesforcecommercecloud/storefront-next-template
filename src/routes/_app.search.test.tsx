@@ -23,12 +23,13 @@ import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
 import type { ShopperExperience, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import SearchPage, { loader, shouldRevalidate, type SearchPageData, SearchPageMetadata } from './_app.search';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
-import { fetchSearchProducts } from '@/lib/api/search';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchSearchProducts } from '@/lib/api/search.server';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getRegionDefinition } from '@/lib/decorators/region-definition';
-import { ConfigWrapper } from '@/test-utils/context-provider';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
@@ -64,12 +65,31 @@ const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
                 type: { master: true },
             } as any,
         },
+        {
+            productId: 'product-2',
+            productName: 'Product 2',
+            image: { alt: 'Product 2', link: '/product2.jpg' },
+            price: 49.99,
+            currency: 'USD',
+            inventory: { ats: 5 },
+            representedProduct: {
+                id: 'product-2',
+                imageGroups: [],
+                variants: [],
+                type: { master: true },
+            } as any,
+        },
     ],
-    total: 10,
+    total: 25,
     query: 'shoes',
     refinements: [],
     searchPhraseSuggestions: { suggestedTerms: [] },
-    sortingOptions: [],
+    sortingOptions: [
+        { id: 'best-matches', label: 'Best Matches' },
+        { id: 'price-low-to-high', label: 'Price: Low to High' },
+    ],
+    selectedSortingOption: 'best-matches',
+    selectedRefinements: {},
     offset: 0,
     limit: 10,
 };
@@ -125,11 +145,20 @@ vi.mock('@/components/region', async () => {
 
 // Mock ProductGrid component
 vi.mock('@/components/product-grid', () => ({
-    default: function ProductGridMock({ products }: any) {
+    default: function ProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
         return (
             <div data-testid="product-grid">
-                {products?.map((product: any) => (
-                    <div key={product.productId} data-testid="product-item">
+                <div data-testid="critical-count" style={{ display: 'none' }}>
+                    {critical?.length ?? 0}
+                </div>
+                <div data-testid="non-critical-skeleton-count" style={{ display: 'none' }}>
+                    {nonCriticalCount ?? 0}
+                </div>
+                {critical?.map((product: any) => (
+                    <div
+                        key={product.productId}
+                        data-testid="product-item"
+                        onClick={() => handleProductClick?.(product)}>
                         {product.productName}
                     </div>
                 ))}
@@ -166,20 +195,23 @@ vi.mock('@/components/category-refinements/filters-button', () => ({
 vi.mock('@/components/category-sorting', () => ({
     default: () => <div data-testid="category-sorting" />,
 }));
-vi.mock('@/lib/api/search', () => ({
+vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(),
 }));
 
-vi.mock('@/lib/util/pageLoader', () => ({
+vi.mock('@/lib/util/pageLoader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 
-// Mock analytics
+// Mock analytics with controllable mock functions
+const mockTrackViewSearch = vi.fn();
+const mockTrackClickProductInSearch = vi.fn();
+
 vi.mock('@/hooks/use-analytics', () => ({
-    useAnalytics: () => ({
-        trackViewSearch: vi.fn(),
-        trackClickProductInSearch: vi.fn(),
-    }),
+    useAnalytics: vi.fn(() => ({
+        trackViewSearch: mockTrackViewSearch,
+        trackClickProductInSearch: mockTrackClickProductInSearch,
+    })),
 }));
 
 // Mock config
@@ -209,11 +241,6 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
         useConfig: vi.fn(() => mockConfigValue),
     };
 });
-
-// Mock Page Designer mode
-vi.mock('@salesforce/storefront-next-runtime/design/mode', () => ({
-    isDesignModeActive: vi.fn(() => false),
-}));
 
 describe('SearchPage', () => {
     const mockContext = createTestContext();
@@ -345,6 +372,197 @@ describe('SearchPage', () => {
             expect(openResult.initialFiltersOpen).toBe(true);
             expect(closedResult.initialFiltersOpen).toBe(false);
         });
+
+        test('should split search results into critical and non-critical', async () => {
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
+                unstable_pattern: '/search',
+            });
+
+            await loader(args);
+
+            expect(fetchSearchProducts).toHaveBeenCalledTimes(2);
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                q: 'shoes',
+                limit: 2,
+                offset: 0,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                q: 'shoes',
+                limit: 8,
+                offset: 2,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+        });
+
+        test('should prevent negative non-critical limit when API returns fewer items than requested', async () => {
+            // Setup: Config requests 4 critical, but API only returns 2
+            const mockConfigWithCritical = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 24, critical: 4 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigWithCritical);
+
+            // Mock API returning only 2 items instead of 4
+            const partialResult = { ...mockSearchResult, hits: mockSearchResult.hits?.slice(0, 2) };
+            (fetchSearchProducts as any).mockResolvedValue(partialResult);
+
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
+                unstable_pattern: '/search',
+            });
+            await loader(args);
+
+            // Verify: Critical request asks for 4
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                q: 'shoes',
+                limit: 4,
+                offset: 0,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request uses actual returned count (2), not config (4)
+            // This prevents gaps: offset should be 2 (actual), not 4 (config)
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                q: 'shoes',
+                limit: 22, // 24 - 2 (actual) = 22
+                offset: 2, // Starts at 2, not 4 - prevents gap!
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+        });
+
+        test('should cap critical limit when config.critical > config.limit', async () => {
+            // Setup: Config has critical=30 but limit=24
+            const mockConfigHighCritical = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 24, critical: 30 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigHighCritical);
+            (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
+
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
+                unstable_pattern: '/search',
+            });
+            await loader(args);
+
+            // Verify: Critical request is capped at limit (24), not using config.critical (30)
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                q: 'shoes',
+                limit: 24, // Capped at limit, not 30
+                offset: 0,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request limit should not be negative
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                q: 'shoes',
+                limit: 22, // 24 - 2 (actual hits) = 22 (not negative!)
+                offset: 2,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+        });
+
+        test('should handle API returning zero items', async () => {
+            // Setup: API returns empty result
+            const emptyResult = { ...mockSearchResult, hits: [], total: 0 };
+            (fetchSearchProducts as any).mockResolvedValue(emptyResult);
+
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
+                unstable_pattern: '/search',
+            });
+            await loader(args);
+
+            // Verify: Critical request
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                q: 'shoes',
+                limit: 2,
+                offset: 0,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request uses full limit since no critical items returned
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                q: 'shoes',
+                limit: 10, // 10 - 0 = 10 (full limit)
+                offset: 0, // Starts at 0 since no critical items
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+        });
+
+        test('should handle small limits correctly', async () => {
+            // Setup: Small limit config
+            const mockConfigSmallLimit = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 4, critical: 2 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigSmallLimit);
+            (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
+
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
+                unstable_pattern: '/search',
+            });
+            await loader(args);
+
+            // Verify: Critical request
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(1, mockContext, {
+                q: 'shoes',
+                limit: 2,
+                offset: 0,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+
+            // Verify: Non-critical request with small remaining limit
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                q: 'shoes',
+                limit: 2, // 4 - 2 = 2
+                offset: 2,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+        });
+
+        test('should never request negative limits', async () => {
+            // Setup: Config where critical equals limit
+            const mockConfigCriticalEqualsLimit = {
+                ...mockConfig,
+                search: { products: { hits: { limit: 10, critical: 10 } } },
+            } as AppConfig;
+            (getConfig as any).mockReturnValue(mockConfigCriticalEqualsLimit);
+            (fetchSearchProducts as any).mockResolvedValue(mockSearchResult);
+
+            const args = createLoaderArgs(new Request('https://example.com/search?q=shoes'), mockContext, {
+                unstable_pattern: '/search',
+            });
+            await loader(args);
+
+            // Verify: Non-critical limit should be 0 or positive, never negative
+            expect(fetchSearchProducts).toHaveBeenNthCalledWith(2, mockContext, {
+                q: 'shoes',
+                limit: 8, // 10 - 2 (actual returned) = 8 (not negative)
+                offset: 2,
+                sort: '',
+                refine: [],
+                currency: 'GBP',
+            });
+        });
     });
 
     describe('SearchPage Component', () => {
@@ -368,9 +586,9 @@ describe('SearchPage', () => {
 
             const { unmount } = render(
                 <MemoryRouter initialEntries={['/search?q=shoes&filters=open']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={openLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -382,9 +600,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/search?q=shoes&filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={closedLoaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -409,9 +627,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter initialEntries={['/search?q=shoes&filters=closed']}>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -442,15 +660,15 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
             await waitFor(() => {
                 expect(screen.getByTestId('active-filters')).toBeInTheDocument();
-                expect(screen.getByText('shoes (10)')).toBeInTheDocument();
+                expect(screen.getByText('shoes (25)')).toBeInTheDocument();
                 expect(screen.getByTestId('product-grid')).toBeInTheDocument();
             });
         });
@@ -461,7 +679,7 @@ describe('SearchPage', () => {
                 components: [
                     {
                         id: 'hero-1',
-                        typeId: 'odyssey_base.hero',
+                        typeId: 'Content.hero',
                         data: {},
                     },
                 ],
@@ -480,9 +698,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -507,9 +725,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -532,9 +750,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -557,9 +775,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -569,18 +787,10 @@ describe('SearchPage', () => {
         });
 
         test('should render refinements and sorting', async () => {
-            const searchResultWithSorting = {
-                ...mockSearchResult,
-                sortingOptions: [
-                    { id: 'best-matches', label: 'Best Matches' },
-                    { id: 'price-low-to-high', label: 'Price: Low to High' },
-                ],
-            };
-
             const loaderData: SearchPageData = {
                 searchTerm: 'shoes',
-                searchResultCritical: searchResultWithSorting,
-                searchResultNonCritical: Promise.resolve(searchResultWithSorting),
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
                 page: Promise.resolve({ ...createMockPage(), componentData: {} }),
                 currency: 'USD',
                 locale: 'en-US',
@@ -590,9 +800,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -625,9 +835,9 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
@@ -663,14 +873,398 @@ describe('SearchPage', () => {
 
             render(
                 <MemoryRouter>
-                    <ConfigWrapper>
+                    <AllProvidersWrapper>
                         <SearchPage loaderData={loaderData} />
-                    </ConfigWrapper>
+                    </AllProvidersWrapper>
                 </MemoryRouter>
             );
 
             await waitFor(() => {
                 expect(screen.queryByTestId('region')).not.toBeInTheDocument();
+            });
+        });
+
+        test('should not render sorting when no sorting options available', async () => {
+            const searchResultWithoutSorting = { ...mockSearchResult, sortingOptions: [] };
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: searchResultWithoutSorting,
+                searchResultNonCritical: Promise.resolve(searchResultWithoutSorting),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('category-sorting')).not.toBeInTheDocument();
+            });
+        });
+
+        test('should remount when currency changes', async () => {
+            const loaderData1: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            const { rerender } = render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData1} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            const loaderData2: SearchPageData = {
+                ...loaderData1,
+                currency: 'EUR',
+            };
+
+            rerender(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData2} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('shoes (25)')).toBeInTheDocument();
+            });
+        });
+
+        test('should handle empty hits array', async () => {
+            const searchResultWithoutHits = { ...mockSearchResult, hits: [], total: 0 };
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: searchResultWithoutHits,
+                searchResultNonCritical: Promise.resolve(searchResultWithoutHits),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('shoes (0)')).toBeInTheDocument();
+                expect(screen.getByTestId('product-grid')).toBeInTheDocument();
+            });
+        });
+
+        test('should show 0 skeletons when total is 0 (empty results)', async () => {
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: { ...mockSearchResult, hits: [], total: 0, offset: 0 },
+                searchResultNonCritical: Promise.resolve({ ...mockSearchResult, hits: [], total: 0 }),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
+            });
+        });
+
+        test('should show 0 skeletons when criticalCount >= 8', async () => {
+            // Create 8 critical hits
+            const manyHits = Array.from({ length: 8 }, (_, i) => ({
+                productId: `product-${i}`,
+                productName: `Product ${i}`,
+                price: 29.99,
+                currency: 'USD',
+            }));
+
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: { ...mockSearchResult, hits: manyHits as any, total: 100, offset: 0 },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('8');
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
+            });
+        });
+
+        test('should cap at 8 total tiles when many products remain', async () => {
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: {
+                    ...mockSearchResult,
+                    hits: mockSearchResult.hits?.slice(0, 2),
+                    total: 100,
+                    offset: 0,
+                },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('2');
+                // Math.max(0, Math.min(8, 10, 100) - 2) = 6
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('6');
+            });
+        });
+
+        test('should respect remaining products when fewer than 8 available', async () => {
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: {
+                    ...mockSearchResult,
+                    hits: mockSearchResult.hits?.slice(0, 2),
+                    total: 6,
+                    offset: 0,
+                },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('2');
+                // Math.max(0, Math.min(8, 10, 6) - 2) = 4
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('4');
+            });
+        });
+
+        test('should handle pagination offset correctly', async () => {
+            const fourHits = Array.from({ length: 4 }, (_, i) => ({
+                productId: `product-${i}`,
+                productName: `Product ${i}`,
+                price: 29.99,
+                currency: 'USD',
+            }));
+
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: { ...mockSearchResult, hits: fourHits as any, total: 30, offset: 20 },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('4');
+                // Math.max(0, Math.min(8, 10, 30-20) - 4) = Math.max(0, 8-4) = 4
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('4');
+            });
+        });
+
+        test('should show 0 skeletons when offset >= total', async () => {
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: {
+                    ...mockSearchResult,
+                    hits: mockSearchResult.hits?.slice(0, 2),
+                    total: 24,
+                    offset: 24,
+                },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('2');
+                // Math.max(0, Math.min(8, 10, 24-24) - 2) = Math.max(0, 0-2) = 0
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
+            });
+        });
+
+        test('should never show negative skeleton count', async () => {
+            const tenHits = Array.from({ length: 10 }, (_, i) => ({
+                productId: `product-${i}`,
+                productName: `Product ${i}`,
+                price: 29.99,
+                currency: 'USD',
+            }));
+
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: { ...mockSearchResult, hits: tenHits as any, total: 5, offset: 0 },
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('critical-count')).toHaveTextContent('10');
+                // Math.max(0, Math.min(8, 10, 5) - 10) = Math.max(0, 5-10) = 0
+                expect(screen.getByTestId('non-critical-skeleton-count')).toHaveTextContent('0');
+            });
+        });
+    });
+
+    describe('Analytics Integration', () => {
+        beforeEach(() => {
+            mockTrackViewSearch.mockClear();
+            mockTrackClickProductInSearch.mockClear();
+        });
+
+        test('should call trackClickProductInSearch when product is clicked', async () => {
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByTestId('product-grid')).toBeInTheDocument();
+            });
+
+            // Click on a product
+            const productItems = screen.getAllByTestId('product-item');
+            productItems[0].click();
+
+            expect(mockTrackClickProductInSearch).toHaveBeenCalledWith({
+                searchInputText: 'shoes',
+                product: expect.objectContaining({ productId: 'product-1' }),
+            });
+        });
+
+        test('should render without errors when analytics is not available', async () => {
+            // Temporarily mock useAnalytics to return null
+            vi.mocked(useAnalytics).mockReturnValueOnce(null as any);
+
+            const loaderData: SearchPageData = {
+                searchTerm: 'shoes',
+                searchResultCritical: mockSearchResult,
+                searchResultNonCritical: Promise.resolve(mockSearchResult),
+                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
+                currency: 'USD',
+                locale: 'en-US',
+                refine: [],
+                pageUrl: 'http://localhost/search',
+            };
+
+            // Should render without errors even when analytics is null
+            render(
+                <MemoryRouter>
+                    <AllProvidersWrapper>
+                        <SearchPage loaderData={loaderData} />
+                    </AllProvidersWrapper>
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('shoes (25)')).toBeInTheDocument();
             });
         });
     });

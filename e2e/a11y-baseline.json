@@ -1,30 +1,15 @@
 {
-  "homepage/desktop": {
-    "color-contrast": 2
-  },
-  "plp/desktop": {
-    "color-contrast": 25
-  },
-  "pdp/desktop": {
-    "color-contrast": 2,
-    "nested-interactive": 1
-  },
-  "search/desktop": {
-    "aria-required-children": 1,
-    "color-contrast": 4
-  },
+  "homepage/desktop": {},
+  "plp/desktop": {},
+  "pdp/desktop": {},
+  "search/desktop": {},
   "cart/desktop": {},
   "checkout/desktop": {},
   "login/desktop": {},
   "signup/desktop": {},
   "homepage/mobile": {},
-  "plp/mobile": {
-    "color-contrast": 25
-  },
-  "pdp/mobile": {
-    "color-contrast": 2,
-    "nested-interactive": 1
-  },
+  "plp/mobile": {},
+  "pdp/mobile": {},
   "search/mobile": {},
   "cart/mobile": {},
   "checkout/mobile": {},

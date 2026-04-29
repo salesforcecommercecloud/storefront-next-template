@@ -2,7 +2,7 @@
 
 exports[`FaqQuestionItem stories snapshot > Default story renders and matches snapshot 1`] = `
 <button
-  class="flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+  class="flex w-full cursor-pointer items-center gap-3 rounded-none border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
   type="button"
 >
   <svg
@@ -42,7 +42,7 @@ exports[`FaqQuestionItem stories snapshot > Default story renders and matches sn
 
 exports[`FaqQuestionItem stories snapshot > SecondQuestion story renders and matches snapshot 1`] = `
 <button
-  class="flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+  class="flex w-full cursor-pointer items-center gap-3 rounded-none border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
   type="button"
 >
   <svg
@@ -82,7 +82,7 @@ exports[`FaqQuestionItem stories snapshot > SecondQuestion story renders and mat
 
 exports[`FaqQuestionItem stories snapshot > ThirdQuestion story renders and matches snapshot 1`] = `
 <button
-  class="flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+  class="flex w-full cursor-pointer items-center gap-3 rounded-none border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
   type="button"
 >
   <svg

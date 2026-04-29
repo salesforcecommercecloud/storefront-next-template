@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -260,7 +258,9 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
     return (
         <>
-            <Card data-testid="interests-preferences-section" className="bg-card border-border">
+            <Card
+                data-testid="interests-preferences-section"
+                className="bg-card border-border rounded-none shadow-none">
                 <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
                     <div className="space-y-1.5">
                         <CardTitle className="text-base font-semibold text-foreground">
@@ -277,7 +277,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                 size="sm"
                                 onClick={() => void handleSave()}
                                 disabled={isSaving}
-                                className="rounded-sm">
+                                className="rounded-none">
                                 {isSaving ? t('common.saving') : t('common.save')}
                             </Button>
                             <Button
@@ -286,7 +286,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                 size="sm"
                                 onClick={handleCancel}
                                 disabled={isSaving}
-                                className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                 {t('common.cancel')}
                             </Button>
                         </div>
@@ -296,7 +296,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                             variant="outline"
                             size="sm"
                             onClick={handleEdit}
-                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('common.edit')}
                         </Button>
                     )}
@@ -308,16 +308,16 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                             <div className="space-y-3">
                                 <Skeleton className="h-4 w-24" />
                                 <div className="flex flex-wrap gap-2">
-                                    <Skeleton className="h-8 w-24 rounded-md" />
-                                    <Skeleton className="h-8 w-20 rounded-md" />
+                                    <Skeleton className="h-8 w-24 rounded-none" />
+                                    <Skeleton className="h-8 w-20 rounded-none" />
                                 </div>
                             </div>
                             {[1, 2, 3].map((i) => (
                                 <div key={i} className="space-y-2">
                                     <Skeleton className="h-4 w-32" />
                                     <div className="flex gap-2">
-                                        <Skeleton className="h-8 w-24 rounded-md" />
-                                        <Skeleton className="h-8 w-20 rounded-md" />
+                                        <Skeleton className="h-8 w-24 rounded-none" />
+                                        <Skeleton className="h-8 w-20 rounded-none" />
                                     </div>
                                 </div>
                             ))}
@@ -338,7 +338,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                             <span
                                                 key={interest.id}
                                                 data-testid={`interest-badge-${interest.id}`}
-                                                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium ${
+                                                className={`inline-flex items-center gap-1.5 rounded-none px-3 py-1.5 text-sm font-medium ${
                                                     isEditing
                                                         ? 'bg-primary text-primary-foreground'
                                                         : 'bg-primary/10 text-primary'
@@ -395,7 +395,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                                                 <span
                                                                     key={val}
                                                                     data-testid={`pref-badge-${pref.id}-${val}`}
-                                                                    className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium ${
+                                                                    className={`inline-flex items-center gap-1.5 rounded-none px-3 py-1.5 text-sm font-medium ${
                                                                         isEditing
                                                                             ? 'bg-primary text-primary-foreground'
                                                                             : 'bg-primary/10 text-primary'
@@ -455,7 +455,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                                                 }
                                                                 disabled={!isEditing}
                                                                 className={cn(
-                                                                    'rounded-sm px-4 py-2.5 text-sm font-medium transition-colors',
+                                                                    'rounded-none px-4 py-2.5 text-sm font-medium transition-colors',
                                                                     isSelected
                                                                         ? 'bg-foreground text-background'
                                                                         : isEditing
@@ -653,7 +653,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                         <label
                                             key={interest.id}
                                             htmlFor={`dialog-interest-${interest.id}`}
-                                            className="flex items-center justify-between rounded-xl border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
+                                            className="flex items-center justify-between rounded-none border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
                                             <span className="text-sm font-normal">{interest.name}</span>
                                             <Checkbox
                                                 id={`dialog-interest-${interest.id}`}
@@ -707,7 +707,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
                                     <label
                                         key={option.value}
                                         htmlFor={`dialog-pref-${option.value}`}
-                                        className="flex items-center justify-between rounded-xl border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
+                                        className="flex items-center justify-between rounded-none border border-input px-4 py-3.5 cursor-pointer hover:bg-accent transition-colors">
                                         <span className="text-sm font-normal">{option.label}</span>
                                         <Checkbox
                                             id={`dialog-pref-${option.value}`}
@@ -749,7 +749,7 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
  */
 export function InterestsPreferencesSectionSkeleton() {
     return (
-        <Card>
+        <Card className="rounded-none shadow-none">
             <CardHeader className="flex flex-row items-start justify-between border-b border-muted-foreground/20 pb-4">
                 <div className="space-y-1">
                     <Skeleton className="h-6 w-48" />
@@ -762,16 +762,16 @@ export function InterestsPreferencesSectionSkeleton() {
                     <div className="space-y-3">
                         <Skeleton className="h-4 w-24" />
                         <div className="flex flex-wrap gap-2">
-                            <Skeleton className="h-8 w-24 rounded-md" />
-                            <Skeleton className="h-8 w-20 rounded-md" />
+                            <Skeleton className="h-8 w-24 rounded-none" />
+                            <Skeleton className="h-8 w-20 rounded-none" />
                         </div>
                     </div>
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="space-y-2">
                             <Skeleton className="h-4 w-32" />
                             <div className="flex gap-2">
-                                <Skeleton className="h-8 w-24 rounded-md" />
-                                <Skeleton className="h-8 w-20 rounded-md" />
+                                <Skeleton className="h-8 w-24 rounded-none" />
+                                <Skeleton className="h-8 w-20 rounded-none" />
                             </div>
                         </div>
                     ))}

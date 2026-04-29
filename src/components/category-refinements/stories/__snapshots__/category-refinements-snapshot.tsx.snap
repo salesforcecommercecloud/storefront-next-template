@@ -6,7 +6,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
     class=""
   >
     <div
-      class="border border-border rounded-md mb-4"
+      class="border border-border rounded-none mb-4"
       data-state="open"
       data-testid="sf-store-inventory-filter"
     >
@@ -16,7 +16,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
         <button
           aria-controls="radix-_r_0_"
           aria-expanded="true"
-          class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+          class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
           data-state="open"
           type="button"
         >
@@ -51,7 +51,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
         style="transition-duration: 0s; animation-name: none;"
       >
         <div
-          class="flex items-start space-x-2 p-2 rounded-md"
+          class="flex items-start space-x-2 p-2 rounded-none"
         >
           <button
             aria-checked="false"
@@ -84,7 +84,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
     </div>
     <section>
       <div
-        class="border border-border rounded-md mb-4"
+        class="border border-border rounded-none mb-4"
         data-state="closed"
       >
         <h3
@@ -93,7 +93,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
           <button
             aria-controls="radix-_r_1_"
             aria-expanded="false"
-            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
             data-state="closed"
             type="button"
           >
@@ -135,7 +135,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
     </section>
     <section>
       <div
-        class="border border-border rounded-md mb-4"
+        class="border border-border rounded-none mb-4"
         data-state="closed"
       >
         <h3
@@ -144,7 +144,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
           <button
             aria-controls="radix-_r_2_"
             aria-expanded="false"
-            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
             data-state="closed"
             type="button"
           >
@@ -186,7 +186,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
     </section>
     <section>
       <div
-        class="border border-border rounded-md mb-4"
+        class="border border-border rounded-none mb-4"
         data-state="closed"
       >
         <h3
@@ -195,7 +195,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
           <button
             aria-controls="radix-_r_3_"
             aria-expanded="false"
-            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
             data-state="closed"
             type="button"
           >
@@ -242,7 +242,7 @@ exports[`CategoryRefinements stories snapshot > Default story renders and matche
 exports[`CategoryRefinements stories snapshot > Empty story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border rounded-md p-4"
+    class="border rounded-none p-4"
   >
     <p
       class="text-muted-foreground text-sm"
@@ -259,7 +259,7 @@ exports[`CategoryRefinements stories snapshot > Minimal story renders and matche
     class=""
   >
     <div
-      class="border border-border rounded-md mb-4"
+      class="border border-border rounded-none mb-4"
       data-state="open"
       data-testid="sf-store-inventory-filter"
     >
@@ -269,7 +269,7 @@ exports[`CategoryRefinements stories snapshot > Minimal story renders and matche
         <button
           aria-controls="radix-_r_4_"
           aria-expanded="true"
-          class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+          class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
           data-state="open"
           type="button"
         >
@@ -304,7 +304,7 @@ exports[`CategoryRefinements stories snapshot > Minimal story renders and matche
         style="transition-duration: 0s; animation-name: none;"
       >
         <div
-          class="flex items-start space-x-2 p-2 rounded-md"
+          class="flex items-start space-x-2 p-2 rounded-none"
         >
           <button
             aria-checked="false"
@@ -337,7 +337,7 @@ exports[`CategoryRefinements stories snapshot > Minimal story renders and matche
     </div>
     <section>
       <div
-        class="border border-border rounded-md mb-4"
+        class="border border-border rounded-none mb-4"
         data-state="closed"
       >
         <h3
@@ -346,7 +346,7 @@ exports[`CategoryRefinements stories snapshot > Minimal story renders and matche
           <button
             aria-controls="radix-_r_5_"
             aria-expanded="false"
-            class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+            class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
             data-state="closed"
             type="button"
           >

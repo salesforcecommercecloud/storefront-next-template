@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useState, useEffect, useContext } from 'react';
 import type { HtmlContent } from '@/lib/adapters/product-content-data-types';
 import type { HtmlContentAdapterMethod } from '@/lib/adapters/product-content-types';

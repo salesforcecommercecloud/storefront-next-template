@@ -213,6 +213,64 @@ describe('Dynamic Image Component', () => {
             const srcset = sources?.[0]?.getAttribute('srcset');
             expect(srcset).toContain('sw=468');
         });
+
+        test('renders responsive image with widths and heights arrays', () => {
+            render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} heights={[150, 300]} />);
+
+            const picture = screen.getByRole('img').closest('picture');
+            expect(picture).toBeInTheDocument();
+
+            // [200, 400] → 2 unique widths → 2 sources (reversed: sm first, then base)
+            const sources = picture?.querySelectorAll('source');
+            expect(sources).toHaveLength(2);
+
+            const srcSets = Array.from(sources ?? []).map((s) => s.getAttribute('srcset'));
+            // sm breakpoint: 1x sw=400&sh=300, 2x sw=800&sh=600
+            expect(srcSets[0]).toContain('sw=400');
+            expect(srcSets[0]).toContain('sh=300');
+            expect(srcSets[0]).toContain('sw=800');
+            expect(srcSets[0]).toContain('sh=600');
+            // base breakpoint: 1x sw=200&sh=150, 2x sw=400&sh=300
+            expect(srcSets[1]).toContain('sw=200');
+            expect(srcSets[1]).toContain('sh=150');
+        });
+
+        test('renders responsive image without sh when heights not provided', () => {
+            render(<DynamicImage src={src} alt="Test image" widths={[200, 400]} />);
+
+            const picture = screen.getByRole('img').closest('picture');
+            const sources = picture?.querySelectorAll('source');
+            expect(sources).toHaveLength(2);
+
+            const srcSets = Array.from(sources ?? []).map((s) => s.getAttribute('srcset'));
+            // sm breakpoint: 1x sw=400, 2x sw=800
+            expect(srcSets[0]).toContain('sw=400');
+            expect(srcSets[0]).toContain('sw=800');
+            expect(srcSets[0]).not.toContain('sh=');
+            // base breakpoint: 1x sw=200, 2x sw=400
+            expect(srcSets[1]).toContain('sw=200');
+            expect(srcSets[1]).not.toContain('sh=');
+        });
+
+        test('renders responsive image with only heights (no widths)', () => {
+            render(<DynamicImage src={src} alt="Test image" heights={[200, 400]} />);
+
+            const picture = screen.getByRole('img').closest('picture');
+            expect(picture).toBeInTheDocument();
+
+            // [200, 400] → 2 unique heights → 2 sources (reversed: sm first, then base)
+            const sources = picture?.querySelectorAll('source');
+            expect(sources).toHaveLength(2);
+
+            const srcSets = Array.from(sources ?? []).map((s) => s.getAttribute('srcset'));
+            // sm breakpoint: 1x sh=400, 2x sh=800
+            expect(srcSets[0]).toContain('sh=400');
+            expect(srcSets[0]).toContain('sh=800');
+            expect(srcSets[0]).not.toContain('sw=');
+            // base breakpoint: 1x sh=200, 2x sh=400
+            expect(srcSets[1]).toContain('sh=200');
+            expect(srcSets[1]).not.toContain('sw=');
+        });
     });
 
     describe('edge cases', () => {
@@ -734,9 +792,48 @@ describe('Dynamic Image Component', () => {
 
         test('parses widths string from Page Designer', () => {
             render(<DynamicImage src={src} alt="Test" widths="400,800,1200" />);
-            // The component should render without errors
-            const img = screen.getByRole('img');
-            expect(img).toBeInTheDocument();
+
+            const picture = screen.getByRole('img').closest('picture');
+            expect(picture).toBeInTheDocument();
+
+            // Sources are in reverse breakpoint order: md (1200), sm (800), base (400)
+            // Each contains 1x and 2x variants
+            const sources = picture?.querySelectorAll('source');
+            expect(sources).toHaveLength(3);
+
+            const srcSets = Array.from(sources ?? []).map((s) => s.getAttribute('srcset'));
+            expect(srcSets[0]).toContain('sw=1200');
+            expect(srcSets[0]).toContain('sw=2400');
+            expect(srcSets[1]).toContain('sw=800');
+            expect(srcSets[1]).toContain('sw=1600');
+            expect(srcSets[2]).toContain('sw=400');
+            expect(srcSets[2]).toContain('sw=800');
+        });
+
+        test('parses heights string from Page Designer', () => {
+            render(<DynamicImage src={src} alt="Test" heights="300,600,900" />);
+
+            const picture = screen.getByRole('img').closest('picture');
+            expect(picture).toBeInTheDocument();
+
+            // Heights-only: sources are in reverse breakpoint order (md, sm, base)
+            // Each contains 1x and 2x variants for sh, no sw
+            const sources = picture?.querySelectorAll('source');
+            expect(sources).toHaveLength(3);
+
+            const srcSets = Array.from(sources ?? []).map((s) => s.getAttribute('srcset'));
+            // md breakpoint: heights=900, 1x sh=900, 2x sh=1800
+            expect(srcSets[0]).toContain('sh=900');
+            expect(srcSets[0]).toContain('sh=1800');
+            expect(srcSets[0]).not.toContain('sw=');
+            // sm breakpoint: heights=600, 1x sh=600, 2x sh=1200
+            expect(srcSets[1]).toContain('sh=600');
+            expect(srcSets[1]).toContain('sh=1200');
+            expect(srcSets[1]).not.toContain('sw=');
+            // base breakpoint: heights=300, 1x sh=300, 2x sh=600
+            expect(srcSets[2]).toContain('sh=300');
+            expect(srcSets[2]).toContain('sh=600');
+            expect(srcSets[2]).not.toContain('sw=');
         });
 
         test('does not pass Page Designer props to DOM', () => {

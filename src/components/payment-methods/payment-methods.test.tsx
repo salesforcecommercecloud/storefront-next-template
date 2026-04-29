@@ -19,7 +19,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi } from 'vitest';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { PaymentMethods } from './payment-methods';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 
@@ -49,6 +49,10 @@ vi.mock('react-router', async () => {
 
 vi.mock('@/components/toast', () => ({
     useToast: () => ({ addToast: vi.fn() }),
+}));
+
+vi.mock('@/targets/ui-target', () => ({
+    UITarget: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('PaymentMethods', () => {

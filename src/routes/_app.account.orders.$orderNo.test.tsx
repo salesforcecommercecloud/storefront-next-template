@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const { t } = getTranslation();
@@ -35,7 +35,7 @@ const mockProductsById: Record<string, ShopperProducts.schemas['Product'] | unde
     } as ShopperProducts.schemas['Product'],
 };
 
-vi.mock('@/lib/api/order', () => ({
+vi.mock('@/lib/api/order.server', () => ({
     fetchOrderWithProducts: vi.fn(),
 }));
 
@@ -62,7 +62,7 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 import OrderDetailsPage, { loader, ErrorBoundary } from './_app.account.orders.$orderNo';
-import { fetchOrderWithProducts } from '@/lib/api/order';
+import { fetchOrderWithProducts } from '@/lib/api/order.server';
 
 function createOrderDetailsRouter(orderNo: string) {
     vi.mocked(fetchOrderWithProducts).mockImplementation((_context, orderNoParam) => ({

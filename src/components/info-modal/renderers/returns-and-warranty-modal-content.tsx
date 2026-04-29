@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/components/typography';
@@ -45,7 +43,7 @@ export function ReturnsAndWarrantyModalContent({
                         {returnsPolicy.intro}
                     </Typography>
                     {returnsPolicy.conditions.length > 0 && (
-                        <div className="rounded-lg bg-muted p-4 space-y-2">
+                        <div className="rounded-none bg-muted p-4 space-y-2">
                             <Typography as="p" className="font-medium text-foreground">
                                 {t('returnConditions')}
                             </Typography>
@@ -94,7 +92,7 @@ export function ReturnsAndWarrantyModalContent({
                         {warranty.intro}
                     </Typography>
                     {warranty.whatsCovered.length > 0 && (
-                        <div className="rounded-lg bg-muted p-4 space-y-2">
+                        <div className="rounded-none bg-muted p-4 space-y-2">
                             <Typography as="p" className="font-medium text-foreground">
                                 {t('whatsCovered')}
                             </Typography>
@@ -153,7 +151,7 @@ export function ReturnsAndWarrantyModalContent({
 
             {/* Need Help */}
             {needHelp && (
-                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <div className="rounded-none border border-primary/20 bg-primary/5 p-4">
                     <Typography as="p" className="mb-2 text-sm font-medium text-foreground">
                         {t('needHelp')}
                     </Typography>

@@ -120,6 +120,53 @@ describe('logging.server', () => {
         });
     });
 
+    describe('log line format', () => {
+        it('excludes pid and hostname, and uses string level labels', async () => {
+            process.env.NODE_ENV = 'production';
+            process.env.SFCC_LOG_LEVEL = 'info';
+
+            const pino = await import('pino');
+            const { Writable } = await import('stream');
+
+            // Create a writable stream that captures output
+            let output = '';
+            const stream = new Writable({
+                write(chunk, _encoding, callback) {
+                    output += chunk.toString();
+                    callback();
+                },
+            });
+
+            // Re-import to get resolveLevel with our env
+            const { resolveLevel } = await import('@/lib/logger');
+            const logger = pino.default(
+                {
+                    level: resolveLevel(),
+                    base: undefined,
+                    formatters: {
+                        level: (label) => ({ level: label }),
+                    },
+                },
+                stream
+            );
+
+            logger.info({ correlationId: 'test-123' }, 'test message');
+
+            const parsed = JSON.parse(output.trim());
+            expect(parsed).toEqual(
+                expect.objectContaining({
+                    level: 'info',
+                    correlationId: 'test-123',
+                    msg: 'test message',
+                })
+            );
+            expect(parsed).not.toHaveProperty('pid');
+            expect(parsed).not.toHaveProperty('hostname');
+            // level should be a string, not a number
+            expect(typeof parsed.level).toBe('string');
+        });
+    });
+
     describe('error serialization', () => {
         it('serializes Error instances in metadata', async () => {
             process.env.NODE_ENV = 'development';

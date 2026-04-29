@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useMemo, useEffect, useRef } from 'react';
 import { useFetcher } from 'react-router';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -30,7 +28,7 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { formatCurrency } from '@/lib/currency';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { getPriceData } from '@/components/product-price/utils';
 
 interface BonusProductSelectionProps {
@@ -52,7 +50,7 @@ export default function BonusProductSelection({
     const { addToast } = useToast();
     const { t, i18n } = useTranslation();
     const config = useConfig<AppConfig>();
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     // Track processed fetcher data to prevent duplicate toasts
     const processedDataRef = useRef<typeof addToCartFetcher.data>(null);
@@ -136,12 +134,10 @@ export default function BonusProductSelection({
             if (processedDataRef.current !== addToCartFetcher.data) {
                 processedDataRef.current = addToCartFetcher.data;
 
-                if (addToCartFetcher.data.success) {
-                    addToast(t('product:bonusProducts.addedToCart'), 'success');
-                } else {
+                if (!addToCartFetcher.data.success) {
                     addToast(
                         t('product:bonusProducts.failedToAdd', {
-                            error: addToCartFetcher.data.error || t('product:unknownError'),
+                            error: addToCartFetcher.data.error?.message || t('product:unknownError'),
                         }),
                         'error'
                     );
@@ -195,7 +191,7 @@ export default function BonusProductSelection({
     return (
         <section
             aria-label="Bonus Product Bundle"
-            className="w-full overflow-hidden rounded-[var(--radius)] border border-border bg-[var(--bg-input-30)] shadow-md p-4">
+            className="w-full overflow-hidden rounded-none border border-border bg-[var(--bg-input-30)] p-4">
             <h3 className="text-base leading-6 text-card-foreground font-sans pb-3">
                 <span className="font-semibold">{titleText}</span>
                 <span className="font-normal">{titleSuffix}</span>
@@ -206,12 +202,12 @@ export default function BonusProductSelection({
                         {bonusProducts.map((item) => (
                             <CarouselItem key={item.productId} className="basis-[220px] pl-3">
                                 <article
-                                    className="flex h-[329px] flex-col justify-between items-start rounded-[var(--radius)] border border-border bg-background"
+                                    className="flex h-[329px] flex-col justify-between items-start rounded-none border border-border bg-background"
                                     aria-label="Bonus bundle product card">
                                     {/* Image */}
                                     <div className="flex flex-col items-start self-stretch">
                                         <div className="px-4 py-3 self-stretch">
-                                            <div className="bg-muted/30 border border-border rounded-xl overflow-hidden">
+                                            <div className="bg-muted/30 border border-border rounded-none overflow-hidden">
                                                 <div className="h-36 w-full relative">
                                                     {item.imageUrl ? (
                                                         <img
@@ -248,7 +244,7 @@ export default function BonusProductSelection({
                                                 {item.productName}
                                             </p>
                                             <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                                                <Badge className="bg-primary text-primary-foreground font-semibold text-xs rounded-pill">
+                                                <Badge className="bg-primary text-primary-foreground font-semibold text-xs rounded-none">
                                                     {t('cart:bonusProducts.freeBadge')}
                                                 </Badge>
                                                 {(() => {
@@ -266,7 +262,7 @@ export default function BonusProductSelection({
                                     {/* Select button */}
                                     <div className="px-4 pb-3 self-stretch">
                                         <Button
-                                            className="w-full h-9 shadow-sm"
+                                            className="w-full h-9"
                                             onClick={() =>
                                                 handleSelectProduct(item.productId, item.productName, item.product)
                                             }
@@ -281,8 +277,8 @@ export default function BonusProductSelection({
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 size-8 rounded-full shadow-md border-border" />
-                    <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 size-8 rounded-full shadow-md border-border" />
+                    <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 size-8 rounded-full border border-border" />
+                    <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 size-8 rounded-full border border-border" />
                 </div>
             </Carousel>
         </section>

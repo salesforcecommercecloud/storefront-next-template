@@ -17,13 +17,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import OrderListPage, { loader } from './_app.account.orders._index';
-import { fetchCustomerOrders } from '@/lib/api/order';
+import { fetchCustomerOrders } from '@/lib/api/order.server';
 import { getAuth } from '@/middlewares/auth.server';
 import type { Order } from '@/components/account/order-list';
 import { createTestContext } from '@/lib/test-utils';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
-vi.mock('@/lib/api/order', () => ({
+vi.mock('@/lib/api/order.server', () => ({
     fetchCustomerOrders: vi.fn(),
     DEFAULT_ORDERS_OFFSET: 0,
     DEFAULT_ORDERS_LIMIT: 10,

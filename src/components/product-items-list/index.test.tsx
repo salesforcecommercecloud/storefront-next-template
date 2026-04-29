@@ -25,8 +25,19 @@ import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-n
 // Components
 import ProductItemsList from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
+
+const defaultMockSite = {
+    id: 'RefArch',
+    defaultLocale: 'en-US',
+    defaultCurrency: 'USD',
+    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+    supportedCurrencies: ['USD'],
+};
+const mockLocale =
+    defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
+    defaultMockSite.supportedLocales[0];
 
 const renderWithRouter = (component: React.ReactElement) => {
     const router = createMemoryRouter(
@@ -35,7 +46,9 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/cart',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <CurrencyProvider value="USD">{component}</CurrencyProvider>
+                        <SiteProvider site={defaultMockSite} locale={mockLocale} language="en-US" currency="USD">
+                            {component}
+                        </SiteProvider>
                     </ConfigProvider>
                 ),
             },

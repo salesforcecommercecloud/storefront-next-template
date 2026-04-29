@@ -10,18 +10,18 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
       style="--header-height: 0px;"
     >
       <div
-        class="flex justify-end px-4 lg:px-9"
+        class="flex justify-end section-container"
       />
       <div
-        class="px-4 lg:px-9"
+        class="section-container py-6"
       >
         <div
-          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+          class="flex items-center gap-x-4 lg:gap-x-6"
         >
           <a
             class="flex-shrink-0 flex items-center"
             data-testid="header-logo"
-            href="/"
+            href="/RefArchGlobal/en-GB/"
           >
             <img
               alt="Home"
@@ -87,7 +87,7 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
             </form>
           </div>
           <div
-            class="flex items-center space-x-2"
+            class="flex items-center"
           >
             <button
               aria-label="Find a Store"
@@ -130,7 +130,7 @@ exports[`Header stories snapshot > Authenticated story renders and matches snaps
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/account/overview"
+              href="/RefArchGlobal/en-GB/account/overview"
               type="button"
             >
               <svg
@@ -264,18 +264,18 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
       style="--header-height: 0px;"
     >
       <div
-        class="flex justify-end px-4 lg:px-9"
+        class="flex justify-end section-container"
       />
       <div
-        class="px-4 lg:px-9"
+        class="section-container py-6"
       >
         <div
-          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+          class="flex items-center gap-x-4 lg:gap-x-6"
         >
           <a
             class="flex-shrink-0 flex items-center"
             data-testid="header-logo"
-            href="/"
+            href="/RefArchGlobal/en-GB/"
           >
             <img
               alt="Home"
@@ -341,7 +341,7 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
             </form>
           </div>
           <div
-            class="flex items-center space-x-2"
+            class="flex items-center"
           >
             <button
               aria-label="Find a Store"
@@ -384,7 +384,7 @@ exports[`Header stories snapshot > Guest story renders and matches snapshot 1`] 
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/login"
+              href="/RefArchGlobal/en-GB/login"
               type="button"
             >
               <svg
@@ -519,18 +519,18 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
       style="--header-height: 0px;"
     >
       <div
-        class="flex justify-end px-4 lg:px-9"
+        class="flex justify-end section-container"
       />
       <div
-        class="px-4 lg:px-9"
+        class="section-container py-6"
       >
         <div
-          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+          class="flex items-center gap-x-4 lg:gap-x-6"
         >
           <a
             class="flex-shrink-0 flex items-center"
             data-testid="header-logo"
-            href="/"
+            href="/RefArchGlobal/en-GB/"
           >
             <img
               alt="Home"
@@ -596,7 +596,7 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
             </form>
           </div>
           <div
-            class="flex items-center space-x-2"
+            class="flex items-center"
           >
             <button
               aria-label="Find a Store"
@@ -639,7 +639,7 @@ exports[`Header stories snapshot > MobileView story renders and matches snapshot
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/login"
+              href="/RefArchGlobal/en-GB/login"
               type="button"
             >
               <svg
@@ -777,18 +777,18 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
         style="--header-height: 0px;"
       >
         <div
-          class="flex justify-end px-4 lg:px-9"
+          class="flex justify-end section-container"
         />
         <div
-          class="px-4 lg:px-9"
+          class="section-container py-6"
         >
           <div
-            class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+            class="flex items-center gap-x-4 lg:gap-x-6"
           >
             <a
               class="flex-shrink-0 flex items-center"
               data-testid="header-logo"
-              href="/"
+              href="/RefArchGlobal/en-GB/"
             >
               <img
                 alt="Home"
@@ -878,7 +878,7 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
               </form>
             </div>
             <div
-              class="flex items-center space-x-2"
+              class="flex items-center"
             >
               <button
                 aria-label="Find a Store"
@@ -921,7 +921,7 @@ exports[`Header stories snapshot > StickyWithContent story renders and matches s
                 data-slot="popover-trigger"
                 data-state="closed"
                 data-variant="ghost"
-                href="/login"
+                href="/RefArchGlobal/en-GB/login"
                 type="button"
               >
                 <svg
@@ -1245,18 +1245,18 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
       style="--header-height: 0px;"
     >
       <div
-        class="flex justify-end px-4 lg:px-9"
+        class="flex justify-end section-container"
       />
       <div
-        class="px-4 lg:px-9"
+        class="section-container py-6"
       >
         <div
-          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+          class="flex items-center gap-x-4 lg:gap-x-6"
         >
           <a
             class="flex-shrink-0 flex items-center"
             data-testid="header-logo"
-            href="/"
+            href="/RefArchGlobal/en-GB/"
           >
             <img
               alt="Home"
@@ -1346,7 +1346,7 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
             </form>
           </div>
           <div
-            class="flex items-center space-x-2"
+            class="flex items-center"
           >
             <button
               aria-label="Find a Store"
@@ -1389,7 +1389,7 @@ exports[`Header stories snapshot > WithNavigation story renders and matches snap
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/login"
+              href="/RefArchGlobal/en-GB/login"
               type="button"
             >
               <svg
@@ -1548,18 +1548,18 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
       style="--header-height: 0px;"
     >
       <div
-        class="flex justify-end px-4 lg:px-9"
+        class="flex justify-end section-container"
       />
       <div
-        class="px-4 lg:px-9"
+        class="section-container py-6"
       >
         <div
-          class="flex items-center gap-x-4 lg:gap-x-6 h-16"
+          class="flex items-center gap-x-4 lg:gap-x-6"
         >
           <a
             class="flex-shrink-0 flex items-center"
             data-testid="header-logo"
-            href="/"
+            href="/RefArchGlobal/en-GB/"
           >
             <img
               alt="Home"
@@ -1649,7 +1649,7 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
             </form>
           </div>
           <div
-            class="flex items-center space-x-2"
+            class="flex items-center"
           >
             <button
               aria-label="Find a Store"
@@ -1692,7 +1692,7 @@ exports[`Header stories snapshot > WithNavigationAuthenticated story renders and
               data-slot="popover-trigger"
               data-state="closed"
               data-variant="ghost"
-              href="/account/overview"
+              href="/RefArchGlobal/en-GB/account/overview"
               type="button"
             >
               <svg

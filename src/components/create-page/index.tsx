@@ -65,7 +65,7 @@ export type RouteComponentProps<TLoaderData = any> = LoaderDataProp<TLoaderData>
  * // Product page without page key (no Fragment wrapping)
  * const ProductPage = createPage({
  *   component: ProductView,
- *   fallback: <ProductSkeleton />
+ *   fallback: <ProductViewSkeleton />
  * });
  * ```
  */
@@ -99,7 +99,10 @@ export function createPage<TLoaderData = any>(config: {
     } = config;
 
     // Create the component with Suspense using withSuspense HOC
-    const ComponentWithSuspense = withSuspense(Component, { fallback });
+    const ComponentWithSuspense = withSuspense<RouteComponentProps<TLoaderData>>(
+        Component as ComponentType<Omit<RouteComponentProps<TLoaderData>, 'resolve'>>,
+        { fallback }
+    );
 
     return function PageComponent(props: RouteComponentProps<TLoaderData> = {} as RouteComponentProps<TLoaderData>) {
         const loaderData = props.loaderData;

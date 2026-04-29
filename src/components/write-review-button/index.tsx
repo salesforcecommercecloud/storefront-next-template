@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useState, useEffect, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -22,6 +20,8 @@ import type { InfoModalData, WriteReviewModalData } from '@/components/info-moda
 import type { WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
 import { useProduct } from '@/providers/product-context';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
+import { useRequireAuth } from '@/hooks/use-require-auth';
+import { UITarget } from '@/targets/ui-target';
 
 const InfoModal = lazy(() => import('@/components/info-modal'));
 
@@ -30,6 +30,9 @@ const InfoModal = lazy(() => import('@/components/info-modal'));
  * Fetches form config from the product content adapter (e.g. getWriteReviewForm) and passes
  * it to the modal for labels, placeholders, and validation. Must be used within a PDP context
  * (ProductProvider + ProductContentProvider).
+ *
+ * If the user is not authenticated (guest), a toast with Sign In / Sign Up options is shown.
+ * After authentication, the review modal opens automatically via pending action replay.
  */
 export default function WriteReviewButton(): ReactElement {
     const { t } = useTranslation('product');
@@ -60,14 +63,26 @@ export default function WriteReviewButton(): ReactElement {
         formConfig: formConfig ?? undefined,
     } satisfies WriteReviewModalData;
 
+    const handleWriteReviewClick = useRequireAuth(
+        () => {
+            setOpen(true);
+            return Promise.resolve();
+        },
+        {
+            actionName: 'writeReview',
+            getReturnUrl: () => window.location.pathname,
+            toastMessage: t('signInToContinue'),
+        }
+    );
+
     return (
-        <>
+        <UITarget targetId="sfcc.pdp.reviews.form">
             <Button
                 type="button"
                 variant="default"
                 size="lg"
-                className="w-full rounded-lg sm:w-auto"
-                onClick={() => setOpen(true)}
+                className="w-full rounded-none sm:w-auto"
+                onClick={() => void handleWriteReviewClick()}
                 data-testid="write-review-button"
                 aria-label={formConfig?.title ?? t('writeReviewButton')}>
                 {formConfig?.title}
@@ -77,6 +92,6 @@ export default function WriteReviewButton(): ReactElement {
                     <InfoModal open={open} onOpenChange={setOpen} data={data} />
                 </Suspense>
             )}
-        </>
+        </UITarget>
     );
 }

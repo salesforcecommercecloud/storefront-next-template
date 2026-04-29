@@ -15,11 +15,13 @@
  */
 import { useRef } from 'react';
 import { type LoaderFunctionArgs, Outlet } from 'react-router';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchCategory } from '@/lib/api/categories';
+import { fetchCategory } from '@/lib/api/categories.server';
+import { getLogger } from '@/lib/logger.server';
+import type { AppConfig } from '@/types/config';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
-import { getLogger } from '@/lib/logger.server';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
 
 type LoaderData = {
@@ -39,41 +41,46 @@ type LoaderData = {
  * caching strategy, including specific reload/refresh intervals/conditions.
  * @see {@link https://reactrouter.com/start/framework/route-module#shouldrevalidate}
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate() {
     return false;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): LoaderData {
     const logger = getLogger(context);
-    logger.debug('AppLayout: loader starting');
+    const config = getConfig<AppConfig>(context);
+    const { rootCategoryId, maxDepth } = config.pages.navigation;
+
+    logger.debug('AppLayout: loader starting', { rootCategoryId, maxDepth });
 
     // Load the root category and its sub categories information
-    const rootCategoryPromise = fetchCategory(context, 'root', 1);
+    // Depth 1 fetches the root category with its immediate children
+    const rootCategoryPromise = fetchCategory(context, rootCategoryId, 1);
 
     // Load each second-level sub categories tree as well, in case the resolved root-level category has any sub
-    // categories. We then base this composed second-level promise on the initial root category promise to allow
-    // for parallel loading and streaming of the two main promises.
-    const subCategoriesPromise = rootCategoryPromise.then((rootCategory: ShopperProducts.schemas['Category']) =>
-        Promise.all(
-            rootCategory.categories?.reduce(
-                (
-                    acc: Promise<ShopperProducts.schemas['Category']>[],
-                    subCategory: ShopperProducts.schemas['Category']
-                ) => {
-                    if (
-                        typeof subCategory.onlineSubCategoriesCount === 'number' &&
-                        subCategory.onlineSubCategoriesCount > 0
-                    ) {
-                        acc.push(fetchCategory(context, subCategory.id, 2));
-                    }
-                    return acc;
-                },
-                []
-            ) ?? []
-        )
-    );
+    // categories and maxDepth allows for it. We then base this composed second-level promise on the initial root
+    // category promise to allow for parallel loading and streaming of the two main promises.
+    const subCategoriesPromise =
+        maxDepth >= 2
+            ? rootCategoryPromise.then((rootCategory: ShopperProducts.schemas['Category']) =>
+                  Promise.all(
+                      rootCategory.categories?.reduce(
+                          (
+                              acc: Promise<ShopperProducts.schemas['Category']>[],
+                              subCategory: ShopperProducts.schemas['Category']
+                          ) => {
+                              if (
+                                  typeof subCategory.onlineSubCategoriesCount === 'number' &&
+                                  subCategory.onlineSubCategoriesCount > 0
+                              ) {
+                                  acc.push(fetchCategory(context, subCategory.id, maxDepth as 0 | 1 | 2));
+                              }
+                              return acc;
+                          },
+                          []
+                      ) ?? []
+                  )
+              )
+            : Promise.resolve([]);
 
     return {
         root: rootCategoryPromise,

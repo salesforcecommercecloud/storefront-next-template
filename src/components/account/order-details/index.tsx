@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Check, Hash, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,10 +24,11 @@ import OrderSummary from '@/components/order-summary';
 import ShippingAddressDisplay from '@/components/checkout/components/shipping-address-display';
 import { formatStatusFallbackLabel, getOrderStatusConfig, getShippingStatusConfig } from '@/lib/order-status';
 import { cn } from '@/lib/utils';
+import { UITarget } from '@/targets/ui-target';
 
 export type { ProductDataById };
 
-const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-md w-fit';
+const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
 
 export type OrderDetailsProps = {
     order: ShopperOrders.schemas['Order'];
@@ -91,8 +92,53 @@ function getPaymentMethodDisplays(
     });
 }
 
+function orderReviewStorageKey(orderNo: string | undefined): string {
+    return `orderReviewSubmittedLines:${orderNo ?? ''}`;
+}
+
 export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactElement {
     const { t } = useTranslation('account');
+    const orderNo = order.orderNo ?? '';
+    const [submittedReviewLineKeys, setSubmittedReviewLineKeys] = useState<Set<string>>(() => new Set());
+
+    useEffect(() => {
+        if (typeof sessionStorage === 'undefined' || !orderNo) {
+            return;
+        }
+        try {
+            const raw = sessionStorage.getItem(orderReviewStorageKey(orderNo));
+            if (!raw) {
+                return;
+            }
+            const parsed = JSON.parse(raw) as unknown;
+            if (Array.isArray(parsed)) {
+                setSubmittedReviewLineKeys(
+                    new Set(parsed.filter((x): x is string => typeof x === 'string' && x.length > 0))
+                );
+            }
+        } catch {
+            /* ignore corrupt storage */
+        }
+    }, [orderNo]);
+
+    const handleOrderLineReviewSubmitted = useCallback(
+        (lineKey: string) => {
+            setSubmittedReviewLineKeys((prev) => {
+                const next = new Set(prev);
+                next.add(lineKey);
+                try {
+                    if (typeof sessionStorage !== 'undefined' && orderNo) {
+                        sessionStorage.setItem(orderReviewStorageKey(orderNo), JSON.stringify([...next]));
+                    }
+                } catch {
+                    /* ignore quota */
+                }
+                return next;
+            });
+        },
+        [orderNo]
+    );
+
     const shipments = order.shipments ?? [];
     const productItems = order.productItems ?? [];
     const orderStatusConfig = getOrderStatusConfig(order.status);
@@ -164,10 +210,18 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                                                     />
                                                 </div>
                                                 <div className="p-3">
-                                                    <OrderItemsList items={items} productsById={productsById} />
+                                                    <OrderItemsList
+                                                        items={items}
+                                                        productsById={productsById}
+                                                        orderNo={order.orderNo}
+                                                        submittedReviewLineKeys={submittedReviewLineKeys}
+                                                        onOrderLineReviewSubmitted={handleOrderLineReviewSubmitted}
+                                                    />
+                                                    <UITarget targetId="sfcc.myAccount.orderDetails.review" />
                                                 </div>
                                                 {/* Tracking Number and Shipping Address for this shipment */}
                                                 <div className="mt-2 border-t border-muted-foreground/20 pt-4 px-3 pb-3 mx-3">
+                                                    <UITarget targetId="sfcc.myAccount.orderDetails.tracking" />
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                         {shipment.trackingNumber != null && (
                                                             <Card
@@ -215,7 +269,12 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                         {/* Order Summary – OrderSummary accepts both Basket and Order for totals */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold">{t('orders.orderSummary')}</h3>
-                            <OrderSummary basket={order} showCartItems={false} showHeading={false} />
+                            <UITarget targetId="sfcc.myAccount.orderDetails.tax">
+                                <OrderSummary basket={order} showCartItems={false} showHeading={false} />
+                            </UITarget>
+                            <UITarget targetId="sfcc.myAccount.orderDetails.returns" />
+                            <UITarget targetId="sfcc.myAccount.orderDetails.cancel" />
+                            <UITarget targetId="sfcc.myAccount.orderDetails.support" />
                             {paymentMethodDisplays.length > 0 && (
                                 <div className="space-y-1.5">
                                     <p className="text-xs font-semibold text-foreground">{t('orders.paymentMethod')}</p>

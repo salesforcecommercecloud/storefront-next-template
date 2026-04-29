@@ -5,163 +5,155 @@ exports[`RefineColor stories snapshot > Default story renders and matches snapsh
   data-refine-color-harness="true"
 >
   <div
-    class="grid grid-cols-2 gap-2 mt-2"
+    class="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-3"
   >
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 border-foreground/80"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-foreground/80"
+        class="size-8 shrink-0 rounded-none border border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
         style="background-color: rgb(0, 0, 0);"
-      >
-        <div
-          class="absolute inset-0 flex items-center justify-center"
-        >
-          <div
-            class="w-1.5 h-1.5 rounded-full bg-background"
-          />
-        </div>
-      </div>
+      />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-semibold"
         >
           Black
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           43
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(37, 99, 235);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Blue
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           27
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(220, 38, 38);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Red
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           1
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(22, 163, 74);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Green
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           4
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(255, 255, 255);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           White
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           30
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(161, 98, 7);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Brown
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           15
+          )
         </span>
       </div>
     </button>
@@ -174,313 +166,305 @@ exports[`RefineColor stories snapshot > ManyColors story renders and matches sna
   data-refine-color-harness="true"
 >
   <div
-    class="grid grid-cols-2 gap-2 mt-2"
+    class="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-3"
   >
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 border-foreground/80"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-foreground/80"
+        class="size-8 shrink-0 rounded-none border border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background"
         style="background-color: rgb(0, 0, 0);"
-      >
-        <div
-          class="absolute inset-0 flex items-center justify-center"
-        >
-          <div
-            class="w-1.5 h-1.5 rounded-full bg-background"
-          />
-        </div>
-      </div>
+      />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-semibold"
         >
           Black
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           43
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(37, 99, 235);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Blue
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           27
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(220, 38, 38);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Red
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           1
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(22, 163, 74);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Green
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           4
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(255, 255, 255);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           White
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           30
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(161, 98, 7);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Brown
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           15
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(219, 39, 119);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Pink
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           3
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(147, 51, 234);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Purple
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           0
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(202, 138, 4);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Yellow
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           0
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(234, 88, 12);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Orange
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           0
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(107, 114, 128);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Grey
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           13
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(30, 58, 138);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Navy
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           0
+          )
         </span>
       </div>
     </button>
@@ -493,155 +477,155 @@ exports[`RefineColor stories snapshot > NoSelectedColors story renders and match
   data-refine-color-harness="true"
 >
   <div
-    class="grid grid-cols-2 gap-2 mt-2"
+    class="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-3"
   >
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(0, 0, 0);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Black
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           43
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(37, 99, 235);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Blue
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           27
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(220, 38, 38);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Red
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           1
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(22, 163, 74);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Green
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           4
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(255, 255, 255);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           White
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           30
+          )
         </span>
       </div>
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3"
-      data-size="default"
-      data-slot="button"
-      data-variant="outline"
+      class="flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none whitespace-normal hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      type="button"
     >
       <div
-        class="relative size-4 rounded-full border-1 flex-shrink-0 border-border"
+        class="size-8 shrink-0 rounded-none border border-border"
         style="background-color: rgb(161, 98, 7);"
       />
       <div
-        class="flex items-center justify-between flex-1 min-w-0"
+        class="flex w-full min-w-0 flex-col items-center gap-0.5 text-center"
       >
         <span
-          class="text-sm font-medium truncate"
+          class="text-pretty text-sm break-words text-foreground font-medium"
         >
           Brown
         </span>
         <span
-          class="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full"
+          class="text-muted-foreground text-xs"
         >
+          (
           15
+          )
         </span>
       </div>
     </button>

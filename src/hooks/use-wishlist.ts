@@ -13,33 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
 import { useRequireAuth } from '@/hooks/use-require-auth';
-import type { WishlistActionResponse } from '@/lib/api/wishlist';
+import type { WishlistActionResponse } from '@/lib/api/wishlist.server';
 
 /**
  * Hook for wishlist functionality using action routes for server-side state management.
- * Note: This hook maintains optimistic client-side state. For server-side wishlist data,
- * use the loader in account.wishlist.tsx route.
+ * Pass `initialProductIds` from a route loader (e.g. cart) so controls reflect the server wishlist after refresh.
+ * Otherwise the hook only tracks optimistic toggles until navigation.
  *
  * Fetcher responses are handled via useEffect rather than by reading fetcher.data
  * immediately after submit — the latter causes a stale closure because fetcher.data
  * is updated through React state and is only current on the next render.
  */
-export const useWishlist = () => {
+export type UseWishlistOptions = {
+    /** Product IDs already in the shopper wishlist (registered sessions). */
+    initialProductIds?: readonly string[];
+};
+
+export const useWishlist = (options?: UseWishlistOptions) => {
     const { t } = useTranslation();
     const addFetcher = useFetcher<WishlistActionResponse>();
     const removeFetcher = useFetcher<WishlistActionResponse>();
     const { addToast } = useToast();
 
-    // Optimistic client-side state for tracking wishlist items
-    const [wishlistItems, setWishlistItems] = useState<Set<string>>(new Set());
+    const initialProductIds = options?.initialProductIds;
+    const initialProductIdsKey = useMemo(
+        () => (initialProductIds?.length ? [...initialProductIds].sort().join('\0') : ''),
+        [initialProductIds]
+    );
+
+    const [wishlistItems, setWishlistItems] = useState<Set<string>>(() => new Set(initialProductIds ?? []));
+
+    /** Which wishlist mutation is in flight — keeps correct loading copy after optimistic `wishlistItems` flips */
+    const [pendingOperation, setPendingOperation] = useState<'add' | 'remove' | null>(null);
+
+    useEffect(() => {
+        if (initialProductIds === undefined) {
+            return;
+        }
+        setWishlistItems(new Set(initialProductIds));
+    }, [initialProductIds, initialProductIdsKey]);
 
     // Refs to carry operation context into the useEffect handlers
     const pendingAddRef = useRef<{ productId: string; productName: string } | null>(null);
@@ -75,8 +93,9 @@ export const useWishlist = () => {
                     next.delete(productId);
                     return next;
                 });
-                addToast(result.error || t('product:failedToAddToWishlist'), 'error');
+                addToast(t('product:failedToAddToWishlist'), 'error');
             }
+            setPendingOperation(null);
         }
     }, [addFetcher.state, addFetcher.data, addToast, t]);
 
@@ -106,8 +125,9 @@ export const useWishlist = () => {
                     next.add(productId);
                     return next;
                 });
-                addToast(result.error || t('product:failedToAddToWishlist'), 'error');
+                addToast(t('product:failedToRemoveFromWishlist'), 'error');
             }
+            setPendingOperation(null);
         }
     }, [removeFetcher.state, removeFetcher.data, addToast, t]);
 
@@ -131,6 +151,8 @@ export const useWishlist = () => {
             }
 
             const isInWishlist = wishlistItems.has(productId);
+
+            setPendingOperation(isInWishlist ? 'remove' : 'add');
 
             // Optimistic update
             setWishlistItems((prev) => {
@@ -176,6 +198,7 @@ export const useWishlist = () => {
     return {
         wishlist: Array.from(wishlistItems),
         isLoading,
+        pendingOperation,
         isItemInWishlist,
         toggleWishlist,
     };

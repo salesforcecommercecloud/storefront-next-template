@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useBasket } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { TurnstileWidget } from '@/components/security/turnstile-widget';
+import type { AppConfig } from '@/types/config';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 interface RegisterCustomerSelectionProps {
     /** Callback when checkbox state changes - receives boolean value */
@@ -35,8 +39,9 @@ interface RegisterCustomerSelectionProps {
 
 type InitiateRegistrationResponse = {
     success: boolean;
-    error?: string;
+    error?: { code: string; message: string };
     email?: string;
+    unavailable?: boolean;
 };
 
 export default function RegisterCustomerSelection({
@@ -56,6 +61,42 @@ export default function RegisterCustomerSelection({
     const config = useConfig();
     const registrationFetcher = useFetcher<InitiateRegistrationResponse>({ key: 'checkout-registration' });
     const lastProcessedDataRef = useRef<InitiateRegistrationResponse | null>(null);
+
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const turnstileResetRef = useRef<(() => void) | null>(null);
+    const [alreadyVerified, setAlreadyVerified] = useState(false);
+    useEffect(() => {
+        if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('turnstileVerified') === '1') {
+            setAlreadyVerified(true);
+        }
+    }, []);
+    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) && !alreadyVerified : false;
+    const turnstileMode = config ? getTurnstileMode(config as AppConfig) : 'managed';
+    const turnstileSiteKey = useMemo(() => {
+        if (!config || !turnstileEnabled) return null;
+        if (typeof window !== 'undefined') {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            return getTurnstileSiteKey(config as AppConfig, baseUrl);
+        }
+        return null;
+    }, [config, turnstileEnabled]);
+
+    const resetTurnstile = useCallback(() => {
+        setTurnstileToken(null);
+        turnstileResetRef.current?.();
+    }, []);
+
+    const handleTurnstileSuccess = useCallback((token: string) => {
+        setTurnstileToken(token);
+    }, []);
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
 
     const handleCheckboxChange = (checked: boolean) => {
         setShouldCreateAccount(checked);
@@ -82,11 +123,15 @@ export default function RegisterCustomerSelection({
 
             const formData = new FormData();
             formData.append('email', email);
+            if (turnstileToken) {
+                formData.append('turnstileToken', turnstileToken);
+            }
 
             void registrationFetcher.submit(formData, {
                 method: 'POST',
                 action: '/action/initiate-checkout-registration',
             });
+            if (turnstileEnabled) resetTurnstile();
         } else {
             if (typeof sessionStorage !== 'undefined') {
                 sessionStorage.removeItem('registeredViaCheckout');
@@ -103,8 +148,13 @@ export default function RegisterCustomerSelection({
 
             if (data.success) {
                 setIsOtpModalOpen(true);
+            } else if (data.unavailable) {
+                setShouldCreateAccount(false);
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem('registeredViaCheckout');
+                }
             } else {
-                const errorMsg = data.error || t('registration.initiationFailed');
+                const errorMsg = t('registration.initiationFailed');
                 setError(errorMsg);
                 showToast?.(errorMsg, 'error');
                 setShouldCreateAccount(false);
@@ -140,12 +190,16 @@ export default function RegisterCustomerSelection({
     const handleResendCode = async () => {
         const formData = new FormData();
         formData.append('email', registrationEmail);
+        if (turnstileToken) {
+            formData.append('turnstileToken', turnstileToken);
+        }
 
         return new Promise<void>((resolve, _reject) => {
             void registrationFetcher.submit(formData, {
                 method: 'POST',
                 action: '/action/initiate-checkout-registration',
             });
+            if (turnstileEnabled) resetTurnstile();
 
             setTimeout(() => resolve(), 1000);
         });
@@ -167,11 +221,13 @@ export default function RegisterCustomerSelection({
                 aria-label={t('registration.accountCreatedTitle')}>
                 <div className="flex flex-1 flex-col gap-1">
                     <h6 className="text-sm font-semibold text-foreground">{t('registration.accountCreatedTitle')}</h6>
-                    <p className="text-sm leading-5 text-foreground">{t('registration.accountCreatedDescription')}</p>
+                    <p className="text-sm leading-5 text-muted-foreground">
+                        {t('registration.accountCreatedDescription')}
+                    </p>
                 </div>
-                <div className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-active-foreground px-2 py-0.5">
-                    <span className="text-sm font-medium text-active-foreground">{t('registration.verified')}</span>
-                </div>
+                <Badge variant="success" className="rounded-none">
+                    {t('registration.verified')}
+                </Badge>
             </section>
         );
     }
@@ -194,7 +250,7 @@ export default function RegisterCustomerSelection({
                     <span className="font-medium leading-5 text-foreground">{t('payment.saveForFutureUse')}</span>
                     <span className="leading-5 text-foreground">{t('payment.createAccountForFasterCheckout')}</span>
                     {registrationFetcher.state === 'submitting' && (
-                        <p className="text-foreground">{t('registration.sendingVerificationCode')}</p>
+                        <p className="text-muted-foreground">{t('registration.sendingVerificationCode')}</p>
                     )}
                     {shouldCreateAccount && !error && registrationFetcher.state !== 'submitting' && (
                         <p className="mt-3 leading-5 text-foreground">
@@ -203,6 +259,17 @@ export default function RegisterCustomerSelection({
                     )}
                 </div>
             </label>
+            {turnstileEnabled && turnstileSiteKey && (
+                <TurnstileWidget
+                    siteKey={turnstileSiteKey}
+                    onSuccess={handleTurnstileSuccess}
+                    onError={handleTurnstileError}
+                    onExpire={handleTurnstileExpire}
+                    enabled={turnstileEnabled}
+                    mode={turnstileMode}
+                    resetRef={turnstileResetRef}
+                />
+            )}
 
             {isOtpModalOpen && (
                 <Suspense fallback={null}>

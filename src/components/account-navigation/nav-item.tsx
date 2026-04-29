@@ -45,7 +45,7 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
     const config = useConfig<AppConfig>();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const Icon = item.icon;
-    const baseClasses = 'w-full px-3 py-2 text-left text-sm font-medium rounded-md flex items-center gap-2';
+    const baseClasses = 'w-full px-3 py-2 text-left text-sm font-medium rounded-none flex items-center gap-2';
     const mobileClasses = `${baseClasses} border`;
     const disabledClasses = 'opacity-50 cursor-not-allowed pointer-events-none';
 

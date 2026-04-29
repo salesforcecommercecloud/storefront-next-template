@@ -39,7 +39,7 @@ describe('CategoryBreadcrumbs', () => {
             id: 'category-3',
             name: 'Subcategory',
             parentCategoryTree: [
-                { id: 'category-1', name: 'Home' },
+                { id: 'category-1', name: 'New Arrivals' },
                 { id: 'category-2', name: 'Parent Category' },
                 { id: 'category-3', name: 'Subcategory' },
             ],
@@ -49,20 +49,21 @@ describe('CategoryBreadcrumbs', () => {
 
         expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument();
         expect(screen.getByText('Home')).toBeInTheDocument();
+        expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         expect(screen.getByText('Parent Category')).toBeInTheDocument();
         expect(screen.getByText('Subcategory')).toBeInTheDocument();
     });
 
-    it('should render single breadcrumb when parentCategoryTree is undefined', () => {
+    it('should render Home and fallback breadcrumb when parentCategoryTree is undefined', () => {
         const category: ShopperProducts.schemas['Category'] = {
             id: 'category-1',
             name: 'Root Category',
-            // parentCategoryTree is undefined
         };
 
         render(createTestWrapper(<CategoryBreadcrumbs category={category} />));
 
         expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument();
+        expect(screen.getByText('Home')).toBeInTheDocument();
         expect(screen.getByText('Root Category')).toBeInTheDocument();
     });
 
@@ -78,9 +79,11 @@ describe('CategoryBreadcrumbs', () => {
 
         render(createTestWrapper(<CategoryBreadcrumbs category={category} />));
 
+        const homeLink = screen.getByRole('link', { name: 'Home' });
         const firstLink = screen.getByRole('link', { name: 'First' });
         const secondLink = screen.getByRole('link', { name: 'Second' });
 
+        expect(homeLink).toHaveAttribute('href', '/global/en-GB/');
         expect(firstLink).toHaveAttribute('href', '/global/en-GB/category/cat-1');
         expect(secondLink).toHaveAttribute('href', '/global/en-GB/category/cat-2');
     });
@@ -98,12 +101,12 @@ describe('CategoryBreadcrumbs', () => {
 
         const { container } = render(createTestWrapper(<CategoryBreadcrumbs category={category} />));
 
-        // Should have 2 chevron icons (between 3 items)
+        // Home + 3 category items = 4 items, 3 chevrons (one before each category item)
         const chevrons = container.querySelectorAll('svg.lucide-chevron-right');
-        expect(chevrons).toHaveLength(2);
+        expect(chevrons).toHaveLength(3);
     });
 
-    it('should not show chevron before first item', () => {
+    it('should show chevron between Home and single category item', () => {
         const category: ShopperProducts.schemas['Category'] = {
             id: 'cat-1',
             name: 'Single',
@@ -112,7 +115,8 @@ describe('CategoryBreadcrumbs', () => {
 
         const { container } = render(createTestWrapper(<CategoryBreadcrumbs category={category} />));
 
+        // Home + 1 category item = 2 items, 1 chevron
         const chevrons = container.querySelectorAll('svg.lucide-chevron-right');
-        expect(chevrons).toHaveLength(0);
+        expect(chevrons).toHaveLength(1);
     });
 });

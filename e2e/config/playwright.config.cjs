@@ -36,6 +36,13 @@ function getPlaywrightConfig() {
     }
   };
 
+  if (process.env.RECORD_VIDEO === 'true') {
+    config.recordVideo = {
+      dir: './output/videos/',
+      size: { width: 1280, height: 720 }
+    };
+  }
+
   // windowSize and emulate are mutually exclusive: windowSize calls page.setViewportSize()
   // after context creation and overrides the context-level emulate.viewport, breaking
   // isMobile layout behavior. Only one should be set at a time.

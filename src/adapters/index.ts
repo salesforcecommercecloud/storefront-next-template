@@ -43,6 +43,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig): void {
                     realm: engagementAdapterConfigs.einstein.realm || '',
                     siteId: engagementAdapterConfigs.einstein.siteId || '',
                     isProduction: engagementAdapterConfigs.einstein.isProduction || false,
+                    consentCategory: engagementAdapterConfigs.einstein.consentCategory,
                     eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
                 })
             );
@@ -58,6 +59,7 @@ export function initializeEngagementAdapters(appConfig: AppConfig): void {
                 createActiveDataAdapter({
                     host: engagementAdapterConfigs.activeData.host || '',
                     siteUUID: engagementAdapterConfigs.activeData.siteUUID || '',
+                    consentCategory: engagementAdapterConfigs.activeData.consentCategory,
                     eventToggles: engagementAdapterConfigs.activeData.eventToggles || {},
                 })
             );

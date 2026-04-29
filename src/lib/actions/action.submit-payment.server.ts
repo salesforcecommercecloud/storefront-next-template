@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { RouterContextProvider } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createPaymentSchema, parsePaymentFromFormData } from '@/lib/checkout-schemas';
@@ -21,18 +21,61 @@ import {
     addPaymentInstrumentToBasket,
     removePaymentInstrumentFromBasket,
     updateBillingAddressForBasket,
-} from '@/lib/api/basket';
+} from '@/lib/api/basket.server';
 import { detectCardType, normalizeCardType } from '@/lib/payment-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getAuth } from '@/middlewares/auth.server';
-import { getCustomerProfileForCheckout } from '@/lib/api/customer';
-import { getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getCustomerProfileForCheckout, saveBillingAddressToCustomer } from '@/lib/api/customer.server';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { getLogger } from '@/lib/logger.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
+
+const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
+
+const isSameAddress = (
+    a:
+        | {
+              firstName?: string;
+              lastName?: string;
+              address1?: string;
+              address2?: string;
+              city?: string;
+              stateCode?: string;
+              postalCode?: string;
+              countryCode?: string;
+          }
+        | undefined,
+    b:
+        | {
+              firstName?: string;
+              lastName?: string;
+              address1?: string;
+              address2?: string;
+              city?: string;
+              stateCode?: string;
+              postalCode?: string;
+              countryCode?: string;
+          }
+        | undefined
+) => {
+    if (!a || !b) return false;
+    return (
+        normalizeAddressField(a.firstName) === normalizeAddressField(b.firstName) &&
+        normalizeAddressField(a.lastName) === normalizeAddressField(b.lastName) &&
+        normalizeAddressField(a.address1) === normalizeAddressField(b.address1) &&
+        normalizeAddressField(a.address2) === normalizeAddressField(b.address2) &&
+        normalizeAddressField(a.city) === normalizeAddressField(b.city) &&
+        normalizeAddressField(a.stateCode) === normalizeAddressField(b.stateCode) &&
+        normalizeAddressField(a.postalCode) === normalizeAddressField(b.postalCode) &&
+        normalizeAddressField(a.countryCode) === normalizeAddressField(b.countryCode)
+    );
+};
 
 /**
  * Server action for submitting checkout payment information.
  */
-export async function action(formData: FormData, context: RouterContextProvider) {
+export async function action(formData: FormData, context: ActionFunctionArgs['context']) {
     const logger = getLogger(context);
     const { t } = getTranslation();
     logger.debug('SubmitPayment: starting');
@@ -63,7 +106,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         cardNumber,
         expiryDate,
         cardholderName,
-        billingSameAsShipping,
+        useDifferentBilling,
         selectedSavedPaymentMethod,
         useSavedPaymentMethod,
     } = result.data;
@@ -81,14 +124,11 @@ export async function action(formData: FormData, context: RouterContextProvider)
         // The v2 basket API does not support customerPaymentInstrumentId; when sent, SFCC
         // resolves the stored customer instrument which may have paymentMethodId
         // "CREDIT_CARD (visa)" causing a 400 "Invalid Payment Method Id".
-        const auth = getAuth(context as Parameters<typeof getAuth>[0]);
+        const auth = getAuth(context);
         const customerId = auth?.customerId;
         if (customerId) {
             try {
-                const customerProfile = await getCustomerProfileForCheckout(
-                    context as Parameters<typeof getCustomerProfileForCheckout>[0],
-                    customerId
-                );
+                const customerProfile = await getCustomerProfileForCheckout(context, customerId);
                 const savedMethods = getPaymentMethodsFromCustomer(customerProfile ?? undefined);
                 const savedMethod = savedMethods.find((m) => m.id === selectedSavedPaymentMethod) || savedMethods[0];
                 if (savedMethod) {
@@ -122,7 +162,10 @@ export async function action(formData: FormData, context: RouterContextProvider)
             return Response.json(
                 {
                     success: false,
-                    error: t('errors:checkout.paymentProcessingFailed'),
+                    error: createActionError({
+                        code: ErrorCode.NOT_FOUND,
+                        message: 'Saved payment method not found',
+                    }),
                     step: 'payment',
                 },
                 { status: 400 }
@@ -149,7 +192,10 @@ export async function action(formData: FormData, context: RouterContextProvider)
             return Response.json(
                 {
                     success: false,
-                    error: 'Please fill in all required payment fields',
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'Incomplete card data',
+                    }),
                     step: 'payment',
                 },
                 { status: 400 }
@@ -181,7 +227,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         return Response.json(
             {
                 success: false,
-                error: t('errors:api.basketNotFound'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Basket not found after payment prep' }),
                 step: 'payment',
             },
             { status: 400 }
@@ -192,7 +238,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
     const contactPhone = basket.billingAddress?.phone;
     const shippingAddress = basket.shipments?.[0]?.shippingAddress;
     const billingAddress =
-        billingSameAsShipping && shippingAddress
+        !useDifferentBilling && shippingAddress
             ? { ...shippingAddress, phone: contactPhone || shippingAddress.phone }
             : {
                   firstName: result.data.billingFirstName || '',
@@ -221,7 +267,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
             return Response.json(
                 {
                     success: false,
-                    error: t('errors:checkout.paymentProcessingFailed'),
+                    error: createActionError({ error }),
                     step: 'payment',
                 },
                 { status: 400 }
@@ -238,19 +284,11 @@ export async function action(formData: FormData, context: RouterContextProvider)
             basketId,
             error,
         });
-        const apiDetail =
-            error && typeof error === 'object' && 'body' in error
-                ? typeof (error as { body?: unknown }).body === 'object' &&
-                  (error as { body?: { detail?: string } }).body?.detail
-                    ? (error as { body: { detail?: string } }).body.detail
-                    : ''
-                : '';
         return Response.json(
             {
                 success: false,
-                error: t('errors:checkout.paymentProcessingFailed'),
+                error: createActionError({ error }),
                 step: 'payment',
-                ...(apiDetail && { apiError: apiDetail }),
             },
             { status: 400 }
         );
@@ -308,11 +346,33 @@ export async function action(formData: FormData, context: RouterContextProvider)
         return Response.json(
             {
                 success: false,
-                error: t('errors:checkout.paymentProcessingFailed'),
+                error: createActionError({ error }),
                 step: 'payment',
             },
             { status: 500 }
         );
+    }
+
+    // Existing registered customers: if they explicitly choose a different billing
+    // address and enter a new one, persist it to their address book.
+    const auth = getAuth(context);
+    if (auth.customerId && useDifferentBilling) {
+        try {
+            const customerProfile = await getCustomerProfileForCheckout(context, auth.customerId);
+            const savedAddresses = getAddressBookFromCustomer(customerProfile ?? undefined);
+            const alreadySaved = savedAddresses.some((address) => isSameAddress(address, billingAddress));
+            if (!alreadySaved) {
+                await saveBillingAddressToCustomer(context, auth.customerId, billingAddress);
+                logger.info('SubmitPayment: saved new billing address to customer profile', {
+                    customerId: auth.customerId,
+                });
+            }
+        } catch (error) {
+            logger.error('SubmitPayment: failed to save billing address to customer profile', {
+                customerId: auth.customerId,
+                error,
+            });
+        }
     }
 
     logger.info('SubmitPayment: succeeded', { basketId });

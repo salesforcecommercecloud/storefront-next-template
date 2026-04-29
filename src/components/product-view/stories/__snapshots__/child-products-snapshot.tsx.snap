@@ -9,7 +9,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
         data-slot="card"
         data-testid="child-product"
       >
@@ -39,6 +39,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="sr-only"
             >
               Turquoise and Gold Bracelet
+               
               Current price: £38.00
             </span>
              
@@ -55,7 +56,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="space-y-4"
             >
               <div
-                class="relative aspect-square overflow-hidden rounded-lg bg-muted"
+                class="relative aspect-square overflow-hidden rounded-none bg-muted"
               >
                 <div
                   class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -111,8 +112,8 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                 <a
                   aria-checked="true"
                   aria-label="Gold"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
-                  href="/?013742002836M=color%3DJJ887XX"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
+                  href="/RefArchGlobal/en-GB/?013742002836M=color%3DJJ887XX"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -122,7 +123,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   >
                     <div
                       aria-label="Turquoise and Gold Bracelet, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwe64c51d1/images/swatch/PG.60119239.JJ887XX.CP.jpg");"
                     />
                   </div>
@@ -142,7 +143,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
         data-slot="card"
         data-testid="child-product"
       >
@@ -172,6 +173,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="sr-only"
             >
               Turquoise and Gold Necklace
+               
               Current price: £45.00
             </span>
              
@@ -188,7 +190,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="space-y-4"
             >
               <div
-                class="relative aspect-square overflow-hidden rounded-lg bg-muted"
+                class="relative aspect-square overflow-hidden rounded-none bg-muted"
               >
                 <div
                   class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -244,8 +246,8 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                 <a
                   aria-checked="true"
                   aria-label="Gold"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
-                  href="/?013742002805M=color%3DJJ887XX"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
+                  href="/RefArchGlobal/en-GB/?013742002805M=color%3DJJ887XX"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -255,7 +257,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   >
                     <div
                       aria-label="Turquoise and Gold Necklace, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwef2fba24/images/swatch/PG.60119236.JJ887XX.CP.jpg");"
                     />
                   </div>
@@ -275,7 +277,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
         data-slot="card"
         data-testid="child-product"
       >
@@ -305,6 +307,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="sr-only"
             >
               Turquoise and Gold Hoop Earring
+               
               Current price: £30.00
             </span>
              
@@ -321,7 +324,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               class="space-y-4"
             >
               <div
-                class="relative aspect-square overflow-hidden rounded-lg bg-muted"
+                class="relative aspect-square overflow-hidden rounded-none bg-muted"
               >
                 <div
                   class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -377,8 +380,8 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                 <a
                   aria-checked="true"
                   aria-label="Gold"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
-                  href="/?013742002799M=color%3DJJ887XX"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
+                  href="/RefArchGlobal/en-GB/?013742002799M=color%3DJJ887XX"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -388,7 +391,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   >
                     <div
                       aria-label="Turquoise and Gold Hoop Earring, Gold, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwde3c3e85/images/swatch/PG.60119235.JJ887XX.CP.jpg");"
                     />
                   </div>
@@ -425,11 +428,11 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             Quantity:
           </label>
           <div
-            class="inline-flex items-center border border-input rounded-lg"
+            class="inline-flex items-center border border-input rounded-none"
           >
             <button
               aria-label="Decrement Quantity for Turquoise Jewelry Bundle"
-              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-decrement"
               disabled=""
             >
@@ -445,7 +448,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             />
             <button
               aria-label="Increment Quantity for Turquoise Jewelry Bundle"
-              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-increment"
             >
               +
@@ -475,7 +478,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               tabindex="0"
             >
               <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
                 for="delivery-option-womens-jewelry-bundleM"
               >
@@ -495,7 +498,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -518,7 +521,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                 </div>
               </label>
               <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
                 for="pickup-option-womens-jewelry-bundleM"
               >
@@ -538,7 +541,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -556,7 +559,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                       class="mt-0.5"
                     >
                       <button
-                        class="text-xs text-primary hover:underline"
+                        class="text-xs text-primary hover:underline cursor-pointer"
                         type="button"
                       />
                       <p
@@ -614,7 +617,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
         data-slot="card"
         data-testid="child-product"
       >
@@ -644,12 +647,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Quilted Jacket
+               
               Current price: £110.99
             </span>
              
             <span
               aria-label="List price from £159.00"
-              class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+              class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
             >
               £159.00
             </span>
@@ -659,6 +663,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Quilted Jacket
+               
               List price: £159.00
             </span>
           </div>
@@ -683,7 +688,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="space-y-4"
             >
               <div
-                class="relative aspect-square overflow-hidden rounded-lg bg-muted"
+                class="relative aspect-square overflow-hidden rounded-none bg-muted"
               >
                 <div
                   class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -715,10 +720,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               >
                 <button
                   class="
-                                aspect-square overflow-hidden rounded-lg bg-muted
-                                border-2 transition-colors
+                                aspect-square overflow-hidden rounded-none bg-muted
+                                border-2 transition-colors cursor-pointer
                                 border-primary
                             "
+                  data-index="0"
                 >
                   <img
                     alt="Quilted Jacket, , large"
@@ -729,10 +735,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </button>
                 <button
                   class="
-                                aspect-square overflow-hidden rounded-lg bg-muted
-                                border-2 transition-colors
+                                aspect-square overflow-hidden rounded-none bg-muted
+                                border-2 transition-colors cursor-pointer
                                 border-transparent hover:border-border
                             "
+                  data-index="1"
                 >
                   <img
                     alt="Quilted Jacket, , large"
@@ -768,8 +775,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="royal"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518447M=color%3DJJ5FUXX"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518447M=color%3DJJ5FUXX"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -779,7 +786,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Quilted Jacket, royal, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw1d0ec998/images/swatch/PG.10205921.JJ5FUXX.CP.jpg");"
                     />
                   </div>
@@ -806,13 +813,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="S"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518447M=size%3D9SM"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9SM"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -830,8 +837,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518447M=size%3D9MD"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9MD"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -849,8 +856,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518447M=size%3D9LG"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9LG"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -868,8 +875,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518447M=size%3D9XL"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518447M=size%3D9XL"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -898,11 +905,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               Quantity:
             </label>
             <div
-              class="inline-flex items-center border border-input rounded-lg"
+              class="inline-flex items-center border border-input rounded-none"
             >
               <button
                 aria-label="Decrement Quantity for Quilted Jacket"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -918,7 +925,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Quilted Jacket"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -954,7 +961,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option-25518447M"
                   >
@@ -974,7 +981,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -997,7 +1004,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     </div>
                   </label>
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="pickup-option-25518447M"
                   >
@@ -1017,7 +1024,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1035,7 +1042,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                           class="mt-0.5"
                         >
                           <button
-                            class="text-xs text-primary hover:underline"
+                            class="text-xs text-primary hover:underline cursor-pointer"
                             type="button"
                           />
                           <p
@@ -1064,7 +1071,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
         data-slot="card"
         data-testid="child-product"
       >
@@ -1094,6 +1101,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Pull On Pant
+               
               Current price: £69.00
             </span>
              
@@ -1119,7 +1127,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="space-y-4"
             >
               <div
-                class="relative aspect-square overflow-hidden rounded-lg bg-muted"
+                class="relative aspect-square overflow-hidden rounded-none bg-muted"
               >
                 <div
                   class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -1151,10 +1159,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               >
                 <button
                   class="
-                                aspect-square overflow-hidden rounded-lg bg-muted
-                                border-2 transition-colors
+                                aspect-square overflow-hidden rounded-none bg-muted
+                                border-2 transition-colors cursor-pointer
                                 border-primary
                             "
+                  data-index="0"
                 >
                   <img
                     alt="Pull On Pant, , large"
@@ -1165,10 +1174,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </button>
                 <button
                   class="
-                                aspect-square overflow-hidden rounded-lg bg-muted
-                                border-2 transition-colors
+                                aspect-square overflow-hidden rounded-none bg-muted
+                                border-2 transition-colors cursor-pointer
                                 border-transparent hover:border-border
                             "
+                  data-index="1"
                 >
                   <img
                     alt="Pull On Pant, , large"
@@ -1204,8 +1214,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="Grey Heather"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518704M=color%3DJJ2XNXX"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518704M=color%3DJJ2XNXX"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -1215,7 +1225,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Pull On Pant, Grey Heather, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw811d3399/images/swatch/PG.10218785.JJ2XNXX.CP.jpg");"
                     />
                   </div>
@@ -1242,13 +1252,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="XS"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518704M=size%3D9XS"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9XS"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -1266,8 +1276,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="S"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518704M=size%3D9SM"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9SM"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1285,8 +1295,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518704M=size%3D9MD"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9MD"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1304,8 +1314,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518704M=size%3D9LG"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9LG"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1323,8 +1333,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25518704M=size%3D9XL"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25518704M=size%3D9XL"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1353,11 +1363,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               Quantity:
             </label>
             <div
-              class="inline-flex items-center border border-input rounded-lg"
+              class="inline-flex items-center border border-input rounded-none"
             >
               <button
                 aria-label="Decrement Quantity for Pull On Pant"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -1373,7 +1383,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Pull On Pant"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -1409,7 +1419,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option-25518704M"
                   >
@@ -1429,7 +1439,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1452,7 +1462,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     </div>
                   </label>
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="pickup-option-25518704M"
                   >
@@ -1472,7 +1482,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -1490,7 +1500,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                           class="mt-0.5"
                         >
                           <button
-                            class="text-xs text-primary hover:underline"
+                            class="text-xs text-primary hover:underline cursor-pointer"
                             type="button"
                           />
                           <p
@@ -1519,7 +1529,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
         </div>
       </div>
       <div
-        class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full"
+        class="bg-card text-card-foreground flex flex-col gap-6 border py-6 h-full rounded-none shadow-none"
         data-slot="card"
         data-testid="child-product"
       >
@@ -1549,6 +1559,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="sr-only"
             >
               Zerrick
+               
               Current price: £99.00
             </span>
              
@@ -1574,7 +1585,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               class="space-y-4"
             >
               <div
-                class="relative aspect-square overflow-hidden rounded-lg bg-muted"
+                class="relative aspect-square overflow-hidden rounded-none bg-muted"
               >
                 <div
                   class="w-full h-full object-cover object-center [&_img]:object-contain! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
@@ -1606,10 +1617,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               >
                 <button
                   class="
-                                aspect-square overflow-hidden rounded-lg bg-muted
-                                border-2 transition-colors
+                                aspect-square overflow-hidden rounded-none bg-muted
+                                border-2 transition-colors cursor-pointer
                                 border-primary
                             "
+                  data-index="0"
                 >
                   <img
                     alt="Zerrick, , large"
@@ -1620,10 +1632,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </button>
                 <button
                   class="
-                                aspect-square overflow-hidden rounded-lg bg-muted
-                                border-2 transition-colors
+                                aspect-square overflow-hidden rounded-none bg-muted
+                                border-2 transition-colors cursor-pointer
                                 border-transparent hover:border-border
                             "
+                  data-index="1"
                 >
                   <img
                     alt="Zerrick, , large"
@@ -1659,8 +1672,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="Black"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=color%3DBLACKLE"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=color%3DBLACKLE"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -1670,7 +1683,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Zerrick, Black, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwaaf5a5ba/images/swatch/PG.CJZERRICK.BLACKLE.CP.jpg");"
                     />
                   </div>
@@ -1678,8 +1691,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="Taupe"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-pill w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=color%3DTAUPETX"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=color%3DTAUPETX"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1689,7 +1702,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   >
                     <div
                       aria-label="Zerrick, Taupe, swatch"
-                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                      class="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                       style="background-image: url("https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw114ea19c/images/swatch/PG.CJZERRICK.TAUPETX.CP.jpg");"
                     />
                   </div>
@@ -1716,13 +1729,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="6"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D060"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D060"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -1740,8 +1753,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="6.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D065"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D065"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1759,8 +1772,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="7"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D070"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D070"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1778,8 +1791,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="7.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D075"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D075"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1797,8 +1810,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="8"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D080"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D080"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1816,8 +1829,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="8.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D085"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D085"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1835,8 +1848,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="9"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D090"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D090"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1854,8 +1867,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="9.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D095"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D095"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1873,8 +1886,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="10"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D100"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D100"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1892,8 +1905,8 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="11"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=size%3D110"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=size%3D110"
                   position="relative"
                   role="radio"
                   tabindex="-1"
@@ -1930,13 +1943,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </span>
               </div>
               <div
-                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1"
+                class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
               >
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-md px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
-                  href="/?25772717M=width%3DM"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  href="/RefArchGlobal/en-GB/?25772717M=width%3DM"
                   position="relative"
                   role="radio"
                   tabindex="0"
@@ -1965,11 +1978,11 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               Quantity:
             </label>
             <div
-              class="inline-flex items-center border border-input rounded-lg"
+              class="inline-flex items-center border border-input rounded-none"
             >
               <button
                 aria-label="Decrement Quantity for Zerrick"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -1985,7 +1998,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Zerrick"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -2021,7 +2034,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   tabindex="0"
                 >
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="delivery-option-25772717M"
                   >
@@ -2041,7 +2054,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -2064,7 +2077,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     </div>
                   </label>
                   <label
-                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                    class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                     data-slot="label"
                     for="pickup-option-25772717M"
                   >
@@ -2084,7 +2097,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5 shrink-0"
                     >
                       <div
-                        class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                        class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                       />
                     </div>
                     <div
@@ -2102,7 +2115,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                           class="mt-0.5"
                         >
                           <button
-                            class="text-xs text-primary hover:underline"
+                            class="text-xs text-primary hover:underline cursor-pointer"
                             type="button"
                           />
                           <p
@@ -2152,7 +2165,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               tabindex="0"
             >
               <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
                 for="delivery-option-winter-lookM"
               >
@@ -2172,7 +2185,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -2195,7 +2208,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 </div>
               </label>
               <label
-                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-lg border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
+                class="text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 flex items-start gap-2 p-3 rounded-none border transition-colors text-left shadow-xs cursor-pointer border-muted-foreground/20 hover:border-primary/50"
                 data-slot="label"
                 for="pickup-option-winter-lookM"
               >
@@ -2215,7 +2228,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   class="mt-0.5 shrink-0"
                 >
                   <div
-                    class="w-4 h-4 rounded-pill border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
+                    class="w-4 h-4 rounded-none border-2 flex items-center justify-center transition-colors border-muted-foreground/20"
                   />
                 </div>
                 <div
@@ -2233,7 +2246,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       class="mt-0.5"
                     >
                       <button
-                        class="text-xs text-primary hover:underline"
+                        class="text-xs text-primary hover:underline cursor-pointer"
                         type="button"
                       />
                       <p

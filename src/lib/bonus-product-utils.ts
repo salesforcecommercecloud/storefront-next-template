@@ -20,7 +20,6 @@
  */
 
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import type { ShopperBasketsTypes } from 'commerce-sdk-isomorphic';
 import type { ProductWithPromotions, ProductsWithPromotionsMap } from '@/hooks/use-basket-with-promotions';
 import { isBonusProduct, getBonusProductType } from './product-utils';
 
@@ -262,7 +261,7 @@ export function getAttachedBonusPromotions(
  * @returns Object with selectedBonusItems and maxBonusItems counts
  */
 export function getBonusProductCountsForPromotion(
-    basket: ShopperBasketsTypes.Basket | undefined,
+    basket: ShopperBasketsV2.schemas['Basket'] | undefined,
     promotionId: string
 ): { selectedBonusItems: number; maxBonusItems: number } {
     if (!basket || !promotionId) {
@@ -319,9 +318,9 @@ export function getBonusProductCountsForPromotion(
  * ```
  */
 export function calculateMaxQuantityForBonusProduct(
-    productItem: ShopperBasketsTypes.ProductItem,
-    allProductItems: ShopperBasketsTypes.ProductItem[],
-    bonusDiscountLineItems?: ShopperBasketsTypes.BonusDiscountLineItem[]
+    productItem: ShopperBasketsV2.schemas['ProductItem'],
+    allProductItems: ShopperBasketsV2.schemas['ProductItem'][],
+    bonusDiscountLineItems?: ShopperBasketsV2.schemas['BonusDiscountLineItem'][]
 ): number | undefined {
     // Early returns for non-bonus or invalid products
     if (!isBonusProduct(productItem) || !productItem.bonusDiscountLineItemId || !productItem.itemId) {

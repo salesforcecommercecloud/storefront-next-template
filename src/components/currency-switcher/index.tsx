@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
 import { NativeSelect } from '@/components/ui/native-select';
-import { useSite, type Site } from '@salesforce/storefront-next-runtime/site-context';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useToast } from '@/components/toast';
 
 /**
@@ -34,9 +31,8 @@ export default function CurrencySwitcher(): ReactElement {
     const id = useId();
     const { t } = useTranslation('currencySwitcher');
     const fetcher = useFetcher();
-    const currentCurrency = useCurrency();
+    const { site: currentSite, currency: currentCurrency } = useSite();
     const { addToast } = useToast();
-    const currentSite = useSite() as Site;
 
     const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCurrency = e.target.value;
@@ -48,12 +44,13 @@ export default function CurrencySwitcher(): ReactElement {
         }
 
         const formData = new FormData();
-        formData.append('currency', newCurrency);
+        formData.append('type', 'currency');
+        formData.append('payload', JSON.stringify({ currency: newCurrency }));
 
         // Submit to server action - React Router will automatically revalidate loaders
         void fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-currency',
+            action: '/action/set-site-context',
         });
     };
 

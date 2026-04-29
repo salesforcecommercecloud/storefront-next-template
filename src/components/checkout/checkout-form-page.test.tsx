@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, within, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act, type ReactNode, type ComponentProps } from 'react';
 import i18next from 'i18next';
 import CheckoutFormPage from './checkout-form-page';
@@ -222,10 +222,36 @@ const mockSubmitPayment = vi.fn();
 const mockSubmitPlaceOrder = vi.fn();
 const mockHandleCreateAccountPreferenceChange = vi.fn();
 let mockShouldCreateAccount = false;
+let mockContactFetcherState: 'idle' | 'submitting' = 'idle';
+let mockContactFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
+let mockShippingAddressFetcherState: 'idle' | 'submitting' = 'idle';
+let mockShippingAddressFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
+let mockShippingOptionsFetcherState: 'idle' | 'submitting' = 'idle';
+let mockShippingOptionsFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
 let mockPlaceOrderFetcherState: 'idle' | 'submitting' = 'idle';
-let mockPlaceOrderFetcherData: { success?: boolean; error?: string; step?: string } | null = null;
+let mockPlaceOrderFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
 let mockPaymentFetcherState: 'idle' | 'submitting' = 'idle';
-let mockPaymentFetcherData: { success?: boolean; error?: string } | null = null;
+let mockPaymentFetcherData: {
+    success?: boolean;
+    error?: string | { code: string; message: string };
+    step?: string;
+} | null = null;
 
 vi.mock('@/hooks/use-checkout-actions', () => ({
     useCheckoutActions: () => ({
@@ -234,9 +260,15 @@ vi.mock('@/hooks/use-checkout-actions', () => ({
         submitShippingOptions: mockSubmitShippingOptions,
         submitPayment: mockSubmitPayment,
         submitPlaceOrder: mockSubmitPlaceOrder,
-        contactFetcher: { data: null, state: 'idle' },
-        shippingAddressFetcher: { data: null, state: 'idle' },
-        shippingOptionsFetcher: { data: null, state: 'idle' },
+        get contactFetcher() {
+            return { data: mockContactFetcherData, state: mockContactFetcherState };
+        },
+        get shippingAddressFetcher() {
+            return { data: mockShippingAddressFetcherData, state: mockShippingAddressFetcherState };
+        },
+        get shippingOptionsFetcher() {
+            return { data: mockShippingOptionsFetcherData, state: mockShippingOptionsFetcherState };
+        },
         get paymentFetcher() {
             return { data: mockPaymentFetcherData, state: mockPaymentFetcherState };
         },
@@ -319,24 +351,6 @@ vi.mock('./components/register-customer-selection', () => ({
     default: () => <div data-testid="register-customer-checkbox">Create Account Checkbox</div>,
 }));
 
-// Mock CheckoutErrorBanner with proper ref support
-vi.mock('./components/checkout-error-banner', async () => {
-    const React = await vi.importActual('react');
-    const { forwardRef } = React;
-
-    // @ts-expect-error - forwardRef type is inferred from React import
-    const MockCheckoutErrorBanner = forwardRef<HTMLDivElement, { message: React.ReactNode; [key: string]: unknown }>(
-        ({ message, ...props }, ref) => (
-            <div ref={ref} data-testid="checkout-error-banner" {...props}>
-                {message}
-            </div>
-        )
-    );
-    MockCheckoutErrorBanner.displayName = 'MockCheckoutErrorBanner';
-
-    return { default: MockCheckoutErrorBanner };
-});
-
 vi.mock('./checkout-progress', () => ({
     CheckoutProgress: () => <div data-testid="checkout-progress">Checkout Progress</div>,
 }));
@@ -344,10 +358,6 @@ vi.mock('./checkout-progress', () => ({
 // Mock MyCart component
 vi.mock('@/components/my-cart', () => ({
     default: () => <div data-testid="my-cart">My Cart</div>,
-}));
-
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
@@ -359,6 +369,18 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
         },
     })),
 }));
+
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArch', defaultLocale: 'en-US' },
+            language: 'en-US',
+            currency: 'USD',
+        })),
+    };
+});
 
 describe('CheckoutFormPage', () => {
     // Default test props
@@ -406,6 +428,12 @@ describe('CheckoutFormPage', () => {
             orderTotal: 99.99,
         });
         mockShouldCreateAccount = false;
+        mockContactFetcherState = 'idle';
+        mockContactFetcherData = null;
+        mockShippingAddressFetcherState = 'idle';
+        mockShippingAddressFetcherData = null;
+        mockShippingOptionsFetcherState = 'idle';
+        mockShippingOptionsFetcherData = null;
         mockPlaceOrderFetcherState = 'idle';
         mockPlaceOrderFetcherData = null;
         mockPaymentFetcherState = 'idle';
@@ -691,19 +719,46 @@ describe('CheckoutFormPage', () => {
         });
     });
 
-    describe('Mobile order summary accordion', () => {
-        test('renders accordion with order summary and cart content', async () => {
+    describe('Mobile order summary', () => {
+        test('renders order summary and cart content on mobile', async () => {
             await renderCheckoutPage();
 
-            const toggle = screen.getByText('Show Order Summary');
-            expect(toggle).toBeInTheDocument();
+            // Both mobile and md+ sections render OrderSummary and MyCart
+            const orderSummaries = screen.getAllByTestId('order-summary');
+            expect(orderSummaries.length).toBeGreaterThanOrEqual(1);
 
-            const accordion = toggle.closest('[data-slot="accordion"]');
-            expect(accordion).not.toBeNull();
+            const myCarts = screen.getAllByTestId('my-cart');
+            expect(myCarts.length).toBeGreaterThanOrEqual(1);
+        });
+    });
 
-            const scoped = within(accordion as HTMLElement);
-            expect(scoped.getByTestId('order-summary')).toBeInTheDocument();
-            expect(scoped.getByTestId('my-cart')).toBeInTheDocument();
+    describe('Responsive order summary layout', () => {
+        test('keeps sidebar before express checkout in DOM for md layout', async () => {
+            await renderCheckoutPage();
+
+            const sidebar = screen.getByTestId('checkout-order-summary-sidebar');
+            const expressPayments = screen.getByTestId('express-payments');
+
+            const relation = sidebar.compareDocumentPosition(expressPayments);
+            expect(relation & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        });
+
+        test('uses responsive order classes to move sidebar right on lg', async () => {
+            const { container } = await renderCheckoutPage();
+
+            const grid = container.querySelector('.grid.grid-cols-1.lg\\:grid-cols-3.gap-8');
+            expect(grid).toBeInTheDocument();
+
+            const sidebar = screen.getByTestId('checkout-order-summary-sidebar');
+            expect(sidebar.className).toContain('md:order-1');
+            expect(sidebar.className).toContain('lg:order-2');
+            expect(sidebar.className).toContain('lg:col-span-1');
+
+            const mainContent = screen.getByTestId('express-payments').closest('div.space-y-6');
+            expect(mainContent).toBeInTheDocument();
+            expect(mainContent?.className).toContain('order-2');
+            expect(mainContent?.className).toContain('lg:order-1');
+            expect(mainContent?.className).toContain('lg:col-span-2');
         });
     });
 
@@ -769,45 +824,6 @@ describe('CheckoutFormPage', () => {
 
             const button = screen.getByRole('button', { name: i18next.t('checkout:placeOrder.processing') });
             expect(button).toBeDisabled();
-        });
-
-        test('displays error banner when place order fails', async () => {
-            // Mock scrollIntoView to prevent errors
-            const mockScrollIntoView = vi.fn();
-            Element.prototype.scrollIntoView = mockScrollIntoView;
-
-            mockUseCheckoutContext.mockReturnValue(
-                buildCheckoutContext({
-                    step: defaultSteps.PLACE_ORDER,
-                })
-            );
-            mockPlaceOrderFetcherData = {
-                success: false,
-                error: 'Order placement failed. Please try again.',
-            };
-
-            await renderCheckoutPage();
-
-            // Error banner should be rendered
-            await waitFor(() => {
-                expect(screen.getByTestId('checkout-error-banner')).toBeInTheDocument();
-                expect(screen.getByText('Order placement failed. Please try again.')).toBeInTheDocument();
-            });
-        });
-
-        test('does not display error banner when place order succeeds', async () => {
-            mockUseCheckoutContext.mockReturnValue(
-                buildCheckoutContext({
-                    step: defaultSteps.PLACE_ORDER,
-                })
-            );
-            mockPlaceOrderFetcherData = {
-                success: true,
-            };
-
-            await renderCheckoutPage();
-
-            expect(screen.queryByText(/Order placement failed/i)).not.toBeInTheDocument();
         });
     });
 
@@ -913,32 +929,6 @@ describe('CheckoutFormPage', () => {
         });
     });
 
-    describe('Scroll behavior', () => {
-        test('renders error banner when place order fails', async () => {
-            // Mock scrollIntoView to prevent errors
-            const mockScrollIntoView = vi.fn();
-            Element.prototype.scrollIntoView = mockScrollIntoView;
-
-            mockUseCheckoutContext.mockReturnValue(
-                buildCheckoutContext({
-                    step: defaultSteps.PLACE_ORDER,
-                })
-            );
-            mockPlaceOrderFetcherData = {
-                success: false,
-                error: 'Test error message',
-            };
-
-            await renderCheckoutPage();
-
-            // Wait for error banner to render
-            await waitFor(() => {
-                expect(screen.getByTestId('checkout-error-banner')).toBeInTheDocument();
-                expect(screen.getByText('Test error message')).toBeInTheDocument();
-            });
-        });
-    });
-
     describe('Empty cart edge cases', () => {
         test('handles null cart', async () => {
             mockUseBasket.mockReturnValue(null);
@@ -1014,7 +1004,7 @@ describe('CheckoutFormPage', () => {
 
     describe('MyCartWithData component', () => {
         test('handles productMapPromise resolution', async () => {
-            const productMap = { product1: { productId: 'product1', name: 'Test Product' } };
+            const productMap = { product1: { id: 'product1', productId: 'product1', name: 'Test Product' } };
             const productMapPromise = Promise.resolve(productMap);
 
             await renderCheckoutPage({
@@ -1119,6 +1109,90 @@ describe('CheckoutFormPage', () => {
         });
     });
 
+    describe('Session cleanup for returning shoppers', () => {
+        test('clears stale registeredViaCheckout and shouldCreateAccount flags for returning shoppers with saved payment methods', async () => {
+            const mockRemoveItem = vi.fn();
+            const mockGetItem = vi.fn(() => null);
+            Object.defineProperty(window, 'sessionStorage', {
+                value: {
+                    getItem: mockGetItem,
+                    setItem: vi.fn(),
+                    removeItem: mockRemoveItem,
+                    clear: vi.fn(),
+                },
+                writable: true,
+                configurable: true,
+            });
+
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'returning-cust', email: 'returning@example.com' },
+                addresses: [{ addressId: 'addr-1' }],
+                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }],
+            });
+            mockUseAuth.mockReturnValue({ userType: 'registered' });
+
+            const { rerender } = await renderCheckoutPage();
+
+            expect(mockRemoveItem).toHaveBeenCalledWith('registeredViaCheckout');
+            expect(mockRemoveItem).toHaveBeenCalledWith('shouldCreateAccount');
+            expect(mockHandleCreateAccountPreferenceChange).toHaveBeenCalledWith(false);
+
+            // Cleanup should only run once even when deps change (ref guard)
+            mockRemoveItem.mockClear();
+            mockHandleCreateAccountPreferenceChange.mockClear();
+
+            // Simulate profile update with more payment instruments
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'returning-cust', email: 'returning@example.com' },
+                addresses: [{ addressId: 'addr-1' }],
+                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }, { paymentInstrumentId: 'pi-2' }],
+            });
+
+            act(() => {
+                rerender(<CheckoutFormPage {...defaultProps} />);
+            });
+
+            // Should NOT fire again due to ref guard
+            expect(mockRemoveItem).not.toHaveBeenCalledWith('registeredViaCheckout');
+            expect(mockHandleCreateAccountPreferenceChange).not.toHaveBeenCalledWith(false);
+
+            mockUseAuth.mockReturnValue({ userType: 'guest' });
+        });
+
+        test('does not clear session flags for newly registered user without saved payment methods', async () => {
+            const mockRemoveItem = vi.fn();
+            const mockGetItem = vi.fn((key: string) => {
+                if (key === 'registeredViaCheckout') return 'true';
+                return null;
+            });
+            Object.defineProperty(window, 'sessionStorage', {
+                value: {
+                    getItem: mockGetItem,
+                    setItem: vi.fn(),
+                    removeItem: mockRemoveItem,
+                    clear: vi.fn(),
+                },
+                writable: true,
+                configurable: true,
+            });
+
+            mockUseCustomerProfile.mockReturnValue({
+                customer: { customerId: 'new-cust', email: 'new@example.com' },
+                addresses: [],
+                paymentInstruments: [],
+            });
+            mockUseAuth.mockReturnValue({ userType: 'registered' });
+
+            await renderCheckoutPage();
+
+            // Should NOT clear because no saved payment methods
+            expect(mockRemoveItem).not.toHaveBeenCalledWith('registeredViaCheckout');
+            expect(mockRemoveItem).not.toHaveBeenCalledWith('shouldCreateAccount');
+
+            mockUseAuth.mockReturnValue({ userType: 'guest' });
+        });
+    });
+
     describe('Form submission handlers', () => {
         test('handlers are properly assigned to form components', async () => {
             await renderCheckoutPage();
@@ -1128,6 +1202,124 @@ describe('CheckoutFormPage', () => {
             expect(screen.getByText('Shipping Address Form')).toBeInTheDocument();
             expect(screen.getByText('Shipping Options Form')).toBeInTheDocument();
             expect(screen.getByText('Payment Form')).toBeInTheDocument();
+        });
+    });
+
+    describe('Error toast notifications', () => {
+        test('fires error toast when contact info submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Failed to update email' },
+                step: 'contactInfo',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith(
+                    "We couldn't save the contact information. Try again.",
+                    'error'
+                );
+            });
+        });
+
+        test('fires error toast when shipping address submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockShippingAddressFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Invalid shipping address' },
+                step: 'shippingAddress',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith(
+                    "We couldn't validate your address. Check your address and try again.",
+                    'error'
+                );
+            });
+        });
+
+        test('fires error toast when shipping options submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockShippingOptionsFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Shipping method unavailable' },
+                step: 'shippingOptions',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith(
+                    "The selected shipping method isn't available. Choose another option.",
+                    'error'
+                );
+            });
+        });
+
+        test('fires error toast when payment submission fails', async () => {
+            const mockShowToast = vi.fn();
+            mockPaymentFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Payment processing failed' },
+                step: 'payment',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith("We couldn't process your payment. Try again.", 'error');
+            });
+        });
+
+        test('fires error toast when place order fails', async () => {
+            const mockShowToast = vi.fn();
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
+            mockPlaceOrderFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Order placement failed' },
+                step: 'placeOrder',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith("We couldn't create the order. Try again.", 'error');
+            });
+        });
+
+        test('does not fire error toast when fetcher succeeds', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = { success: true, step: 'contactInfo' };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
+        });
+
+        test('does not fire error toast when fetcher has no data', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = null;
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
+        });
+
+        test('does not fire error toast for a different step', async () => {
+            const mockShowToast = vi.fn();
+            mockContactFetcherData = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Some error' },
+                step: 'shippingAddress',
+            };
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
         });
     });
 
@@ -1166,7 +1358,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: '',
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
             });
@@ -1203,7 +1395,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: 'Jane Smith',
                 expiryDate: '12/28',
                 cvv: '123',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
             });
@@ -1241,7 +1433,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: '',
                 expiryDate: '',
                 cvv: '',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: true,
                 selectedSavedPaymentMethod: 'pi-1',
             });
@@ -1261,7 +1453,7 @@ describe('CheckoutFormPage', () => {
         });
 
         test('submits payment when basket has no payment instrument (guest flow)', async () => {
-            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PAYMENT }));
+            mockUseCheckoutContext.mockReturnValue(buildCheckoutContext({ step: defaultSteps.PLACE_ORDER }));
             mockUseBasket.mockReturnValue({
                 basketId: 'test-basket',
                 productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
@@ -1273,7 +1465,7 @@ describe('CheckoutFormPage', () => {
                 cardholderName: 'Guest User',
                 expiryDate: '12/28',
                 cvv: '456',
-                billingSameAsShipping: true,
+                useDifferentBilling: false,
                 useSavedPaymentMethod: false,
                 selectedSavedPaymentMethod: undefined,
             });
@@ -1290,6 +1482,61 @@ describe('CheckoutFormPage', () => {
 
             expect(mockSubmitPayment).toHaveBeenCalled();
             expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('emailVerificationEnabled hides create account checkbox', () => {
+        let originalSessionStorage: Storage;
+
+        beforeEach(() => {
+            originalSessionStorage = window.sessionStorage;
+            mockUseCustomerProfile.mockReturnValue(null);
+            mockUseBasket.mockReturnValue({
+                basketId: 'test-basket',
+                productItems: [{ itemId: 'item1', productId: 'product1', quantity: 1 }],
+                customerInfo: null,
+            });
+            mockUseCheckoutContext.mockReturnValue(
+                buildCheckoutContext({
+                    step: defaultSteps.PAYMENT,
+                })
+            );
+            Object.defineProperty(window, 'sessionStorage', {
+                value: {
+                    getItem: vi.fn(() => null),
+                    setItem: vi.fn(),
+                    removeItem: vi.fn(),
+                    clear: vi.fn(),
+                },
+                writable: true,
+                configurable: true,
+            });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(window, 'sessionStorage', {
+                value: originalSessionStorage,
+                writable: true,
+                configurable: true,
+            });
+        });
+
+        test('hides create account checkbox when emailVerificationEnabled is false', async () => {
+            await renderCheckoutPage({ emailVerificationEnabled: false });
+
+            expect(screen.queryByTestId('register-customer-checkbox')).not.toBeInTheDocument();
+        });
+
+        test('shows create account checkbox when emailVerificationEnabled is true', async () => {
+            await renderCheckoutPage({ emailVerificationEnabled: true });
+
+            expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
+        });
+
+        test('shows create account checkbox when emailVerificationEnabled is undefined', async () => {
+            await renderCheckoutPage({ emailVerificationEnabled: undefined });
+
+            expect(screen.getByTestId('register-customer-checkbox')).toBeInTheDocument();
         });
     });
 });

@@ -20,17 +20,28 @@ import type { ComponentType } from '@/components/region';
 import { Link } from '@/components/link';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+import { cn } from '@/lib/utils';
+import { carouselItemImageWidths } from '@/components/carousel-section';
 import { DynamicImage } from '@/components/dynamic-image';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-01.webp';
-import { loader as loaders } from './loaders';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
-interface PopularCategoryProps extends ComponentProps<'div'> {
+// eslint-disable-next-line react-refresh/only-export-components
+export { loader } from './loaders';
+
+/**
+ * Extends Link props (minus `to`, which is hardcoded to the category URL) so that
+ * callers can forward attributes such as `className`, `ref`, or `aria-*` directly
+ * onto the rendered anchor element via `...rest`.
+ */
+interface PopularCategoryProps extends Omit<ComponentProps<typeof Link>, 'to'> {
     // Category data from Page Designer (via loader) or programmatic use
     category?: ShopperProducts.schemas['Category'];
+    // Whether to display the category description on the card
+    showDescription?: boolean;
     // Page Designer props (passed by Component wrapper, must be extracted to avoid passing to DOM)
     regionId?: string;
     page?: ShopperExperience.schemas['Page'];
@@ -43,8 +54,9 @@ interface PopularCategoryProps extends ComponentProps<'div'> {
 
 /* v8 ignore start - do not test decorators in unit tests, decorator functionality is tested separately*/
 @Component('popularCategory', {
-    name: 'Popular Category',
+    name: 'Category Card',
     description: 'Displays a single category card with image, title, description, and shop now button',
+    group: 'Content',
 })
 export class PopularCategoryMetadata {
     @AttributeDefinition({
@@ -55,9 +67,6 @@ export class PopularCategoryMetadata {
     category?: string;
 }
 /* v8 ignore stop */
-
-/* eslint-disable-next-line react-refresh/only-export-components*/
-export const loader = loaders.server;
 
 /**
  * PopularCategory component that displays a single category as an image card
@@ -72,6 +81,7 @@ export const loader = loaders.server;
  */
 export default function PopularCategory({
     category,
+    showDescription = false,
     // Page Designer props - extracted to avoid passing to DOM
     regionId: _regionId,
     page: _page,
@@ -80,6 +90,8 @@ export default function PopularCategory({
     designMetadata: _designMetadata,
     // Loader data - full category object fetched by loader
     data,
+    className,
+    ...rest
 }: PopularCategoryProps) {
     const { t } = useTranslation('home');
     const config = useConfig<AppConfig>();
@@ -95,7 +107,7 @@ export default function PopularCategory({
 
     const finalCategoryId = categoryData.id || '';
     const finalName = categoryData.name || '';
-    const finalDescription = categoryData.pageDescription || categoryData.description || '';
+    const finalDescription = showDescription ? categoryData.pageDescription || categoryData.description || '' : '';
 
     // Determine image URL - priority: category image > category banner > hero fallback
     const categoryImageUrl =
@@ -108,9 +120,12 @@ export default function PopularCategory({
     return (
         <Link
             to={`/category/${finalCategoryId}`}
-            className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl flex-shrink-0 w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px]"
-            role="listitem">
-            <div className="group relative overflow-hidden rounded-xl bg-muted h-full">
+            className={cn(
+                'block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                className
+            )}
+            {...rest}>
+            <div className="group relative overflow-hidden bg-muted h-full">
                 <div className="aspect-square overflow-hidden">
                     <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-105">
                         <DynamicImage
@@ -118,7 +133,7 @@ export default function PopularCategory({
                             alt={finalName}
                             className="w-full h-full"
                             imageProps={{ className: 'w-full h-full object-cover' }}
-                            widths={[240, 260, 280, 300]}
+                            widths={carouselItemImageWidths}
                             loading="eager"
                         />
                     </div>

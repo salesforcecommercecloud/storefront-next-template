@@ -90,7 +90,7 @@ class OrderListPage {
         const hrefs = await I.grabAttributeFromAll('a[href*="/account/orders/"]', 'href');
         if (hrefs[index]) {
             // Extract order number from URL like /account/orders/00097407
-            const match = hrefs[index].match(/\/account\/orders\/(.+)$/);
+            const match = hrefs[index].match(/\/account\/orders\/([^?]+)/);
             return match ? match[1] : '';
         }
         return '';
@@ -103,7 +103,7 @@ class OrderListPage {
     async getAllOrderNumbers(): Promise<string[]> {
         const hrefs = await I.grabAttributeFromAll('a[href*="/account/orders/"]', 'href');
         return hrefs.map((href) => {
-            const match = href.match(/\/account\/orders\/(.+)$/);
+            const match = href.match(/\/account\/orders\/([^?]+)/);
             return match ? match[1] : '';
         });
     }
@@ -115,7 +115,7 @@ class OrderListPage {
     clickViewDetails(orderNumber?: string): void {
         if (orderNumber) {
             // Use $= (ends-with) so the selector works with and without a url prefix
-            I.click(`a[href$="/account/orders/${orderNumber}"]`);
+            I.click(`a[href*="/account/orders/${orderNumber}"]`);
         } else {
             I.click(this.locators.orderCardFirst);
         }

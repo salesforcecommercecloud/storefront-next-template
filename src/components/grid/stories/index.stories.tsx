@@ -215,6 +215,63 @@ Grid with max-width constraint.
     },
 };
 
+export const WithContainerAlignment: Story = {
+    render: () => (
+        <div className="space-y-8">
+            <div className="border-2 border-dashed border-gray-300 p-4">
+                <h3 className="text-sm font-semibold mb-2">Align: Start (Default)</h3>
+                <Grid columns="3" maxWidth="lg" containerAlign="start" columnGap="4">
+                    <div className="bg-muted p-4 rounded">Item 1</div>
+                    <div className="bg-muted p-4 rounded">Item 2</div>
+                    <div className="bg-muted p-4 rounded">Item 3</div>
+                </Grid>
+            </div>
+            <div className="border-2 border-dashed border-gray-300 p-4">
+                <h3 className="text-sm font-semibold mb-2">Align: Center</h3>
+                <Grid columns="3" maxWidth="lg" containerAlign="center" columnGap="4">
+                    <div className="bg-muted p-4 rounded">Item 1</div>
+                    <div className="bg-muted p-4 rounded">Item 2</div>
+                    <div className="bg-muted p-4 rounded">Item 3</div>
+                </Grid>
+            </div>
+            <div className="border-2 border-dashed border-gray-300 p-4">
+                <h3 className="text-sm font-semibold mb-2">Align: End</h3>
+                <Grid columns="3" maxWidth="lg" containerAlign="end" columnGap="4">
+                    <div className="bg-muted p-4 rounded">Item 1</div>
+                    <div className="bg-muted p-4 rounded">Item 2</div>
+                    <div className="bg-muted p-4 rounded">Item 3</div>
+                </Grid>
+            </div>
+        </div>
+    ),
+    parameters: {
+        docs: {
+            story: `
+Grid container alignment when maxWidth is set.
+
+### Features:
+- containerAlign="start" - Grid aligns to the left
+- containerAlign="center" - Grid centers horizontally (mx-auto)
+- containerAlign="end" - Grid aligns to the right
+- Most useful when maxWidth < full width
+            `,
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        // Verify all three alignment sections are rendered
+        const startHeading = await canvas.findByText(/align: start \(default\)/i, {}, { timeout: 5000 });
+        await expect(startHeading).toBeInTheDocument();
+        const centerHeading = await canvas.findByText(/align: center/i, {}, { timeout: 5000 });
+        await expect(centerHeading).toBeInTheDocument();
+        const endHeading = await canvas.findByText(/align: end/i, {}, { timeout: 5000 });
+        await expect(endHeading).toBeInTheDocument();
+    },
+};
+
 export const WithVerticalAlignment: Story = {
     render: () => (
         <Grid columns="3" verticalAlignment="center" columnGap="4" className="h-64">
@@ -247,7 +304,7 @@ Grid with vertical center alignment.
 
 export const WithBackgroundGradient: Story = {
     render: () => (
-        <Grid columns="2" backgroundGradient="blue" columnGap="6" className="p-8 rounded-lg">
+        <Grid columns="2" backgroundGradient="blue" columnGap="6" className="p-8 rounded-none">
             <div className="bg-white p-4 rounded shadow">Item 1</div>
             <div className="bg-white p-4 rounded shadow">Item 2</div>
         </Grid>
@@ -277,8 +334,8 @@ Grid with blue gradient background.
 export const WithBackgroundBlur: Story = {
     render: () => (
         <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg" />
-            <Grid columns="2" backgroundBlur="md" columnGap="4" className="relative p-6 rounded-lg bg-white/30">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-none" />
+            <Grid columns="2" backgroundBlur="md" columnGap="4" className="relative p-6 rounded-none bg-white/30">
                 <div className="bg-white/80 p-4 rounded">Blurred Background</div>
                 <div className="bg-white/80 p-4 rounded">Glassmorphism Effect</div>
             </Grid>
@@ -314,7 +371,7 @@ export const FullFeatured: Story = {
             columnGap="6"
             verticalAlignment="stretch"
             backgroundGradient="purple"
-            className="mx-auto p-8 rounded-xl">
+            className="mx-auto p-8 rounded-none">
             <div className="bg-white p-4 rounded shadow">Feature 1</div>
             <div className="bg-white p-4 rounded shadow">Feature 2</div>
             <div className="bg-white p-4 rounded shadow">Feature 3</div>

@@ -18,11 +18,15 @@ import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import OrderSummary from '../index';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import emptyBasket from '@/components/__mocks__/empty-basket';
 import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__mocks__/basket-with-multiple-items';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -160,9 +164,9 @@ const meta: Meta<typeof OrderSummary> = {
     decorators: [
         (Story: React.ComponentType) => (
             <ActionLogger>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <Story />
-                </CurrencyWrapper>
+                </SiteProvider>
             </ActionLogger>
         ),
     ],
@@ -190,6 +194,24 @@ const mockBasketWithPromos = {
             price: -59.99,
         },
     ],
+} as ShopperBasketsV2.schemas['Basket'];
+
+const mockBasketWithItemPromos = {
+    ...basketWithMultipleItems,
+    productItems: [
+        {
+            ...basketWithMultipleItems.productItems[0],
+            priceAdjustments: [{ priceAdjustmentId: 'item-adj-1', itemText: '$10 Off Ties', price: -10.0 }],
+            priceAfterItemDiscount: 28.38,
+        },
+        {
+            ...basketWithMultipleItems.productItems[1],
+            priceAdjustments: [{ priceAdjustmentId: 'item-adj-2', itemText: '15% Off Tops', price: -5.28 }],
+            priceAfterItemDiscount: 29.91,
+        },
+    ],
+    productSubTotal: 58.29,
+    productTotal: 58.29,
 } as ShopperBasketsV2.schemas['Basket'];
 
 const mockProductMap: Record<string, ShopperProducts.schemas['Product']> = {};
@@ -281,6 +303,29 @@ export const WithAppliedPromotions: Story = {
             // If elements not found, verify component still renders
             void expect(canvasElement).toBeInTheDocument();
         }
+    },
+};
+
+export const WithItemLevelPromotions: Story = {
+    args: {
+        basket: mockBasketWithItemPromos,
+        showPromoCodeForm: false,
+        showCartItems: false,
+        showHeading: true,
+        itemsExpanded: false,
+        isEstimate: false,
+        productsByItemId: mockProductMap,
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const tiePromo = Array.from(canvasElement.querySelectorAll('span, div')).find((el) =>
+            el.textContent?.includes('$10 Off Ties')
+        );
+        void expect(tiePromo).toBeInTheDocument();
+        const topPromo = Array.from(canvasElement.querySelectorAll('span, div')).find((el) =>
+            el.textContent?.includes('15% Off Tops')
+        );
+        void expect(topPromo).toBeInTheDocument();
     },
 };
 
@@ -408,6 +453,126 @@ export const EmptyBasket: Story = {
             void expect(emptyMessage).toBeInTheDocument();
         } else {
             // If empty message not found, verify component still renders
+            void expect(canvasElement).toBeInTheDocument();
+        }
+    },
+};
+
+export const MobileCollapsible: Story = {
+    args: {
+        basket: mockBasket,
+        showPromoCodeForm: false,
+        showCartItems: false,
+        showHeading: false,
+        itemsExpanded: false,
+        isEstimate: true,
+        productsByItemId: mockProductMap,
+    },
+    render: (args) => {
+        const totalItems = args.basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
+        return (
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="order-summary" className="border-b-0">
+                    <AccordionTrigger className="px-[var(--cart-summary-px)] py-4 hover:no-underline">
+                        <span className="flex-1 text-left text-sm font-semibold text-primary">
+                            Estimated Total ({totalItems} items)
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-0">
+                        <OrderSummary
+                            {...args}
+                            showCheckoutAction={false}
+                            className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                        />
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        );
+    },
+    parameters: {
+        viewport: {
+            defaultViewport: 'mobile1',
+        },
+        docs: {
+            description: {
+                story: 'Mobile view with collapsible accordion. On mobile (< 768px), the Order Summary is collapsed by default with a trigger showing "Estimated Total (X items)". Click to expand and see order details.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Check for mobile accordion trigger with item count
+        const accordionTrigger = Array.from(canvasElement.querySelectorAll('button')).find((button) =>
+            button.textContent?.toLowerCase().includes('estimated total')
+        );
+        const showOrderSummaryButton = Array.from(canvasElement.querySelectorAll('button, a')).find((element) =>
+            element.textContent?.toLowerCase().includes('show order summary')
+        );
+        if (accordionTrigger) {
+            void expect(accordionTrigger).toBeInTheDocument();
+            void expect(accordionTrigger.textContent).toMatch(/\d+\s+items?/i);
+            void expect(showOrderSummaryButton).toBeUndefined();
+        } else {
+            // If not in mobile viewport, verify component still renders
+            void expect(canvasElement).toBeInTheDocument();
+        }
+    },
+};
+
+export const MobileExpanded: Story = {
+    args: {
+        basket: mockBasket,
+        showPromoCodeForm: false,
+        showCartItems: false,
+        showHeading: false,
+        itemsExpanded: true,
+        isEstimate: true,
+        productsByItemId: mockProductMap,
+    },
+    render: (args) => {
+        const totalItems = args.basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
+        return (
+            <Accordion type="single" collapsible defaultValue="order-summary" className="w-full">
+                <AccordionItem value="order-summary" className="border-b-0">
+                    <AccordionTrigger className="px-[var(--cart-summary-px)] py-4 hover:no-underline">
+                        <span className="flex-1 text-left text-sm font-semibold text-primary">
+                            Estimated Total ({totalItems} items)
+                        </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-0">
+                        <OrderSummary
+                            {...args}
+                            showCheckoutAction={false}
+                            className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                        />
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        );
+    },
+    parameters: {
+        viewport: {
+            defaultViewport: 'mobile1',
+        },
+        docs: {
+            description: {
+                story: 'Mobile view with collapsible accordion expanded by default to display cart items and summary details.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const accordionTrigger = Array.from(canvasElement.querySelectorAll('button')).find((button) =>
+            button.textContent?.toLowerCase().includes('estimated total')
+        );
+        const showOrderSummaryButton = Array.from(canvasElement.querySelectorAll('button, a')).find((element) =>
+            element.textContent?.toLowerCase().includes('show order summary')
+        );
+        if (accordionTrigger) {
+            void expect(accordionTrigger).toBeInTheDocument();
+            void expect(accordionTrigger.textContent).toMatch(/\d+\s+items?/i);
+            void expect(showOrderSummaryButton).toBeUndefined();
+        } else {
             void expect(canvasElement).toBeInTheDocument();
         }
     },

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 /* eslint-disable react-refresh/only-export-components -- provider and hook are co-located by design */
-'use client';
-
 import { createContext, useCallback, type PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { useProductContentAdapter } from '@/providers/product-content';
 import { useProduct } from '@/providers/product-context';

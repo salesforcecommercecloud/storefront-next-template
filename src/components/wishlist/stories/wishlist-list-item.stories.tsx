@@ -23,8 +23,8 @@ import WishlistListItem from '../wishlist-list-item';
 import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { CurrencyProvider } from '@/providers/currency';
-import { mockConfig } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import BasketProvider from '@/providers/basket';
 
 // -- Shared mock data --
@@ -56,9 +56,28 @@ const standardWishlistItem: ShopperCustomers.schemas['CustomerProductListItem'] 
     quantity: 1,
 };
 
-// Out-of-stock product
+// Out-of-stock standard product (item-level)
 const outOfStockProduct: ShopperProducts.schemas['Product'] = {
     ...standardProd,
+    inventory: {
+        ats: 0,
+        backorderable: false,
+        id: 'inventory_m',
+        orderable: false,
+        preorderable: false,
+        stockLevel: 0,
+    },
+};
+
+// Master product whose specific saved variant is not orderable — exercises the disabled
+// "Out of stock" button. We mark every variant as non-orderable so the resolved variant
+// pulled via masterWishlistItem/variantWishlistItem is flagged as OOS by the hook.
+const outOfStockVariantMasterProduct: ShopperProducts.schemas['Product'] = {
+    ...masterProduct,
+    variants: masterProduct.variants?.map((variant) => ({
+        ...variant,
+        orderable: false,
+    })),
     inventory: {
         ats: 0,
         backorderable: false,
@@ -128,11 +147,11 @@ Horizontal card row for a single wishlist product.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <BasketProvider>
-                    <CurrencyProvider value="USD">
+                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="USD">
+                    <BasketProvider>
                         <Story />
-                    </CurrencyProvider>
-                </BasketProvider>
+                    </BasketProvider>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],
@@ -165,7 +184,7 @@ export const Default: Story = {
 };
 
 export const OutOfStock: Story = {
-    name: 'Out of stock',
+    name: 'Out of stock (standard product)',
     args: {
         product: outOfStockProduct,
         wishlistItem: standardWishlistItem,
@@ -177,6 +196,26 @@ export const OutOfStock: Story = {
 
         await expect(canvas.getByText(outOfStockProduct.name as string)).toBeInTheDocument();
         await expect(canvas.getByText('Out of stock')).toBeInTheDocument();
+    },
+};
+
+export const OutOfStockVariant: Story = {
+    name: 'Out of stock (specific variant — disabled button)',
+    args: {
+        product: outOfStockVariantMasterProduct,
+        wishlistItem: variantWishlistItem,
+        onRemove: action('onRemove'),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Disabled "Out of stock" button takes the place of "Add to cart"
+        const oosButton = canvas.getByRole('button', { name: /out of stock/i });
+        await expect(oosButton).toBeInTheDocument();
+        await expect(oosButton).toBeDisabled();
+        // Add to cart should not render when variant is OOS
+        await expect(canvas.queryByRole('button', { name: /add to cart/i })).toBeNull();
     },
 };
 

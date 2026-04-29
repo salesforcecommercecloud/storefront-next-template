@@ -279,6 +279,87 @@ describe('useScapiFetcher', () => {
         });
     });
 
+    describe('helpers overload', () => {
+        it('should encode helper resource with correct format for load', () => {
+            const { result } = renderHook(() =>
+                useScapiFetcher('helpers', 'basket', 'getOrCreateBasket', {
+                    params: { path: { basketId: 'basket-123' } },
+                    body: { currency: 'USD' },
+                })
+            );
+
+            act(() => {
+                void result.current.load();
+            });
+
+            expect(mockFetcher.load).toHaveBeenCalled();
+            const callArg = mockFetcher.load.mock.calls[0][0];
+            // Verify it starts with the resource API route
+            expect(callArg).toMatch(/^\/resource\/api\/client\//);
+            // Decode the resource to verify the format
+            const resourcePart = callArg.replace('/resource/api/client/', '');
+            const decoded = JSON.parse(atob(resourcePart));
+            expect(decoded[0]).toBe('helpers');
+            expect(decoded[1]).toBe('basket');
+            expect(decoded[2]).toEqual({
+                helperName: 'getOrCreateBasket',
+                params: { path: { basketId: 'basket-123' } },
+                body: { currency: 'USD' },
+            });
+        });
+
+        it('should encode helper resource without options', () => {
+            const { result } = renderHook(() => useScapiFetcher('helpers', 'auth', 'loginAsGuest'));
+
+            act(() => {
+                void result.current.load();
+            });
+
+            expect(mockFetcher.load).toHaveBeenCalled();
+            const callArg = mockFetcher.load.mock.calls[0][0];
+            const resourcePart = callArg.replace('/resource/api/client/', '');
+            const decoded = JSON.parse(atob(resourcePart));
+            expect(decoded[0]).toBe('helpers');
+            expect(decoded[1]).toBe('auth');
+            expect(decoded[2]).toEqual({ helperName: 'loginAsGuest' });
+        });
+
+        it('should call fetcher.submit with correct action for helpers', () => {
+            const { result } = renderHook(() =>
+                useScapiFetcher('helpers', 'basket', 'getOrCreateBasket', {
+                    params: { path: { basketId: 'basket-123' } },
+                    body: { currency: 'USD' },
+                })
+            );
+
+            const submitData = { currency: 'EUR' };
+            act(() => {
+                void result.current.submit(submitData);
+            });
+
+            expect(mockFetcher.submit).toHaveBeenCalled();
+            const [payload, opts] = mockFetcher.submit.mock.calls[0];
+            expect(payload).toEqual(submitData);
+            expect(opts.method).toBe('POST');
+            expect(opts.action).toMatch(/^\/resource\/api\/client\//);
+        });
+
+        it('should return data from fetcher response', () => {
+            const mockData = { basketId: 'basket-123', currency: 'USD' };
+            mockFetcher.data = { success: true, data: mockData };
+
+            const { result } = renderHook(() =>
+                useScapiFetcher('helpers', 'basket', 'getOrCreateBasket', {
+                    params: { path: { basketId: 'basket-123' } },
+                    body: { currency: 'USD' },
+                })
+            );
+
+            expect(result.current.data).toBe(mockData);
+            expect(result.current.success).toBe(true);
+        });
+    });
+
     describe('request cancellation', () => {
         it('should handle multiple concurrent requests', () => {
             const { result } = renderHook(() =>

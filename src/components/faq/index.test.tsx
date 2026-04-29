@@ -19,14 +19,23 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Faq from './index';
 
-const { mockOpenShopperAgentAndSendMessage, mockUseConfig } = vi.hoisted(() => ({
+const { mockOpenShopperAgentAndSendMessage, mockUseConfig, mockIsShopperAgentContextUiEnabled } = vi.hoisted(() => ({
     mockOpenShopperAgentAndSendMessage: vi.fn(),
     mockUseConfig: vi.fn(),
+    mockIsShopperAgentContextUiEnabled: vi.fn(() => true),
 }));
 
 vi.mock('@/components/shopper-agent', () => ({
     openShopperAgentAndSendMessage: mockOpenShopperAgentAndSendMessage,
 }));
+
+vi.mock('@/lib/shopper-agent-context-ui', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/shopper-agent-context-ui')>();
+    return {
+        ...actual,
+        isShopperAgentContextUiEnabled: () => mockIsShopperAgentContextUiEnabled(),
+    };
+});
 
 vi.mock('@salesforce/storefront-next-runtime/config', async () => {
     const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
@@ -72,6 +81,7 @@ vi.mock('@/providers/product-view', () => ({
 describe('Faq', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockIsShopperAgentContextUiEnabled.mockReturnValue(true);
         mockUseProductContent.mockReturnValue({
             adapter: { getFaqQuestions: mockGetFaqQuestions },
             isEnabled: true,
@@ -150,5 +160,17 @@ describe('Faq', () => {
 
         expect(mockGetFaqQuestions).not.toHaveBeenCalled();
         expect(mockOpenShopperAgentAndSendMessage).not.toHaveBeenCalled();
+    });
+
+    it('renders nothing when production context UI is off even if agent config is valid', async () => {
+        mockIsShopperAgentContextUiEnabled.mockReturnValue(false);
+        const { container } = render(<Faq />);
+
+        await waitFor(() => {
+            expect(mockGetFaqQuestions).not.toHaveBeenCalled();
+        });
+
+        expect(container.firstChild).toBeNull();
+        mockIsShopperAgentContextUiEnabled.mockReturnValue(true);
     });
 });

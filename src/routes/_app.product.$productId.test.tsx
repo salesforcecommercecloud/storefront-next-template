@@ -468,6 +468,7 @@ describe('Product Detail Route', () => {
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
+                pageUrl: '/product/test-product-123',
                 productSchema: fulfilledSchemaPromise,
             };
 

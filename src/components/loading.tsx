@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import { useNavigation } from 'react-router';
 
 /**
- * Loading indicator optimized for React Server Components (RSC). The indicator shows a loading
+ * Loading indicator optimized for streaming SSR. The indicator shows a loading
  * state whenever the navigation state diverges from "idle" for more than 150ms. It's implemented
  * to do this only for client-side (follow-up) navigation requests, but not for the initial SSR
  * page load.

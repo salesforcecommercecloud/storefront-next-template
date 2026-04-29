@@ -19,18 +19,31 @@ import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import ShippingMultiAddress from './shipping-multi-address';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
+const defaultMockSite = {
+    id: 'RefArch',
+    defaultLocale: 'en-US',
+    defaultCurrency: 'USD',
+    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+    supportedCurrencies: ['USD'],
+};
+const defaultMockLocale =
+    defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
+    defaultMockSite.supportedLocales[0];
+
 const wrapper = ({ children }: { children: ReactNode }) => (
-    <ConfigProvider config={mockConfig}>{children}</ConfigProvider>
+    <ConfigProvider config={mockConfig}>
+        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+            {children}
+        </SiteProvider>
+    </ConfigProvider>
 );
 
 // Mock hooks
 vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
-}));
 vi.mock('@/hooks/checkout/use-customer-profile', () => ({
     useCustomerProfile: vi.fn(),
 }));
@@ -864,6 +877,60 @@ describe('ShippingMultiAddress', () => {
             }
         });
 
+        test('assigns auto-generated addressId when saving address without customerId', async () => {
+            const user = userEvent.setup();
+            const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
+                {
+                    itemId: 'item-1',
+                    productId: 'product-1',
+                    productName: 'Test Product',
+                    quantity: 1,
+                    price: 29.99,
+                },
+            ];
+
+            useBasket.mockReturnValue({
+                basketId: 'test-basket',
+                currency: 'USD',
+                productItems: mockProductItems,
+            });
+
+            // No customerId — showAddressId will be false, addressId field is hidden
+            useCustomerProfile.mockReturnValue({
+                addresses: [],
+                paymentInstruments: [],
+            });
+
+            render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
+
+            const addAddressButton = screen.getAllByText('+ Add New Address');
+            await user.click(addAddressButton[0]);
+
+            // addressId field should NOT be visible
+            expect(screen.queryByPlaceholderText(/e\.g\., Home, Work/i)).not.toBeInTheDocument();
+
+            await user.type(screen.getByPlaceholderText(/first name/i), 'Jane');
+            await user.type(screen.getByPlaceholderText(/last name/i), 'Doe');
+            await user.type(screen.getByRole('textbox', { name: /address line 1|^address$/i }), '789 New St');
+            await user.type(screen.getByPlaceholderText(/city/i), 'Seattle');
+            await user.selectOptions(screen.getByRole('combobox', { name: /state/i }), 'WA');
+            await user.type(screen.getByRole('textbox', { name: /zip|postal/i }), '98101');
+            await user.type(screen.getByRole('textbox', { name: /phone/i }), '2065551234');
+
+            await user.click(screen.getByRole('button', { name: 'Save' }));
+
+            await waitFor(() => {
+                expect(screen.queryByText('Add New Address')).not.toBeInTheDocument();
+            });
+
+            // The address should appear in the dropdown with an auto-generated addr_ id
+            const select = screen.getByTestId('delivery-address-select-item-1');
+            const options = within(select).getAllByRole('option');
+            const newAddressOption = options.find((opt) => opt.textContent?.includes('Jane Doe'));
+            expect(newAddressOption).toBeTruthy();
+            expect(newAddressOption?.getAttribute('value')).toMatch(/^addr_/);
+        });
+
         test('resets form when dialog is closed and reopened', async () => {
             const user = userEvent.setup();
             const mockProductItems: ShopperBasketsV2.schemas['ProductItem'][] = [
@@ -1369,28 +1436,6 @@ describe('ShippingMultiAddress', () => {
 
             // Verify onSubmit was not called because form should return early
             expect(mockOnSubmit).not.toHaveBeenCalled();
-        });
-
-        test('displays field errors from actionData', () => {
-            const fieldErrors = {
-                shippingAddress: 'Shipping address is required',
-                city: 'City is invalid',
-            };
-
-            render(
-                <ShippingMultiAddress
-                    {...createDefaultProps({
-                        actionData: {
-                            fieldErrors,
-                        },
-                    })}
-                />,
-                { wrapper }
-            );
-
-            // Verify field errors are displayed
-            expect(screen.getByText('Shipping address is required')).toBeInTheDocument();
-            expect(screen.getByText('City is invalid')).toBeInTheDocument();
         });
     });
 });

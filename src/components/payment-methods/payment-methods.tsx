@@ -24,6 +24,7 @@ import { AddPaymentMethodDialog } from './add-payment-method-dialog';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/toast';
 import { getLastFourDigits } from '@/lib/payment-utils';
+import { UITarget } from '@/targets/ui-target';
 
 export interface PaymentMethodsProps {
     customer: ShopperCustomers.schemas['Customer'] | null;
@@ -153,7 +154,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
     return (
         <div className="space-y-5">
             {/* Page Header */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <h1
                         className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
@@ -165,57 +166,66 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
             </Card>
 
             {/* Payment Methods Section */}
-            <Card className="p-6">
-                <div className="flex items-center justify-between pb-6 border-b">
-                    <div>
-                        <h2 className="text-base font-semibold text-foreground mb-1">
-                            {t('navigation.paymentMethods')}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">{t('paymentMethods.subtitle')}</p>
+            <UITarget targetId="sfcc.accountPaymentOptions.payments.savedPaymentMethods">
+                <Card className="p-6 rounded-none shadow-none">
+                    <div className="flex items-center justify-between pb-6 border-b">
+                        <div>
+                            <h2 className="text-base font-semibold text-foreground mb-1">
+                                {t('navigation.paymentMethods')}
+                            </h2>
+                            <p className="text-sm text-muted-foreground">{t('paymentMethods.subtitle')}</p>
+                        </div>
+                        <Button variant="outline" onClick={handleAddClick}>
+                            {t('paymentMethods.addPaymentMethod')}
+                        </Button>
                     </div>
-                    <Button variant="outline" onClick={handleAddClick}>
-                        {t('paymentMethods.addPaymentMethod')}
-                    </Button>
-                </div>
 
-                <div className="pt-2">
-                    {!hasPaymentMethods ? (
-                        /* Empty State */
-                        <div className="py-8 text-center">
-                            <div className="flex flex-col items-center gap-4">
-                                <div className="text-muted-foreground">
-                                    <p className="text-lg font-medium">{t('paymentMethods.noSavedPaymentMethods')}</p>
-                                    <p className="text-sm mt-1">{t('paymentMethods.empty')}</p>
+                    <div className="pt-2">
+                        {!hasPaymentMethods ? (
+                            /* Empty State */
+                            <div className="py-8 text-center">
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="text-muted-foreground">
+                                        <p className="text-lg font-medium">
+                                            {t('paymentMethods.noSavedPaymentMethods')}
+                                        </p>
+                                        <p className="text-sm mt-1">{t('paymentMethods.empty')}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        /* Payment Methods List */
-                        <div className="space-y-6">
-                            {paymentMethods.map((method) => (
-                                <PaymentMethodCard
-                                    key={method.id}
-                                    paymentMethod={method}
-                                    onRemove={() => handleRemoveClick(method)}
-                                    onSetDefault={() => handleSetDefault(method)}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </Card>
+                        ) : (
+                            /* Payment Methods List */
+                            <div className="space-y-6">
+                                {paymentMethods.map((method) => (
+                                    <PaymentMethodCard
+                                        key={method.id}
+                                        paymentMethod={method}
+                                        onRemove={() => handleRemoveClick(method)}
+                                        onSetDefault={() => handleSetDefault(method)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </Card>
+            </UITarget>
+            <UITarget targetId="sfcc.myAccountPaymentMethods.giftCards.manage" />
 
             {/* Add Payment Method Dialog */}
-            <AddPaymentMethodDialog
-                open={isAddDialogOpen}
-                onOpenChange={setIsAddDialogOpen}
-                onSubmitForm={handleAddSubmitForm}
-                addresses={customer?.addresses || []}
-                isLoading={
-                    (paymentFetcher.state === 'submitting' || paymentFetcher.state === 'loading') &&
-                    currentIntentRef.current === 'add'
-                }
-            />
+            {isAddDialogOpen && (
+                <UITarget targetId="sfcc.myAccount.payments.addMethod">
+                    <AddPaymentMethodDialog
+                        open={isAddDialogOpen}
+                        onOpenChange={setIsAddDialogOpen}
+                        onSubmitForm={handleAddSubmitForm}
+                        addresses={customer?.addresses || []}
+                        isLoading={
+                            (paymentFetcher.state === 'submitting' || paymentFetcher.state === 'loading') &&
+                            currentIntentRef.current === 'add'
+                        }
+                    />
+                </UITarget>
+            )}
 
             {/* Remove Payment Method Dialog */}
             <RemovePaymentMethodDialog

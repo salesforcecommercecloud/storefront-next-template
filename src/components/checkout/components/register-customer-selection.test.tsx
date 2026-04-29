@@ -199,13 +199,13 @@ describe('RegisterCustomerSelection', () => {
         mockUseFetcher.mockReturnValue({
             submit: mockSubmit,
             state: 'idle',
-            data: { success: false, error: 'Registration failed' },
+            data: { success: false, error: { code: 'OPERATION_FAILED', message: 'Registration failed' } },
         });
         rerender(<RegisterCustomerSelection showToast={mockShowToast} />);
 
         // Should show error toast
         await waitFor(() => {
-            expect(mockShowToast).toHaveBeenCalledWith('Registration failed', 'error');
+            expect(mockShowToast).toHaveBeenCalledWith('Initiation failed', 'error');
         });
 
         // Checkbox should be unchecked after error state (state updates async)

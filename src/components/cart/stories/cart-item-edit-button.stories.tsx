@@ -237,7 +237,7 @@ function StoryQuantityPicker() {
 export const InCartItem: Story = {
     render: () => (
         <div className="flex justify-center w-full">
-            <div className="bg-card rounded-lg shadow-md p-4 md:p-8 w-full max-w-3xl">
+            <div className="bg-card rounded-none shadow-md p-4 md:p-8 w-full max-w-3xl">
                 {/* Delivery Header */}
                 <div className="flex items-start gap-2 mb-6">
                     <Info className="w-5 h-5 text-foreground mt-1 shrink-0" />
@@ -253,7 +253,7 @@ export const InCartItem: Story = {
                 <div className="flex gap-4 md:gap-6 py-4 px-4 md:px-6">
                     {/* Product Image */}
                     <a
-                        className="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 bg-muted rounded-lg overflow-hidden block hover:opacity-90 transition-opacity"
+                        className="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 bg-muted rounded-none overflow-hidden block hover:opacity-90 transition-opacity"
                         href="#"
                         onClick={(e) => e.preventDefault()}>
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -272,7 +272,7 @@ export const InCartItem: Story = {
                             </a>
                             {/* Mobile delivery badge */}
                             <div className="md:hidden flex-shrink-0">
-                                <Badge variant="secondary" className="rounded-md gap-1">
+                                <Badge variant="secondary" className="rounded-none gap-1">
                                     <ShoppingCart className="w-3 h-3" />
                                     Delivery
                                 </Badge>
@@ -329,7 +329,7 @@ export const InCartItem: Story = {
                     {/* Desktop right column: delivery badge, price, quantity */}
                     <div className="hidden md:flex flex-col items-end flex-shrink-0 min-w-[140px]">
                         <div className="mb-2">
-                            <Badge variant="secondary" className="rounded-md gap-1">
+                            <Badge variant="secondary" className="rounded-none gap-1">
                                 <ShoppingCart className="w-3 h-3" />
                                 Delivery
                             </Badge>

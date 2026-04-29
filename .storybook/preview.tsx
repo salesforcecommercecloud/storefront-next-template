@@ -1,13 +1,13 @@
 import type { Preview } from '@storybook/react-vite';
 import type { ComponentType, ReactNode } from 'react';
 import { useMemo } from 'react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { createMemoryRouter, Outlet, RouterProvider, type RouteObject } from 'react-router';
 import { applyProviders } from '../src/lib/provider-utils';
 import { storybookProviders } from './storybook-providers';
 import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
 import { masterProduct } from '@/components/__mocks__/master-variant-product';
-import '../src/app.css'; // Import global CSS
-import { TargetProviders } from '@/targets/target-providers';
+import '../src/theme/index.css'; // Import global CSS
+import { UITargetProviders } from '@/targets/ui-target-providers';
 
 // Create HOC that applies all Storybook providers
 // This uses the real provider components with mock data injected via wrapper components
@@ -19,14 +19,42 @@ const StorybookWrapper = withStorybookProviders(({ children }: { children: React
 ));
 
 // Router wrapper component that ensures React is initialized before rendering RouterProvider
-const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
+const RouterWrapper = ({
+    Story,
+    context,
+}: {
+    Story: ComponentType;
+    context: { parameters?: Record<string, unknown> };
+}) => {
+    // When a story provides `parameters.routeLoaderData`, wrap the story inside ancestor
+    // routes that expose their data via useRouteLoaderData(routeId). This lets components
+    // like CategoryBanner receive loader data without modifying the component itself.
+    const routeLoaderData = context.parameters?.routeLoaderData as Record<string, unknown> | undefined;
+
     const WrappedStory = (
         <StorybookWrapper>
-            <TargetProviders>
+            <UITargetProviders>
                 <Story />
-            </TargetProviders>
+            </UITargetProviders>
         </StorybookWrapper>
     );
+
+    // Build the main story route. When routeLoaderData is provided, each entry becomes a
+    // pathless ancestor layout route (element: <Outlet />) so useRouteLoaderData(id) resolves.
+    // The outermost entry gets path: '/' to anchor the route tree.
+    const storyRoute: RouteObject =
+        routeLoaderData && Object.keys(routeLoaderData).length > 0
+            ? Object.entries(routeLoaderData).reduceRight<RouteObject>(
+                  (child, [id, data], i) => ({
+                      ...(i === 0 ? { path: '/' } : {}),
+                      id,
+                      loader: () => data,
+                      element: <Outlet />,
+                      children: [child],
+                  }),
+                  { index: true, element: WrappedStory }
+              )
+            : { path: '/', element: WrappedStory };
 
     // Create a memory router for components that use React Router hooks (e.g., useFetcher)
     // This provides the data router context needed for useFetcher and other React Router hooks
@@ -38,10 +66,7 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
         () =>
             createMemoryRouter(
                 [
-                    {
-                        path: '/',
-                        element: WrappedStory,
-                    },
+                    storyRoute,
                     {
                         // Resource route for basket product enrichment
                         // Used by useBasketWithProducts hook to fetch full product details
@@ -156,7 +181,8 @@ const RouterWrapper = ({ Story }: { Story: ComponentType }) => {
                     initialEntries: ['/'],
                 }
             ),
-        [WrappedStory]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [WrappedStory, routeLoaderData]
     );
 
     return <RouterProvider router={router} />;
@@ -186,9 +212,9 @@ const preview: Preview = {
         },
     },
     decorators: [
-        (Story: ComponentType) => {
+        (Story: ComponentType, context: { parameters?: Record<string, unknown> }) => {
             // Use a wrapper component that ensures React is initialized before creating the router
-            return <RouterWrapper Story={Story} />;
+            return <RouterWrapper Story={Story} context={context} />;
         },
     ],
 };

@@ -48,7 +48,7 @@ export function PageType(config: PageTypeConfig) {
  * @returns PageTypeConfig object or undefined if not found
  */
 export function getPageTypeMetadata(target: unknown): PageTypeConfig | undefined {
-    return Reflect.getMetadata('page:type', target);
+    return Reflect.getMetadata('page:type', target as object);
 }
 
 /**
@@ -58,7 +58,7 @@ export function getPageTypeMetadata(target: unknown): PageTypeConfig | undefined
  * @returns Object containing page type metadata
  */
 export function getPageTypeDefinitions(target: unknown): { pageType?: PageTypeConfig } {
-    const pageType = Reflect.getMetadata('page:type', target) || undefined;
+    const pageType = Reflect.getMetadata('page:type', target as object) || undefined;
 
     return { pageType };
 }

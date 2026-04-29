@@ -33,7 +33,8 @@ function LocaleSwitcherMock(): ReactElement {
     const handleLocaleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newLocale = e.target.value;
         const formData = new FormData();
-        formData.append('locale', newLocale);
+        formData.append('type', 'locale');
+        formData.append('payload', JSON.stringify({ locale: newLocale }));
 
         // Change the language in i18next client-side for immediate UX
         await i18n.changeLanguage(newLocale);
@@ -41,7 +42,7 @@ function LocaleSwitcherMock(): ReactElement {
         // Mock the server-side submission
         mockFetcherSubmit(formData, {
             method: 'POST',
-            action: '/action/set-locale',
+            action: '/action/set-site-context',
         });
     };
 
@@ -165,10 +166,11 @@ export const LanguageSwitch: Story = {
         const formData = submitCall[0] as FormData;
         const options = submitCall[1];
 
-        await expect(formData.get('locale')).toBe('it-IT');
+        const payload = JSON.parse(formData.get('payload') as string);
+        await expect(payload.locale).toBe('it-IT');
         await expect(options).toEqual({
             method: 'POST',
-            action: '/action/set-locale',
+            action: '/action/set-site-context',
         });
     },
 };
@@ -206,10 +208,11 @@ export const ItalianToEnglish: Story = {
         const formData = submitCall[0] as FormData;
         const options = submitCall[1];
 
-        await expect(formData.get('locale')).toBe('en-GB');
+        const payload = JSON.parse(formData.get('payload') as string);
+        await expect(payload.locale).toBe('en-GB');
         await expect(options).toEqual({
             method: 'POST',
-            action: '/action/set-locale',
+            action: '/action/set-site-context',
         });
     },
 };

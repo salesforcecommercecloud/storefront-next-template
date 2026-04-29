@@ -17,14 +17,15 @@ import { z } from 'zod';
 import type { TFunction } from 'i18next';
 
 /** Accept any TFunction for schema factories (namespace branding differs by usage) */
-type SchemaTFunction = TFunction | ((key: string) => string);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SchemaTFunction = TFunction<any, any>;
 
 /**
  * Checkout validation schemas using factory functions to prevent i18next race conditions.
  *
  * Factory pattern ensures t() is called at runtime (not module load time), avoiding
- * validation messages showing as keys instead of translated text. Critical for RSC where
- * client-side i18next initializes separately from server-side.
+ * validation messages showing as keys instead of translated text. Critical for server rendering
+ * where client-side i18next initializes separately from server-side.
  *
  * @example
  * const { t } = useTranslation(); // or getTranslation() or getTranslation(context)
@@ -61,6 +62,7 @@ export const createShippingAddressSchema = (t: SchemaTFunction) => {
         city: z.string().min(1, t('checkout:shippingAddress.cityRequired')),
         stateCode: z.string().min(1, t('checkout:shippingAddress.stateRequired')),
         postalCode: z.string().min(1, t('checkout:shippingAddress.postalCodeRequired')),
+        countryCode: z.string().optional(),
         phoneCountryCode: z.string().optional(),
         phone: z.string().optional(),
     });
@@ -81,7 +83,7 @@ export const createPaymentSchema = (t: SchemaTFunction) => {
             cardholderName: z.string().optional(),
             expiryDate: z.string().optional(),
             cvv: z.string().optional(),
-            billingSameAsShipping: z.boolean(),
+            useDifferentBilling: z.boolean(),
             // Saved payment method fields
             selectedSavedPaymentMethod: z.string().optional(),
             useSavedPaymentMethod: z.boolean().optional(),
@@ -242,7 +244,7 @@ export const createPaymentSchema = (t: SchemaTFunction) => {
                 if (value === key || value === keyWithoutNs || value.includes(':')) return fallback;
                 return value;
             };
-            if (!data.billingSameAsShipping) {
+            if (data.useDifferentBilling) {
                 if (!data.billingFirstName?.trim()) {
                     ctx.addIssue({
                         code: 'custom',
@@ -321,7 +323,7 @@ export const getPaymentDefaultValues = (params: {
             paymentMethod?.holder || `${shippingAddress?.firstName || ''} ${shippingAddress?.lastName || ''}`.trim(),
         expiryDate: '',
         cvv: '',
-        billingSameAsShipping: true,
+        useDifferentBilling: false,
         // Saved payment method fields - default to new payment method
         useSavedPaymentMethod: false,
         selectedSavedPaymentMethod: undefined,
@@ -358,6 +360,7 @@ export const parseShippingAddressFromFormData = (formData: FormData): ShippingAd
         city: formData.get('city')?.toString() || '',
         stateCode: formData.get('stateCode')?.toString() || '',
         postalCode: formData.get('postalCode')?.toString() || '',
+        countryCode: formData.get('countryCode')?.toString() || 'US',
         phoneCountryCode: formData.get('phoneCountryCode')?.toString() || '',
         phone: formData.get('phone')?.toString() || '',
     };
@@ -375,7 +378,7 @@ export const parsePaymentFromFormData = (formData: FormData): PaymentData => {
         cardholderName: formData.get('cardholderName')?.toString() || '',
         expiryDate: formData.get('expiryDate')?.toString() || '',
         cvv: formData.get('cvv')?.toString() || '',
-        billingSameAsShipping: formData.get('billingSameAsShipping') === 'true',
+        useDifferentBilling: formData.get('useDifferentBilling') === 'true',
         billingFirstName: formData.get('billingFirstName')?.toString() || '',
         billingLastName: formData.get('billingLastName')?.toString() || '',
         billingAddress1: formData.get('billingAddress1')?.toString() || '',

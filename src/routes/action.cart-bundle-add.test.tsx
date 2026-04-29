@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.cart-bundle-add';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -31,9 +31,9 @@ const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() =
     return { createContext: React.createContext, actualReactRouter: reactRouter };
 });
 
-vi.mock('@/lib/api-clients');
+vi.mock('@/lib/api-clients.server');
 vi.mock('@salesforce/storefront-next-runtime/config');
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock('@/extensions/bopis/lib/basket-utils', () => ({
@@ -130,7 +130,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(true);
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalled();
         });
@@ -163,7 +163,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(true);
         });
 
@@ -194,7 +194,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(true);
             // The server action extracts productId and quantity from ProductSelectionValues
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledWith({
@@ -222,7 +222,7 @@ describe('action.cart-bundle-add', () => {
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await (response as Response).json();
+            const result = await response.json();
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });
@@ -232,9 +232,16 @@ describe('action.cart-bundle-add', () => {
                 method: 'GET',
             });
 
-            await expect(
-                action(createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' }))
-            ).rejects.toThrow();
+            const response = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            );
+
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(405);
+            const result = await response.json();
+            expect(result.success).toBe(false);
+            expect(result.error).toBeDefined();
+            expect(result.error.code).toBe('METHOD_NOT_ALLOWED');
         });
     });
 });

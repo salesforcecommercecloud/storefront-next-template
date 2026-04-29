@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
-import { useState } from 'react';
-import { useNavigate } from '@/hooks/use-navigate';
-import { useTranslation } from 'react-i18next';
-import { CartItemModal } from '@/components/cart-item-modal';
+import { lazy, Suspense, useState, useCallback, type MouseEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { createProductUrl } from '@/lib/product-utils';
+import { useProductTileContext } from './context';
 
 interface QuickAddButtonProps {
     productId: string;
@@ -32,6 +27,10 @@ interface QuickAddButtonProps {
     label?: string;
 }
 
+const CartItemModal = lazy(() =>
+    import('@/components/cart-item-modal').then((module) => ({ default: module.CartItemModal }))
+);
+
 /**
  * Client component that renders the "Quick Add" hover button on a product tile and manages
  * the add-mode CartItemModal lifecycle.
@@ -40,16 +39,21 @@ interface QuickAddButtonProps {
  * "Buy it Now" closes the modal and navigates to the PDP with the selected color pre-seeded.
  */
 export function QuickAddButton({ productId, productName, selectedColorValue, label }: QuickAddButtonProps) {
+    const [loaded, setLoaded] = useState(false);
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
-    const { t } = useTranslation('product');
+    const { navigate, t } = useProductTileContext();
 
     const resolvedLabel = label ?? t('quickAdd');
 
-    const handleBuyItNow = () => {
+    const handleBuyItNow = useCallback(() => {
         setOpen(false);
         void navigate(createProductUrl(productId, selectedColorValue ?? null, 'color'));
-    };
+    }, [navigate, productId, selectedColorValue]);
+    const handleOpenModal = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setLoaded(true);
+        setOpen(true);
+    }, []);
 
     return (
         <>
@@ -57,22 +61,22 @@ export function QuickAddButton({ productId, productName, selectedColorValue, lab
                 variant="outline"
                 size="default"
                 className="w-full shadow-sm cursor-pointer"
-                tabIndex={-1}
                 aria-label={`${resolvedLabel} ${productName}`}
-                onClick={(e) => {
-                    e.preventDefault();
-                    setOpen(true);
-                }}>
+                onClick={handleOpenModal}>
                 {resolvedLabel}
             </Button>
 
-            <CartItemModal
-                productId={productId}
-                open={open}
-                onOpenChange={setOpen}
-                onBuyNow={handleBuyItNow}
-                initialVariantSelections={selectedColorValue ? { color: selectedColorValue } : undefined}
-            />
+            {loaded && (
+                <Suspense fallback={null}>
+                    <CartItemModal
+                        productId={productId}
+                        open={open}
+                        onOpenChange={setOpen}
+                        onBuyNow={handleBuyItNow}
+                        initialVariantSelections={selectedColorValue ? { color: selectedColorValue } : undefined}
+                    />
+                </Suspense>
+            )}
         </>
     );
 }

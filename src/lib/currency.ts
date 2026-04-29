@@ -13,18 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext } from 'react-router';
 
 const formatterCache = new Map<string, Intl.NumberFormat>();
 
-/**
- * Format a number as a currency string
- * @param price - The price to format
- * @param locale - The locale to use for formatting
- * @param currency - The currency code to use
- * @returns Formatted currency string
- */
-export function formatCurrency(price: number, locale: string, currency: string): string {
+function getFormatter(locale: string, currency: string): Intl.NumberFormat {
     const key = `${locale}:${currency}`;
     if (!formatterCache.has(key)) {
         formatterCache.set(
@@ -37,15 +29,31 @@ export function formatCurrency(price: number, locale: string, currency: string):
             })
         );
     }
-    return (formatterCache.get(key) as Intl.NumberFormat).format(price);
+    return formatterCache.get(key) as Intl.NumberFormat;
 }
 
 /**
- * Base currency cookie name
+ * Format a number as a currency string
+ * @param price - The price to format
+ * @param locale - The locale to use for formatting
+ * @param currency - The currency code to use
+ * @returns Formatted currency string
  */
-export const COOKIE_CURRENCY = 'currency';
+export function formatCurrency(price: number, locale: string, currency: string): string {
+    return getFormatter(locale, currency).format(price);
+}
 
 /**
- * Context key for currency data (shared between server middleware and client code)
+ * Extract the currency symbol for a given locale and currency code.
+ * Uses the same narrowSymbol display as formatCurrency for consistency.
+ * @param locale - The locale to use (e.g. "en-US", "de-DE")
+ * @param currency - The ISO 4217 currency code (e.g. "USD", "EUR", "GBP")
+ * @returns The narrow currency symbol (e.g. "$", "€", "£", "¥")
  */
-export const currencyContext = createContext<string | null>(null);
+export function getCurrencySymbol(locale: string, currency: string): string {
+    return (
+        getFormatter(locale, currency)
+            .formatToParts(0)
+            .find((part) => part.type === 'currency')?.value ?? currency
+    );
+}

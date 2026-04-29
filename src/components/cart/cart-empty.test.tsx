@@ -16,7 +16,7 @@
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const { t } = getTranslation();
@@ -73,7 +73,7 @@ describe('CartEmpty', () => {
             renderWithRouter(<CartEmpty />);
 
             const startShoppingLink = screen.getByText(t('cart:empty.continueShopping')).closest('a');
-            expect(startShoppingLink).toHaveAttribute('href', '/');
+            expect(startShoppingLink).toHaveAttribute('href', '/global/en-GB/');
         });
     });
 });

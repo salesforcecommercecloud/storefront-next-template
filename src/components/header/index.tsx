@@ -28,17 +28,28 @@ import type { AppConfig } from '@/types/config';
 import { launchChat } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 interface HeaderProps extends PropsWithChildren {
     beforeHeader?: ReactNode;
+    variant?: 'full' | 'checkout';
 }
 
-export default function Header({ children, beforeHeader }: HeaderProps): ReactElement {
-    const { t } = useTranslation('header');
+// Isolates the `useLocation()` subscription so that route changes only re-render the Search component (via key reset)
+// without cascading a re-render through the entire `Header` tree, which would unnecessarily re-render the navigation
+// menu and other stable children.
+function LocationKeyedSearch() {
     const location = useLocation();
+    return <Search key={`${location.pathname}${location.search}`} />;
+}
+
+export default function Header({ children, beforeHeader, variant = 'full' }: HeaderProps): ReactElement {
+    const { t } = useTranslation('header');
     const headerRef = useRef<HTMLElement>(null);
     const config = useConfig<AppConfig>();
+    const { trackCommerceAgentEngagement } = useAnalytics();
     const showChat =
+        variant === 'full' &&
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
         validateShopperAgentConfig(config.commerceAgent);
     const updateHeaderHeight = useCallback(() => {
@@ -58,14 +69,36 @@ export default function Header({ children, beforeHeader }: HeaderProps): ReactEl
         return () => observer.disconnect();
     }, [updateHeaderHeight]);
 
+    if (variant === 'checkout') {
+        return (
+            <header
+                ref={headerRef}
+                className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+                <div className="section-container">
+                    <div className="flex items-center h-16">
+                        <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
+                            <img
+                                src={logo}
+                                alt={t('logoAlt')}
+                                className="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+                            />
+                        </Link>
+                        <div className="flex-1" />
+                        <CartBadge />
+                    </div>
+                </div>
+            </header>
+        );
+    }
+
     return (
         <header
             ref={headerRef}
             className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
-            <div className="flex justify-end px-4 lg:px-9">{beforeHeader}</div>
-            <div className="px-4 lg:px-9">
+            <div className="flex justify-end section-container">{beforeHeader}</div>
+            <div className="section-container py-6">
                 {/* Top row: Logo left, Icons right */}
-                <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
+                <div className="flex items-center gap-x-4 lg:gap-x-6">
                     {/* Logo - color swapped by theme via --header-logo-filter in app.css */}
                     <Link to="/" className="flex-shrink-0 flex items-center" data-testid="header-logo">
                         <img
@@ -83,18 +116,21 @@ export default function Header({ children, beforeHeader }: HeaderProps): ReactEl
 
                     {/* Search - desktop only */}
                     <div className="hidden lg:block" data-testid="header-search-desktop">
-                        <Search key={`${location.pathname}${location.search}`} />
+                        <LocationKeyedSearch />
                     </div>
 
                     {/* Icons group - includes mobile hamburger */}
-                    <div className="flex items-center space-x-2">
-                        <UITarget targetId="header.before.cart" />
+                    <div className="flex items-center">
+                        <UITarget targetId="sfcc.header.before.cart" />
                         {showChat && (
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 className="cursor-pointer lg:px-4 px-1 text-header-foreground hover:bg-transparent hover:opacity-50 transition-opacity"
-                                onClick={() => launchChat()}
+                                onClick={() => {
+                                    void trackCommerceAgentEngagement({ surface: 'header' });
+                                    launchChat();
+                                }}
                                 aria-label={t('openChat')}>
                                 <SparklesIcon />
                             </Button>
@@ -107,8 +143,9 @@ export default function Header({ children, beforeHeader }: HeaderProps): ReactEl
 
                 {/* Mobile search - second row */}
                 <div className="pb-4 lg:hidden" data-testid="header-search-mobile">
-                    <Search key={`${location.pathname}${location.search}`} />
+                    <LocationKeyedSearch />
                 </div>
+                <UITarget targetId="sfcc.header.bnpl.banner" />
             </div>
         </header>
     );

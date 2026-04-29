@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import type { ReactElement } from 'react';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import type { RefinementProps } from '../types';
 
 const mapColorNameToHex = (colorName: string): string | null => {
@@ -44,6 +42,23 @@ const mapColorNameToHex = (colorName: string): string | null => {
     return colorMap[normalized] || null;
 };
 
+const colorOptionButtonClass = cn(
+    'flex w-full min-w-0 flex-col items-center gap-2 rounded-none border-0 bg-transparent p-1 text-center shadow-none',
+    'whitespace-normal hover:bg-muted/40',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+);
+
+const swatchBaseClass = 'size-8 shrink-0 rounded-none border';
+const swatchSelectedClass = cn(
+    swatchBaseClass,
+    'border-foreground ring-2 ring-foreground/25 ring-offset-2 ring-offset-background'
+);
+const swatchUnselectedClass = cn(swatchBaseClass, 'border-border');
+
+const colorLabelBaseClass = 'text-pretty text-sm break-words text-foreground';
+const colorLabelSelectedClass = `${colorLabelBaseClass} font-semibold`;
+const colorLabelUnselectedClass = `${colorLabelBaseClass} font-medium`;
+
 export default function RefineColor({
     values,
     attributeId,
@@ -51,44 +66,33 @@ export default function RefineColor({
     toggleFilter,
 }: RefinementProps): ReactElement {
     return (
-        <div className="grid grid-cols-2 gap-2 mt-2">
+        <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-3">
             {values.map((value) => {
                 const color = mapColorNameToHex(value.value) || mapColorNameToHex(value.label || '');
                 const isSelected = isFilterSelected(attributeId, value.value);
+                const label = value.label || value.value;
 
                 return (
-                    <Button
+                    <button
                         key={`${attributeId}:${value.value}`}
-                        variant="outline"
+                        type="button"
                         onClick={() => toggleFilter(attributeId, value.value)}
-                        className={`${isSelected ? 'border-foreground/80' : ''}`}>
-                        {/* Color Circle */}
+                        className={colorOptionButtonClass}>
+                        {/* Swatch only is framed; label sits below with no outer “chip” box */}
                         <div
-                            className={`relative size-4 rounded-full border-1 flex-shrink-0 ${
-                                isSelected ? 'border-foreground/80' : 'border-border'
-                            }`}
-                            style={{ backgroundColor: color || '#e5e7eb' }}>
-                            {isSelected && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div
-                                        className={`w-1.5 h-1.5 rounded-full ${
-                                            color === '#ffffff' || !color ? 'bg-foreground/20' : 'bg-background'
-                                        }`}
-                                    />
-                                </div>
-                            )}
-                        </div>
+                            className={isSelected ? swatchSelectedClass : swatchUnselectedClass}
+                            style={{ backgroundColor: color ?? 'var(--muted)' }}
+                        />
 
-                        {/* Color Name and Hit Count */}
-                        <div className="flex items-center justify-between flex-1 min-w-0">
-                            <span className="text-sm font-medium truncate">{value.label || value.value}</span>
+                        <div className="flex w-full min-w-0 flex-col items-center gap-0.5 text-center">
+                            <span className={isSelected ? colorLabelSelectedClass : colorLabelUnselectedClass}>
+                                {label}
+                            </span>
                             {value.hitCount !== undefined && (
-                                <span className="ml-auto text-xs bg-muted/50 px-2 py-1 rounded-full">
-                                    {value.hitCount}
-                                </span>
+                                <span className="text-muted-foreground text-xs">({value.hitCount})</span>
                             )}
                         </div>
-                    </Button>
+                    </button>
                 );
             })}
         </div>

@@ -2,7 +2,7 @@
 
 exports[`MarketingConsent stories snapshot > ClickEditButton story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
   data-section="marketing-consent"
   data-slot="card"
 >
@@ -131,7 +131,7 @@ exports[`MarketingConsent stories snapshot > ClickEditButton story renders and m
 
 exports[`MarketingConsent stories snapshot > Default story renders and matches snapshot 1`] = `
 <div
-  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+  class="bg-card text-card-foreground flex flex-col gap-6 border py-6 rounded-none shadow-none"
   data-section="marketing-consent"
   data-slot="card"
 >

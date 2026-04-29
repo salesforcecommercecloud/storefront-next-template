@@ -19,7 +19,7 @@ import { act } from 'react';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
 import { MarketingConsent } from './index';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper } from '@/test-utils/config';
 
 const { t } = getTranslation();

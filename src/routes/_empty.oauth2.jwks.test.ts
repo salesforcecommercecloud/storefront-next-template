@@ -15,7 +15,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loader } from './_empty.oauth2.jwks';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 // Mock global fetch
@@ -87,7 +87,7 @@ describe('oauth2.jwks loader', () => {
                     method: 'GET',
                     headers: {
                         Accept: 'application/json',
-                        'User-Agent': 'Odyssey-JWKS-Proxy',
+                        'User-Agent': 'Storefront-Next-JWKS-Proxy',
                     },
                     signal: expect.any(AbortSignal),
                 }

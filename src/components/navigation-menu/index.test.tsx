@@ -19,6 +19,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMockCategory, createMockCategoryWithChildren, testData } from './__tests__/data';
 import CategoryNavigationMenu from './impl';
 import { WithCategoryNavigationMenu } from './index';
+// eslint-disable-next-line import/no-namespace
+import * as contextModule from './context';
 
 // Mock CategoryNavigationMenu component
 vi.mock('./impl', () => ({
@@ -173,6 +175,19 @@ describe('WithCategoryNavigationMenu Component', () => {
         });
 
         it('should render nested categories filtered based on the "c_showInMenu" property', async () => {
+            // Spy on createSubCategoryStore to capture the store's update call
+            const updateSpy = vi.fn();
+            const originalCreate = contextModule.createSubCategoryStore;
+            vi.spyOn(contextModule, 'createSubCategoryStore').mockImplementation(() => {
+                const store = originalCreate();
+                const originalUpdate = store.update.bind(undefined);
+                store.update = (entries) => {
+                    updateSpy(entries);
+                    originalUpdate(entries);
+                };
+                return store;
+            });
+
             const { getByTestId } = renderComponent({
                 resolve: Promise.resolve(
                     createMockCategoryWithChildren({ id: 'root', name: 'Root', categories: testData.mixedVisibility })
@@ -249,11 +264,10 @@ describe('WithCategoryNavigationMenu Component', () => {
             // Should show the fallback while resolving the promise
             expect(getByTestId('fallback')).toBeInTheDocument();
 
-            // Wait for promise to resolve
+            // Root categories are rendered once and stay stable (no re-render on enrichment)
             await waitFor(() => {
-                expect(MockCategoryNavigationMenu).toHaveBeenCalledTimes(2);
-                expect(MockCategoryNavigationMenu).toHaveBeenNthCalledWith(
-                    1,
+                expect(MockCategoryNavigationMenu).toHaveBeenCalledTimes(1);
+                expect(MockCategoryNavigationMenu).toHaveBeenCalledWith(
                     expect.objectContaining({
                         categories: expect.arrayContaining([
                             expect.objectContaining({
@@ -265,109 +279,6 @@ describe('WithCategoryNavigationMenu Component', () => {
                                 id: 'visible-2',
                                 c_showInMenu: true,
                                 onlineSubCategoriesCount: 3,
-                            }),
-                            expect.objectContaining({
-                                id: 'visible-3',
-                                c_showInMenu: true,
-                                onlineSubCategoriesCount: 0,
-                            }),
-                        ]),
-                    }),
-                    undefined
-                );
-
-                expect(MockCategoryNavigationMenu).toHaveBeenNthCalledWith(
-                    2,
-                    expect.objectContaining({
-                        categories: expect.arrayContaining([
-                            expect.objectContaining({
-                                id: 'visible-1',
-                                c_showInMenu: true,
-                                onlineSubCategoriesCount: 2,
-                                categories: expect.arrayContaining([
-                                    expect.objectContaining({
-                                        id: 'visible-1-1',
-                                        c_showInMenu: true,
-                                        onlineSubCategoriesCount: 2,
-                                        categories: expect.arrayContaining([
-                                            expect.objectContaining({
-                                                id: 'visible-1-1-1',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                            expect.objectContaining({
-                                                id: 'visible-1-1-2',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                        ]),
-                                    }),
-                                    expect.objectContaining({
-                                        id: 'visible-1-2',
-                                        c_showInMenu: true,
-                                        onlineSubCategoriesCount: 2,
-                                        categories: expect.arrayContaining([
-                                            expect.objectContaining({
-                                                id: 'visible-1-2-1',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                            expect.objectContaining({
-                                                id: 'visible-1-2-2',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                        ]),
-                                    }),
-                                ]),
-                            }),
-                            expect.objectContaining({
-                                id: 'visible-2',
-                                c_showInMenu: true,
-                                onlineSubCategoriesCount: 3,
-                                categories: expect.arrayContaining([
-                                    expect.objectContaining({
-                                        id: 'visible-2-1',
-                                        c_showInMenu: true,
-                                        onlineSubCategoriesCount: 2,
-                                        categories: expect.arrayContaining([
-                                            expect.objectContaining({
-                                                id: 'visible-2-1-2',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                        ]),
-                                    }),
-                                    expect.objectContaining({
-                                        id: 'visible-2-2',
-                                        c_showInMenu: true,
-                                        onlineSubCategoriesCount: 2,
-                                        categories: expect.arrayContaining([
-                                            expect.objectContaining({
-                                                id: 'visible-2-2-1',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                            expect.objectContaining({
-                                                id: 'visible-2-2-2',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                        ]),
-                                    }),
-                                    expect.objectContaining({
-                                        id: 'visible-2-3',
-                                        c_showInMenu: true,
-                                        onlineSubCategoriesCount: 2,
-                                        categories: expect.arrayContaining([
-                                            expect.objectContaining({
-                                                id: 'visible-2-3-1',
-                                                c_showInMenu: true,
-                                                onlineSubCategoriesCount: 0,
-                                            }),
-                                        ]),
-                                    }),
-                                ]),
                             }),
                             expect.objectContaining({
                                 id: 'visible-3',
@@ -379,6 +290,70 @@ describe('WithCategoryNavigationMenu Component', () => {
                     undefined
                 );
             });
+
+            // Enrichment data is pushed into the SubCategoryStore (not into the categories prop)
+            await waitFor(() => {
+                expect(updateSpy).toHaveBeenCalledTimes(1);
+            });
+
+            const enrichmentMap: Map<string, unknown> = updateSpy.mock.calls[0][0];
+
+            // visible-1 enrichment: subcategories with filtered children
+            const enrichedVisible1 = enrichmentMap.get('visible-1');
+            expect(enrichedVisible1).toEqual(
+                expect.objectContaining({
+                    id: 'visible-1',
+                    categories: expect.arrayContaining([
+                        expect.objectContaining({
+                            id: 'visible-1-1',
+                            categories: expect.arrayContaining([
+                                expect.objectContaining({ id: 'visible-1-1-1' }),
+                                expect.objectContaining({ id: 'visible-1-1-2' }),
+                            ]),
+                        }),
+                        expect.objectContaining({
+                            id: 'visible-1-2',
+                            categories: expect.arrayContaining([
+                                expect.objectContaining({ id: 'visible-1-2-1' }),
+                                expect.objectContaining({ id: 'visible-1-2-2' }),
+                            ]),
+                        }),
+                    ]),
+                })
+            );
+
+            // visible-2 enrichment: direct children are filtered by c_showInMenu (all three are true),
+            // grandchildren are NOT filtered at the store level — that's the responsibility of the
+            // nested components consuming the store.
+            const enrichedVisible2 = enrichmentMap.get('visible-2');
+            expect(enrichedVisible2).toEqual(
+                expect.objectContaining({
+                    id: 'visible-2',
+                    categories: expect.arrayContaining([
+                        expect.objectContaining({
+                            id: 'visible-2-1',
+                            categories: expect.arrayContaining([
+                                expect.objectContaining({ id: 'visible-2-1-1', c_showInMenu: false }),
+                                expect.objectContaining({ id: 'visible-2-1-2' }),
+                            ]),
+                        }),
+                        expect.objectContaining({
+                            id: 'visible-2-2',
+                            categories: expect.arrayContaining([
+                                expect.objectContaining({ id: 'visible-2-2-1' }),
+                                expect.objectContaining({ id: 'visible-2-2-2' }),
+                            ]),
+                        }),
+                        expect.objectContaining({
+                            id: 'visible-2-3',
+                            categories: expect.arrayContaining([
+                                expect.objectContaining({ id: 'visible-2-3-1' }),
+                                expect.objectContaining({ id: 'visible-2-3-2', c_showInMenu: false }),
+                            ]),
+                        }),
+                    ]),
+                })
+            );
         });
     });
 

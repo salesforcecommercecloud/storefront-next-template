@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { data, type ActionFunction } from 'react-router';
+import type { ActionFunction } from 'react-router';
 import { refreshAccessToken, getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -40,7 +42,16 @@ export const action: ActionFunction = async ({ request, context }) => {
     // Verify tracking consent feature is enabled
     if (!isTrackingConsentEnabled(context)) {
         logger.warn('UpdateTrackingConsent: feature not enabled');
-        throw new Response('Tracking consent feature is not enabled', { status: 400 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.INVALID_INPUT,
+                    message: 'Tracking consent feature is not enabled',
+                }),
+            },
+            { status: 400 }
+        );
     }
 
     // Validate tracking consent value is a valid enum value
@@ -49,7 +60,16 @@ export const action: ActionFunction = async ({ request, context }) => {
             providedValue: trackingConsentValue,
             validValues: Object.values(TrackingConsent),
         });
-        throw new Response('Invalid tracking consent value. Must be "0" (accepted) or "1" (declined)', { status: 400 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.INVALID_INPUT,
+                    message: 'Invalid tracking consent value. Must be "0" (accepted) or "1" (declined)',
+                }),
+            },
+            { status: 400 }
+        );
     }
 
     const trackingConsent = trackingConsentValue as TrackingConsent;
@@ -68,12 +88,17 @@ export const action: ActionFunction = async ({ request, context }) => {
         // Standard flow: refresh the SLAS token with tracking consent embedded (DNT claim).
         // The authMiddleware in api-clients.ts automatically injects the sfdc_dwsid header
         // on SLAS requests, so SLAS reuses the existing ECOM session.
-        const tokenResponse = await refreshAccessToken(context, refreshToken, {
-            trackingConsent,
-        });
-
-        // Update the auth context with the new token response
-        updateAuth(context, tokenResponse);
+        // refreshAccessToken can throw an ApiError that has status/headers/body properties,
+        // which React Router misidentifies as a Response and calls .json() — crashing.
+        try {
+            const tokenResponse = await refreshAccessToken(context, refreshToken, {
+                trackingConsent,
+            });
+            // Update the auth context with the new token response
+            updateAuth(context, tokenResponse);
+        } catch (error) {
+            logger.warn('UpdateTrackingConsent: token refresh failed, updating session only', { error });
+        }
 
         // Restore userType and set tracking consent.
         updateAuth(context, (session) => ({
@@ -95,5 +120,5 @@ export const action: ActionFunction = async ({ request, context }) => {
     }
 
     logger.info('UpdateTrackingConsent: succeeded', { trackingConsent });
-    return data({ success: true, trackingConsent });
+    return Response.json({ success: true, trackingConsent });
 };

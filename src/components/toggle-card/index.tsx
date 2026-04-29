@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ComponentProps, createContext, type ReactNode, type Ref, useContext, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,6 +38,7 @@ export type ToggleCardProps = Omit<ComponentProps<'div'>, 'title'> & {
     editLabel?: ReactNode;
     editVariant?: 'link' | 'outline';
     editAction?: string;
+    editActionClassName?: string;
     onEditActionClick?: () => void;
     isLoading?: boolean;
     showHeaderSeparator?: boolean;
@@ -57,6 +56,7 @@ export function ToggleCard({
     editLabel,
     editVariant = 'link',
     editAction,
+    editActionClassName,
     isLoading = false,
     onEditActionClick,
     showHeaderSeparator = false,
@@ -69,12 +69,15 @@ export function ToggleCard({
     const contextValue = useMemo<ToggleCardContextValue>(() => ({ editing, disabled }), [editing, disabled]);
 
     const showHeaderContentGap = editing || (!editing && !disabled);
-    const isCompact = !editing && disabled;
 
     return (
         <ToggleCardContext.Provider value={contextValue}>
             <Card
-                className={cn('relative', showHeaderContentGap ? 'gap-4' : 'gap-0', isCompact && 'py-4', className)}
+                className={cn(
+                    'relative rounded-none py-4 shadow-none',
+                    showHeaderContentGap ? 'gap-4' : 'gap-0',
+                    className
+                )}
                 data-testid={id ? `sf-toggle-card-${id}` : undefined}
                 aria-disabled={disabled && !editing ? true : undefined}
                 {...props}>
@@ -99,11 +102,12 @@ export function ToggleCard({
                     <CardAction className={cn(!description && 'row-span-1 self-center')}>
                         {!editing && !disabled && onEdit && !disableEdit ? (
                             <Button
+                                type="button"
                                 variant={editVariant}
                                 size="sm"
                                 className={cn(
                                     editVariant === 'outline' &&
-                                        'rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium',
+                                        'rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium',
                                     editVariant === 'link' && 'font-bold'
                                 )}
                                 onClick={() => {
@@ -118,7 +122,12 @@ export function ToggleCard({
 
                         {editing && editAction && onEditActionClick ? (
                             <Button
-                                className={cn('cursor-pointer', editVariant === 'link' && 'font-bold')}
+                                type="button"
+                                className={cn(
+                                    'cursor-pointer',
+                                    !editActionClassName && editVariant === 'link' && 'font-bold',
+                                    editActionClassName
+                                )}
                                 variant={editVariant}
                                 size="sm"
                                 onClick={onEditActionClick}
@@ -132,7 +141,7 @@ export function ToggleCard({
                 <CardContent data-testid={id ? `sf-toggle-card-${id}-content` : undefined}>{children}</CardContent>
 
                 {isLoading ? (
-                    <div className="absolute inset-0 z-10 rounded-xl bg-background/60">
+                    <div className="absolute inset-0 z-10 bg-background/60">
                         <div className="flex h-full w-full items-center justify-center">
                             <Spinner size="md" />
                         </div>

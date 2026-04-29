@@ -21,7 +21,7 @@ import { formatCurrency } from '@/lib/currency';
 interface CurrentPriceProps {
     labelForA11y?: string;
     price: number;
-    as?: 'span' | 'div' | 'p' | 'h3';
+    as?: 'span' | 'div' | 'p' | 'h3' | 'h5';
     isRange?: boolean;
     /** When set with isRange, display as "min – max" price range */
     maxPrice?: number;
@@ -72,8 +72,7 @@ export default function CurrentPrice({
             </Typography>
             {/*For screen reader, we want to make sure the product name is announced before the price to avoid confusion*/}
             <span className="sr-only" aria-live="polite" aria-atomic={true}>
-                {labelForA11y}
-                {ariaLabel}
+                {labelForA11y} {ariaLabel}
             </span>
         </>
     );

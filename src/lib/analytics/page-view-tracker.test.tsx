@@ -30,7 +30,7 @@ import { PageViewTracker } from './page-view-tracker';
 import type { SessionData } from '@/lib/api/types';
 
 import { createEvent, sendViewPageEvent, getEventMediator } from '@salesforce/storefront-next-runtime/events';
-import { getAllAdapters } from '@/lib/adapters';
+import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
 import { TrackingConsent } from '@/types/tracking-consent';
@@ -87,6 +87,7 @@ vi.mock('@salesforce/storefront-next-runtime/events', async () => {
 
 vi.mock('@/lib/adapters', () => ({
     getAllAdapters: vi.fn(),
+    buildConsentPreferences: vi.fn(),
 }));
 
 vi.mock('@/adapters', () => ({
@@ -111,11 +112,17 @@ describe('PageViewTracker', () => {
         },
     };
 
+    const mockConsentCategories = ['necessary', 'analytics', 'marketing', 'personalization'];
+    const mockConsentPreferences = [...mockConsentCategories];
+
     const defaultConfig = {
         engagement: {
             analytics: {
                 pageViewsBlocklist: [],
                 pageViewsResetDuration: 1500, // 1.5 seconds
+                trackingConsent: {
+                    consentCategories: mockConsentCategories,
+                },
             },
         },
     };
@@ -131,7 +138,7 @@ describe('PageViewTracker', () => {
         // Setup default mocks - auth must be defined for tracking to occur
         mockUseAuth.mockReturnValue(defaultGuestAuth);
         mockUseConfig.mockReturnValue(defaultConfig);
-        mockUseSite.mockReturnValue({ id: 'RefArchGlobal' });
+        mockUseSite.mockReturnValue({ site: { id: 'RefArchGlobal' }, language: 'en-GB', currency: 'USD' });
         mockUseTranslation.mockReturnValue({ i18n: { language: 'en-GB' } });
 
         // Default to tracking consent accepted for all existing tests
@@ -142,6 +149,9 @@ describe('PageViewTracker', () => {
             setTrackingConsent: vi.fn(),
             defaultTrackingConsent: TrackingConsent.Declined,
         });
+
+        // Default: accepted consent returns all categories
+        vi.mocked(buildConsentPreferences).mockReturnValue(mockConsentPreferences);
 
         // Setup dynamic import mocks
         vi.mocked(createEvent).mockReturnValue(mockEvent);
@@ -274,10 +284,15 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
-                    siteId: 'RefArchGlobal',
-                    localeId: 'en-GB',
-                });
+                expect(sendViewPageEvent).toHaveBeenCalledWith(
+                    mockEvent,
+                    mockEventMediator,
+                    {
+                        siteId: 'RefArchGlobal',
+                        localeId: 'en-GB',
+                    },
+                    mockConsentPreferences
+                );
             });
         });
 
@@ -299,10 +314,15 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
-                    siteId: 'RefArchGlobal',
-                    localeId: 'en-GB',
-                });
+                expect(sendViewPageEvent).toHaveBeenCalledWith(
+                    mockEvent,
+                    mockEventMediator,
+                    {
+                        siteId: 'RefArchGlobal',
+                        localeId: 'en-GB',
+                    },
+                    mockConsentPreferences
+                );
             });
         });
     });
@@ -445,10 +465,15 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
-                    siteId: 'RefArchGlobal',
-                    localeId: 'en-GB',
-                });
+                expect(sendViewPageEvent).toHaveBeenCalledWith(
+                    mockEvent,
+                    mockEventMediator,
+                    {
+                        siteId: 'RefArchGlobal',
+                        localeId: 'en-GB',
+                    },
+                    mockConsentPreferences
+                );
             });
         });
 
@@ -470,10 +495,15 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
-                    siteId: 'RefArchGlobal',
-                    localeId: 'en-GB',
-                });
+                expect(sendViewPageEvent).toHaveBeenCalledWith(
+                    mockEvent,
+                    mockEventMediator,
+                    {
+                        siteId: 'RefArchGlobal',
+                        localeId: 'en-GB',
+                    },
+                    mockConsentPreferences
+                );
             });
         });
     });
@@ -496,6 +526,7 @@ describe('PageViewTracker', () => {
                 setTrackingConsent: vi.fn(),
                 defaultTrackingConsent: TrackingConsent.Declined,
             });
+            vi.mocked(buildConsentPreferences).mockReturnValue([]);
 
             renderPageViewTracker('/test-page');
 
@@ -512,6 +543,7 @@ describe('PageViewTracker', () => {
                 setTrackingConsent: vi.fn(),
                 defaultTrackingConsent: TrackingConsent.Declined,
             });
+            vi.mocked(buildConsentPreferences).mockReturnValue(undefined);
 
             renderPageViewTracker('/test-page');
 
@@ -536,37 +568,46 @@ describe('PageViewTracker', () => {
             });
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
-                    siteId: 'RefArchGlobal',
-                    localeId: 'en-GB',
-                });
+                expect(sendViewPageEvent).toHaveBeenCalledWith(
+                    mockEvent,
+                    mockEventMediator,
+                    {
+                        siteId: 'RefArchGlobal',
+                        localeId: 'en-GB',
+                    },
+                    mockConsentPreferences
+                );
             });
         });
     });
 
     describe('Dynamic site/locale', () => {
         it('should pass correct siteInfo for a different site and locale', async () => {
-            mockUseSite.mockReturnValue({ id: 'SiteGenesis' });
+            mockUseSite.mockReturnValue({ site: { id: 'SiteGenesis' }, language: 'fr-FR', currency: 'USD' });
             mockUseTranslation.mockReturnValue({ i18n: { language: 'fr-FR' } });
 
             renderPageViewTracker('/test-page');
 
             await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, {
-                    siteId: 'SiteGenesis',
-                    localeId: 'fr-FR',
-                });
+                expect(sendViewPageEvent).toHaveBeenCalledWith(
+                    mockEvent,
+                    mockEventMediator,
+                    {
+                        siteId: 'SiteGenesis',
+                        localeId: 'fr-FR',
+                    },
+                    mockConsentPreferences
+                );
             });
         });
 
-        it('should pass undefined siteInfo when useSite returns undefined', async () => {
-            mockUseSite.mockReturnValue(undefined);
+        it('should not track when useSite returns undefined site', async () => {
+            mockUseSite.mockReturnValue({ site: undefined, language: 'en-GB', currency: 'USD' });
 
             renderPageViewTracker('/test-page');
 
-            await waitFor(() => {
-                expect(sendViewPageEvent).toHaveBeenCalledWith(mockEvent, mockEventMediator, undefined);
-            });
+            await waitForAsyncTracking();
+            expect(sendViewPageEvent).not.toHaveBeenCalled();
         });
     });
 });

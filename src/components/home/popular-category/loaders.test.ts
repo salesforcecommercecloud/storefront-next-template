@@ -15,12 +15,12 @@
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { loader } from './loaders';
-import { fetchCategory } from '@/lib/api/categories';
+import { fetchCategory } from '@/lib/api/categories.server';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperience, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock the fetchCategory function
-vi.mock('@/lib/api/categories', () => ({
+vi.mock('@/lib/api/categories.server', () => ({
     fetchCategory: vi.fn(),
 }));
 
@@ -47,14 +47,14 @@ describe('PopularCategory loader', () => {
 
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {
                 category: 'newarrivals' as never,
             },
             regions: [],
         };
 
-        const result = await loader.server({
+        const result = await loader({
             componentData,
             context: mockContext,
         });
@@ -66,13 +66,13 @@ describe('PopularCategory loader', () => {
     test('throws error when categoryId is missing', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {},
             regions: [],
         };
 
         expect(() => {
-            void loader.server({
+            void loader({
                 componentData,
                 context: mockContext,
             });
@@ -82,7 +82,7 @@ describe('PopularCategory loader', () => {
     test('throws error when categoryId is not a string', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {
                 category: 123 as never,
             },
@@ -90,7 +90,7 @@ describe('PopularCategory loader', () => {
         };
 
         expect(() => {
-            void loader.server({
+            void loader({
                 componentData,
                 context: mockContext,
             });
@@ -100,7 +100,7 @@ describe('PopularCategory loader', () => {
     test('throws error when categoryId is empty string', () => {
         const componentData: ShopperExperience.schemas['Component'] = {
             id: 'component-1',
-            typeId: 'odyssey_base.popularCategory',
+            typeId: 'Content.popularCategory',
             data: {
                 category: '' as never,
             },
@@ -108,7 +108,7 @@ describe('PopularCategory loader', () => {
         };
 
         expect(() => {
-            void loader.server({
+            void loader({
                 componentData,
                 context: mockContext,
             });

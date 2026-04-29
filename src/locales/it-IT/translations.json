@@ -19,6 +19,13 @@
         "productGeneric": "Prodotto",
         "noProductsFound": "Nessun prodotto trovato",
         "productCarousel": "Carosello prodotti",
+        "productImageAlt": "Immagine prodotto",
+        "suggestionImageAlt": "Immagine suggerimento",
+        "hero": {
+            "defaultTitle": "Acquista ora",
+            "defaultImageAlt": "Immagine hero",
+            "defaultCtaText": "Acquista ora"
+        },
         "previousImage": "Immagine precedente",
         "nextImage": "Immagine successiva"
     },
@@ -74,6 +81,7 @@
         "logoAlt": "Home",
         "openChat": "Apri chat",
         "searchPlaceholder": "Cerca",
+        "searchSuggestions": "Suggerimenti di ricerca",
         "welcomeBack": "Bentornato!",
         "signIn": "Accedi",
         "signOut": "Esci",
@@ -85,7 +93,18 @@
         "closeMenu": "Chiudi menu",
         "mobileNavigation": "Menu di navigazione mobile",
         "expandCategory": "Espandi {{category}}",
-        "collapseCategory": "Comprimi {{category}}"
+        "collapseCategory": "Comprimi {{category}}",
+        "menu": {
+            "yourLists": "Le tue liste",
+            "yourAccount": "Il tuo account",
+            "savedItems": "Articoli salvati",
+            "overview": "Panoramica",
+            "addressBook": "Rubrica indirizzi",
+            "paymentMethods": "Metodi di pagamento",
+            "signInForBestExperience": "Accedi per la migliore esperienza",
+            "newCustomer": "Sei un nuovo cliente?",
+            "createAccount": "Crea account"
+        }
     },
     "login": {
         "title": "Accedi al Suo account",
@@ -146,7 +165,8 @@
         "resettingPassword": "Reimpostazione password in corso...",
         "invalidToken": "Link di reimpostazione non valido o scaduto. Ne richieda uno nuovo.",
         "resetSuccess": "Password reimpostata con successo! Accesso in corso...",
-        "resetSuccessToast": "Password reimpostata con successo! Acceda con la Sua nuova password."
+        "resetSuccessToast": "Password reimpostata con successo! Acceda con la Sua nuova password.",
+        "enterNewPassword": "Inserisca la Sua nuova password qui sotto"
     },
     "signup": {
         "title": "Crei il Suo account",
@@ -200,19 +220,14 @@
         "noCustomerFound": "Nessun cliente trovato nella sessione",
         "api": {
             "orderNotFound": "Ordine non trovato. Controlli il numero d'ordine e riprovi.",
-            "basketNotFound": "Carrello non trovato. Aggiorni la pagina e riprovi.",
+            "basketNotFound": "Non è stato possibile trovare un carrello attivo. Aggiorni la pagina e riprovi.",
             "basketQuotaExceeded": "Numero massimo di carrelli superato. Utilizzi il Suo carrello esistente.",
-            "paymentFailed": "Pagamento non riuscito. Controlli le Sue informazioni di pagamento e riprovi.",
-            "paymentInformationRequired": "Le informazioni di pagamento sono necessarie per completare l'ordine.",
             "unableToLoadCustomerProfile": "Impossibile caricare il Suo profilo. Aggiorni la pagina e riprovi.",
-            "inventoryUnavailable": "Alcuni articoli nel Suo carrello non sono più disponibili. Riveda il Suo carrello.",
             "invalidOrderData": "Dati dell'ordine non validi. Controlli le informazioni di checkout e riprovi.",
-            "shippingAddressRequired": "L'indirizzo di spedizione è necessario per continuare.",
-            "billingAddressRequired": "L'indirizzo di fatturazione è necessario per completare l'ordine.",
             "networkError": "Errore di rete. Controlli la Sua connessione e riprovi.",
-            "serverError": "Errore del server. Riprovi più tardi.",
-            "unauthorized": "La Sua sessione è scaduta. Acceda nuovamente.",
-            "badRequest": "Richiesta non valida. Controlli le Sue informazioni e riprovi.",
+            "serverError": "Qualcosa è andato storto. Riprovi più tardi.",
+            "unauthorized": "La sessione è scaduta. Acceda nuovamente.",
+            "badRequest": "Ha inserito informazioni non valide. Controlli le Sue informazioni e riprovi.",
             "forbidden": "Accesso negato. Non ha il permesso di eseguire questa azione.",
             "timeout": "Timeout della richiesta. Riprovi.",
             "unexpectedError": "Si è verificato un errore imprevisto"
@@ -229,15 +244,14 @@
             "invalidPostalCode": "Inserisca un codice postale valido."
         },
         "checkout": {
-            "noActiveBasket": "Nessun carrello attivo trovato. Aggiorni e riprovi.",
-            "basketCalculationFailed": "Impossibile calcolare il totale dell'ordine. Riprovi.",
-            "orderCreationFailed": "Impossibile creare l'ordine. Riprovi.",
-            "paymentProcessingFailed": "Il pagamento non è stato aggiornato. Riprovi o utilizzi un altro metodo di pagamento.",
+            "checkoutIncomplete": "Alcune informazioni obbligatorie mancano. Verifichi i dati e riprovi.",
+            "orderCreationFailed": "Non è stato possibile creare l'ordine. Riprovi.",
+            "paymentProcessingFailed": "Non è stato possibile elaborare il pagamento. Riprovi.",
             "shippingMethodNotAvailable": "Il metodo di spedizione selezionato non è disponibile. Scelga un'altra opzione.",
             "shippingMethodRequired": "Selezioni un metodo di spedizione per continuare.",
-            "addressValidationFailed": "Validazione dell'indirizzo non riuscita. Controlli il Suo indirizzo e riprovi.",
-            "promoCodeInvalid": "Codice promozionale non valido. Controlli e riprovi.",
-            "stockNotAvailable": "Stock insufficiente per uno o più articoli nel Suo carrello."
+            "contactInfoFailed": "Non è stato possibile salvare le informazioni di contatto. Riprovi.",
+            "addressValidationFailed": "Non è stato possibile verificare l'indirizzo. Controlli l'indirizzo e riprovi.",
+            "stockNotAvailable": "Non è stato possibile completare l'ordine. Stock insufficiente per uno o più articoli nel carrello."
         },
         "customer": {
             "addressIdRequired": "Il titolo dell'indirizzo è obbligatorio per l'indirizzo del cliente",
@@ -287,14 +301,15 @@
     "_NOTICE_product": "Le traduzioni dei prodotti sono state spostate in product.json come namespace separato. Usa t('product:key') per accedervi.",
     "cart": {
         "title": "Carrello",
+        "meta": {
+            "title": "Carrello",
+            "description": "Visualizza e gestisci gli articoli nel carrello"
+        },
         "delivery": {
             "heading": "Consegna - {{deliveryCount}} di {{totalCount}} articoli"
         },
-        "itemCount": {
-            "zero": "Il Mio Carrello (0 articoli)",
-            "one": "Il Mio Carrello (1 articolo)",
-            "other": "Il Mio Carrello ({{count}} articoli)"
-        },
+        "itemCount_one": "Carrello (1 articolo)",
+        "itemCount_other": "Carrello ({{count}} articoli)",
         "empty": {
             "title": "Il Suo carrello è vuoto.",
             "registeredMessage": "Continui lo shopping per aggiungere articoli al Suo carrello.",
@@ -305,6 +320,8 @@
         "summary": {
             "orderSummary": "Riepilogo ordine",
             "showOrderSummary": "Mostra riepilogo ordine",
+            "mobileHeading_one": "Totale stimato (1 articolo)",
+            "mobileHeading_other": "Totale stimato ({{count}} articoli)",
             "subtotal": "Subtotale",
             "shipping": "Spedizione",
             "shippingPromotionApplied": "(Promozione applicata)",
@@ -314,6 +331,7 @@
             "taxTbd": "Da definire",
             "estimatedTotal": "Totale stimato",
             "orderTotal": "Totale ordine",
+            "total": "Totale",
             "noBasketData": "Nessun dato del carrello disponibile"
         },
         "promoCode": {
@@ -323,7 +341,7 @@
             "applying": "Applicazione in corso...",
             "remove": "Rimuovi",
             "removing": "Rimozione in corso...",
-            "accordionTitle": "Hai un codice promozionale?",
+            "accordionTitle": "Inserisci un codice promozionale",
             "successMessage": "Promozione applicata con successo!",
             "errorMessage": "Controlli il codice e riprovi, potrebbe essere già applicato o la promozione potrebbe essere scaduta.",
             "removeSuccessMessage": "Promozione rimossa con successo!",
@@ -342,15 +360,13 @@
             }
         },
         "items": {
-            "itemsInCart": {
-                "zero": "0 articoli nel carrello",
-                "one": "1 articolo nel carrello",
-                "other": "{{count}} articoli nel carrello"
-            },
+            "itemsInCart_zero": "0 articoli nel carrello",
+            "itemsInCart_one": "1 articolo nel carrello",
+            "itemsInCart_other": "{{count}} articoli nel carrello",
             "editCart": "Modifica carrello"
         },
         "checkout": {
-            "proceedToCheckout": "Procedere al pagamento",
+            "continueToCheckout": "Continua al checkout",
             "secure": "Sicuro"
         },
         "attributes": {
@@ -385,6 +401,7 @@
         }
     },
     "checkout": {
+        "pageTitle": "Cassa",
         "contactInfo": {
             "title": "Informazioni di contatto",
             "emailLabel": "Indirizzo email",
@@ -514,8 +531,8 @@
             "billingPostalCodeRequired": "Il codice postale è obbligatorio",
             "billingStateRequired": "Lo stato è obbligatorio",
             "billingCountryRequired": "Il paese è obbligatorio",
-            "billingSameAsShipping": "Indirizzo di fatturazione uguale all'indirizzo di spedizione",
-            "billingSameAsShippingDescription": "Utilizzi lo stesso indirizzo per fatturazione e spedizione",
+            "useDifferentBilling": "Indirizzo di fatturazione uguale all'indirizzo di spedizione",
+            "useDifferentBillingDescription": "Utilizzi lo stesso indirizzo per fatturazione e spedizione",
             "sameAsShippingAddress": "Uguale all'indirizzo di spedizione",
             "noBillingAddressSaved": "Nessun indirizzo di fatturazione salvato",
             "continue": "Continua alla revisione",
@@ -536,10 +553,18 @@
             "billingSummaryTitle": "Indirizzo di fatturazione",
             "viewAllMore": "Visualizza tutto (altri {{count}})",
             "viewLess": "Mostra meno",
-            "savePaymentToProfile": "Salva questo metodo di pagamento nel mio account"
+            "savePaymentToProfile": "Salva questo metodo di pagamento nel mio account",
+            "selectAnAddress": "Seleziona un indirizzo"
         },
         "expressPayments": {
-            "separator": "Oppure"
+            "title": "Pagamento Rapido",
+            "separator": "o continua qui sotto",
+            "venmoUnavailable": "Venmo non è disponibile su questo dispositivo.",
+            "applePayLabel": "Apple Pay",
+            "googlePayLabel": "Google Pay",
+            "amazonPayLabel": "Amazon Pay",
+            "payPalLabel": "PayPal",
+            "venmoLabel": "Venmo"
         },
         "common": {
             "edit": "Modifica",
@@ -561,7 +586,8 @@
         },
         "myCart": {
             "title": "Il mio carrello",
-            "saved": "Risparmiato {{amount}}"
+            "saved": "Risparmiato {{amount}}",
+            "delivery": "Consegna"
         },
         "placeOrder": {
             "button": "Effettua ordine - {{total}}",
@@ -758,10 +784,12 @@
                 "accountDetailsDesc": "Visualizza e modifica il tuo profilo",
                 "orderHistoryDesc": "Monitora i tuoi ordini",
                 "wishlistDesc": "Articoli che hai salvato",
-                "addressesDesc": "Gestisci i tuoi indirizzi"
+                "addressesDesc": "Gestisci i tuoi indirizzi",
+                "paymentMethodsDesc": "Gestisci i tuoi metodi di pagamento"
             },
             "curatedForYou": {
-                "title": "Selezionato per te"
+                "title": "Selezionato per te",
+                "subtitle": "Selezionato per te in base alla tua attività"
             },
             "appDownload": {
                 "title": "Scarica la nostra app",
@@ -769,6 +797,17 @@
                 "appStore": "App Store",
                 "googlePlay": "Google Play",
                 "qrCode": "Codice QR"
+            },
+            "recentOrders": {
+                "title": "Ordini Recenti",
+                "subtitle": "Questi sono i tuoi ultimi 5 ordini",
+                "viewAll": "Vedi Tutti"
+            },
+            "rateRecentPurchases": {
+                "title": "Valuta i tuoi acquisti recenti",
+                "subtitle": "Condividi la tua esperienza e aiuta altri a scoprire ottimi prodotti",
+                "orderCaption": "Ordine {{orderNo}} • {{status}}",
+                "cta": "Valuta e recensisci"
             }
         },
         "shopperAgentEntry": {
@@ -855,13 +894,22 @@
             "orderNotFound": "Ordine non trovato",
             "orderNotFoundDescription": "Impossibile trovare l'ordine richiesto.",
             "buyAgain": "Acquista di nuovo",
+            "rateAndReview": "Valuta e recensisci",
+            "reviewSubmitted": "Recensione inviata",
             "emptyItemsFallback": "Nessun articolo.",
             "productPlaceholderInitial": "Articolo",
             "quantityLabel": "Qtà: {{count}}",
             "trackingNumber": "Numero di tracking",
             "shippingAddress": "Indirizzo di spedizione",
             "paymentMethod": "Metodo di pagamento",
-            "paymentMethodEndingIn": "{{cardType}} che termina con {{lastDigits}}"
+            "paymentMethodEndingIn": "{{cardType}} che termina con {{lastDigits}}",
+            "orderDate": "Data ordine",
+            "total": "Totale",
+            "items": "Articoli",
+            "pickupLocation": "Punto di ritiro",
+            "location": "Posizione",
+            "address": "Indirizzo",
+            "viewOrderDetails": "Visualizza dettagli ordine"
         },
         "addresses": {
             "empty": "Nessun indirizzo salvato. Aggiunga un indirizzo per rendere il checkout più veloce!",
@@ -880,7 +928,17 @@
             "removeConfirmTitle": "Conferma rimozione indirizzo",
             "removeConfirmDescription": "È sicuro di voler rimuovere l'indirizzo \"{{addressName}}\"?",
             "removeCancelButton": "Annulla",
-            "removeConfirmButton": "Sì, rimuovi indirizzo"
+            "removeConfirmButton": "Sì, rimuovi indirizzo",
+            "subtitle": "Gestisci i tuoi indirizzi di spedizione",
+            "addNewAddress": "Aggiungi nuovo indirizzo",
+            "default": "Predefinito",
+            "setDefault": "Imposta come predefinito",
+            "setDefaultSuccess": "Indirizzo impostato come predefinito.",
+            "setDefaultError": "Impossibile impostare l'indirizzo come predefinito. Riprova.",
+            "removeDialogTitle": "Rimuovi indirizzo",
+            "removeDialogDescription": "Sei sicuro di voler rimuovere questo indirizzo?",
+            "removeDefaultWarning": "Questo è il tuo indirizzo predefinito. La rimozione imposterà automaticamente un altro indirizzo come predefinito, se disponibile.",
+            "removeButton": "Rimuovi"
         },
         "addressForm": {
             "addressTitleLabel": "Titolo indirizzo",
@@ -905,8 +963,13 @@
             "successMessage": "Indirizzo salvato con successo",
             "errorMessage": "Impossibile salvare l'indirizzo. Riprovi.",
             "validation": {
-                "stateRequired": "Stato/Provincia è obbligatorio"
-            }
+                "stateRequired": "Stato/Provincia è obbligatorio",
+                "addressTitleRequired": "Il titolo dell'indirizzo è obbligatorio",
+                "addressTitleMaxLength": "Il titolo dell'indirizzo deve contenere al massimo 256 caratteri",
+                "phoneRequired": "Il numero di telefono è obbligatorio"
+            },
+            "addressTitlePlaceholder": "es. Casa, Lavoro, Casa della mamma",
+            "phonePlaceholder": "(000) 123-4567"
         },
         "paymentMethods": {
             "pageSubtitle": "Gestisca i Suoi metodi di pagamento, carte regalo e credito del negozio",
@@ -968,8 +1031,18 @@
                 "lastNameRequired": "Il cognome è obbligatorio",
                 "emailRequired": "L'email è obbligatoria",
                 "emailInvalid": "Inserisca un indirizzo email valido",
-                "phoneInvalid": "Inserisca un numero di telefono valido"
-            }
+                "phoneInvalid": "Inserisca un numero di telefono valido",
+                "birthdayFuture": "La data di nascita non può essere nel futuro"
+            },
+            "description": "Gestisci le tue informazioni personali",
+            "gender": "Sesso",
+            "genderPlaceholder": "Seleziona sesso",
+            "genderOptions": {
+                "male": "Maschio",
+                "female": "Femmina"
+            },
+            "dateOfBirth": "Data di nascita",
+            "dateOfBirthPlaceholder": "Seleziona data di nascita"
         },
         "password": {
             "title": "Password",
@@ -1001,7 +1074,8 @@
                 "hasLowercase": "Almeno una lettera minuscola",
                 "hasNumber": "Almeno un numero",
                 "hasSpecial": "Almeno un carattere speciale"
-            }
+            },
+            "description": "Gestisci la tua password e le impostazioni di sicurezza"
         },
         "common": {
             "save": "Salva",
@@ -1023,6 +1097,39 @@
             "disclaimer": "Abilitando queste preferenze di comunicazione, accetti di ricevere comunicazioni di marketing da noi, inclusi offerte esclusive, ultime informazioni sui prodotti e novità sulle prossime collezioni. Consulta i nostri Termini e condizioni e l'Informativa sulla privacy per maggiori dettagli.",
             "updateError": "Impossibile aggiornare la preferenza di marketing. Riprova.",
             "partialSuccess": "Alcune preferenze sono state salvate. Aggiorna la pagina per vedere le impostazioni attuali."
+        },
+        "subtitle": "Gestisci le tue informazioni personali",
+        "interests": {
+            "title": "I tuoi interessi",
+            "description": "Aggiungi i tuoi interessi di design per ottenere contenuti, consigli e offerte personalizzati",
+            "selectedLabel": "I tuoi interessi selezionati",
+            "noneSelected": "Nessun interesse selezionato",
+            "noneInCategory": "Nessuno selezionato",
+            "addMore": "Aggiungi altri",
+            "addInterestsTitle": "Aggiungi i tuoi interessi",
+            "dialogTitle": "Seleziona i tuoi interessi",
+            "dialogDescription": "Scegli tra le categorie qui sotto per personalizzare la tua esperienza",
+            "selectCategory": "Seleziona {{category}}",
+            "selectCategoryDescription": "Scegli le opzioni che ti interessano",
+            "successMessage": "I tuoi interessi sono stati aggiornati.",
+            "errorMessage": "Impossibile aggiornare gli interessi. Riprova."
+        },
+        "interestsPreferences": {
+            "title": "Interessi e preferenze",
+            "description": "Aggiungi i tuoi interessi di design e gestisci le tue preferenze di acquisto",
+            "successMessage": "I tuoi interessi e preferenze sono stati aggiornati.",
+            "errorMessage": "Impossibile aggiornare. Riprova."
+        },
+        "preferences": {
+            "title": "Le tue preferenze",
+            "description": "Gestisci le tue preferenze di acquisto e l'iscrizione alla newsletter",
+            "noneSelected": "Nessuna selezionata",
+            "addMore": "Aggiungi altre",
+            "dialogTitle": "Seleziona opzioni",
+            "selectCategory": "Seleziona {{category}}",
+            "selectCategoryDescription": "Scegli le opzioni che si applicano a te",
+            "successMessage": "Le tue preferenze sono state aggiornate.",
+            "errorMessage": "Impossibile aggiornare le preferenze. Riprova."
         }
     },
     "home": {
@@ -1058,7 +1165,8 @@
         },
         "featuredProducts": {
             "title": "Prodotti in evidenza",
-            "shopAll": "Acquista tutto"
+            "shopAll": "Acquista tutto",
+            "loadFailed": "Impossibile caricare i prodotti in evidenza."
         },
         "newArrivals": {
             "title": "Nuovi arrivi",
@@ -1068,7 +1176,8 @@
         "categoryGrid": {
             "title": "Entri nell'eleganza",
             "description": "In Salesforce Foundations, crediamo che il design debba essere accessibile, innovativo e senza tempo. Le nostre collezioni sono create per l'individuo moderno che apprezza la qualità, la forma e la bellezza duratura.",
-            "shopNowButton": "Acquista ora"
+            "shopNowButton": "Acquista ora",
+            "loadFailed": "Impossibile caricare le categorie."
         },
         "featuredContent": {
             "women": {
@@ -1229,7 +1338,11 @@
         "viewCart": "Visualizza carrello",
         "delivery": "Consegna",
         "saved": "Risparmiato {{amount}}",
-        "free": "Gratuito"
+        "free": "Gratuito",
+        "productAltFallback": "Prodotto",
+        "emptyTitle": "Il tuo carrello è vuoto",
+        "emptyMessage": "Sembra che tu non abbia ancora aggiunto nulla al tuo carrello. Inizia a fare shopping per riempirlo di prodotti straordinari!",
+        "startShopping": "Inizia a fare shopping"
     },
     "trackingConsent": {
         "title": "Consenso al tracciamento",
@@ -1271,7 +1384,8 @@
     "addressSuggestionDropdown": {
         "suggested": "SUGGERITO",
         "closeSuggestions": "Chiudi suggerimenti",
-        "loading": "Caricamento suggerimenti..."
+        "loading": "Caricamento suggerimenti...",
+        "googleMapsLogoAlt": "Google Maps"
     },
     "infoModal": {
         "paymentScheduleDescription": "Dettagli piano di pagamento",
@@ -1322,6 +1436,127 @@
         "sites": {
             "RefArchGlobal": "Globale (UK)",
             "RefArch": "Stati Uniti"
+        }
+    },
+    "security": {
+        "turnstile": {
+            "error": "Impossibile verificare la richiesta. Riprova.",
+            "expired": "Verifica scaduta. Riprova.",
+            "loading": "Verifica in corso...",
+            "retry": "Riprova verifica"
+        }
+    },
+    "category": {
+        "banner": {
+            "counting": "Conteggio prodotti in corso...",
+            "productsAvailable_one": "1 prodotto disponibile",
+            "productsAvailable_other": "{{count}} prodotti disponibili"
+        },
+        "breadcrumbs": {
+            "label": "Briciole di pane",
+            "home": "Home"
+        },
+        "pagination": {
+            "label": "Impaginazione",
+            "previous": "Precedente",
+            "previousPage": "Pagina precedente",
+            "next": "Successivo",
+            "nextPage": "Pagina successiva",
+            "page": "Pagina {{number}}"
+        }
+    },
+    "maintenancePage": {
+        "heading": "Stiamo migliorando le cose ancora di più",
+        "description": "Il nostro negozio è temporaneamente chiuso per manutenzione programmata. Stiamo lavorando per migliorare la tua esperienza di acquisto e torneremo a breve.",
+        "apology": "Ci scusiamo per l'inconveniente. Grazie per la pazienza!",
+        "checkBack": "Ricontrolla tra qualche minuto o seguici per aggiornamenti.",
+        "tryAgain": "Riprova"
+    },
+    "error": {
+        "403": {
+            "title": "Accesso limitato",
+            "message": "Non hai il permesso di visualizzare questa pagina. Se ritieni che questo sia un errore, contatta il nostro team di supporto.",
+            "secondaryMessage": "Nel frattempo, sentiti libero di sfogliare la nostra collezione."
+        },
+        "404": {
+            "title": "Pagina non trovata",
+            "message": "Non siamo riusciti a trovare la pagina che stai cercando. Potrebbe essere stata spostata o il link potrebbe essere errato.",
+            "secondaryMessage": "Non preoccuparti—puoi ancora esplorare la nostra collezione o tornare alla home.",
+            "details": "La pagina richiesta non è stata trovata."
+        },
+        "500": {
+            "title": "Si è verificato un errore",
+            "message": "Ci scusiamo, ma si è verificato un problema imprevisto da parte nostra. Il nostro team è stato notificato e sta lavorando per risolverlo.",
+            "secondaryMessage": "Riprova tra qualche istante o sfoglia il nostro negozio mentre risolviamo il problema."
+        },
+        "defaultTitle": "Si è verificato un errore",
+        "defaultDescription": "Si è verificato un errore",
+        "defaultDetails": "Si è verificato un errore imprevisto.",
+        "notFoundTitle": "Pagina non trovata",
+        "notFoundDetails": "La pagina richiesta non è stata trovata.",
+        "persistsMessage": "Se il problema persiste, contatta l'assistenza.",
+        "tryAgainMessage": "Si è verificato un errore imprevisto. Riprova più tardi.",
+        "goToHomepage": "Vai alla Homepage",
+        "allRightsReserved": "Tutti i diritti riservati.",
+        "recommendations": {
+            "title": "Potrebbero interessarti anche"
+        }
+    },
+    "aboutUs": {
+        "breadcrumb": {
+            "home": "Home",
+            "aboutUs": "Chi siamo"
+        },
+        "title": "Chi siamo",
+        "subtitle": "Scopri di più sulla nostra azienda e la nostra missione",
+        "section": {
+            "ourGoal": {
+                "title": "Costruito per il movimento. Progettato per la vita quotidiana.",
+                "content": "Ispirato dalla cultura urbana e dall'energia del movimento, Market Street è stato creato per unire performance, stile ed essenziali quotidiani in un'esperienza fluida. Crediamo che i grandi prodotti debbano muoversi con te—dalle strade allo studio, dal lavoro al weekend."
+            },
+            "ourVision": {
+                "title": "La nostra visione",
+                "content": "Ridefinire il retail moderno attraverso tecnologia, design ed esperienza del cliente—creando un ambiente commerciale che sembri semplice, ispirante e umano."
+            },
+            "ourValue": {
+                "title": "Perché esistiamo",
+                "content": "Esistiamo per rimuovere l'attrito tra le persone e ciò che amano. Per rendere lo shopping intuitivo, veloce e significativo."
+            },
+            "ourMission": {
+                "title": "I nostri valori",
+                "content": "Design con scopo—ogni prodotto, ogni interazione, ogni dettaglio è intenzionale.\nTecnologia che scompare—usiamo l'innovazione per semplificare, non per complicare.\nMentalità incentrata sul cliente—dalla scoperta alla consegna, il tuo percorso viene prima.\nSostenibilità in movimento—diamo priorità a materiali, fornitori e logistica responsabili."
+            },
+            "ourTeam": {
+                "title": "Un brand globale, un'anima di strada",
+                "content": "Market Street è nato dall'idea che il grande stile non debba sembrare irraggiungibile. Combiniamo ispirazione globale con una mentalità di strada, unendo cultura, performance e stile di vita in un'espressione fluida."
+            }
+        },
+        "contact": {
+            "title": "Siamo qui per aiutarti",
+            "intro": "Hai una domanda, un feedback o hai bisogno di supporto? Il nostro team è pronto ad assisterti.",
+            "phoneDisplay": "1-800-8060-6453",
+            "phoneHref": "tel:180080606453",
+            "hours": {
+                "weekdays": "Lunedì – Venerdì: 9:00 – 22:00 EST",
+                "weekends": "Sabato e domenica: 10:00 – 19:00 EST"
+            },
+            "cta": "Oppure inviaci un messaggio tramite il modulo — ti risponderemo il prima possibile.",
+            "form": {
+                "label": "Etichetta",
+                "nameLabel": "Nome",
+                "emailLabel": "Email",
+                "messageLabel": "Messaggio",
+                "placeholders": {
+                    "fullName": "Inserisci il tuo nome completo",
+                    "email": "tu@esempio.com",
+                    "topic": "Informazioni generali",
+                    "message": "Lasciaci un messaggio"
+                },
+                "submit": "Invia messaggio"
+            },
+            "toast": {
+                "success": "Messaggio inviato con successo."
+            }
         }
     }
 }

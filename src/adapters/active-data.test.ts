@@ -22,7 +22,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createActiveDataAdapter, type ActiveDataConfig } from './active-data';
-import type { AnalyticsEvent, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
+import type { AnalyticsEvent, EventSiteInfo, ConsentPreferences } from '@salesforce/storefront-next-runtime/events';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
 
@@ -42,7 +42,11 @@ Object.defineProperty(navigator, 'sendBeacon', {
 // Helper type that guarantees sendEvent is implemented
 type ActiveDataAdapter = {
     name: string;
-    sendEvent: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => Promise<unknown>;
+    sendEvent: (
+        event: AnalyticsEvent,
+        siteInfo?: EventSiteInfo,
+        consentPreferences?: ConsentPreferences
+    ) => Promise<unknown>;
 };
 
 /**
@@ -60,6 +64,10 @@ const mockSiteInfo: EventSiteInfo = {
     siteId: 'test-site-id',
     localeId: 'en-GB',
 };
+
+// Default consent preferences for non-consent tests — provides sufficient consent
+// so tests can focus on event transformation and payload correctness
+const defaultConsent: ConsentPreferences = ['necessary', 'analytics', 'marketing', 'personalization'];
 
 const mockConfig: ActiveDataConfig = {
     enabled: true,
@@ -80,6 +88,7 @@ const mockConfig: ActiveDataConfig = {
         checkout_step: false,
         view_search_suggestion: false,
         click_search_suggestion: false,
+        commerce_agent_engagement: false,
     },
 };
 
@@ -215,6 +224,12 @@ const mockRecommenderEvent: AnalyticsEvent = {
     payload: {},
 } as AnalyticsEvent;
 
+const mockCommerceAgentEngagementEvent: AnalyticsEvent = {
+    eventType: 'commerce_agent_engagement',
+    surface: 'header',
+    payload: {},
+} as AnalyticsEvent;
+
 describe('Active Data Adapter', () => {
     describe('createActiveDataAdapter', () => {
         it('should create adapter with valid config', () => {
@@ -239,13 +254,13 @@ describe('Active Data Adapter', () => {
 
         it('should skip event when siteInfo is missing', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent);
+            await adapter.sendEvent(mockPageViewEvent, undefined, defaultConsent);
             expect(mockSendBeacon).not.toHaveBeenCalled();
         });
 
         it('should skip event when siteInfo has empty siteId', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, { siteId: '', localeId: 'en-GB' });
+            await adapter.sendEvent(mockPageViewEvent, { siteId: '', localeId: 'en-GB' }, defaultConsent);
             expect(mockSendBeacon).not.toHaveBeenCalled();
         });
     });
@@ -254,7 +269,7 @@ describe('Active Data Adapter', () => {
         it('should not send event when event toggle is disabled', async () => {
             const config = { ...mockConfig, eventToggles: { ...mockConfig.eventToggles, view_page: false } };
             const adapter = createActiveDataAdapter(config) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).not.toHaveBeenCalled();
         });
@@ -265,14 +280,34 @@ describe('Active Data Adapter', () => {
                 payload: {},
             } as AnalyticsEvent;
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(unsupportedEvent, mockSiteInfo);
+            await adapter.sendEvent(unsupportedEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).not.toHaveBeenCalled();
         });
 
+        it('should not send commerce_agent_engagement when event toggle is disabled', async () => {
+            const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
+            await adapter.sendEvent(mockCommerceAgentEngagementEvent, mockSiteInfo, defaultConsent);
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+
+        it('should send commerce_agent_engagement through the analytics proxy with surface param when toggle enabled', async () => {
+            const config = {
+                ...mockConfig,
+                eventToggles: { ...mockConfig.eventToggles, commerce_agent_engagement: true },
+            };
+            const adapter = createActiveDataAdapter(config) as ActiveDataAdapter;
+            await adapter.sendEvent(mockCommerceAgentEngagementEvent, mockSiteInfo, defaultConsent);
+
+            expect(mockSendBeacon).toHaveBeenCalled();
+            const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
+            expect(url).toContain('sfn-cagent-surface');
+            expect(url).toMatch(/[?&]sfn-cagent-surface=header(?:&|$)/);
+        });
+
         it('should send view_page event through the analytics proxy', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const rawUrl = mockSendBeacon.mock.calls[0][0] as string;
@@ -306,7 +341,7 @@ describe('Active Data Adapter', () => {
 
         it('should send view_product event with product data', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockProductViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockProductViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -321,7 +356,7 @@ describe('Active Data Adapter', () => {
 
         it('should send view_search event with search params and product data', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockSearchEvent, mockSiteInfo);
+            await adapter.sendEvent(mockSearchEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -347,7 +382,7 @@ describe('Active Data Adapter', () => {
 
         it('should send view_category event with category and product data', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockCategoryEvent, mockSiteInfo);
+            await adapter.sendEvent(mockCategoryEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -367,7 +402,7 @@ describe('Active Data Adapter', () => {
 
         it('should send view_recommender event with recommendation product data', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockRecommenderEvent, mockSiteInfo);
+            await adapter.sendEvent(mockRecommenderEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -384,7 +419,7 @@ describe('Active Data Adapter', () => {
                 searchResults: [],
             } as AnalyticsEvent;
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(searchEventNoResults, mockSiteInfo);
+            await adapter.sendEvent(searchEventNoResults, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -404,7 +439,7 @@ describe('Active Data Adapter', () => {
                 product: productNoCategory,
             } as AnalyticsEvent;
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(productEvent, mockSiteInfo);
+            await adapter.sendEvent(productEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -417,7 +452,7 @@ describe('Active Data Adapter', () => {
             mockDwDntCookie('1');
 
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -429,7 +464,7 @@ describe('Active Data Adapter', () => {
             mockDwDntCookie('invalid');
 
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -441,7 +476,7 @@ describe('Active Data Adapter', () => {
             mockDwDntCookie('0');
 
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -463,7 +498,7 @@ describe('Active Data Adapter', () => {
             } as AnalyticsEvent;
 
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(largeSearchEvent, mockSiteInfo);
+            await adapter.sendEvent(largeSearchEvent, mockSiteInfo, defaultConsent);
 
             // Should have multiple URLs
             expect(mockSendBeacon.mock.calls.length).toBeGreaterThan(1);
@@ -486,7 +521,7 @@ describe('Active Data Adapter', () => {
                 siteCurrency: 'EUR',
             };
             const adapter = createActiveDataAdapter(customConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -501,7 +536,7 @@ describe('Active Data Adapter', () => {
                 siteCurrency: undefined,
             };
             const adapter = createActiveDataAdapter(configWithoutCurrency) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo);
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -521,7 +556,7 @@ describe('Active Data Adapter', () => {
             } as AnalyticsEvent;
 
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(multiProductEvent, mockSiteInfo);
+            await adapter.sendEvent(multiProductEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -546,7 +581,7 @@ describe('Active Data Adapter', () => {
             } as AnalyticsEvent;
 
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(productEvent, mockSiteInfo);
+            await adapter.sendEvent(productEvent, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -562,7 +597,7 @@ describe('Active Data Adapter', () => {
             } as AnalyticsEvent;
 
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(searchEventNoRefinements, mockSiteInfo);
+            await adapter.sendEvent(searchEventNoRefinements, mockSiteInfo, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -572,10 +607,56 @@ describe('Active Data Adapter', () => {
         });
     });
 
+    describe('consent category filtering', () => {
+        it('should send event when adapter consentCategory is in consentPreferences', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createActiveDataAdapter(configWithConsent) as ActiveDataAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, ['necessary', 'analytics']);
+
+            expect(mockSendBeacon).toHaveBeenCalled();
+        });
+
+        it('should not send event when adapter consentCategory is not in consentPreferences', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createActiveDataAdapter(configWithConsent) as ActiveDataAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, ['necessary']);
+
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+
+        it('should not send event when consentPreferences is an empty array (all declined)', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createActiveDataAdapter(configWithConsent) as ActiveDataAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, []);
+
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+
+        it('should send event when no consentCategory is configured on adapter', async () => {
+            const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, ['necessary']);
+
+            expect(mockSendBeacon).toHaveBeenCalled();
+        });
+
+        it('should not send event when consentPreferences is undefined (consent not yet determined)', async () => {
+            const configWithConsent = { ...mockConfig, consentCategory: 'analytics' };
+            const adapter = createActiveDataAdapter(configWithConsent) as ActiveDataAdapter;
+
+            await adapter.sendEvent(mockPageViewEvent, mockSiteInfo, undefined);
+
+            expect(mockSendBeacon).not.toHaveBeenCalled();
+        });
+    });
+
     describe('dynamic site/locale', () => {
         it('should use siteInfo siteId and locale in the endpoint URL', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, { siteId: 'SiteGenesis', localeId: 'fr-FR' });
+            await adapter.sendEvent(mockPageViewEvent, { siteId: 'SiteGenesis', localeId: 'fr-FR' }, defaultConsent);
 
             expect(mockSendBeacon).toHaveBeenCalled();
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
@@ -584,7 +665,7 @@ describe('Active Data Adapter', () => {
 
         it('should convert locale from BCP-47 to underscore format', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, { siteId: 'RefArchGlobal', localeId: 'ja-JP' });
+            await adapter.sendEvent(mockPageViewEvent, { siteId: 'RefArchGlobal', localeId: 'ja-JP' }, defaultConsent);
 
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
             expect(url).toContain('Sites-RefArchGlobal-Site/ja_JP/__Analytics-Start');

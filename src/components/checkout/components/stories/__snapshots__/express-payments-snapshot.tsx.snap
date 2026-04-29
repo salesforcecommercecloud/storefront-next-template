@@ -3,109 +3,120 @@
 exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
         Or continue with card
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
   </div>
@@ -115,109 +126,120 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
 exports[`ExpressPayments stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
-        Or
+        or continue below
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
   </div>
@@ -227,114 +249,125 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
 exports[`ExpressPayments stories snapshot > Disabled story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-        disabled=""
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-        disabled=""
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-        disabled=""
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-        disabled=""
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-        disabled=""
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          disabled=""
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          disabled=""
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          disabled=""
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          disabled=""
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+          disabled=""
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
-        Or
+        or continue below
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
   </div>
@@ -344,110 +377,121 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
 exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
-        Or
+        or continue below
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -456,109 +500,120 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
 exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
-        Or
+        or continue below
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
   </div>
@@ -568,109 +623,120 @@ exports[`ExpressPayments stories snapshot > VenmoEligibility story renders and m
 exports[`ExpressPayments stories snapshot > VerticalLayout story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
-        Or
+        or continue below
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
   </div>
@@ -680,110 +746,121 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
 exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
         Express checkout
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
     <div
-      class="grid grid-cols-1 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -792,109 +869,120 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
 exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
-        Or
+        or continue below
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
   </div>
@@ -904,109 +992,120 @@ exports[`ExpressPayments stories snapshot > WithPayPalSDKError story renders and
 exports[`ExpressPayments stories snapshot > WithPayPalSDKLoading story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="space-y-6"
     data-testid="express-payments"
   >
     <div
-      class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+      class="bg-card text-card-foreground rounded-xl border flex flex-col items-center gap-3 p-6 shadow-none"
+      data-slot="card"
     >
-      <button
-        aria-label="Apple Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-foreground hover:bg-foreground/90 text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+      <p
+        class="text-sm font-normal text-card-foreground"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Google Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-background hover:bg-muted text-foreground border-2 border-border hover:border-primary transition-colors rounded-lg flex items-center justify-center"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
+        Express Checkout
+      </p>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full"
       >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Amazon Pay"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--amazon-pay-yellow)] hover:bg-[var(--amazon-pay-yellow-hover)] border-[var(--amazon-pay-yellow)] border-[1.5px] rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-5 w-auto object-contain"
-          height="20"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="62"
-        />
-      </button>
-      <button
-        aria-label="PayPal"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-4 w-auto object-contain"
-          height="16"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          width="48"
-        />
-      </button>
-      <button
-        aria-label="Venmo"
-        class="gap-2 whitespace-nowrap text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-6 has-[>svg]:px-4 w-full h-12 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 rounded-lg flex items-center justify-center transition-colors"
-        data-size="lg"
-        data-slot="button"
-        data-variant="default"
-      >
-        <img
-          alt=""
-          aria-hidden="true"
-          class="flex-shrink-0 h-3 w-auto object-contain"
-          height="12"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
-          style="filter: brightness(0) invert(1);"
-          width="48"
-        />
-      </button>
+        <button
+          aria-label="Google Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Apple Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="PayPal"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-4 w-auto object-contain"
+            height="16"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Venmo"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-3 w-auto object-contain"
+            height="12"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+            style="filter: brightness(0) invert(1);"
+            width="48"
+          />
+        </button>
+        <button
+          aria-label="Amazon Pay"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          data-size="default"
+          data-slot="button"
+          data-variant="default"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="flex-shrink-0 h-[19px] w-auto object-contain"
+            height="19"
+            src="/images/amazon-pay-logo.png"
+            width="99"
+          />
+        </button>
+      </div>
     </div>
     <div
-      class="relative flex items-center py-2"
+      class="relative flex items-center gap-[15px]"
     >
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
       <span
-        class="px-4 !text-foreground font-medium uppercase text-sm whitespace-nowrap"
+        class="text-sm font-normal leading-5 text-muted-foreground whitespace-nowrap"
         data-express-payments-separator-label=""
       >
-        Or
+        or continue below
       </span>
       <div
-        class="flex-1 h-[2px] bg-separator"
+        class="flex-1 h-px bg-separator"
       />
     </div>
   </div>

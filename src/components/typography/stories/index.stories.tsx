@@ -259,7 +259,7 @@ export const CustomStyling: Story = {
     args: {
         variant: 'h2',
         children: 'Custom Styled Heading',
-        className: 'text-primary bg-primary/10 p-4 rounded-lg',
+        className: 'text-primary bg-primary/10 p-4 rounded-none',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

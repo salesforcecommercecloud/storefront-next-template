@@ -22,10 +22,11 @@
  * which adds `metadata` and `runtime` sections.
  */
 import type { BaseConfig, Site, Url } from '@salesforce/storefront-next-runtime/config';
+import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
 
-import type { DetectionConfig } from '@salesforce/storefront-next-runtime/site-context';
+import type { DetectionConfig, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 
 export type BadgeDetail = {
     propertyName: string;
@@ -74,6 +75,7 @@ export type AppConfig = {
             trackingConsent?: {
                 enabled: boolean;
                 defaultTrackingConsent: TrackingConsent;
+                consentCategories?: ConsentCategory[];
                 position?: 'bottom-left' | 'bottom-right' | 'bottom-center';
             };
             pageViewsBlocklist: string[];
@@ -108,6 +110,7 @@ export type AppConfig = {
         googleCloudAPI: {
             apiKey: string;
         };
+        mrtBasedPageDesignerResolution: boolean;
     };
     global: {
         branding: {
@@ -188,6 +191,10 @@ export type AppConfig = {
     localeAliasMap?: Record<string, string>;
     localeDetectionConfig?: DetectionConfig;
     pages: {
+        navigation: {
+            rootCategoryId: string;
+            maxDepth: number;
+        };
         home: {
             featuredProductsCount: number;
         };
@@ -199,6 +206,8 @@ export type AppConfig = {
             removeAction: string;
             ruleBasedProductLimit: number;
             confirmDescription?: string;
+            /** When true, cart line items show product short/long description (default false). */
+            showLineItemDescription?: boolean;
             miniCart?: {
                 enableViewCartButton: boolean;
             };
@@ -239,8 +248,25 @@ export type AppConfig = {
         };
     };
     siteAliasMap?: Record<string, string>;
+    /** Configuration for site-context cookies (site, locale, currency). */
+    siteContext?: {
+        /** Cookie name for persisting the selected currency. Defaults to 'currency'. */
+        currencyCookieName?: string;
+        /** Cookie attributes (httpOnly, maxAge, secure, sameSite, etc.) applied to all site-context cookies. */
+        cookieOptions?: SiteConfig['cookieOptions'];
+    };
     siteDetectionConfig?: DetectionConfig;
     url?: Url;
+    security?: {
+        turnstile?: {
+            sites: Record<string, Array<{ siteKey: string; domains: string[] }>>;
+            enabled?: boolean;
+            mode?: 'managed' | 'non-interactive' | 'invisible';
+            verification?: {
+                enabled: boolean;
+            };
+        };
+    };
 };
 
 export type Config = BaseConfig<AppConfig>;

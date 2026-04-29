@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 // React
 import { type ReactElement, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -122,7 +120,7 @@ export function RemoveAddressConfirmationDialog({
         }
 
         if (removeFetcher.state === 'idle') {
-            void removeFetcher.submit({});
+            void removeFetcher.submit();
         }
     }, [addressId, customerId, removeFetcher, addToast, t]);
 
@@ -135,14 +133,14 @@ export function RemoveAddressConfirmationDialog({
                 </DialogHeader>
 
                 {/* Address Card */}
-                <Card className="border-border">
+                <Card className="border-border rounded-none shadow-none">
                     <CardContent className="px-4">
                         <div className="flex items-center gap-2 mb-2">
                             <Typography variant="h6">{address.addressId}</Typography>
                             {isDefault && (
                                 <Badge
                                     variant="secondary"
-                                    className="text-xs font-normal bg-primary/10 text-primary rounded-md">
+                                    className="text-xs font-normal bg-primary/10 text-primary rounded-none">
                                     {t('addresses.default')}
                                 </Badge>
                             )}
@@ -153,7 +151,7 @@ export function RemoveAddressConfirmationDialog({
 
                 {/* Default Address Warning */}
                 {isDefault && (
-                    <div className="flex gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                    <div className="flex gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-none">
                         <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                         <p className="text-sm text-destructive">{t('addresses.removeDefaultWarning')}</p>
                     </div>

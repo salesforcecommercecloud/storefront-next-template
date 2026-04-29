@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useState, useEffect, lazy, Suspense, type ReactElement } from 'react';
 
 // Commerce SDK
@@ -23,23 +21,13 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 // Components
 import ProductItemsList from '@/components/product-items-list';
 import { RemoveItemButtonWithConfirmation } from '@/components/buttons/remove-item-button-with-confirmation';
-import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
+import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 import { Link } from '@/components/link';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
-const LazyBonusProductModal = lazy(() =>
-    import('@/components/bonus-product-modal').then((m) => ({ default: m.BonusProductModal }))
-);
+import { Button } from '@/components/ui/button';
+import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { useBasketUpdater } from '@/providers/basket';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -48,9 +36,20 @@ import { getFirstPickupStore, filterPickupProductItems } from '@/extensions/bopi
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import CartDeliveryOption from '@/extensions/bopis/components/delivery-options/cart-delivery-option';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
+import { UITarget } from '@/targets/ui-target';
 
 // utils
-import { isStandardProduct, isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product-utils';
+import { isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product-utils';
+
+const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
+const LazyBonusProductModal = lazy(() =>
+    import('@/components/bonus-product-modal').then((m) => ({ default: m.BonusProductModal }))
+);
+const LazyCartItemAddToWishlistButton = lazy(() =>
+    import('@/components/cart/cart-item-add-to-wishlist-button').then((m) => ({
+        default: m.CartItemAddToWishlistButton,
+    }))
+);
 
 /**
  * Props for the CartContent component
@@ -59,12 +58,14 @@ import { isStandardProduct, isBonusProduct, isRuleBasedPromotion, type EnrichedP
  * @property {ShopperBasketsV2.schemas['Basket'] | undefined} basket - The basket data from the loader
  * @property {Record<string, ShopperProducts.schemas['Product']>} [productsByItemId] - Item ID to product mapping
  * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotion ID to promotion mapping
+ * @property {string[]} [wishlistProductIds] - Product IDs in the shopper wishlist (from cart loader) for line-level wishlist state after refresh
  */
 interface CartContentProps {
     basket: ShopperBasketsV2.schemas['Basket'] | undefined;
     productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
     bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
+    wishlistProductIds?: readonly string[];
 }
 
 /**
@@ -86,11 +87,15 @@ export default function CartContent({
     productsByItemId,
     bonusProductsById,
     promotions,
+    wishlistProductIds = [],
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
-    const { t: tHeader } = useTranslation('header');
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const { t: tBopis } = useTranslation('extBopis');
+
+    // Calculate total item count for page heading
+    const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
+    const pageHeading = t('itemCount', { count: totalItems });
 
     // TEMPORARY: State to facilitate bonus product modal development
     const [bonusModalOpen, setBonusModalOpen] = useState(false);
@@ -154,61 +159,64 @@ export default function CartContent({
             return undefined;
         }
 
-        // Check if this is a bonus product
         const isBonusProd = isBonusProduct(product);
-
-        // Check if this is a standard product (no variants)
-        const productDetails = product;
-        const isStandardProd = productDetails && isStandardProduct(productDetails);
-
-        // Show edit button if:
-        // - NOT a standard product (standard products have no variants to edit)
-        // - AND NOT a bonus product (bonus products should not have edit buttons)
-        const shouldShowEditButton = !isStandardProd && !isBonusProd;
+        const shouldShowWishlist = !isBonusProd;
 
         return (
             <div className="flex gap-2">
                 <RemoveItemButtonWithConfirmation itemId={product.itemId} className="pl-0" />
-                {shouldShowEditButton && <CartItemEditButton product={product} className="pl-0" />}
+                {shouldShowWishlist && (
+                    <Suspense fallback={null}>
+                        <LazyCartItemAddToWishlistButton
+                            product={product}
+                            wishlistProductIds={wishlistProductIds}
+                            className="pl-0"
+                        />
+                    </Suspense>
+                )}
             </div>
         );
     };
 
-    // Render prop function for cart-specific delivery actions
-    let cartDeliveryActions: ((product: EnrichedProductItem) => ReactElement | undefined) | null = null;
+    // Per-line pickup vs delivery (BOPIS). Defined only inside the extension block so a
+    // storefront that strips SFDC_EXT_BOPIS does not reference CartDeliveryOption after its import is removed.
+    let cartDeliveryActions: ((product: EnrichedProductItem) => ReactElement) | undefined = undefined;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    cartDeliveryActions = (product: EnrichedProductItem) => {
-        return <CartDeliveryOption key={product.itemId || product.productId} product={product} />;
-    };
+    cartDeliveryActions = (product: EnrichedProductItem) => (
+        <CartDeliveryOption key={product.itemId || product.productId} product={product} />
+    );
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     return (
-        <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
-                <Breadcrumb className="mb-6">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink asChild>
-                                <Link to="/">{tHeader('logoAlt')}</Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>{t('title')}</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
+        <div className="flex-1 min-h-screen bg-background mb-10 md:mb-10 pb-32 md:pb-0" data-testid="sf-cart-container">
+            <div className="section-container">
+                <Typography variant="h1" as="h1" className="mb-6">
+                    {pageHeading}
+                </Typography>
 
                 {/* Mobile Order Summary - visible only on mobile */}
                 <div className="md:hidden mb-3">
-                    <OrderSummary
-                        basket={basket}
-                        showCartItems={false}
-                        isEstimate={true}
-                        productsByItemId={productsByItemId}
-                        showPromoCodeForm={true}
-                        showCheckoutAction={true}
-                    />
+                    <div className="bg-background border-t border-border shadow-none fixed bottom-0 left-0 right-0 z-50">
+                        <OrderSummaryMobileAccordion basket={basket} defaultExpanded={false}>
+                            <OrderSummary
+                                basket={basket}
+                                showCartItems={false}
+                                showHeading={false}
+                                isEstimate={true}
+                                productsByItemId={productsByItemId}
+                                showPromoCodeForm={true}
+                                showCheckoutAction={false}
+                                className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                            />
+                        </OrderSummaryMobileAccordion>
+                        <div className="px-[var(--cart-summary-px)] py-4">
+                            <Button asChild className="w-full text-sm">
+                                <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                            </Button>
+                            <UITarget targetId="sfcc.cart.payments.expressCheckout" />
+                        </div>
+                    </div>
+                    <UITarget targetId="sfcc.cart.bnpl.message" />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
@@ -216,8 +224,12 @@ export default function CartContent({
                         {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                         {/* Group store info cards with their product items */}
                         {pickupItems.length > 0 && store && (
-                            <div key={store.id} className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
-                                <CartPickup store={store} />
+                            <div key={store.id} className="md:p-8 p-3 border border-border rounded-none mb-3">
+                                <CartPickup
+                                    store={store}
+                                    pickupCount={pickupItems.length}
+                                    totalCount={basket?.productItems?.length ?? 0}
+                                />
                                 <div className="mt-4">
                                     <ProductItemsList
                                         promotions={promotions}
@@ -234,14 +246,14 @@ export default function CartContent({
                         {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
                         {/* Show delivery items if any exist */}
                         {deliveryItems.length > 0 && (
-                            <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-lg shadow-sm mb-3">
+                            <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-none mb-3">
                                 <CartTitle basket={basket} deliveryCount={deliveryItems.length} />
                                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                                 {pickupItems.length > 0 && (
                                     <h2 className="text-lg font-semibold mb-4">
                                         {tBopis('cart.deliveryItemsHeading', {
                                             deliveryCount: deliveryItems.length,
-                                            totalCount: basket?.productItems?.length ?? 0,
+                                            count: basket?.productItems?.length ?? 0,
                                         })}
                                     </h2>
                                 )}
@@ -266,6 +278,7 @@ export default function CartContent({
                             showPromoCodeForm={true}
                             showCheckoutAction={true}
                         />
+                        <UITarget targetId="sfcc.cart.bnpl.message" />
                     </div>
                 </div>
 

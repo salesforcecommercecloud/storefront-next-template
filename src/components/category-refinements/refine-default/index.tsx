@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import type { ReactElement } from 'react';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -36,7 +34,7 @@ export default function DefaultRefinement({
                     <label
                         key={`${attributeId}:${value.value}`}
                         htmlFor={id}
-                        className="flex items-center p-2 rounded-md hover:bg-muted/30 cursor-pointer">
+                        className="flex items-center p-2 rounded-none hover:bg-muted/30 cursor-pointer">
                         <Checkbox
                             id={id}
                             checked={isSelected}

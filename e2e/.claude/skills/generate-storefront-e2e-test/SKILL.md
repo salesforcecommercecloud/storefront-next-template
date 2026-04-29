@@ -434,7 +434,7 @@ Scenario('Interactive test development demo', async () => {
     
     // Try these in the pause console:
     // > "Search for winter jackets and filter by size Large"
-    // > "Add the first product to cart and proceed to checkout"
+    // > "Add the first product to cart and continue to checkout"
     // > I.askForPageObject("checkout")
     
     storefrontPage.validatePageLoaded();
@@ -452,6 +452,8 @@ Scenario('Interactive test development demo', async () => {
 - `@user-account` - User registration/login
 - `@mobile` - Mobile-specific tests
 - `@cookies` - Session and cookie validation
+- `@multi-currency` - Multi-currency/locale checkout tests
+- `@usd`, `@gbp`, `@eur` - Currency-specific tests
 
 **Example test execution**:
 ```bash
@@ -506,7 +508,8 @@ Before completing, verify:
 - [ ] **All `I.amOnPage()` calls with test-authored paths use `buildSitePath()`** (DOM-extracted URLs excluded)
 - [ ] **Page objects registered in `src/pages/index.ts`** (or flows in `src/flows/index.ts`)
 - [ ] **Self-healing recipes updated** for all new or modified page object locators
-- [ ] Commerce-specific flows are covered (search, cart, checkout)
+- [ ] Commerce-specific flows are covered (search, cart, checkout, multi-currency)
+- [ ] Currency assertions use locale-aware patterns (`TEST_LOCALE_CURRENCIES.currencyPattern`), never hardcoded `$`
 - [ ] SFCC cookie validation is included where relevant
 - [ ] Tests are tagged appropriately for filtering
 - [ ] TypeScript definitions auto-generated successfully
@@ -565,12 +568,18 @@ pnpm e2e --grep "@your-test-tag"
    - Cross-selling/upselling
    - Wishlist functionality
 
-2. **Mobile Commerce**
+2. **Multi-Currency Checkout**
+   - Place order in different currencies (USD, GBP, EUR, etc.)
+   - Verify currency symbols in order summary and confirmation
+   - Data-driven tests via `TEST_LOCALE_CURRENCIES` in `checkout.data.ts`
+   - Use direct locale-prefixed URLs (`/{siteAlias}/{locale}/path`) instead of `buildSitePath()`
+
+3. **Mobile Commerce**
    - Touch interactions
    - Mobile-specific UI elements
    - Responsive behavior
 
-3. **Performance Scenarios**
+4. **Performance Scenarios**
    - Page load times
    - Search response times
    - Cart update performance

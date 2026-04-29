@@ -36,7 +36,7 @@ vi.mock('react-router', async (importOriginal) => {
 
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import SiteSwitcher from './index';
 
 const site = mockConfig.commerce.sites[0];
@@ -46,7 +46,7 @@ function renderSiteSwitcher(configOverride?: typeof mockConfig) {
     const config = configOverride ?? mockConfig;
     return render(
         <ConfigProvider config={config}>
-            <SiteProvider value={siteWithAlias}>
+            <SiteProvider site={siteWithAlias} locale={mockLocale} language="en-GB" currency="GBP">
                 <SiteSwitcher />
             </SiteProvider>
         </ConfigProvider>
@@ -91,7 +91,7 @@ describe('SiteSwitcher', () => {
         expect(options).toHaveLength(2);
     });
 
-    it('submits to /action/set-site when a different site is selected', async () => {
+    it('submits to /action/set-site-context when a different site is selected', async () => {
         renderSiteSwitcher();
 
         const select = screen.getByRole('combobox', { name: /select site/i });
@@ -99,10 +99,11 @@ describe('SiteSwitcher', () => {
 
         expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
             method: 'POST',
-            action: '/action/set-site',
+            action: '/action/set-site-context',
         });
 
         const formData = mockSubmit.mock.calls[0][0] as FormData;
-        expect(formData.get('siteId')).toBe('RefArch');
+        expect(formData.get('type')).toBe('site');
+        expect(JSON.parse(formData.get('payload') as string)).toEqual({ siteId: 'RefArch' });
     });
 });

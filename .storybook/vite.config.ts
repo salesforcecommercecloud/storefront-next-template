@@ -43,9 +43,12 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
+            // PDP FAQ + Account “Ask a question” — production uses src/lib; Storybook uses shim (no globalThis).
+            '@/lib/shopper-agent-context-ui': path.resolve(__dirname, './shims/shopper-agent-context-ui.ts'),
             '@': path.resolve(__dirname, '../src'), // Proper path resolution for Storybook
             '@storybook/test-utils': path.resolve(__dirname, './test-utils'), // Storybook test utilities
-            '@fonts': path.resolve(__dirname, '../public/fonts'), // Fonts alias for easy customization
+            // Fonts alias — root-absolute path because fonts live in public/ (see vite.config.ts)
+            '@fonts': '/fonts',
             // Ensure React 19 compatibility
             react: path.resolve(__dirname, '../node_modules/react'),
             'react-dom': path.resolve(__dirname, '../node_modules/react-dom'),

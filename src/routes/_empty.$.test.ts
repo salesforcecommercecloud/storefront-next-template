@@ -15,24 +15,24 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loader, action } from './_empty.$';
-import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login';
-import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
-import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
+import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login.server';
+import { handleSocialLoginLanding } from '@/lib/api/auth/social-login.server';
+import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password.server';
 import { createActionArgs, createLoaderArgs } from '@/lib/test-utils/loader-action-args';
 
 // Mock passwordless-login handlers
-vi.mock('@/lib/passwordless-login', () => ({
+vi.mock('@/lib/passwordless-login.server', () => ({
     handlePasswordlessCallback: vi.fn(),
     handlePasswordlessLanding: vi.fn(),
 }));
 
 // Mock social-callback handler
-vi.mock('@/lib/api/auth/social-login', () => ({
+vi.mock('@/lib/api/auth/social-login.server', () => ({
     handleSocialLoginLanding: vi.fn(),
 }));
 
 // Mock reset-password handlers
-vi.mock('@/lib/api/auth/reset-password', () => ({
+vi.mock('@/lib/api/auth/reset-password.server', () => ({
     handleResetPasswordCallback: vi.fn(),
     handleResetPasswordLanding: vi.fn(),
 }));

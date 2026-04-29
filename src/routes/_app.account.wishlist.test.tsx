@@ -18,10 +18,10 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { loader } from './_app.account.wishlist';
-import { fetchProductsForWishlist } from '@/lib/api/wishlist';
+import { fetchProductsForWishlist } from '@/lib/api/wishlist.server';
 import { createTestContext } from '@/lib/test-utils';
 import type { LoaderFunctionArgs } from 'react-router';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 
@@ -44,7 +44,7 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 // Mock createApiClients
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: () => ({
         shopperProducts: {
             getProducts: mockGetProducts,
@@ -632,7 +632,7 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should return wishlist with items when items are in initial response', async () => {
-            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
+            const mockWishlist = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
                 type: 'wish_list',
@@ -671,10 +671,10 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should fetch all products for the wishlist (no initial batch limit)', async () => {
-            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
+            const mockWishlist = {
                 id: 'wishlist-1',
                 listId: 'wishlist-1',
-                type: 'wish_list',
+                type: 'wish_list' as const,
                 items: Array.from({ length: 20 }, (_, i) => ({
                     id: `item-${i}`,
                     productId: `product-${i}`,
@@ -772,10 +772,10 @@ describe('account.wishlist loaders', () => {
         });
 
         test('should use id field when listId is not available', async () => {
-            const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
+            const mockWishlist = {
                 id: 'wishlist-1',
                 listId: undefined,
-                type: 'wish_list',
+                type: 'wish_list' as const,
                 items: [
                     { id: 'item-1', productId: 'product-1' },
                 ] as ShopperCustomers.schemas['CustomerProductListItem'][],
@@ -883,7 +883,7 @@ describe('WishlistSkeleton Component', () => {
         const pendingPromise = new Promise<Record<string, any>>(() => {});
 
         const loaderData = {
-            wishlist: { id: 'wishlist-1', type: 'wish_list' },
+            wishlist: { id: 'wishlist-1', type: 'wish_list' as const },
             items: [
                 { id: 'item-1', productId: 'product-1' },
                 { id: 'item-2', productId: 'product-2' },
@@ -891,7 +891,7 @@ describe('WishlistSkeleton Component', () => {
             productsByProductId: pendingPromise,
         };
 
-        const { container } = render(<AccountWishlist loaderData={loaderData} />);
+        const { container } = render(<AccountWishlist loaderData={loaderData as any} />);
 
         // Should show the Wishlist page title from translation while loading
         const heading = screen.getByRole('heading', { level: 1 });

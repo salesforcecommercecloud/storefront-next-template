@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useState, useEffect, useRef, useMemo, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useFetcher } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
-import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getPasswordlessErrorMessageKey } from '@/lib/auth-error-handler';
 
 type VerifyOtpResponse = {
     success: boolean;
-    error?: string;
+    error?: { code: string; message: string };
     message?: string;
     tokenResponse?: ShopperLogin.schemas['TokenResponse'];
 };
@@ -34,6 +32,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useOtpVerification } from '@/hooks/use-otp-verification';
 
 interface OtpModalProps {
@@ -47,7 +46,8 @@ interface OtpModalProps {
     initialError?: string;
 }
 
-const createOtpSchema = (t: (key: string, options?: object) => string, otpLength: number) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createOtpSchema = (t: TFunction<any, any>, otpLength: number) => {
     return z.object({
         otpCode: z
             .string()
@@ -132,7 +132,12 @@ export default function OtpModal({
             setResendTimer(0);
 
             requestAnimationFrame(() => {
-                otpInputsRef.current.inputRefs.current[0]?.focus();
+                const alreadyFocused = otpInputsRef.current.inputRefs.current.some(
+                    (ref) => ref && ref === document.activeElement
+                );
+                if (!alreadyFocused) {
+                    otpInputsRef.current.inputRefs.current[0]?.focus();
+                }
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,9 +164,9 @@ export default function OtpModal({
         }
         // Failure
         else if (fetcher.state === 'idle' && fetcher.data?.success === false && fetcher.data?.error) {
-            const rawError = fetcher.data.error;
-            const errorMessageKey = getPasswordlessErrorMessageKey(extractErrorMessage(rawError));
-            const userFriendlyError = t(errorMessageKey);
+            const rawMessage = fetcher.data.error.message;
+            const errorMessageKey = getPasswordlessErrorMessageKey(rawMessage);
+            const userFriendlyError = String(t(errorMessageKey as never));
             setError(userFriendlyError);
             setIsVerifying(false);
             // Clear OTP inputs so user can retry

@@ -21,7 +21,10 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { checkoutWithMultipleItems, checkoutWithOneItem } from '@/components/__mocks__/checkout-data';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 function MyCartStoryHarness({ children }: { children: ReactNode }): ReactElement {
@@ -79,9 +82,9 @@ A collapsible cart component that displays cart items in an accordion format. Us
     decorators: [
         (Story) => (
             <MyCartStoryHarness>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <Story />
-                </CurrencyWrapper>
+                </SiteProvider>
             </MyCartStoryHarness>
         ),
     ],
@@ -114,14 +117,13 @@ My cart with multiple items, collapsed by default.
 
         await waitForStorybookReady(canvasElement);
 
-        // Check for cart title with item count
-        const cartTitle = await canvas.findByText(/my cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
+        await expect(cartContainer).toBeInTheDocument();
     },
 };
 
 export const Expanded: Story = {
-    render: () => <MyCart basket={checkoutWithMultipleItems.cart} productMap={productMap} itemsExpanded={true} />,
+    render: () => <MyCart basket={checkoutWithMultipleItems.cart} productMap={productMap} />,
     parameters: {
         docs: {
             story: `
@@ -138,9 +140,8 @@ My cart with items expanded by default.
 
         await waitForStorybookReady(canvasElement);
 
-        // Check for cart title
-        const cartTitle = await canvas.findByText(/my cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
+        await expect(cartContainer).toBeInTheDocument();
     },
 };
 
@@ -162,8 +163,7 @@ My cart with a single item.
 
         await waitForStorybookReady(canvasElement);
 
-        // Check for cart title
-        const cartTitle = await canvas.findByText(/my cart/i, {}, { timeout: 5000 });
-        await expect(cartTitle).toBeInTheDocument();
+        const cartContainer = await canvas.findByTestId('my-cart-toggle', {}, { timeout: 5000 });
+        await expect(cartContainer).toBeInTheDocument();
     },
 };

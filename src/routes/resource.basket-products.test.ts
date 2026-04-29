@@ -16,6 +16,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loader } from './resource.basket-products';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
+import config from '@/config/server';
 
 // Mock getBasket
 vi.mock('@/middlewares/basket.server', () => ({
@@ -23,9 +24,11 @@ vi.mock('@/middlewares/basket.server', () => ({
 }));
 
 // Mock createApiClients
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(),
 }));
+
+const expectedSiteId = config.app.commerce.sites[0].id;
 
 // Mock getConfig - use importOriginal to preserve other exports like appConfigContext
 vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
@@ -36,7 +39,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
             commerce: {
                 api: {
                     organizationId: 'test-org',
-                    siteId: 'RefArchGlobal',
+                    siteId: expectedSiteId,
                 },
             },
         })),
@@ -53,7 +56,7 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 import { getBasket } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 
 describe('resource.basket-products', () => {
     let mockContext: ReturnType<typeof createTestContext>;
@@ -159,7 +162,7 @@ describe('resource.basket-products', () => {
                     organizationId: 'test-org',
                 },
                 query: {
-                    siteId: 'RefArchGlobal',
+                    siteId: expectedSiteId,
                     ids: ['product-1', 'product-2'],
                     allImages: true,
                     perPricebook: true,

@@ -20,17 +20,13 @@ import type { ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 
 // Utils
-import { extractResponseError } from '@/lib/utils';
-import { createApiClients } from '@/lib/api-clients';
-import {
-    type BasketActionResponse,
-    createBasketSuccessResponse,
-    createBasketErrorResponse,
-} from '@/routes/types/action-responses';
-import { getTranslation } from '@/lib/i18next';
-import { currencyContext } from '@/lib/currency';
+import { createApiClients } from '@/lib/api-clients.server';
+import { createBasketSuccessResponse } from '@/routes/types/action-responses';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
+import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
-import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
+import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment.server';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
 import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';
@@ -64,11 +60,15 @@ import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/l
  * @throws Error if no basket is found in the session
  * @throws Error if any items are out of stock at the selected store
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<BasketActionResponse> {
-    const { t } = getTranslation();
-
+export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     if (request.method !== 'PATCH') {
-        throw new Response(t('errors:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
+            },
+            { status: 405 }
+        );
     }
 
     const basketResource = await getBasket(context);
@@ -76,7 +76,10 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     const basketId = basket?.basketId ?? basketResource.snapshot?.basketId;
 
     if (!basketId) {
-        return createBasketErrorResponse(t('errors:noBasketFound'));
+        return Response.json(
+            { success: false, error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }) },
+            { status: 404 }
+        );
     }
 
     let originalStoreId = '';
@@ -91,9 +94,15 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const validationResult = pickupStoreUpdateSchema.safeParse(rawData);
 
         if (!validationResult.success) {
-            return createBasketErrorResponse(
-                validationResult.error.issues[0]?.message ||
-                    t('extBopis:cart.pickupStoreInfo.missingStoreIdOrInventoryIdError')
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: validationResult.error.issues[0]?.message || 'Store ID and inventory ID are required',
+                    }),
+                },
+                { status: 400 }
             );
         }
 
@@ -102,14 +111,26 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         const clients = createApiClients(context);
         if (!basket) {
-            return createBasketErrorResponse(t('errors:noBasketFound'));
+            return Response.json(
+                { success: false, error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }) },
+                { status: 404 }
+            );
         }
 
         // Capture the original store ID from the first pickup shipment for potential rollback
         // Validate that there's an existing pickup store before allowing change
         const pickupShipment = getPickupShipment(basket);
         if (!pickupShipment?.shipmentId || !pickupShipment?.c_fromStoreId) {
-            return createBasketErrorResponse('No pickup shipment found. Cannot change pickup store.');
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.NOT_FOUND,
+                        message: 'No pickup shipment found. Cannot change pickup store.',
+                    }),
+                },
+                { status: 404 }
+            );
         }
         originalStoreId = pickupShipment.c_fromStoreId as string;
         pickupShipmentId = pickupShipment.shipmentId;
@@ -126,7 +147,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 .map((item) => item.productId)
                 .filter((id): id is string => Boolean(id));
 
-            const currency = context.get(currencyContext) as string;
+            const currency = (context.get(siteContext) as SiteContext).currency;
 
             // Fetch products with the new store's inventory ID to validate availability
             const productsResponse = await clients.shopperProducts.getProducts({
@@ -172,10 +193,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 if (outOfStockItems.length > 0) {
                     // Use store name from form data, fall back to storeId if not provided
                     const displayStoreName = storeName || storeId;
-                    const errorMessage = t('extBopis:cart.pickupStoreInfo.itemsOutOfStock', {
-                        storeName: displayStoreName,
-                    });
-                    return createBasketErrorResponse(errorMessage);
+                    return Response.json(
+                        {
+                            success: false,
+                            error: createActionError({
+                                code: ErrorCode.OUT_OF_STOCK,
+                                message: `Some items are out of stock at ${displayStoreName}`,
+                            }),
+                        },
+                        { status: 422 }
+                    );
                 }
             }
         }
@@ -220,7 +247,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         // Update the basket cache to reflect the changes
         updateBasketResource(context, updatedBasket);
 
-        return createBasketSuccessResponse(updatedBasket);
+        return Response.json(createBasketSuccessResponse(updatedBasket));
     } catch (error) {
         // Rollback shipment update if it was already updated
         if (shipmentUpdated && originalStoreId && pickupShipmentId) {
@@ -232,8 +259,6 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             }
         }
 
-        const { responseMessage } = await extractResponseError(error as Error);
-        const errorMsg = responseMessage || t('extBopis:cart.pickupStoreInfo.changeStoreError');
-        return createBasketErrorResponse(errorMsg);
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

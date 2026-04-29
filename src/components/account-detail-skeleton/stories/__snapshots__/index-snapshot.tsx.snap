@@ -6,7 +6,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
     class="space-y-5"
   >
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
       data-slot="card"
     >
       <div
@@ -24,7 +24,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
       data-slot="card"
     >
       <div
@@ -98,7 +98,7 @@ exports[`AccountDetailSkeleton stories snapshot > Default story renders and matc
       </div>
     </div>
     <div
-      class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-card border-border"
+      class="text-card-foreground flex flex-col gap-6 border py-6 bg-card border-border rounded-none shadow-none"
       data-slot="card"
     >
       <div

@@ -23,12 +23,12 @@ import type { AppConfig } from '@/types/config';
  * Applies alias mappings when configured, falling back to the raw IDs.
  */
 export function useCurrentSiteAndLocaleRef() {
-    const site = useSite();
+    const { site } = useSite();
     const { i18n } = useTranslation();
     const config = useConfig<AppConfig>();
 
     return {
-        siteRef: (site?.alias ?? site?.id) as string,
+        siteRef: site.alias ?? site.id,
         localeRef: config.localeAliasMap?.[i18n.language] ?? i18n.language,
     };
 }

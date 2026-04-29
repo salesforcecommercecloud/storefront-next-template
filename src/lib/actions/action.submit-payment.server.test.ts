@@ -23,16 +23,16 @@ import {
     addPaymentInstrumentToBasket,
     removePaymentInstrumentFromBasket,
     updateBillingAddressForBasket,
-} from '@/lib/api/basket';
-import { getTranslation } from '@/lib/i18next';
+} from '@/lib/api/basket.server';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getAuth } from '@/middlewares/auth.server';
-import { getCustomerProfileForCheckout } from '@/lib/api/customer';
+import { getCustomerProfileForCheckout } from '@/lib/api/customer.server';
 
 vi.mock('@/middlewares/basket.server');
-vi.mock('@/lib/api/basket');
-vi.mock('@/lib/i18next');
+vi.mock('@/lib/api/basket.server');
+vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/api/customer');
+vi.mock('@/lib/api/customer.server');
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
 }));
@@ -52,7 +52,7 @@ function createSavedPaymentFormData(): FormData {
     const formData = new FormData();
     formData.append('useSavedPaymentMethod', 'true');
     formData.append('selectedSavedPaymentMethod', 'card_1');
-    formData.append('billingSameAsShipping', 'true');
+    formData.append('useDifferentBilling', 'false');
     formData.append('cardNumber', '');
     formData.append('cardholderName', '');
     formData.append('expiryDate', '');
@@ -105,6 +105,7 @@ describe('action.submit-payment.server', () => {
         } as ReturnType<typeof getTranslation>);
 
         mockGetAuth.mockReturnValue({ customerId: 'cust-1' } as ReturnType<typeof getAuth>);
+
         mockGetCustomerProfileForCheckout.mockResolvedValue({
             paymentInstruments: [
                 {
@@ -117,7 +118,7 @@ describe('action.submit-payment.server', () => {
                     expirationYear: 2028,
                 },
             ],
-        } as ReturnType<Awaited<typeof getCustomerProfileForCheckout>>);
+        } as any);
 
         mockGetBasket.mockResolvedValue({
             current: createBasketWithPayment(),
@@ -142,7 +143,7 @@ describe('action.submit-payment.server', () => {
                     postalCode: '02101',
                     countryCode: 'US',
                 },
-            }) as Awaited<ReturnType<typeof updateBillingAddressForBasket>>
+            } as any) as Awaited<ReturnType<typeof updateBillingAddressForBasket>>
         );
     });
 
@@ -197,7 +198,9 @@ describe('action.submit-payment.server', () => {
 
             expect(response.status).toBe(400);
             expect(data.success).toBe(false);
-            expect(data.error).toBe('errors:checkout.paymentProcessingFailed');
+            expect(data.error).toEqual(
+                expect.objectContaining({ code: expect.any(String), message: expect.any(String) })
+            );
             expect(data.step).toBe('payment');
             expect(mockRemovePaymentInstrumentFromBasket).toHaveBeenCalledTimes(1);
             expect(mockAddPaymentInstrumentToBasket).not.toHaveBeenCalled();
@@ -212,7 +215,9 @@ describe('action.submit-payment.server', () => {
 
             expect(response.status).toBe(400);
             expect(data.success).toBe(false);
-            expect(data.error).toBe('errors:checkout.paymentProcessingFailed');
+            expect(data.error).toEqual(
+                expect.objectContaining({ code: expect.any(String), message: expect.any(String) })
+            );
             expect(data.step).toBe('payment');
             expect(mockRemovePaymentInstrumentFromBasket).toHaveBeenCalledTimes(1);
             expect(mockAddPaymentInstrumentToBasket).toHaveBeenCalledTimes(1);

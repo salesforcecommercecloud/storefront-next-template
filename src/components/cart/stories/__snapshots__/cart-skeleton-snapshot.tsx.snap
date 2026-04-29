@@ -7,7 +7,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"
@@ -21,7 +21,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
         class="md:hidden mb-3"
       >
         <div
-          class="border rounded-md bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -44,15 +44,13 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-none shadow-none"
-              data-slot="card"
+              class="bg-card text-card-foreground border-0 rounded-none"
             >
               <div
                 class="px-3 py-4 md:px-6 md:py-7"
-                data-slot="card-content"
               >
                 <div
                   class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -61,7 +59,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
                     class="flex-shrink-0 flex items-center justify-center"
                   >
                     <div
-                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded"
+                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded-none"
                       data-slot="skeleton"
                     />
                   </div>
@@ -158,7 +156,7 @@ exports[`CartSkeleton stories snapshot > Default story renders and matches snaps
           class="hidden md:block md:order-1 lg:order-2"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 py-6 border rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -281,7 +279,7 @@ exports[`CartSkeleton stories snapshot > EmptyCartGuest story renders and matche
     data-testid="sf-cart-empty-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+      class="section-container py-8 lg:py-14"
     >
       <div
         class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm max-w-md mx-auto"
@@ -345,7 +343,7 @@ exports[`CartSkeleton stories snapshot > EmptyCartRegistered story renders and m
     data-testid="sf-cart-empty-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14"
+      class="section-container py-8 lg:py-14"
     >
       <div
         class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm max-w-md mx-auto"
@@ -405,7 +403,7 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"
@@ -419,7 +417,7 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
         class="md:hidden mb-3"
       >
         <div
-          class="border rounded-md bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -442,15 +440,13 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-none shadow-none"
-              data-slot="card"
+              class="bg-card text-card-foreground border-0 rounded-none"
             >
               <div
                 class="px-3 py-4 md:px-6 md:py-7"
-                data-slot="card-content"
               >
                 <div
                   class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -459,7 +455,7 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
                     class="flex-shrink-0 flex items-center justify-center"
                   >
                     <div
-                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded"
+                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded-none"
                       data-slot="skeleton"
                     />
                   </div>
@@ -556,7 +552,7 @@ exports[`CartSkeleton stories snapshot > GuestUser story renders and matches sna
           class="hidden md:block md:order-1 lg:order-2"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 py-6 border rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -679,7 +675,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"
@@ -693,7 +689,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
         class="md:hidden mb-3"
       >
         <div
-          class="border rounded-md bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -716,15 +712,13 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-none shadow-none"
-              data-slot="card"
+              class="bg-card text-card-foreground border-0 rounded-none"
             >
               <div
                 class="px-3 py-4 md:px-6 md:py-7"
-                data-slot="card-content"
               >
                 <div
                   class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -733,7 +727,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
                     class="flex-shrink-0 flex items-center justify-center"
                   >
                     <div
-                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded"
+                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded-none"
                       data-slot="skeleton"
                     />
                   </div>
@@ -825,12 +819,10 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
               </div>
             </div>
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-none shadow-none"
-              data-slot="card"
+              class="bg-card text-card-foreground border-0 rounded-none"
             >
               <div
                 class="px-3 py-4 md:px-6 md:py-7"
-                data-slot="card-content"
               >
                 <div
                   class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -839,7 +831,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
                     class="flex-shrink-0 flex items-center justify-center"
                   >
                     <div
-                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded"
+                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded-none"
                       data-slot="skeleton"
                     />
                   </div>
@@ -931,12 +923,10 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
               </div>
             </div>
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-none shadow-none"
-              data-slot="card"
+              class="bg-card text-card-foreground border-0 rounded-none"
             >
               <div
                 class="px-3 py-4 md:px-6 md:py-7"
-                data-slot="card-content"
               >
                 <div
                   class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -945,7 +935,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
                     class="flex-shrink-0 flex items-center justify-center"
                   >
                     <div
-                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded"
+                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded-none"
                       data-slot="skeleton"
                     />
                   </div>
@@ -1042,7 +1032,7 @@ exports[`CartSkeleton stories snapshot > MultipleItems story renders and matches
           class="hidden md:block md:order-1 lg:order-2"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 py-6 border rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -1165,7 +1155,7 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
     data-testid="sf-cart-skeleton"
   >
     <div
-      class="max-w-7xl mx-auto px-6"
+      class="section-container"
     >
       <div
         class="my-6"
@@ -1179,7 +1169,7 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
         class="md:hidden mb-3"
       >
         <div
-          class="border rounded-md bg-card px-5 py-3"
+          class="border rounded-none bg-card px-5 py-3"
         >
           <div
             class="flex items-center justify-between"
@@ -1202,15 +1192,13 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
           class="md:order-2 lg:order-1"
         >
           <div
-            class="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3"
+            class="md:p-8 p-3 border border-border rounded-none mb-3"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-none shadow-none"
-              data-slot="card"
+              class="bg-card text-card-foreground border-0 rounded-none"
             >
               <div
                 class="px-3 py-4 md:px-6 md:py-7"
-                data-slot="card-content"
               >
                 <div
                   class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -1219,7 +1207,7 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
                     class="flex-shrink-0 flex items-center justify-center"
                   >
                     <div
-                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded"
+                      class="bg-accent animate-pulse aspect-square md:w-32 w-16 rounded-none"
                       data-slot="skeleton"
                     />
                   </div>
@@ -1316,7 +1304,7 @@ exports[`CartSkeleton stories snapshot > RegisteredUser story renders and matche
           class="hidden md:block md:order-1 lg:order-2"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6 border shadow-sm"
+            class="bg-card text-card-foreground flex flex-col gap-6 py-6 border rounded-none shadow-none"
             data-slot="card"
           >
             <div

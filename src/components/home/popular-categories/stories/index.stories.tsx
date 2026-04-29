@@ -117,10 +117,6 @@ Popular Categories component that displays a grid of category cards.
             description: 'Direct category data (bypasses promise)',
             control: 'object',
         },
-        paddingX: {
-            description: 'Horizontal padding classes (e.g., px-4 sm:px-6 lg:px-8)',
-            control: 'text',
-        },
         parentId: {
             description: 'Parent category ID for component loader',
             control: 'text',
@@ -282,17 +278,17 @@ export const MoreThanFourCategories: Story = {
 };
 
 /**
- * Custom horizontal padding
+ * Custom subtitle only (title falls back to i18n default)
  */
-export const CustomPadding: Story = {
+export const WithCustomSubtitle: Story = {
     args: {
         data: mockPopularCategories,
-        paddingX: 'px-2',
+        subtitle: 'Discover pieces that match your style',
     },
     parameters: {
         docs: {
             description: {
-                story: 'Popular categories with custom horizontal padding (px-2).',
+                story: 'Popular categories with a custom subtitle while the title falls back to the i18n default.',
             },
         },
     },
@@ -301,10 +297,41 @@ export const CustomPadding: Story = {
         const canvas = within(canvasElement);
 
         await expect(canvas.getByText('Style for Real Life')).toBeInTheDocument();
+        await expect(canvas.getByText('Discover pieces that match your style')).toBeInTheDocument();
+    },
+};
 
-        // Verify the container is rendered
-        const container = canvasElement.querySelector('.max-w-7xl');
-        await expect(container).toBeInTheDocument();
+/**
+ * Custom title and subtitle
+ */
+export const CustomTitle: Story = {
+    args: {
+        data: mockPopularCategories,
+        title: 'Shop by Category',
+        subtitle: 'Discover our curated collections designed for your lifestyle',
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Popular categories with custom title and subtitle configured via Page Designer attributes.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Verify custom title is rendered
+        await expect(canvas.getByText('Shop by Category')).toBeInTheDocument();
+
+        // Verify custom subtitle is rendered
+        await expect(
+            canvas.getByText('Discover our curated collections designed for your lifestyle')
+        ).toBeInTheDocument();
+
+        // Verify categories still render correctly
+        const shopNowButtons = await canvas.findAllByText(/shop now/i, {}, { timeout: 5000 });
+        await expect(shopNowButtons.length).toBe(4);
     },
 };
 
@@ -386,8 +413,8 @@ export const InteractionTest: Story = {
         const shopNowButtons = await canvas.findAllByText(/shop now/i, {}, { timeout: 5000 });
         await expect(shopNowButtons.length).toBe(4);
 
-        // Verify category list items are present (each category card is a listitem link)
-        const categoryItems = await canvas.findAllByRole('listitem', {}, { timeout: 5000 });
+        // Verify category cards are present (each category card is a link)
+        const categoryItems = await canvas.findAllByRole('link', {}, { timeout: 5000 });
         await expect(categoryItems.length).toBeGreaterThan(0);
 
         // Test clicking the first category's shop button
@@ -402,8 +429,8 @@ export const InteractionTest: Story = {
         const jewelryCategory = canvas.getByText('Jewelry');
         await userEvent.click(jewelryCategory);
 
-        // Verify category descriptions are present
-        await expect(canvas.getByText(/elegant jewelry pieces/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/stylish and comfortable/i)).toBeInTheDocument();
+        // Descriptions are hidden by default (showDescription defaults to false)
+        await expect(canvas.queryByText(/elegant jewelry pieces/i)).not.toBeInTheDocument();
+        await expect(canvas.queryByText(/stylish and comfortable/i)).not.toBeInTheDocument();
     },
 };

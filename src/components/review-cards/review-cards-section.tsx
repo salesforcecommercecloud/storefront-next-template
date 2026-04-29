@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { type ReactElement, useState, useEffect, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Search, ImageIcon, X } from 'lucide-react';
@@ -30,6 +27,7 @@ import { cn } from '@/lib/utils';
 import WriteReviewButton from '@/components/write-review-button';
 import { StarIcon } from '@/components/product-ratings/star-icon';
 import { ReviewCard } from './review-card';
+import { UITarget } from '@/targets/ui-target';
 
 const REVIEWS_PER_PAGE = 5;
 /** When there are more than this many pages, show truncated pagination (e.g. 1 ... 4 [5] 6 ... 20) */
@@ -177,183 +175,187 @@ export default function ReviewCardsSection({
     const to = Math.min(startIndex + REVIEWS_PER_PAGE, totalReviews);
 
     return (
-        <div ref={sectionRef} className="space-y-6" data-testid="review-cards-section">
-            {reviews.length === 0 ? (
-                <p className="text-muted-foreground">{t('noReviewsForProduct')}</p>
-            ) : (
-                <>
-                    {/* Filter by star rating + With Photos */}
-                    <div className="space-y-2">
-                        <p className="sm:text-sm text-brand-gray-600 font-medium">{t('filterBy')}</p>
-                        <div className="flex flex-wrap items-center gap-2">
-                            {([5, 4, 3, 2, 1] as const).map((rating) => {
-                                const count = ratingCounts[rating] ?? 0;
-                                const isSelected = selectedRating === rating;
-                                return (
-                                    <Button
-                                        key={rating}
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        className={cn(
-                                            'cursor-pointer gap-1 rounded bg-muted border-transparent hover:bg-muted-hover',
-                                            isSelected && 'border-filter-selected-border bg-filter-selected'
-                                        )}
-                                        onClick={() => setSelectedRating(isSelected ? null : rating)}
-                                        aria-pressed={isSelected}
-                                        aria-label={t('filterByStars', { count: rating })}>
-                                        <span>{rating}</span>
-                                        <StarIcon filled={true} opacity={1} className="size-4" aria-hidden />
-                                        <span className="text-muted-foreground">({count})</span>
-                                    </Button>
-                                );
-                            })}
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className={cn(
-                                    'cursor-pointer gap-1.5 rounded bg-muted border-transparent hover:bg-muted-hover',
-                                    withPhotosOnly && 'border-filter-selected-border bg-filter-selected'
-                                )}
-                                onClick={() => setWithPhotosOnly((prev) => !prev)}
-                                aria-pressed={withPhotosOnly}
-                                aria-label={`${t('withPhotos')} (${withPhotosCount})`}>
-                                <ImageIcon className="size-4" aria-hidden />
-                                {t('withPhotos')} <span className="text-muted-foreground">({withPhotosCount})</span>
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Search reviews */}
-                    <div className="relative">
-                        <Search
-                            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                            aria-hidden
-                        />
-                        <Input
-                            type="search"
-                            placeholder={t('searchReviewsPlaceholder')}
-                            value={searchKeyword}
-                            onChange={(e) => setSearchKeyword(e.target.value)}
-                            className="pl-9"
-                            aria-label={t('searchReviewsPlaceholder')}
-                        />
-                    </div>
-
-                    {/* Sort + Write a Review */}
-                    <div className="flex flex-wrap items-center justify-between gap-4 w-full">
-                        <div className="flex items-center gap-2">
-                            <label htmlFor={sortSelectId} className="sm:text-sm text-brand-gray-600 font-medium">
-                                {t('sortLabel')}
-                            </label>
-                            <NativeSelect
-                                id={sortSelectId}
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value as ReviewSortValue)}>
-                                {REVIEW_SORT_OPTIONS.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {t(opt.labelKey)}
-                                    </option>
-                                ))}
-                            </NativeSelect>
-                        </div>
-                        <WriteReviewButton />
-                    </div>
-
-                    {/* Active filter chips - show in reviews section when filters are applied */}
-                    {(selectedRating != null || withPhotosOnly) && (
-                        <div className="flex flex-wrap items-center gap-2">
-                            {selectedRating != null && (
-                                <button
+        <UITarget targetId="sfcc.pdp.reviews.list">
+            <div ref={sectionRef} className="space-y-6" data-testid="review-cards-section">
+                {reviews.length === 0 ? (
+                    <p className="text-muted-foreground">{t('noReviewsForProduct')}</p>
+                ) : (
+                    <>
+                        {/* Filter by star rating + With Photos */}
+                        <div className="space-y-2">
+                            <p className="sm:text-sm text-brand-gray-600 font-medium">{t('filterBy')}</p>
+                            <div className="flex flex-wrap items-center gap-2">
+                                {([5, 4, 3, 2, 1] as const).map((rating) => {
+                                    const count = ratingCounts[rating] ?? 0;
+                                    const isSelected = selectedRating === rating;
+                                    return (
+                                        <Button
+                                            key={rating}
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            className={cn(
+                                                'gap-1 rounded bg-muted border-transparent hover:bg-muted-hover',
+                                                isSelected && 'border-filter-selected-border bg-filter-selected'
+                                            )}
+                                            onClick={() => setSelectedRating(isSelected ? null : rating)}
+                                            aria-pressed={isSelected}
+                                            aria-label={t('filterByStars', { count: rating })}>
+                                            <span>{rating}</span>
+                                            <StarIcon filled={true} opacity={1} className="size-4" aria-hidden />
+                                            <span className="text-muted-foreground">({count})</span>
+                                        </Button>
+                                    );
+                                })}
+                                <Button
                                     type="button"
-                                    onClick={() => setSelectedRating(null)}
-                                    className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    aria-label={t('clearStarFilter', { count: selectedRating })}>
-                                    <span>{t('activeFilterStars', { count: selectedRating })}</span>
-                                    <X className="size-3.5 shrink-0" aria-hidden />
-                                </button>
-                            )}
-                            {withPhotosOnly && (
-                                <button
-                                    type="button"
-                                    onClick={() => setWithPhotosOnly(false)}
-                                    className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    aria-label={t('clearPhotoFilter')}>
-                                    <span>{t('withPhotos')}</span>
-                                    <X className="size-3.5 shrink-0" aria-hidden />
-                                </button>
-                            )}
-                        </div>
-                    )}
-
-                    {totalReviews === 0 ? (
-                        <p className="text-muted-foreground">{t('noReviewsMatchFilters')}</p>
-                    ) : (
-                        <>
-                            <ul className="list-none divide-y divide-border p-0 m-0">
-                                {pageReviews.map((review) => (
-                                    <li key={review.id} className="py-6 first:pt-0">
-                                        <ReviewCard review={review} />
-                                    </li>
-                                ))}
-                            </ul>
-
-                            {/* Pagination - gap between last review and this divider */}
-                            <div className="mt-6 flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                                <p className="text-sm text-muted-foreground">
-                                    {t('showingReviews', { from, to, total: totalReviews })}
-                                </p>
-                                <nav className="flex items-center gap-1" aria-label={t('reviews')}>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="size-9 cursor-pointer"
-                                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                        disabled={safePage <= 1}
-                                        aria-label="Previous page">
-                                        <ChevronLeft className="size-4" />
-                                    </Button>
-                                    {getPaginationItems(totalPages, safePage, MAX_VISIBLE_PAGE_BUTTONS).map((item) => {
-                                        if (typeof item === 'object' && item.type === 'ellipsis') {
-                                            return (
-                                                <span
-                                                    key={item.key}
-                                                    className="flex size-9 items-center justify-center px-1 text-muted-foreground"
-                                                    aria-hidden>
-                                                    …
-                                                </span>
-                                            );
-                                        }
-                                        const page = item as number;
-                                        return (
-                                            <Button
-                                                key={page}
-                                                variant={page === safePage ? 'default' : 'outline'}
-                                                size="icon"
-                                                className="size-9 cursor-pointer"
-                                                onClick={() => setCurrentPage(page)}
-                                                aria-label={`Page ${String(page)}`}
-                                                aria-current={page === safePage ? 'page' : undefined}>
-                                                {page}
-                                            </Button>
-                                        );
-                                    })}
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="size-9 cursor-pointer"
-                                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                        disabled={safePage >= totalPages}
-                                        aria-label="Next page">
-                                        <ChevronRight className="size-4" />
-                                    </Button>
-                                </nav>
+                                    variant="outline"
+                                    size="sm"
+                                    className={cn(
+                                        'gap-1.5 rounded bg-muted border-transparent hover:bg-muted-hover',
+                                        withPhotosOnly && 'border-filter-selected-border bg-filter-selected'
+                                    )}
+                                    onClick={() => setWithPhotosOnly((prev) => !prev)}
+                                    aria-pressed={withPhotosOnly}
+                                    aria-label={`${t('withPhotos')} (${withPhotosCount})`}>
+                                    <ImageIcon className="size-4" aria-hidden />
+                                    {t('withPhotos')} <span className="text-muted-foreground">({withPhotosCount})</span>
+                                </Button>
                             </div>
-                        </>
-                    )}
-                </>
-            )}
-        </div>
+                        </div>
+
+                        {/* Search reviews */}
+                        <div className="relative">
+                            <Search
+                                className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                                aria-hidden
+                            />
+                            <Input
+                                type="search"
+                                placeholder={t('searchReviewsPlaceholder')}
+                                value={searchKeyword}
+                                onChange={(e) => setSearchKeyword(e.target.value)}
+                                className="pl-9"
+                                aria-label={t('searchReviewsPlaceholder')}
+                            />
+                        </div>
+
+                        {/* Sort + Write a Review */}
+                        <div className="flex flex-wrap items-center justify-between gap-4 w-full">
+                            <div className="flex items-center gap-2">
+                                <label htmlFor={sortSelectId} className="sm:text-sm text-brand-gray-600 font-medium">
+                                    {t('sortLabel')}
+                                </label>
+                                <NativeSelect
+                                    id={sortSelectId}
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value as ReviewSortValue)}>
+                                    {REVIEW_SORT_OPTIONS.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>
+                                            {t(opt.labelKey)}
+                                        </option>
+                                    ))}
+                                </NativeSelect>
+                            </div>
+                            <WriteReviewButton />
+                        </div>
+
+                        {/* Active filter chips - show in reviews section when filters are applied */}
+                        {(selectedRating != null || withPhotosOnly) && (
+                            <div className="flex flex-wrap items-center gap-2">
+                                {selectedRating != null && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedRating(null)}
+                                        className="inline-flex items-center gap-1 rounded-none border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        aria-label={t('clearStarFilter', { count: selectedRating })}>
+                                        <span>{t('activeFilterStars', { count: selectedRating })}</span>
+                                        <X className="size-3.5 shrink-0" aria-hidden />
+                                    </button>
+                                )}
+                                {withPhotosOnly && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setWithPhotosOnly(false)}
+                                        className="inline-flex items-center gap-1 rounded-none border border-filter-selected-border bg-filter-selected px-2 py-1 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        aria-label={t('clearPhotoFilter')}>
+                                        <span>{t('withPhotos')}</span>
+                                        <X className="size-3.5 shrink-0" aria-hidden />
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {totalReviews === 0 ? (
+                            <p className="text-muted-foreground">{t('noReviewsMatchFilters')}</p>
+                        ) : (
+                            <>
+                                <ul className="list-none divide-y divide-border p-0 m-0">
+                                    {pageReviews.map((review) => (
+                                        <li key={review.id} className="py-6 first:pt-0">
+                                            <ReviewCard review={review} />
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* Pagination - gap between last review and this divider */}
+                                <div className="mt-6 flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <p className="text-sm text-muted-foreground">
+                                        {t('showingReviews', { from, to, total: totalReviews })}
+                                    </p>
+                                    <nav className="flex items-center gap-1" aria-label={t('reviews')}>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="size-9"
+                                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                            disabled={safePage <= 1}
+                                            aria-label="Previous page">
+                                            <ChevronLeft className="size-4" />
+                                        </Button>
+                                        {getPaginationItems(totalPages, safePage, MAX_VISIBLE_PAGE_BUTTONS).map(
+                                            (item) => {
+                                                if (typeof item === 'object' && item.type === 'ellipsis') {
+                                                    return (
+                                                        <span
+                                                            key={item.key}
+                                                            className="flex size-9 items-center justify-center px-1 text-muted-foreground"
+                                                            aria-hidden>
+                                                            …
+                                                        </span>
+                                                    );
+                                                }
+                                                const page = item as number;
+                                                return (
+                                                    <Button
+                                                        key={page}
+                                                        variant={page === safePage ? 'default' : 'outline'}
+                                                        size="icon"
+                                                        className="size-9"
+                                                        onClick={() => setCurrentPage(page)}
+                                                        aria-label={`Page ${String(page)}`}
+                                                        aria-current={page === safePage ? 'page' : undefined}>
+                                                        {page}
+                                                    </Button>
+                                                );
+                                            }
+                                        )}
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="size-9"
+                                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                            disabled={safePage >= totalPages}
+                                            aria-label="Next page">
+                                            <ChevronRight className="size-4" />
+                                        </Button>
+                                    </nav>
+                                </div>
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
+        </UITarget>
     );
 }

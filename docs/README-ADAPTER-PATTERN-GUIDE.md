@@ -1926,7 +1926,7 @@ PUBLIC__app__engagement__adapters__activeData__host=https://your-host.commercecl
 PUBLIC__app__engagement__adapters__activeData__siteUUID=your-site-uuid
 ```
 
-This allows deploying the same build to different environments that point to different Commerce Cloud instances without rebuilding.
+This allows deploying the same build to different environments that point to different B2C Commerce instances without rebuilding.
 
 ---
 

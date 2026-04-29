@@ -15,14 +15,24 @@
  */
 
 /**
- * UITarget is a placeholder component that is used to render a target.
- * At build time, this component is transformed by the target system:
- * - If a target is registered for the targetId, it replaces this component with the target component(s)
- * - If no target is registered and children are provided, it replaces this component with its children
- * - If no target is registered and no children are provided, it removes this component
- * @param targetId - The id of the target to render
- * @param children - Default content to render if no target is registered (handled at build time)
- * @returns
+ * UITarget is a placeholder component that marks extension points in the UI.
+ *
+ * At build time, this component is transformed:
+ * - PRODUCTION: Pure passthrough, renders children as-is (zero overhead)
+ * - DEVELOPMENT: Vite plugin adds visual markers for debugging extension points
+ *
+ * @param targetId - Unique identifier for this extension point
+ * @param children - Default content to render (optional for replacement targets)
+ *
+ * @example
+ * // Replacement target (extension adds new UI)
+ * <UITarget targetId="pdp.loyalty.badge" />
+ *
+ * @example
+ * // Wrapper target (extension enhances existing UI)
+ * <UITarget targetId="orderSummary.tax">
+ *   <TaxDisplay amount={tax} />
+ * </UITarget>
  */
 
 import { createLogger } from '@/lib/logger';
@@ -31,5 +41,7 @@ const logger = createLogger();
 
 export function UITarget({ targetId, children }: { targetId: string; children?: React.ReactNode }) {
     logger.debug('UITarget', { targetId });
+    // Production: pure passthrough with zero overhead
+    // Development: Vite plugin transforms this at build time to add visual markers
     return <>{children}</>;
 }

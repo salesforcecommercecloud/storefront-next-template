@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
 import { Check } from 'lucide-react';
@@ -57,7 +54,7 @@ export function ToasterTheme() {
             closeButton
             className="toaster"
             theme={theme}
-            offset="var(--header-height)"
+            offset="calc(var(--header-height, 0px) + 0.75rem)"
             icons={{ success: <Check size={20} strokeWidth={2.5} /> }}
             toastOptions={{ unstyled: true }}
         />

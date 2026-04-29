@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { cn } from '@/lib/utils';
 import type { InfoModalProps } from './types';
 
@@ -80,7 +78,7 @@ const MODAL_WIDTH_CLASSES = {
  * @returns ReactElement
  */
 export default function InfoModal({ open, onOpenChange, data, className }: InfoModalProps): ReactElement {
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { t } = useTranslation('infoModal');
     const { t: tProduct } = useTranslation('product');
 
@@ -175,6 +173,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                                 key={open ? 'open' : 'closed'}
                                 onClose={() => onOpenChange(false)}
                                 formConfig={data.formConfig}
+                                onAfterSubmit={data.onAfterSubmit}
                             />
                         </div>
                     </>

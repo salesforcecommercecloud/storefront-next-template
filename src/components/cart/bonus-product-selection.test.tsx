@@ -23,7 +23,11 @@ import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
 import BonusProductSelection from './bonus-product-selection';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 // ============================================================================
 // Mocks
@@ -35,11 +39,6 @@ vi.mock('react-i18next', () => ({
         const { t } = getTranslation();
         return { t, i18n: { language: 'en-US' } };
     },
-}));
-
-// Mock currency provider
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
 }));
 
 // Mock useFetcher from react-router - will be spied on in beforeEach
@@ -187,7 +186,11 @@ function renderWithRouter(ui: React.ReactElement) {
         [
             {
                 path: '/',
-                element: ui,
+                element: (
+                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        {ui}
+                    </SiteProvider>
+                ),
             },
         ],
         {
@@ -448,8 +451,7 @@ describe('BonusProductSelection', () => {
             ]);
         });
 
-        test('shows success toast after successful direct add', async () => {
-            const { t } = getTranslation();
+        test('does not show toast after successful direct add', async () => {
             mockRequiresVariantSelection.mockReturnValue(false);
             // Set up fetcher with success state before render
             mockFetcher.state = 'idle';
@@ -459,7 +461,7 @@ describe('BonusProductSelection', () => {
             renderWithRouter(<BonusProductSelection {...props} />);
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(t('product:bonusProducts.addedToCart'), 'success');
+                expect(mockAddToast).not.toHaveBeenCalled();
             });
         });
 

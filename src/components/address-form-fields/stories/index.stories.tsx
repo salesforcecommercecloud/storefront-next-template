@@ -24,7 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { AddressFormFields } from '../index';
 import { createShippingAddressSchema } from '@/lib/checkout-schemas';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 /**
  * The AddressFormFields component provides shared address form fields with Google Maps
@@ -37,11 +37,13 @@ interface ShippingFormData {
     firstName: string;
     lastName: string;
     address1: string;
-    address2: string;
+    address2?: string;
     city: string;
     stateCode: string;
     postalCode: string;
-    phone: string;
+    countryCode?: string;
+    phoneCountryCode?: string;
+    phone?: string;
 }
 
 interface BillingFormData {
@@ -510,12 +512,12 @@ export const FieldErrorValidation: Story = {
  * Form with custom className
  */
 export const WithCustomClassName: Story = {
-    render: () => <ShippingAddressFormWrapper className="bg-muted p-4 rounded-lg" />,
+    render: () => <ShippingAddressFormWrapper className="bg-muted p-4 rounded-none" />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
         // Verify custom class is applied
-        const container = canvasElement.querySelector('.bg-muted.p-4.rounded-lg');
+        const container = canvasElement.querySelector('.bg-muted.p-4.rounded-none');
         await expect(container).toBeInTheDocument();
     },
 };

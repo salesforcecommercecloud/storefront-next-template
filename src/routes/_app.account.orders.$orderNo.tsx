@@ -30,10 +30,11 @@ import { Typography } from '@/components/typography';
 import { ChevronLeft } from 'lucide-react';
 import OrderDetails, { type ProductDataById } from '@/components/account/order-details';
 import OrderSkeleton from '@/components/order-skeleton';
+import ProductContentProvider from '@/providers/product-content';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchOrderWithProducts } from '@/lib/api/order';
+import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
 
@@ -47,7 +48,6 @@ type OrderDetailsPageLoaderData = {
 };
 
 /** Loader fetches order and product details via SCAPI (getOrder + getProducts). */
-// eslint-disable-next-line react-refresh/only-export-components -- route file exports loader
 export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPageLoaderData {
     const { orderNo } = params;
     const logger = getLogger(context);
@@ -69,7 +69,7 @@ export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPag
 function OrderNotFoundCard() {
     const { t } = useTranslation('account');
     return (
-        <Card>
+        <Card className="rounded-none shadow-none">
             <CardHeader>
                 <CardTitle className="text-center">{t('orders.orderNotFound')}</CardTitle>
             </CardHeader>
@@ -88,7 +88,7 @@ function OrderNotFoundCard() {
 export function ErrorBoundary() {
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-4xl mx-auto section-container py-8">
                 <OrderNotFoundCard />
             </div>
         </div>
@@ -102,7 +102,7 @@ export default function OrderDetailsPage(): ReactElement {
     const loaderData = useLoaderData<OrderDetailsPageLoaderData>();
 
     return (
-        <div className="w-full px-4 sm:px-6 lg:px-8 pt-0 pb-8">
+        <div className="w-full section-container pt-0 pb-8">
             <SeoMeta title={t('meta.orderDetailsTitle', { defaultValue: 'Order Details' })} noIndex />
             <Breadcrumb className="mb-5">
                 <BreadcrumbList>
@@ -137,7 +137,11 @@ export default function OrderDetailsPage(): ReactElement {
                             <OrderNotFoundCard />
                         </div>
                     }>
-                    {(data) => <OrderDetails order={data.order} productsById={data.productsById} />}
+                    {(data) => (
+                        <ProductContentProvider>
+                            <OrderDetails order={data.order} productsById={data.productsById} />
+                        </ProductContentProvider>
+                    )}
                 </Await>
             </Suspense>
         </div>

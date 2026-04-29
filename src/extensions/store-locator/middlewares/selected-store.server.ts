@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type MiddlewareFunction, createContext as createRouterContext } from 'react-router';
-import { createCookie, getCookieConfig } from '@/lib/cookie-utils';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 
 const COOKIE_SELECTED_STORE = 'selectedStoreInfo';
@@ -69,7 +69,7 @@ export const updateSelectedStore = (
 
 /**
  * Middleware to resolve selected store info from cookie and persist updates via Set-Cookie.
- * Follows the same before/after pattern as currencyMiddleware.
+ * Follows the same before/after pattern as authMiddleware.
  */
 export const selectedStoreMiddleware: MiddlewareFunction<Response> = async ({ request, context }, next) => {
     const storeCookie = createSelectedStoreCookie(context);

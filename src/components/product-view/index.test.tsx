@@ -108,22 +108,13 @@ describe('ProductView', () => {
         ],
     };
 
-    const mockCategory: ShopperProducts.schemas['Category'] = {
-        id: 'test-category',
-        name: 'Test Category',
-        parentCategoryTree: [
-            { id: 'root', name: 'Root' },
-            { id: 'parent', name: 'Parent Category' },
-        ],
-    };
-
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
     describe('regular product rendering', () => {
         test('should render regular product with image gallery and product info', () => {
-            renderProductView({ product: mockProduct, category: mockCategory });
+            renderProductView({ product: mockProduct });
 
             // Check that regular product components are rendered
             // ImageGallery: Should have images displayed
@@ -135,33 +126,8 @@ describe('ProductView', () => {
             expect(screen.getByText(`$99.99`)).toBeInTheDocument();
         });
 
-        test('should render breadcrumbs when category with parent tree is provided', () => {
-            renderProductView({ product: mockProduct, category: mockCategory });
-
-            // Look for breadcrumb text content (path TO current category, not including it)
-            expect(screen.getByText('Root')).toBeInTheDocument();
-            expect(screen.getByText('Parent Category')).toBeInTheDocument();
-        });
-
-        test('should not render breadcrumbs when category has no parent tree', () => {
-            const categoryWithoutParents = { ...mockCategory, parentCategoryTree: [] };
-            renderProductView({ product: mockProduct, category: categoryWithoutParents });
-
-            // Should not render breadcrumb content
-            expect(screen.queryByText('Root')).not.toBeInTheDocument();
-            expect(screen.queryByText('Parent Category')).not.toBeInTheDocument();
-        });
-
-        test('should not render breadcrumbs when no category is provided', () => {
-            renderProductView({ product: mockProduct, category: undefined });
-
-            // Should not render breadcrumb content
-            expect(screen.queryByText('Root')).not.toBeInTheDocument();
-            expect(screen.queryByText('Parent Category')).not.toBeInTheDocument();
-        });
-
         test('should pass correct props to ProductInfo', () => {
-            renderProductView({ product: mockProduct, category: mockCategory });
+            renderProductView({ product: mockProduct });
 
             // Check that ProductInfo is rendered with correct product data
             expect(screen.getByText('Test Product')).toBeInTheDocument();
@@ -172,7 +138,7 @@ describe('ProductView', () => {
         });
 
         test('should pass gallery images to ImageGallery', () => {
-            renderProductView({ product: mockProduct, category: mockCategory });
+            renderProductView({ product: mockProduct });
 
             // Check that images are rendered
             const images = screen.getAllByRole('img');
@@ -187,7 +153,7 @@ describe('ProductView', () => {
     describe('product type detection', () => {
         test('should handle product without type property', () => {
             const productWithoutType = { ...mockProduct, type: undefined };
-            renderProductView({ product: productWithoutType, category: mockCategory });
+            renderProductView({ product: productWithoutType });
 
             // Should render as regular product with image gallery and product info
             const images = screen.getAllByRole('img');
@@ -198,7 +164,7 @@ describe('ProductView', () => {
 
         test('should handle product with empty type object', () => {
             const productWithEmptyType = { ...mockProduct, type: {} };
-            renderProductView({ product: productWithEmptyType, category: mockCategory });
+            renderProductView({ product: productWithEmptyType });
 
             // Should render as regular product with image gallery and product info
             const images = screen.getAllByRole('img');
@@ -212,7 +178,7 @@ describe('ProductView', () => {
                 ...mockProduct,
                 type: { set: false, bundle: false, item: true },
             };
-            renderProductView({ product: productWithFalseTypes, category: mockCategory });
+            renderProductView({ product: productWithFalseTypes });
 
             // Should render as regular product with image gallery and product info
             const images = screen.getAllByRole('img');

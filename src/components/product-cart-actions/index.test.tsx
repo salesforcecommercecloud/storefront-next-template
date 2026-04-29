@@ -32,7 +32,7 @@ import { bundleProd } from '@/components/__mocks__/bundle-product';
 import { mockBuildConfig } from '@/test-utils/config';
 import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import type { Config } from '@/types/config';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Create a default config object for tests
 const defaultTestConfig = createAppConfig({

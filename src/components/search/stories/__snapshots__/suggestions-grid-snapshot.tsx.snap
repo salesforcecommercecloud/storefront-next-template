@@ -12,7 +12,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/running-shoes"
+        href="/RefArchGlobal/en-GB/products/running-shoes"
       >
         <div
           class="w-full"
@@ -51,7 +51,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/hiking-boots"
+        href="/RefArchGlobal/en-GB/products/hiking-boots"
       >
         <div
           class="w-full"
@@ -90,7 +90,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/casual-sneakers"
+        href="/RefArchGlobal/en-GB/products/casual-sneakers"
       >
         <div
           class="w-full"
@@ -129,7 +129,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/dress-shoes"
+        href="/RefArchGlobal/en-GB/products/dress-shoes"
       >
         <div
           class="w-full"
@@ -168,7 +168,7 @@ exports[`SuggestionsGrid stories snapshot > Default story renders and matches sn
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/sandals"
+        href="/RefArchGlobal/en-GB/products/sandals"
       >
         <div
           class="w-full"
@@ -223,7 +223,7 @@ exports[`SuggestionsGrid stories snapshot > SingleProduct story renders and matc
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/running-shoes"
+        href="/RefArchGlobal/en-GB/products/running-shoes"
       >
         <div
           class="w-full"
@@ -276,7 +276,7 @@ exports[`SuggestionsGrid stories snapshot > WithoutImages story renders and matc
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/no-image"
+        href="/RefArchGlobal/en-GB/products/no-image"
       >
         <div
           class="w-full"
@@ -358,7 +358,7 @@ exports[`SuggestionsGrid stories snapshot > WithoutImages story renders and matc
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/another"
+        href="/RefArchGlobal/en-GB/products/another"
       >
         <div
           class="w-full"
@@ -454,7 +454,7 @@ exports[`SuggestionsGrid stories snapshot > WithoutPrices story renders and matc
       <a
         class="block hover:underline flex-1 max-w-[20%]"
         data-testid="product-tile"
-        href="/products/no-price"
+        href="/RefArchGlobal/en-GB/products/no-price"
       >
         <div
           class="w-full"

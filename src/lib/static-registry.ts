@@ -24,19 +24,19 @@ import { registry } from '@/lib/registry';
  * 
  * DO NOT EDIT THIS FUNCTION MANUALLY - it will be overwritten on next build.
  * 
- * Components registered: odyssey_base.contentCard, odyssey_base.grid, odyssey_base.hero, odyssey_base.heroCarousel, odyssey_base.pdImage, odyssey_base.popularCategories, odyssey_base.popularCategory, odyssey_base.productCarousel, odyssey_base.productRecommendations, odyssey_base.productTile
+ * Components registered: Content.contentCard, Content.hero, Content.pdImage, Content.popularCategory, Content.productRecommendations, Content.productTile, Layout.grid, Layout.heroCarousel, Layout.popularCategories, Layout.productCarousel
  */
 export function initializeRegistry(targetRegistry = registry): void {
-    targetRegistry.registerImporter('odyssey_base.contentCard', () => import('../components/content-card/index'));
-    targetRegistry.registerImporter('odyssey_base.grid', () => import('../components/grid/index'));
-    targetRegistry.registerImporter('odyssey_base.hero', () => import('../components/hero/index'));
-    targetRegistry.registerImporter('odyssey_base.heroCarousel', () => import('../components/hero-carousel/index'), { fallback: 'fallback' });
-    targetRegistry.registerImporter('odyssey_base.pdImage', () => import('../components/dynamic-image/index'));
-    targetRegistry.registerImporter('odyssey_base.popularCategories', () => import('../components/home/popular-categories/index'), { loader: 'loader' });
-    targetRegistry.registerImporter('odyssey_base.popularCategory', () => import('../components/home/popular-category/index'), { loader: 'loader' });
-    targetRegistry.registerImporter('odyssey_base.productCarousel', () => import('../components/product-carousel/index'), { loader: 'loader', fallback: 'fallback' });
-    targetRegistry.registerImporter('odyssey_base.productRecommendations', () => import('../components/product-recommendations/index'));
-    targetRegistry.registerImporter('odyssey_base.productTile', () => import('../components/product-tile/index'));
+    targetRegistry.registerImporter('Content.contentCard', () => import('../components/content-card/index'));
+    targetRegistry.registerImporter('Content.hero', () => import('../components/hero/index'));
+    targetRegistry.registerImporter('Content.pdImage', () => import('../components/dynamic-image/index'));
+    targetRegistry.registerImporter('Content.popularCategory', () => import('../components/home/popular-category/index'), { loader: 'loader' });
+    targetRegistry.registerImporter('Content.productRecommendations', () => import('../components/product-recommendations/index'));
+    targetRegistry.registerImporter('Content.productTile', () => import('../components/product-tile/index'), { loader: 'loader' });
+    targetRegistry.registerImporter('Layout.grid', () => import('../components/grid/index'));
+    targetRegistry.registerImporter('Layout.heroCarousel', () => import('../components/hero-carousel/index'), { fallback: 'fallback' });
+    targetRegistry.registerImporter('Layout.popularCategories', () => import('../components/home/popular-categories/index'), { loader: 'loader' });
+    targetRegistry.registerImporter('Layout.productCarousel', () => import('../components/product-carousel/index'), { loader: 'loader', fallback: 'fallback' });
 }
 
 // STATIC_REGISTRY_END

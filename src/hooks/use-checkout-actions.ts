@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useFetcher } from 'react-router';
-import { useEffect, useRef, useState, type MutableRefObject } from 'react';
+import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketUpdater } from '@/providers/basket';
 import type { ContactInfoData, PaymentData } from '@/lib/checkout-schemas';
@@ -27,6 +27,13 @@ import {
 
 // Place order uses a dedicated action route (excluded from site context prefix via /action/**)
 const placeOrderActionRoute = '/action/place-order';
+
+/** Persists create-account intent across reloads (mirrors handleCreateAccountPreferenceChange). */
+const SESSION_SHOULD_CREATE_ACCOUNT = 'shouldCreateAccount';
+/** Persists formatted contact phone when basket merge (e.g. OTP) drops it from the basket. */
+const SESSION_CHECKOUT_CONTACT_PHONE = 'checkoutContactPhone';
+/** Set by register-customer-selection while checkout registration OTP flow is active. */
+const SESSION_REGISTERED_VIA_CHECKOUT = 'registeredViaCheckout';
 
 /**
  * Action lifecycle states for tracking form submission progress.
@@ -55,13 +62,16 @@ type ActionLifecycle = {
 };
 
 /** Options passed when placing order (e.g. from payment form at time of Place Order click) */
-export type PlaceOrderOptionsRef = MutableRefObject<{ savePaymentToProfile?: boolean } | null>;
+export type PlaceOrderOptionsRef = MutableRefObject<{
+    savePaymentToProfile?: boolean;
+    useDifferentBilling?: boolean;
+} | null>;
 
 /** Single ref coordinating payment submission and place-order flow to avoid race conditions */
 export type PaymentSubmissionRef = MutableRefObject<{
     formDataGetter: (() => PaymentData) | null;
     shouldPlaceOrderAfterPayment: boolean;
-    options: { savePaymentToProfile?: boolean } | null;
+    options: { savePaymentToProfile?: boolean; useDifferentBilling?: boolean } | null;
     setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
 }>;
 
@@ -108,12 +118,45 @@ export function useCheckoutActions(options?: {
     // We track step here because editingStep from context can change before processing completes.
     const actionRef = useRef<ActionLifecycle>({ step: null, state: ActionState.NOT_STARTED });
 
-    // Create account state
-    const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
+    // Restore create-account only when registration OTP flow is active — avoids stale shouldCreateAccount for returning shoppers
+    const [shouldCreateAccount, setShouldCreateAccount] = useState(() => {
+        if (typeof sessionStorage === 'undefined') {
+            return false;
+        }
+        if (sessionStorage.getItem(SESSION_REGISTERED_VIA_CHECKOUT) !== 'true') {
+            return false;
+        }
+        return sessionStorage.getItem(SESSION_SHOULD_CREATE_ACCOUNT) === 'true';
+    });
     const [savedPaymentMethods, setSavedPaymentMethods] = useState(new Set<string>());
 
     // Stores the contact phone across basket mutations
     const contactPhoneRef = useRef<string | null>(null);
+
+    // Restore phone from session when basket no longer has it after OTP / merge
+    useEffect(() => {
+        if (typeof sessionStorage === 'undefined') {
+            return;
+        }
+        const stored = sessionStorage.getItem(SESSION_CHECKOUT_CONTACT_PHONE);
+        if (stored && !contactPhoneRef.current) {
+            contactPhoneRef.current = stored;
+        }
+    }, []);
+
+    // If billing/shipping gains a phone later (e.g. payment step) and we have no ref/session yet, capture it for place order
+    useEffect(() => {
+        if (contactPhoneRef.current) {
+            return;
+        }
+        if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(SESSION_CHECKOUT_CONTACT_PHONE)) {
+            return;
+        }
+        const fromBasket = basket?.billingAddress?.phone || basket?.shipments?.[0]?.shippingAddress?.phone;
+        if (fromBasket) {
+            contactPhoneRef.current = fromBasket;
+        }
+    }, [basket]);
 
     // Reset lifecycle when entering a new edit step
     useEffect(() => {
@@ -193,9 +236,13 @@ export function useCheckoutActions(options?: {
         // Transition: IDLE -> SUBMITTED
         actionRef.current = { step: CHECKOUT_STEPS.CONTACT_INFO, state: ActionState.SUBMITTED };
 
-        // Persist the full phone (with country code)
+        // Persist the full phone (with country code) for place-order and OTP/basket merges
         if (data.phone) {
-            contactPhoneRef.current = `${data.countryCode || '+1'} ${data.phone}`;
+            const fullPhone = `${data.countryCode || '+1'} ${data.phone}`;
+            contactPhoneRef.current = fullPhone;
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.setItem(SESSION_CHECKOUT_CONTACT_PHONE, fullPhone);
+            }
         }
 
         // Convert typed data to FormData for fetcher submission
@@ -275,7 +322,7 @@ export function useCheckoutActions(options?: {
         formData.append('cardholderName', data.cardholderName || '');
         formData.append('expiryDate', data.expiryDate || '');
         formData.append('cvv', data.cvv || '');
-        formData.append('billingSameAsShipping', data.billingSameAsShipping.toString());
+        formData.append('useDifferentBilling', data.useDifferentBilling.toString());
 
         // Include saved payment method fields
         formData.append('useSavedPaymentMethod', data.useSavedPaymentMethod?.toString() || 'false');
@@ -283,7 +330,7 @@ export function useCheckoutActions(options?: {
             formData.append('selectedSavedPaymentMethod', data.selectedSavedPaymentMethod);
         }
 
-        if (!data.billingSameAsShipping) {
+        if (data.useDifferentBilling) {
             formData.append('billingFirstName', data.billingFirstName || '');
             formData.append('billingLastName', data.billingLastName || '');
             formData.append('billingAddress1', data.billingAddress1 || '');
@@ -332,18 +379,16 @@ export function useCheckoutActions(options?: {
     };
 
     /**
-     * Callback for when create account preference changes
-     *
-     * @param shouldCreate - Whether the user wants to create an account
+     * Callback for when create account preference changes.
+     * Memoized so consumers (e.g. useEffect deps in checkout-form-page) don't fire on every render.
      */
-    const handleCreateAccountPreferenceChange = (shouldCreate: boolean) => {
+    const handleCreateAccountPreferenceChange = useCallback((shouldCreate: boolean) => {
         setShouldCreateAccount(shouldCreate);
 
-        // Store preference in session storage for use during order placement
         if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem('shouldCreateAccount', shouldCreate.toString());
+            sessionStorage.setItem(SESSION_SHOULD_CREATE_ACCOUNT, shouldCreate.toString());
         }
-    };
+    }, []);
 
     /**
      * Submits the place-order action via fetcher so errors can be shown in-page.
@@ -354,14 +399,25 @@ export function useCheckoutActions(options?: {
         }
         const formData = new FormData();
         formData.append('shouldCreateAccount', shouldCreateAccount ? 'true' : 'false');
+        const registrationFlowActive =
+            typeof sessionStorage !== 'undefined' && sessionStorage.getItem(SESSION_REGISTERED_VIA_CHECKOUT) === 'true';
+        formData.append('checkoutRegistrationIntent', registrationFlowActive ? 'true' : 'false');
         const placeOrderOpts =
             options?.paymentSubmissionRef?.current?.options ?? options?.placeOrderOptionsRef?.current;
         if (placeOrderOpts?.savePaymentToProfile) {
             formData.append('savePaymentToProfile', 'true');
         }
-        // Pass the contact phone captured at submission time
+        if (typeof placeOrderOpts?.useDifferentBilling === 'boolean') {
+            formData.append('useDifferentBilling', String(placeOrderOpts.useDifferentBilling));
+        }
+        // Pass the contact phone captured at submission time (session + ref survive basket merge / reload)
+        const storedPhone =
+            typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_CHECKOUT_CONTACT_PHONE) : null;
         const contactPhone =
-            contactPhoneRef.current || basket?.billingAddress?.phone || basket?.shipments?.[0]?.shippingAddress?.phone;
+            contactPhoneRef.current ||
+            storedPhone ||
+            basket?.billingAddress?.phone ||
+            basket?.shipments?.[0]?.shippingAddress?.phone;
         if (contactPhone) {
             formData.append('contactPhone', contactPhone);
         }

@@ -23,7 +23,7 @@ import { mockConfig } from '@/test-utils/config';
 
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const STORYBOOK_REMOVE_BASE = '/__storybook/remove';
 
@@ -529,13 +529,13 @@ This story demonstrates the loading state during item removal:
 export const DifferentItemTypes: Story = {
     render: () => (
         <div className="space-y-4">
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-none">
                 <h4 className="font-medium mb-2">Cart Item</h4>
                 <p className="text-sm text-muted-foreground mb-2">Product in shopping cart</p>
                 <RemoveItemButtonWithConfirmation itemId="cart-item-1" />
             </div>
 
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-none">
                 <h4 className="font-medium mb-2">Wishlist Item</h4>
                 <p className="text-sm text-muted-foreground mb-2">Saved for later</p>
                 <RemoveItemButtonWithConfirmation
@@ -547,7 +547,7 @@ export const DifferentItemTypes: Story = {
                 />
             </div>
 
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-none">
                 <h4 className="font-medium mb-2">Saved Address</h4>
                 <p className="text-sm text-muted-foreground mb-2">Default shipping address</p>
                 <RemoveItemButtonWithConfirmation

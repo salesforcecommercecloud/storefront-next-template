@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Suspense, type ReactElement } from 'react';
-import { Await } from 'react-router';
+import { Await, useLocation } from 'react-router';
 import { Link } from '@/components/link';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from '@icons-pack/react-simple-icons';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -24,38 +24,75 @@ import { useTranslation } from 'react-i18next';
 import LocaleSwitcher from '@/components/locale-switcher';
 import CurrencySwitcher from '@/components/currency-switcher';
 import logo from '/images/logo.svg';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
+import type { AppConfig } from '@/types/config';
 
 interface FooterProps {
     categories?: Promise<ShopperProducts.schemas['Category']>;
+    variant?: 'full' | 'checkout';
 }
 
-export default function Footer({ categories }: FooterProps): ReactElement {
+export default function Footer({ categories, variant = 'full' }: FooterProps): ReactElement {
     const { t } = useTranslation('footer');
+    const location = useLocation();
+    const config = useConfig<AppConfig>();
 
-    return (
-        <footer className="mt-auto">
-            {/* Prominent Newsletter Section (Black Background) */}
-            <div className="bg-primary text-primary-foreground py-12 md:py-16">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-2xl mx-auto text-center">
-                        <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
-                        <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
-                        <div className="flex justify-center">
-                            <Signup />
+    // Check if we're on the homepage by stripping the site context prefix pattern
+    // stripPathPrefix works directly with URL patterns - no need to resolve them first
+    const pathWithoutPrefix = stripPathPrefix(location.pathname, config.url?.prefix || '');
+
+    // Homepage is when the path (after removing prefix) is empty or just "/"
+    const isHomepage = pathWithoutPrefix === '/';
+
+    if (variant === 'checkout') {
+        return (
+            <footer className="mt-auto border-t border-border">
+                <div className="section-container py-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-muted-foreground">
+                        <div>
+                            © {t('logoAlt')} {t('address')}
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Link to="/privacy" className="hover:text-foreground transition-colors">
+                                {t('links.privacyPolicy')}
+                            </Link>
+                            <Link to="/terms" className="hover:text-foreground transition-colors">
+                                {t('links.termsOfUse')}
+                            </Link>
                         </div>
                     </div>
                 </div>
-            </div>
+            </footer>
+        );
+    }
+
+    return (
+        <footer className="mt-auto">
+            {/* Prominent Newsletter Section (Black Background) - Homepage Only */}
+            {isHomepage && (
+                <div className="section-container">
+                    <div className="bg-primary text-primary-foreground py-12 md:py-16">
+                        <div className="max-w-2xl mx-auto text-center">
+                            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
+                            <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
+                            <div className="flex justify-center">
+                                <Signup />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Footer Links Section (Light Background) */}
-            <div className="bg-footer-background py-12">
-                <div className="container mx-auto px-4 text-footer-foreground">
+            <div className="bg-footer-background py-12 section-container">
+                <div className="text-footer-foreground">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
                         {/* Column 1: Shop - Dynamic Categories */}
                         <div>
                             <h3 className="text-sm font-semibold mb-4">{t('sections.shop')}</h3>
                             <ul className="space-y-2">
-                                <UITarget targetId="footer.customersupport.start" />
+                                <UITarget targetId="sfcc.footer.customersupport.start" />
                                 {categories ? (
                                     <Suspense fallback={null}>
                                         <Await resolve={categories} errorElement={null}>
@@ -75,7 +112,7 @@ export default function Footer({ categories }: FooterProps): ReactElement {
                                         </Await>
                                     </Suspense>
                                 ) : null}
-                                <UITarget targetId="footer.customersupport.end" />
+                                <UITarget targetId="sfcc.footer.customersupport.end" />
                             </ul>
                         </div>
 
@@ -83,7 +120,7 @@ export default function Footer({ categories }: FooterProps): ReactElement {
                         <div>
                             <h3 className="text-sm font-semibold mb-4">{t('sections.help')}</h3>
                             <ul className="space-y-2">
-                                <UITarget targetId="footer.account.start" />
+                                <UITarget targetId="sfcc.footer.account.start" />
                                 <li>
                                     <Link
                                         to="/contact"
@@ -112,7 +149,7 @@ export default function Footer({ categories }: FooterProps): ReactElement {
                                         {t('links.signInOrCreateAccount')}
                                     </Link>
                                 </li>
-                                <UITarget targetId="footer.account.end" />
+                                <UITarget targetId="sfcc.footer.account.end" />
                             </ul>
                         </div>
 
@@ -120,7 +157,7 @@ export default function Footer({ categories }: FooterProps): ReactElement {
                         <div>
                             <h3 className="text-sm font-semibold mb-4">{t('sections.about')}</h3>
                             <ul className="space-y-2">
-                                <UITarget targetId="footer.ourcompany.start" />
+                                <UITarget targetId="sfcc.footer.ourcompany.start" />
                                 <li>
                                     <Link
                                         to="/about-us"
@@ -128,7 +165,7 @@ export default function Footer({ categories }: FooterProps): ReactElement {
                                         {t('links.aboutUs')}
                                     </Link>
                                 </li>
-                                <UITarget targetId="footer.ourcompany.end" />
+                                <UITarget targetId="sfcc.footer.ourcompany.end" />
                             </ul>
                         </div>
                     </div>

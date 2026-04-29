@@ -18,8 +18,10 @@ import { expect, userEvent, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 import Footer from '../index';
 
@@ -119,14 +121,14 @@ Site footer with support, account, company links, newsletter signup, social icon
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <ActionLogger>
                         <div className="min-h-[60vh] flex flex-col">
                             <div className="flex-1" />
                             <Story />
                         </div>
                     </ActionLogger>
-                </CurrencyWrapper>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],
@@ -355,6 +357,18 @@ export const MobileView: Story = {
             void expect(canvasElement.firstChild).toBeInTheDocument();
         });
     },
+};
+
+export const NonHomepage: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Footer on non-homepage routes (product, cart, category pages). Newsletter section should be hidden on actual routes, but Storybook always renders in homepage context. See unit tests in footer.test.tsx for non-homepage behavior verification.',
+            },
+        },
+        snapshot: false, // Skip snapshot test - not representative of actual non-homepage behavior
+    },
+    tags: [], // Remove 'interaction' tag to skip interaction tests in CI
 };
 
 export const DarkBackground: Story = {

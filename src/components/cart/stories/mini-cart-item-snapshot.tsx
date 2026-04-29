@@ -75,12 +75,22 @@ vi.mock('@/components/toast', () => ({
         addToast: () => {},
     }),
 }));
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
+            language: 'en-GB',
+            currency: 'GBP',
+        })),
+    };
+});
 
 import { composeStories } from '@storybook/react-vite';
 
 import * as MiniCartItemStories from './mini-cart-item.stories';
 import { render, cleanup } from '@testing-library/react';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
 
 const composed = composeStories(MiniCartItemStories);
 
@@ -92,9 +102,7 @@ describe('MiniCartItem stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(
-                <CurrencyWrapper>
-                    <Story />
-                </CurrencyWrapper>
+                <Story />
             );
             expect(container.firstChild).toMatchSnapshot();
         });

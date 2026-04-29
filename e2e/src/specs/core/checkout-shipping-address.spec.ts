@@ -35,14 +35,10 @@
 
 Feature('Checkout Shipping Address Modal Tests').tag('@core').tag('@checkout').tag('@shipping-address');
 
-const { checkoutPage, addToCartFlow, registeredShopperSetupFlow, storefrontPage, accountAddressesPage } = inject();
+const { checkoutPage, apiCartSetupFlow, registeredShopperSetupFlow, storefrontPage, accountAddressesPage } = inject();
 import { expect } from 'chai';
 import { TEST_SHIPPING_ADDRESS_ALT, TEST_PRODUCT_CATEGORIES } from '../../test-data/checkout.data';
 
-/**
- * Cleanup: Log out after scenarios that create a new registered user.
- * Ensures the next test does not inherit that user's session and starts from a known state.
- */
 After(async (test: unknown) => {
     const tags = (test as { tags?: string[] }).tags ?? [];
     if (Array.isArray(tags) && tags.includes('@shipping-address')) {
@@ -54,24 +50,10 @@ After(async (test: unknown) => {
 // Saved Addresses List Display and Continue
 // =============================================================================
 
-/**
- * Registered shopper sees saved addresses list and can continue checkout
- *
- * Test Flow:
- * 1. Register shopper with full profile (includes one saved address)
- * 2. Add product to cart and navigate to checkout
- * 3. Shipping address is auto-applied (preview mode) — expand to reveal saved addresses
- * 4. Verify saved addresses list is displayed with radio selection
- * 5. Verify at least one saved address is visible
- * 6. Verify "Add New Address" button is present
- * 7. Click "Continue to Shipping Method" — verify step completes
- * 8. Verify address is shown in shipping preview (applied to basket)
- * 9. Navigate to account addresses — verify address exists in profile
- */
 Scenario('Registered shopper sees saved addresses and can continue checkout', async () => {
     const setupResult = await registeredShopperSetupFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
     await checkoutPage.expandShippingAddressForSavedAddresses();
@@ -87,11 +69,9 @@ Scenario('Registered shopper sees saved addresses and can continue checkout', as
 
     checkoutPage.clickContinueToShippingOptions();
 
-    // Verify address applied to basket — preview shows the setup address
     const previewText = await checkoutPage.getShippingAddressPreviewText();
     expect(previewText, 'Shipping preview should show the saved address city').to.include(setupResult.addressData.city);
 
-    // Verify address exists in customer profile
     accountAddressesPage.navigate();
     accountAddressesPage.validatePageLoaded();
     const profileAddressCount = await accountAddressesPage.getAddressCount();
@@ -102,25 +82,10 @@ Scenario('Registered shopper sees saved addresses and can continue checkout', as
 // Add New Address via Modal
 // =============================================================================
 
-/**
- * Registered shopper can add a new address via modal during checkout
- *
- * Test Flow:
- * 1. Register shopper with full profile
- * 2. Navigate to checkout — shipping is in preview mode (auto-applied)
- * 3. Expand shipping step to reveal saved addresses
- * 4. Click "Add New Address"
- * 5. Verify modal opens with "Add New Address" title
- * 6. Fill address form with new address data
- * 7. Click Save
- * 8. Verify modal closes and shipping step advances
- * 9. Verify new address is shown in shipping preview (applied to basket)
- * 10. Navigate to account addresses — verify new address saved to profile
- */
 Scenario('Registered shopper can add new address via modal at checkout', async () => {
     await registeredShopperSetupFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
     await checkoutPage.expandShippingAddressForSavedAddresses();
@@ -150,14 +115,12 @@ Scenario('Registered shopper can add new address via modal at checkout', async (
     const modalStillOpen = await checkoutPage.isAddressModalOpen();
     expect(modalStillOpen, 'Address modal should close after save').to.be.false;
 
-    // Verify new address is applied to the basket
     const previewText = await checkoutPage.getShippingAddressPreviewText();
     expect(previewText, 'Shipping preview should show the new address city').to.include(TEST_SHIPPING_ADDRESS_ALT.city);
     expect(previewText, 'Shipping preview should show the new address name').to.include(
         TEST_SHIPPING_ADDRESS_ALT.firstName
     );
 
-    // Verify new address saved to customer profile
     accountAddressesPage.navigate();
     accountAddressesPage.validatePageLoaded();
     const profileAddressCount = await accountAddressesPage.getAddressCount();
@@ -172,26 +135,10 @@ Scenario('Registered shopper can add new address via modal at checkout', async (
 // Edit Saved Address via Modal
 // =============================================================================
 
-/**
- * Registered shopper can edit a saved address via modal during checkout
- *
- * Test Flow:
- * 1. Register shopper with full profile (includes saved address)
- * 2. Navigate to checkout — shipping in preview mode (auto-applied)
- * 3. Expand shipping step to reveal saved addresses
- * 4. Click "Edit Address" on the first saved address
- * 5. Verify modal opens with "Edit Address" title
- * 6. Verify form is pre-populated with existing address data
- * 7. Modify a field (city)
- * 8. Click Save
- * 9. Verify modal closes and shipping step advances
- * 10. Verify edited address is shown in shipping preview (applied to basket)
- * 11. Navigate to account addresses — verify edit persisted in profile
- */
 Scenario('Registered shopper can edit saved address via modal at checkout', async () => {
     const setupResult = await registeredShopperSetupFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
 
     await checkoutPage.expandShippingAddressForSavedAddresses();
@@ -219,11 +166,9 @@ Scenario('Registered shopper can edit saved address via modal at checkout', asyn
     const modalStillOpen = await checkoutPage.isAddressModalOpen();
     expect(modalStillOpen, 'Address modal should close after edit save').to.be.false;
 
-    // Verify edited address is applied to the basket
     const previewText = await checkoutPage.getShippingAddressPreviewText();
     expect(previewText, 'Shipping preview should show the edited city').to.include(newCity);
 
-    // Verify edit persisted in customer profile
     accountAddressesPage.navigate();
     accountAddressesPage.validatePageLoaded();
     const cardText = await accountAddressesPage.getAddressCardText(0);
@@ -231,5 +176,203 @@ Scenario('Registered shopper can edit saved address via modal at checkout', asyn
 })
     .tag('@edit-address')
     .tag('@address-modal');
+
+// =============================================================================
+// Multiple Addresses with View All / View Less
+// =============================================================================
+
+Scenario('Registered shopper with 4+ addresses can use View All/View Less and add new address', async () => {
+    const setupResult = await registeredShopperSetupFlow.execute();
+
+    await checkoutPage.addMultipleAddressesToProfile([
+        {
+            addressId: `addr_shipping_${Date.now()}_1`,
+            firstName: 'Address',
+            lastName: 'Two',
+            address1: '200 Second St',
+            city: 'Cambridge',
+            stateCode: 'MA',
+            postalCode: '02139',
+            countryCode: 'US',
+            phone: '5559876543',
+            preferred: false,
+        },
+        {
+            addressId: `addr_shipping_${Date.now()}_2`,
+            firstName: 'Address',
+            lastName: 'Three',
+            address1: '300 Third Ave',
+            city: 'Somerville',
+            stateCode: 'MA',
+            postalCode: '02143',
+            countryCode: 'US',
+            phone: '5551112222',
+            preferred: false,
+        },
+        {
+            addressId: `addr_shipping_${Date.now()}_3`,
+            firstName: 'Address',
+            lastName: 'Four',
+            address1: '400 Fourth Rd',
+            city: 'Brookline',
+            stateCode: 'MA',
+            postalCode: '02445',
+            countryCode: 'US',
+            phone: '5553334444',
+            preferred: false,
+        },
+    ]);
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    await checkoutPage.expandShippingAddressForSavedAddresses();
+
+    const hasSavedAddresses = await checkoutPage.isSavedAddressesListVisible();
+    expect(hasSavedAddresses, 'Saved addresses list should be visible').to.be.true;
+
+    const firstAddressText = await checkoutPage.getSavedAddressText(0);
+    expect(firstAddressText, 'Default address should be at the top').to.include(setupResult.addressData.city);
+
+    const initialVisibleCount = await checkoutPage.getSavedAddressCount();
+    expect(initialVisibleCount, 'Should display exactly 3 addresses initially').to.equal(3);
+
+    const viewAllVisible = await checkoutPage.isViewAllVisible();
+    expect(viewAllVisible, 'View All button should be visible with 4+ addresses').to.be.true;
+
+    checkoutPage.clickViewAllAddresses();
+    await checkoutPage.waitForUiSettle(1);
+
+    const expandedCount = await checkoutPage.getSavedAddressCount();
+    expect(expandedCount, 'Should display all 4 addresses after View All').to.equal(4);
+
+    const viewLessVisible = await checkoutPage.isViewLessVisible();
+    expect(viewLessVisible, 'View Less button should be visible after expanding').to.be.true;
+
+    checkoutPage.clickViewLessAddresses();
+    await checkoutPage.waitForUiSettle(1);
+
+    const collapsedCount = await checkoutPage.getSavedAddressCount();
+    expect(collapsedCount, 'Should display 3 addresses again after View Less').to.equal(3);
+
+    checkoutPage.clickAddNewAddress();
+
+    const modalOpen = await checkoutPage.isAddressModalOpen();
+    expect(modalOpen, 'Address modal should open').to.be.true;
+
+    checkoutPage.fillAddressModal({
+        firstName: TEST_SHIPPING_ADDRESS_ALT.firstName,
+        lastName: TEST_SHIPPING_ADDRESS_ALT.lastName,
+        address1: TEST_SHIPPING_ADDRESS_ALT.address1,
+        city: TEST_SHIPPING_ADDRESS_ALT.city,
+        stateCode: TEST_SHIPPING_ADDRESS_ALT.stateCode,
+        postalCode: TEST_SHIPPING_ADDRESS_ALT.postalCode,
+    });
+
+    checkoutPage.clickAddressModalSave();
+    checkoutPage.waitForAddressModalClosed();
+
+    const previewText = await checkoutPage.getShippingAddressPreviewText();
+    expect(previewText, 'Shipping preview should show the new address').to.include(TEST_SHIPPING_ADDRESS_ALT.city);
+
+    await checkoutPage.selectShippingMethod(0);
+    checkoutPage.clickPlaceOrder();
+
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+
+    accountAddressesPage.navigate();
+    accountAddressesPage.validatePageLoaded();
+    const profileAddressCount = await accountAddressesPage.getAddressCount();
+    expect(profileAddressCount, 'Profile should have 5 addresses (4 initial + 1 new)').to.equal(5);
+})
+    .tag('@view-all-addresses')
+    .tag('@multiple-addresses')
+    .tag('@add-address')
+    .tag('@address-modal')
+    .tag('@place-order');
+
+Scenario('Registered shopper can select non-default saved address and place order', async () => {
+    const setupResult = await registeredShopperSetupFlow.execute();
+
+    await checkoutPage.addMultipleAddressesToProfile([
+        {
+            addressId: `addr_saved_${Date.now()}_1`,
+            firstName: 'Shipping',
+            lastName: 'AddressTwo',
+            address1: '200 Second Street',
+            city: 'Austin',
+            stateCode: 'TX',
+            postalCode: '78701',
+            countryCode: 'US',
+            phone: '5129998888',
+            preferred: false,
+        },
+        {
+            addressId: `addr_saved_${Date.now()}_2`,
+            firstName: 'Shipping',
+            lastName: 'AddressThree',
+            address1: '300 Third Avenue',
+            city: 'Denver',
+            stateCode: 'CO',
+            postalCode: '80202',
+            countryCode: 'US',
+            phone: '3037776666',
+            preferred: false,
+        },
+    ]);
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.expandShippingAddressForSavedAddresses();
+
+    const hasSavedAddresses = await checkoutPage.isSavedAddressesListVisible();
+    expect(hasSavedAddresses, 'Saved addresses list should be visible').to.be.true;
+
+    const addressCount = await checkoutPage.getSavedAddressCount();
+    expect(addressCount, 'Should have at least 3 saved addresses').to.be.at.least(3);
+
+    const firstAddressText = await checkoutPage.getSavedAddressText(0);
+    expect(firstAddressText, 'Default address should be at the top').to.include(setupResult.addressData.city);
+
+    // Find and select the Austin address (addresses are sorted by addressId)
+    let austinIndex = -1;
+    for (let i = 0; i < addressCount; i++) {
+        const addressText = await checkoutPage.getSavedAddressText(i);
+        if (addressText.includes('Austin')) {
+            austinIndex = i;
+            break;
+        }
+    }
+    expect(austinIndex, 'Should find Austin address in the list').to.be.greaterThan(-1);
+
+    await checkoutPage.selectSavedAddress(austinIndex);
+
+    const selectedAddressText = await checkoutPage.getSavedAddressText(austinIndex);
+    expect(selectedAddressText, 'Selected address should be Austin address').to.include('Austin');
+
+    checkoutPage.clickContinueToShippingOptions();
+
+    const previewText = await checkoutPage.getShippingAddressPreviewText();
+    expect(previewText, 'Shipping preview should show the selected address').to.include('Austin');
+    expect(previewText, 'Shipping preview should show the selected address').to.include('200 Second Street');
+
+    await checkoutPage.selectShippingMethod(0);
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+})
+    .tag('@select-saved-address')
+    .tag('@non-default-address')
+    .tag('@place-order');
 
 export {};

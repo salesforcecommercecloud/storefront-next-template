@@ -63,7 +63,7 @@ config.app.site.locale
 
 ### Required Variables
 
-Copy `.env.default` to `.env` and set these required Commerce Cloud credentials:
+Copy `.env.default` to `.env` and set these required B2C Commerce credentials:
 
 ```bash
 PUBLIC__app__commerce__api__clientId=your-client-id
@@ -363,7 +363,7 @@ For tests that need all providers (config + currency + store locator), use `AllP
 
 **App won't start - missing credentials?**
 - Copy `.env.default` to `.env`
-- Set required Commerce Cloud credentials:
+- Set required B2C Commerce credentials:
   ```bash
   PUBLIC__app__commerce__api__clientId=your-id
   PUBLIC__app__commerce__api__organizationId=your-org

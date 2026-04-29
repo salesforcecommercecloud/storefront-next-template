@@ -28,7 +28,7 @@ const mockGetProducts = vi.fn();
 const mockGetPromotions = vi.fn();
 const mockGetStores = vi.fn();
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperProducts: { getProducts: mockGetProducts },
         shopperPromotions: { getPromotions: mockGetPromotions },
@@ -45,7 +45,21 @@ vi.mock('@/lib/logger.server', () => ({
     })),
 }));
 
+vi.mock('@/lib/api/wishlist.server', () => ({
+    getWishlist: vi.fn().mockResolvedValue({ wishlist: null, items: [], id: null }),
+}));
+
+vi.mock('@/middlewares/auth.server', () => ({
+    getAuth: vi.fn(() => ({
+        userType: 'registered' as const,
+        customerId: 'test-customer-id',
+        accessToken: 'test-access-token',
+        accessTokenExpiry: Date.now() + 1_800_000,
+    })),
+}));
+
 import { getBasket, getBasketSnapshot } from '@/middlewares/basket.server';
+import { getWishlist } from '@/lib/api/wishlist.server';
 
 describe('Cart route loader', () => {
     const mockBasket = {
@@ -79,6 +93,7 @@ describe('Cart route loader', () => {
         mockGetProducts.mockResolvedValue({ data: { data: [mockProduct] } });
         mockGetPromotions.mockResolvedValue({ data: { data: [] } });
         mockGetStores.mockResolvedValue({ data: { data: [] } });
+        vi.mocked(getWishlist).mockResolvedValue({ wishlist: null, items: [], id: null });
     });
 
     test('returns basketDataPromise and basketSnapshot', () => {
@@ -102,10 +117,12 @@ describe('Cart route loader', () => {
         expect(data).toHaveProperty('productsByItemId');
         expect(data).toHaveProperty('bonusProductsById');
         expect(data).toHaveProperty('promotions');
+        expect(data).toHaveProperty('wishlistProductIds');
         expect(data.basket).toEqual(mockBasket);
         expect(data.productsByItemId).toEqual({ 'item-1': mockProduct });
         expect(data.bonusProductsById).toEqual({});
         expect(data.promotions).toEqual({});
+        expect(data.wishlistProductIds).toEqual([]);
     });
 
     test('loader works with empty basket', async () => {
@@ -127,5 +144,17 @@ describe('Cart route loader', () => {
         expect(data.productsByItemId).toEqual({});
         expect(data.bonusProductsById).toEqual({});
         expect(data.promotions).toEqual({});
+        expect(data.wishlistProductIds).toEqual([]);
+    });
+
+    test('basketDataPromise maps wishlist item product IDs when getWishlist returns items', async () => {
+        vi.mocked(getWishlist).mockResolvedValueOnce({
+            wishlist: { id: 'w1', listId: 'w1' } as any,
+            items: [{ productId: 'product-1', id: 'li-1' } as any, { productId: 'product-2', id: 'li-2' } as any],
+            id: 'w1',
+        });
+        const result = loader(createLoaderArgs()) as any;
+        const data = await result.basketDataPromise;
+        expect(data.wishlistProductIds).toEqual(['product-1', 'product-2']);
     });
 });

@@ -18,7 +18,7 @@ import { vi } from 'vitest';
 import { type ComponentType, Region, type RegionDesignMetadata } from './index';
 import type { RegionDefinitionConfig } from '@/lib/decorators';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
-import type { PageWithComponentData } from '@/lib/util/pageLoader';
+import type { PageWithComponentData } from '@/lib/util/pageLoader.server';
 import {
     useRegionContext,
     PageDesignerPageMetadataProvider,
@@ -45,6 +45,7 @@ vi.mock('./region-wrapper', () => ({
 
 vi.mock('@salesforce/storefront-next-runtime/design/react/core', () => ({
     useRegionContext: vi.fn(() => ({})),
+    usePageDesignerMode: vi.fn(() => ({ isDesignMode: false })),
     PageDesignerPageMetadataProvider: vi.fn(({ children }: { children: React.ReactNode }) => <>{children}</>),
 }));
 
@@ -195,6 +196,58 @@ describe('Region', () => {
 
         // In non-design mode, empty region renders nothing (empty Fragment)
         expect(screen.queryByTestId(/component-/)).not.toBeInTheDocument();
+    });
+
+    it('renders errorElement for empty page region when fallbackOnEmpty is set', async () => {
+        const emptyRegion = { id: 'empty-region', components: [] };
+        const emptyPage = { id: 'page', typeId: 'page', regions: [emptyRegion] };
+        render(
+            <Region
+                page={emptyPage}
+                regionId="empty-region"
+                fallbackOnEmpty
+                errorElement={<div data-testid="fallback-banner">Fallback</div>}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('fallback-banner')).toBeInTheDocument();
+        });
+    });
+
+    it('renders errorElement for empty component region when fallbackOnEmpty is set', () => {
+        const emptyRegion = { id: 'empty-region', components: [] };
+        const mockComponent = {
+            id: 'test-component',
+            typeId: 'grid',
+            regions: [emptyRegion],
+        } as ComponentType;
+        render(
+            <Region
+                component={mockComponent}
+                regionId="empty-region"
+                fallbackOnEmpty
+                errorElement={<div data-testid="fallback-banner">Fallback</div>}
+            />
+        );
+
+        expect(screen.getByTestId('fallback-banner')).toBeInTheDocument();
+    });
+
+    it('does NOT render errorElement for empty page region without fallbackOnEmpty', async () => {
+        const emptyRegion = { id: 'empty-region', components: [] };
+        const emptyPage = { id: 'page', typeId: 'page', regions: [emptyRegion] };
+        render(
+            <Region
+                page={emptyPage}
+                regionId="empty-region"
+                errorElement={<div data-testid="fallback-banner">Fallback</div>}
+            />
+        );
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('fallback-banner')).not.toBeInTheDocument();
+        });
     });
 
     it('handles undefined components in page region', async () => {

@@ -13,8 +13,7 @@
             "@/*": ["./src/*"],
             "+types/*": ["./types/*"],
             "@/config/server": ["./config.server.ts"],
-            "@storybook/test-utils": ["./.storybook/test-utils"],
-            "@fonts/*": ["./public/fonts/*"]
+            "@storybook/test-utils": ["./.storybook/test-utils"]
         },
         "esModuleInterop": true,
         "noEmit": true,

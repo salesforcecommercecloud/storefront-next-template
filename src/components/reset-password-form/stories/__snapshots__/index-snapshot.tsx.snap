@@ -753,7 +753,7 @@ exports[`ResetPasswordForm stories snapshot > WithError story renders and matche
       method="POST"
     >
       <div
-        class="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md"
+        class="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-none"
       >
         <p
           class="text-sm text-destructive"

@@ -20,8 +20,8 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -71,11 +71,15 @@ const meta: Meta<typeof Suggestions> = {
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyProvider value={mockConfig.commerce.sites[0].defaultCurrency}>
+                <SiteProvider
+                    site={mockConfig.commerce.sites[0]}
+                    locale={mockLocale}
+                    language="en-GB"
+                    currency={mockConfig.commerce.sites[0].defaultCurrency}>
                     <ActionLogger>
                         <Story />
                     </ActionLogger>
-                </CurrencyProvider>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],

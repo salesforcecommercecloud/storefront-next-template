@@ -5,7 +5,7 @@ exports[`ListPrice Snapshots > Default snapshot 1`] = `
   <div>
     <span
       aria-label="List price: $129.99"
-      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
     >
       $129.99
     </span>
@@ -14,6 +14,7 @@ exports[`ListPrice Snapshots > Default snapshot 1`] = `
       aria-live="polite"
       class="sr-only"
     >
+       
       List price: $129.99
     </span>
   </div>
@@ -25,7 +26,7 @@ exports[`ListPrice Snapshots > Range snapshot 1`] = `
   <div>
     <span
       aria-label="List price from $89.99"
-      class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+      class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
     >
       $89.99
     </span>
@@ -34,6 +35,7 @@ exports[`ListPrice Snapshots > Range snapshot 1`] = `
       aria-live="polite"
       class="sr-only"
     >
+       
       List price: $89.99
     </span>
   </div>

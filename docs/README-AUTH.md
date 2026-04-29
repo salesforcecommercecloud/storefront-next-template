@@ -76,7 +76,7 @@ On user type transition (e.g., guest → registered), the old refresh token cook
 
 **Refresh Token Expiry:**
 
-- Configurable via environment variables (with Commerce Cloud maximum limits enforced)
+- Configurable via environment variables (with B2C Commerce maximum limits enforced)
 - Guest tokens: 30 days maximum
 - Registered tokens: 90 days maximum
 

@@ -21,7 +21,7 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import DefaultLayout, { loader, shouldRevalidate } from './_app';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
-vi.mock('@/lib/api/categories', () => ({
+vi.mock('@/lib/api/categories.server', () => ({
     fetchCategory: vi.fn(),
 }));
 
@@ -49,6 +49,32 @@ vi.mock('@/lib/logger.server', () => ({
         debug: vi.fn(),
     })),
 }));
+
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>();
+    const mockNavigationConfig = {
+        rootCategoryId: 'root',
+        maxDepth: 2,
+        filter: {
+            enabled: true,
+            attribute: 'c_showInMenu',
+            requireOnline: true,
+        },
+    };
+    return {
+        ...actual,
+        getConfig: vi.fn(() => ({
+            pages: {
+                navigation: mockNavigationConfig,
+            },
+        })),
+        useConfig: vi.fn(() => ({
+            pages: {
+                navigation: mockNavigationConfig,
+            },
+        })),
+    };
+});
 
 describe('_app.tsx - Default Layout Route', () => {
     const mockCategory: ShopperProducts.schemas['Category'] = {
@@ -253,7 +279,7 @@ describe('_app.tsx - Default Layout Route', () => {
 
     describe('loader', () => {
         it('should load root category with level 1', async () => {
-            const { fetchCategory } = await import('@/lib/api/categories');
+            const { fetchCategory } = await import('@/lib/api/categories.server');
             const mockFetchCategory = vi.mocked(fetchCategory);
 
             const mockRootCategory: ShopperProducts.schemas['Category'] = {
@@ -276,7 +302,7 @@ describe('_app.tsx - Default Layout Route', () => {
         });
 
         it('should load subcategories for categories with onlineSubCategoriesCount > 0', async () => {
-            const { fetchCategory } = await import('@/lib/api/categories');
+            const { fetchCategory } = await import('@/lib/api/categories.server');
             const mockFetchCategory = vi.mocked(fetchCategory);
 
             const mockRootCategory: ShopperProducts.schemas['Category'] = {
@@ -321,7 +347,7 @@ describe('_app.tsx - Default Layout Route', () => {
         });
 
         it('should handle root category without subcategories', async () => {
-            const { fetchCategory } = await import('@/lib/api/categories');
+            const { fetchCategory } = await import('@/lib/api/categories.server');
             const mockFetchCategory = vi.mocked(fetchCategory);
 
             const mockRootCategory: ShopperProducts.schemas['Category'] = {
@@ -342,7 +368,7 @@ describe('_app.tsx - Default Layout Route', () => {
         });
 
         it('should handle root category with undefined categories array', async () => {
-            const { fetchCategory } = await import('@/lib/api/categories');
+            const { fetchCategory } = await import('@/lib/api/categories.server');
             const mockFetchCategory = vi.mocked(fetchCategory);
 
             const mockRootCategory: ShopperProducts.schemas['Category'] = {
@@ -362,7 +388,7 @@ describe('_app.tsx - Default Layout Route', () => {
         });
 
         it('should return promises that can be used for streaming', async () => {
-            const { fetchCategory } = await import('@/lib/api/categories');
+            const { fetchCategory } = await import('@/lib/api/categories.server');
             const mockFetchCategory = vi.mocked(fetchCategory);
 
             const mockRootCategory: ShopperProducts.schemas['Category'] = {

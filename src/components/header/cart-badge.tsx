@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { lazy, type ReactElement, Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useBasketSnapshot, useMiniCart } from '@/providers/basket';

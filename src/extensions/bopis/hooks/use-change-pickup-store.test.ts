@@ -20,13 +20,13 @@ import type { FetcherWithComponents } from 'react-router';
 import * as ReactRouter from 'react-router';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useChangePickupStore } from './use-change-pickup-store';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Mock useFetcher from react-router
 const mockSubmit = vi.fn();
 const mockFetcher = {
     state: 'idle' as const,
-    data: undefined as { success: boolean; basket?: unknown; error?: string } | undefined,
+    data: undefined as { success: boolean; basket?: unknown; error?: { code: string; message: string } } | undefined,
     submit: mockSubmit,
     load: vi.fn(),
     Form: vi.fn() as any,
@@ -39,7 +39,11 @@ const mockFetcher = {
     json: undefined,
     text: undefined,
     reset: vi.fn(),
-} as unknown as FetcherWithComponents<{ success: boolean; basket?: unknown; error?: string }>;
+} as unknown as FetcherWithComponents<{
+    success: boolean;
+    basket?: unknown;
+    error?: { code: string; message: string };
+}>;
 
 // Mock useToast
 const mockAddToast = vi.fn();
@@ -213,14 +217,13 @@ describe('useChangePickupStore', () => {
         it('shows error toast with custom error message when data.error exists', async () => {
             const { rerender } = renderHook(() => useChangePickupStore());
 
-            const customError = 'Custom error message';
             mockFetcher.state = 'loading';
-            mockFetcher.data = { success: false, error: customError };
+            mockFetcher.data = { success: false, error: { code: 'OPERATION_FAILED', message: 'Custom error message' } };
 
             rerender();
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(customError, 'error');
+                expect(mockAddToast).toHaveBeenCalledWith('Custom error message', 'error');
             });
         });
 
@@ -317,13 +320,15 @@ describe('useChangePickupStore', () => {
             expect(mockSubmit).toHaveBeenCalledTimes(1);
 
             // Step 2: Simulate loading state with error
-            const errorMessage = 'Items out of stock at Test Store';
             mockFetcher.state = 'loading';
-            mockFetcher.data = { success: false, error: errorMessage };
+            mockFetcher.data = {
+                success: false,
+                error: { code: 'OPERATION_FAILED', message: 'Items out of stock at Test Store' },
+            };
             rerender();
 
             await waitFor(() => {
-                expect(mockAddToast).toHaveBeenCalledWith(errorMessage, 'error');
+                expect(mockAddToast).toHaveBeenCalledWith('Items out of stock at Test Store', 'error');
             });
         });
     });

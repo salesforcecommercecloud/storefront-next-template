@@ -30,6 +30,7 @@ import { TrackingConsent } from './src/types/tracking-consent';
  *    - PUBLIC__app__commerce__api__clientId → app.commerce.api.clientId
  *    - PUBLIC__app__site__locale → app.site.locale
  *    - PUBLIC__app__pages__cart__quantityUpdateDebounce → app.pages.cart.quantityUpdateDebounce
+ *    - PUBLIC__app__pages__cart__showLineItemDescription → app.pages.cart.showLineItemDescription
  *    - PUBLIC__app__site__features__socialLogin__providers=["Apple","Google"] → app.features.socialLogin.providers
  *
  * The PUBLIC__ prefix indicates these values are SAFE TO EXPOSE to the client.
@@ -77,6 +78,10 @@ export default defineConfig<Config>(
             // Page-specific configuration
             // See CONFIG-OPTIONS.md#pages for detailed documentation
             pages: {
+                navigation: {
+                    rootCategoryId: 'root',
+                    maxDepth: 2,
+                },
                 home: {
                     featuredProductsCount: 12,
                 },
@@ -87,6 +92,7 @@ export default defineConfig<Config>(
                     enableSaveForLater: false,
                     removeAction: '/action/cart-item-remove',
                     ruleBasedProductLimit: 50,
+                    showLineItemDescription: false,
                     miniCart: {
                         enableViewCartButton: true,
                     },
@@ -99,8 +105,8 @@ export default defineConfig<Config>(
                     suggestionsDebounce: 400,
                 },
                 maintenancePage: {
-                    sharedMaintenancePage: false,
-                    cdnUrl: 'http://prd.cmp.cdn.commercecloud.salesforce.com',
+                    sharedMaintenancePage: true,
+                    cdnUrl: 'https://prd.cmp.cdn.commercecloud.salesforce.com',
                     forwardedHost: '',
                 },
             },
@@ -114,6 +120,8 @@ export default defineConfig<Config>(
                     shortCode: '',
                     // Optional API settings
                     proxy: '/mobify/proxy/api',
+                    // OAuth2 redirect_uri sent to SLAS — must match what's registered in SLAS Admin.
+                    // Not a storefront route; token exchange happens server-side with redirect: 'manual'.
                     callback: '/callback',
                     privateKeyEnabled: false,
                     registeredRefreshTokenExpirySeconds: undefined,
@@ -186,7 +194,7 @@ export default defineConfig<Config>(
             // See CONFIG-OPTIONS.md#features for detailed documentation
             features: {
                 passwordlessLogin: {
-                    enabled: false,
+                    enabled: true, // Enabled for Turnstile testing
                     mode: 'email',
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/login',
@@ -212,6 +220,7 @@ export default defineConfig<Config>(
                 googleCloudAPI: {
                     apiKey: '',
                 },
+                mrtBasedPageDesignerResolution: false,
             },
             // Internationalization configuration
             // See CONFIG-OPTIONS.md#i18n for detailed documentation
@@ -308,7 +317,7 @@ export default defineConfig<Config>(
                     },
                     hits: {
                         limit: 24,
-                        critical: 2,
+                        critical: 4,
                     },
                 },
             },
@@ -347,6 +356,7 @@ export default defineConfig<Config>(
                             checkout_step: true,
                             view_search_suggestion: true,
                             click_search_suggestion: true,
+                            commerce_agent_engagement: true,
                         },
                     },
                     dataCloud: {
@@ -368,6 +378,7 @@ export default defineConfig<Config>(
                             checkout_step: true,
                             view_search_suggestion: true,
                             click_search_suggestion: true,
+                            commerce_agent_engagement: true,
                         },
                     },
                     activeData: {
@@ -388,6 +399,7 @@ export default defineConfig<Config>(
                             checkout_step: false,
                             view_search_suggestion: false,
                             click_search_suggestion: false,
+                            commerce_agent_engagement: true,
                         },
                     },
                 },
@@ -395,18 +407,18 @@ export default defineConfig<Config>(
                     trackingConsent: {
                         enabled: true,
                         defaultTrackingConsent: TrackingConsent.Declined,
+                        consentCategories: ['necessary', 'analytics', 'marketing', 'personalization'],
                         position: 'bottom-right',
                     },
                     // Do not send viewPage events for the following paths
                     // We omit /action because we don't want to trigger viewPage events for actions
                     // like modifying the quanity of an item in the cart
-                    // We omit /callback, /oauth2, and /resource because these do not correspond to pages
+                    // We omit /oauth2 and /resource because these do not correspond to pages
                     // We omit /search, /category, /product, and /checkout because they are tracked with
                     // different events (viewSearch, viewCategory, viewProduct, and beginCheckout) triggered
                     // on the search, category, product, and checkout pages respectively
                     pageViewsBlocklist: [
                         '/action',
-                        '/callback',
                         '/oauth2',
                         '/resource',
                         '/search',
@@ -437,6 +449,31 @@ export default defineConfig<Config>(
             url: {
                 prefix: '/:siteId/:localeId',
                 excludeRoutes: ['/resource/**', '/action/**'],
+            },
+            security: {
+                turnstile: {
+                    sites: (() => {
+                        if (!process.env.PUBLIC__security__turnstile__sites) return {};
+                        try {
+                            return JSON.parse(process.env.PUBLIC__security__turnstile__sites);
+                        } catch {
+                            // eslint-disable-next-line no-console
+                            console.error(
+                                '[Turnstile] Failed to parse PUBLIC__security__turnstile__sites — no sites configured (fail-closed)'
+                            );
+                            return {};
+                        }
+                    })(),
+                    enabled: process.env.PUBLIC__security__turnstile__enabled === 'true',
+                    mode:
+                        (process.env.PUBLIC__security__turnstile__mode as
+                            | 'managed'
+                            | 'non-interactive'
+                            | 'invisible') || 'managed',
+                    verification: {
+                        enabled: process.env.TURNSTILE_VERIFICATION_ENABLED === 'true',
+                    },
+                },
             },
         },
     },

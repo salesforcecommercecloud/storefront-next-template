@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
-import { type PropsWithChildren, type ReactElement, useEffect, useMemo, useCallback, memo } from 'react';
+import {
+    type PropsWithChildren,
+    type ReactElement,
+    useEffect,
+    useMemo,
+    useCallback,
+    useRef,
+    useState,
+    memo,
+} from 'react';
 import { useFetcher } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
-import { useBasket, useMiniCart } from '@/providers/basket';
+import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -34,9 +41,10 @@ import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/bonus-
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { useToast } from '@/components/toast';
-import type { ActionResponse } from '@/routes/types/action-responses';
+import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { UITarget } from '@/targets/ui-target';
 /**
  * Container component for MiniCartItem that handles remove functionality
  * Uses useFetcher to submit remove requests to the cart API
@@ -45,40 +53,64 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
     item,
     removeAction,
     bonusProductSlot,
+    onRemoveStart,
+    onRemoveEnd,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup,
 }: {
     item: BasketItemWithProduct;
     removeAction: string;
     bonusProductSlot?: ReactElement;
+    onRemoveStart?: (itemId: string) => void;
+    onRemoveEnd?: (itemId: string, success: boolean) => void;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup?: boolean;
 }) {
-    const fetcher = useFetcher<ActionResponse>();
+    const fetcher = useFetcher<BasketActionResponse>();
     const { addToast } = useToast();
     const { t } = useTranslation('removeItem');
+    const updateBasket = useBasketUpdater();
+    const processedDataRef = useRef<BasketActionResponse | null>(null);
+    const pendingRemovalItemIdRef = useRef<string | null>(null);
 
     const handleRemove = useCallback(() => {
+        // Move focus before optimistic hide so focus is never trapped in hidden content.
+        if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+
+        const removalItemId = item.itemId;
+        if (removalItemId) {
+            pendingRemovalItemIdRef.current = removalItemId;
+            onRemoveStart?.(removalItemId);
+        }
         const formData = new FormData();
         formData.append('itemId', item.itemId || '');
         void fetcher.submit(formData, {
             method: 'POST',
             action: removeAction,
         });
-    }, [item.itemId, removeAction, fetcher]);
+    }, [item.itemId, removeAction, fetcher, onRemoveStart]);
 
     // Show toast notification when item is removed
     useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data) {
+        if (fetcher.state === 'idle' && pendingRemovalItemIdRef.current) {
+            onRemoveEnd?.(pendingRemovalItemIdRef.current, fetcher.data?.success === true);
+            pendingRemovalItemIdRef.current = null;
+        }
+
+        if (fetcher.state === 'idle' && fetcher.data && fetcher.data !== processedDataRef.current) {
+            processedDataRef.current = fetcher.data;
             if (fetcher.data.success) {
+                if (fetcher.data.basket) {
+                    updateBasket(fetcher.data.basket);
+                }
                 addToast(t('success'), 'success');
             } else {
                 addToast(t('failed'), 'error');
             }
         }
-        // addToast is stable, no need to include in deps
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetcher.state, fetcher.data, t]);
+    }, [fetcher.state, fetcher.data, t, addToast, updateBasket, onRemoveEnd]);
 
     return (
         <MiniCartItem
@@ -97,7 +129,10 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
     const basket = useBasket();
     const config = useConfig<AppConfig>();
     const navigate = useNavigate();
-    const currency = useCurrency();
+    const { currency } = useSite();
+    const titleId = 'mini-cart-title';
+    const [pendingRemoveItemIds, setPendingRemoveItemIds] = useState<Set<string>>(new Set());
+    const [optimisticallyRemovedItemIds, setOptimisticallyRemovedItemIds] = useState<Set<string>>(new Set());
 
     // Fetch full product details (images, variations, etc.) for basket items
     const { productItems: enrichedProductItems, isLoading } = useBasketWithProducts(basket);
@@ -129,14 +164,68 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
         void navigate('/cart');
     }, [navigate]);
 
+    const handleRemoveStart = useCallback((itemId: string) => {
+        setOptimisticallyRemovedItemIds((prev) => {
+            const next = new Set(prev);
+            next.add(itemId);
+            return next;
+        });
+        setPendingRemoveItemIds((prev) => {
+            const next = new Set(prev);
+            next.add(itemId);
+            return next;
+        });
+    }, []);
+
+    const handleRemoveEnd = useCallback((itemId: string, _success: boolean) => {
+        // On success, basket sync keeps the item removed; on failure this restores it.
+        setOptimisticallyRemovedItemIds((prev) => {
+            if (!prev.has(itemId)) return prev;
+            const next = new Set(prev);
+            next.delete(itemId);
+            return next;
+        });
+
+        setPendingRemoveItemIds((prev) => {
+            if (!prev.has(itemId)) return prev;
+            const next = new Set(prev);
+            next.delete(itemId);
+            return next;
+        });
+    }, []);
+
+    const isCartUpdating = pendingRemoveItemIds.size > 0;
+    const orderedProductItems = useMemo(() => [...enrichedProductItems].reverse(), [enrichedProductItems]);
+    const visibleProductItemIds = useMemo(
+        () =>
+            new Set(
+                orderedProductItems
+                    .filter((item) => !optimisticallyRemovedItemIds.has(item.itemId || ''))
+                    .map((item) => item.itemId)
+            ),
+        [orderedProductItems, optimisticallyRemovedItemIds]
+    );
+
     // Use the same count as the cart badge icon - number of unique products, not total quantity
-    const totalItems = basket?.productItems?.length ?? 0;
+    const totalItems = visibleProductItemIds.size;
 
     return (
-        <SheetContent className="w-full sm:max-w-lg flex flex-col p-0" data-testid="mini-cart-flyout">
+        <SheetContent
+            className="w-full sm:max-w-lg flex flex-col p-0"
+            data-testid="mini-cart-flyout"
+            onOpenAutoFocus={(event) => {
+                event.preventDefault();
+                if (typeof document !== 'undefined') {
+                    const titleElement = document.getElementById(titleId);
+                    titleElement?.focus();
+                }
+            }}>
             {/* Header */}
             <SheetHeader className="px-6 pt-6 pb-4 space-y-0">
-                <SheetTitle className="text-2xl font-bold text-foreground">
+                <SheetTitle
+                    id={titleId}
+                    tabIndex={-1}
+                    className="text-3xl font-bold leading-none tracking-[-0.75px] font-sans text-foreground focus:outline-none">
                     {t('cartTitle')}
                     {totalItems > 0 && ` (${totalItems})`}
                 </SheetTitle>
@@ -156,9 +245,15 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                             </div>
                         ) : (
                             <div className="py-4 px-6">
-                                {enrichedProductItems.map((item) => {
+                                {visibleProductItemIds.size === 0 && isCartUpdating && (
+                                    <div className="flex items-center justify-center py-4">
+                                        <p className="text-sm text-muted-foreground">{tMiniCart('loading')}</p>
+                                    </div>
+                                )}
+                                {orderedProductItems.map((item) => {
                                     // Check if this item has an attached bonus card
                                     const bonusPromo = item.itemId ? attachedPromotions.get(item.itemId) : undefined;
+                                    const isOptimisticallyHidden = optimisticallyRemovedItemIds.has(item.itemId || '');
 
                                     const bonusProductCard = bonusPromo ? (
                                         <SelectBonusProductsCard
@@ -168,11 +263,16 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                                     ) : undefined;
 
                                     return (
-                                        <div key={item.itemId} className="mb-4 last:mb-0">
+                                        <div
+                                            key={item.itemId}
+                                            className={`mb-4 last:mb-0 ${isOptimisticallyHidden ? 'hidden' : ''}`}
+                                            hidden={isOptimisticallyHidden}>
                                             <MiniCartItemContainer
                                                 item={item}
                                                 removeAction={config.pages.cart.removeAction}
                                                 bonusProductSlot={bonusProductCard}
+                                                onRemoveStart={handleRemoveStart}
+                                                onRemoveEnd={handleRemoveEnd}
                                                 // @sfdc-extension-block-start SFDC_EXT_BOPIS
                                                 // getStoreIdForBasketItem returns truthy if the item is in a pickup shipment
                                                 // and falsy (undefined) if it is in a delivery shipment
@@ -198,8 +298,22 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
             {/* Footer */}
             {basket && basket.productItems && basket.productItems.length > 0 && (
                 <SheetFooter className="px-6 py-6 border-t flex-col gap-3 sm:flex-col">
-                    <Button asChild className="w-full h-12 text-sm font-semibold rounded-md" size="lg">
-                        <Link to="/checkout" onClick={onClose}>
+                    {isCartUpdating && <p className="text-xs text-muted-foreground">{tMiniCart('loading')}</p>}
+                    <Button
+                        asChild
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 font-sans rounded-none shadow-2xs"
+                        size="lg">
+                        <Link
+                            to="/checkout"
+                            aria-disabled={isCartUpdating}
+                            className={isCartUpdating ? 'pointer-events-none opacity-60' : undefined}
+                            onClick={(e) => {
+                                if (isCartUpdating) {
+                                    e.preventDefault();
+                                    return;
+                                }
+                                onClose();
+                            }}>
                             {t('checkout')}{' '}
                             {basket?.orderTotal
                                 ? formatCurrency(basket.orderTotal, i18n.language, currency)
@@ -208,9 +322,11 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                                   : ''}
                         </Link>
                     </Button>
+                    <UITarget targetId="sfcc.miniCart.payments.expressCheckout" />
+                    <UITarget targetId="sfcc.miniCart.bnpl.message" />
                     <Button
                         variant="secondary"
-                        className="w-full h-12 text-sm font-normal rounded-md"
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 border border-input bg-secondary text-secondary-foreground text-sm font-semibold leading-5 font-sans rounded-none shadow-2xs"
                         size="lg"
                         onClick={onClose}>
                         {t('continueShopping')}
@@ -219,7 +335,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                         <Button
                             asChild
                             variant="ghost"
-                            className="w-full h-12 text-sm font-normal rounded-md"
+                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-normal rounded-none"
                             size="lg">
                             <Link to="/cart" onClick={onClose}>
                                 {tMiniCart('viewCart')}

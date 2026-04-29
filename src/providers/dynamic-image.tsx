@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { createContext, type PropsWithChildren, useCallback, useContext, useState } from 'react';
-import type { DynamicImageWidths } from '@/lib/dynamic-image';
+import type { DynamicImageDimensions } from '@/lib/dynamic-image';
 
 type DynamicImageContextValue = {
     hasSource: (src: string) => boolean;
     addSource: (src: string) => boolean;
-    widths: DynamicImageWidths | undefined;
+    widths: DynamicImageDimensions | undefined;
+    heights: DynamicImageDimensions | undefined;
 };
 
 const DynamicImageContext = createContext<DynamicImageContextValue | null>(null);
@@ -40,7 +41,8 @@ const DynamicImageProvider = ({
 }: PropsWithChildren<{
     value: {
         sources?: Set<string>;
-        widths?: DynamicImageWidths;
+        widths?: DynamicImageDimensions;
+        heights?: DynamicImageDimensions;
         addSource?: (src: string, sources: Set<string>) => boolean;
         hasSource?: (src: string, sources: Set<string>) => boolean;
     };
@@ -55,6 +57,7 @@ const DynamicImageProvider = ({
                 addSource,
                 hasSource,
                 widths: value.widths && (Object.freeze(value.widths) as DynamicImageContextValue['widths']),
+                heights: value.heights && (Object.freeze(value.heights) as DynamicImageContextValue['heights']),
             }}>
             {children}
         </DynamicImageContext.Provider>

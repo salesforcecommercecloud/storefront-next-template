@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { fetchCategory } from '@/lib/api/categories';
+import { fetchCategory } from '@/lib/api/categories.server';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -38,6 +38,4 @@ const dataLoader = (args: {
     return fetchCategory(routeContext, categoryId, 0);
 };
 
-export const loader = {
-    server: dataLoader,
-};
+export const loader = dataLoader;

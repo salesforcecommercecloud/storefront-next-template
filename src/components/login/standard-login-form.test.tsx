@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 import { render, screen } from '@testing-library/react';
@@ -31,9 +31,9 @@ const mockNavigation = {
 };
 
 // Helper to render with router context
-function renderWithRouter(ui: React.ReactElement) {
+function renderWithRouter(ui: React.ReactElement, initialEntries: string[] = ['/']) {
     const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
-        initialEntries: ['/'],
+        initialEntries,
     });
     return render(<RouterProvider router={router} />);
 }
@@ -161,10 +161,48 @@ describe('StandardLoginForm', () => {
             expect(passwordlessLink).toHaveAttribute('href', '/global/en-GB/login?mode=passwordless');
         });
 
+        test('preserves returnUrl and pending action params when switching mode', () => {
+            renderWithRouter(<StandardLoginForm isPasswordlessEnabled={true} />, [
+                '/login?returnUrl=%2Fproduct%2F123&action=addToWishlist&actionParams=%7B%22productId%22%3A%22123%22%7D',
+            ]);
+            const passwordlessLink = screen.getByRole('link', {
+                name: t('login:loginWithoutPassword'),
+            });
+            expect(passwordlessLink).toHaveAttribute(
+                'href',
+                '/global/en-GB/login?returnUrl=%2Fproduct%2F123&action=addToWishlist&actionParams=%7B%22productId%22%3A%22123%22%7D&mode=passwordless'
+            );
+        });
+
         test('does not render passwordless login link when disabled', () => {
             renderWithRouter(<StandardLoginForm isPasswordlessEnabled={false} />);
             const passwordlessLink = screen.queryByRole('link', { name: t('login:loginWithoutPassword') });
             expect(passwordlessLink).not.toBeInTheDocument();
+        });
+    });
+
+    describe('checkout as guest', () => {
+        test('renders Checkout as Guest button when onCheckoutAsGuest is provided', () => {
+            renderWithRouter(<StandardLoginForm {...defaultProps} onCheckoutAsGuest={vi.fn()} />);
+
+            const guestButton = screen.getByRole('button', { name: t('login:checkoutAsGuest') });
+            expect(guestButton).toBeInTheDocument();
+        });
+
+        test('does not render Checkout as Guest button when onCheckoutAsGuest is not provided', () => {
+            renderWithRouter(<StandardLoginForm {...defaultProps} />);
+
+            expect(screen.queryByRole('button', { name: t('login:checkoutAsGuest') })).not.toBeInTheDocument();
+        });
+
+        test('calls onCheckoutAsGuest when button is clicked', async () => {
+            const user = userEvent.setup();
+            const onCheckoutAsGuest = vi.fn();
+            renderWithRouter(<StandardLoginForm {...defaultProps} onCheckoutAsGuest={onCheckoutAsGuest} />);
+
+            await user.click(screen.getByRole('button', { name: t('login:checkoutAsGuest') }));
+
+            expect(onCheckoutAsGuest).toHaveBeenCalledTimes(1);
         });
     });
 

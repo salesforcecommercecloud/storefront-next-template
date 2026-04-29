@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { AnalyticsEvent, EventAdapter, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
+import type {
+    AnalyticsEvent,
+    ConsentCategory,
+    ConsentPreferences,
+    EventAdapter,
+    EventSiteInfo,
+} from '@salesforce/storefront-next-runtime/events';
 
 /**
  * Configuration for adapters
  */
 export type EngagementAdapterConfig = {
     siteId?: string;
+    consentCategory?: ConsentCategory;
     eventToggles: Record<AnalyticsEvent['eventType'], boolean>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
@@ -30,6 +37,10 @@ export type EngagementAdapterConfig = {
  */
 export interface EngagementAdapter extends EventAdapter {
     name: string;
-    sendEvent?: (event: AnalyticsEvent, siteInfo?: EventSiteInfo) => Promise<unknown>;
+    sendEvent?: (
+        event: AnalyticsEvent,
+        siteInfo?: EventSiteInfo,
+        consentPreferences?: ConsentPreferences
+    ) => Promise<unknown>;
     send?: (url: string, options?: RequestInit) => Promise<Response>;
 }

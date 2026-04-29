@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import RecentSearches from './recent-searches';
@@ -59,7 +57,7 @@ export default function Suggestions({
             )}
             {showShopperAgent && onShopperAgentClick && (
                 <div
-                    className="w-full min-w-0 border-t border-border shrink-0 overflow-visible pt-3 pb-3 pl-[4.5rem] pr-8"
+                    className="w-full min-w-0 border-t border-border shrink-0 overflow-visible py-3 section-container"
                     data-testid="search-shopper-agent">
                     <Suspense fallback={null}>
                         <AiInsightCard

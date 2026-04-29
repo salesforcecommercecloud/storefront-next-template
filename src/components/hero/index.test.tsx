@@ -100,14 +100,149 @@ describe('Hero Component', () => {
             expect(image).toHaveAttribute('alt', '');
         });
 
+        test('renders image with title attribute when imageTitle is provided', () => {
+            renderHero({
+                imageUrl: { url: '/test.jpg' },
+                imageAlt: 'Test image',
+                imageTitle: 'Hover tooltip text',
+            });
+
+            const image = screen.getByRole('img', { name: 'Test image' });
+            expect(image).toHaveAttribute('title', 'Hover tooltip text');
+        });
+
+        test('does not render title attribute when imageTitle is not provided', () => {
+            renderHero({
+                imageUrl: { url: '/test.jpg' },
+                imageAlt: 'Test image',
+            });
+
+            const image = screen.getByRole('img', { name: 'Test image' });
+            expect(image).not.toHaveAttribute('title');
+        });
+
+        test('does not render title attribute when imageTitle is an empty string', () => {
+            renderHero({
+                imageUrl: { url: '/test.jpg' },
+                imageAlt: 'Test image',
+                imageTitle: '',
+            });
+
+            const image = screen.getByRole('img', { name: 'Test image' });
+            expect(image).not.toHaveAttribute('title');
+        });
+
         test('does not render CTA when only ctaText is provided without ctaLink', () => {
             renderHero({ ctaText: 'Click Me' });
             expect(screen.queryByRole('link')).not.toBeInTheDocument();
         });
 
-        test('does not render CTA when only ctaLink is provided without ctaText', () => {
-            renderHero({ ctaLink: '/somewhere' });
+        test('renders CTA when ctaLink is set without ctaText using a label derived from the path', () => {
+            renderHero({ ctaLink: '/sale-items' });
+            const link = screen.getByRole('link');
+            expect(link).toHaveAttribute('href', '/global/en-GB/sale-items');
+            expect(link).toHaveTextContent('sale items');
+        });
+
+        test('does not render CTA when ctaLink is empty or whitespace only', () => {
+            renderHero({ ctaText: 'Go', ctaLink: '' });
             expect(screen.queryByRole('link')).not.toBeInTheDocument();
+
+            renderHero({ ctaText: 'Go', ctaLink: '   \t  ' });
+            expect(screen.queryByRole('link')).not.toBeInTheDocument();
+        });
+
+        test('applies titleColor when hex is valid', () => {
+            renderHero({ title: 'T', titleColor: '#aabbcc' });
+            expect(screen.getByRole('heading', { level: 1 })).toHaveStyle({ color: '#aabbcc' });
+        });
+
+        test('ignores invalid titleColor and keeps theme foreground class', () => {
+            renderHero({ title: 'T', titleColor: 'not-a-color' });
+            const heading = screen.getByRole('heading', { level: 1 });
+            expect(heading).not.toHaveStyle({ color: 'not-a-color' });
+            expect(heading).toHaveClass('text-primary-foreground');
+        });
+
+        test('maps buttonStyle Secondary to data-variant secondary', () => {
+            const { container } = renderHero({
+                ctaLink: '/go',
+                ctaText: 'Go',
+                buttonStyle: 'Secondary',
+            });
+            expect(container.querySelector('[data-slot="button"]')).toHaveAttribute('data-variant', 'secondary');
+        });
+
+        test('maps buttonStyle Tertiary to data-variant outline', () => {
+            const { container } = renderHero({
+                ctaLink: '/go',
+                ctaText: 'Go',
+                buttonStyle: 'Tertiary',
+            });
+            expect(container.querySelector('[data-slot="button"]')).toHaveAttribute('data-variant', 'outline');
+        });
+    });
+
+    describe('Overlay position and alignment', () => {
+        test('defaults to centered block and centered text when overlay props are omitted', () => {
+            const { container } = renderHero({ title: 'T' });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-center');
+            expect(overlay).not.toHaveClass('pt-6', 'pb-6');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).toBeInTheDocument();
+            expect(block).toHaveClass('mx-auto', 'text-center');
+        });
+
+        test('applies middle-right block position with centered text and CTA row', () => {
+            const { container } = renderHero({
+                title: 'T',
+                ctaText: 'Go',
+                ctaLink: '/go',
+                overlayPosition: 'Middle Right',
+                overlayAlignment: 'center',
+            });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-center');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).toHaveClass('ml-auto', 'text-center');
+            expect(block).not.toHaveClass('mx-auto');
+
+            const ctaRow = container.querySelector('.max-w-2xl .flex.justify-center');
+            expect(ctaRow).toBeInTheDocument();
+        });
+
+        test('maps legacy horizontal overlayPosition values to middle row', () => {
+            const { container } = renderHero({ title: 'T', overlayPosition: 'right' });
+            expect(container.querySelector('.max-w-2xl')).toHaveClass('ml-auto');
+        });
+
+        test('applies top-left overlay row, top padding, and block placement', () => {
+            const { container } = renderHero({ title: 'T', overlayPosition: 'Top Left' });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-start', 'pt-6', 'sm:pt-8', 'md:pt-10');
+            expect(overlay).not.toHaveClass('pb-6');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).not.toHaveClass('mx-auto', 'ml-auto');
+        });
+
+        test('applies bottom padding for bottom overlay positions', () => {
+            const { container } = renderHero({ title: 'T', overlayPosition: 'Bottom Center' });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-end', 'pb-6', 'sm:pb-8', 'md:pb-10');
+            expect(overlay).not.toHaveClass('pt-6');
+        });
+
+        test('normalizes invalid overlay values to middle center', () => {
+            const { container } = renderHero({
+                title: 'T',
+                overlayPosition: 'invalid',
+                overlayAlignment: 'also-bad',
+            });
+            const overlay = container.querySelector('.absolute.inset-0.z-10.flex');
+            expect(overlay).toHaveClass('items-center');
+            const block = container.querySelector('.max-w-2xl');
+            expect(block).toHaveClass('mx-auto', 'text-center');
         });
     });
 
@@ -145,6 +280,88 @@ describe('Hero Component', () => {
 
             const image = screen.getByRole('presentation');
             expect(image).toHaveStyle({ objectPosition: expectedPosition });
+        });
+    });
+
+    describe('Style Override', () => {
+        test('injects a <style> tag when styleOverride is provided', () => {
+            const { container } = renderHero({ styleOverride: ':root-hero { border-radius: 1rem; }' });
+            expect(container.querySelector('style')).toBeInTheDocument();
+        });
+
+        test('does not inject a <style> tag when styleOverride is undefined', () => {
+            const { container } = renderHero({ styleOverride: undefined });
+            expect(container.querySelector('style')).not.toBeInTheDocument();
+        });
+
+        test('does not inject a <style> tag when styleOverride is whitespace only', () => {
+            const { container } = renderHero({ styleOverride: '   ' });
+            expect(container.querySelector('style')).not.toBeInTheDocument();
+        });
+
+        test('wraps the fragment in the scoped data-hero-id selector', () => {
+            const { container } = renderHero({ styleOverride: '& { color: red; }' });
+            const heroId = container.querySelector('[data-hero-id]')?.getAttribute('data-hero-id');
+            expect(heroId).toBeTruthy();
+            const styleContent = container.querySelector('style')?.textContent ?? '';
+            expect(styleContent).toMatch(new RegExp(`\\[data-hero-id="${heroId}"\\]\\s*\\{`));
+            expect(styleContent).toContain('color: red');
+        });
+
+        test('wraps the entire fragment — inner selectors are untouched', () => {
+            const { container } = renderHero({
+                styleOverride: '& { color: red; } & [data-slot="button"] { transform: scale(1.05); }',
+            });
+            const heroId = container.querySelector('[data-hero-id]')?.getAttribute('data-hero-id');
+            const styleContent = container.querySelector('style')?.textContent ?? '';
+            expect(styleContent).toContain(`[data-hero-id="${heroId}"]`);
+            expect(styleContent).toContain('& { color: red; }');
+            expect(styleContent).toContain('& [data-slot="button"]');
+        });
+
+        test('passes any CSS fragment through inside the wrapper', () => {
+            const css = '.custom-class { color: green; }';
+            const { container } = renderHero({ styleOverride: css });
+            const styleContent = container.querySelector('style')?.textContent ?? '';
+            expect(styleContent).toContain(css);
+        });
+
+        test('sets data-hero-id attribute on the root div', () => {
+            const { container } = renderHero({});
+            expect(container.querySelector('[data-hero-id]')).toBeInTheDocument();
+        });
+
+        test('preserves base classes on the root div when styleOverride is provided', () => {
+            const { container } = renderHero({ styleOverride: ':root-hero { color: red; }' });
+            expect(container.querySelector('[data-hero-id]')).toHaveClass('relative', 'w-full', 'overflow-hidden');
+        });
+
+        test('trims leading and trailing whitespace from the fragment', () => {
+            const { container } = renderHero({ styleOverride: '  & { color: red; }  ' });
+            expect(container.querySelector('style')).toBeInTheDocument();
+        });
+    });
+
+    describe('Height', () => {
+        test('applies full height class by default', () => {
+            const { container } = renderHero();
+            expect(container.firstChild).toHaveClass('h-[100vh]', 'md:h-[85vh]');
+        });
+
+        test.each([
+            { height: 'sm', classes: ['h-[250px]', 'md:h-[300px]', 'lg:h-[350px]'] },
+            { height: 'md', classes: ['h-[350px]', 'md:h-[450px]', 'lg:h-[500px]'] },
+            { height: 'lg', classes: ['h-[400px]', 'md:h-[500px]', 'lg:h-[600px]'] },
+            { height: 'xl', classes: ['h-[500px]', 'md:h-[600px]', 'lg:h-[700px]'] },
+            { height: 'full', classes: ['h-[100vh]', 'md:h-[85vh]'] },
+        ])('applies $height height class', ({ height, classes }) => {
+            const { container } = renderHero({ height });
+            expect(container.firstChild).toHaveClass(...classes);
+        });
+
+        test('falls back to full height for invalid height value', () => {
+            const { container } = renderHero({ height: 'invalid' });
+            expect(container.firstChild).toHaveClass('h-[100vh]', 'md:h-[85vh]');
         });
     });
 

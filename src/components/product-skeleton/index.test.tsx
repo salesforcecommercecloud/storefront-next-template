@@ -15,17 +15,17 @@
  */
 import { render, screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
-import ProductSkeleton from './index';
+import ProductContentSkeleton from './index';
 
-describe('ProductSkeleton', () => {
+describe('ProductContentSkeleton', () => {
     test('renders product skeleton component', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('product-skeleton')).toBeInTheDocument();
     });
 
     test('renders image gallery skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('image-gallery-skeleton')).toBeInTheDocument();
         expect(screen.getByTestId('main-image-skeleton')).toBeInTheDocument();
@@ -33,61 +33,55 @@ describe('ProductSkeleton', () => {
     });
 
     test('renders product info skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('product-info-skeleton')).toBeInTheDocument();
     });
 
     test('renders price skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('price-skeleton')).toBeInTheDocument();
     });
 
     test('renders variants skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('variants-skeleton')).toBeInTheDocument();
     });
 
     test('renders quantity skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('quantity-skeleton')).toBeInTheDocument();
     });
 
-    test('renders mobile title skeleton', () => {
-        render(<ProductSkeleton />);
-
-        expect(screen.getByTestId('mobile-title-skeleton')).toBeInTheDocument();
-    });
-
     test('renders desktop title skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('desktop-title-skeleton')).toBeInTheDocument();
     });
 
     test('renders product features skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('features-skeleton')).toBeInTheDocument();
     });
 
     test('renders inventory skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('inventory-skeleton')).toBeInTheDocument();
     });
 
     test('renders delivery options skeleton', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('delivery-options-skeleton')).toBeInTheDocument();
     });
 
     test('renders cart actions skeleton with add to cart and secondary buttons', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         expect(screen.getByTestId('cart-actions-skeleton')).toBeInTheDocument();
         expect(screen.getByTestId('add-to-cart-skeleton')).toBeInTheDocument();
@@ -95,33 +89,11 @@ describe('ProductSkeleton', () => {
         expect(screen.getByTestId('share-skeleton')).toBeInTheDocument();
     });
 
-    test('renders recommended products skeleton with 1 section', () => {
-        render(<ProductSkeleton />);
-
-        expect(screen.getByTestId('recommended-products-skeleton')).toBeInTheDocument();
-        expect(screen.getByTestId('recommendation-section-skeleton')).toBeInTheDocument();
-    });
-
-    test('renders 4 recommended product items', () => {
-        render(<ProductSkeleton />);
-
-        const recommendedItems = screen.getAllByTestId('recommended-product-item');
-        expect(recommendedItems).toHaveLength(4);
-    });
-
     test('renders 5 thumbnail skeletons in image gallery', () => {
-        render(<ProductSkeleton />);
+        render(<ProductContentSkeleton />);
 
         const thumbnailsContainer = screen.getByTestId('thumbnails-skeleton');
         const thumbnails = thumbnailsContainer.querySelectorAll('div');
         expect(thumbnails).toHaveLength(5);
-    });
-
-    test('renders breadcrumbs skeleton with aria-label', () => {
-        render(<ProductSkeleton />);
-
-        const breadcrumbs = screen.getByLabelText('Breadcrumb');
-        expect(breadcrumbs).toBeInTheDocument();
-        expect(screen.getByTestId('breadcrumbs-skeleton')).toBeInTheDocument();
     });
 });

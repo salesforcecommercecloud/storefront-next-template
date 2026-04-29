@@ -26,7 +26,7 @@ const disImageURL = {
         'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw1e4fcb17/images/large/PG.10212867.JJ3XYXX.PZ.jpg[?sw={width}]',
 };
 
-const urlWithWidth = (width: number) => getSrc(disImageURL.withOptionalParams, width, undefined, 'webp');
+const urlWithWidth = (width: number) => getSrc(disImageURL.withOptionalParams, { w: width, f: 'webp' });
 
 describe('replaceImageFormat()', () => {
     describe('default target format', () => {
@@ -761,19 +761,176 @@ describe('getResponsivePictureAttributes()', () => {
         });
     });
 
+    describe('height parameter (sh)', () => {
+        test('getSrc adds sh parameter when h is provided', () => {
+            const result = getSrc(disImageURL.withOptionalParams, { w: 720, f: 'webp', h: 480 });
+            expect(result).toContain('sw=720');
+            expect(result).toContain('sh=480');
+        });
+
+        test('getSrc does not add sh parameter when h is not provided', () => {
+            const result = getSrc(disImageURL.withOptionalParams, { w: 720, f: 'webp' });
+            expect(result).toContain('sw=720');
+            expect(result).not.toContain('sh=');
+        });
+
+        test('getSrc updates existing sh= parameter in URL', () => {
+            const urlWithSh =
+                'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw1e4fcb17/images/large/PG.10212867.JJ3XYXX.PZ.jpg[?sw={width}&sh={height}&q=60]';
+            const result = getSrc(urlWithSh, { w: 720, f: 'webp', h: 480 });
+            expect(result).toContain('sh=480');
+            // Should not have duplicate sh= parameters
+            expect((result.match(/sh=/g) || []).length).toBe(1);
+        });
+
+        test('getSrc replaces {width} and {height} placeholders independently', () => {
+            const urlWithBoth = 'https://example.com/image.jpg[?sw={width}&sh={height}&q=60]';
+            const result = getSrc(urlWithBoth, { w: 720, f: 'webp', h: 360 });
+            expect(result).toContain('sw=720');
+            expect(result).toContain('sh=360');
+        });
+
+        test('getSrc replaces {height} with w when h is not provided (backward compat)', () => {
+            const urlWithHeight = 'https://example.com/image.jpg[?sw={width}&sh={height}]';
+            const result = getSrc(urlWithHeight, { w: 720, f: 'webp' });
+            // {height} falls back to w, but no sh= param is added since h is not provided
+            // The placeholder replacement still happens, converting {height} to w
+            expect(result).toContain('sw=720');
+        });
+
+        test('getResponsivePictureAttributes with heights produces sh in srcSet', () => {
+            const props = getResponsivePictureAttributes({
+                src: 'https://example.com/image.jpg[?sw={width}&sh={height}&q=60]',
+                widths: [200],
+                heights: [150],
+            });
+
+            // Single width/height → all breakpoints identical → 1 unique source
+            // 1x: sw=200&sh=150, 2x: sw=400&sh=300
+            expect(props.sources).toHaveLength(1);
+            expect(props.sources[0].srcSet).toContain('sw=200');
+            expect(props.sources[0].srcSet).toContain('sh=150');
+            expect(props.sources[0].srcSet).toContain('sw=400');
+            expect(props.sources[0].srcSet).toContain('sh=300');
+        });
+
+        test('getResponsivePictureAttributes without heights produces no sh in srcSet', () => {
+            const props = getResponsivePictureAttributes({
+                src: disImageURL.withOptionalParams,
+                widths: [200],
+            });
+
+            // 1x: sw=200, 2x: sw=400
+            expect(props.sources).toHaveLength(1);
+            expect(props.sources[0].srcSet).toContain('sw=200');
+            expect(props.sources[0].srcSet).toContain('sw=400');
+            expect(props.sources[0].srcSet).not.toContain('sh=');
+        });
+
+        test('getResponsivePictureAttributes with array heights and widths scales by DPR', () => {
+            const props = getResponsivePictureAttributes({
+                src: 'https://example.com/image.jpg[?sw={width}&sh={height}]',
+                widths: [400],
+                heights: [300],
+                formats: ['webp'],
+            });
+
+            // Each srcSet should contain 1x and 2x variants
+            props.sources.forEach((source) => {
+                // 1x: sw=400&sh=300, 2x: sw=800&sh=600
+                expect(source.srcSet).toContain('sw=400');
+                expect(source.srcSet).toContain('sh=300');
+                expect(source.srcSet).toContain('sw=800');
+                expect(source.srcSet).toContain('sh=600');
+            });
+        });
+
+        test('getResponsivePictureAttributes with object heights', () => {
+            const props = getResponsivePictureAttributes({
+                src: 'https://example.com/image.jpg[?sw={width}&sh={height}]',
+                widths: { base: 200, md: 400 },
+                heights: { base: 150, md: 300 },
+                formats: ['webp'],
+            });
+
+            // {base: 200, md: 400} → [200, 200, 400] → 2 unique sources (md first, then base)
+            expect(props.sources).toHaveLength(2);
+            // First source (md): 1x sw=400&sh=300, 2x sw=800&sh=600
+            expect(props.sources[0].srcSet).toContain('sw=400');
+            expect(props.sources[0].srcSet).toContain('sh=300');
+            expect(props.sources[0].srcSet).toContain('sw=800');
+            expect(props.sources[0].srcSet).toContain('sh=600');
+            // Second source (base): 1x sw=200&sh=150, 2x sw=400&sh=300
+            expect(props.sources[1].srcSet).toContain('sw=200');
+            expect(props.sources[1].srcSet).toContain('sh=150');
+        });
+
+        test('getSrc with only h (no w) adds sh but not sw', () => {
+            const result = getSrc('https://example.com/image.jpg', { f: 'webp', h: 300 });
+            expect(result).toContain('sh=300');
+            expect(result).not.toContain('sw=');
+        });
+
+        test('getResponsivePictureAttributes with only heights (no widths) produces sh in srcSet', () => {
+            const props = getResponsivePictureAttributes({
+                src: 'https://example.com/image.jpg',
+                heights: [200],
+                formats: ['webp'],
+            });
+
+            // Single height → 1 unique source, 1x: sh=200, 2x: sh=400
+            expect(props.sources).toHaveLength(1);
+            expect(props.sources[0].srcSet).toContain('sh=200');
+            expect(props.sources[0].srcSet).toContain('sh=400');
+            expect(props.sources[0].srcSet).not.toContain('sw=');
+        });
+
+        test('getResponsivePictureAttributes with only object heights produces responsive sources', () => {
+            const props = getResponsivePictureAttributes({
+                src: 'https://example.com/image.jpg',
+                heights: { base: 150, md: 300 },
+                formats: ['webp'],
+            });
+
+            // {base: 150, md: 300} → [150, 150, 300] → 2 unique sources
+            expect(props.sources).toHaveLength(2);
+            // First source (md): 1x sh=300, 2x sh=600
+            expect(props.sources[0].srcSet).toContain('sh=300');
+            expect(props.sources[0].srcSet).toContain('sh=600');
+            expect(props.sources[0].srcSet).not.toContain('sw=');
+            // Second source (base): 1x sh=150, 2x sh=300
+            expect(props.sources[1].srcSet).toContain('sh=150');
+            expect(props.sources[1].srcSet).not.toContain('sw=');
+        });
+
+        test('getResponsivePictureAttributes with only heights scales by DPR', () => {
+            const props = getResponsivePictureAttributes({
+                src: 'https://example.com/image.jpg',
+                heights: [300],
+                formats: ['webp'],
+            });
+
+            // Single height → 1 unique source, 1x: sh=300, 2x: sh=600
+            expect(props.sources).toHaveLength(1);
+            expect(props.sources[0].srcSet).toContain('sh=300');
+            expect(props.sources[0].srcSet).toContain('sh=600');
+            expect(props.sources[0].srcSet).not.toContain('sw=');
+        });
+    });
+
     describe('quality parameter', () => {
         test('getSrc adds quality parameter when provided', () => {
-            const result = getSrc(disImageURL.withoutQualityParam, 720, 80);
+            const result = getSrc(disImageURL.withoutQualityParam, { w: 720, q: 80 });
             expect(result).toContain('q=80');
         });
 
         test('getSrc does not add quality when not provided', () => {
-            const result = getSrc(disImageURL.withoutQualityParam, 720);
+            const result = getSrc(disImageURL.withoutQualityParam, { w: 720 });
             expect(result).not.toContain('q=');
         });
 
         test('getSrc preserves existing q parameter in URL (URL takes priority)', () => {
-            const result = getSrc(disImageURL.withOptionalParams, 720, 80);
+            const result = getSrc(disImageURL.withOptionalParams, { w: 720, q: 80 });
             // URL has q=60, should not be overwritten by quality=80
             expect(result).toContain('q=60');
             expect(result).not.toContain('q=80');
@@ -895,6 +1052,31 @@ describe('toDisImageUrl()', () => {
             expect(result).toContain('sw=640');
         });
 
+        test('includes height parameter when specified', () => {
+            const staticUrl =
+                'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+            const result = toDisImageUrl({ src: staticUrl, options: { height: 480 }, config: mockConfig });
+
+            expect(result).toContain('sh=480');
+        });
+
+        test('includes both width and height parameters when specified', () => {
+            const staticUrl =
+                'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+            const result = toDisImageUrl({ src: staticUrl, options: { width: 640, height: 480 }, config: mockConfig });
+
+            expect(result).toContain('sw=640');
+            expect(result).toContain('sh=480');
+        });
+
+        test('does not include height parameter when not specified', () => {
+            const staticUrl =
+                'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+            const result = toDisImageUrl({ src: staticUrl, options: { width: 640 }, config: mockConfig });
+
+            expect(result).not.toContain('sh=');
+        });
+
         test('uses custom quality', () => {
             const staticUrl =
                 'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
@@ -945,6 +1127,14 @@ describe('toDisImageUrl()', () => {
 
             expect(result).toContain('[_{width}]');
             expect(result).toContain('[?sw={width}]');
+        });
+
+        test('preserves [?sw={width}&sh={height}] placeholder', () => {
+            const staticUrl =
+                'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg[?sw={width}&sh={height}]';
+            const result = toDisImageUrl({ src: staticUrl, config: mockConfig });
+
+            expect(result).toContain('[?sw={width}&sh={height}]');
         });
 
         test('works without placeholders', () => {
@@ -1184,6 +1374,23 @@ describe('toImageUrl()', () => {
             const result = toImageUrl({ src: staticUrl, config: mockConfig, options: { quality: 85 } });
 
             expect(result).toContain('q=85');
+        });
+
+        test('uses custom height option', () => {
+            const staticUrl =
+                'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+            const result = toImageUrl({ src: staticUrl, config: mockConfig, options: { height: 480 } });
+
+            expect(result).toContain('sh=480');
+        });
+
+        test('uses both width and height options', () => {
+            const staticUrl =
+                'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+            const result = toImageUrl({ src: staticUrl, config: mockConfig, options: { width: 640, height: 480 } });
+
+            expect(result).toContain('sw=640');
+            expect(result).toContain('sh=480');
         });
     });
 

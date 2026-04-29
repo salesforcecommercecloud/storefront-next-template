@@ -82,15 +82,16 @@ const meta: Meta<typeof RefineColor> = {
         docs: {
             description: {
                 component: `
-A color refinement component that displays color options as swatches with color circles. Users can select colors to filter products.
+A color refinement component that displays color options as square swatches above each label, without an outline box around each option. Users can select colors to filter products.
 
 ## Features
 
-- **Color Swatches**: Visual color circles for each color option
-- **Color Names**: Text labels for each color
-- **Hit Counts**: Shows number of products for each color
+- **Layout**: Swatch on top, color name and count below—no bordered “chip” around the whole control
+- **Color Swatches**: Square swatches for each color option
+- **Color Names**: Full text labels (wrapping when needed)
+- **Hit Counts**: Product count in parentheses below the name
 - **Selected State**: Visual indication of selected colors
-- **Grid Layout**: 2-column grid layout
+- **Grid Layout**: 2 columns on small screens, 3 columns from the large breakpoint up (fits the default narrow filter column with square swatches)
 - **Action Logging**: Integrates with Storybook's ActionLogger to track user interactions
 
 ## Usage
@@ -127,7 +128,7 @@ function ColorFilter({ values, attributeId, isFilterSelected, toggleFilter }) {
 ## Behavior
 
 - **Clicking a color**: Toggles that color filter
-- **Selected colors**: Show a checkmark indicator
+- **Selected colors**: Ring and border on the swatch; semibold label (no center dot)
 - **Color mapping**: Maps color names to hex values for display
                 `,
             },
@@ -178,9 +179,9 @@ export const Default: Story = {
 The default RefineColor shows color swatches:
 
 ### Features:
-- **Color swatches**: Visual color circles
-- **Color names**: Text labels
-- **Hit counts**: Product counts for each color
+- **Color swatches**: Square swatches above each label
+- **Color names**: Full labels with wrapping when needed
+- **Hit counts**: Count in parentheses under the name
 - **Selected state**: Black is selected
 - **Action logging**: All clicks are logged
 
@@ -225,7 +226,7 @@ RefineColor with no selected colors:
 ### No Selection Features:
 - **All unselected**: No colors are selected
 - **Same functionality**: All features work the same
-- **Visual state**: No checkmarks shown
+- **Visual state**: No selection ring; default swatch border only
 
 ### Use Cases:
 - Initial state
@@ -268,7 +269,7 @@ export const ManyColors: Story = {
 RefineColor with many color options:
 
 ### Many Colors Features:
-- **Grid layout**: 2-column grid wraps colors
+- **Grid layout**: 2 columns by default, 3 from the large breakpoint
 - **All colors**: Shows all available colors
 - **Hit counts**: Some colors have 0 products
 - **Wrapping**: Colors wrap to multiple rows

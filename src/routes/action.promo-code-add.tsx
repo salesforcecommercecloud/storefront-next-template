@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
-import { extractResponseError } from '@/lib/utils';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { createPromoCodeFormSchema } from '@/components/promo-code-form';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -46,26 +46,31 @@ import { getLogger } from '@/lib/logger.server';
  * </form>
  * ```
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<{
-    success: boolean;
-    basket?: ShopperBasketsV2.schemas['Basket'];
-    error?: string;
-}> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
     const { t } = getTranslation();
 
     if (request.method !== 'POST') {
         logger.warn('PromoCodeAdd: method not allowed', { method: request.method });
-        throw new Response(t('errors:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
+            },
+            { status: 405 }
+        );
     }
 
     const basketId = await ensureBasketId(context);
     if (!basketId) {
         logger.warn('PromoCodeAdd: no basket found');
-        return {
-            success: false,
-            error: t('errors:noBasketFound'),
-        };
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
+            },
+            { status: 404 }
+        );
     }
 
     try {
@@ -77,10 +82,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const validationResult = promoCodeFormSchema.safeParse({ code: promoCode });
         if (!validationResult.success) {
             logger.warn('PromoCodeAdd: validation failed');
-            return {
-                success: false,
-                error: validationResult.error.issues[0]?.message || t('errors:promoCodeRequired'),
-            };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.INVALID_INPUT,
+                        message: validationResult.error.issues[0]?.message || 'Promo code is required',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         const { code: validatedPromoCode } = validationResult.data;
@@ -100,19 +111,9 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         updateBasketResource(context, updatedBasket);
 
         logger.info('PromoCodeAdd: succeeded', { basketId });
-        return { success: true, basket: updatedBasket };
+        return Response.json({ success: true, basket: updatedBasket });
     } catch (error) {
         logger.error('PromoCodeAdd: failed', { error });
-        if (error instanceof ApiError) {
-            return {
-                success: false,
-                error: error.body?.detail || error.statusText,
-            };
-        }
-        const { responseMessage } = await extractResponseError(error as Error);
-        return {
-            success: false,
-            error: responseMessage,
-        };
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

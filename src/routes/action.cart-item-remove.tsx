@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
-import { extractResponseError } from '@/lib/utils';
-import { createApiClients } from '@/lib/api-clients';
-import { getTranslation } from '@/lib/i18next';
+import { createApiClients } from '@/lib/api-clients.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -57,26 +56,30 @@ import { getLogger } from '@/lib/logger.server';
  * </form>
  * ```
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<{
-    success: boolean;
-    basket?: ShopperBasketsV2.schemas['Basket'];
-    error?: string;
-}> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartItemRemove: action starting');
 
     if (request.method !== 'POST') {
-        throw new Response(t('errors:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
+            },
+            { status: 405 }
+        );
     }
 
     const basketId = await ensureBasketId(context);
     if (!basketId) {
         logger.warn('CartItemRemove: no basket found');
-        return {
-            success: false,
-            error: t('errors:noBasketFound'),
-        };
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
+            },
+            { status: 404 }
+        );
     }
 
     try {
@@ -84,10 +87,13 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const itemId = formData.get('itemId') as string;
         if (!itemId) {
             logger.warn('CartItemRemove: missing itemId in form data');
-            return {
-                success: false,
-                error: t('cart:itemIdRequired'),
-            };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'itemId is required' }),
+                },
+                { status: 400 }
+            );
         }
 
         logger.debug('CartItemRemove: removing item', { itemId, basketId });
@@ -101,24 +107,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             },
         });
 
-        // Update the basket cache to reflect the changes
         updateBasketResource(context, updatedBasket);
 
         logger.info('CartItemRemove: item removed successfully');
-        return { success: true, basket: updatedBasket };
+        return Response.json({ success: true, basket: updatedBasket });
     } catch (error) {
-        if (error instanceof ApiError) {
-            logger.error('CartItemRemove: API error removing item', { error });
-            return {
-                success: false,
-                error: error.body?.detail || error.statusText,
-            };
-        }
         logger.error('CartItemRemove: failed', { error });
-        const { responseMessage } = await extractResponseError(error as Error);
-        return {
-            success: false,
-            error: responseMessage,
-        };
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

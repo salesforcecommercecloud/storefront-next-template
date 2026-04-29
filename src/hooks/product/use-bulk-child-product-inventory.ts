@@ -90,9 +90,8 @@ export function useBulkChildProductInventory({
     const fetcher = useScapiFetcher('shopperProducts', 'getProducts', {
         params: {
             query: {
-                // Only include ids when productIds is available
-                // When undefined, the load() call won't execute, so this won't cause issues
-                ...(productIds ? { ids: productIds.split(',') } : {}),
+                // Always provide ids; the load() guard below prevents firing when productIds is undefined
+                ids: productIds?.split(',') ?? [],
                 // @sfdc-extension-line SFDC_EXT_BOPIS
                 ...(inventoryId ? { inventoryIds: [inventoryId] } : {}),
                 allImages: false,

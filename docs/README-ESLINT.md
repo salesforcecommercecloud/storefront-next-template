@@ -7,7 +7,7 @@ This project uses ESLint for code quality and enforces TypeScript over JavaScrip
 The ESLint configuration is already set up with the following features:
 
 - **TypeScript Support**: Full TypeScript linting with `@typescript-eslint`
-- **React 19 Support**: Optimized for React 19 Server Components
+- **React 19 Support**: Optimized for React 19
 - **JavaScript → TypeScript Enforcement**: Prevents `.js`, `.jsx`, `.mjs`, `.cjs` files in source code
 - **Other File Types Allowed**: CSS, JSON, and other non-JavaScript files are permitted
 - **Server/Client Separation**: Different rules for server and client components

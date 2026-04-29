@@ -18,8 +18,21 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import PopularCategories from './popular-categories';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+
+const defaultMockSite = {
+    id: 'RefArch',
+    defaultLocale: 'en-US',
+    defaultCurrency: 'USD',
+    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
+    supportedCurrencies: ['USD'],
+};
+
+const mockLocale =
+    defaultMockSite.supportedLocales.find((l) => l.id === defaultMockSite.defaultLocale) ??
+    defaultMockSite.supportedLocales[0];
 
 // Mock decorators (minimal mocking to avoid testing them)
 vi.mock('@/lib/decorators/component', async (importOriginal) => {
@@ -44,7 +57,13 @@ const renderWithRouter = (component: React.ReactElement) => {
         [
             {
                 path: '/',
-                element: <ConfigProvider config={mockConfig}>{component}</ConfigProvider>,
+                element: (
+                    <ConfigProvider config={mockConfig}>
+                        <SiteProvider site={defaultMockSite} locale={mockLocale} language="en-US" currency="USD">
+                            {component}
+                        </SiteProvider>
+                    </ConfigProvider>
+                ),
             },
         ],
         { initialEntries: ['/'] }
@@ -134,9 +153,9 @@ describe('PopularCategories', () => {
             { timeout: 3000 }
         );
 
-        // Check that the max-w-7xl container is present
-        const mainContainer = container.querySelector('.max-w-7xl');
-        expect(mainContainer).toBeInTheDocument();
+        // Check that the outer section wrapper is present (max-w-7xl was removed; carousel is now full-width)
+        const sectionWrapper = container.querySelector('section');
+        expect(sectionWrapper).toBeInTheDocument();
     });
 
     test('renders section wrapper with background', async () => {
@@ -177,7 +196,7 @@ describe('PopularCategories', () => {
         expect(screen.getByText('Sports')).toBeInTheDocument();
     });
 
-    test('displays category descriptions', async () => {
+    test('hides category descriptions by default', async () => {
         const categoriesPromise = Promise.resolve(mockCategories);
 
         renderComponent(<PopularCategories categoriesPromise={categoriesPromise} />);
@@ -185,16 +204,16 @@ describe('PopularCategories', () => {
         // Wait for categories to load
         await waitFor(
             () => {
-                expect(screen.getByText('Latest electronics and gadgets')).toBeInTheDocument();
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
             },
             { timeout: 3000 }
         );
 
-        // Check descriptions are displayed
-        expect(screen.getByText('Latest electronics and gadgets')).toBeInTheDocument();
-        expect(screen.getByText('Fashion and apparel')).toBeInTheDocument();
-        expect(screen.getByText('Books and literature')).toBeInTheDocument();
-        expect(screen.getByText('Sports and fitness')).toBeInTheDocument();
+        // Descriptions are hidden by default (showDescription defaults to false)
+        expect(screen.queryByText('Latest electronics and gadgets')).not.toBeInTheDocument();
+        expect(screen.queryByText('Fashion and apparel')).not.toBeInTheDocument();
+        expect(screen.queryByText('Books and literature')).not.toBeInTheDocument();
+        expect(screen.queryByText('Sports and fitness')).not.toBeInTheDocument();
     });
 
     test('displays shop now buttons', async () => {
@@ -213,5 +232,165 @@ describe('PopularCategories', () => {
         // Check shop now buttons are present
         const shopNowButtons = screen.getAllByText('Shop Now');
         expect(shopNowButtons).toHaveLength(4);
+    });
+
+    // Fallback logic tests - verify all code paths work
+    test('renders data prop when provided (no component)', async () => {
+        renderComponent(<PopularCategories data={mockCategories} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText('Clothing')).toBeInTheDocument();
+        expect(screen.getByText('Books')).toBeInTheDocument();
+        expect(screen.getByText('Sports')).toBeInTheDocument();
+    });
+
+    test('falls back to data when component has no regions', async () => {
+        const component = {
+            id: 'test-component',
+            typeId: 'popularCategories',
+            regions: [],
+        };
+
+        renderComponent(<PopularCategories component={component} data={mockCategories} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText('Clothing')).toBeInTheDocument();
+    });
+
+    test('falls back to categoriesPromise when component has empty categories region', async () => {
+        const component = {
+            id: 'test-component',
+            typeId: 'popularCategories',
+            regions: [
+                {
+                    id: 'categories',
+                    components: [],
+                },
+            ],
+        };
+        const categoriesPromise = Promise.resolve(mockCategories);
+
+        renderComponent(<PopularCategories component={component} categoriesPromise={categoriesPromise} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText('Clothing')).toBeInTheDocument();
+    });
+
+    test('renders nothing when no data sources provided', () => {
+        const { container } = renderComponent(<PopularCategories />);
+
+        const section = container.querySelector('section');
+        expect(section).toBeInTheDocument();
+
+        expect(screen.queryByText('Electronics')).not.toBeInTheDocument();
+        expect(screen.queryByText('Style for Real Life')).not.toBeInTheDocument();
+    });
+
+    test('prioritizes data over categoriesPromise when both provided', async () => {
+        const categoriesPromise = Promise.resolve([
+            {
+                id: 'wrong-cat',
+                name: 'This should not render',
+            },
+        ]);
+
+        renderComponent(<PopularCategories data={mockCategories} categoriesPromise={categoriesPromise} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.queryByText('This should not render')).not.toBeInTheDocument();
+    });
+
+    // Tests for title/subtitle functionality
+    test('renders with custom title and subtitle', async () => {
+        const customTitle = 'Shop by Category';
+        const customSubtitle = 'Discover our curated collections';
+
+        renderComponent(<PopularCategories data={mockCategories} title={customTitle} subtitle={customSubtitle} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText(customTitle)).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText(customSubtitle)).toBeInTheDocument();
+    });
+
+    test('falls back to i18n translations when title and subtitle are undefined', async () => {
+        renderComponent(<PopularCategories data={mockCategories} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        // Default subtitle from i18n
+        expect(
+            screen.getByText(
+                'At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.'
+            )
+        ).toBeInTheDocument();
+    });
+
+    test('renders custom title with default subtitle', async () => {
+        const customTitle = 'Browse Our Collections';
+
+        renderComponent(<PopularCategories data={mockCategories} title={customTitle} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText(customTitle)).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        // Should still show default subtitle from i18n
+        expect(
+            screen.getByText(
+                'At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.'
+            )
+        ).toBeInTheDocument();
+    });
+
+    test('renders custom subtitle with default title', async () => {
+        const customSubtitle = 'Find your perfect style';
+
+        renderComponent(<PopularCategories data={mockCategories} subtitle={customSubtitle} />);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText('Style for Real Life')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(screen.getByText(customSubtitle)).toBeInTheDocument();
     });
 });

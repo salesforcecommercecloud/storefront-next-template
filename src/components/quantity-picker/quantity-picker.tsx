@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 // React
 import { type ReactElement } from 'react';
 
@@ -43,6 +41,8 @@ interface QuantityPickerProps {
     productName?: string;
     /** Whether the picker is disabled */
     disabled?: boolean;
+    /** Additional class names for the container */
+    className?: string;
 }
 
 /**
@@ -64,6 +64,7 @@ export default function QuantityPicker({
     max,
     productName,
     disabled = false,
+    className,
 }: QuantityPickerProps): ReactElement {
     const { t: tQuantity } = useTranslation('quantitySelector');
     const { t: tCommon } = useTranslation('common');
@@ -88,12 +89,12 @@ export default function QuantityPicker({
     });
 
     return (
-        <div className="inline-flex items-center border border-input rounded-lg">
+        <div className={cn('inline-flex items-center border border-input rounded-none', className)}>
             {/* Decrement Button */}
             <button
                 onClick={handleDecrement}
                 disabled={disabled || isDecrementDisabled}
-                className="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={tQuantity('decreaseQuantityForProduct', { productName: productName || tCommon('product') })}
                 data-testid="quantity-decrement">
                 −
@@ -123,7 +124,7 @@ export default function QuantityPicker({
             <button
                 onClick={handleIncrement}
                 disabled={disabled || isIncrementDisabled}
-                className="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={tQuantity('increaseQuantityForProduct', { productName: productName || tCommon('product') })}
                 data-testid="quantity-increment">
                 +

@@ -18,16 +18,17 @@ import { redirect, Form, useActionData, type LoaderFunctionArgs, type ActionFunc
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 // services
-import { registerCustomer } from '@/lib/api/auth/register';
+import { registerCustomer } from '@/lib/api/auth/register.server';
 
 // components
 import { SignupForm } from '@/components/signup-form';
+import { UITarget } from '@/targets/ui-target';
 import { SeoMeta } from '@/components/seo-meta';
 
 // utils
 import { isPasswordValid } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { useTranslation } from 'react-i18next';
 import { getLogger } from '@/lib/logger.server';
 
@@ -35,7 +36,6 @@ type SignupActionResponse = {
     error?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ context }: LoaderFunctionArgs): null | Response {
     const session = getAuth(context);
     if (session.userType === 'registered') {
@@ -49,7 +49,6 @@ export function loader({ context }: LoaderFunctionArgs): null | Response {
  * This server action is required for authentication, because registration must be handled server-side for security reasons,
  * and proper integration with session management and Salesforce Commerce Cloud's authentication system.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse | Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
@@ -108,7 +107,7 @@ export default function Signup(): ReactElement {
 
     return (
         <>
-            <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
                 <SeoMeta
                     title={t('meta.title', { defaultValue: 'Sign Up' })}
                     description={t('meta.description', {
@@ -122,7 +121,7 @@ export default function Signup(): ReactElement {
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
 
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         <Form method="POST">
                             <SignupForm error={error} />
 
@@ -136,6 +135,7 @@ export default function Signup(): ReactElement {
                             </div>
                         </Form>
                     </Card>
+                    <UITarget targetId="sfcc.userRegistration.address.validation" />
                 </div>
             </div>
         </>

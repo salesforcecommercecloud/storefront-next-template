@@ -69,8 +69,26 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
                 suggestionsDebounce: 300,
             },
         },
+        engagement: {
+            analytics: {
+                trackingConsent: {
+                    consentCategories: ['necessary', 'analytics', 'marketing', 'personalization'],
+                },
+            },
+        },
     }),
 }));
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
+            language: 'en-GB',
+            currency: 'GBP',
+        })),
+    };
+});
 
 import { composeStories } from '@storybook/react-vite';
 

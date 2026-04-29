@@ -52,11 +52,10 @@ describe('ExpressPayments Integration Tests', () => {
             expect(screen.getByRole('button', { name: 'Venmo' })).toBeInTheDocument();
         });
 
-        test('renders divider with Or text', () => {
+        test('renders divider with separator text', () => {
             render(<ExpressPayments {...createDefaultProps()} />);
 
-            // Text content is "Or" but displayed as "OR" via CSS uppercase
-            expect(screen.getByText('Or')).toBeInTheDocument();
+            expect(screen.getByText('or continue below')).toBeInTheDocument();
         });
     });
 
@@ -192,7 +191,7 @@ describe('ExpressPayments Integration Tests', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps({ layout: 'vertical' })} />);
 
             const gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('gap-3');
+            expect(gridContainer).toHaveClass('gap-2');
         });
     });
 
@@ -213,18 +212,15 @@ describe('ExpressPayments Integration Tests', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const separators = container.querySelectorAll('.relative');
-            // Should have a separator element
             expect(separators.length).toBeGreaterThan(0);
 
-            // Default text is "Or" (displayed as "OR" via CSS uppercase)
-            expect(screen.getByText('Or')).toBeInTheDocument();
+            expect(screen.getByText('or continue below')).toBeInTheDocument();
         });
 
         test('renders separator at top when position is "top"', () => {
             render(<ExpressPayments {...createDefaultProps({ separatorPosition: 'top' })} />);
 
-            // Separator text should still be present (displayed as "OR" via CSS uppercase)
-            expect(screen.getByText('Or')).toBeInTheDocument();
+            expect(screen.getByText('or continue below')).toBeInTheDocument();
         });
 
         test('renders custom separator text with uppercase styling', () => {
@@ -258,40 +254,36 @@ describe('ExpressPayments Integration Tests', () => {
             expect(lines).toHaveLength(2);
         });
 
-        test('separator lines have correct styling (2px height, separator color)', () => {
+        test('separator lines have correct styling (1px height, separator color)', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const separator = container.querySelector('.relative.flex.items-center');
             const lines = separator?.querySelectorAll('div.flex-1');
 
             lines?.forEach((line) => {
-                expect(line).toHaveClass('h-[2px]');
+                expect(line).toHaveClass('h-px');
                 expect(line).toHaveClass('bg-separator');
             });
         });
 
-        test('separator text has correct styling (foreground for a11y contrast, uppercase)', () => {
+        test('separator text has correct styling', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const separator = container.querySelector('.relative.flex.items-center');
             const textElement = separator?.querySelector('span');
 
-            expect(textElement).toHaveClass('!text-foreground');
+            expect(textElement).toHaveClass('text-muted-foreground');
             expect(textElement).toHaveAttribute('data-express-payments-separator-label');
-            expect(textElement).toHaveClass('uppercase');
-            expect(textElement).toHaveClass('font-medium');
+            expect(textElement).toHaveClass('font-normal');
             expect(textElement).toHaveClass('text-sm');
         });
 
-        test('separator text applies uppercase CSS transformation', () => {
+        test('separator text preserves content', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps({ separatorText: 'Or buy with' })} />);
 
             const separator = container.querySelector('.relative.flex.items-center');
             const textElement = separator?.querySelector('span') as HTMLElement;
 
-            // Verify uppercase class is applied
-            expect(textElement).toHaveClass('uppercase');
-            // Verify text content is preserved (CSS transforms display, not content)
             expect(textElement.textContent).toBe('Or buy with');
         });
 
@@ -330,10 +322,8 @@ describe('ExpressPayments Integration Tests', () => {
             expect(lines).toHaveLength(2);
             lines?.forEach((line) => {
                 const htmlElement = line as HTMLElement;
-                // Lines should have flex-1 class to take up space
                 expect(htmlElement).toHaveClass('flex-1');
-                // Should have height
-                expect(htmlElement).toHaveClass('h-[2px]');
+                expect(htmlElement).toHaveClass('h-px');
             });
         });
     });
@@ -419,8 +409,7 @@ describe('ExpressPayments Integration Tests', () => {
             const buttons = container.querySelectorAll('button');
             const buttonLabels = Array.from(buttons).map((btn) => btn.getAttribute('aria-label'));
 
-            // Verify order: Apple Pay, Google Pay, Amazon Pay, PayPal, Venmo
-            expect(buttonLabels).toEqual(['Apple Pay', 'Google Pay', 'Amazon Pay', 'PayPal', 'Venmo']);
+            expect(buttonLabels).toEqual(['Google Pay', 'Apple Pay', 'PayPal', 'Venmo', 'Amazon Pay']);
         });
 
         test('renders with all optional props undefined', () => {
@@ -560,15 +549,16 @@ describe('ExpressPayments Integration Tests', () => {
         });
 
         test('updates separator text prop correctly', () => {
-            const { rerender } = render(<ExpressPayments {...createDefaultProps({ separatorText: 'Or' })} />);
+            const { rerender } = render(
+                <ExpressPayments {...createDefaultProps({ separatorText: 'or continue below' })} />
+            );
 
-            expect(screen.getByText('Or')).toBeInTheDocument();
+            expect(screen.getByText('or continue below')).toBeInTheDocument();
 
-            // Change separator text
             rerender(<ExpressPayments {...createDefaultProps({ separatorText: 'Or continue with' })} />);
 
             expect(screen.getByText('Or continue with')).toBeInTheDocument();
-            expect(screen.queryByText('Or')).not.toBeInTheDocument();
+            expect(screen.queryByText('or continue below')).not.toBeInTheDocument();
         });
     });
 
@@ -769,8 +759,7 @@ describe('ExpressPayments Integration Tests', () => {
 
                 const button = screen.getByRole('button');
                 expect(button).toHaveClass('w-full');
-                expect(button).toHaveClass('h-12');
-                expect(button).toHaveClass('rounded-lg');
+                expect(button).toHaveClass('h-9');
             });
 
             test('has aria-label for accessibility', () => {
@@ -877,8 +866,7 @@ describe('ExpressPayments Integration Tests', () => {
 
                 const button = screen.getByRole('button');
                 expect(button).toHaveClass('w-full');
-                expect(button).toHaveClass('h-12');
-                expect(button).toHaveClass('rounded-lg');
+                expect(button).toHaveClass('h-9');
             });
 
             test('has aria-label for accessibility', () => {

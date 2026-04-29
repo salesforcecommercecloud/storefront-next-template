@@ -12,10 +12,10 @@ exports[`Swatches stories snapshot > ColorSwatches story renders and matches sna
       aria-current="true"
       aria-label="View Test Product in Navy"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-      href="/product/test?color=navy"
+      href="/RefArchGlobal/en-GB/product/test?color=navy"
       style="background-color: navy;"
       tabindex="-1"
-      to="/product/test?color=navy"
+      to="/RefArchGlobal/en-GB/product/test?color=navy"
     >
       <img
         alt=""
@@ -27,10 +27,10 @@ exports[`Swatches stories snapshot > ColorSwatches story renders and matches sna
     <a
       aria-label="View Test Product in Red"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=red"
+      href="/RefArchGlobal/en-GB/product/test?color=red"
       style="background-color: red;"
       tabindex="-1"
-      to="/product/test?color=red"
+      to="/RefArchGlobal/en-GB/product/test?color=red"
     >
       <img
         alt=""
@@ -42,10 +42,10 @@ exports[`Swatches stories snapshot > ColorSwatches story renders and matches sna
     <a
       aria-label="View Test Product in Blue"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=blue"
+      href="/RefArchGlobal/en-GB/product/test?color=blue"
       style="background-color: blue;"
       tabindex="-1"
-      to="/product/test?color=blue"
+      to="/RefArchGlobal/en-GB/product/test?color=blue"
     >
       <img
         alt=""
@@ -57,10 +57,10 @@ exports[`Swatches stories snapshot > ColorSwatches story renders and matches sna
     <a
       aria-label="View Test Product in Black"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=black"
+      href="/RefArchGlobal/en-GB/product/test?color=black"
       style="background-color: black;"
       tabindex="-1"
-      to="/product/test?color=black"
+      to="/RefArchGlobal/en-GB/product/test?color=black"
     >
       <img
         alt=""
@@ -72,10 +72,10 @@ exports[`Swatches stories snapshot > ColorSwatches story renders and matches sna
     <a
       aria-label="View Test Product in Green"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=green"
+      href="/RefArchGlobal/en-GB/product/test?color=green"
       style="background-color: green;"
       tabindex="-1"
-      to="/product/test?color=green"
+      to="/RefArchGlobal/en-GB/product/test?color=green"
     >
       <img
         alt=""
@@ -99,10 +99,10 @@ exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and
     <a
       aria-label="View Test Product in Navy"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=navy"
+      href="/RefArchGlobal/en-GB/product/test?color=navy"
       style="background-color: navy;"
       tabindex="-1"
-      to="/product/test?color=navy"
+      to="/RefArchGlobal/en-GB/product/test?color=navy"
     >
       <img
         alt=""
@@ -115,10 +115,10 @@ exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and
       aria-current="true"
       aria-label="View Test Product in Red"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-      href="/product/test?color=red"
+      href="/RefArchGlobal/en-GB/product/test?color=red"
       style="background-color: red;"
       tabindex="-1"
-      to="/product/test?color=red"
+      to="/RefArchGlobal/en-GB/product/test?color=red"
     >
       <img
         alt=""
@@ -130,10 +130,10 @@ exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and
     <a
       aria-label="View Test Product in Blue"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=blue"
+      href="/RefArchGlobal/en-GB/product/test?color=blue"
       style="background-color: blue;"
       tabindex="-1"
-      to="/product/test?color=blue"
+      to="/RefArchGlobal/en-GB/product/test?color=blue"
     >
       <img
         alt=""
@@ -176,10 +176,10 @@ exports[`Swatches stories snapshot > NoSelection story renders and matches snaps
     <a
       aria-label="View Test Product in Navy"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=navy"
+      href="/RefArchGlobal/en-GB/product/test?color=navy"
       style="background-color: navy;"
       tabindex="-1"
-      to="/product/test?color=navy"
+      to="/RefArchGlobal/en-GB/product/test?color=navy"
     >
       <img
         alt=""
@@ -191,10 +191,10 @@ exports[`Swatches stories snapshot > NoSelection story renders and matches snaps
     <a
       aria-label="View Test Product in Red"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=red"
+      href="/RefArchGlobal/en-GB/product/test?color=red"
       style="background-color: red;"
       tabindex="-1"
-      to="/product/test?color=red"
+      to="/RefArchGlobal/en-GB/product/test?color=red"
     >
       <img
         alt=""
@@ -206,10 +206,10 @@ exports[`Swatches stories snapshot > NoSelection story renders and matches snaps
     <a
       aria-label="View Test Product in Blue"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=blue"
+      href="/RefArchGlobal/en-GB/product/test?color=blue"
       style="background-color: blue;"
       tabindex="-1"
-      to="/product/test?color=blue"
+      to="/RefArchGlobal/en-GB/product/test?color=blue"
     >
       <img
         alt=""
@@ -221,10 +221,10 @@ exports[`Swatches stories snapshot > NoSelection story renders and matches snaps
     <a
       aria-label="View Test Product in Black"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=black"
+      href="/RefArchGlobal/en-GB/product/test?color=black"
       style="background-color: black;"
       tabindex="-1"
-      to="/product/test?color=black"
+      to="/RefArchGlobal/en-GB/product/test?color=black"
     >
       <img
         alt=""
@@ -236,10 +236,10 @@ exports[`Swatches stories snapshot > NoSelection story renders and matches snaps
     <a
       aria-label="View Test Product in Green"
       class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-      href="/product/test?color=green"
+      href="/RefArchGlobal/en-GB/product/test?color=green"
       style="background-color: green;"
       tabindex="-1"
-      to="/product/test?color=green"
+      to="/RefArchGlobal/en-GB/product/test?color=green"
     >
       <img
         alt=""

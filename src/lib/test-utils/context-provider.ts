@@ -20,8 +20,7 @@ import type { SessionData } from '@/lib/api/types';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { Config } from '@/types/config';
 import config from '@/config/server';
-import { i18nextContext } from '@/lib/i18next';
-import { currencyContext } from '@/lib/currency';
+import { mockI18nContext } from '@salesforce/storefront-next-runtime/i18n';
 import { createMaintenance, maintenanceContext } from '@/lib/maintenance';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import i18next from 'i18next';
@@ -140,18 +139,11 @@ export function createTestContext(testConfig: TestContextConfig = {}): Readonly<
     const mergedAppConfig = appConfig ? { ...config.app, ...appConfig } : config.app;
     contextProvider.set(appConfigContext, mergedAppConfig);
 
-    // Set up i18next context (unless explicitly skipped)
     if (!skipI18next) {
-        contextProvider.set(i18nextContext, {
-            getLocale: () => locale,
-            getI18nextInstance: () => i18next,
-        });
+        mockI18nContext(contextProvider, { locale, instance: i18next });
     }
 
-    // Set up currency context
-    contextProvider.set(currencyContext, currency);
-
-    // Set up site context
+    // Set up site context (includes currency)
     const site = config.app.commerce.sites[0];
     const localeObj = site.supportedLocales.find((l: { id: string }) => l.id === locale) ?? {
         id: locale,
@@ -160,8 +152,10 @@ export function createTestContext(testConfig: TestContextConfig = {}): Readonly<
     contextProvider.set(siteContext, {
         site: { ...site, alias: 'global', name: site.id, supportedLocales: site.supportedLocales },
         locale: { ...localeObj },
+        currency,
         siteCookie: { name: 'site_id' } as unknown as Cookie,
         localeCookie: { name: 'locale_id' } as unknown as Cookie,
+        currencyCookie: { name: 'currency' } as unknown as Cookie,
     });
 
     // Set up maintenance context

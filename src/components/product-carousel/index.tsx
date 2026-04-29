@@ -21,8 +21,14 @@
  *
  * @fileoverview Exports for product carousel functionality including loading states and Suspense boundaries
  */
-import { AttributeDefinition, Component } from '@/lib/decorators';
-import { loader as loaders } from './loaders';
+import { AttributeDefinition, Component, RegionDefinition } from '@/lib/decorators';
+// eslint-disable-next-line react-refresh/only-export-components
+export { loader } from './loaders';
+
+const productCarouselDefaults = {
+    title: '',
+    limit: 12,
+} as const;
 
 // Skeleton component for loading states
 export { default as ProductCarouselSkeleton } from './skeleton';
@@ -39,14 +45,39 @@ export default ProductCarouselWithSuspense;
     name: 'Product Carousel',
     description:
         'A responsive, interactive carousel that displays a collection of product cards in a horizontally scrollable layout.',
+    group: 'Layout',
 })
+@RegionDefinition([
+    {
+        id: 'products',
+        name: 'Products',
+        description: 'Add Product Tile components to populate this carousel.',
+        maxComponents: 12,
+        componentTypeInclusions: ['Content.productTile'],
+    },
+])
 export class ProductCarouselWithSuspenseMetadata {
-    @AttributeDefinition()
+    @AttributeDefinition({
+        defaultValue: productCarouselDefaults.title,
+    })
     title?: string;
-}
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const loader = loaders.server;
+    @AttributeDefinition({
+        name: 'Category',
+        description:
+            'Select a category to populate the carousel with its products. When set, the carousel fetches products automatically and the manual product-tile region is ignored.',
+        type: 'category',
+    })
+    categoryId?: string;
+
+    @AttributeDefinition({
+        name: 'Product Limit',
+        description: 'Maximum number of products to fetch for the carousel.',
+        type: 'integer',
+        defaultValue: productCarouselDefaults.limit,
+    })
+    limit?: number;
+}
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { default as fallback } from './skeleton';

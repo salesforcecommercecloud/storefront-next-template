@@ -30,12 +30,7 @@ export function getFormattedMaskedCardNumber(
         return '**** **** **** ****';
     }
 
-    // Try different possible sources for the masked card number
-    // SFCC may store this in different properties depending on the API version and configuration
-    const maskedNumber =
-        paymentInstrument.maskedCreditCardNumber ||
-        paymentInstrument.paymentCard?.maskedCreditCardNumber ||
-        paymentInstrument.paymentCard?.maskedNumber;
+    const maskedNumber = paymentInstrument.paymentCard?.maskedNumber || paymentInstrument.paymentCard?.numberLastDigits;
 
     if (maskedNumber) {
         // If it's already in masked format (contains asterisks), use it as-is
@@ -218,9 +213,11 @@ export function hasValidPaymentCard(
     }
 
     // For new payment methods, check if any form of masked card number exists
+    const pi = paymentInstrument as Record<string, unknown>;
+    const card = paymentInstrument.paymentCard as Record<string, unknown> | undefined;
     const hasCardNumber = !!(
-        paymentInstrument.maskedCreditCardNumber ||
-        paymentInstrument.paymentCard?.maskedCreditCardNumber ||
+        pi.maskedCreditCardNumber ||
+        card?.maskedCreditCardNumber ||
         paymentInstrument.paymentCard?.maskedNumber
     );
 

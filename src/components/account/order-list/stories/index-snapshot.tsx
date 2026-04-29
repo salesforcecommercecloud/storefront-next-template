@@ -51,16 +51,18 @@ vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
     useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
 }));
 
-vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
-    useSite: () => null,
-    buildUrl: ({ to }: { to: string }) => to,
-    SiteProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
+            language: 'en-GB',
+            currency: 'GBP',
+        })),
+    };
+});
 
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'GBP',
-    CurrencyProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
 import { composeStories } from '@storybook/react-vite';
 import React from 'react';
 import { MemoryRouter } from 'react-router';

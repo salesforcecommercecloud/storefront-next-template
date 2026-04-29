@@ -15,10 +15,11 @@
  */
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type RouterContextProvider } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login';
-import { handleSocialLoginLanding } from '@/lib/api/auth/social-login';
-import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password';
+import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login.server';
+import { handleSocialLoginLanding } from '@/lib/api/auth/social-login.server';
+import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password.server';
 import { isAbsoluteURL } from '@/lib/utils';
 import { getLogger } from '@/lib/logger.server';
 
@@ -109,9 +110,11 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
 
 export async function loader(args: LoaderFunctionArgs) {
     const logger = getLogger(args.context);
+    const config = getConfig<AppConfig>(args.context);
     const url = new URL(args.request.url);
-    logger.debug('CatchAllRoute: loader starting', { pathname: url.pathname });
-    const handler = getLoaderHandler(url.pathname, args.context);
+    const strippedPath = stripPathPrefix(url.pathname, config.url?.prefix ?? '');
+    logger.debug('CatchAllRoute: loader starting', { pathname: url.pathname, strippedPath });
+    const handler = getLoaderHandler(strippedPath, args.context);
 
     if (handler) {
         logger.debug('CatchAllRoute: matched loader handler', { pathname: url.pathname });
@@ -125,9 +128,11 @@ export async function loader(args: LoaderFunctionArgs) {
 
 export async function action(args: ActionFunctionArgs) {
     const logger = getLogger(args.context);
+    const config = getConfig<AppConfig>(args.context);
     const url = new URL(args.request.url);
-    logger.debug('CatchAllRoute: action starting', { pathname: url.pathname });
-    const handler = getActionHandler(url.pathname, args.context);
+    const strippedPath = stripPathPrefix(url.pathname, config.url?.prefix ?? '');
+    logger.debug('CatchAllRoute: action starting', { pathname: url.pathname, strippedPath });
+    const handler = getActionHandler(strippedPath, args.context);
 
     if (handler) {
         logger.debug('CatchAllRoute: matched action handler', { pathname: url.pathname });

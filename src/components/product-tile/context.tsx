@@ -22,7 +22,7 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig, BadgeDetail } from '@/types/config';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { getProductBadges } from '@/lib/product-badges';
 
 type ProductBadgesResult = { badges: BadgeDetail[]; hasBadges: boolean };
@@ -84,7 +84,7 @@ export function ProductTileProvider({ children }: PropsWithChildren) {
     const navigate = useNavigate();
     const config = useConfig<AppConfig>();
     const { t } = useTranslation('product');
-    const currency = useCurrency();
+    const { currency } = useSite();
     const swatchMode = useSwatchMode();
     const getBadges = useCallback(
         (product: ShopperSearch.schemas['ProductSearchHit']) =>
@@ -120,7 +120,7 @@ export function useProductTileContext(): ProductTileContextValue {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         t: useTranslation('product').t,
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        currency: useCurrency(),
+        currency: useSite().currency,
         // eslint-disable-next-line react-hooks/rules-of-hooks
         swatchMode: useSwatchMode(),
         getBadges: (product: ShopperSearch.schemas['ProductSearchHit']) =>

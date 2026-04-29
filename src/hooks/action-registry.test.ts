@@ -17,7 +17,7 @@
 import { describe, test, expect, vi } from 'vitest';
 import { actionRegistry, type ActionResponse } from './action-registry';
 
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
 }));
 
@@ -74,7 +74,10 @@ describe('actionRegistry', () => {
         describe('handleError', () => {
             test('shows error toast with the error message', () => {
                 const addToast = vi.fn();
-                const result: ActionResponse = { success: false, error: 'Network error' };
+                const result: ActionResponse = {
+                    success: false,
+                    error: { code: 'OPERATION_FAILED', message: 'Network error' },
+                };
                 handler.handleError(result, {}, addToast);
                 expect(addToast).toHaveBeenCalledWith('Network error', 'error');
             });

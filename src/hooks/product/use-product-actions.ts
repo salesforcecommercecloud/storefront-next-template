@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFetcher, useLocation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
@@ -194,7 +191,13 @@ export function useProductActions({
         currentVariant,
     ]);
 
-    const isOutOfStock = !isInStock;
+    /** Master inventory is not a reliable OOS signal until a variant is resolved (also avoids flash during URL/swatches updates). */
+    const isAwaitingVariantSelection = useMemo(
+        () => (product.variants?.length ?? 0) > 0 && currentVariant == null,
+        [product.variants?.length, currentVariant]
+    );
+
+    const isOutOfStock = !isInStock && !isAwaitingVariantSelection;
 
     // Check if product is a master or variant product (has variation attributes like size, color)
     const isMasterOrVariantProduct = product?.type?.master === true || product?.type?.variant === true;
@@ -233,6 +236,21 @@ export function useProductActions({
         storeInventoryId,
         currentVariant,
     ]);
+
+    /**
+     * Is the current selection orderable right now based purely on inventory/stock?
+     *
+     * Unlike `canAddToCart`, this signal is independent of variant selection, quantity
+     * validity, or other full-validation concerns — it only reflects whether the effective
+     * inventory (store or site, depending on delivery option) says the item can be ordered
+     * (either in stock and orderable, or backorderable).
+     *
+     * Intended for callers that want to render a dedicated "Out of stock" state
+     * (e.g., a disabled button on a wishlist row) separately from the full add-to-cart flow.
+     */
+    const isOrderable = useMemo(() => {
+        return Boolean(effectiveInventory?.orderable || effectiveInventory?.backorderable);
+    }, [effectiveInventory]);
 
     // Can add to cart validation - defaults to false, only true when explicitly allowed
     const canAddToCart = useMemo(() => {
@@ -314,16 +332,15 @@ export function useProductActions({
             updateBasket(basketData);
 
             setIsAddingToOrUpdatingCart(false);
-            // Only show toast and open mini cart for add to cart action, not edit cart
+            // Only open mini cart for add to cart action, not edit cart
             if (!itemId) {
-                addToast(t('product:addedToCart', { productName: product.name || 'product' }), 'success');
                 setMiniCartOpen(true);
             }
         } else if (cartFetcher.data?.success === false) {
             // Show error toast for both add and edit mode
             const errorMessage = itemId
-                ? t('product:failedToUpdateCart', { error: cartFetcher.data.error })
-                : t('product:failedToAddToCart', { error: cartFetcher.data.error });
+                ? t('product:failedToUpdateCart', { error: cartFetcher.data.error?.message })
+                : t('product:failedToAddToCart', { error: cartFetcher.data.error?.message });
             addToast(errorMessage, 'error');
             setIsAddingToOrUpdatingCart(false);
         }
@@ -340,10 +357,9 @@ export function useProductActions({
             const basketData = multipleItemsFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
-            addToast(t('product:addedSetToCart'), 'success');
             setMiniCartOpen(true);
         } else if (multipleItemsFetcher.data?.success === false) {
-            addToast(t('product:failedToAddItemsToCart', { error: multipleItemsFetcher.data.error }), 'error');
+            addToast(t('product:failedToAddItemsToCart', { error: multipleItemsFetcher.data.error?.message }), 'error');
             setIsAddingToOrUpdatingCart(false);
         }
         //As addToast, setIsAddingToOrUpdatingCart are unlikely to change, we don't need to include them in the dependency array
@@ -359,10 +375,9 @@ export function useProductActions({
             const basketData = bundleFetcher.data?.basket as unknown as ShopperBasketsV2.schemas['Basket'];
             updateBasket(basketData);
             setIsAddingToOrUpdatingCart(false);
-            addToast(t('product:addedBundleToCart'), 'success');
             setMiniCartOpen(true);
         } else if (bundleFetcher.data?.success === false) {
-            addToast(t('product:failedToAddBundleToCart', { error: bundleFetcher.data.error }), 'error');
+            addToast(t('product:failedToAddBundleToCart', { error: bundleFetcher.data.error?.message }), 'error');
             setIsAddingToOrUpdatingCart(false);
         }
         //As addToast, setIsAddingToOrUpdatingCart are unlikely to change, we don't need to include them in the dependency array
@@ -393,7 +408,7 @@ export function useProductActions({
         const result = wishlistFetcher.data as
             | {
                   success: boolean;
-                  error?: string;
+                  error?: { code: string; message: string };
                   alreadyInWishlist?: boolean;
               }
             | undefined;
@@ -427,7 +442,7 @@ export function useProductActions({
                 void navigate(location.pathname, { replace: true });
             }
 
-            addToast(result.error || t('product:failedToAddProductToWishlist'), 'error');
+            addToast(t('product:failedToAddProductToWishlist'), 'error');
         }
         //As addToast, navigate are unlikely to change, we don't need to include them in the dependency array
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -435,7 +450,9 @@ export function useProductActions({
 
     // Handle adding to cart
     const handleAddToCart = useCallback(async () => {
-        if (isAddingToOrUpdatingCart || !canAddToCart) return;
+        if (isAddingToOrUpdatingCart || !canAddToCart) {
+            return;
+        }
 
         // Remember: not all products have variation attributes, so `product` in this case could be a standard product
         const productToAdd = isMasterOrVariantProduct ? currentVariant : product;
@@ -714,7 +731,16 @@ export function useProductActions({
 
                 // Track cart item add
                 void analytics.trackCartItemAdd({
-                    cartItems: [bundleItem, ...childProductSelections],
+                    cartItems: [
+                        bundleItem as ShopperBasketsV2.schemas['ProductItem'],
+                        ...childProductSelections.map(
+                            (sel) =>
+                                ({
+                                    product: sel.product as ShopperBasketsV2.schemas['ProductItem']['product'],
+                                    quantity: sel.quantity,
+                                }) as ShopperBasketsV2.schemas['ProductItem']
+                        ),
+                    ],
                 });
             } catch {
                 setIsAddingToOrUpdatingCart(false);
@@ -856,7 +882,7 @@ export function useProductActions({
                 });
                 // Check if remove succeeded
                 if (cartFetcher.data?.success === false) {
-                    throw new Error(cartFetcher.data.error || t('product:failedToRemoveItem'));
+                    throw new Error(t('product:failedToRemoveItem'));
                 }
 
                 // Then update the existing variant's quantity
@@ -886,7 +912,7 @@ export function useProductActions({
                         method: 'POST',
                         action: '/action/cart-item-add',
                     });
-                    throw new Error(cartFetcher.data.error || t('product:failedToUpdateItemQuantity'));
+                    throw new Error(t('product:failedToUpdateItemQuantity'));
                 }
             }
             // Case 3: User is selecting a different variant that doesn't exist in basket
@@ -939,6 +965,12 @@ export function useProductActions({
         isInStock,
         /** Convenience boolean - opposite of isInStock */
         isOutOfStock,
+        /**
+         * Indicates if the current selection is orderable based purely on inventory
+         * (orderable or backorderable), independent of variant selection, quantity, etc.
+         * Use this to render an "Out of stock" state separately from `canAddToCart`.
+         */
+        isOrderable,
         /** Indicates if the current quantity selection cannot be fulfilled due to insufficient stock */
         unfulfillable,
         /** Indicates if the product is a master or variant product (has variation attributes like size, color, etc.) */

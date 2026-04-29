@@ -19,8 +19,8 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { MemoryRouter } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import RecommendersProvider from '@/providers/recommenders';
 import {
     AccountOverview,
@@ -29,15 +29,65 @@ import {
     QuickLinksSection,
     WelcomeSectionSkeleton,
     QuickLinksSectionSkeleton,
+    AccountOverviewOrdersAwait,
+    RecentOrdersSectionSkeleton,
 } from '../index';
+import type { CustomerOrdersResult } from '@/lib/api/order.server';
+import heroNewArrivals from '/images/hero-02.webp';
 
-// Mock customer data
 const mockCustomer = {
     customerId: 'test-customer-123',
     firstName: 'John',
     lastName: 'Doe',
     email: 'john.doe@example.com',
     login: 'john.doe@example.com',
+};
+
+const mockOrders: CustomerOrdersResult = {
+    orders: [
+        {
+            orderNo: 'INV001',
+            orderDate: '2024-09-14T10:30:00Z',
+            status: 'ready_for_pickup',
+            statusLabel: 'Ready for Pickup',
+            total: 250.0,
+            currency: 'GBP',
+            itemCount: 4,
+            productItems: [
+                { productId: 'prod-1', quantity: 1, imageUrl: heroNewArrivals, imageAlt: 'Classic White Shirt' },
+                { productId: 'prod-2', quantity: 1, imageUrl: heroNewArrivals, imageAlt: 'Blue Dress Pants' },
+                { productId: 'prod-3', quantity: 1, imageUrl: heroNewArrivals, imageAlt: 'Silk Scarf' },
+                { productId: 'prod-4', quantity: 1, imageUrl: heroNewArrivals, imageAlt: 'Leather Handbag' },
+            ],
+            pickupLocation: {
+                name: 'Market Street San Francisco',
+                address: '415 Mission Street',
+                city: 'San Francisco',
+                state: 'CA',
+                postalCode: '94105',
+            },
+        },
+        {
+            orderNo: 'INV002',
+            orderDate: '2024-09-10T14:00:00Z',
+            status: 'completed',
+            statusLabel: 'Completed',
+            total: 89.99,
+            currency: 'GBP',
+            itemCount: 1,
+            productItems: [{ productId: 'prod-5', quantity: 1, imageUrl: heroNewArrivals, imageAlt: 'Running Shoes' }],
+        },
+    ],
+    total: 2,
+    offset: 0,
+    limit: 5,
+};
+
+const emptyOrders: CustomerOrdersResult = {
+    orders: [],
+    total: 0,
+    offset: 0,
+    limit: 5,
 };
 
 /**
@@ -75,13 +125,13 @@ This component is typically rendered as the default view when users navigate to 
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <CurrencyProvider value="GBP">
+                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="GBP">
                     <RecommendersProvider>
                         <MemoryRouter>
                             <Story />
                         </MemoryRouter>
                     </RecommendersProvider>
-                </CurrencyProvider>
+                </SiteProvider>
             </ConfigProvider>
         ),
     ],
@@ -91,23 +141,20 @@ export default meta;
 type Story = StoryObj<typeof AccountOverview>;
 
 /**
- * Default state with customer data and all sections visible
+ * Default state with customer data, recent orders, and all sections visible
  */
 export const Default: Story = {
     args: {
         customer: mockCustomer,
+        ordersPromise: Promise.resolve(mockOrders),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify welcome message is displayed
         await expect(canvas.getByText(/Welcome back, John!/i)).toBeInTheDocument();
-
-        // Verify Quick Links section is present
+        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
         await expect(canvas.getByText(/Quick Links/i)).toBeInTheDocument();
-
-        // Verify all quick link items are present by their headings
         await expect(canvas.getByRole('heading', { name: /Account Details/i })).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Manage Addresses/i })).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Payment Methods/i })).toBeInTheDocument();
@@ -121,6 +168,7 @@ export const Default: Story = {
 export const GuestUser: Story = {
     args: {
         customer: null,
+        ordersPromise: Promise.resolve(emptyOrders),
     },
     parameters: {
         docs: {
@@ -133,8 +181,30 @@ export const GuestUser: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify default welcome message is displayed
         await expect(canvas.getByText(/Welcome back, there!/i)).toBeInTheDocument();
+    },
+};
+
+/**
+ * Overview without orders (no ordersPromise provided)
+ */
+export const WithoutOrders: Story = {
+    args: {
+        customer: mockCustomer,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Account overview without the recent orders section (ordersPromise not provided).',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByText(/Welcome back, John!/i)).toBeInTheDocument();
+        await expect(canvas.queryByText(/Recent Orders/i)).not.toBeInTheDocument();
     },
 };
 
@@ -173,6 +243,68 @@ export const WelcomeSectionLoading: StoryObj<typeof WelcomeSectionSkeleton> = {
 
         // Verify skeleton elements are present
         const skeletons = canvasElement.querySelectorAll('[class*="animate-pulse"]');
+        await expect(skeletons.length).toBeGreaterThan(0);
+    },
+};
+
+// Recent Orders Section Stories
+export const RecentOrdersDefault: StoryObj<typeof AccountOverviewOrdersAwait> = {
+    render: (args) => <AccountOverviewOrdersAwait {...args} />,
+    args: {
+        ordersPromise: Promise.resolve(mockOrders),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Recent orders section showing the last 5 orders with a View All link.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(canvas.getByRole('link', { name: /View All/i })).toBeInTheDocument();
+        await expect(canvas.getByText('INV001')).toBeInTheDocument();
+        await expect(canvas.getByText('INV002')).toBeInTheDocument();
+    },
+};
+
+export const RecentOrdersEmpty: StoryObj<typeof AccountOverviewOrdersAwait> = {
+    render: (args) => <AccountOverviewOrdersAwait {...args} />,
+    args: {
+        ordersPromise: Promise.resolve(emptyOrders),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Recent orders section when the shopper has no order history.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(canvas.getByRole('link', { name: /View All/i })).toBeInTheDocument();
+    },
+};
+
+export const RecentOrdersLoading: StoryObj<typeof RecentOrdersSectionSkeleton> = {
+    render: () => <RecentOrdersSectionSkeleton />,
+    parameters: {
+        docs: {
+            description: {
+                story: 'Loading skeleton for the recent orders section.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        const skeletons = canvasElement.querySelectorAll('[data-slot="skeleton"]');
         await expect(skeletons.length).toBeGreaterThan(0);
     },
 };
@@ -217,7 +349,7 @@ export const QuickLinksSectionLoading: StoryObj<typeof QuickLinksSectionSkeleton
 
         // Verify 4 quick link skeletons (items inside the grid)
         const grid = canvasElement.querySelector('.grid');
-        const linkSkeletons = grid?.querySelectorAll('.rounded-lg.border');
+        const linkSkeletons = grid?.querySelectorAll('.rounded-none.border');
         await expect(linkSkeletons?.length).toBe(4);
     },
 };

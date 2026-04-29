@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
-import { useSite, type Site } from '@salesforce/storefront-next-runtime/site-context';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { Typography } from '@/components/typography';
 import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
 
@@ -35,7 +33,7 @@ export function EstimatedDeliveryModalContent({
     currency: string;
 }): ReactElement {
     const { t } = useTranslation('estimatedDelivery');
-    const currentSite = useSite() as Site;
+    const { site: currentSite } = useSite();
     const locale = currentSite.defaultLocale;
     const { estimatedDelivery, shippingOptions, internationalShipping, orderTracking } = deliveryData;
 
@@ -73,7 +71,7 @@ export function EstimatedDeliveryModalContent({
                     </Typography>
                     <div className="space-y-3">
                         {shippingOptions.map((option) => (
-                            <div key={option.name} className="rounded-lg border border-border p-4">
+                            <div key={option.name} className="rounded-none border border-border p-4">
                                 <div className="mb-2 flex items-start justify-between">
                                     <div>
                                         <Typography as="p" className="font-medium text-foreground">

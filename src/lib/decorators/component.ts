@@ -19,7 +19,9 @@ import type { RegionDefinitionConfig } from '@/lib/decorators';
 export const TYPE_ID_KEY = 'component:typeId';
 export const META_KEY = 'component:metadata';
 export const LOADER_KEY = 'component:loader';
-export const COMPONENT_PACKAGE = 'odyssey_base';
+
+/** Default cartridge group when `@Component` metadata omits `group` (must match storefront-next-dev generate-cartridge / staticRegistry). */
+export const DEFAULT_COMPONENT_GROUP = 'storefrontnext_base';
 
 type ComponentId = string;
 
@@ -39,11 +41,12 @@ export interface ComponentTypeMetadata {
 }
 
 function defineComponentMetadata<T extends object>(typeId: string, metadata: ComponentTypeMetadata, target: T): T {
+    const resolvedGroup = metadata.group ?? DEFAULT_COMPONENT_GROUP;
     const enrichedMetadata = {
         ...metadata,
-        group: metadata.group || COMPONENT_PACKAGE,
+        group: resolvedGroup,
     };
-    const typeWithGroup = `${enrichedMetadata.group}.${typeId}`;
+    const typeWithGroup = `${resolvedGroup}.${typeId}`;
     // Store metadata on the constructor
     Reflect.defineMetadata(TYPE_ID_KEY, typeWithGroup, target);
     Reflect.defineMetadata(META_KEY, enrichedMetadata, target);

@@ -53,6 +53,7 @@ const SUMMARY_SPACING = 'space-y-5';
  * @property {'default' | 'summary'} [variant='default'] - Display variant: 'default' for full product cards, 'summary' for compact list view
  * @property {function} [primaryAction] - Optional render prop function to generate primary action buttons for each product
  * @property {function} [secondaryActions] - Optional render prop function to generate secondary action buttons for each product
+ * @property {function} [deliveryActions] - Optional render prop (e.g. cart pickup/delivery selector per line)
  */
 interface ProductItemsListProps {
     /** Array of product items from the basket */
@@ -77,11 +78,7 @@ interface ProductItemsListProps {
      * @returns React element for secondary actions or undefined
      */
     secondaryActions?: (product: EnrichedProductItem) => ReactElement | undefined;
-    /**
-     * Optional render delivery option UI for each product
-     * @param product - Combined product data
-     * @returns React element for delivery actions || undefined
-     */
+    /** Optional per-line fulfillment UI (e.g. BOPIS pickup vs delivery dropdown on cart) */
     deliveryActions?: (product: EnrichedProductItem) => ReactElement | undefined;
     /** Optional basket for bonus product selection */
     basket?: ShopperBasketsV2.schemas['Basket'];

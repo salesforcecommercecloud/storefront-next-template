@@ -17,7 +17,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import type { ReactNode, ComponentProps } from 'react';
 import { SignupForm } from './form';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Type definitions for mock components
 interface MockButtonProps extends ComponentProps<'button'> {

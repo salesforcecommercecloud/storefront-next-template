@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useState, useMemo } from 'react';
+import { useRouteLoaderData } from 'react-router';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -24,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/spinner';
 import { XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { UITarget } from '@/targets/ui-target';
 import { useTranslation } from 'react-i18next';
 import { TrackingConsent } from '@/types/tracking-consent';
 
@@ -122,7 +122,9 @@ export function TrackingConsentBanner({ onConsentChange }: TrackingConsentBanner
         void handleConsent(TrackingConsent.Declined, 'decline');
     };
 
-    if (!shouldShowBanner) {
+    const rootData = useRouteLoaderData('root');
+
+    if (!shouldShowBanner || rootData?.pageDesignerMode) {
         return null;
     }
 
@@ -135,56 +137,58 @@ export function TrackingConsentBanner({ onConsentChange }: TrackingConsentBanner
     };
 
     return (
-        <div
-            className={cn(
-                'fixed z-50 w-full md:max-w-md animate-in slide-in-from-bottom-5 duration-300',
-                positionClasses[position] || positionClasses['bottom-center']
-            )}
-            role="dialog"
-            aria-labelledby="tracking-consent-banner-title"
-            aria-describedby="tracking-consent-banner-description">
-            <Card className="relative shadow-lg">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-4 top-4 h-8 w-8 shrink-0 opacity-70 transition-opacity hover:opacity-100"
-                    onClick={handleClose}
-                    disabled={isProcessing}
-                    aria-label={t('closeAriaLabel')}>
-                    {processingAction === 'close' ? <Spinner size="sm" /> : <XIcon className="size-4" />}
-                    <span className="sr-only">{t('closeAriaLabel')}</span>
-                </Button>
-                <CardContent className="pt-6 pr-10">
-                    <div className="space-y-2">
-                        <h2 id="tracking-consent-banner-title" className="text-lg font-semibold">
-                            {t('title')}
-                        </h2>
-                        <p id="tracking-consent-banner-description" className="text-sm text-muted-foreground">
-                            {t('description')}
-                        </p>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex gap-2 pt-0">
+        <UITarget targetId="sfcc.global.cookies.banner">
+            <div
+                className={cn(
+                    'fixed z-50 w-full md:max-w-md animate-in slide-in-from-bottom-5 duration-300',
+                    positionClasses[position] || positionClasses['bottom-center']
+                )}
+                role="dialog"
+                aria-labelledby="tracking-consent-banner-title"
+                aria-describedby="tracking-consent-banner-description">
+                <Card className="relative shadow-lg">
                     <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleDecline}
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-4 top-4 h-8 w-8 shrink-0 opacity-70 transition-opacity hover:opacity-100"
+                        onClick={handleClose}
                         disabled={isProcessing}
-                        className="flex-1">
-                        {processingAction === 'decline' && <Spinner size="sm" />}
-                        {t('decline')}
+                        aria-label={t('closeAriaLabel')}>
+                        {processingAction === 'close' ? <Spinner size="sm" /> : <XIcon className="size-4" />}
+                        <span className="sr-only">{t('closeAriaLabel')}</span>
                     </Button>
-                    <Button
-                        variant="default"
-                        size="sm"
-                        onClick={handleAccept}
-                        disabled={isProcessing}
-                        className="flex-1">
-                        {processingAction === 'accept' && <Spinner size="sm" />}
-                        {t('accept')}
-                    </Button>
-                </CardFooter>
-            </Card>
-        </div>
+                    <CardContent className="pt-6 pr-10">
+                        <div className="space-y-2">
+                            <h2 id="tracking-consent-banner-title" className="text-lg font-semibold">
+                                {t('title')}
+                            </h2>
+                            <p id="tracking-consent-banner-description" className="text-sm text-muted-foreground">
+                                {t('description')}
+                            </p>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex gap-2 pt-0">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleDecline}
+                            disabled={isProcessing}
+                            className="flex-1">
+                            {processingAction === 'decline' && <Spinner size="sm" />}
+                            {t('decline')}
+                        </Button>
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={handleAccept}
+                            disabled={isProcessing}
+                            className="flex-1">
+                            {processingAction === 'accept' && <Spinner size="sm" />}
+                            {t('accept')}
+                        </Button>
+                    </CardFooter>
+                </Card>
+            </div>
+        </UITarget>
     );
 }

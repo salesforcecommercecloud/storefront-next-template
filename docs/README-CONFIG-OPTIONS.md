@@ -8,7 +8,7 @@ This reference provides detailed documentation for all configuration options ava
 - [runtime](#runtime) - Runtime deployment settings for MRT
 - [app](#app) - Application-specific configuration
   - [pages](#pages) - Page-specific settings
-  - [commerce](#commerce) - Commerce Cloud API details
+  - [commerce](#commerce) - B2C Commerce API details
   - [siteAliasMap](#sitealiasmap) - Site alias mapping configuration
   - [hybrid](#hybrid) - Hybrid mode configuration
   - [auth](#auth) - Authentication configuration shared across all auth features
@@ -20,6 +20,7 @@ This reference provides detailed documentation for all configuration options ava
   - [search](#search) - Search-specific settings
   - [performance](#performance) - Performance optimization settings
   - [engagement](#engagement) - Analytics and engagement adapters
+  - [Engagement analytics](./README-ENGAGEMENT-ANALYTICS.md) - Einstein / Active Data event mapping
   - [commerceAgent](#commerceagent) - Shopper Agent (Embedded Messaging / Agentforce)
   - [development](#development) - Development tools and features
 
@@ -124,6 +125,66 @@ PUBLIC__app__defaultSiteId="RefArch"
 
 Page-specific configuration options that control the behavior and appearance of different pages in the storefront.
 
+### pages.navigation.rootCategoryId
+
+Type: `string` | Default: `'root'`
+
+The category ID to use as the root of the navigation menu tree. This determines which category's children are displayed in the main site navigation.
+
+This setting is particularly useful for:
+- **Multi-brand sites**: Different storefronts can use different category hierarchies
+- **Custom category structures**: Use a specific category as the navigation root instead of the B2C Commerce default 'root' category
+- **A/B testing**: Test different navigation structures by changing the root category
+
+Example:
+```bash
+# Use a custom root category (e.g., for ASICS brand)
+PUBLIC__app__pages__navigation__rootCategoryId=asics-root
+
+# Use a specific season's collection as the root
+PUBLIC__app__pages__navigation__rootCategoryId=spring-2026-collection
+```
+
+**Industry Context**: This mirrors Adobe Commerce (Magento)'s multi-store root category capability, where each store view can have its own category tree root.
+
+**Troubleshooting**:
+- If navigation fails to load, verify the category ID exists in Business Manager and is marked as "online"
+- Ensure the root category has online subcategories
+- Check browser console for API errors related to category fetching
+
+---
+
+### pages.navigation.maxDepth
+
+Type: `number` | Default: `2`
+
+The maximum number of category levels to fetch and display in the navigation menu. This controls how deep the category tree goes.
+
+- `1` = Top-level categories only (no subcategories)
+- `2` = Top-level categories with one level of subcategories (default)
+
+**Important**: The current implementation is limited to `maxDepth` of 2. Setting values higher than 2 will not fetch additional levels. The SFCC API returns a maximum of 2 levels per request, and the template implementation fetches up to this limit. If you need deeper navigation (3+ levels), you must customize the loader in `src/routes/_app.tsx` to implement recursive category fetching.
+
+Example:
+```bash
+# Show only top-level categories (flat navigation)
+PUBLIC__app__pages__navigation__maxDepth=1
+
+# Show two levels (default)
+PUBLIC__app__pages__navigation__maxDepth=2
+```
+
+**Industry Context**: Adobe Commerce (Magento) provides a similar "Maximal Depth" setting. Shopify has a hard limit of 3 levels.
+
+**Use Cases**:
+- **Simple navigation**: Set to `1` for a minimal, flat navigation menu
+- **Standard navigation**: Keep at `2` (default) for most e-commerce sites
+- **Performance optimization**: Reduce depth if you have a very large category tree
+
+**Note**: The SCAPI automatically filters out offline categories server-side. Only categories with online status will be returned. To control which categories appear in navigation, set their online/offline status in Business Manager under **Merchant Tools > Products and Catalogs > Categories**.
+
+---
+
 ### pages.home.featuredProductsCount
 
 Type: `number` | Default: `12`
@@ -135,7 +196,7 @@ Example:
 PUBLIC__app__pages__home__featuredProductsCount=16
 ```
 
-**Troubleshooting:** If you're seeing performance issues on the homepage, consider reducing this number. Ensure your Commerce Cloud API can handle the product request size.
+**Troubleshooting:** If you're seeing performance issues on the homepage, consider reducing this number. Ensure your B2C Commerce API can handle the product request size.
 
 ---
 
@@ -150,7 +211,7 @@ Example:
 PUBLIC__app__pages__cart__quantityUpdateDebounce=1000
 ```
 
-When a user changes the quantity of an item in their cart, the application waits this many milliseconds after the last interaction before sending the update request to the Commerce Cloud API.
+When a user changes the quantity of an item in their cart, the application waits this many milliseconds after the last interaction before sending the update request to the B2C Commerce API.
 
 ---
 
@@ -223,6 +284,19 @@ The maximum number of items allowed in the cart when rule-based product recommen
 Example:
 ```bash
 PUBLIC__app__pages__cart__ruleBasedProductLimit=100
+```
+
+---
+
+### pages.cart.showLineItemDescription
+
+Type: `boolean` | Optional | Default: `false`
+
+When `true`, each cart line item shows the product short description (plain text) when available, otherwise the long description (HTML via `HtmlFragment`). When `false` (default), descriptions are hidden so the cart stays compact.
+
+Example:
+```bash
+PUBLIC__app__pages__cart__showLineItemDescription=true
 ```
 
 ---
@@ -349,7 +423,7 @@ PUBLIC__app__pages__maintenancePage__forwardedHost="mystore.example.com"
 
 ## commerce
 
-Commerce Cloud API configuration.
+B2C Commerce API configuration.
 
 ### commerce.api.clientId
 
@@ -383,7 +457,7 @@ PUBLIC__app__commerce__api__organizationId="f_ecom_aaaa_001"
 
 Type: `string` Required | Default: `''`
 
-The unique identifier for your Commerce Cloud instance. This short code is part of your instance URL and API endpoints. See [Configuration Values](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#configuration-values) in the _B2C Commerce API Guide_.
+The unique identifier for your B2C Commerce instance. This short code is part of your instance URL and API endpoints. See [Configuration Values](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#configuration-values) in the _B2C Commerce API Guide_.
 
 Example:
 ```bash
@@ -1090,7 +1164,7 @@ Performance optimization configuration.
 
 Type: `number` | Default: `300`
 
-Time-to-live for API response caching in seconds. This determines how long Commerce Cloud API responses are cached.
+Time-to-live for API response caching in seconds. This determines how long B2C Commerce API responses are cached.
 
 Example:
 ```bash
@@ -1141,6 +1215,8 @@ When enabled, collects client-side performance metrics using the Performance API
 ## engagement
 
 Analytics and engagement adapter configuration.
+
+For how storefront analytics events (including **`commerce_agent_engagement`**) map to **Einstein** and **Active Data** APIs and reporting fields, see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md).
 
 Note: Engagement settings can't be overridden via `PUBLIC__` environment variables. To change these values, update `config.server.ts` directly. This restriction exists because engagement configuration affects build-time validation for analytics instrumentation.
 
@@ -1221,6 +1297,9 @@ Individual toggles for each Einstein event type. Available events:
 - `cart_item_add` - Add to cart events
 - `checkout_start` - Checkout initiation
 - `checkout_step` - Checkout step progression
+- `view_search_suggestion` - Search suggestion panel views
+- `click_search_suggestion` - Clicks on search suggestions
+- `commerce_agent_engagement` - Opens agentic commerce from the header or search assistant (see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement))
 
 Example:
 ```bash
@@ -1313,7 +1392,13 @@ The unique site identifier for Active Data.
 
 Type: `Record<string, boolean>`
 
-Individual toggles for each Active Data event type. Uses the same event types as Einstein.
+Individual toggles for each Active Data event type. Uses the same event types as Einstein (including `commerce_agent_engagement`; see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement)).
+
+---
+
+### Commerce agent engagement (`commerce_agent_engagement`)
+
+Behavior, Einstein **`viewPage`** / **`currentLocation`** mapping, Active Data **`sfn-cagent-surface`**, default toggles, and reporting notes: **[README-ENGAGEMENT-ANALYTICS.md — Commerce agent engagement](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement)**.
 
 ---
 
@@ -1450,7 +1535,7 @@ PUBLIC__app__development__strictMode=false
 Minimum required configuration for a new site.
 
 ```bash
-# Commerce Cloud credentials (required)
+# B2C Commerce credentials (required)
 PUBLIC__app__commerce__api__clientId="your-client-id"
 PUBLIC__app__commerce__api__organizationId="your-org-id"
 PUBLIC__app__commerce__api__shortCode="your-short-code"
@@ -1584,7 +1669,7 @@ PUBLIC__app__global__productListing__enableQuickView=false
 
 **Possible Solutions:**
 1. Copy `.env.default` to `.env` if you haven't already.
-2. Set all required Commerce Cloud credentials.
+2. Set all required B2C Commerce credentials.
    ```bash
    PUBLIC__app__commerce__api__clientId=your-id
    PUBLIC__app__commerce__api__organizationId=your-org

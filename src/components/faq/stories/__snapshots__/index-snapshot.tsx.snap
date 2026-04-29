@@ -47,7 +47,7 @@ exports[`Faq stories snapshot > Default story renders and matches snapshot 1`] =
       >
         <button
           aria-label="Open shopper agent and ask: What sizes does this come in?"
-          class="flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          class="flex w-full cursor-pointer items-center gap-3 rounded-none border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
           type="button"
         >
           <svg
@@ -85,7 +85,7 @@ exports[`Faq stories snapshot > Default story renders and matches snapshot 1`] =
         </button>
         <button
           aria-label="Open shopper agent and ask: Which color would work best for a minimalist space?"
-          class="flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          class="flex w-full cursor-pointer items-center gap-3 rounded-none border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
           type="button"
         >
           <svg
@@ -123,7 +123,7 @@ exports[`Faq stories snapshot > Default story renders and matches snapshot 1`] =
         </button>
         <button
           aria-label="Open shopper agent and ask: Will this work in a minimalist living room?"
-          class="flex w-full cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          class="flex w-full cursor-pointer items-center gap-3 rounded-none border border-border bg-background px-3 py-3 text-left text-sm text-foreground transition-colors hover:border-muted-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
           type="button"
         >
           <svg

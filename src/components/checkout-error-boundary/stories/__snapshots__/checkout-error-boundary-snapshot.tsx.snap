@@ -109,7 +109,7 @@ exports[`CheckoutErrorBoundary stories snapshot > Default story renders and matc
   data-error-boundary-harness="true"
 >
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm mx-auto max-w-2xl"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 mx-auto max-w-2xl rounded-none shadow-none"
     data-slot="card"
   >
     <div

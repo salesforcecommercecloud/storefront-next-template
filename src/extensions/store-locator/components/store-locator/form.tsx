@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useCallback, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createLogger } from '@/lib/logger';

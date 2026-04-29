@@ -31,8 +31,6 @@ import { getContactInfoFromCustomer } from '@/lib/customer-profile-utils';
 import { getCommonPhoneCountryCodes } from '@/lib/country-codes';
 import type { CheckoutActionData } from '../types';
 import type { AuthorizePasswordlessEmailResponse } from '@/routes/action.authorize-passwordless-email';
-import CheckoutErrorBanner from './checkout-error-banner';
-import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import {
@@ -45,8 +43,12 @@ import {
 import type { OtpFlowActiveRef } from '@/hooks/use-checkout-actions';
 import { Spinner } from '@/components/spinner';
 import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { TurnstileWidget } from '@/components/security/turnstile-widget';
+import type { AppConfig } from '@/types/config';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
+const LoginModal = lazy(() => import('@/components/login/login-modal'));
 
 interface ContactInfoProps {
     onSubmit: (data: ContactInfoData) => void;
@@ -68,7 +70,7 @@ interface ContactInfoProps {
 export default function ContactInfo({
     onSubmit,
     isLoading,
-    actionData,
+    actionData: _actionData,
     onRegisteredUserChoseGuest,
     onPasswordlessOtpVerified,
     suppressRegisteredEmailLoginHints = false,
@@ -87,8 +89,6 @@ export default function ContactInfo({
     const customerContactInfo = getContactInfoFromCustomer(customerProfile);
 
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
-    const contactFormError = getCheckoutDisplayError(actionData, 'contactInfo');
-
     const authorizePasswordlessEmailPath = useResolvedPath('/action/authorize-passwordless-email').pathname;
     const revalidator = useRevalidator();
     const passwordlessEmailFetcher = useFetcher<AuthorizePasswordlessEmailResponse>({
@@ -98,6 +98,47 @@ export default function ContactInfo({
     const otpSuccessRevalidatingRef = useRef(false);
     const [isOtpOpen, setIsOtpOpen] = useState(false);
     const [otpModalEmail, setOtpModalEmail] = useState('');
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const turnstileResetRef = useRef<(() => void) | null>(null);
+    const turnstileExecuteRef = useRef<(() => void) | null>(null);
+    const tokenConsumedRef = useRef(false);
+
+    const turnstileEnabled = appConfig ? isTurnstileEnabled(appConfig as AppConfig) : false;
+    const turnstileSiteKey = useMemo(() => {
+        if (!appConfig || !turnstileEnabled) return null;
+        if (typeof window !== 'undefined') {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            return getTurnstileSiteKey(appConfig as AppConfig, baseUrl);
+        }
+        return null;
+    }, [appConfig, turnstileEnabled]);
+
+    const [showTurnstile, setShowTurnstile] = useState(false);
+
+    const turnstilePending = !!(turnstileEnabled && turnstileSiteKey && !turnstileToken);
+
+    const resetTurnstile = useCallback(() => {
+        setTurnstileToken(null);
+        turnstileResetRef.current?.();
+    }, []);
+
+    const handleTurnstileSuccess = useCallback((token: string) => {
+        tokenConsumedRef.current = false;
+        setTurnstileToken(token);
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('turnstileVerified', '1');
+        }
+    }, []);
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
 
     const form = useForm<ContactInfoData, void, ContactInfoData>({
         resolver: zodResolver(schema),
@@ -139,6 +180,14 @@ export default function ContactInfo({
         onSubmit({ ...data, phone: stripNonDigits(data.phone) });
     };
 
+    const pendingEmailRef = useRef<string | null>(null);
+
+    const handleEmailFocus = useCallback(() => {
+        if (turnstileEnabled && !showTurnstile) {
+            setShowTurnstile(true);
+        }
+    }, [turnstileEnabled, showTurnstile]);
+
     const handleEmailBlur = useCallback(
         (e: React.FocusEvent<HTMLInputElement>, fieldOnBlur: (e: React.FocusEvent<HTMLInputElement>) => void) => {
             fieldOnBlur(e);
@@ -146,11 +195,31 @@ export default function ContactInfo({
             if (!raw) return;
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) return;
             const normalized = raw.toLowerCase();
+
+            if (turnstileEnabled && !showTurnstile) {
+                setShowTurnstile(true);
+            }
+
             if (lastEmailSentRef.current === normalized) return;
             if (passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading') return;
+
+            if (turnstileEnabled && (!turnstileToken || tokenConsumedRef.current)) {
+                pendingEmailRef.current = raw;
+                if (tokenConsumedRef.current) {
+                    resetTurnstile();
+                } else {
+                    turnstileExecuteRef.current?.();
+                }
+                return;
+            }
+
             lastEmailSentRef.current = normalized;
             const formData = new FormData();
             formData.append('email', raw);
+            if (turnstileToken) {
+                formData.append('turnstileToken', turnstileToken);
+                tokenConsumedRef.current = true;
+            }
             void passwordlessEmailFetcher.submit(formData, {
                 method: 'POST',
                 action: authorizePasswordlessEmailPath,
@@ -160,8 +229,42 @@ export default function ContactInfo({
         },
         // Ref is stable; .current is mutated intentionally — omit from deps
         // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
-        [form, passwordlessEmailFetcher, authorizePasswordlessEmailPath]
+        [
+            form,
+            passwordlessEmailFetcher,
+            authorizePasswordlessEmailPath,
+            turnstileToken,
+            turnstileEnabled,
+            showTurnstile,
+            resetTurnstile,
+        ]
     );
+
+    useEffect(() => {
+        if (turnstileToken === null && pendingEmailRef.current && turnstileEnabled) {
+            turnstileExecuteRef.current?.();
+        }
+    }, [turnstileToken, turnstileEnabled]);
+
+    useEffect(() => {
+        if (!turnstileToken || !pendingEmailRef.current || tokenConsumedRef.current) return;
+        const raw = pendingEmailRef.current;
+        const normalized = raw.toLowerCase();
+        if (lastEmailSentRef.current === normalized) return;
+        lastEmailSentRef.current = normalized;
+        pendingEmailRef.current = null;
+
+        const formData = new FormData();
+        formData.append('email', raw);
+        formData.append('turnstileToken', turnstileToken);
+        tokenConsumedRef.current = true;
+        void passwordlessEmailFetcher.submit(formData, {
+            method: 'POST',
+            action: authorizePasswordlessEmailPath,
+        });
+        if (otpFlowActiveRef) otpFlowActiveRef.current = true;
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef is a ref
+    }, [turnstileToken, passwordlessEmailFetcher, authorizePasswordlessEmailPath]);
 
     // When authorize (blur) succeeds, open OTP modal so user can enter the code
     useEffect(() => {
@@ -173,6 +276,14 @@ export default function ContactInfo({
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only open modal when state/data from last submit
     }, [passwordlessEmailFetcher.state, passwordlessEmailFetcher.data?.success, passwordlessEmailFetcher.data?.email]);
 
+    useEffect(() => {
+        const { state, data } = passwordlessEmailFetcher;
+        if (state === 'idle' && data?.requiresLogin === true) {
+            setIsLoginModalOpen(true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to requiresLogin flag
+    }, [passwordlessEmailFetcher.state, passwordlessEmailFetcher.data?.requiresLogin]);
+
     const handleOtpSuccess = useCallback(
         () => {
             onPasswordlessOtpVerified?.();
@@ -183,6 +294,18 @@ export default function ContactInfo({
             setIsOtpOpen(false);
         },
         // Ref is stable; .current is mutated intentionally — omit from deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
+        [onPasswordlessOtpVerified, revalidator]
+    );
+
+    const handleLoginModalSuccess = useCallback(
+        () => {
+            onPasswordlessOtpVerified?.();
+            otpSuccessRevalidatingRef.current = true;
+            void revalidator.revalidate();
+            if (otpFlowActiveRef) otpFlowActiveRef.current = false;
+            setIsLoginModalOpen(false);
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
         [onPasswordlessOtpVerified, revalidator]
     );
@@ -202,9 +325,21 @@ export default function ContactInfo({
         lastEmailSentRef.current = null;
         const fd = new FormData();
         fd.append('email', email);
+        if (turnstileToken) {
+            fd.append('turnstileToken', turnstileToken);
+        }
         void passwordlessEmailFetcher.submit(fd, { method: 'POST', action: authorizePasswordlessEmailPath });
+        if (turnstileEnabled) resetTurnstile();
         return Promise.resolve();
-    }, [form, otpModalEmail, passwordlessEmailFetcher, authorizePasswordlessEmailPath]);
+    }, [
+        form,
+        otpModalEmail,
+        passwordlessEmailFetcher,
+        authorizePasswordlessEmailPath,
+        turnstileToken,
+        turnstileEnabled,
+        resetTurnstile,
+    ]);
 
     /**
      * Checkout only: close OTP without calling verify-otp — shopper stays a guest (no SLAS session from OTP).
@@ -227,22 +362,22 @@ export default function ContactInfo({
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const stepTitle = (
-        <span className="text-2xl font-bold tracking-[-0.6px] text-card-foreground">{t('contactInfo.title')}</span>
+        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('contactInfo.title')}</span>
     );
 
     const isSendingOtp =
         passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading';
 
-    // Keep parent ref in sync so checkout does not advance to shipping while OTP modal is open or authorize in flight
+    // Keep parent ref in sync so checkout does not advance to shipping while OTP/login modal is open or authorize in flight
     useEffect(
         () => {
             if (otpFlowActiveRef) {
-                otpFlowActiveRef.current = isSendingOtp || isOtpOpen;
+                otpFlowActiveRef.current = isSendingOtp || isOtpOpen || isLoginModalOpen;
             }
         },
         // Ref is stable; .current is mutated intentionally — omit from deps
         // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef
-        [isSendingOtp, isOtpOpen]
+        [isSendingOtp, isOtpOpen, isLoginModalOpen]
     );
 
     const otpLength = (appConfig?.auth as { otpLength?: number } | undefined)?.otpLength ?? 6;
@@ -264,8 +399,6 @@ export default function ContactInfo({
                             onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
                             className="flex flex-col gap-4 pt-2"
                             noValidate>
-                            {contactFormError && <CheckoutErrorBanner message={contactFormError} />}
-
                             <FormField
                                 control={form.control}
                                 name="email"
@@ -282,6 +415,7 @@ export default function ContactInfo({
                                                     disabled={isSendingOtp}
                                                     className="pr-12"
                                                     {...field}
+                                                    onFocus={handleEmailFocus}
                                                     onBlur={(e) => handleEmailBlur(e, field.onBlur)}
                                                 />
                                             </FormControl>
@@ -297,6 +431,19 @@ export default function ContactInfo({
                                     </FormItem>
                                 )}
                             />
+
+                            {turnstileEnabled && turnstileSiteKey && showTurnstile && (
+                                <TurnstileWidget
+                                    siteKey={turnstileSiteKey}
+                                    onSuccess={handleTurnstileSuccess}
+                                    onError={handleTurnstileError}
+                                    onExpire={handleTurnstileExpire}
+                                    enabled={turnstileEnabled}
+                                    mode="non-interactive"
+                                    resetRef={turnstileResetRef}
+                                    executeRef={turnstileExecuteRef}
+                                />
+                            )}
 
                             <div className="flex items-start gap-2">
                                 <FormField
@@ -350,7 +497,7 @@ export default function ContactInfo({
                                 />
                             </div>
 
-                            <Button type="submit" disabled={isLoading} className="w-full">
+                            <Button type="submit" disabled={isLoading || turnstilePending} className="w-full">
                                 {nextStepButtonLabel}
                             </Button>
                         </form>
@@ -396,6 +543,36 @@ export default function ContactInfo({
                         onCheckoutAsGuest={onRegisteredUserChoseGuest ? handleCheckoutAsGuestFromOtp : undefined}
                         onResendCode={handleResendOtp}
                         otpLength={otpLength}
+                    />
+                </Suspense>
+            )}
+
+            {isLoginModalOpen && (
+                <Suspense fallback={null}>
+                    <LoginModal
+                        isOpen={isLoginModalOpen}
+                        onOpenChange={(open) => {
+                            setIsLoginModalOpen(open);
+                            if (!open) {
+                                lastEmailSentRef.current = null;
+                                if (otpFlowActiveRef) otpFlowActiveRef.current = false;
+                            }
+                        }}
+                        mode="password"
+                        isPasswordlessEnabled={false}
+                        returnUrl="/checkout"
+                        initialEmail={passwordlessEmailFetcher.data?.email || form.getValues('email')}
+                        onSuccess={handleLoginModalSuccess}
+                        onCheckoutAsGuest={
+                            onRegisteredUserChoseGuest
+                                ? () => {
+                                      setIsLoginModalOpen(false);
+                                      lastEmailSentRef.current = null;
+                                      if (otpFlowActiveRef) otpFlowActiveRef.current = false;
+                                      onRegisteredUserChoseGuest(true);
+                                  }
+                                : undefined
+                        }
                     />
                 </Suspense>
             )}

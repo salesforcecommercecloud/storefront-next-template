@@ -19,7 +19,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { action } from 'storybook/actions';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 import { Info, Truck, Heart, Check, MapPin } from 'lucide-react';
 
@@ -494,7 +494,7 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -508,7 +508,7 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {/* Delivery header */}
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -587,7 +587,7 @@ Cart with 2 items and a qualified promotion. Shows:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -601,7 +601,7 @@ Cart with 2 items and a qualified promotion. Shows:
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {/* Delivery header */}
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -678,7 +678,7 @@ Cart layout optimized for mobile devices. Shows:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-4">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -699,7 +699,7 @@ Cart layout optimized for mobile devices. Shows:
                         showPromoCodeForm={true}
                         showCheckoutAction={true}
                     />
-                    <div className="p-3 border border-border rounded-lg shadow-sm">
+                    <div className="p-3 border border-border rounded-none">
                         {/* Delivery header */}
                         <div className="flex items-start gap-2 mb-4">
                             <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -809,7 +809,7 @@ Cart with 4 items. Demonstrates:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -823,7 +823,7 @@ Cart with 4 items. Demonstrates:
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
@@ -921,7 +921,7 @@ This demonstrates how the component handles items with high quantities.
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -935,7 +935,7 @@ This demonstrates how the component handles items with high quantities.
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
@@ -999,7 +999,7 @@ This demonstrates the component's resilience to missing data.
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -1013,7 +1013,7 @@ This demonstrates the component's resilience to missing data.
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {/* Delivery header */}
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -1108,7 +1108,7 @@ This verifies the component handles long product names gracefully.
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -1122,7 +1122,7 @@ This verifies the component handles long product names gracefully.
                 </Breadcrumb>
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>
@@ -1237,7 +1237,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
     },
     render: () => (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-container">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <Breadcrumb className="mb-6 mt-4">
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -1252,7 +1252,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1 space-y-3">
                         {/* Pickup card */}
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm">
+                        <div className="md:p-8 p-3 border border-border rounded-none">
                             <div className="flex items-start justify-between gap-2 mb-4">
                                 <div className="flex items-start gap-2">
                                     <MapPin className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -1278,7 +1278,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                             />
                         </div>
                         {/* Delivery card */}
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm">
+                        <div className="md:p-8 p-3 border border-border rounded-none">
                             <div className="flex items-start gap-2 mb-4">
                                 <Info className="size-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                                 <div>

@@ -3,7 +3,7 @@
 exports[`OrderSummary stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -16,7 +16,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
       >
         <h2
           class="tracking-tight text-left text-base font-semibold text-foreground"
-          id="order-summary-heading"
+          id="order-summary-heading-desktop"
         >
           Order Summary
         </h2>
@@ -24,7 +24,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
           class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
         />
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -160,20 +160,13 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
                 TBD
               </span>
             </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
               >
-                Order Total
+                Total
               </span>
               <span
                 class="font-bold"
@@ -192,7 +185,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
 exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -205,7 +198,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
       >
         <h2
           class="tracking-tight text-left text-base font-semibold text-foreground"
-          id="order-summary-heading"
+          id="order-summary-heading-desktop"
         >
           Order Summary
         </h2>
@@ -213,7 +206,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
           class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
         />
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -347,20 +340,13 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
                 £0.00
               </span>
             </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
               >
-                Order Total
+                Total
               </span>
               <span
                 class="font-bold"
@@ -379,7 +365,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
 exports[`OrderSummary stories snapshot > EstimateMode story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -392,7 +378,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
       >
         <h2
           class="tracking-tight text-left text-base font-semibold text-foreground"
-          id="order-summary-heading"
+          id="order-summary-heading-desktop"
         >
           Order Summary
         </h2>
@@ -400,7 +386,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
           class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
         />
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -536,15 +522,8 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
                 TBD
               </span>
             </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
@@ -568,7 +547,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
 exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -581,7 +560,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
       >
         <h2
           class="tracking-tight text-left text-base font-semibold text-foreground"
-          id="order-summary-heading"
+          id="order-summary-heading-desktop"
         >
           Order Summary
         </h2>
@@ -589,7 +568,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
           class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
         />
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -701,7 +680,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             class="flex items-center justify-center"
                           >
                             <div
-                              class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
                             >
                               <img
                                 alt="Solid Silk Tie, Navy, small"
@@ -721,7 +700,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               >
                                 <a
                                   class="text-foreground hover:text-primary block break-words"
-                                  href="/product/25752218M"
+                                  href="/RefArchGlobal/en-GB/product/25752218M"
                                   title="Solid Silk Tie"
                                 >
                                   Solid Silk Tie
@@ -746,7 +725,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved £40.62
@@ -768,6 +747,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Solid Silk Tie
+                                 
                                 Current price: £19.19
                               </span>
                                
@@ -783,6 +763,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Solid Silk Tie
+                                 
                                 List price: £39.50
                               </span>
                             </div>
@@ -800,7 +781,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                             class="flex items-center justify-center"
                           >
                             <div
-                              class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+                              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
                             >
                               <img
                                 alt="Floral Ruffle Top, Cardinal Red Multi, small"
@@ -820,7 +801,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               >
                                 <a
                                   class="text-foreground hover:text-primary block break-words"
-                                  href="/product/25591227M"
+                                  href="/RefArchGlobal/en-GB/product/25591227M"
                                   title="Floral Ruffle Top"
                                 >
                                   Floral Ruffle Top
@@ -850,7 +831,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center rounded-full px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-pill"
+                                class="inline-flex items-center justify-center px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none"
                                 data-slot="badge"
                               >
                                 Saved £43.81
@@ -872,6 +853,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Floral Ruffle Top
+                                 
                                 Current price: £35.19
                               </span>
                                
@@ -887,6 +869,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 class="sr-only"
                               >
                                 Floral Ruffle Top
+                                 
                                 List price: £79.00
                               </span>
                             </div>
@@ -905,7 +888,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                     </div>
                     <a
                       class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-9 px-4 py-2 has-[>svg]:px-3 w-full justify-center"
-                      href="/cart"
+                      href="/RefArchGlobal/en-GB/cart"
                     >
                       Edit cart
                     </a>
@@ -955,20 +938,13 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                 TBD
               </span>
             </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
               >
-                Order Total
+                Total
               </span>
               <span
                 class="font-bold"
@@ -987,7 +963,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
 exports[`OrderSummary stories snapshot > Minimal story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -999,7 +975,7 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
         data-testid="sf-order-summary"
       >
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -1044,20 +1020,13 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
                 TBD
               </span>
             </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
               >
-                Order Total
+                Total
               </span>
               <span
                 class="font-bold"
@@ -1073,10 +1042,233 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
 </div>
 `;
 
+exports[`OrderSummary stories snapshot > MobileCollapsible story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="w-full"
+    data-orientation="vertical"
+    data-slot="accordion"
+  >
+    <div
+      class="last:border-b-0 border-b-0"
+      data-orientation="vertical"
+      data-slot="accordion-item"
+      data-state="closed"
+    >
+      <h3
+        class="flex"
+        data-orientation="vertical"
+        data-state="closed"
+      >
+        <button
+          aria-controls="radix-«x»"
+          aria-expanded="false"
+          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 px-[var(--cart-summary-px)] py-4 hover:no-underline"
+          data-orientation="vertical"
+          data-radix-collection-item=""
+          data-slot="accordion-trigger"
+          data-state="closed"
+          id="radix-«x»"
+          type="button"
+        >
+          <span
+            class="flex-1 text-left text-sm font-semibold text-primary"
+          >
+            Estimated Total (
+            3
+             items)
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+      </h3>
+      <div
+        aria-labelledby="radix-«x»"
+        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+        data-orientation="vertical"
+        data-slot="accordion-content"
+        data-state="closed"
+        hidden=""
+        id="radix-«x»"
+        role="region"
+        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OrderSummary stories snapshot > MobileExpanded story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="w-full"
+    data-orientation="vertical"
+    data-slot="accordion"
+  >
+    <div
+      class="last:border-b-0 border-b-0"
+      data-orientation="vertical"
+      data-slot="accordion-item"
+      data-state="open"
+    >
+      <h3
+        class="flex"
+        data-orientation="vertical"
+        data-state="open"
+      >
+        <button
+          aria-controls="radix-«x»"
+          aria-expanded="true"
+          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 px-[var(--cart-summary-px)] py-4 hover:no-underline"
+          data-orientation="vertical"
+          data-radix-collection-item=""
+          data-slot="accordion-trigger"
+          data-state="open"
+          id="radix-«x»"
+          type="button"
+        >
+          <span
+            class="flex-1 text-left text-sm font-semibold text-primary"
+          >
+            Estimated Total (
+            3
+             items)
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+      </h3>
+      <div
+        aria-labelledby="radix-«x»"
+        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
+        data-orientation="vertical"
+        data-slot="accordion-content"
+        data-state="open"
+        id="radix-«x»"
+        role="region"
+        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+      >
+        <div
+          class="p-0"
+        >
+          <div
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 border-none !py-0 [--cart-summary-px:1rem] rounded-none shadow-none"
+            data-slot="card"
+          >
+            <div
+              class="px-[var(--cart-summary-px)]"
+              data-slot="card-content"
+            >
+              <div
+                class="space-y-4"
+                data-testid="sf-order-summary"
+              >
+                <div
+                  aria-label="Order Summary"
+                  class="space-y-2"
+                  role="region"
+                >
+                  <div
+                    class="space-y-2 text-sm"
+                  >
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Subtotal
+                      </span>
+                      <span>
+                        £73.57
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <div
+                        class="flex items-center"
+                      >
+                        <span>
+                          Shipping
+                        </span>
+                      </div>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span>
+                        Tax
+                      </span>
+                      <span
+                        class="text-muted-foreground"
+                      >
+                        TBD
+                      </span>
+                    </div>
+                    <div
+                      class="flex justify-between items-center"
+                    >
+                      <span
+                        class="font-bold"
+                      >
+                        Estimated Total
+                      </span>
+                      <span
+                        class="font-bold"
+                      >
+                        £73.57
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1089,7 +1281,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
       >
         <h2
           class="tracking-tight text-left text-base font-semibold text-foreground"
-          id="order-summary-heading"
+          id="order-summary-heading-desktop"
         >
           Order Summary
         </h2>
@@ -1097,7 +1289,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
           class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
         />
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -1245,12 +1437,26 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                 TBD
               </span>
             </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <span
+                class="font-bold"
+              >
+                Total
+              </span>
+              <span
+                class="font-bold"
+              >
+                £73.57
+              </span>
+            </div>
           </div>
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
           <div
-            class="w-full"
+            class="flex w-full flex-col gap-2 pt-2 pb-4"
           >
             <div
               class="mb-0"
@@ -1261,28 +1467,28 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                 class="border-b last:border-b-0"
                 data-orientation="vertical"
                 data-slot="accordion-item"
-                data-state="closed"
+                data-state="open"
               >
                 <h3
                   class="flex"
                   data-orientation="vertical"
-                  data-state="closed"
+                  data-state="open"
                 >
                   <button
                     aria-controls="radix-«x»"
-                    aria-expanded="false"
-                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                    aria-expanded="true"
+                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                     data-orientation="vertical"
                     data-radix-collection-item=""
                     data-slot="accordion-trigger"
-                    data-state="closed"
+                    data-state="open"
                     id="radix-«x»"
                     type="button"
                   >
                     <span
-                      class="flex-1 text-left text-sm font-medium"
+                      class="text-left text-sm font-medium text-primary"
                     >
-                      Do you have a promo code?
+                      Enter a Promotion Code
                     </span>
                     <svg
                       aria-hidden="true"
@@ -1308,66 +1514,226 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                   class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                   data-orientation="vertical"
                   data-slot="accordion-content"
-                  data-state="closed"
-                  hidden=""
+                  data-state="open"
                   id="radix-«x»"
                   role="region"
-                  style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                />
+                  style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                >
+                  <div
+                    class="px-0 pt-2 pb-0"
+                  >
+                    <form
+                      data-testid="promo-code-form"
+                    >
+                      <div
+                        class="space-y-2"
+                      >
+                        <div
+                          class="grid gap-2"
+                          data-slot="form-item"
+                        >
+                          <label
+                            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                            data-error="false"
+                            data-slot="form-label"
+                            for="_r_b_-form-item"
+                          >
+                            Promo code
+                          </label>
+                          <div
+                            class="flex gap-2"
+                          >
+                            <input
+                              aria-describedby="_r_b_-form-item-description"
+                              aria-invalid="false"
+                              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
+                              data-slot="form-control"
+                              id="_r_b_-form-item"
+                              name="code"
+                              placeholder="Promo code..."
+                              value=""
+                            />
+                            <button
+                              class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                              data-size="default"
+                              data-slot="button"
+                              data-variant="secondary"
+                              type="submit"
+                            >
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
               </div>
             </div>
             <div
-              class="space-y-2"
+              class="space-y-1"
             >
               <div
-                class="flex justify-between"
+                class="flex items-center justify-between py-1"
               >
                 <span
-                  class="px-2 text-sm rounded-md bg-secondary"
+                  class="inline-flex items-center justify-center border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 gap-1 rounded-none text-xs font-semibold"
+                  data-slot="badge"
                 >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-check size-3"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M20 6 9 17l-5-5"
+                    />
+                  </svg>
                   SAVE20
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-x size-3 cursor-pointer"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M18 6 6 18"
+                    />
+                    <path
+                      d="m6 6 12 12"
+                    />
+                  </svg>
                 </span>
-                <svg
-                  aria-hidden="true"
-                  class="lucide lucide-x cursor-pointer hover:bg-secondary"
-                  fill="none"
-                  height="15"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="15"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M18 6 6 18"
-                  />
-                  <path
-                    d="m6 6 12 12"
-                  />
-                </svg>
               </div>
             </div>
           </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+    data-slot="card"
+  >
+    <div
+      class="px-[var(--cart-summary-px)]"
+      data-slot="card-content"
+    >
+      <div
+        class="space-y-4"
+        data-testid="sf-order-summary"
+      >
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
+          id="order-summary-heading-desktop"
+        >
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
+        <div
+          aria-label="Order Summary"
+          class="space-y-2"
+          role="region"
+        >
           <div
-            class="space-y-2 w-full text-sm pt-2"
+            class="space-y-2 text-sm"
           >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
+            >
+              <span>
+                Subtotal
+              </span>
+              <span>
+                £58.29
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <span>
+                $10 Off Ties
+              </span>
+              <span
+                class="text-success text-xs font-semibold"
+              >
+                -£10.00
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <span>
+                15% Off Tops
+              </span>
+              <span
+                class="text-success text-xs font-semibold"
+              >
+                -£5.28
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <div
+                class="flex items-center"
+              >
+                <span>
+                  Shipping
+                </span>
+              </div>
+              <span
+                class="text-muted-foreground"
+              >
+                TBD
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <span>
+                Tax
+              </span>
+              <span
+                class="text-muted-foreground"
+              >
+                TBD
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
               >
-                Order Total
+                Total
               </span>
               <span
                 class="font-bold"
               >
-                £73.57
+                £58.29
               </span>
             </div>
           </div>
@@ -1381,7 +1747,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
 exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1394,7 +1760,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
       >
         <h2
           class="tracking-tight text-left text-base font-semibold text-foreground"
-          id="order-summary-heading"
+          id="order-summary-heading-desktop"
         >
           Order Summary
         </h2>
@@ -1402,7 +1768,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
           class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
         />
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -1538,12 +1904,26 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                 TBD
               </span>
             </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <span
+                class="font-bold"
+              >
+                Total
+              </span>
+              <span
+                class="font-bold"
+              >
+                £73.57
+              </span>
+            </div>
           </div>
           <hr
             class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
           />
           <div
-            class="w-full"
+            class="flex w-full flex-col gap-2 pt-2 pb-4"
           >
             <div
               class="mb-0"
@@ -1554,28 +1934,28 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                 class="border-b last:border-b-0"
                 data-orientation="vertical"
                 data-slot="accordion-item"
-                data-state="closed"
+                data-state="open"
               >
                 <h3
                   class="flex"
                   data-orientation="vertical"
-                  data-state="closed"
+                  data-state="open"
                 >
                   <button
                     aria-controls="radix-«x»"
-                    aria-expanded="false"
-                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 py-0"
+                    aria-expanded="true"
+                    class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary"
                     data-orientation="vertical"
                     data-radix-collection-item=""
                     data-slot="accordion-trigger"
-                    data-state="closed"
+                    data-state="open"
                     id="radix-«x»"
                     type="button"
                   >
                     <span
-                      class="flex-1 text-left text-sm font-medium"
+                      class="text-left text-sm font-medium text-primary"
                     >
-                      Do you have a promo code?
+                      Enter a Promotion Code
                     </span>
                     <svg
                       aria-hidden="true"
@@ -1601,34 +1981,61 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                   class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
                   data-orientation="vertical"
                   data-slot="accordion-content"
-                  data-state="closed"
-                  hidden=""
+                  data-state="open"
                   id="radix-«x»"
                   role="region"
-                  style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-                />
+                  style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+                >
+                  <div
+                    class="px-0 pt-2 pb-0"
+                  >
+                    <form
+                      data-testid="promo-code-form"
+                    >
+                      <div
+                        class="space-y-2"
+                      >
+                        <div
+                          class="grid gap-2"
+                          data-slot="form-item"
+                        >
+                          <label
+                            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive sr-only"
+                            data-error="false"
+                            data-slot="form-label"
+                            for="_r_6_-form-item"
+                          >
+                            Promo code
+                          </label>
+                          <div
+                            class="flex gap-2"
+                          >
+                            <input
+                              aria-describedby="_r_6_-form-item-description"
+                              aria-invalid="false"
+                              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none focus-visible:ring-0"
+                              data-slot="form-control"
+                              id="_r_6_-form-item"
+                              name="code"
+                              placeholder="Promo code..."
+                              value=""
+                            />
+                            <button
+                              class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 py-2 has-[>svg]:px-3 rounded-none cursor-pointer px-4"
+                              data-size="default"
+                              data-slot="button"
+                              data-variant="secondary"
+                              type="submit"
+                            >
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
-            <div
-              class="flex w-full justify-between items-center"
-            >
-              <span
-                class="font-bold"
-              >
-                Order Total
-              </span>
-              <span
-                class="font-bold"
-              >
-                £73.57
-              </span>
             </div>
           </div>
         </div>
@@ -1641,7 +2048,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
 exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1654,7 +2061,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
       >
         <h2
           class="tracking-tight text-left text-base font-semibold text-foreground"
-          id="order-summary-heading"
+          id="order-summary-heading-desktop"
         >
           Order Summary
         </h2>
@@ -1662,7 +2069,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
           class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
         />
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -1707,20 +2114,13 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
                 TBD
               </span>
             </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
               >
-                Order Total
+                Total
               </span>
               <span
                 class="font-bold"
@@ -1739,7 +2139,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
 exports[`OrderSummary stories snapshot > WithoutHeading story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -1751,7 +2151,7 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
         data-testid="sf-order-summary"
       >
         <div
-          aria-labelledby="order-summary-heading"
+          aria-label="Order Summary"
           class="space-y-2"
           role="region"
         >
@@ -1887,20 +2287,13 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
                 TBD
               </span>
             </div>
-          </div>
-          <hr
-            class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-          />
-          <div
-            class="space-y-2 w-full text-sm pt-2"
-          >
             <div
-              class="flex w-full justify-between items-center"
+              class="flex justify-between items-center"
             >
               <span
                 class="font-bold"
               >
-                Order Total
+                Total
               </span>
               <span
                 class="font-bold"

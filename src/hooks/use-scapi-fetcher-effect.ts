@@ -129,7 +129,7 @@ export function useScapiFetcherEffect<TData = unknown, TSubmitPayload = unknown>
         if (stateChanged && currentState === 'idle') {
             if (currentSuccess && onSuccess) {
                 try {
-                    onSuccess(currentData);
+                    onSuccess(currentData as TData | undefined);
                 } catch (error) {
                     logger.error('Error in onSuccess callback', { error });
                 }

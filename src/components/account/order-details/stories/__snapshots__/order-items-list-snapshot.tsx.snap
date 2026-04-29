@@ -13,7 +13,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
       <a
         class="flex-shrink-0 block"
         data-discover="true"
-        href="/product/701643108633M"
+        href="/RefArchGlobal/en-GB/product/701643108633M"
       >
         <div
           class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
@@ -37,7 +37,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
             <a
               class="text-foreground hover:text-primary block break-words"
               data-discover="true"
-              href="/product/701643108633M"
+              href="/RefArchGlobal/en-GB/product/701643108633M"
               title="Sweater"
             >
               Sweater
@@ -85,12 +85,13 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
             class="sr-only"
           >
             Sweater
+             
             Current price: £61.99
           </span>
            
           <span
             aria-label="List price: £185.97"
-            class="text-sm font-medium leading-none text-left text-muted-foreground line-through"
+            class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
           >
             £185.97
           </span>
@@ -100,6 +101,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
             class="sr-only"
           >
             Sweater
+             
             List price: £185.97
           </span>
         </div>
@@ -109,7 +111,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
           data-size="sm"
           data-slot="button"
           data-variant="default"
-          href="/product/701643108633M"
+          href="/RefArchGlobal/en-GB/product/701643108633M"
         >
           Buy Again
         </a>
@@ -140,13 +142,13 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
       <a
         class="flex-shrink-0 block"
         data-discover="true"
-        href="/product/prod-1"
+        href="/RefArchGlobal/en-GB/product/prod-1"
       >
         <div
           class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
         >
           <div
-            class="w-full h-full bg-muted rounded"
+            class="w-full h-full bg-muted rounded-none"
           />
         </div>
       </a>
@@ -195,6 +197,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
             class="sr-only"
           >
             Product One
+             
             Current price: £10.00
           </span>
            
@@ -205,7 +208,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
           data-size="sm"
           data-slot="button"
           data-variant="default"
-          href="/product/prod-1"
+          href="/RefArchGlobal/en-GB/product/prod-1"
         >
           Buy Again
         </a>
@@ -221,13 +224,13 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
       <a
         class="flex-shrink-0 block"
         data-discover="true"
-        href="/product/prod-2"
+        href="/RefArchGlobal/en-GB/product/prod-2"
       >
         <div
           class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
         >
           <div
-            class="w-full h-full bg-muted rounded"
+            class="w-full h-full bg-muted rounded-none"
           />
         </div>
       </a>
@@ -276,6 +279,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
             class="sr-only"
           >
             Product Two
+             
             Current price: £20.00
           </span>
            
@@ -286,7 +290,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
           data-size="sm"
           data-slot="button"
           data-variant="default"
-          href="/product/prod-2"
+          href="/RefArchGlobal/en-GB/product/prod-2"
         >
           Buy Again
         </a>

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useMemo, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Typography } from '@/components/typography';
@@ -34,7 +32,7 @@ import {
 import { ProductItemVariantImage } from '@/components/product-item';
 import CurrentPrice from '@/components/product-price/current-price';
 import { getPriceData } from '@/components/product-price/utils';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
@@ -101,7 +99,7 @@ export default function CheckoutPickup({
     const pickupContext = usePickup();
     const store = getFirstPickupStore(cart, pickupContext?.pickupStores);
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency();
+    const { currency } = useSite();
     const openStoreLocator = useStoreLocator((s) => s.open);
     const setSelectedStoreInfoRaw = useStoreLocator((s) => s.setSelectedStoreInfo);
     const selectedStoreInfo = useStoreLocator((s) => s.selectedStoreInfo);
@@ -162,7 +160,7 @@ export default function CheckoutPickup({
             <CardContent className="pt-0 pb-0">
                 {isEditing ? (
                     <>
-                        <Card className="border border-border bg-background rounded-xl shadow-sm">
+                        <Card className="border border-border bg-background rounded-none shadow-none">
                             <div className="px-6 pt-0 pb-0 flex items-center justify-between">
                                 <Typography
                                     variant="h5"

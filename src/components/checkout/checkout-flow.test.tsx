@@ -334,10 +334,6 @@ vi.mock('@/hooks/checkout/use-completed-steps', () => ({
     useCompletedSteps: () => [],
 }));
 
-vi.mock('@/providers/currency', () => ({
-    useCurrency: () => 'USD',
-}));
-
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: vi.fn(() => ({
         engagement: {
@@ -347,6 +343,18 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
         },
     })),
 }));
+
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArch', defaultLocale: 'en-US' },
+            language: 'en-US',
+            currency: 'USD',
+        })),
+    };
+});
 
 // Mock functions from useAnalytics to avoid tracking consent dependency chain
 vi.mock('@/hooks/use-analytics', () => ({
@@ -1398,7 +1406,7 @@ describe('Checkout Flow Integration Tests', () => {
             formData.append('cardholderName', 'John Doe');
             formData.append('expiryDate', '12/25');
             formData.append('cvv', '123');
-            formData.append('billingSameAsShipping', 'true');
+            formData.append('useDifferentBilling', 'false');
 
             const response = await makeFormRequest('/action/submit-payment', formData);
 
@@ -1413,7 +1421,7 @@ describe('Checkout Flow Integration Tests', () => {
             formData.append('cardholderName', 'John Doe');
             formData.append('expiryDate', '12/25');
             formData.append('cvv', '123');
-            formData.append('billingSameAsShipping', 'false');
+            formData.append('useDifferentBilling', 'true');
             formData.append('billingFirstName', 'Jane');
             formData.append('billingLastName', 'Smith');
             formData.append('billingAddress1', '456 Oak Ave');
@@ -1458,7 +1466,7 @@ describe('Checkout Flow Integration Tests', () => {
             const formData = new URLSearchParams();
             formData.append('useSavedPaymentMethod', 'true');
             formData.append('selectedSavedPaymentMethod', 'saved-card-1');
-            formData.append('billingSameAsShipping', 'true');
+            formData.append('useDifferentBilling', 'true');
 
             const response = await makeFormRequest('/action/submit-payment', formData);
 
@@ -1499,7 +1507,7 @@ describe('Checkout Flow Integration Tests', () => {
             paymentData.append('cardholderName', 'Complete Test');
             paymentData.append('expiryDate', '12/25');
             paymentData.append('cvv', '123');
-            paymentData.append('billingSameAsShipping', 'true');
+            paymentData.append('useDifferentBilling', 'true');
             const paymentResponse = await makeFormRequest('/action/submit-payment', paymentData);
             expect((await paymentResponse.json()).success).toBe(true);
 
@@ -1840,7 +1848,7 @@ describe('Checkout Flow Integration Tests', () => {
             const paymentData = new URLSearchParams();
             paymentData.append('useSavedPaymentMethod', 'true');
             paymentData.append('selectedSavedPaymentMethod', 'saved-card-1');
-            paymentData.append('billingSameAsShipping', 'true');
+            paymentData.append('useDifferentBilling', 'true');
             const paymentResponse = await makeFormRequest('/action/submit-payment', paymentData);
             const paymentResult = await paymentResponse.json();
             expect(paymentResult.success).toBe(true);

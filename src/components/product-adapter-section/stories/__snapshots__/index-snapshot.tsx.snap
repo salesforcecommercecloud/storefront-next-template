@@ -40,16 +40,16 @@ exports[`ProductAdapterSection stories snapshot > CareInstructions story renders
     >
       <ul>
         <li>
-          Clean with a soft, dry cloth
+          Hand wash cold
         </li>
         <li>
-          Use leather conditioner monthly
+          Do not wring or twist
         </li>
         <li>
-          Store in a cool, dry place
+          Hang dry
         </li>
         <li>
-          Use shoe trees to maintain shape
+          Iron on low heat on reverse side
         </li>
       </ul>
     </div>
@@ -176,16 +176,13 @@ exports[`ProductAdapterSection stories snapshot > Materials story renders and ma
     >
       <ul>
         <li>
-          Premium full-grain leather upper
+          High-density composite resin
         </li>
         <li>
-          Cushioned leather insole
+          UV-resistant matte coating
         </li>
         <li>
-          Durable rubber outsole
-        </li>
-        <li>
-          Metal hardware accents
+          Weighted stabilizing core
         </li>
       </ul>
     </div>
@@ -231,38 +228,44 @@ exports[`ProductAdapterSection stories snapshot > Specifications story renders a
       class="text-sm text-foreground [&_table]:w-full [&_table]:border-collapse [&_td]:py-1.5 [&_td]:pr-4 [&_td]:align-top [&_td:first-child]:font-semibold [&_td:first-child]:w-1/2 [&_tr]:border-b [&_tr]:border-border"
       data-testid="html-fragment"
     >
-      <table>
+      <table
+        style="border: none;"
+      >
         <tbody>
-          <tr>
-            <td>
-              Heel Height
+          <tr
+            style="border: none;"
+          >
+            <td
+              style="font-weight: normal"
+            >
+              Material:
             </td>
             <td>
-              1.5 inches
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Material
-            </td>
-            <td>
-              Full-grain leather
+              Premium composite
             </td>
           </tr>
-          <tr>
-            <td>
-              Sole
+          <tr
+            style="border: none;"
+          >
+            <td
+              style="font-weight: normal"
+            >
+              Finish:
             </td>
             <td>
-              Rubber
+              Matte
             </td>
           </tr>
-          <tr>
-            <td>
-              Closure
+          <tr
+            style="border: none;"
+          >
+            <td
+              style="font-weight: normal"
+            >
+              Origin:
             </td>
             <td>
-              Lace-up with side zip
+              Made in Portugal
             </td>
           </tr>
         </tbody>
@@ -307,12 +310,20 @@ exports[`ProductAdapterSection stories snapshot > UsageInstructions story render
     class="pb-4"
   >
     <div
-      class="text-sm text-foreground leading-relaxed"
+      class="text-sm text-foreground [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5 [&_ul]:list-none [&_ul]:m-0 [&_ul]:p-0 [&_li]:flex [&_li]:items-center [&_li]:gap-2 [&_li]:before:content-[''] [&_li]:before:h-1.5 [&_li]:before:w-1.5 [&_li]:before:flex-shrink-0 [&_li]:before:rounded-full [&_li]:before:bg-foreground"
       data-testid="html-fragment"
     >
-      <p>
-        For best results, condition leather regularly with a quality leather conditioner. Avoid prolonged exposure to water and direct sunlight.
-      </p>
+      <ul>
+        <li>
+          Place on any flat, stable surface
+        </li>
+        <li>
+          Position near natural light for best effect
+        </li>
+        <li>
+          Rotate periodically to appreciate all angles
+        </li>
+      </ul>
     </div>
   </div>
 </details>

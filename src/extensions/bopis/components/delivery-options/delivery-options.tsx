@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ComponentType, type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import PickupOrDelivery from './pickup-or-delivery';
@@ -32,7 +30,7 @@ const ShippingCalculator = lazy(shippingCalculatorImport) as ComponentType<{
 /** Skeleton matching ShippingCalculator layout for a smoother loading state */
 function ShippingCalculatorSkeleton() {
     return (
-        <div className="p-4 border border-muted-foreground/20 rounded-lg bg-card animate-pulse">
+        <div className="p-4 border border-muted-foreground/20 rounded-none bg-card animate-pulse">
             <div className="space-y-3">
                 <div className="h-4 w-32 rounded bg-muted" />
                 <div className="flex gap-2">

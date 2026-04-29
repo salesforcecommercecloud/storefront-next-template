@@ -16,8 +16,19 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, test, expect } from 'vitest';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
 import { OrderList, OrderListHeader, OrderListBody, type Order } from './index';
+
+vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
+    const actual = await importOriginal<object>();
+    return {
+        ...actual,
+        useSite: vi.fn(() => ({
+            site: { id: 'RefArch', defaultLocale: 'en-US' },
+            language: 'en-US',
+            currency: 'USD',
+        })),
+    };
+});
 
 // Mock the Link component from @/components/link
 vi.mock('@/components/link', () => ({
@@ -70,11 +81,7 @@ describe('OrderList Component', () => {
             title: 'Order History',
             orders: testOrders,
         };
-        return render(
-            <CurrencyWrapper>
-                <OrderList {...defaultProps} {...props} />
-            </CurrencyWrapper>
-        );
+        return render(<OrderList {...defaultProps} {...props} />);
     };
 
     describe('Header Rendering', () => {
@@ -282,60 +289,36 @@ describe('OrderListHeader Component', () => {
 
 describe('OrderListBody Component', () => {
     test('renders order items', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={testOrders} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={testOrders} />);
         expect(screen.getByText('Completed')).toBeInTheDocument();
         expect(screen.getByText('New')).toBeInTheDocument();
         expect(screen.getByText('Cancelled')).toBeInTheDocument();
     });
 
     test('renders empty state when no orders', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={[]} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={[]} />);
         expect(
             screen.getByText("You haven't placed an order yet. Once you place an order the details will show up here.")
         ).toBeInTheDocument();
     });
 
     test('renders custom empty message', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={[]} emptyMessage="Nothing here yet!" />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={[]} emptyMessage="Nothing here yet!" />);
         expect(screen.getByText('Nothing here yet!')).toBeInTheDocument();
     });
 
     test('renders total orders footer', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={testOrders} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={testOrders} />);
         expect(screen.getByText('Viewing 3 orders')).toBeInTheDocument();
     });
 
     test('renders zero orders count for empty list', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={[]} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={[]} />);
         expect(screen.getByText('Viewing 0 orders')).toBeInTheDocument();
     });
 
     test('renders pagination range and controls when total exceeds limit', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={testOrders} total={25} offset={0} limit={10} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={testOrders} total={25} offset={0} limit={10} />);
         expect(screen.getByText('Viewing 1–3 of 25 orders')).toBeInTheDocument();
         expect(screen.getByRole('navigation', { name: /order history pagination/i })).toBeInTheDocument();
         const nextLink = screen.getByRole('link', { name: /next/i });
@@ -344,11 +327,7 @@ describe('OrderListBody Component', () => {
     });
 
     test('renders "Viewing X orders" and disabled Previous/Next when single page', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={testOrders} total={5} offset={0} limit={10} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={testOrders} total={5} offset={0} limit={10} />);
         expect(screen.getByText('Viewing 5 orders')).toBeInTheDocument();
         expect(screen.getByRole('navigation', { name: /order history pagination/i })).toBeInTheDocument();
         expect(screen.getByText('Previous page')).toBeInTheDocument();
@@ -360,11 +339,7 @@ describe('OrderListBody Component', () => {
     test('calls onViewDetails callback', async () => {
         const user = userEvent.setup();
         const mockOnViewDetails = vi.fn();
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={testOrders} onViewDetails={mockOnViewDetails} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={testOrders} onViewDetails={mockOnViewDetails} />);
 
         const viewDetailsLinks = screen.getAllByText('View Order Details');
         await user.click(viewDetailsLinks[0]);
@@ -374,11 +349,7 @@ describe('OrderListBody Component', () => {
     });
 
     test('does not render header elements', () => {
-        render(
-            <CurrencyWrapper>
-                <OrderListBody orders={testOrders} />
-            </CurrencyWrapper>
-        );
+        render(<OrderListBody orders={testOrders} />);
         expect(screen.queryByRole('heading', { level: 4 })).not.toBeInTheDocument();
     });
 });

@@ -18,7 +18,7 @@ import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionAr
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { ResetPasswordForm } from '@/components/reset-password-form';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { isPasswordValid } from '@/lib/utils';
@@ -34,7 +34,6 @@ type ResetPasswordActionData = {
     error?: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordLoaderData | Response {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');
@@ -52,7 +51,6 @@ export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordL
 
 // Server action required for authentication - password reset must be handled
 // server-side to maintain security and proper integration with SFCC's authentication system
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request, context }: ActionFunctionArgs): Promise<ResetPasswordActionData | Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
@@ -104,14 +102,14 @@ export default function ResetPassword({ loaderData }: { loaderData: ResetPasswor
     const { t } = useTranslation('resetPassword');
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                     <p className="mt-2 text-center text-sm text-muted-foreground">{t('enterNewPassword')}</p>
                 </div>
 
-                <Card className="p-8">
+                <Card className="p-8 rounded-none shadow-none">
                     <ResetPasswordForm error={actionData?.error} token={token} email={email} />
                 </Card>
             </div>

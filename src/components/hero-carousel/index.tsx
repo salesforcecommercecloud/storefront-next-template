@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import React, { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
+import { cn } from '@/lib/utils';
 import { Link } from '@/components/link';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import withSuspense from '@/components/with-suspense';
 import HeroCarouselSkeleton from './skeleton';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import heroImage from '/images/hero-01.webp';
+import { normalizeOverlayPosition, normalizeOverlayAlignment, overlayPositionLayout } from '@/components/hero/utils';
 import type { ComponentType } from '@/components/region';
 
 const heroCarouselDefaults = {
@@ -37,6 +39,7 @@ const heroCarouselDefaults = {
     name: 'Hero Carousel',
     description:
         'Interactive carousel component with multiple hero slides, autoplay, navigation controls, and dot indicators',
+    group: 'Layout',
 })
 @RegionDefinition([
     {
@@ -45,6 +48,7 @@ const heroCarouselDefaults = {
         description:
             'Add hero components to display as carousel slides. Each hero will be shown as a full-width slide.',
         maxComponents: 10,
+        componentTypeInclusions: ['Content.hero'],
     },
 ])
 export class HeroCarouselMetadata {
@@ -111,6 +115,8 @@ export interface HeroSlide {
     imageAlt?: string;
     ctaText?: string;
     ctaLink?: string;
+    overlayPosition?: string;
+    overlayAlignment?: string;
 }
 
 interface HeroCarouselProps {
@@ -245,7 +251,7 @@ export function HeroCarouselPlain({
 
     const emptyState = useMemo(
         () => (
-            <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] flex items-center justify-center bg-muted">
+            <div className="relative w-full flex items-center justify-center bg-muted h-[400px] md:h-[500px] lg:h-[600px]">
                 <p className="text-muted-foreground text-lg">No slides available</p>
             </div>
         ),
@@ -258,7 +264,7 @@ export function HeroCarouselPlain({
 
     return (
         <div
-            className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
+            className="relative w-full overflow-hidden h-[400px] md:h-[500px] lg:h-[600px]"
             role="region"
             aria-label={`Hero carousel with ${slides.length} slides`}
             onFocus={handleFocus}
@@ -285,39 +291,41 @@ export function HeroCarouselPlain({
                 </CarouselContent>
             </Carousel>
 
-            {showDots && slides.length > 1 && (
-                <div
-                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2"
-                    role="tablist"
-                    aria-label="Slide navigation">
-                    {slides.map((slide, index) => (
-                        <DotButton
-                            key={`dot-${slide.id}`}
-                            index={index}
-                            isActive={currentSlide === index}
-                            totalSlides={slides.length}
-                            onClick={goToSlide}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {showNavigation && slides.length > 1 && (
-                <div className="absolute bottom-6 right-6 z-30 flex gap-2">
-                    <NavigationButton
-                        direction="prev"
-                        onClick={() => api?.scrollPrev()}
-                        disabled={!canScrollPrev}
-                        currentSlide={currentSlide + 1}
-                        totalSlides={slides.length}
-                    />
-                    <NavigationButton
-                        direction="next"
-                        onClick={() => api?.scrollNext()}
-                        disabled={!canScrollNext}
-                        currentSlide={currentSlide + 1}
-                        totalSlides={slides.length}
-                    />
+            {slides.length > 1 && (
+                <div className="absolute bottom-6 inset-x-0 z-30 section-container">
+                    <div className="relative flex items-center justify-center">
+                        {showDots && (
+                            <div className="flex gap-2" role="tablist" aria-label="Slide navigation">
+                                {slides.map((slide, index) => (
+                                    <DotButton
+                                        key={`dot-${slide.id}`}
+                                        index={index}
+                                        isActive={currentSlide === index}
+                                        totalSlides={slides.length}
+                                        onClick={goToSlide}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                        {showNavigation && (
+                            <div className="absolute right-0 flex gap-2">
+                                <NavigationButton
+                                    direction="prev"
+                                    onClick={() => api?.scrollPrev()}
+                                    disabled={!canScrollPrev}
+                                    currentSlide={currentSlide + 1}
+                                    totalSlides={slides.length}
+                                />
+                                <NavigationButton
+                                    direction="next"
+                                    onClick={() => api?.scrollNext()}
+                                    disabled={!canScrollNext}
+                                    currentSlide={currentSlide + 1}
+                                    totalSlides={slides.length}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 
@@ -342,7 +350,7 @@ const DotButton = React.memo(
     }): ReactElement => (
         <button
             onClick={() => onClick(index)}
-            className={`transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 ${
+            className={`transition-all duration-300 rounded-none focus:outline-none focus:ring-2 focus:ring-white/50 ${
                 isActive ? 'w-8 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/75'
             }`}
             role="tab"
@@ -376,7 +384,7 @@ const NavigationButton = React.memo(
             <button
                 onClick={onClick}
                 disabled={disabled}
-                className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-none transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
                 aria-label={`${label} slide (${currentSlide} of ${totalSlides})`}>
                 <Icon className="w-6 h-6 text-primary-foreground" strokeWidth={2} />
             </button>
@@ -386,8 +394,26 @@ const NavigationButton = React.memo(
 
 NavigationButton.displayName = 'NavigationButton';
 
-const HeroSlideContent = React.memo(
-    ({ slide }: { slide: HeroSlide }): ReactElement => (
+const HeroSlideContent = React.memo(({ slide }: { slide: HeroSlide }): ReactElement => {
+    const position = normalizeOverlayPosition(slide.overlayPosition);
+    const alignment = normalizeOverlayAlignment(slide.overlayAlignment);
+    const { vertical, horizontal } = overlayPositionLayout(position);
+
+    const overlayRowClass = cn(
+        vertical === 'start' && 'items-start',
+        vertical === 'center' && 'items-center',
+        vertical === 'end' && 'items-end'
+    );
+    const overlayEdgePaddingClass = cn(
+        vertical === 'start' && 'pt-6 sm:pt-8 md:pt-10',
+        vertical === 'end' && 'pb-6 sm:pb-8 md:pb-10'
+    );
+    const contentBlockClass = cn('max-w-xl', horizontal === 'center' && 'mx-auto', horizontal === 'right' && 'ml-auto');
+    const textAlignClass = alignment === 'left' ? 'text-left' : alignment === 'right' ? 'text-right' : 'text-center';
+    const ctaJustifyClass =
+        alignment === 'left' ? 'justify-start' : alignment === 'right' ? 'justify-end' : 'justify-center';
+
+    return (
         <div className="relative w-full h-full overflow-hidden">
             <img
                 src={slide.imageUrl}
@@ -403,19 +429,23 @@ const HeroSlideContent = React.memo(
                 }}
             />
 
-            <div className="relative h-full flex items-center z-20 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                    <div className="max-w-xl">
-                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 tracking-tight">
+            <div className={cn('relative h-full flex z-20 overflow-hidden', overlayRowClass, overlayEdgePaddingClass)}>
+                <div className="section-container w-full">
+                    <div className={cn(contentBlockClass, textAlignClass)}>
+                        <h1 className="text-6xl font-bold leading-none [letter-spacing:-1.5px] text-primary-foreground mb-4">
                             {slide.title}
                         </h1>
 
                         {slide.subtitle && (
-                            <p className="text-base md:text-lg text-white/90 mb-8 font-normal">{slide.subtitle}</p>
+                            <p className="text-lg font-normal leading-[1.2] text-primary-foreground mb-8">
+                                {slide.subtitle}
+                            </p>
                         )}
 
-                        <div>
-                            <Button asChild className="h-auto px-8 py-4 text-base">
+                        <div className={cn('flex', ctaJustifyClass)}>
+                            <Button
+                                asChild
+                                className="h-auto px-8 py-4 text-sm font-medium leading-5 text-primary-foreground">
                                 <Link to={slide.ctaLink || '#'}>{slide.ctaText || 'Learn More'}</Link>
                             </Button>
                         </div>
@@ -423,8 +453,8 @@ const HeroSlideContent = React.memo(
                 </div>
             </div>
         </div>
-    )
-);
+    );
+});
 
 HeroSlideContent.displayName = 'HeroSlideContent';
 

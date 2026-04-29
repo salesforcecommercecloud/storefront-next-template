@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type LoaderFunctionArgs } from 'react-router';
+import { Suspense } from 'react';
+import { Await, type LoaderFunctionArgs, redirect, useAsyncError } from 'react-router';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchSearchProducts } from '@/lib/api/search';
-import { fetchCategories } from '@/lib/api/categories';
-import { currencyContext } from '@/lib/currency';
+import { fetchCarouselProducts } from '@/components/product-carousel/loaders';
+import { fetchCategories } from '@/lib/api/categories.server';
+import { siteContext, resolvePrefix, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { Region } from '@/components/region';
 import PopularCategories from '@/components/home/popular-categories';
 import ContentCard from '@/components/content-card';
@@ -26,7 +27,7 @@ import type { AppConfig } from '@/types/config';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getLogger } from '@/lib/logger.server';
 
 import hero01 from '/images/hero-01.webp';
@@ -34,10 +35,12 @@ import hero02 from '/images/hero-02.webp';
 import hero03 from '/images/hero-03.webp';
 import hero04 from '/images/hero-04.webp';
 import HeroCarousel, { HeroCarouselSkeleton, type HeroSlide } from '@/components/hero-carousel';
-import { ProductCarouselSkeleton, ProductCarouselWithSuspense } from '@/components/product-carousel';
+import { ProductCarouselSkeleton } from '@/components/product-carousel';
+import { ProductCarouselWithData } from '@/components/product-carousel/carousel';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 @PageType({
     name: 'Home Page',
@@ -55,13 +58,29 @@ import { useTranslation } from 'react-i18next';
         id: 'main',
         name: 'Main Content Region',
         description: 'Region for main content',
-        maxComponents: 5,
+        maxComponents: 10,
     },
 ])
 export class HomePageMetadata {}
 
+function FeaturedProductsError() {
+    const error = useAsyncError() as NormalizedApiError;
+    const { t } = useTranslation('home');
+    return (
+        <div role="alert" className="py-8 text-center text-muted-foreground">
+            <p>{t('featuredProducts.loadFailed')}</p>
+            {import.meta.env.DEV && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground/70">
+                    {error.status && <span>{error.status}</span>}
+                    {error.message && <p>{error.message}</p>}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export type HomePageData = {
-    page: Promise<PageWithComponentData>;
+    page: ReturnType<typeof fetchPageWithComponentData>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     categories: Promise<ShopperProducts.schemas['Category'][]>;
     pageUrl: string;
@@ -73,22 +92,33 @@ export type HomePageData = {
  * This function runs on the server during SSR and prepares data for the home page.
  * @returns Promise that resolves to an object containing search result promise
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): HomePageData {
     const logger = getLogger(args.context);
     logger.debug('HomePage: loader starting');
 
-    const currency = args.context.get(currencyContext) as string;
+    const config = getConfig<AppConfig>(args.context);
     const requestUrl = new URL(args.request.url);
+
+    // Redirect bare "/" to the default site/locale prefixed homepage
+    if (requestUrl.pathname === '/' && config.url?.prefix && config.url.prefix !== '/') {
+        const siteRef = config.siteAliasMap?.[config.defaultSiteId] ?? config.defaultSiteId;
+        const defaultSite = config.commerce.sites.find((s) => s.id === config.defaultSiteId);
+        const defaultLocale = defaultSite?.defaultLocale ?? config.i18n.fallbackLng;
+        const localeRef = config.localeAliasMap?.[defaultLocale] ?? defaultLocale;
+        const prefixedPath = resolvePrefix(config.url.prefix, { siteId: siteRef, localeId: localeRef });
+        throw redirect(`${prefixedPath}/`);
+    }
+
+    const currency = (args.context.get(siteContext) as SiteContext).currency;
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 
     return {
         page: fetchPageWithComponentData(args, {
             pageId: 'homepage',
         }),
-        searchResult: fetchSearchProducts(args.context, {
-            refine: ['cgid=root'],
-            limit: getConfig<AppConfig>(args.context).pages.home.featuredProductsCount,
+        searchResult: fetchCarouselProducts(args.context, {
+            categoryId: 'root',
+            limit: config.pages.home.featuredProductsCount,
             currency: currency ?? undefined,
         }),
         categories: fetchCategories(args.context, 'root', 1),
@@ -114,6 +144,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide1.imageAlt'),
             ctaText: t('hero.slide1.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
         {
             id: 'slide-2',
@@ -123,6 +155,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide2.imageAlt'),
             ctaText: t('hero.slide2.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
         {
             id: 'slide-3',
@@ -132,6 +166,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide3.imageAlt'),
             ctaText: t('hero.slide3.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
         {
             id: 'slide-4',
@@ -141,6 +177,8 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
             imageAlt: t('hero.slide4.imageAlt'),
             ctaText: t('hero.slide4.ctaText'),
             ctaLink: '/category/root',
+            overlayPosition: 'Middle Center',
+            overlayAlignment: 'center',
         },
     ];
 
@@ -178,13 +216,19 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                                 showDots={true}
                             />
 
-                            {/* Featured Products - ProductCarouselWithSuspense handles its own Suspense */}
-                            <ProductCarouselWithSuspense
-                                resolve={loaderData.searchResult}
-                                title={t('featuredProducts.title')}
-                                shopAllUrl="/category/root"
-                                shopAllText={t('featuredProducts.shopAll')}
-                            />
+                            {/* Featured Products */}
+                            <Suspense fallback={<ProductCarouselSkeleton title={t('featuredProducts.title')} />}>
+                                <Await resolve={loaderData.searchResult} errorElement={<FeaturedProductsError />}>
+                                    {(searchResult) => (
+                                        <ProductCarouselWithData
+                                            data={searchResult}
+                                            title={t('featuredProducts.title')}
+                                            shopAllUrl="/category/root"
+                                            shopAllText={t('featuredProducts.shopAll')}
+                                        />
+                                    )}
+                                </Await>
+                            </Suspense>
                         </>
                     }
                 />
@@ -202,7 +246,7 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
 
                         {/* Featured Content Cards - Static content */}
                         <div className="pt-16">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="section-container">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <ContentCard
                                         title={t('featuredContent.women.title')}

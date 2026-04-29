@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useCallback, useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
+import { useFetcher } from 'react-router';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketHydrated } from '@/providers/basket';
 import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Typography } from '@/components/typography';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { useAuth } from '@/providers/auth';
@@ -29,12 +27,14 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
-import CheckoutErrorBanner from './components/checkout-error-banner';
+import { Spinner } from '@/components/spinner';
+import { getCheckoutDisplayError } from './utils/checkout-display-error';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
+import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { handlePickupContinueAction } from './utils/checkout-utils';
 import { filterDeliveryShippingMethods } from '@/extensions/bopis/lib/basket-utils';
@@ -170,6 +170,7 @@ interface CheckoutFormPageProps {
     productMapPromise: Promise<Record<string, ShopperProducts.schemas['Product']>>;
     promotionsPromise?: Promise<Record<string, ShopperPromotions.schemas['Promotion']>>;
     showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
+    emailVerificationEnabled?: boolean;
 }
 
 /**
@@ -187,7 +188,7 @@ function MyCartWithData({
     const productMap = use(productMapPromise);
     const promotions = promotionsPromise ? use(promotionsPromise) : undefined;
 
-    return <MyCart basket={basket} productMap={productMap} promotions={promotions} itemsExpanded={true} />;
+    return <MyCart basket={basket} productMap={productMap} promotions={promotions} />;
 }
 
 export default function CheckoutFormPage({
@@ -195,15 +196,20 @@ export default function CheckoutFormPage({
     productMapPromise,
     promotionsPromise,
     showToast,
+    emailVerificationEnabled,
 }: CheckoutFormPageProps) {
     const { t, i18n } = useTranslation('checkout');
-    const currency = useCurrency();
+    const { t: tErrors } = useTranslation('errors');
+    const tAny = t as (key: string) => string;
+    const { currency } = useSite();
 
     const cart = useBasket();
     const basketHydrated = useBasketHydrated();
     const { step, STEPS, goToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
+    const registrationFetcher = useFetcher({ key: 'checkout-registration' });
+    const isRegistrationInProgress = registrationFetcher.state !== 'idle';
 
     const paymentSubmissionRef = useRef<PaymentSubmissionRef['current']>({
         formDataGetter: null,
@@ -229,7 +235,28 @@ export default function CheckoutFormPage({
         placeOrderFetcher,
         isSubmitting,
         handleCreateAccountPreferenceChange,
+        shouldCreateAccount,
     } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef });
+
+    // Stale `registeredViaCheckout` / `shouldCreateAccount` session from a prior visit can leave
+    // `shouldCreateAccount` true and hide the "Save payment" checkbox (see hidePaymentSaveCheckbox).
+    // Established returning shoppers already have wallet data — clear those flags so the checkbox shows.
+    // Uses a ref guard so the cleanup runs at most once per mount, avoiding mid-checkout resets when
+    // customerProfile loads asynchronously or paymentInstruments array changes during basket updates.
+    const sessionCleanupDoneRef = useRef(false);
+    useEffect(() => {
+        if (typeof sessionStorage === 'undefined' || sessionCleanupDoneRef.current) {
+            return;
+        }
+        const hasSavedPaymentMethods = (customerProfile?.paymentInstruments?.length ?? 0) > 0;
+        if (!isRegisteredUser || !hasSavedPaymentMethods) {
+            return;
+        }
+        sessionStorage.removeItem('registeredViaCheckout');
+        sessionStorage.removeItem('shouldCreateAccount');
+        handleCreateAccountPreferenceChange(false);
+        sessionCleanupDoneRef.current = true;
+    }, [isRegisteredUser, customerProfile?.paymentInstruments?.length, handleCreateAccountPreferenceChange]);
 
     /**
      * Shopper closed passwordless OTP via "Checkout as guest" — do not verify OTP / sign in.
@@ -320,15 +347,50 @@ export default function CheckoutFormPage({
 
     const isPlacingOrder = placeOrderFetcher.state === 'submitting';
     const [isPlaceOrderPending, setIsPlaceOrderPending] = useState(false);
+    const [shippingMethodValidationError, setShippingMethodValidationError] = useState<string | null>(null);
 
     // Form submission handlers - delegated to checkout actions hook
     const handleContactSubmit = submitContactInfo;
     const handleShippingAddressSubmit = submitShippingAddress;
-    const handleShippingOptionsSubmit = submitShippingOptions;
+    const handleShippingOptionsSubmit = (formData: FormData) => {
+        setShippingMethodValidationError(null);
+        submitShippingOptions(formData);
+    };
     const handlePaymentSubmit = submitPayment;
 
     const handlePlaceOrderSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // Block submission while a non-payment section is being edited. The Place Order button
+        // is hidden via the render condition, but this guard handles edge cases (e.g. mobile
+        // fixed bar overlap, stale UI state, or buttons without explicit type="button").
+        if (editingStep !== null && editingStep !== STEPS.PAYMENT) {
+            return;
+        }
+
+        // Validate that all non-empty shipments have a shipping method selected.
+        // Without this, the request goes through payment sync → server place-order round-trip
+        // before the user sees the error, making the UI appear stuck.
+        if (cart?.shipments && cart?.productItems) {
+            const shipmentItemCounts = new Map<string, number>();
+            for (const item of cart.productItems) {
+                if (item.shipmentId) {
+                    shipmentItemCounts.set(item.shipmentId, (shipmentItemCounts.get(item.shipmentId) || 0) + 1);
+                }
+            }
+            const missingShippingMethod = cart.shipments.some(
+                (shipment) =>
+                    shipment.shipmentId &&
+                    (shipmentItemCounts.get(shipment.shipmentId) || 0) > 0 &&
+                    !shipment.shippingMethod
+            );
+            if (missingShippingMethod) {
+                setShippingMethodValidationError(tErrors('checkout.shippingMethodRequired'));
+                goToStep(STEPS.SHIPPING_OPTIONS);
+                return;
+            }
+        }
+
         const paymentData = paymentSubmissionRef.current.formDataGetter?.();
         const basketAlreadyHasPayment = Boolean(cart?.paymentInstruments?.[0]);
 
@@ -339,9 +401,9 @@ export default function CheckoutFormPage({
             paymentData && (!basketAlreadyHasPayment || doesPaymentSelectionDiffer(paymentData, cart));
 
         if (needsPaymentSync) {
-            // For new card entry, validate fields client-side before submitting so the user sees
-            // inline errors (empty card number, missing CVV, etc.)
-            if (!paymentData.useSavedPaymentMethod) {
+            // Validate client-side before submitting so the user sees inline errors.
+            // Runs for new card entry (card fields) and for different billing address (billing fields).
+            if (!paymentData.useSavedPaymentMethod || paymentData.useDifferentBilling) {
                 const schema = createPaymentSchema(t);
                 const result = schema.safeParse(paymentData);
                 if (!result.success) {
@@ -363,12 +425,20 @@ export default function CheckoutFormPage({
 
             setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = true;
-            paymentSubmissionRef.current.options = { savePaymentToProfile: paymentData.savePaymentToProfile ?? false };
+            paymentSubmissionRef.current.options = {
+                savePaymentToProfile: paymentData.savePaymentToProfile ?? false,
+                useDifferentBilling: paymentData.useDifferentBilling,
+            };
             submitPayment(paymentData);
         } else {
             setIsPlaceOrderPending(true);
             paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
-            paymentSubmissionRef.current.options = null;
+            paymentSubmissionRef.current.options = paymentData
+                ? {
+                      savePaymentToProfile: paymentData.savePaymentToProfile ?? false,
+                      useDifferentBilling: paymentData.useDifferentBilling,
+                  }
+                : null;
             submitPlaceOrder();
         }
     };
@@ -403,7 +473,7 @@ export default function CheckoutFormPage({
         disabled: !isRegisteredUser && step < STEPS.PAYMENT,
     };
 
-    // Focus place order error without scrolling (prevents CLS while maintaining accessibility)
+    // Surface blocking API errors as error toasts for immediate visibility.
     useEffect(() => {
         if (
             placeOrderFetcher.state === 'idle' &&
@@ -412,14 +482,44 @@ export default function CheckoutFormPage({
             placeOrderFetcher.data.error
         ) {
             setIsPlaceOrderPending(false);
-            // Find the error banner and focus it without scrolling
-            const errorElement = document.querySelector('[role="alert"]');
-            if (errorElement instanceof HTMLElement) {
-                errorElement.tabIndex = -1;
-                errorElement.focus({ preventScroll: true });
-            }
+            const error = getCheckoutDisplayError(placeOrderFetcher.data, undefined, tAny);
+            if (error) showToast?.(error, 'error');
         }
-    }, [placeOrderFetcher.state, placeOrderFetcher.data]);
+    }, [placeOrderFetcher.state, placeOrderFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (contactFetcher.state !== 'idle' || !contactFetcher.data || contactFetcher.data.success) return;
+        const error = getCheckoutDisplayError(contactFetcher.data, 'contactInfo', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [contactFetcher.state, contactFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (
+            shippingAddressFetcher.state !== 'idle' ||
+            !shippingAddressFetcher.data ||
+            shippingAddressFetcher.data.success
+        )
+            return;
+        const error = getCheckoutDisplayError(shippingAddressFetcher.data, 'shippingAddress', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [shippingAddressFetcher.state, shippingAddressFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (
+            shippingOptionsFetcher.state !== 'idle' ||
+            !shippingOptionsFetcher.data ||
+            shippingOptionsFetcher.data.success
+        )
+            return;
+        const error = getCheckoutDisplayError(shippingOptionsFetcher.data, 'shippingOptions', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [shippingOptionsFetcher.state, shippingOptionsFetcher.data, showToast, tAny]);
+
+    useEffect(() => {
+        if (paymentFetcher.state !== 'idle' || !paymentFetcher.data || paymentFetcher.data.success) return;
+        const error = getCheckoutDisplayError(paymentFetcher.data, 'payment', tAny);
+        if (error) showToast?.(error, 'error');
+    }, [paymentFetcher.state, paymentFetcher.data, showToast, tAny]);
 
     // Place the order once payment succeeds; reset ref on failure so we never place order without valid payment
     useEffect(() => {
@@ -440,7 +540,7 @@ export default function CheckoutFormPage({
     if (!cart.basketId || !cart.productItems || cart.productItems.length === 0) {
         return (
             <div className="min-h-screen bg-muted flex items-center justify-center">
-                <Card className="w-full max-w-md">
+                <Card className="w-full max-w-md rounded-none shadow-none">
                     <CardContent className="pt-6">
                         <Typography variant="muted" className="text-center">
                             {t('common.emptyCart')}
@@ -470,6 +570,7 @@ export default function CheckoutFormPage({
             isLoading={isSubmitting('shipping-options')}
             actionData={shippingOptionsFetcher.data}
             shippingMethods={shippingMethodsMap[defaultShipmentId]}
+            validationError={shippingMethodValidationError}
             {...shippingOptionsState}
         />
     );
@@ -504,66 +605,113 @@ export default function CheckoutFormPage({
     }
     // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
+    const showPlaceOrderSection = step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT);
+
     return (
         <div className="min-h-screen bg-background pb-20 lg:pb-0">
-            <UITarget targetId="checkout.page.before" />
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <UITarget targetId="sfcc.checkout.page.before" />
+            <div className="section-container py-8">
+                <Typography variant="h2" as="h1" className="mb-8">
+                    {t('pageTitle')}
+                </Typography>
                 {/* Mobile Order Summary + My Cart */}
-                <div className="lg:hidden mb-6">
-                    <Accordion type="single" collapsible defaultValue="order-summary">
-                        <AccordionItem
-                            value="order-summary"
-                            className="border rounded-2xl bg-card shadow-sm overflow-hidden">
-                            <AccordionTrigger className="px-4 py-4 text-lg font-semibold">
-                                {t('orderSummary.toggleLabel')}
-                            </AccordionTrigger>
-                            <AccordionContent className="px-0">
-                                <div className="px-4 pb-4 space-y-6">
-                                    <Card className="shadow-none border border-border">
-                                        <CardContent className="p-4">
-                                            <Suspense fallback={<OrderSummarySkeleton />}>
-                                                <OrderSummary
-                                                    basket={cart}
-                                                    showCartItems={false}
-                                                    showHeading={false}
-                                                    showPromoCodeForm={true}
-                                                    productsByItemId={{}}
-                                                />
-                                            </Suspense>
-                                        </CardContent>
-                                    </Card>
+                <div className="md:hidden mb-6 border border-border">
+                    <Suspense fallback={<OrderSummarySkeleton />}>
+                        {/* Pass lazy <OrderSummary /> as children to preserve checkout route code-splitting. */}
+                        <OrderSummaryMobileAccordion basket={cart} defaultExpanded={false}>
+                            <OrderSummary
+                                basket={cart}
+                                showCartItems={false}
+                                showHeading={false}
+                                showPromoCodeForm={true}
+                                productsByItemId={{}}
+                                isEstimate={true}
+                                showCheckoutAction={false}
+                                className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
+                            />
+                        </OrderSummaryMobileAccordion>
+                    </Suspense>
 
-                                    <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
-                                        <MyCartWithData
-                                            basket={cart}
-                                            productMapPromise={productMapPromise}
-                                            promotionsPromise={promotionsPromise}
-                                        />
-                                    </Suspense>
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
+                    <div className="mt-6">
+                        <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
+                            <MyCartWithData
+                                basket={cart}
+                                productMapPromise={productMapPromise}
+                                promotionsPromise={promotionsPromise}
+                            />
+                        </Suspense>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Order Summary Sidebar - above content on md, right side on lg */}
+                    <div
+                        className="hidden md:block md:order-1 lg:order-2 lg:col-span-1"
+                        data-testid="checkout-order-summary-sidebar">
+                        <UITarget targetId="sfcc.checkout.sidebar.before" />
+                        <div className="space-y-6">
+                            {/* Order Summary + Cart Items */}
+                            <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem]">
+                                <CardHeader className="border-b border-border pb-4">
+                                    <CardTitle>
+                                        <span className="text-xl font-bold tracking-tight text-card-foreground">
+                                            {t('orderSummary.title')}
+                                        </span>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <UITarget targetId="sfcc.checkout.orderSummary.before" />
+                                    <UITarget targetId="sfcc.checkout.orderSummary">
+                                        <Suspense fallback={<OrderSummarySkeleton />}>
+                                            <OrderSummary
+                                                basket={cart}
+                                                showCartItems={false}
+                                                showHeading={false}
+                                                showPromoCodeForm={true}
+                                                productsByItemId={{}}
+                                                className="border-none shadow-none rounded-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
+                                            />
+                                        </Suspense>
+                                    </UITarget>
+                                    <UITarget targetId="sfcc.checkout.orderSummary.after" />
+
+                                    <hr className="border-border -mx-6" />
+
+                                    <UITarget targetId="sfcc.checkout.myCart.before" />
+                                    <UITarget targetId="sfcc.checkout.myCart">
+                                        <Suspense
+                                            fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
+                                            <MyCartWithData
+                                                basket={cart}
+                                                productMapPromise={productMapPromise}
+                                                promotionsPromise={promotionsPromise}
+                                            />
+                                        </Suspense>
+                                    </UITarget>
+                                    <UITarget targetId="sfcc.checkout.myCart.after" />
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <UITarget targetId="sfcc.checkout.sidebar.after" />
+                    </div>
+
                     {/* Main Checkout Content - Single Page Layout */}
-                    <div className="lg:col-span-2 space-y-8">
-                        <UITarget targetId="checkout.mainContent.before" />
+                    <div className="space-y-6 order-2 lg:order-1 lg:col-span-2">
+                        <UITarget targetId="sfcc.checkout.mainContent.before" />
                         {/* Express Payments - Apple Pay, Google Pay, Amazon Pay, PayPal & Venmo (mobile only) */}
-                        <UITarget targetId="checkout.expressPayments.header.before" />
+                        <UITarget targetId="sfcc.checkout.expressPayments.header.before" />
                         <Suspense fallback={<ExpressPaymentsSkeleton />}>
-                            <UITarget targetId="checkout.expressPayments.before" />
-                            <UITarget targetId="checkout.expressPayments">
+                            <UITarget targetId="sfcc.checkout.expressPayments.before" />
+                            <UITarget targetId="sfcc.checkout.expressPayments">
                                 <ExpressPayments separatorText={t('expressPayments.separator')} />
                             </UITarget>
-                            <UITarget targetId="checkout.expressPayments.after" />
+                            <UITarget targetId="sfcc.checkout.expressPayments.after" />
                         </Suspense>
 
-                        <UITarget targetId="checkout.contactInfo.header.before" />
+                        <UITarget targetId="sfcc.checkout.contactInfo.header.before" />
                         <Suspense fallback={<ContactInfoSkeleton />}>
-                            <UITarget targetId="checkout.contactInfo.before" />
-                            <UITarget targetId="checkout.contactInfo">
+                            <UITarget targetId="sfcc.checkout.contactInfo.before" />
+                            <UITarget targetId="sfcc.checkout.contactInfo">
                                 {!cart ? (
                                     <ContactInfoSkeleton />
                                 ) : (
@@ -579,7 +727,7 @@ export default function CheckoutFormPage({
                                     />
                                 )}
                             </UITarget>
-                            <UITarget targetId="checkout.contactInfo.after" />
+                            <UITarget targetId="sfcc.checkout.contactInfo.after" />
                         </Suspense>
 
                         {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
@@ -602,46 +750,52 @@ export default function CheckoutFormPage({
                         {/* Shipping Address & Options */}
                         {showAddressAndOptions && (
                             <>
-                                <UITarget targetId="checkout.shippingAddress.header.before" />
+                                <UITarget targetId="sfcc.checkout.shippingAddress.header.before" />
                                 <Suspense fallback={<ShippingAddressSkeleton />}>
-                                    <UITarget targetId="checkout.shippingAddress.before" />
-                                    <UITarget targetId="checkout.shippingAddress">{shippingAddressComponent}</UITarget>
-                                    <UITarget targetId="checkout.shippingAddress.after" />
+                                    <UITarget targetId="sfcc.checkout.shippingAddress.before" />
+                                    <UITarget targetId="sfcc.checkout.shippingAddress">
+                                        {shippingAddressComponent}
+                                    </UITarget>
+                                    <UITarget targetId="sfcc.checkout.shippingAddress.after" />
                                 </Suspense>
 
-                                <UITarget targetId="checkout.shippingOptions.header.before" />
+                                <UITarget targetId="sfcc.checkout.shippingOptions.header.before" />
                                 <Suspense fallback={<ShippingOptionsSkeleton />}>
-                                    <UITarget targetId="checkout.shippingOptions.before" />
-                                    <UITarget targetId="checkout.shippingOptions">{shippingOptionsComponent}</UITarget>
-                                    <UITarget targetId="checkout.shippingOptions.after" />
+                                    <UITarget targetId="sfcc.checkout.shippingOptions.before" />
+                                    <UITarget targetId="sfcc.checkout.shippingOptions">
+                                        {shippingOptionsComponent}
+                                    </UITarget>
+                                    <UITarget targetId="sfcc.checkout.shippingOptions.after" />
                                 </Suspense>
                             </>
                         )}
 
-                        <UITarget targetId="checkout.payment.header.before" />
+                        <UITarget targetId="sfcc.checkout.payment.header.before" />
                         <Suspense fallback={<PaymentSkeleton />}>
-                            <UITarget targetId="checkout.payment.before" />
-                            <UITarget targetId="checkout.payment">
+                            <UITarget targetId="sfcc.checkout.payment.before" />
+                            <UITarget targetId="sfcc.checkout.payment">
                                 <Payment
                                     onSubmit={handlePaymentSubmit}
                                     isLoading={isSubmitting('payment')}
                                     actionData={paymentFetcher.data}
-                                    showBillingSameAsShipping={showAddressAndOptions}
+                                    showUseDifferentBilling={showAddressAndOptions}
                                     paymentSubmissionRef={paymentSubmissionRef}
+                                    hidePaymentSaveCheckbox={shouldCreateAccount}
                                     {...paymentState}
                                 />
                             </UITarget>
-                            <UITarget targetId="checkout.payment.after" />
+                            <UITarget targetId="sfcc.checkout.payment.after" />
                         </Suspense>
 
-                        {/* Place Order Section */}
-                        {step >= STEPS.PAYMENT && (
+                        {/* Place Order Section — hide when editing any step except Payment
+                           (Payment has no separate Save button; Place Order acts as its submit) */}
+                        {showPlaceOrderSection && (
                             <div className="flex flex-col items-end gap-4 w-full lg:-mt-4">
                                 {/* Create Account Option - Show for guest users when Place Order is visible (step >= PAYMENT) */}
                                 {step >= STEPS.PAYMENT && (
                                     <div className="w-full">
-                                        <UITarget targetId="checkout.createAccount.before" />
-                                        <UITarget targetId="checkout.createAccount">
+                                        <UITarget targetId="sfcc.checkout.createAccount.before" />
+                                        <UITarget targetId="sfcc.checkout.createAccount">
                                             <GuestAccountCreation
                                                 cart={cart}
                                                 customerProfile={customerProfile}
@@ -650,22 +804,17 @@ export default function CheckoutFormPage({
                                                     paymentSubmissionRef.current.options?.savePaymentToProfile
                                                 }
                                                 showToast={showToast}
-                                                hideCreateAccountOption={hideCreateAccountAfterSkippedPasswordlessOtp}
+                                                hideCreateAccountOption={
+                                                    hideCreateAccountAfterSkippedPasswordlessOtp ||
+                                                    emailVerificationEnabled === false
+                                                }
                                             />
                                         </UITarget>
-                                        <UITarget targetId="checkout.createAccount.after" />
+                                        <UITarget targetId="sfcc.checkout.createAccount.after" />
                                     </div>
                                 )}
-                                {placeOrderFetcher.data &&
-                                    !placeOrderFetcher.data.success &&
-                                    placeOrderFetcher.data.error && (
-                                        <CheckoutErrorBanner
-                                            message={placeOrderFetcher.data.error}
-                                            className="w-full"
-                                        />
-                                    )}
-                                <UITarget targetId="checkout.placeOrder.before" />
-                                <UITarget targetId="checkout.placeOrder">
+                                <UITarget targetId="sfcc.checkout.placeOrder.before" />
+                                <UITarget targetId="sfcc.checkout.placeOrder">
                                     <form
                                         onSubmit={handlePlaceOrderSubmit}
                                         className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
@@ -692,61 +841,19 @@ export default function CheckoutFormPage({
                                         </Button>
                                     </form>
                                 </UITarget>
-                                <UITarget targetId="checkout.placeOrder.after" />
+                                <UITarget targetId="sfcc.checkout.placeOrder.after" />
                             </div>
                         )}
-                        <UITarget targetId="checkout.mainContent.after" />
-                    </div>
-
-                    {/* Order Summary Sidebar - scrolls independently when content exceeds viewport */}
-                    <div
-                        className="hidden lg:block lg:col-span-1 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto"
-                        data-testid="checkout-order-summary-sidebar">
-                        <UITarget targetId="checkout.sidebar.before" />
-                        <div className="sticky top-8 space-y-6">
-                            {/* Order Summary */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>
-                                        <Typography variant="h4" as="h2">
-                                            {t('orderSummary.title')}
-                                        </Typography>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <UITarget targetId="checkout.orderSummary.before" />
-                                    <UITarget targetId="checkout.orderSummary">
-                                        <Suspense fallback={<OrderSummarySkeleton />}>
-                                            <OrderSummary
-                                                basket={cart}
-                                                showCartItems={false}
-                                                showHeading={false}
-                                                showPromoCodeForm={true}
-                                                productsByItemId={{}}
-                                            />
-                                        </Suspense>
-                                    </UITarget>
-                                    <UITarget targetId="checkout.orderSummary.after" />
-                                </CardContent>
-                            </Card>
-
-                            <UITarget targetId="checkout.myCart.before" />
-                            <UITarget targetId="checkout.myCart">
-                                <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
-                                    <MyCartWithData
-                                        basket={cart}
-                                        productMapPromise={productMapPromise}
-                                        promotionsPromise={promotionsPromise}
-                                    />
-                                </Suspense>
-                            </UITarget>
-                            <UITarget targetId="checkout.myCart.after" />
-                        </div>
-                        <UITarget targetId="checkout.sidebar.after" />
+                        <UITarget targetId="sfcc.checkout.mainContent.after" />
                     </div>
                 </div>
             </div>
-            <UITarget targetId="checkout.page.after" />
+            <UITarget targetId="sfcc.checkout.page.after" />
+            {isRegistrationInProgress && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60">
+                    <Spinner size="lg" />
+                </div>
+            )}
         </div>
     );
 }

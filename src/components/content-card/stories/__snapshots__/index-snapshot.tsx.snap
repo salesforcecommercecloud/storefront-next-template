@@ -3,7 +3,7 @@
 exports[`ContentCard stories snapshot > CustomClassNames story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="text-card-foreground flex gap-6 rounded-xl border py-6 shadow-sm h-full overflow-hidden ring-secondary/40 bg-muted/50 flex-row"
+    class="text-card-foreground flex gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50 flex-row"
     data-slot="card"
   >
     <div
@@ -11,7 +11,7 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
         <img
           alt="Custom class names"
@@ -20,35 +20,41 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
           src="https://via.placeholder.com/400x300"
           style="object-position: 50% 50%;"
         />
-      </div>
-    </div>
-    <div
-      class="flex [.border-t]:pt-6 gap-4 p-6 flex-1 flex-row items-center"
-      data-slot="card-footer"
-    >
-      <div
-        class="flex-none"
-      >
-        <h3
-          class="text-2xl font-bold text-foreground mb-3"
+        <div
+          class="absolute inset-0 flex justify-end p-6 md:p-8 flex-row items-center"
         >
-          Custom Class Names
-        </h3>
-        <p
-          class="text-sm text-muted-foreground whitespace-pre-line"
-        >
-          This example applies custom classes to the footer, description, and button.
-        </p>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent -z-10"
+          />
+          <div
+            class="relative z-10"
+          >
+            <div
+              class="flex flex-col justify-end flex-none"
+            >
+              <p
+                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+              >
+                This example applies custom classes to the footer, description, and button.
+              </p>
+              <h3
+                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+              >
+                Custom Class Names
+              </h3>
+            </div>
+            <a
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              href="/details"
+            >
+              View Details
+            </a>
+          </div>
+        </div>
       </div>
-      <a
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit"
-        data-size="default"
-        data-slot="button"
-        data-variant="default"
-        href="/details"
-      >
-        View Details
-      </a>
     </div>
   </div>
 </div>
@@ -57,7 +63,7 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
 exports[`ContentCard stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   >
     <div
@@ -65,7 +71,7 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
       data-slot="card-content"
     >
       <div
-        class="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary/20"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
         <img
           alt="Featured Product"
@@ -74,35 +80,41 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
           src="https://via.placeholder.com/400x300"
           style="object-position: 50% 50%;"
         />
-      </div>
-    </div>
-    <div
-      class="flex [.border-t]:pt-6 flex-col items-start gap-4 p-6 flex-1"
-      data-slot="card-footer"
-    >
-      <div
-        class="flex-1"
-      >
-        <h3
-          class="text-2xl font-bold text-foreground mb-3"
+        <div
+          class="absolute inset-0 flex flex-col justify-end p-6 md:p-8"
         >
-          Featured Product
-        </h3>
-        <p
-          class="text-sm text-muted-foreground whitespace-pre-line"
-        >
-          Discover our latest collection of premium products designed for modern living.
-        </p>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent -z-10"
+          />
+          <div
+            class="relative z-10"
+          >
+            <div
+              class="flex-1 flex flex-col justify-end"
+            >
+              <p
+                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+              >
+                Discover our latest collection of premium products designed for modern living.
+              </p>
+              <h3
+                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+              >
+                Featured Product
+              </h3>
+            </div>
+            <a
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              href="/category/featured"
+            >
+              Shop Now
+            </a>
+          </div>
+        </div>
       </div>
-      <a
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-        data-size="default"
-        data-slot="button"
-        data-variant="default"
-        href="/category/featured"
-      >
-        Shop Now
-      </a>
     </div>
   </div>
 </div>
@@ -111,26 +123,48 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
 exports[`ContentCard stories snapshot > Minimal story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   >
     <div
-      class="flex [.border-t]:pt-6 flex-col items-start gap-4 p-6 flex-1"
-      data-slot="card-footer"
+      class="p-0"
+      data-slot="card-content"
     >
       <div
-        class="flex-1"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
-        <h3
-          class="text-2xl font-bold text-foreground mb-3"
+        <img
+          alt="Minimal card"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          src="https://via.placeholder.com/400x300"
+          style="object-position: 50% 50%;"
+        />
+        <div
+          class="absolute inset-0 flex flex-col justify-end p-6 md:p-8"
         >
-          Minimal Card
-        </h3>
-        <p
-          class="text-sm text-muted-foreground whitespace-pre-line"
-        >
-          A simple card with just title and description, no button.
-        </p>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent -z-10"
+          />
+          <div
+            class="relative z-10"
+          >
+            <div
+              class="flex-1 flex flex-col justify-end"
+            >
+              <p
+                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+              >
+                A simple card with image and text overlay.
+              </p>
+              <h3
+                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+              >
+                Minimal Card
+              </h3>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -140,74 +174,109 @@ exports[`ContentCard stories snapshot > Minimal story renders and matches snapsh
 exports[`ContentCard stories snapshot > NoBackground story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl py-6 h-full overflow-hidden bg-transparent border-0 shadow-none"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl py-6 relative h-full overflow-hidden bg-transparent border-0 shadow-none"
     data-slot="card"
   >
     <div
-      class="flex [.border-t]:pt-6 flex-col items-start gap-4 p-6 flex-1"
-      data-slot="card-footer"
+      class="p-0"
+      data-slot="card-content"
     >
       <div
-        class="flex-1"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
-        <h3
-          class="text-2xl font-bold text-foreground mb-3"
+        <img
+          alt="Transparent card"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          src="https://via.placeholder.com/400x300"
+          style="object-position: 50% 50%;"
+        />
+        <div
+          class="absolute inset-0 flex flex-col justify-end p-6 md:p-8"
         >
-          Transparent Card
-        </h3>
-        <p
-          class="text-sm text-muted-foreground whitespace-pre-line"
-        >
-          This card has no background or border for a cleaner look.
-        </p>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent -z-10"
+          />
+          <div
+            class="relative z-10"
+          >
+            <div
+              class="flex-1 flex flex-col justify-end"
+            >
+              <p
+                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+              >
+                This card has no background or border for a cleaner look.
+              </p>
+              <h3
+                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+              >
+                Transparent Card
+              </h3>
+            </div>
+            <a
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              href="/explore"
+            >
+              Explore
+            </a>
+          </div>
+        </div>
       </div>
-      <a
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-        data-size="default"
-        data-slot="button"
-        data-variant="default"
-        href="/explore"
-      >
-        Explore
-      </a>
     </div>
   </div>
 </div>
 `;
 
-exports[`ContentCard stories snapshot > WithoutImage story renders and matches snapshot 1`] = `
+exports[`ContentCard stories snapshot > WithoutButton story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm h-full overflow-hidden ring-secondary/40 bg-muted/50"
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative h-full overflow-hidden ring-secondary/40 bg-muted/50"
     data-slot="card"
   >
     <div
-      class="flex [.border-t]:pt-6 flex-col items-start gap-4 p-6 flex-1"
-      data-slot="card-footer"
+      class="p-0"
+      data-slot="card-content"
     >
       <div
-        class="flex-1"
+        class="relative aspect-[4/3] overflow-hidden rounded-none bg-secondary/20"
       >
-        <h3
-          class="text-2xl font-bold text-foreground mb-3"
+        <img
+          alt="Text only card"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          src="https://via.placeholder.com/400x300"
+          style="object-position: 50% 50%;"
+        />
+        <div
+          class="absolute inset-0 flex flex-col justify-end p-6 md:p-8"
         >
-          Text Only Card
-        </h3>
-        <p
-          class="text-sm text-muted-foreground whitespace-pre-line"
-        >
-          This card doesn't have an image, just text content and a button.
-        </p>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent -z-10"
+          />
+          <div
+            class="relative z-10"
+          >
+            <div
+              class="flex-1 flex flex-col justify-end"
+            >
+              <p
+                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+              >
+                This card has an image with text overlay but no button.
+              </p>
+              <h3
+                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+              >
+                Text Only Card
+              </h3>
+            </div>
+          </div>
+        </div>
       </div>
-      <a
-        class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-        data-size="default"
-        data-slot="button"
-        data-variant="default"
-        href="/about"
-      >
-        Learn More
-      </a>
     </div>
   </div>
 </div>

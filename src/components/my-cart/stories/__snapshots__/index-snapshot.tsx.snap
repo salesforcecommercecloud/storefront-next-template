@@ -4,70 +4,240 @@ exports[`MyCart stories snapshot > Default story renders and matches snapshot 1`
 <div>
   <div
     class="w-full"
-    data-orientation="vertical"
-    data-slot="accordion"
   >
     <div
-      class="border-b last:border-b-0 border-none"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="closed"
+      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]"
+      data-testid="my-cart-toggle"
     >
-      <h3
-        class="flex"
-        data-orientation="vertical"
-        data-state="closed"
-      >
-        <button
-          aria-controls="radix-«x»"
-          aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 md:py-5"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
-          data-state="closed"
-          data-testid="my-cart-toggle"
-          id="radix-«x»"
-          type="button"
-        >
-          <span
-            class="text-base md:text-lg font-semibold text-foreground"
-          >
-            My Cart
-             (
-            4
-            )
-          </span>
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
       <div
-        aria-labelledby="radix-«x»"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="closed"
-        hidden=""
-        id="radix-«x»"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-      />
+        class="py-4"
+        data-testid="my-cart-item-701642868279M"
+      >
+        <div
+          class="flex gap-3 md:gap-4"
+        >
+          <div
+            class="flex-shrink-0"
+          >
+            <div
+              class="w-16 h-16 md:w-20 md:h-20 bg-muted overflow-hidden flex items-center justify-center"
+            >
+              <div
+                class="w-full h-full bg-muted"
+              />
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="flex justify-between items-start gap-2"
+            >
+              <a
+                class="text-sm font-semibold text-foreground hover:text-primary"
+                href="/RefArchGlobal/en-GB/product/701642868279M"
+              >
+                Button Front Jacket
+              </a>
+              <div
+                class="flex flex-col items-end gap-1 shrink-0"
+              >
+                <span
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-truck size-3"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                    />
+                    <path
+                      d="M15 18H9"
+                    />
+                    <path
+                      d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                    />
+                    <circle
+                      cx="17"
+                      cy="18"
+                      r="2"
+                    />
+                    <circle
+                      cx="7"
+                      cy="18"
+                      r="2"
+                    />
+                  </svg>
+                  Delivery
+                </span>
+              </div>
+            </div>
+            <div
+              class="mt-1 space-y-0.5 text-xs"
+            />
+            <div
+              class="mt-1"
+            >
+              <div
+                class="items-center gap-2"
+              >
+                <span
+                  aria-label="Current price: £39.67"
+                  aria-live="polite"
+                  class="[&:not(:first-child)]:mt-6 text-left text-sm font-semibold text-foreground"
+                >
+                  £39.67
+                </span>
+                <span
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="sr-only"
+                >
+                  Button Front Jacket
+                   
+                  Current price: £39.67
+                </span>
+                 
+              </div>
+            </div>
+            <div
+              class="mt-0.5 text-xs"
+            >
+              Qty:
+               
+              1
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="py-4"
+        data-testid="my-cart-item-883360520599M"
+      >
+        <div
+          class="flex gap-3 md:gap-4"
+        >
+          <div
+            class="flex-shrink-0"
+          >
+            <div
+              class="w-16 h-16 md:w-20 md:h-20 bg-muted overflow-hidden flex items-center justify-center"
+            >
+              <div
+                class="w-full h-full bg-muted"
+              />
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="flex justify-between items-start gap-2"
+            >
+              <a
+                class="text-sm font-semibold text-foreground hover:text-primary"
+                href="/RefArchGlobal/en-GB/product/883360520599M"
+              >
+                Casual To Dressy Trousers
+              </a>
+              <div
+                class="flex flex-col items-end gap-1 shrink-0"
+              >
+                <span
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-truck size-3"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                    />
+                    <path
+                      d="M15 18H9"
+                    />
+                    <path
+                      d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                    />
+                    <circle
+                      cx="17"
+                      cy="18"
+                      r="2"
+                    />
+                    <circle
+                      cx="7"
+                      cy="18"
+                      r="2"
+                    />
+                  </svg>
+                  Delivery
+                </span>
+              </div>
+            </div>
+            <div
+              class="mt-1 space-y-0.5 text-xs"
+            />
+            <div
+              class="mt-1"
+            >
+              <div
+                class="items-center gap-2"
+              >
+                <span
+                  aria-label="Current price: £374.40"
+                  aria-live="polite"
+                  class="[&:not(:first-child)]:mt-6 text-left text-sm font-semibold text-foreground"
+                >
+                  £374.40
+                </span>
+                <span
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="sr-only"
+                >
+                  Casual To Dressy Trousers
+                   
+                  Current price: £374.40
+                </span>
+                 
+              </div>
+              <div
+                class="text-xs"
+              >
+                £124.80
+                 
+                each
+              </div>
+            </div>
+            <div
+              class="mt-0.5 text-xs"
+            >
+              Qty:
+               
+              3
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -77,190 +247,236 @@ exports[`MyCart stories snapshot > Expanded story renders and matches snapshot 1
 <div>
   <div
     class="w-full"
-    data-orientation="vertical"
-    data-slot="accordion"
   >
     <div
-      class="border-b last:border-b-0 border-none"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="open"
+      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]"
+      data-testid="my-cart-toggle"
     >
-      <h3
-        class="flex"
-        data-orientation="vertical"
-        data-state="open"
-      >
-        <button
-          aria-controls="radix-«x»"
-          aria-expanded="true"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 md:py-5"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
-          data-state="open"
-          data-testid="my-cart-toggle"
-          id="radix-«x»"
-          type="button"
-        >
-          <span
-            class="text-base md:text-lg font-semibold text-foreground"
-          >
-            My Cart
-             (
-            4
-            )
-          </span>
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
       <div
-        aria-labelledby="radix-«x»"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="open"
-        id="radix-«x»"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width); transition-duration: 0s; animation-name: none;"
+        class="py-4"
+        data-testid="my-cart-item-701642868279M"
       >
         <div
-          class="pt-0 px-0 pb-0"
+          class="flex gap-3 md:gap-4"
         >
           <div
-            class="flex flex-col gap-6 md:gap-10"
+            class="flex-shrink-0"
           >
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 shadow-sm px-4 py-3 md:px-6 md:py-4 border border-border rounded-lg"
-              data-slot="card"
-              data-testid="my-cart-item-701642868279M"
+              class="w-16 h-16 md:w-20 md:h-20 bg-muted overflow-hidden flex items-center justify-center"
             >
               <div
-                class="flex gap-3 md:gap-4"
+                class="w-full h-full bg-muted"
+              />
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="flex justify-between items-start gap-2"
+            >
+              <a
+                class="text-sm font-semibold text-foreground hover:text-primary"
+                href="/RefArchGlobal/en-GB/product/701642868279M"
               >
-                <div
-                  class="flex-shrink-0"
+                Button Front Jacket
+              </a>
+              <div
+                class="flex flex-col items-end gap-1 shrink-0"
+              >
+                <span
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
                 >
-                  <div
-                    class="w-16 h-16 md:w-24 md:h-24 bg-muted rounded-lg overflow-hidden flex items-center justify-center"
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-truck size-3"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <div
-                      class="w-full h-full bg-muted"
+                    <path
+                      d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
                     />
-                  </div>
-                </div>
-                <div
-                  class="flex-1 min-w-0"
-                >
-                  <a
-                    class="text-sm md:text-base font-semibold text-foreground hover:text-primary block mb-1 md:mb-2"
-                    href="/product/701642868279M"
-                  >
-                    Button Front Jacket
-                  </a>
-                  <div
-                    class="space-y-0.5 md:space-y-1 text-xs md:text-sm text-muted-foreground"
-                  />
-                </div>
-                <div
-                  class="flex-shrink-0 text-right"
-                >
-                  <div
-                    class="items-center gap-2"
-                  >
-                    <span
-                      aria-label="Current price: £39.67"
-                      aria-live="polite"
-                      class="[&:not(:first-child)]:mt-6 text-left text-sm md:text-base font-semibold text-foreground"
-                    >
-                      £39.67
-                    </span>
-                    <span
-                      aria-atomic="true"
-                      aria-live="polite"
-                      class="sr-only"
-                    >
-                      Button Front Jacket
-                      Current price: £39.67
-                    </span>
-                     
-                  </div>
-                </div>
+                    <path
+                      d="M15 18H9"
+                    />
+                    <path
+                      d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                    />
+                    <circle
+                      cx="17"
+                      cy="18"
+                      r="2"
+                    />
+                    <circle
+                      cx="7"
+                      cy="18"
+                      r="2"
+                    />
+                  </svg>
+                  Delivery
+                </span>
               </div>
             </div>
             <div
-              class="bg-card text-card-foreground flex flex-col gap-6 shadow-sm px-4 py-3 md:px-6 md:py-4 border border-border rounded-lg"
-              data-slot="card"
-              data-testid="my-cart-item-883360520599M"
+              class="mt-1 space-y-0.5 text-xs"
+            />
+            <div
+              class="mt-1"
             >
               <div
-                class="flex gap-3 md:gap-4"
+                class="items-center gap-2"
               >
-                <div
-                  class="flex-shrink-0"
+                <span
+                  aria-label="Current price: £39.67"
+                  aria-live="polite"
+                  class="[&:not(:first-child)]:mt-6 text-left text-sm font-semibold text-foreground"
                 >
-                  <div
-                    class="w-16 h-16 md:w-24 md:h-24 bg-muted rounded-lg overflow-hidden flex items-center justify-center"
-                  >
-                    <div
-                      class="w-full h-full bg-muted"
-                    />
-                  </div>
-                </div>
-                <div
-                  class="flex-1 min-w-0"
+                  £39.67
+                </span>
+                <span
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="sr-only"
                 >
-                  <a
-                    class="text-sm md:text-base font-semibold text-foreground hover:text-primary block mb-1 md:mb-2"
-                    href="/product/883360520599M"
-                  >
-                    Casual To Dressy Trousers
-                  </a>
-                  <div
-                    class="space-y-0.5 md:space-y-1 text-xs md:text-sm text-muted-foreground"
-                  />
-                </div>
-                <div
-                  class="flex-shrink-0 text-right"
-                >
-                  <div
-                    class="items-center gap-2"
-                  >
-                    <span
-                      aria-label="Current price: £124.80"
-                      aria-live="polite"
-                      class="[&:not(:first-child)]:mt-6 text-left text-sm md:text-base font-semibold text-foreground"
-                    >
-                      £124.80
-                    </span>
-                    <span
-                      aria-atomic="true"
-                      aria-live="polite"
-                      class="sr-only"
-                    >
-                      Casual To Dressy Trousers
-                      Current price: £124.80
-                    </span>
-                     
-                  </div>
-                </div>
+                  Button Front Jacket
+                   
+                  Current price: £39.67
+                </span>
+                 
               </div>
+            </div>
+            <div
+              class="mt-0.5 text-xs"
+            >
+              Qty:
+               
+              1
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="py-4"
+        data-testid="my-cart-item-883360520599M"
+      >
+        <div
+          class="flex gap-3 md:gap-4"
+        >
+          <div
+            class="flex-shrink-0"
+          >
+            <div
+              class="w-16 h-16 md:w-20 md:h-20 bg-muted overflow-hidden flex items-center justify-center"
+            >
+              <div
+                class="w-full h-full bg-muted"
+              />
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="flex justify-between items-start gap-2"
+            >
+              <a
+                class="text-sm font-semibold text-foreground hover:text-primary"
+                href="/RefArchGlobal/en-GB/product/883360520599M"
+              >
+                Casual To Dressy Trousers
+              </a>
+              <div
+                class="flex flex-col items-end gap-1 shrink-0"
+              >
+                <span
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-truck size-3"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                    />
+                    <path
+                      d="M15 18H9"
+                    />
+                    <path
+                      d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                    />
+                    <circle
+                      cx="17"
+                      cy="18"
+                      r="2"
+                    />
+                    <circle
+                      cx="7"
+                      cy="18"
+                      r="2"
+                    />
+                  </svg>
+                  Delivery
+                </span>
+              </div>
+            </div>
+            <div
+              class="mt-1 space-y-0.5 text-xs"
+            />
+            <div
+              class="mt-1"
+            >
+              <div
+                class="items-center gap-2"
+              >
+                <span
+                  aria-label="Current price: £374.40"
+                  aria-live="polite"
+                  class="[&:not(:first-child)]:mt-6 text-left text-sm font-semibold text-foreground"
+                >
+                  £374.40
+                </span>
+                <span
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="sr-only"
+                >
+                  Casual To Dressy Trousers
+                   
+                  Current price: £374.40
+                </span>
+                 
+              </div>
+              <div
+                class="text-xs"
+              >
+                £124.80
+                 
+                each
+              </div>
+            </div>
+            <div
+              class="mt-0.5 text-xs"
+            >
+              Qty:
+               
+              3
             </div>
           </div>
         </div>
@@ -274,70 +490,122 @@ exports[`MyCart stories snapshot > SingleItem story renders and matches snapshot
 <div>
   <div
     class="w-full"
-    data-orientation="vertical"
-    data-slot="accordion"
   >
     <div
-      class="border-b last:border-b-0 border-none"
-      data-orientation="vertical"
-      data-slot="accordion-item"
-      data-state="closed"
+      class="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]"
+      data-testid="my-cart-toggle"
     >
-      <h3
-        class="flex"
-        data-orientation="vertical"
-        data-state="closed"
-      >
-        <button
-          aria-controls="radix-«x»"
-          aria-expanded="false"
-          class="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 text-left hover:no-underline py-4 md:py-5"
-          data-orientation="vertical"
-          data-radix-collection-item=""
-          data-slot="accordion-trigger"
-          data-state="closed"
-          data-testid="my-cart-toggle"
-          id="radix-«x»"
-          type="button"
-        >
-          <span
-            class="text-base md:text-lg font-semibold text-foreground"
-          >
-            My Cart
-             (
-            1
-            )
-          </span>
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="m6 9 6 6 6-6"
-            />
-          </svg>
-        </button>
-      </h3>
       <div
-        aria-labelledby="radix-«x»"
-        class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
-        data-orientation="vertical"
-        data-slot="accordion-content"
-        data-state="closed"
-        hidden=""
-        id="radix-«x»"
-        role="region"
-        style="--radix-accordion-content-height: var(--radix-collapsible-content-height); --radix-accordion-content-width: var(--radix-collapsible-content-width);"
-      />
+        class="py-4"
+        data-testid="my-cart-item-701642868279M"
+      >
+        <div
+          class="flex gap-3 md:gap-4"
+        >
+          <div
+            class="flex-shrink-0"
+          >
+            <div
+              class="w-16 h-16 md:w-20 md:h-20 bg-muted overflow-hidden flex items-center justify-center"
+            >
+              <div
+                class="w-full h-full bg-muted"
+              />
+            </div>
+          </div>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <div
+              class="flex justify-between items-start gap-2"
+            >
+              <a
+                class="text-sm font-semibold text-foreground hover:text-primary"
+                href="/RefArchGlobal/en-GB/product/701642868279M"
+              >
+                Button Front Jacket
+              </a>
+              <div
+                class="flex flex-col items-end gap-1 shrink-0"
+              >
+                <span
+                  class="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-truck size-3"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                    />
+                    <path
+                      d="M15 18H9"
+                    />
+                    <path
+                      d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                    />
+                    <circle
+                      cx="17"
+                      cy="18"
+                      r="2"
+                    />
+                    <circle
+                      cx="7"
+                      cy="18"
+                      r="2"
+                    />
+                  </svg>
+                  Delivery
+                </span>
+              </div>
+            </div>
+            <div
+              class="mt-1 space-y-0.5 text-xs"
+            />
+            <div
+              class="mt-1"
+            >
+              <div
+                class="items-center gap-2"
+              >
+                <span
+                  aria-label="Current price: £39.67"
+                  aria-live="polite"
+                  class="[&:not(:first-child)]:mt-6 text-left text-sm font-semibold text-foreground"
+                >
+                  £39.67
+                </span>
+                <span
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="sr-only"
+                >
+                  Button Front Jacket
+                   
+                  Current price: £39.67
+                </span>
+                 
+              </div>
+            </div>
+            <div
+              class="mt-0.5 text-xs"
+            >
+              Qty:
+               
+              1
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

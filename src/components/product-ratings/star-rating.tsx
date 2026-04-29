@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { forwardRef, type HTMLAttributes } from 'react';
+import { type HTMLAttributes, type Ref, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { StarIcon } from './star-icon';
 
 export interface StarRatingProps extends HTMLAttributes<HTMLDivElement> {
+    /**
+     * Ref forwarded to the root div element
+     */
+    ref?: Ref<HTMLDivElement>;
     /**
      * The rating value (0-5)
      */
@@ -138,156 +142,165 @@ function formatRating(rating: number): string {
  * @param values - Object with key-value pairs to replace
  */
 function formatString(template: string, values: Record<string, string | number>): string {
-    return template.replace(/\{(\w+)\}/g, (match, key) => String(values[key] ?? match));
+    return template.replace(/\{(\w+)}/g, (match, key) => String(values[key] ?? match));
 }
+
+const STAR_SIZE_CLASSES = {
+    sm: 'w-3 h-3',
+    default: 'w-4 h-4',
+    lg: 'w-6 h-6',
+} as const;
 
 /**
  * StarRating component displays a customizable star rating with optional labels and links
  */
-export const StarRating = forwardRef<HTMLDivElement, StarRatingProps>(
-    (
-        {
-            rating,
-            reviewCount,
-            showRatingLabel = false,
-            ratingLabelPosition = 'top',
-            ratingLabelFormat = 'full',
-            ratingLabelTemplate,
-            showRatingLink = false,
-            ratingLinkTemplate,
-            onRatingLinkClick,
-            showReviewCountLabel = false,
-            reviewCountLabelTemplate,
-            starSize = 'sm',
-            ratingLabelClassName = 'text-lg font-semibold text-black',
-            reviewCountLabelClassName = 'text-xs text-gray-500 mt-2 mb-4',
-            starClassName,
-            ratingLinkClassName = 'text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground',
-            starContainerAriaLabelTemplate,
-            ratingLinkAriaLabelTemplate,
-            totalStars = 5,
-            className,
-            ...props
-        },
-        ref
-    ) => {
-        const { t } = useTranslation();
+export function StarRating({
+    rating,
+    reviewCount,
+    showRatingLabel = false,
+    ratingLabelPosition = 'top',
+    ratingLabelFormat = 'full',
+    ratingLabelTemplate,
+    showRatingLink = false,
+    ratingLinkTemplate,
+    onRatingLinkClick,
+    showReviewCountLabel = false,
+    reviewCountLabelTemplate,
+    starSize = 'sm',
+    ratingLabelClassName = 'text-lg font-semibold text-black',
+    reviewCountLabelClassName = 'text-xs text-gray-500 mt-2 mb-4',
+    starClassName,
+    ratingLinkClassName = 'text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground',
+    starContainerAriaLabelTemplate,
+    ratingLinkAriaLabelTemplate,
+    totalStars = 5,
+    className,
+    ref,
+    ...props
+}: StarRatingProps) {
+    const { t } = useTranslation();
 
-        // Clamp rating between 0 and 5
-        const clampedRating = Math.min(Math.max(rating, 0), 5);
-        const formattedRating = formatRating(clampedRating);
+    // Clamp rating between 0 and 5
+    const clampedRating = Math.min(Math.max(rating, 0), 5);
+    const formattedRating = formatRating(clampedRating);
 
-        // Star size classes
-        const starSizeClasses = {
-            sm: 'w-3 h-3',
-            default: 'w-4 h-4',
-            lg: 'w-6 h-6',
-        };
+    // Compute star class string once (same for all 5 stars)
+    const starClasses = cn(STAR_SIZE_CLASSES[starSize], starClassName);
 
-        // Generate rating label (with type assertion to prevent TS compiler crash)
-        const ratingLabel = ratingLabelTemplate
-            ? formatString(ratingLabelTemplate, { rating: formattedRating })
-            : ratingLabelFormat === 'full'
-              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (t as any)('product:rating.ratingOutOfTotal', { rating: formattedRating, total: totalStars })
-              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (t as any)('product:rating.ratingValue', { rating: formattedRating });
+    // Generate rating label
+    const ratingLabel = useMemo(
+        () =>
+            ratingLabelTemplate
+                ? formatString(ratingLabelTemplate, { rating: formattedRating })
+                : ratingLabelFormat === 'full'
+                  ? t('product:rating.ratingOutOfTotal', { rating: formattedRating, total: totalStars })
+                  : t('product:rating.ratingValue', { rating: formattedRating }),
+        [t, ratingLabelTemplate, ratingLabelFormat, formattedRating, totalStars]
+    );
 
-        // Generate rating link text (with type assertion to prevent TS compiler crash)
-        const ratingLinkText = ratingLinkTemplate
-            ? formatString(ratingLinkTemplate, {
-                  rating: formattedRating,
-                  count: reviewCount,
-              })
-            : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (t as any)('product:rating.ratingWithCount', {
-                  rating: formattedRating,
-                  count: reviewCount,
-              });
+    // Generate rating link text
+    const ratingLinkText = useMemo(
+        () =>
+            ratingLinkTemplate
+                ? formatString(ratingLinkTemplate, {
+                      rating: formattedRating,
+                      count: reviewCount,
+                  })
+                : t('product:rating.ratingWithCount', {
+                      rating: formattedRating,
+                      count: reviewCount,
+                  }),
+        [t, ratingLinkTemplate, formattedRating, reviewCount]
+    );
 
-        // Generate review count label (with type assertion to prevent TS compiler crash)
-        const reviewCountLabel = reviewCountLabelTemplate
-            ? formatString(reviewCountLabelTemplate, { count: reviewCount })
-            : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (t as any)('product:rating.basedOnReviews', { count: reviewCount });
+    // Generate review count label
+    const reviewCountLabel = useMemo(
+        () =>
+            reviewCountLabelTemplate
+                ? formatString(reviewCountLabelTemplate, { count: reviewCount })
+                : t('product:rating.basedOnReviews', { count: reviewCount }),
+        [t, reviewCountLabelTemplate, reviewCount]
+    );
 
-        // Generate aria-labels for accessibility using i18next translations
-        const starContainerAriaLabel = starContainerAriaLabelTemplate
-            ? formatString(starContainerAriaLabelTemplate, {
-                  rating: formatRating(clampedRating),
-                  total: totalStars,
-                  count: reviewCount,
-              })
-            : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (t as any)('product:rating.starContainerAriaLabel', {
-                  rating: formatRating(clampedRating),
-                  total: totalStars,
-                  count: reviewCount,
-              });
+    // Generate aria-labels for accessibility using i18next translations
+    const starContainerAriaLabel = useMemo(
+        () =>
+            starContainerAriaLabelTemplate
+                ? formatString(starContainerAriaLabelTemplate, {
+                      rating: formattedRating,
+                      total: totalStars,
+                      count: reviewCount,
+                  })
+                : t('product:rating.starContainerAriaLabel', {
+                      rating: formattedRating,
+                      total: totalStars,
+                      count: reviewCount,
+                  }),
+        [t, starContainerAriaLabelTemplate, formattedRating, totalStars, reviewCount]
+    );
 
-        // For rating link aria-label: use explicit template, fall back to visual text if customized, then i18n default
-        const isCustomRatingLinkTemplate = ratingLinkTemplate !== undefined;
-        const ratingLinkAriaLabel = ratingLinkAriaLabelTemplate
-            ? ratingLinkAriaLabelTemplate
-            : isCustomRatingLinkTemplate
-              ? ratingLinkText
-              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (t as any)('product:rating.viewAllReviews');
+    // For rating link aria-label: use explicit template, fall back to visual text if customized, then i18n default
+    const ratingLinkAriaLabel = useMemo(
+        () =>
+            ratingLinkAriaLabelTemplate
+                ? ratingLinkAriaLabelTemplate
+                : ratingLinkTemplate !== undefined
+                  ? ratingLinkText
+                  : t('product:rating.viewAllReviews'),
+        [t, ratingLinkAriaLabelTemplate, ratingLinkTemplate, ratingLinkText]
+    );
 
-        return (
-            <div ref={ref} className={cn('flex flex-col gap-1', className)} {...props}>
-                {/* Top Rating Label */}
-                {showRatingLabel && ratingLabelPosition === 'top' && (
+    return (
+        <div ref={ref} className={cn('flex flex-col gap-1', className)} {...props}>
+            {/* Top Rating Label */}
+            {showRatingLabel && ratingLabelPosition === 'top' && (
+                <div className={ratingLabelClassName}>{ratingLabel}</div>
+            )}
+
+            {/* Stars Row */}
+            <div className="flex items-center gap-2">
+                {/* Stars */}
+                <div role="group" aria-label={starContainerAriaLabel} className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((position) => {
+                        const fillValue = clampedRating - (position - 1);
+                        const isUnfilled = fillValue <= 0;
+                        const opacity = isUnfilled ? 1 : Math.min(Math.max(fillValue, 0), 1);
+
+                        return (
+                            <StarIcon
+                                key={position}
+                                opacity={opacity}
+                                filled={!isUnfilled}
+                                className={starClasses}
+                                aria-hidden="true"
+                            />
+                        );
+                    })}
+                </div>
+
+                {/* Right Rating Label */}
+                {showRatingLabel && ratingLabelPosition === 'right' && (
                     <div className={ratingLabelClassName}>{ratingLabel}</div>
                 )}
 
-                {/* Stars Row */}
-                <div className="flex items-center gap-2">
-                    {/* Stars */}
-                    <div role="group" aria-label={starContainerAriaLabel} className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4, 5].map((position) => {
-                            const fillValue = clampedRating - (position - 1);
-                            const isUnfilled = fillValue <= 0;
-                            const opacity = isUnfilled ? 1 : Math.min(Math.max(fillValue, 0), 1);
-
-                            return (
-                                <StarIcon
-                                    key={position}
-                                    opacity={opacity}
-                                    filled={!isUnfilled}
-                                    className={cn(starSizeClasses[starSize], starClassName)}
-                                    aria-hidden="true"
-                                />
-                            );
-                        })}
-                    </div>
-
-                    {/* Right Rating Label */}
-                    {showRatingLabel && ratingLabelPosition === 'right' && (
-                        <div className={ratingLabelClassName}>{ratingLabel}</div>
-                    )}
-
-                    {/* Rating Link */}
-                    {showRatingLink && (
-                        <button
-                            type="button"
-                            onClick={onRatingLinkClick}
-                            onMouseEnter={onRatingLinkClick}
-                            aria-label={ratingLinkAriaLabel}
-                            className={cn(
-                                'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded',
-                                ratingLinkClassName
-                            )}>
-                            {ratingLinkText}
-                        </button>
-                    )}
-                </div>
-
-                {/* Review Count Label */}
-                {showReviewCountLabel && <div className={reviewCountLabelClassName}>{reviewCountLabel}</div>}
+                {/* Rating Link */}
+                {showRatingLink && (
+                    <button
+                        type="button"
+                        onClick={onRatingLinkClick}
+                        onMouseEnter={onRatingLinkClick}
+                        aria-label={ratingLinkAriaLabel}
+                        className={cn(
+                            'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded',
+                            ratingLinkClassName
+                        )}>
+                        {ratingLinkText}
+                    </button>
+                )}
             </div>
-        );
-    }
-);
 
-StarRating.displayName = 'StarRating';
+            {/* Review Count Label */}
+            {showReviewCountLabel && <div className={reviewCountLabelClassName}>{reviewCountLabel}</div>}
+        </div>
+    );
+}

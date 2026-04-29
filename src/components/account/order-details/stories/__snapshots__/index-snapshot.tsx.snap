@@ -69,7 +69,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -145,7 +145,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                         <a
                           class="flex-shrink-0 block"
                           data-discover="true"
-                          href="/product/701643108633M"
+                          href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
@@ -169,7 +169,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                               <a
                                 class="text-foreground hover:text-primary block break-words"
                                 data-discover="true"
-                                href="/product/701643108633M"
+                                href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
                               >
                                 First Product
@@ -182,6 +182,23 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                           >
                             Qty: 1
                           </p>
+                          <div
+                            class="pt-1"
+                          >
+                            <button
+                              aria-busy="false"
+                              aria-expanded="false"
+                              aria-haspopup="dialog"
+                              class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 h-auto p-0 text-sm font-medium"
+                              data-size="sm"
+                              data-slot="button"
+                              data-testid="order-line-rate-review"
+                              data-variant="link"
+                              type="button"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
                         </div>
                         <div
                           class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
@@ -202,6 +219,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -212,7 +230,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                             data-size="sm"
                             data-slot="button"
                             data-variant="default"
-                            href="/product/701643108633M"
+                            href="/RefArchGlobal/en-GB/product/701643108633M"
                           >
                             Buy Again
                           </a>
@@ -303,7 +321,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -315,7 +333,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -360,20 +378,13 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -462,7 +473,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -520,7 +531,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                         <a
                           class="flex-shrink-0 block"
                           data-discover="true"
-                          href="/product/701643108633M"
+                          href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
@@ -544,7 +555,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                               <a
                                 class="text-foreground hover:text-primary block break-words"
                                 data-discover="true"
-                                href="/product/701643108633M"
+                                href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
                               >
                                 First Product
@@ -557,6 +568,23 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                           >
                             Qty: 1
                           </p>
+                          <div
+                            class="pt-1"
+                          >
+                            <button
+                              aria-busy="false"
+                              aria-expanded="false"
+                              aria-haspopup="dialog"
+                              class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 h-auto p-0 text-sm font-medium"
+                              data-size="sm"
+                              data-slot="button"
+                              data-testid="order-line-rate-review"
+                              data-variant="link"
+                              type="button"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
                         </div>
                         <div
                           class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
@@ -577,6 +605,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -587,7 +616,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                             data-size="sm"
                             data-slot="button"
                             data-variant="default"
-                            href="/product/701643108633M"
+                            href="/RefArchGlobal/en-GB/product/701643108633M"
                           >
                             Buy Again
                           </a>
@@ -678,7 +707,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -690,7 +719,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -735,20 +764,13 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -837,7 +859,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -895,13 +917,13 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         <a
                           class="flex-shrink-0 block"
                           data-discover="true"
-                          href="/product/prod-a"
+                          href="/RefArchGlobal/en-GB/product/prod-a"
                         >
                           <div
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
                           >
                             <div
-                              class="w-full h-full bg-muted rounded"
+                              class="w-full h-full bg-muted rounded-none"
                             />
                           </div>
                         </a>
@@ -917,7 +939,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               <a
                                 class="text-foreground hover:text-primary block break-words"
                                 data-discover="true"
-                                href="/product/prod-a"
+                                href="/RefArchGlobal/en-GB/product/prod-a"
                                 title="Product for Alice"
                               >
                                 Product for Alice
@@ -930,6 +952,23 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           >
                             Qty: 1
                           </p>
+                          <div
+                            class="pt-1"
+                          >
+                            <button
+                              aria-busy="false"
+                              aria-expanded="false"
+                              aria-haspopup="dialog"
+                              class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 h-auto p-0 text-sm font-medium"
+                              data-size="sm"
+                              data-slot="button"
+                              data-testid="order-line-rate-review"
+                              data-variant="link"
+                              type="button"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
                         </div>
                         <div
                           class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
@@ -950,6 +989,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               class="sr-only"
                             >
                               Product for Alice
+                               
                               Current price: £0.00
                             </span>
                              
@@ -960,7 +1000,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             data-size="sm"
                             data-slot="button"
                             data-variant="default"
-                            href="/product/prod-a"
+                            href="/RefArchGlobal/en-GB/product/prod-a"
                           >
                             Buy Again
                           </a>
@@ -1035,13 +1075,13 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         <a
                           class="flex-shrink-0 block"
                           data-discover="true"
-                          href="/product/prod-b"
+                          href="/RefArchGlobal/en-GB/product/prod-b"
                         >
                           <div
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
                           >
                             <div
-                              class="w-full h-full bg-muted rounded"
+                              class="w-full h-full bg-muted rounded-none"
                             />
                           </div>
                         </a>
@@ -1057,7 +1097,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               <a
                                 class="text-foreground hover:text-primary block break-words"
                                 data-discover="true"
-                                href="/product/prod-b"
+                                href="/RefArchGlobal/en-GB/product/prod-b"
                                 title="Product for Bob"
                               >
                                 Product for Bob
@@ -1070,6 +1110,23 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                           >
                             Qty: 1
                           </p>
+                          <div
+                            class="pt-1"
+                          >
+                            <button
+                              aria-busy="false"
+                              aria-expanded="false"
+                              aria-haspopup="dialog"
+                              class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 h-auto p-0 text-sm font-medium"
+                              data-size="sm"
+                              data-slot="button"
+                              data-testid="order-line-rate-review"
+                              data-variant="link"
+                              type="button"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
                         </div>
                         <div
                           class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
@@ -1090,6 +1147,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                               class="sr-only"
                             >
                               Product for Bob
+                               
                               Current price: £0.00
                             </span>
                              
@@ -1100,7 +1158,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             data-size="sm"
                             data-slot="button"
                             data-variant="default"
-                            href="/product/prod-b"
+                            href="/RefArchGlobal/en-GB/product/prod-b"
                           >
                             Buy Again
                           </a>
@@ -1159,7 +1217,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -1171,7 +1229,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -1216,20 +1274,13 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -1318,7 +1369,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -1394,7 +1445,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                         <a
                           class="flex-shrink-0 block"
                           data-discover="true"
-                          href="/product/701643108633M"
+                          href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
@@ -1418,7 +1469,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                               <a
                                 class="text-foreground hover:text-primary block break-words"
                                 data-discover="true"
-                                href="/product/701643108633M"
+                                href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
                               >
                                 First Product
@@ -1431,6 +1482,23 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                           >
                             Qty: 1
                           </p>
+                          <div
+                            class="pt-1"
+                          >
+                            <button
+                              aria-busy="false"
+                              aria-expanded="false"
+                              aria-haspopup="dialog"
+                              class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 h-auto p-0 text-sm font-medium"
+                              data-size="sm"
+                              data-slot="button"
+                              data-testid="order-line-rate-review"
+                              data-variant="link"
+                              type="button"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
                         </div>
                         <div
                           class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
@@ -1451,6 +1519,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -1461,7 +1530,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                             data-size="sm"
                             data-slot="button"
                             data-variant="default"
-                            href="/product/701643108633M"
+                            href="/RefArchGlobal/en-GB/product/701643108633M"
                           >
                             Buy Again
                           </a>
@@ -1552,7 +1621,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -1564,7 +1633,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -1609,20 +1678,13 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -1711,7 +1773,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -1769,7 +1831,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                         <a
                           class="flex-shrink-0 block"
                           data-discover="true"
-                          href="/product/701643108633M"
+                          href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
@@ -1793,7 +1855,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                               <a
                                 class="text-foreground hover:text-primary block break-words"
                                 data-discover="true"
-                                href="/product/701643108633M"
+                                href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
                               >
                                 First Product
@@ -1806,6 +1868,23 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                           >
                             Qty: 1
                           </p>
+                          <div
+                            class="pt-1"
+                          >
+                            <button
+                              aria-busy="false"
+                              aria-expanded="false"
+                              aria-haspopup="dialog"
+                              class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 h-auto p-0 text-sm font-medium"
+                              data-size="sm"
+                              data-slot="button"
+                              data-testid="order-line-rate-review"
+                              data-variant="link"
+                              type="button"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
                         </div>
                         <div
                           class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
@@ -1826,6 +1905,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -1836,7 +1916,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                             data-size="sm"
                             data-slot="button"
                             data-variant="default"
-                            href="/product/701643108633M"
+                            href="/RefArchGlobal/en-GB/product/701643108633M"
                           >
                             Buy Again
                           </a>
@@ -1927,7 +2007,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -1939,7 +2019,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -1984,20 +2064,13 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"
@@ -2113,7 +2186,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
           </p>
         </div>
         <span
-          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+          class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
           data-slot="badge"
           data-testid="order-status-badge"
         >
@@ -2156,7 +2229,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                     Shipment 1
                   </p>
                   <span
-                    class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+                    class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
                     data-slot="badge"
                     data-testid="shipping-status-badge"
                   >
@@ -2178,7 +2251,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                         <a
                           class="flex-shrink-0 block"
                           data-discover="true"
-                          href="/product/701643108633M"
+                          href="/RefArchGlobal/en-GB/product/701643108633M"
                         >
                           <div
                             class="bg-muted flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden h-24 w-24 rounded-none"
@@ -2202,7 +2275,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                               <a
                                 class="text-foreground hover:text-primary block break-words"
                                 data-discover="true"
-                                href="/product/701643108633M"
+                                href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
                               >
                                 First Product
@@ -2215,6 +2288,23 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                           >
                             Qty: 1
                           </p>
+                          <div
+                            class="pt-1"
+                          >
+                            <button
+                              aria-busy="false"
+                              aria-expanded="false"
+                              aria-haspopup="dialog"
+                              class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline rounded-md gap-1.5 has-[>svg]:px-2.5 h-auto p-0 text-sm font-medium"
+                              data-size="sm"
+                              data-slot="button"
+                              data-testid="order-line-rate-review"
+                              data-variant="link"
+                              type="button"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
                         </div>
                         <div
                           class="flex shrink-0 flex-col items-end gap-1 sm:self-start"
@@ -2235,6 +2325,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                               class="sr-only"
                             >
                               First Product
+                               
                               Current price: £61.99
                             </span>
                              
@@ -2245,7 +2336,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                             data-size="sm"
                             data-slot="button"
                             data-variant="default"
-                            href="/product/701643108633M"
+                            href="/RefArchGlobal/en-GB/product/701643108633M"
                           >
                             Buy Again
                           </a>
@@ -2336,7 +2427,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
             Order Summary
           </h3>
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm !py-4"
+            class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
             data-slot="card"
           >
             <div
@@ -2348,7 +2439,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                 data-testid="sf-order-summary"
               >
                 <div
-                  aria-labelledby="order-summary-heading"
+                  aria-label="Order Summary"
                   class="space-y-2"
                   role="region"
                 >
@@ -2393,20 +2484,13 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                         TBD
                       </span>
                     </div>
-                  </div>
-                  <hr
-                    class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
-                  />
-                  <div
-                    class="space-y-2 w-full text-sm pt-2"
-                  >
                     <div
-                      class="flex w-full justify-between items-center"
+                      class="flex justify-between items-center"
                     >
                       <span
                         class="font-bold"
                       >
-                        Order Total
+                        Total
                       </span>
                       <span
                         class="font-bold"

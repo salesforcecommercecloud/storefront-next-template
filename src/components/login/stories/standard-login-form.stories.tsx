@@ -410,7 +410,7 @@ The StandardLoginForm is the primary authentication method for most applications
     decorators: [
         (Story: React.ComponentType) => (
             <ActionLogger>
-                <div className="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm">
+                <div className="w-full max-w-md p-6 bg-background border rounded-none">
                     <div className="mb-6">
                         <h1 className="text-2xl font-bold text-foreground">Sign in to your account</h1>
                         <p className="text-sm text-muted-foreground mt-1">

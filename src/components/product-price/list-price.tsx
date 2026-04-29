@@ -17,11 +17,12 @@
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
+import { cn } from '@/lib/utils';
 
 interface ListPriceProps {
     labelForA11y?: string;
     price: number;
-    as?: 'span' | 'div' | 'p';
+    as?: 'span' | 'div' | 'p' | 'h5';
     isRange?: boolean;
     currency: string;
     className?: string;
@@ -59,14 +60,13 @@ export default function ListPrice({
             <Typography
                 as={as}
                 variant="small"
-                className={`text-muted-foreground line-through ${className || ''}`}
+                className={cn('line-through text-muted-foreground', className)}
                 aria-label={ariaLabel}>
                 {listPriceText}
             </Typography>
             {/*For screen reader, we want to make sure the product name is announced before the price to avoid confusion*/}
             <span className="sr-only" aria-live="polite" aria-atomic={true}>
-                {labelForA11y}
-                {t('price.listPrice', { price: listPriceText })}
+                {labelForA11y} {t('price.listPrice', { price: listPriceText })}
             </span>
         </>
     );

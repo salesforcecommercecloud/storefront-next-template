@@ -18,7 +18,6 @@ import CheckoutOneClickProvider from '../src/components/checkout/utils/checkout-
 import ProductViewProvider from '../src/providers/product-view';
 import StoreLocatorProvider from '../src/extensions/store-locator/providers/store-locator';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { CurrencyProvider } from '../src/providers/currency';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '../src/test-utils/config';
 import type { SessionData } from '../src/lib/api/types';
@@ -84,15 +83,18 @@ export const StorybookConfigProvider = ({ children }: PropsWithChildren) => (
 /**
  * Storybook SiteProvider wrapper with mock site data from the first configured site
  */
-export const StorybookSiteProvider = ({ children }: PropsWithChildren) => (
-    <SiteProvider value={mockConfig.commerce.sites[0]}>{children}</SiteProvider>
-);
+const storybookSite = mockConfig.commerce.sites[0];
+const storybookLocale =
+    storybookSite.supportedLocales.find((l) => l.id === storybookSite.defaultLocale) ?? storybookSite.supportedLocales[0];
 
-/**
- * Storybook CurrencyProvider wrapper with default currency from the first configured site
- */
-export const StorybookCurrencyProvider = ({ children }: PropsWithChildren) => (
-    <CurrencyProvider value={mockConfig.commerce.sites[0].defaultCurrency}>{children}</CurrencyProvider>
+export const StorybookSiteProvider = ({ children }: PropsWithChildren) => (
+    <SiteProvider
+        site={storybookSite}
+        locale={storybookLocale}
+        language={storybookSite.defaultLocale}
+        currency={storybookSite.defaultCurrency}>
+        {children}
+    </SiteProvider>
 );
 
 /**
@@ -156,7 +158,6 @@ export const storybookProviders = [
     StorybookConfigProvider,
     StorybookI18nextProvider,
     StorybookSiteProvider,
-    StorybookCurrencyProvider,
     StorybookAuthProvider,
     StorybookBasketProvider,
     StorybookStoreLocatorProvider,

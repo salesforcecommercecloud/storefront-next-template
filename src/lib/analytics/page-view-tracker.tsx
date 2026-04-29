@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -22,13 +20,11 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
 import { useAuth } from '@/providers/auth';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
-import { getAllAdapters } from '@/lib/adapters';
+import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();
-import { TrackingConsent } from '@/types/tracking-consent';
-import { useTranslation } from 'react-i18next';
 
 /**
  * Component that tracks page view events asynchronously
@@ -43,9 +39,8 @@ export function PageViewTracker() {
     const location = useLocation();
     const config = useConfig<AppConfig>();
     const auth = useAuth();
-    const { trackingConsent } = useTrackingConsent();
-    const site = useSite();
-    const { i18n } = useTranslation();
+    const { trackingConsent, isTrackingConsentEnabled } = useTrackingConsent();
+    const { site, language } = useSite();
     const trackedRef = useRef<{ path: string; timestamp: number } | null>(null);
     const trackingResetDuration = config.engagement.analytics.pageViewsResetDuration;
 
@@ -55,8 +50,15 @@ export function PageViewTracker() {
             return;
         }
 
-        // Don't track if user has declined tracking or hasn't provided consent
-        if (trackingConsent !== TrackingConsent.Accepted) {
+        // Don't track if user has declined tracking or hasn't provided consent yet
+        // (avoids unnecessary auth resolution and mediator initialization)
+        const consentCategories = config.engagement.analytics.trackingConsent?.consentCategories ?? [];
+        const consentPreferences = buildConsentPreferences(
+            trackingConsent,
+            consentCategories,
+            isTrackingConsentEnabled
+        );
+        if (!consentPreferences || consentPreferences.length === 0) {
             return;
         }
 
@@ -110,8 +112,8 @@ export function PageViewTracker() {
                         usid: auth.usid,
                     },
                 });
-                const eventSiteInfo = site ? { siteId: site.id, localeId: i18n.language } : undefined;
-                sendViewPageEvent(event, mediator, eventSiteInfo);
+                const eventSiteInfo = { siteId: site.id, localeId: language };
+                sendViewPageEvent(event, mediator, eventSiteInfo, consentPreferences);
             } catch (error) {
                 // Silently fail - analytics should not break the app
                 trackedRef.current = null; // Reset the tracked path to allow tracking again
@@ -132,8 +134,9 @@ export function PageViewTracker() {
         auth,
         trackingConsent,
         trackingResetDuration,
+        isTrackingConsentEnabled,
         site,
-        i18n.language,
+        language,
     ]);
 
     return null;

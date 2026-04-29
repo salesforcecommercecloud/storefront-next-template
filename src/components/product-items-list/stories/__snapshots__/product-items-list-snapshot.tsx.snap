@@ -16,12 +16,10 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-            data-slot="card"
+            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-              data-slot="card-content"
             >
               <div
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -30,7 +28,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -59,9 +57,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -78,11 +76,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
-                      >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -116,6 +109,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £99.99
                               </span>
                                
@@ -134,11 +128,11 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           Quantity:
                         </label>
                         <div
-                          class="inline-flex items-center border border-input rounded-lg"
+                          class="inline-flex items-center border border-input rounded-none"
                         >
                           <button
                             aria-label="Decrement Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-decrement"
                             disabled=""
                           >
@@ -155,7 +149,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           />
                           <button
                             aria-label="Increment Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-increment"
                           >
                             +
@@ -163,9 +157,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         </div>
                       </div>
                     </div>
-                    <div
-                      class="min-w-0 md:col-start-1 md:row-start-2"
-                    />
                   </div>
                 </div>
               </div>
@@ -181,12 +172,10 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-            data-slot="card"
+            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-              data-slot="card-content"
             >
               <div
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -195,7 +184,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -224,9 +213,9 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -243,11 +232,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
-                      >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -281,6 +265,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £199.98
                               </span>
                                
@@ -306,11 +291,11 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           Quantity:
                         </label>
                         <div
-                          class="inline-flex items-center border border-input rounded-lg"
+                          class="inline-flex items-center border border-input rounded-none"
                         >
                           <button
                             aria-label="Decrement Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-decrement"
                           >
                             −
@@ -326,7 +311,7 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           />
                           <button
                             aria-label="Increment Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-increment"
                           >
                             +
@@ -334,9 +319,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         </div>
                       </div>
                     </div>
-                    <div
-                      class="min-w-0 md:col-start-1 md:row-start-2"
-                    />
                   </div>
                 </div>
               </div>
@@ -365,12 +347,10 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-            data-slot="card"
+            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-              data-slot="card-content"
             >
               <div
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -379,7 +359,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -408,9 +388,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -427,11 +407,16 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          data-testid="edit-item"
+                          type="button"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -465,6 +450,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £99.99
                               </span>
                                
@@ -483,11 +469,11 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           Quantity:
                         </label>
                         <div
-                          class="inline-flex items-center border border-input rounded-lg"
+                          class="inline-flex items-center border border-input rounded-none"
                         >
                           <button
                             aria-label="Decrement Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-decrement"
                             disabled=""
                           >
@@ -504,7 +490,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           />
                           <button
                             aria-label="Increment Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-increment"
                           >
                             +
@@ -526,12 +512,6 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           item-1
                         </button>
                       </div>
-                      <button
-                        data-testid="edit-item"
-                        type="button"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -548,12 +528,10 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-            data-slot="card"
+            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-              data-slot="card-content"
             >
               <div
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -562,7 +540,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -591,9 +569,9 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -610,11 +588,16 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          data-testid="edit-item"
+                          type="button"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -648,6 +631,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £199.98
                               </span>
                                
@@ -673,11 +657,11 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           Quantity:
                         </label>
                         <div
-                          class="inline-flex items-center border border-input rounded-lg"
+                          class="inline-flex items-center border border-input rounded-none"
                         >
                           <button
                             aria-label="Decrement Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-decrement"
                           >
                             −
@@ -693,7 +677,7 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           />
                           <button
                             aria-label="Increment Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-increment"
                           >
                             +
@@ -715,12 +699,6 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           item-2
                         </button>
                       </div>
-                      <button
-                        data-testid="edit-item"
-                        type="button"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -753,7 +731,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             class="flex items-center justify-center"
           >
             <div
-              class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -773,9 +751,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
               >
                 <a
                   class="text-foreground hover:text-primary block break-words"
-                  href="/product/TG508M"
+                  href="/RefArchGlobal/en-GB/product/TG508M"
                   title="Men's Classic Deer Gloves"
-                  to="/product/TG508M"
+                  to="/RefArchGlobal/en-GB/product/TG508M"
                 >
                   Men's Classic Deer Gloves
                 </a>
@@ -815,6 +793,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
                 class="sr-only"
               >
                 Men's Classic Deer Gloves
+                 
                 Current price: £99.99
               </span>
                
@@ -833,7 +812,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             class="flex items-center justify-center"
           >
             <div
-              class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
+              class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden w-16"
             >
               <img
                 alt="Men's Classic Deer Gloves, , small"
@@ -853,9 +832,9 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
               >
                 <a
                   class="text-foreground hover:text-primary block break-words"
-                  href="/product/TG508M"
+                  href="/RefArchGlobal/en-GB/product/TG508M"
                   title="Men's Classic Deer Gloves"
-                  to="/product/TG508M"
+                  to="/RefArchGlobal/en-GB/product/TG508M"
                 >
                   Men's Classic Deer Gloves
                 </a>
@@ -895,6 +874,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
                 class="sr-only"
               >
                 Men's Classic Deer Gloves
+                 
                 Current price: £99.99
               </span>
                
@@ -923,12 +903,10 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-            data-slot="card"
+            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-              data-slot="card-content"
             >
               <div
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -937,7 +915,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -966,9 +944,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -985,11 +963,15 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          class="text-primary"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -1023,6 +1005,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £99.99
                               </span>
                                
@@ -1041,11 +1024,11 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           Quantity:
                         </label>
                         <div
-                          class="inline-flex items-center border border-input rounded-lg"
+                          class="inline-flex items-center border border-input rounded-none"
                         >
                           <button
                             aria-label="Decrement Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-decrement"
                             disabled=""
                           >
@@ -1062,7 +1045,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           />
                           <button
                             aria-label="Increment Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-increment"
                           >
                             +
@@ -1083,11 +1066,6 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           item-1
                         </button>
                       </div>
-                      <button
-                        class="text-primary"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -1104,12 +1082,10 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
           data-testid="sf-product-item-061492183589M"
         >
           <div
-            class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl p-0 border border-none shadow-none"
-            data-slot="card"
+            class="bg-card text-card-foreground border-0 shadow-none rounded-none"
           >
             <div
               class="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden"
-              data-slot="card-content"
             >
               <div
                 class="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0"
@@ -1118,7 +1094,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                   class="flex-shrink-0 flex items-start justify-center"
                 >
                   <div
-                    class="bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
+                    class="bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden md:w-32 w-16"
                   >
                     <img
                       alt="Men's Classic Deer Gloves, , small"
@@ -1147,9 +1123,9 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                         >
                           <a
                             class="text-foreground hover:text-primary block break-words"
-                            href="/product/TG508M"
+                            href="/RefArchGlobal/en-GB/product/TG508M"
                             title="Men's Classic Deer Gloves"
-                            to="/product/TG508M"
+                            to="/RefArchGlobal/en-GB/product/TG508M"
                           >
                             Men's Classic Deer Gloves
                           </a>
@@ -1166,11 +1142,15 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          class="text-primary"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -1204,6 +1184,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                                 class="sr-only"
                               >
                                 Men's Classic Deer Gloves
+                                 
                                 Current price: £199.98
                               </span>
                                
@@ -1229,11 +1210,11 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           Quantity:
                         </label>
                         <div
-                          class="inline-flex items-center border border-input rounded-lg"
+                          class="inline-flex items-center border border-input rounded-none"
                         >
                           <button
                             aria-label="Decrement Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-decrement"
                           >
                             −
@@ -1249,7 +1230,7 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           />
                           <button
                             aria-label="Increment Quantity for the product"
-                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                             data-testid="quantity-increment"
                           >
                             +
@@ -1270,11 +1251,6 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           item-2
                         </button>
                       </div>
-                      <button
-                        class="text-primary"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>

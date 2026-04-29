@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/toast';
@@ -77,7 +75,7 @@ export default function PickupPreferences(): ReactElement {
     const preferences = isEditing ? editingPreferences : savedPreferences;
 
     return (
-        <Card>
+        <Card className="rounded-none shadow-none">
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <CardTitle className="text-lg-xl">{t('storePreferences.pickupPreferences.heading')}</CardTitle>

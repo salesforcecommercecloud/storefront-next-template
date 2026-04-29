@@ -28,7 +28,7 @@ import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // mock data
 import { masterProduct as mockProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 
@@ -187,8 +187,10 @@ describe('ProductInfo', () => {
 
     describe('inventory and stock handling', () => {
         test('should show out of stock message when inventory is zero', () => {
+            // Simple item (no variants) so OOS reflects this SKU, not indeterminate master inventory
             const outOfStockProduct = {
-                ...mockProduct,
+                ...standardProd,
+                name: mockProduct.name,
                 inventory: { ats: 0, orderable: false, id: 'test-inventory' },
             };
 
@@ -222,6 +224,138 @@ describe('ProductInfo', () => {
             expect(screen.getByLabelText('38')).toBeInTheDocument();
             expect(screen.getByLabelText('Short')).toBeInTheDocument();
             expect(screen.getByLabelText('Regular')).toBeInTheDocument();
+        });
+
+        test('should hide inventory message until multi-attribute selection resolves to one variant in controlled mode', () => {
+            const multiAttributeProduct = {
+                ...mockProduct,
+                inventory: {
+                    ats: 0,
+                    orderable: false,
+                    id: 'master-oos-inventory',
+                    backorderable: false,
+                    preorderable: false,
+                },
+            };
+            renderProductInfo({
+                product: multiAttributeProduct,
+                swatchMode: 'controlled',
+                onAttributeChange: () => undefined,
+                variationValues: { color: 'CHARCWL' },
+            });
+
+            // With only one of multiple variation attributes selected, inventory message stays hidden.
+            expect(screen.queryByText(t('product:outOfStockLabel'))).not.toBeInTheDocument();
+            expect(screen.queryByText(t('product:inStock'))).not.toBeInTheDocument();
+            expect(
+                screen.queryByText(
+                    t('product:outOfStock', {
+                        productName: 'Charcoal Flat Front Athletic Fit Shadow Striped Wool Suit',
+                    })
+                )
+            ).not.toBeInTheDocument();
+        });
+
+        test('should disable non-selectable attribute values in controlled mode based on current selection', () => {
+            const constrainedProduct = {
+                ...mockProduct,
+                variationAttributes: [
+                    ...(mockProduct.variationAttributes ?? []).map((attribute) => {
+                        if (attribute.id === 'size') {
+                            return {
+                                ...attribute,
+                                values: [
+                                    { name: '40', value: '040', orderable: true },
+                                    { name: '42', value: '042', orderable: true },
+                                ],
+                            };
+                        }
+                        if (attribute.id === 'width') {
+                            return {
+                                ...attribute,
+                                values: [
+                                    { name: 'Short', value: 'S', orderable: true },
+                                    { name: 'Regular', value: 'V', orderable: true },
+                                ],
+                            };
+                        }
+                        return attribute;
+                    }),
+                ],
+                variants: [
+                    {
+                        productId: 'variant-40-short',
+                        orderable: true,
+                        variationValues: { color: 'CHARCWL', size: '040', width: 'S' },
+                    },
+                    {
+                        productId: 'variant-42-regular',
+                        orderable: true,
+                        variationValues: { color: 'CHARCWL', size: '042', width: 'V' },
+                    },
+                ],
+            };
+
+            renderProductInfo({
+                product: constrainedProduct,
+                swatchMode: 'controlled',
+                onAttributeChange: () => undefined,
+                variationValues: { color: 'CHARCWL', size: '042' },
+            });
+
+            expect(screen.getByLabelText('Short')).toBeDisabled();
+            expect(screen.getByLabelText('Regular')).not.toBeDisabled();
+        });
+
+        test('should disable controlled swatch value when only matching variants are out of stock', () => {
+            const constrainedProduct = {
+                ...mockProduct,
+                variationAttributes: [
+                    ...(mockProduct.variationAttributes ?? []).map((attribute) => {
+                        if (attribute.id === 'size') {
+                            return {
+                                ...attribute,
+                                values: [
+                                    { name: '40', value: '040', orderable: true },
+                                    { name: '42', value: '042', orderable: true },
+                                ],
+                            };
+                        }
+                        if (attribute.id === 'width') {
+                            return {
+                                ...attribute,
+                                values: [
+                                    { name: 'Short', value: 'S', orderable: true },
+                                    { name: 'Regular', value: 'V', orderable: true },
+                                ],
+                            };
+                        }
+                        return attribute;
+                    }),
+                ],
+                variants: [
+                    {
+                        productId: 'variant-42-short-oos',
+                        orderable: false,
+                        variationValues: { color: 'CHARCWL', size: '042', width: 'S' },
+                    },
+                    {
+                        productId: 'variant-42-regular',
+                        orderable: true,
+                        variationValues: { color: 'CHARCWL', size: '042', width: 'V' },
+                    },
+                ],
+            };
+
+            renderProductInfo({
+                product: constrainedProduct,
+                swatchMode: 'controlled',
+                onAttributeChange: () => undefined,
+                variationValues: { color: 'CHARCWL', size: '042' },
+            });
+
+            expect(screen.getByLabelText('Short')).toBeDisabled();
+            expect(screen.getByLabelText('Regular')).not.toBeDisabled();
         });
 
         test('should display in-stock inventory message when product has stock', () => {
@@ -280,7 +414,8 @@ describe('ProductInfo', () => {
 
         test('should display out-of-stock inventory message when product is not orderable', () => {
             const outOfStockProduct = {
-                ...mockProduct,
+                ...standardProd,
+                name: mockProduct.name,
                 inventory: {
                     ats: 0,
                     orderable: false,
@@ -288,7 +423,6 @@ describe('ProductInfo', () => {
                     backorderable: false,
                     preorderable: false,
                 },
-                variationAttributes: [],
             };
 
             renderProductInfo({ product: outOfStockProduct });

@@ -26,8 +26,8 @@ import { AccountNavList, type AccountNavItemData } from '@/components/account-na
 import { Card, CardContent } from '@/components/ui/card';
 
 // Lib
-import { getSubscriptions } from '@/lib/api/consent';
-import { getCustomer } from '@/lib/api/customer';
+import { getSubscriptions } from '@/lib/api/consent.server';
+import { getCustomer } from '@/lib/api/customer.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 
 // Logging
@@ -51,7 +51,6 @@ type AccountPageData = {
  * @param args - Loader function arguments containing request context
  * @returns Promise containing customer data or redirects to login
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs) {
     const logger = getLogger(args.context);
     logger.debug('Account: loader starting');
@@ -76,7 +75,6 @@ export function loader(args: LoaderFunctionArgs) {
     return { customer, subscriptions };
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ defaultShouldRevalidate, formAction }: ShouldRevalidateFunctionArgs) {
     // Defer revalidation when a fetcher submits to our SCAPI resource route (profile/password update)
     // so AccountDetailsContent stays mounted and useScapiFetcherEffect can fire its callbacks.
@@ -156,13 +154,13 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+            <div className="w-full section-container py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 w-full">
                     {/* Nav column: mobile accordion + desktop sidebar (one cell so sidebar stays left of content) */}
                     <div className="w-full lg:w-fit">
                         {/* Mobile Navigation Accordion */}
                         <div className="lg:hidden">
-                            <Card className="bg-muted/30">
+                            <Card className="bg-muted/30 rounded-none shadow-none">
                                 <CardContent className="p-4">
                                     <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
                                     <nav className="space-y-1">

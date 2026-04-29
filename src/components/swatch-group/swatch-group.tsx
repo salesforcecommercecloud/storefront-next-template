@@ -156,7 +156,7 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
         (React.Children.toArray(children)[0] as React.ReactElement<SwatchChild['props']>)?.props?.shape === 'label';
 
     const swatchesWrapperClasses = isSquareSwatchGroup
-        ? 'inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-lg p-1'
+        ? 'inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1'
         : 'flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none';
 
     return (

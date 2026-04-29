@@ -20,7 +20,7 @@ export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
     return (
         <div className="product-tile-swatches-skeleton flex items-center flex-wrap gap-1 mb-2 relative z-20">
             {Array.from({ length: count }, (_, i) => (
-                <Skeleton key={i} className="h-[22px] w-[22px] rounded-full" />
+                <Skeleton key={i} className="h-4 w-4 rounded-full" />
             ))}
         </div>
     );
@@ -28,7 +28,7 @@ export function ProductTileSwatchesSkeleton({ count = 2 }: { count?: number }) {
 
 export function ProductTileSkeleton() {
     return (
-        <Card className="product-tile-skeleton rounded-xl overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0">
+        <Card className="product-tile-skeleton overflow-hidden w-full min-w-0 max-w-full flex flex-col h-full gap-0 py-0 rounded-none shadow-none">
             {/* Product image */}
             <CardHeader className="p-0">
                 <Skeleton className="aspect-square w-full" />

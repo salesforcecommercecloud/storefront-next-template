@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Pencil, Trash2, InfoIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -216,7 +214,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
 
     return (
         <>
-            <Card>
+            <Card className="rounded-none shadow-none">
                 <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <CardTitle className="text-lg-xl">
@@ -243,7 +241,7 @@ export default function AuthorizedPickupPeople(): ReactElement {
                             {people.map((person) => (
                                 <li
                                     key={person.id}
-                                    className="flex flex-col gap-2 rounded-lg border border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                    className="flex flex-col gap-2 rounded-none border border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div className="min-w-0 flex-1">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <span className="text-sm font-medium text-foreground">

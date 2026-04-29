@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs, data } from 'react-router';
-import { ApiError, type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ActionFunctionArgs } from 'react-router';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { extractResponseError } from '@/lib/utils';
-import { createApiClients } from '@/lib/api-clients';
-import { getTranslation } from '@/lib/i18next';
+import { createApiClients } from '@/lib/api-clients.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 // @sfdc-extension-line SFDC_EXT_BOPIS
-import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment';
+import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment.server';
 
 async function addToCart(
     context: ActionFunctionArgs['context'],
     productItem: Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {
         storeId?: string;
     }
-): Promise<{
-    success: boolean;
-    basket?: ShopperBasketsV2.schemas['Basket'];
-    error?: string;
-}> {
+) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartItemAdd: starting addToCart', {
         productId: productItem.productId,
         quantity: productItem.quantity,
@@ -43,11 +38,10 @@ async function addToCart(
     const basket = basketResource.current;
 
     if (!basket) {
-        // This state should never happen as it would indicate that the basket middleware is broken
         logger.warn('CartItemAdd: no basket found');
         return {
             success: false,
-            error: t('errors:noBasketFound'),
+            error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
         };
     }
 
@@ -73,35 +67,13 @@ async function addToCart(
             body: [payload],
         });
 
-        // Update the basket storage
         updateBasketResource(context, updatedBasket);
 
         logger.info('CartItemAdd: item added successfully');
         return { success: true, basket: updatedBasket };
     } catch (error) {
-        if (error instanceof ApiError) {
-            logger.error('CartItemAdd: API error adding item', { error });
-            return {
-                success: false,
-                error: error.body?.detail || error.statusText,
-            };
-        }
-        // extractResponseError only handles errors that have a `response` property
-        // (i.e. HTTP errors from the SCAPI client). For plain errors (network failures,
-        // basket context errors, etc.) it re-throws, which would escape the action and
-        // cause React Router's single-fetch middleware path to produce a non-Response
-        // result that crashes in parseResponseBody. Fall back to the error message.
-        try {
-            const { responseMessage } = await extractResponseError(error);
-            logger.error('CartItemAdd: failed', { error });
-            return { success: false, error: responseMessage };
-        } catch {
-            logger.error('CartItemAdd: unexpected error', { error });
-            return {
-                success: false,
-                error: error instanceof Error ? error.message : 'An unexpected error occurred',
-            };
-        }
+        logger.error('CartItemAdd: failed', { error });
+        return { success: false, error: createActionError({ error }) };
     }
 }
 
@@ -110,11 +82,19 @@ async function addToCart(
  */
 export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
     logger.debug('CartItemAdd: action starting');
 
     if (request.method !== 'POST') {
-        throw new Response(t('product:methodNotAllowed'), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: `Expected POST, got ${request.method}`,
+                }),
+            },
+            { status: 405 }
+        );
     }
 
     try {
@@ -123,29 +103,28 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         if (!productItemJson) {
             logger.warn('CartItemAdd: missing productItem in form data');
-            throw new Error(t('product:productItemRequired'));
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'productItem missing from form data',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         const productItem = JSON.parse(productItemJson);
         const result = await addToCart(context, productItem);
 
-        logger.info('CartItemAdd: action succeeded');
+        if (!result.success) {
+            const status = result.error?.code === ErrorCode.NOT_FOUND ? 404 : 500;
+            return Response.json(result, { status });
+        }
         return Response.json(result);
     } catch (error) {
-        // extractResponseError re-throws for plain errors (no `response` property).
-        // If it throws, the action would propagate an unhandled error through React Router's
-        // single-fetch + middleware path, which produces a non-Response that crashes in
-        // parseResponseBody. Always return a Response from the action.
-        try {
-            const { responseMessage, status_code } = await extractResponseError(error);
-            logger.error('CartItemAdd: action failed', { error });
-            return data({ success: false, error: responseMessage }, { status: Number(status_code) });
-        } catch {
-            logger.error('CartItemAdd: action unexpected error', { error });
-            return Response.json(
-                { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' },
-                { status: 500 }
-            );
-        }
+        logger.error('CartItemAdd: action failed', { error });
+        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

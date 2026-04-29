@@ -33,15 +33,6 @@ vi.mock('@/extensions/bopis/context/pickup-context', () => ({
     usePickup: vi.fn(() => null),
 }));
 
-// Mock CartDeliveryOption component
-vi.mock('@/extensions/bopis/components/delivery-options/cart-delivery-option', () => ({
-    default: ({ product }: { product: any }) => (
-        <div data-testid={`cart-delivery-option-${product.itemId || product.productId}`}>
-            Delivery Option for {product.productId}
-        </div>
-    ),
-}));
-
 const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
     // Using createMemoryRouter in framework mode is fine
     // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
@@ -290,91 +281,6 @@ describe('CartContent', () => {
             expect(screen.getByTestId('sf-product-item-product-2')).toBeInTheDocument();
             // No pickup store info should be rendered
             expect(screen.queryByTestId('cart-pickup-card')).not.toBeInTheDocument();
-        });
-    });
-
-    describe('Delivery actions integration', () => {
-        test('renders delivery option dropdown for each cart item', () => {
-            renderCartContent({
-                basket: mockBasket,
-                productsByItemId: mockProductMap,
-                bonusProductsById: mockBonusProductsById,
-            });
-
-            // Verify delivery option components are rendered for each item
-            // Each delivery option renders twice (mobile + desktop), so we use getAllByTestId
-            expect(screen.getAllByTestId('cart-delivery-option-item-1').length).toBeGreaterThanOrEqual(1);
-            expect(screen.getAllByTestId('cart-delivery-option-item-2').length).toBeGreaterThanOrEqual(1);
-
-            // Verify they display the correct product IDs
-            expect(screen.getAllByText('Delivery Option for product-1').length).toBeGreaterThanOrEqual(1);
-            expect(screen.getAllByText('Delivery Option for product-2').length).toBeGreaterThanOrEqual(1);
-        });
-
-        test('renders delivery option for items without itemId using productId', () => {
-            const basketWithoutItemIds = {
-                ...mockBasket,
-                productItems: [
-                    { quantity: 2, productId: 'product-1' }, // No itemId
-                    { itemId: 'item-2', quantity: 1, productId: 'product-2' }, // Has itemId
-                ],
-            };
-
-            renderCartContent({
-                basket: basketWithoutItemIds,
-                productsByItemId: mockProductMap,
-                bonusProductsById: mockBonusProductsById,
-            });
-
-            // Should render for both items (one uses productId as key)
-            // Each delivery option renders twice (mobile + desktop), so we use getAllByTestId
-            expect(screen.getAllByTestId('cart-delivery-option-product-1').length).toBeGreaterThanOrEqual(1);
-            expect(screen.getAllByTestId('cart-delivery-option-item-2').length).toBeGreaterThanOrEqual(1);
-        });
-
-        test('delivery actions receives correct product data', () => {
-            renderCartContent({
-                basket: mockBasket,
-                productsByItemId: mockProductMap,
-                bonusProductsById: mockBonusProductsById,
-            });
-
-            // Verify delivery option components are rendered with correct product IDs
-            // The mock component displays "Delivery Option for {productId}", so we can verify
-            // the product data was passed correctly by checking the displayed text
-            // Each delivery option renders twice (mobile + desktop), so we use getAllByText
-            expect(screen.getAllByText('Delivery Option for product-1').length).toBeGreaterThanOrEqual(1);
-            expect(screen.getAllByText('Delivery Option for product-2').length).toBeGreaterThanOrEqual(1);
-        });
-
-        test('renders delivery option for both pickup and delivery items', () => {
-            const basketWithPickupShipment = {
-                ...mockBasket,
-                shipments: [
-                    {
-                        shipmentId: 'shipment-1',
-                        c_fromStoreId: 'store-1',
-                    },
-                    {
-                        shipmentId: 'shipment-2',
-                    },
-                ],
-                productItems: [
-                    { itemId: 'item-1', quantity: 2, productId: 'product-1', shipmentId: 'shipment-1' },
-                    { itemId: 'item-2', quantity: 1, productId: 'product-2', shipmentId: 'shipment-2' },
-                ],
-            };
-
-            renderCartContent({
-                basket: basketWithPickupShipment,
-                productsByItemId: mockProductMap,
-                bonusProductsById: mockBonusProductsById,
-            });
-
-            // Both items should have delivery option dropdowns
-            // Each delivery option renders twice (mobile + desktop), so we use getAllByTestId
-            expect(screen.getAllByTestId('cart-delivery-option-item-1').length).toBeGreaterThanOrEqual(1);
-            expect(screen.getAllByTestId('cart-delivery-option-item-2').length).toBeGreaterThanOrEqual(1);
         });
     });
 });

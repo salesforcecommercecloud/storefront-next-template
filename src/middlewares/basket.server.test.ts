@@ -16,8 +16,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createCookie, RouterContextProvider, type MiddlewareFunction } from 'react-router';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
-import { createApiClients } from '@/lib/api-clients';
-import { getCookieConfig } from '@/lib/cookie-utils';
+import { createApiClients } from '@/lib/api-clients.server';
+import { getCookieConfig } from '@/lib/cookie-utils.server';
 import createBasketMiddleware, {
     basketMetadataContext,
     basketResourceContext,
@@ -38,11 +38,11 @@ vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => mockLogger),
 }));
 
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(),
 }));
 
-vi.mock('@/lib/cookie-utils', () => ({
+vi.mock('@/lib/cookie-utils.server', () => ({
     getCookieConfig: vi.fn(() => ({
         path: '/',
         sameSite: 'lax',

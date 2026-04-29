@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useMemo, useState, type ChangeEvent, type ComponentProps } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form';
@@ -250,7 +247,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
         if (fieldPrefix === 'billing') {
             return (
                 <div>
-                    <UITarget targetId="checkout.payment.billingAddress.autocomplete">{dropdown}</UITarget>
+                    <UITarget targetId="sfcc.checkout.payment.billingAddress.autocomplete">{dropdown}</UITarget>
                 </div>
             );
         }
@@ -258,7 +255,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
         // Default: shipping address (no fieldPrefix)
         return (
             <div>
-                <UITarget targetId="checkout.shippingAddress.autocomplete">{dropdown}</UITarget>
+                <UITarget targetId="sfcc.checkout.shippingAddress.autocomplete">{dropdown}</UITarget>
             </div>
         );
     };

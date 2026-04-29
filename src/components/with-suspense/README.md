@@ -1,6 +1,6 @@
 # withSuspense HOC
 
-A higher-order component that wraps components with Suspense boundaries for granular streaming in React Server Components.
+A higher-order component that wraps components with Suspense boundaries for granular streaming in server-side rendering.
 
 ## Overview
 

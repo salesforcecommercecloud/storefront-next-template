@@ -17,7 +17,7 @@ import { type ReactElement, Suspense } from 'react';
 import { Await, type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs } from 'react-router';
 import { type ShopperCustomers, type ShopperProducts, ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
-import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist';
+import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist.server';
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
 import { SeoMeta } from '@/components/seo-meta';
 import { getLogger } from '@/lib/logger.server';
@@ -32,7 +32,6 @@ type Product = ShopperProducts.schemas['Product'];
  * Product details are returned as a Promise for streaming — the Suspense boundary
  * in the component shows a skeleton until they resolve.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ context }: LoaderFunctionArgs): Promise<{
     wishlist: CustomerProductList | null;
     items: CustomerProductListItem[];
@@ -110,7 +109,6 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<{
  * Prevent automatic revalidation after wishlist remove actions.
  * Disabled-item state is managed client-side to avoid unnecessary refetches.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ formAction, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
     if (formAction === '/action/wishlist-remove') {
         return false;

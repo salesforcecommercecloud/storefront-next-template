@@ -16,7 +16,7 @@
 
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { ToastType } from '@/components/toast';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getFirstPickupStoreId } from '@/extensions/bopis/lib/basket-utils';
 
 /**

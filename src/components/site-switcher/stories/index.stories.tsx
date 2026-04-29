@@ -16,9 +16,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockBuildConfig } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
-
+import { mockConfig, mockBuildConfig, mockLocale } from '@/test-utils/config';
 import SiteSwitcher from '../index';
 
 const site = mockConfig.commerce.sites[0];
@@ -32,17 +30,15 @@ const meta: Meta<typeof SiteSwitcher> = {
         docs: {
             description: {
                 component:
-                    'A dropdown that allows users to switch between configured commerce sites. Posts to `/action/set-site` to persist the selection via cookie.',
+                    'A dropdown that allows users to switch between configured commerce sites. Posts to `/action/set-site-context` to persist the selection via cookie.',
             },
         },
     },
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider value={siteWithAlias}>
-                    <CurrencyProvider value={site.defaultCurrency}>
-                        <Story />
-                    </CurrencyProvider>
+                <SiteProvider site={siteWithAlias} locale={mockLocale} language="en-GB" currency="GBP">
+                    <Story />
                 </SiteProvider>
             </ConfigProvider>
         ),
@@ -71,10 +67,8 @@ export const SingleSite: Story = {
     decorators: [
         (Story) => (
             <ConfigProvider config={singleSiteConfig}>
-                <SiteProvider value={siteWithAlias}>
-                    <CurrencyProvider value={site.defaultCurrency}>
-                        <Story />
-                    </CurrencyProvider>
+                <SiteProvider site={siteWithAlias} locale={mockLocale} language="en-GB" currency="GBP">
+                    <Story />
                 </SiteProvider>
             </ConfigProvider>
         ),

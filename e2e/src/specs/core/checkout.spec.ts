@@ -16,7 +16,8 @@
 
 Feature('Storefront Checkout Tests').tag('@core').tag('@checkout');
 
-const { I, checkoutPage, addToCartFlow, loginFlow, registeredShopperSetupFlow, storefrontPage } = inject();
+const { checkoutPage, addToCartFlow, apiCartSetupFlow, loginFlow, registeredShopperSetupFlow, storefrontPage } =
+    inject();
 import { expect } from 'chai';
 import {
     TEST_SHIPPING_ADDRESS,
@@ -33,12 +34,12 @@ After(async (test: unknown) => {
 });
 
 Scenario('Guest shopper should complete checkout and place order', async () => {
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
     checkoutPage.validatePageLoaded();
 
-    const orderNumber = await checkoutPage.completeGuestCheckout({
+    const orderNumber = await checkoutPage.completeCheckout({
         email: generateTestEmail('guest'),
         shippingAddress: TEST_SHIPPING_ADDRESS,
         payment: TEST_PAYMENT,
@@ -53,7 +54,7 @@ Scenario('Guest shopper should complete checkout and place order', async () => {
 Scenario('Registered shopper should complete checkout', async () => {
     await loginFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
     checkoutPage.validatePageLoaded();
@@ -61,7 +62,7 @@ Scenario('Registered shopper should complete checkout', async () => {
     const prefilledEmail = await checkoutPage.getPrefilledEmail();
     const emailToUse = prefilledEmail || generateTestEmail('registered');
 
-    const orderNumber = await checkoutPage.completeGuestCheckout({
+    const orderNumber = await checkoutPage.completeCheckout({
         email: emailToUse,
         shippingAddress: TEST_SHIPPING_ADDRESS,
         payment: TEST_PAYMENT,
@@ -76,7 +77,7 @@ Scenario('Registered shopper should complete checkout', async () => {
 Scenario('Registered shopper with full profile should place order with prefilled checkout', async () => {
     await registeredShopperSetupFlow.execute();
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 
     checkoutPage.validatePageLoaded();
@@ -113,47 +114,52 @@ Scenario('Basket context syncs when navigating to checkout', async () => {
  * 3. Select shipping method to advance to payment step
  * 4. Verify "Use a different billing address" checkbox is not selected by default
  * 5. Check "Use a different billing address" checkbox
- * 6. Verify all billing address fields are blank
+ * 6. Verify billing address fields are pre-filled with shipping address
  * 7. Uncheck "Use a different billing address" checkbox
  * 8. Verify billing fields are hidden (shipping address is used)
  *
  * This validates the acceptance criteria: when checking "Use a different billing address",
- * billing address fields should be blank, not pre-filled with shipping data.
+ * billing address fields should be pre-filled with the shipping address as a starting point.
  */
-Scenario('Guest shopper billing address fields are blank when checking "Use a different billing address"', async () => {
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
-    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
-    checkoutPage.validatePageLoaded();
+Scenario(
+    'Guest shopper billing address fields are pre-filled with shipping address when checking "Use a different billing address"',
+    async () => {
+        const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+        expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+        checkoutPage.validatePageLoaded();
 
-    await checkoutPage.fillContactInfo(generateTestEmail('billing-test'), TEST_SHIPPING_ADDRESS.phone);
+        await checkoutPage.fillContactInfo(generateTestEmail('billing-test'), TEST_SHIPPING_ADDRESS.phone);
 
-    await checkoutPage.fillShippingAddress(TEST_SHIPPING_ADDRESS);
+        await checkoutPage.fillShippingAddress(TEST_SHIPPING_ADDRESS);
 
-    await checkoutPage.selectShippingMethod(0);
+        await checkoutPage.selectShippingMethod(0);
 
-    const isDifferentBilling = await checkoutPage.isUseDifferentBillingAddressChecked();
-    expect(isDifferentBilling, '"Use a different billing address" checkbox should not be selected by default').to.be
-        .false;
+        const isDifferentBilling = await checkoutPage.isUsingDifferentBillingAddress();
+        expect(isDifferentBilling, '"Use a different billing address" checkbox should not be selected by default').to.be
+            .false;
 
-    const fieldsHiddenByDefault = await checkoutPage.areBillingAddressFieldsVisible();
-    expect(fieldsHiddenByDefault, 'Billing fields should be hidden by default').to.be.false;
+        const fieldsHiddenByDefault = await checkoutPage.areBillingAddressFieldsVisible();
+        expect(fieldsHiddenByDefault, 'Billing fields should be hidden by default').to.be.false;
 
-    await checkoutPage.checkUseDifferentBillingAddress();
+        await checkoutPage.checkUseDifferentBillingAddress();
 
-    const fieldsVisibleAfterCheck = await checkoutPage.areBillingAddressFieldsVisible();
-    expect(fieldsVisibleAfterCheck, 'Billing fields should be visible after checking "Use a different billing address"')
-        .to.be.true;
+        const fieldsVisibleAfterCheck = await checkoutPage.areBillingAddressFieldsVisible();
+        expect(
+            fieldsVisibleAfterCheck,
+            'Billing fields should be visible after checking "Use a different billing address"'
+        ).to.be.true;
 
-    await checkoutPage.validateBillingAddressFieldsAreBlank();
+        await checkoutPage.validateBillingAddressMatchesShipping(TEST_SHIPPING_ADDRESS);
 
-    await checkoutPage.uncheckUseDifferentBillingAddress();
+        await checkoutPage.uncheckUseDifferentBillingAddress();
 
-    const fieldsHiddenAfterUncheck = await checkoutPage.areBillingAddressFieldsVisible();
-    expect(
-        fieldsHiddenAfterUncheck,
-        'Billing fields should be hidden after unchecking "Use a different billing address"'
-    ).to.be.false;
-})
+        const fieldsHiddenAfterUncheck = await checkoutPage.areBillingAddressFieldsVisible();
+        expect(
+            fieldsHiddenAfterUncheck,
+            'Billing fields should be hidden after unchecking "Use a different billing address"'
+        ).to.be.false;
+    }
+)
     .tag('@billing-address')
     .tag('@guest-checkout');
 
@@ -182,7 +188,7 @@ Scenario('Guest shopper can fill custom billing address and place order', async 
         postalCode: '90001',
     };
 
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
     checkoutPage.validatePageLoaded();
 
@@ -191,17 +197,15 @@ Scenario('Guest shopper can fill custom billing address and place order', async 
     await checkoutPage.selectShippingMethod(0);
 
     await checkoutPage.checkUseDifferentBillingAddress();
-
-    await checkoutPage.checkUseDifferentBillingAddress();
     expect(await checkoutPage.areBillingAddressFieldsVisible(), 'Billing fields visible when checked').to.be.true;
-    await checkoutPage.validateBillingAddressFieldsAreBlank();
+    await checkoutPage.validateBillingAddressMatchesShipping(TEST_SHIPPING_ADDRESS);
 
     await checkoutPage.uncheckUseDifferentBillingAddress();
     expect(await checkoutPage.areBillingAddressFieldsVisible(), 'Billing fields hidden when unchecked').to.be.false;
 
     await checkoutPage.checkUseDifferentBillingAddress();
-    await checkoutPage.validateBillingAddressFieldsAreBlank();
-    checkoutPage.fillBillingAddress(customBillingAddress);
+    await checkoutPage.validateBillingAddressMatchesShipping(TEST_SHIPPING_ADDRESS);
+    await checkoutPage.fillBillingAddress(customBillingAddress);
 
     await checkoutPage.fillPaymentInfo(TEST_PAYMENT);
 
@@ -232,7 +236,7 @@ Scenario('Guest shopper can fill custom billing address and place order', async 
  * silently succeed — the shopper must see inline validation errors.
  */
 Scenario('Place order is blocked with validation errors when payment fields are empty', async () => {
-    const productInfo = await addToCartFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
     checkoutPage.validatePageLoaded();
 
@@ -245,7 +249,7 @@ Scenario('Place order is blocked with validation errors when payment fields are 
     const errors = await checkoutPage.getPaymentValidationErrors();
     expect(errors.length, 'Validation errors should appear for empty payment fields').to.be.greaterThan(0);
 
-    const currentUrl = await I.grabCurrentUrl();
+    const currentUrl = await checkoutPage.getCurrentUrl();
     expect(currentUrl, 'Should still be on checkout page (order not placed)').to.include('/checkout');
     expect(currentUrl, 'Should NOT have redirected to order confirmation').to.not.include('/order-confirmation');
 })

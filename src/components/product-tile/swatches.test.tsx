@@ -19,7 +19,13 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
 import { ProductTileSwatches } from './swatches';
-import { ConfigWrapper } from '@/test-utils/config';
+import { ConfigWrapper, mockBuildConfig, mockLocale } from '@/test-utils/config';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = {
+    ...mockBuildConfig.app.commerce.sites[0],
+    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+};
 
 // toImageUrl returns the raw image link in tests; mock it to avoid config dependency inside swatches
 vi.mock('@/lib/dynamic-image', async (importOriginal) => {
@@ -99,7 +105,13 @@ const renderSwatches = ({
     );
     return render(
         <ConfigWrapper>
-            <RouterProvider router={router} />
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSite.defaultLocale}
+                currency={mockSite.defaultCurrency}>
+                <RouterProvider router={router} />
+            </SiteProvider>
         </ConfigWrapper>
     );
 };
@@ -213,7 +225,8 @@ describe('ProductTileSwatches', () => {
         });
         const overflowLink = screen.getByTitle('+2 more');
         expect(overflowLink.tagName).toBe('A');
-        expect(overflowLink).toHaveAttribute('href', '/product/my-product');
+        const siteAlias = mockSite.alias ?? mockSite.id;
+        expect(overflowLink).toHaveAttribute('href', `/${siteAlias}/${mockSite.defaultLocale}/product/my-product`);
     });
 
     test('overflow indicator has an accessible label with product name and total count', () => {

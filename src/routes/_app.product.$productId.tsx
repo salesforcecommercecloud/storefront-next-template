@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 import { use, useEffect, useRef, useMemo, Suspense, Fragment, lazy } from 'react';
-import { type LoaderFunctionArgs } from 'react-router';
+import { Await, type LoaderFunctionArgs } from 'react-router';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { createApiClients } from '@/lib/api-clients';
-import { currencyContext } from '@/lib/currency';
-import ProductSkeleton from '@/components/product-skeleton';
+import { createApiClients } from '@/lib/api-clients.server';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import ProductContentSkeleton from '@/components/product-skeleton';
 import ProductView from '@/components/product-view';
 import ChildProducts from '@/components/product-view/child-products';
+import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
+import { CategoryBreadcrumbsSkeleton } from '@/components/category-breadcrumbs/skeleton';
 
 // Lazy-load reviews section to reduce initial PDP bundle (reviews chunk loads with product page)
 const CustomerReviewsSection = lazy(() =>
@@ -37,13 +39,14 @@ import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/providers/product-reviews-context';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';
 import { getPublicOrigin } from '@/utils/schema-url';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { getLogger } from '@/lib/logger.server';
+import { UITarget } from '@/targets/ui-target';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
@@ -73,7 +76,7 @@ export class ProductPageMetadata {}
 export type ProductPageData = {
     product: Promise<ShopperProducts.schemas['Product']>;
     category: Promise<ShopperProducts.schemas['Category'] | undefined>;
-    page: Promise<PageWithComponentData>;
+    page: ReturnType<typeof fetchPageWithComponentData>;
     pageKey: string;
     pageUrl: string;
     productSchema: Promise<ReturnType<typeof generateProductSchema> | null>;
@@ -84,7 +87,6 @@ export type ProductPageData = {
  * This function runs on the server during SSR and can access cookies for store information.
  * @returns Object containing product, category, page data, and component data promises
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function loader(args: LoaderFunctionArgs): ProductPageData {
     const { request, params, context } = args;
     const logger = getLogger(context);
@@ -99,10 +101,12 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     // Get currency from context for product pricing
-    const currency = context.get(currencyContext) as string;
-    if (!currency) {
-        throw new Error('Currency not found in context');
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        logger.error('Product: site context is not available');
+        throw new Response('Site context is not available', { status: 500 });
     }
+    const { currency } = siteCtx;
 
     const clients = createApiClients(context);
     const productPromise = clients.shopperProducts
@@ -234,7 +238,6 @@ export function loader(args: LoaderFunctionArgs): ProductPageData {
  * https://reactrouter.com/start/data/route-object#shouldrevalidate
  * we don't want the page to show skeleton when loading variant product after first initial load
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({
     currentUrl,
     nextUrl,
@@ -300,107 +303,105 @@ function ProductRecommendationsSection() {
 
     return (
         <div className="mt-16 space-y-16">
-            <ProductRecommendations recommender={completeSetRecommender} />
-            <ProductRecommendations recommender={mightAlsoLikeRecommender} />
-            <ProductRecommendations recommender={recentlyViewedRecommender} />
+            <ProductRecommendations recommender={completeSetRecommender} className="max-w-none px-0" />
+            <ProductRecommendations recommender={mightAlsoLikeRecommender} className="max-w-none px-0" />
+            <ProductRecommendations recommender={recentlyViewedRecommender} className="max-w-none px-0" />
         </div>
     );
 }
 
-/**
- * Product view component that displays the product content.
- * This component receives loader data and renders the main product view including
- * breadcrumbs and product details. Uses React's use() hook to unwrap promises.
- * @returns JSX element representing the product page layout
- */
-
-function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
-    const { product, category } = loaderData;
-    const productData = use(product);
-    const categoryData = use(category);
+function ProductContent({ product, url }: { product: ShopperProducts.schemas['Product']; url: string }) {
     const analytics = useAnalytics();
     const lastTrackedProductIdRef = useRef<string | null>(null);
 
     const primaryImage =
-        productData.imageGroups?.find((g) => g.viewType === 'large')?.images?.[0]?.link ??
-        productData.imageGroups?.[0]?.images?.[0]?.link;
+        product.imageGroups?.find((g) => g.viewType === 'large')?.images?.[0]?.link ??
+        product.imageGroups?.[0]?.images?.[0]?.link;
 
     // Track product view on mount and whenever productData changes
     useEffect(() => {
         // Only track if we haven't already tracked this product
-        if (productData.id !== lastTrackedProductIdRef.current) {
+        if (product.id !== lastTrackedProductIdRef.current) {
             void analytics.trackViewProduct({
-                product: productData,
+                product,
             });
-            lastTrackedProductIdRef.current = productData.id;
+            lastTrackedProductIdRef.current = product.id;
         }
-    }, [analytics, productData]);
+    }, [analytics, product]);
 
-    const isProductASet = isProductSet(productData);
-    const isProductABundle = isProductBundle(productData);
+    const isProductASet = isProductSet(product);
+    const isProductABundle = isProductBundle(product);
 
-    // Main product content - product view with details and images
-    const mainProductContent = (
-        <div className="space-y-8">
-            {isProductASet || isProductABundle ? (
-                <>
-                    <ProductView product={productData} category={categoryData} />
-                    <ChildProducts parentProduct={productData} />
-                </>
-            ) : (
-                <ProductView product={productData} category={categoryData} />
-            )}
-            {/* Customer Reviews Section (lazy-loaded to reduce initial bundle) */}
-            <Suspense fallback={null}>
-                <CustomerReviewsSection />
-            </Suspense>
-        </div>
-    );
-
-    /**
-     * Renders the page content based on Page Designer regions
-     */
-    const renderPageContent = (page: Promise<PageWithComponentData>) => {
-        return (
-            <>
-                {/* Promo Content Region - Promotional content above main product */}
-                <Region className="mb-8" page={page} regionId="promoContent" />
-
-                {/* Main Product Content - Always shown */}
-                {mainProductContent}
-
-                {/* Engagement Content Region - Shows page content or recommendations */}
-                <Region
-                    className="mt-16"
-                    page={page}
-                    regionId="engagementContent"
-                    errorElement={<ProductRecommendationsSection />}
-                />
-            </>
-        );
-    };
-
-    const content = (
-        <ProductProvider product={productData}>
+    return (
+        <ProductProvider product={product}>
             <ProductContentProvider>
                 <ProductReviewsProvider>
                     <SeoMeta
-                        title={productData.name}
-                        description={productData.pageDescription || productData.shortDescription}
+                        title={product.name}
+                        description={product.pageDescription || product.shortDescription}
                         openGraph={{
                             type: 'product',
-                            url: loaderData.pageUrl,
+                            url,
                             image: primaryImage,
                         }}
                     />
-                    <div className="min-h-screen bg-background">
-                        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 lg:pb-8">
-                            {renderPageContent(loaderData.page)}
-                        </div>
+                    <div className="space-y-8">
+                        {isProductASet || isProductABundle ? (
+                            <>
+                                <ProductView product={product} />
+                                <ChildProducts parentProduct={product} />
+                            </>
+                        ) : (
+                            <ProductView product={product} />
+                        )}
+
+                        {/* Customer Reviews Section (lazy-loaded to reduce initial bundle) */}
+                        <Suspense fallback={null}>
+                            <CustomerReviewsSection />
+                        </Suspense>
+                        <UITarget targetId="sfcc.pdp.reviews.qna" />
                     </div>
                 </ProductReviewsProvider>
             </ProductContentProvider>
         </ProductProvider>
+    );
+}
+
+/**
+ * Product detail shell that composes the page layout with granular Suspense boundaries.
+ * Regions render independently (they manage their own async via Suspense/Await),
+ * while the core product content suspends only where use() data is needed.
+ */
+function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
+    const content = (
+        <div className="min-h-screen bg-background">
+            <div className="section-container pb-4 lg:pb-8">
+                {/* Promo Content Region - Promotional content above main product */}
+                <Region className="mb-8" page={loaderData.page} regionId="promoContent" />
+
+                {/* Category breadcrumbs - streams independently of product data */}
+                <Suspense fallback={<CategoryBreadcrumbsSkeleton />}>
+                    <Await resolve={loaderData.category}>
+                        {(category) => (category ? <CategoryBreadcrumbs category={category} /> : null)}
+                    </Await>
+                </Suspense>
+
+                {/* Main Product Content - Suspends until product data resolves */}
+                <Suspense fallback={<ProductContentSkeleton />}>
+                    <Await resolve={loaderData.product}>
+                        {(product) => <ProductContent product={product} url={loaderData.pageUrl} />}
+                    </Await>
+                </Suspense>
+
+                {/* Engagement Content Region - Shows page content or recommendations */}
+                <Region
+                    className="mt-16"
+                    page={loaderData.page}
+                    regionId="engagementContent"
+                    errorElement={<ProductRecommendationsSection />}
+                />
+            </div>
+        </div>
     );
 
     let finalContent = content;
@@ -411,14 +412,6 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
     return finalContent;
 }
 
-/**
- * Product page component that displays a product with its details and category breadcrumbs.
- * This component wraps ProductDetailView with Suspense and uses a page key to prevent
- * skeleton from showing when switching between product variants (color, size, etc.).
- * The page key ensures React only remounts when navigating to a different product, not variants.
- * Uses React's use() hook internally to handle async data fetching.
- * @returns JSX element representing the product page with Suspense boundary
- */
 /**
  * Component that renders JSON-LD schema when productSchema promise resolves.
  * Must be inside Suspense boundary to ensure it streams correctly in SSR.
@@ -432,6 +425,12 @@ function JsonLdWrapper({
     return productSchema ? <JsonLd data={productSchema} id="product-schema" /> : null;
 }
 
+/**
+ * Product page component that displays a product with its details and category breadcrumbs.
+ * The page key ensures React only remounts when navigating to a different product, not variants.
+ * Uses React's use() hook internally to handle async data fetching.
+ * @returns JSX element representing the product page with Suspense boundary
+ */
 export default function ProductPage({ loaderData }: { loaderData: ProductPageData }) {
     // Use pageKey from loaderData to force remount only when productId changes
     // This prevents showing skeleton when switching variants (pid parameter)
@@ -439,9 +438,8 @@ export default function ProductPage({ loaderData }: { loaderData: ProductPageDat
 
     return (
         <Fragment key={pageKey}>
-            <Suspense fallback={<ProductSkeleton />}>
-                <ProductDetailView loaderData={loaderData} />
-            </Suspense>
+            <ProductDetailView loaderData={loaderData} />
+
             {/* Product JSON-LD Schema for SEO - render after page content so it appears at end of body flow */}
             <Suspense fallback={null}>
                 <JsonLdWrapper productSchemaPromise={loaderData.productSchema} />

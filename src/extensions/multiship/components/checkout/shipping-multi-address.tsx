@@ -50,7 +50,7 @@ import CurrentPrice from '@/components/product-price/current-price';
 import { getPriceData } from '@/components/product-price/utils';
 import { ProductItemVariantImage } from '@/components/product-item';
 import { useTranslation } from 'react-i18next';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import {
     consolidateAddresses,
@@ -58,12 +58,10 @@ import {
     initializeItemAddresses,
 } from '@/extensions/multiship/lib/multi-address';
 import { getAddressKey, formatAddress } from '@/lib/address-utils';
+import { generateAddressId } from '@/lib/address-id-utils';
 import { AddressModal } from '@/components/checkout/components/address-modal';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';
-import CheckoutErrorBanner from '@/components/checkout/components/checkout-error-banner';
-import { getCheckoutDisplayError } from '@/components/checkout/components/checkout-display-error';
-
 /**
  * Props for the ShippingMultiAddress component.
  *
@@ -170,7 +168,7 @@ function showMultipleLocationsMessage(
 export default function ShippingMultiAddress({
     isLoading,
     isEditing,
-    actionData,
+    actionData: _actionData,
     productMap,
     isDeliveryProductItem,
     deliveryShipments,
@@ -182,12 +180,10 @@ export default function ShippingMultiAddress({
 }: ShippingMultiAddressProps) {
     const cart = useBasket();
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { t: tMultiship } = useTranslation('extMultiship');
     const customerProfile = useCustomerProfile();
     const { savedAddresses, setSavedAddresses, productItemAddresses, setProductItemAddresses } = useCheckoutContext();
-    const shippingFormError = getCheckoutDisplayError(actionData, 'shippingAddress');
-
     // Skip expensive computation when not editing
     const productItems = useMemo(() => {
         if (!isEditing) return [];
@@ -324,15 +320,17 @@ export default function ShippingMultiAddress({
 
     // Handle adding new address to each product item
     const handleAddAddress = (newAddress: ShopperCustomers.schemas['CustomerAddress']) => {
+        const address = newAddress.addressId?.trim() ? newAddress : { ...newAddress, addressId: generateAddressId() };
+
         // Remember the new address
-        const addressKey = getAddressKey(newAddress);
-        rememberedAddresses.current.set(addressKey, newAddress);
+        const addressKey = getAddressKey(address);
+        rememberedAddresses.current.set(addressKey, address);
 
         // If currentItemId is set, assign the address to that item
         if (currentItemId) {
             setItemAddresses((prev) => {
                 const newMap = new Map(prev);
-                newMap.set(currentItemId, newAddress);
+                newMap.set(currentItemId, address);
                 return newMap;
             });
 
@@ -342,7 +340,7 @@ export default function ShippingMultiAddress({
                 if (itemId && !itemAddresses.has(itemId)) {
                     setItemAddresses((prev) => {
                         const newMap = new Map(prev);
-                        newMap.set(itemId, newAddress);
+                        newMap.set(itemId, address);
                         return newMap;
                     });
                 }
@@ -378,7 +376,6 @@ export default function ShippingMultiAddress({
         <>
             <ToggleCard
                 id="shipping-multi-address"
-                // @ts-expect-error - ToggleCard title prop type issue
                 title={stepTitle}
                 editing={isEditing}
                 onEdit={onEdit}
@@ -387,14 +384,6 @@ export default function ShippingMultiAddress({
                 onEditActionClick={handleToggleShippingAddressModeToSingleAddress}>
                 <ToggleCardEdit>
                     <form onSubmit={handleSubmitShippingMultiAddress} className="space-y-4">
-                        {shippingFormError && <CheckoutErrorBanner message={shippingFormError} />}
-                        {actionData?.fieldErrors && (
-                            <div className="space-y-2">
-                                {Object.entries(actionData.fieldErrors).map(([field, error]) => (
-                                    <CheckoutErrorBanner key={field} message={error} />
-                                ))}
-                            </div>
-                        )}
                         {itemsToDisplay.map((productItem, index) => {
                             const quantity = productItem.quantity ?? 1;
                             const displayVariationValues = getDisplayVariationValues(
@@ -409,12 +398,12 @@ export default function ShippingMultiAddress({
                             return (
                                 <div
                                     key={productItem?.itemId || `item-${index}`}
-                                    className="flex flex-col gap-6 p-6 border rounded-xl" // Added padding and border to match the card look
+                                    className="flex flex-col gap-6 p-6 border rounded-none" // Added padding and border to match the card look
                                     data-testid={`sf-product-item-summary-${productItem?.productId || productItem?.id}`}>
                                     <div className="flex gap-4 items-start">
                                         <ProductItemVariantImage
                                             productItem={productItem}
-                                            className="w-24 h-24 rounded-lg bg-muted"
+                                            className="w-24 h-24 rounded-none bg-muted"
                                         />
 
                                         <div className="flex-1">
@@ -515,12 +504,6 @@ export default function ShippingMultiAddress({
                 showAddressId={!!customerProfile?.customer?.customerId}
                 showPhone={true}
                 strictValidation={true}
-                generateAddressId={(firstName, lastName) =>
-                    tMultiship('checkout.addressForm.deliveryAddressIdFallback', {
-                        firstName: firstName.trim(),
-                        lastName: lastName.trim(),
-                    }).trim()
-                }
             />
         </>
     );

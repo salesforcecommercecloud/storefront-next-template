@@ -3,7 +3,7 @@
 exports[`RefineInventory stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border rounded-md mb-4"
+    class="border border-border rounded-none mb-4"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >
@@ -13,7 +13,7 @@ exports[`RefineInventory stories snapshot > Default story renders and matches sn
       <button
         aria-controls="radix-_r_0_"
         aria-expanded="true"
-        class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+        class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
         data-state="open"
         type="button"
       >
@@ -48,7 +48,7 @@ exports[`RefineInventory stories snapshot > Default story renders and matches sn
       style="transition-duration: 0s; animation-name: none;"
     >
       <div
-        class="flex items-start space-x-2 p-2 rounded-md"
+        class="flex items-start space-x-2 p-2 rounded-none"
       >
         <button
           aria-checked="false"
@@ -85,7 +85,7 @@ exports[`RefineInventory stories snapshot > Default story renders and matches sn
 exports[`RefineInventory stories snapshot > DesktopLayout story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border rounded-md mb-4"
+    class="border border-border rounded-none mb-4"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >
@@ -95,7 +95,7 @@ exports[`RefineInventory stories snapshot > DesktopLayout story renders and matc
       <button
         aria-controls="radix-_r_4_"
         aria-expanded="true"
-        class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+        class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
         data-state="open"
         type="button"
       >
@@ -130,7 +130,7 @@ exports[`RefineInventory stories snapshot > DesktopLayout story renders and matc
       style="transition-duration: 0s; animation-name: none;"
     >
       <div
-        class="flex items-start space-x-2 p-2 rounded-md"
+        class="flex items-start space-x-2 p-2 rounded-none"
       >
         <button
           aria-checked="false"
@@ -168,7 +168,7 @@ exports[`RefineInventory stories snapshot > FilterChecked story renders and matc
 <div>
   <div>
     <div
-      class="border border-border rounded-md mb-4"
+      class="border border-border rounded-none mb-4"
       data-state="open"
       data-testid="sf-store-inventory-filter"
     >
@@ -178,7 +178,7 @@ exports[`RefineInventory stories snapshot > FilterChecked story renders and matc
         <button
           aria-controls="radix-_r_2_"
           aria-expanded="true"
-          class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+          class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
           data-state="open"
           type="button"
         >
@@ -213,7 +213,7 @@ exports[`RefineInventory stories snapshot > FilterChecked story renders and matc
         style="transition-duration: 0s; animation-name: none;"
       >
         <div
-          class="flex items-start space-x-2 p-2 rounded-md"
+          class="flex items-start space-x-2 p-2 rounded-none"
         >
           <button
             aria-checked="true"
@@ -276,7 +276,7 @@ exports[`RefineInventory stories snapshot > FilterChecked story renders and matc
 exports[`RefineInventory stories snapshot > MobileLayout story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border rounded-md mb-4"
+    class="border border-border rounded-none mb-4"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >
@@ -286,7 +286,7 @@ exports[`RefineInventory stories snapshot > MobileLayout story renders and match
       <button
         aria-controls="radix-_r_3_"
         aria-expanded="true"
-        class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+        class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
         data-state="open"
         type="button"
       >
@@ -321,7 +321,7 @@ exports[`RefineInventory stories snapshot > MobileLayout story renders and match
       style="transition-duration: 0s; animation-name: none;"
     >
       <div
-        class="flex items-start space-x-2 p-2 rounded-md"
+        class="flex items-start space-x-2 p-2 rounded-none"
       >
         <button
           aria-checked="false"
@@ -358,7 +358,7 @@ exports[`RefineInventory stories snapshot > MobileLayout story renders and match
 exports[`RefineInventory stories snapshot > WithStoreSelected story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="border border-border rounded-md mb-4"
+    class="border border-border rounded-none mb-4"
     data-state="open"
     data-testid="sf-store-inventory-filter"
   >
@@ -368,7 +368,7 @@ exports[`RefineInventory stories snapshot > WithStoreSelected story renders and 
       <button
         aria-controls="radix-_r_1_"
         aria-expanded="true"
-        class="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer"
+        class="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer"
         data-state="open"
         type="button"
       >
@@ -403,7 +403,7 @@ exports[`RefineInventory stories snapshot > WithStoreSelected story renders and 
       style="transition-duration: 0s; animation-name: none;"
     >
       <div
-        class="flex items-start space-x-2 p-2 rounded-md"
+        class="flex items-start space-x-2 p-2 rounded-none"
       >
         <button
           aria-checked="false"

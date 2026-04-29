@@ -23,7 +23,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefront-next-runtime/config';
 import { mockBuildConfig } from '@/test-utils/config';
 
-/** AccountHelp only mounts when shopper agent is enabled and passes validation. */
+/** Account Need Help card always mounts; Ask a question only when agent config is valid and context UI is enabled (Storybook preview sets the global flag). */
 const accountHelpStoryConfig = createAppConfig(
     deepMerge(mockBuildConfig, {
         app: {
@@ -91,9 +91,9 @@ const meta: Meta<typeof AccountHelpWrapper> = {
 Account Help component for the account overview page.
 
 ### Features:
-- Quick access to shopper agent
-- Three action buttons: Ask a question (functional), Contact Info, Browse FAQ
-- Sparkle icon on primary action
+- Need Help card always visible
+- Ask a question (opens chat) when agent config is valid and context UI is enabled; Contact Info and Browse FAQ always shown
+- Sparkle icon on primary action when present
 - Responsive card layout
                 `,
             },

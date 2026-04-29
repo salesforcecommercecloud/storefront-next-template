@@ -53,8 +53,6 @@ vi.mock('@/lib/product-utils', async (importOriginal) => {
 });
 
 vi.mock('@/lib/product-utils-plp', () => ({
-    getProductBrand: vi.fn(() => 'Test Brand'),
-    getProductShortDescription: vi.fn(() => 'A great product description.'),
     getProductRating: vi.fn(() => ({ rating: 4.2, reviewCount: 218 })),
 }));
 
@@ -69,9 +67,9 @@ vi.mock('@/lib/product-badges', () => ({
     })),
 }));
 
-// Isolate WishlistButton to avoid auth/wishlist context dependencies
-vi.mock('@/components/buttons/wishlist-button', () => ({
-    WishlistButton: ({ product }: { product: { productName?: string } }) => (
+// Isolate DeferredWishlistButton to avoid auth/wishlist context dependencies
+vi.mock('./deferred-wishlist-button', () => ({
+    DeferredWishlistButton: ({ product }: { product: { productName?: string } }) => (
         <button aria-label={`Add ${product.productName ?? ''} to wishlist`}>Wishlist</button>
     ),
 }));
@@ -162,35 +160,11 @@ describe('ProductTile — rendering', () => {
         expect(screen.getByText('$99.99')).toBeInTheDocument();
     });
 
-    test('renders brand when getProductBrand returns a value', () => {
-        renderTile();
-        expect(screen.getByText('Test Brand')).toBeInTheDocument();
-    });
-
-    test('does not render brand element when getProductBrand returns undefined', async () => {
-        const { getProductBrand } = await import('@/lib/product-utils-plp');
-        vi.mocked(getProductBrand).mockReturnValueOnce(undefined);
-        renderTile();
-        expect(screen.queryByText('Test Brand')).not.toBeInTheDocument();
-    });
-
     test('renders SKU via data-testid', () => {
         renderTile();
         const skuEl = screen.getByTestId('product-tile-sku');
         expect(skuEl).toBeInTheDocument();
         expect(skuEl.textContent).toContain('test-product');
-    });
-
-    test('renders short description via data-testid', () => {
-        renderTile();
-        expect(screen.getByTestId('product-tile-description')).toHaveTextContent('A great product description.');
-    });
-
-    test('does not render description element when getProductShortDescription returns undefined', async () => {
-        const { getProductShortDescription } = await import('@/lib/product-utils-plp');
-        vi.mocked(getProductShortDescription).mockReturnValueOnce(undefined);
-        renderTile();
-        expect(screen.queryByTestId('product-tile-description')).not.toBeInTheDocument();
     });
 
     test('renders badges when hasBadges is true', async () => {
@@ -314,7 +288,7 @@ describe('ProductTile — navigation', () => {
 
     test('image area overlay link points to the PDP', () => {
         renderTile();
-        const overlayLink = screen.getByRole('link', { name: /view test product/i });
+        const overlayLink = screen.getByLabelText('View Test Product');
         expect(overlayLink).toHaveAttribute('href', '/global/en-GB/product/test-product');
     });
 });
@@ -329,12 +303,11 @@ describe('ProductTile — swatch rendering', () => {
         vi.restoreAllMocks();
     });
 
-    test('renders color swatches inside an aria-hidden container', async () => {
+    test('renders color swatches for interaction', async () => {
         const { container } = renderTile();
-        // Swatches are visual/mouse-only; their container is aria-hidden so AT ignores them
-        // LazySwatches loads async; wait for it to render
+        // LazySwatches loads async; wait for it to render.
         await waitFor(() => {
-            const swatchWrapper = container.querySelector('[aria-hidden="true"] [aria-label="Available colors"]');
+            const swatchWrapper = container.querySelector('[aria-label="Available colors"]');
             expect(swatchWrapper).toBeInTheDocument();
         });
     });
@@ -357,16 +330,22 @@ describe('ProductTile — accessibility', () => {
         vi.restoreAllMocks();
     });
 
-    test('wishlist button is inside an aria-hidden container', () => {
+    test('wishlist button is not in an aria-hidden container', () => {
         renderTile();
         const wishlistBtn = screen.getByRole('button', { name: /add.*to wishlist/i, hidden: true });
-        expect(wishlistBtn.closest('[aria-hidden="true"]')).toBeInTheDocument();
+        expect(wishlistBtn.closest('[aria-hidden="true"]')).not.toBeInTheDocument();
     });
 
-    test('quick add button is inside an aria-hidden container', () => {
+    test('quick add button is not in an aria-hidden container', () => {
         renderTile();
         const quickAddBtn = screen.getByRole('button', { name: /quick add test product/i, hidden: true });
-        expect(quickAddBtn.closest('[aria-hidden="true"]')).toBeInTheDocument();
+        expect(quickAddBtn.closest('[aria-hidden="true"]')).not.toBeInTheDocument();
+    });
+
+    test('quick add container becomes visible when tile receives keyboard focus', () => {
+        renderTile();
+        const quickAddBtn = screen.getByRole('button', { name: /quick add test product/i, hidden: true });
+        expect(quickAddBtn.parentElement).toHaveClass('group-focus-within:opacity-100');
     });
 
     test('product name heading wraps the PDP link', () => {

@@ -25,6 +25,14 @@ describe('HeroMetadata - PD default alignment', () => {
         expect(metadata.fields.title?.defaultValue).toBeUndefined();
     });
 
+    test('titleTypography defaults to Default', () => {
+        expect(metadata.fields.titleTypography?.defaultValue).toBe('Default');
+    });
+
+    test('titleColor has no defaultValue (matches empty JSON metadata)', () => {
+        expect(metadata.fields.titleColor?.defaultValue).toBeUndefined();
+    });
+
     test('imageUrl has no defaultValue (matches empty JSON metadata)', () => {
         expect(metadata.fields.imageUrl?.defaultValue).toBeUndefined();
     });
@@ -33,11 +41,35 @@ describe('HeroMetadata - PD default alignment', () => {
         expect(metadata.fields.imageAlt?.defaultValue).toBeUndefined();
     });
 
+    test('imageTitle has no defaultValue (matches empty JSON metadata)', () => {
+        expect(metadata.fields.imageTitle?.defaultValue).toBeUndefined();
+    });
+
+    test('subtitle has no defaultValue (matches empty JSON metadata)', () => {
+        expect(metadata.fields.subtitle?.defaultValue).toBeUndefined();
+    });
+
+    test('subtitleTypography defaults to Default', () => {
+        expect(metadata.fields.subtitleTypography?.defaultValue).toBe('Default');
+    });
+
+    test('subtitleColor has no defaultValue (matches empty JSON metadata)', () => {
+        expect(metadata.fields.subtitleColor?.defaultValue).toBeUndefined();
+    });
+
     test('ctaText has no defaultValue (matches empty JSON metadata)', () => {
         expect(metadata.fields.ctaText?.defaultValue).toBeUndefined();
     });
 
     test('ctaLink has no defaultValue (matches empty JSON metadata)', () => {
         expect(metadata.fields.ctaLink?.defaultValue).toBeUndefined();
+    });
+
+    test('buttonStyle defaults to Primary', () => {
+        expect(metadata.fields.buttonStyle?.defaultValue).toBe('Primary');
+    });
+
+    test('styleOverride has no defaultValue (matches empty JSON metadata)', () => {
+        expect(metadata.fields.styleOverride?.defaultValue).toBeUndefined();
     });
 });

@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
+import { Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
 import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
 import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { fetchCategory } from '@/lib/api/categories';
-import { fetchSearchProducts } from '@/lib/api/search';
+import { fetchCategory } from '@/lib/api/categories.server';
+import { fetchSearchProducts } from '@/lib/api/search.server';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
 import ActiveFilters from '@/components/category-refinements/active-filters';
@@ -35,9 +34,12 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
-import { fetchPageWithComponentData, type PageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import CategoryBanner from '@/components/category-banner';
+import CategoryBannerSkeleton from '@/components/category-banner/skeleton';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
+import { UITarget } from '@/targets/ui-target';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { getPublicOrigin } from '@/utils/schema-url';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
@@ -80,7 +82,7 @@ type CategoryPageData = {
     category: ShopperProducts.schemas['Category'];
     searchResultCritical: ShopperSearch.schemas['ProductSearchResult'];
     searchResultNonCritical: Promise<ShopperSearch.schemas['ProductSearchResult']>;
-    page: Promise<PageWithComponentData | null>;
+    page: ReturnType<typeof fetchPageWithComponentData>;
     categoryId: string;
     pageUrl: string;
     refine: string[];
@@ -95,7 +97,6 @@ type CategoryPageData = {
  * This function runs on the server during SSR and prepares data for the category page.
  * @returns Object containing search results, category data, and page metadata
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData> {
     const {
         context,
@@ -116,8 +117,13 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
 
     // Get currency and locale for cache-busting the page key
     const config = getConfig<AppConfig>(context);
-    const currency = context.get(currencyContext) as string;
-    const locale = (context.get(siteContext) as SiteContext).locale.id;
+    const siteCtx = context.get(siteContext);
+    if (!siteCtx) {
+        logger.error('Category: site context is not available');
+        throw new Response('Site context is not available', { status: 500 });
+    }
+    const { currency } = siteCtx;
+    const locale = siteCtx.locale.id;
     const limit = config.search.products.hits.limit;
 
     let categoryData: ShopperProducts.schemas['Category'] | undefined;
@@ -142,23 +148,26 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
 
     // Keep non-category refinements and apply exactly one category refinement.
     // If URL already contains a cgid refine (e.g. from quick filters), honor it.
-    // Otherwise default to the category id from the route path.
+    // Otherwise, default to the category id from the route path.
     const effectiveRefine = refine.filter((r) => !r.startsWith('cgid='));
     const selectedCgidRefine = refine.find((r) => r.startsWith('cgid='));
     effectiveRefine.push(selectedCgidRefine ?? `cgid=${categoryId}`);
 
-    const criticalCount = config.search.products.hits.critical ?? 2;
+    // Ensure criticalCount doesn't exceed limit to prevent negative non-critical limit
+    const criticalCount = config.search.products.hits.critical ?? 4;
+    const safeCriticalCount = Math.min(criticalCount, limit);
     const searchResultCritical = await fetchSearchProducts(context, {
-        limit: criticalCount,
+        limit: safeCriticalCount,
         offset,
         sort,
         refine: effectiveRefine,
         currency,
     });
 
+    const effectiveCriticalCount = searchResultCritical.hits?.length ?? 0;
     const searchResultNonCritical = fetchSearchProducts(context, {
-        limit: limit - criticalCount,
-        offset: offset + criticalCount,
+        limit: limit - effectiveCriticalCount,
+        offset: offset + effectiveCriticalCount,
         sort,
         refine: effectiveRefine,
         currency,
@@ -221,7 +230,6 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
     };
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
     const clientOnlyParamsChanged =
         currentUrl.pathname === nextUrl.pathname &&
@@ -275,11 +283,14 @@ export default function CategoryPage({
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
     const limit = config.search.products.hits.limit;
 
-    // Determine the maximum number of skeletons to display in the product grid
+    // Determine the maximum number of skeletons to display in the product grid.
     // Out-of-the-box the idea is to not display more than 8 skeletons, i.e., two rows on a desktop device.
+    // Wrap in Math.max(0, ...) to prevent negative values when criticalCount is high(er).
     const criticalCount = searchResultCritical.hits?.length ?? 0;
-    const nonCriticalCount =
-        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount;
+    const nonCriticalCount = Math.max(
+        0,
+        Math.min(8, limit, searchResultCritical.total - searchResultCritical.offset) - criticalCount
+    );
 
     const analytics = useAnalytics();
     const lastTrackedDataRef = useRef<string | null>(null);
@@ -354,7 +365,7 @@ export default function CategoryPage({
     );
 
     return (
-        <Fragment>
+        <>
             <SeoMeta
                 title={category.name || category.id}
                 description={category.pageDescription || category.description}
@@ -363,8 +374,17 @@ export default function CategoryPage({
                     url: pageUrl,
                 }}
             />
-            <div className="pb-16">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="pb-16 -mt-8">
+                {/* plpTopFullWidth — full-width banner region, flush to the header (mirrors homepage pattern) */}
+                <Region
+                    page={page}
+                    regionId="plpTopFullWidth"
+                    fallbackElement={<CategoryBannerSkeleton />}
+                    errorElement={<CategoryBanner />}
+                    fallbackOnEmpty
+                />
+
+                <div className="section-container pt-8">
                     <div className="mb-4">
                         <CategoryBreadcrumbs category={category} />
                     </div>
@@ -373,15 +393,13 @@ export default function CategoryPage({
                         <h1 className="text-3xl font-bold text-foreground">
                             {category?.name || category.id} ({searchResultCritical.total})
                         </h1>
+                        <UITarget targetId="sfcc.plp.search.summary" />
                         {searchResultCritical?.sortingOptions && searchResultCritical.sortingOptions.length > 0 && (
                             <div className="flex-shrink-0">
                                 <CategorySorting result={searchResultCritical} />
                             </div>
                         )}
                     </div>
-
-                    {/* plpTopFullWidth */}
-                    <Region className="mb-8" page={page} regionId="plpTopFullWidth" />
 
                     <div className="flex flex-col lg:flex-row gap-2">
                         {/* Filters toggle button + Quick Filters - mobile only (above panel) */}
@@ -417,18 +435,21 @@ export default function CategoryPage({
                             {/* plpTopContent */}
                             <Region className="mb-8" page={page} regionId="plpTopContent" />
 
-                            <ProductGrid
-                                key={productGridDataKey}
-                                critical={searchResultCritical.hits ?? []}
-                                nonCritical={nonCriticalPromise}
-                                nonCriticalCount={nonCriticalCount}
-                                hasRefinementsPanel={filtersOpen}
-                                isLoading={isProductGridLoading}
-                                handleProductClick={handleProductClick}
-                                topCategoryName={
-                                    category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name
-                                }
-                            />
+                            <UITarget targetId="sfcc.plp.agent.categoryHelper" />
+                            <UITarget targetId="sfcc.plp.search.results">
+                                <ProductGrid
+                                    key={productGridDataKey}
+                                    critical={searchResultCritical.hits ?? []}
+                                    nonCritical={nonCriticalPromise}
+                                    nonCriticalCount={nonCriticalCount}
+                                    hasRefinementsPanel={filtersOpen}
+                                    isLoading={isProductGridLoading}
+                                    handleProductClick={handleProductClick}
+                                    topCategoryName={
+                                        category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name
+                                    }
+                                />
+                            </UITarget>
 
                             {searchResultCritical.total > 1 && (
                                 <div className="mt-10">
@@ -449,6 +470,6 @@ export default function CategoryPage({
             <Suspense fallback={null}>
                 <CategoryJsonLd categorySchemaPromise={categorySchema} />
             </Suspense>
-        </Fragment>
+        </>
     );
 }

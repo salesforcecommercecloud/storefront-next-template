@@ -1,0 +1,46 @@
+:root {
+    --destructive: #000000;
+    --destructive-foreground: #ffffff;
+
+    /* warning (e.g. caution messages, default-payment warning) */
+    --warning: #C2410C;
+    --warning-foreground: #9a3412;
+    --warning-bg: #fff7ed;
+    --warning-border: #fed7aa;
+
+    /* active status (e.g. authorized pickup person badge) */
+    --active-bg: #dcfce7;
+    --active-foreground: #15803d;
+
+    /* account/payment destructive actions (remove payment, remove address, etc.) — scoped so global --destructive is unchanged */
+    --account-action-destructive: #ef4444;
+    --account-action-destructive-foreground: #ffffff;
+
+    --success: #000000;
+    --success-foreground: #ffffff;
+
+    --info: #dbeafe;
+    --info-foreground: #1e40af;
+
+    /* status colors (for inventory, availability indicators, etc.) */
+    --status-positive: #2E844A;
+    --status-warning: #C2410C;
+    --status-critical: #DC2626;
+    --status-critical-strong: #dc2626;
+    --status-critical-bg: #fef2f2;
+    --status-critical-foreground: #991b1b;
+    --status-critical-border: #fecaca;
+    --status-info: #2563eb;
+}
+
+.dark {
+    --destructive: #9e9e9e;
+    --destructive-foreground: #000000;
+
+    /* account/payment destructive actions (same red as light for consistency) */
+    --account-action-destructive: #ef4444;
+    --account-action-destructive-foreground: #ffffff;
+
+    --success: #fafafa;
+    --success-foreground: #000000;
+}

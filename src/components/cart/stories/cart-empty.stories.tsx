@@ -21,7 +21,7 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
 import EmptyCart from '../cart-empty';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -153,7 +153,7 @@ The EmptyCart component displays when the shopping cart has no items. It provide
 ## Layout
 
 - **Outer Container**: Full-width muted background with max-w-7xl centered content
-- **Card**: \`bg-background rounded-lg shadow-md\` with generous responsive padding
+- **Card**: \`bg-background rounded-none shadow-md\` with generous responsive padding
 - **Icon**: 96×96px inline SVG shopping bag with \`text-muted-foreground/30\`
 - **Typography**: h2 heading (text-xl font-semibold) with mb-2, subtitle (text-sm) with mb-8
 - **Button**: Centered "Start Shopping" button (not full-width)

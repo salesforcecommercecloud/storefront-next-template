@@ -137,7 +137,7 @@ export const GuestUser: Story = {
 Skeleton state for guest users with 1 product item. Verifies:
 
 - Breadcrumb, product item, and order summary skeletons render
-- Product image skeleton has rounded-lg class
+- Product image skeleton has rounded-none class
 - Order summary checkout button skeleton is present
                 `,
             },

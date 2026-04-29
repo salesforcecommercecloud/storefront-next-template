@@ -57,7 +57,8 @@ class CheckoutErrorBoundaryClass extends Component<CheckoutErrorBoundaryProps, C
     }
 
     componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
-        // TODO: report error
+        // Customer integration point: add your APM's captureException() here
+        // (e.g., Sentry, Datadog RUM, New Relic Browser)
     }
 
     private handleRetry = () => {
@@ -74,7 +75,7 @@ class CheckoutErrorBoundaryClass extends Component<CheckoutErrorBoundaryProps, C
             }
 
             return (
-                <Card className="mx-auto max-w-2xl">
+                <Card className="mx-auto max-w-2xl rounded-none shadow-none">
                     <CardContent className="flex min-h-[400px] flex-col items-center justify-center p-8 text-center">
                         <AlertTriangle className="mb-4 h-12 w-12 text-destructive" />
                         <Typography variant="h2" as="h2" className="mb-2 text-xl font-bold text-destructive">

@@ -23,36 +23,32 @@ const MAX_CHECKOUT_EMPTY_RETRIES = 3;
 
 /**
  * Add to Cart Flow
- * Reusable flow for adding a product to cart via direct category navigation
  *
- * This flow encapsulates the complete journey:
- * 1. Navigate directly to category URL
- * 2. Click "More Options" on a product (tries up to MAX_PRODUCTS_TO_TRY products)
- * 3. Select all available variants
- * 4. Click Add to Cart
- * 5. If an error toast appears (e.g. out of stock), go back and try the next product
- * 6. Return product details when add succeeds
- *
- * Uses the UI error message (toast) after add-to-cart failure to detect out-of-stock and skip to next product.
- * Fallback: if checkout shows "No items in cart. Add items before checkout.", use executeAndNavigateToCheckout to retry.
+ * Adds a product to cart via PLP -> PDP -> add-to-cart. Tries up to MAX_PRODUCTS_TO_TRY
+ * products on the category page, skipping out-of-stock items detected via error toast.
  */
 class AddToCartFlow {
     /**
-     * Add to cart, then navigate to checkout. If checkout shows empty-cart message, retry add-to-cart and checkout.
-     * Use as fallback when add-to-cart success was not detected (e.g. no error toast) but checkout has no items.
+     * Add to cart, then navigate to checkout.
+     * Retries the full add-to-cart + navigate cycle when checkout shows an empty cart.
      *
      * @param categoryUrl - Direct URL to category page
-     * @param maxRetries - Max times to retry add-to-cart + checkout when checkout shows empty cart (default 2)
-     * @returns Promise<ProductInfo> - Product details that were added to cart
+     * @param maxRetries - Max times to retry when checkout shows empty cart
+     * @param options - Optional: sitePrefix bypasses buildSitePath for multi-currency/locale tests
      */
     async executeAndNavigateToCheckout(
         categoryUrl: string,
-        maxRetries: number = MAX_CHECKOUT_EMPTY_RETRIES
+        maxRetries: number = MAX_CHECKOUT_EMPTY_RETRIES,
+        options?: { sitePrefix?: string }
     ): Promise<ProductInfo> {
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
-            const productInfo = await this.execute(categoryUrl);
+            const productInfo = await this.execute(categoryUrl, { sitePrefix: options?.sitePrefix });
             try {
-                await checkoutPage.navigateWithRetry();
+                if (options?.sitePrefix) {
+                    checkoutPage.navigateWithPrefix(`${options.sitePrefix}/checkout`);
+                } else {
+                    await checkoutPage.navigateWithRetry();
+                }
                 await this.waitForCheckoutReady(30);
             } catch {
                 continue;
@@ -69,13 +65,8 @@ class AddToCartFlow {
     }
 
     /**
-     * Same as executeAndNavigateToCheckout but prefers adding a product that shows a Sale (promotion) badge on the PLP.
-     * Use only for My Cart E2E tests that validate promotion display; all other tests should use
-     * executeAndNavigateToCheckout() to keep the original add-to-cart order (first product first).
-     *
-     * @param categoryUrl - Direct URL to category page
-     * @param maxRetries - Max times to retry when checkout shows empty cart
-     * @returns Promise<ProductInfo> - Product details that were added to cart
+     * Same as executeAndNavigateToCheckout but prefers a product with a Sale badge on the PLP.
+     * Used by My Cart tests that validate promotion display.
      */
     async executeAndNavigateToCheckoutPreferringPromoted(
         categoryUrl: string,
@@ -100,11 +91,6 @@ class AddToCartFlow {
         );
     }
 
-    /**
-     * Wait for checkout-specific content (contact-info card OR empty-cart message).
-     * Uses Playwright's locator.waitFor() which is event-driven, not Node-side polling.
-     * Throws on timeout so the retry loop can catch and retry the entire add-to-cart + navigate flow.
-     */
     private async waitForCheckoutReady(timeoutSeconds: number = 30): Promise<void> {
         await (I.usePlaywrightTo('wait for checkout content', async ({ page }) => {
             const content = page.locator(
@@ -115,15 +101,18 @@ class AddToCartFlow {
     }
 
     /**
-     * Execute the complete add-to-cart flow
+     * Execute the add-to-cart flow on a category page.
      *
-     * @param categoryUrl - Direct URL to category page (e.g., '/category/womens-clothing-tops')
-     * @param options - Optional: preferPromotedProduct tries a product with Sale badge first (used only by My Cart tests)
-     * @returns Promise<ProductInfo> - Product details that were added to cart
+     * @param categoryUrl - Direct URL to category page (e.g., 'category/womens-clothing-tops')
+     * @param options - preferPromotedProduct: try a product with Sale badge first;
+     *                  sitePrefix: bypass buildSitePath for multi-currency/locale tests
      */
-    async execute(categoryUrl: string, options?: { preferPromotedProduct?: boolean }): Promise<ProductInfo> {
+    async execute(
+        categoryUrl: string,
+        options?: { preferPromotedProduct?: boolean; sitePrefix?: string }
+    ): Promise<ProductInfo> {
         try {
-            await this.navigateToPLP(categoryUrl);
+            await this.navigateToPLP(categoryUrl, options?.sitePrefix);
 
             const productCount = await productListPage.getProductCount();
             if (productCount === 0) {
@@ -152,13 +141,13 @@ class AddToCartFlow {
                 const addToCartCount = await I.grabNumberOfVisibleElements(productDetailPage.locators.addToCartButton);
                 const addToCartVisible = addToCartCount > 0;
                 if (!addToCartVisible) {
-                    await this.navigateToPLP(categoryUrl);
+                    await this.navigateToPLP(categoryUrl, options?.sitePrefix);
                     continue;
                 }
 
                 const enabled = await productDetailPage.isAddToCartEnabled();
                 if (!enabled) {
-                    await this.navigateToPLP(categoryUrl);
+                    await this.navigateToPLP(categoryUrl, options?.sitePrefix);
                     continue;
                 }
 
@@ -168,7 +157,7 @@ class AddToCartFlow {
 
                 const outcome = await productDetailPage.waitForAddToCartOutcome(15);
                 if (outcome === 'error') {
-                    await this.navigateToPLP(categoryUrl);
+                    await this.navigateToPLP(categoryUrl, options?.sitePrefix);
                     continue;
                 }
 
@@ -187,17 +176,16 @@ class AddToCartFlow {
         }
     }
 
-    /** Navigate to PLP and wait for product grid. Retries once if the grid fails to render. */
-    private async navigateToPLP(categoryUrl: string): Promise<void> {
-        I.amOnPage(buildSitePath(categoryUrl));
+    private async navigateToPLP(categoryUrl: string, sitePrefix?: string): Promise<void> {
+        const url = sitePrefix ? `${sitePrefix}/${categoryUrl}` : buildSitePath(categoryUrl);
+        I.amOnPage(url);
         const loaded = await this.waitForPLPGrid();
         if (!loaded) {
-            I.amOnPage(buildSitePath(categoryUrl));
+            I.amOnPage(url);
             await this.waitForPLPGrid();
         }
     }
 
-    /** Wait for product tiles to appear on the PLP. Returns true if found, false on timeout. */
     private async waitForPLPGrid(timeoutMs: number = 20_000): Promise<boolean> {
         try {
             await (I.usePlaywrightTo('wait for PLP product tiles', async ({ page }) => {
@@ -210,5 +198,4 @@ class AddToCartFlow {
     }
 }
 
-// Export as singleton
 export = new AddToCartFlow();

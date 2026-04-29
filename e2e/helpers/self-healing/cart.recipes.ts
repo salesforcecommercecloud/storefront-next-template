@@ -96,7 +96,7 @@ export const itemPriceCartRecipe: HealingRecipe = {
 };
 
 /**
- * Checkout Button - Proceed to checkout CTA
+ * Checkout Button - Continue to checkout CTA
  * Primary: button[data-testid*="checkout"], button:has-text("Checkout")
  */
 export const checkoutButtonRecipe: HealingRecipe = {
@@ -109,7 +109,7 @@ export const checkoutButtonRecipe: HealingRecipe = {
         'button[aria-label*="checkout" i]',
         '[class*="checkout"] button',
     ],
-    context: 'Primary CTA to proceed to checkout from cart',
+    context: 'Primary CTA to continue to checkout from cart',
     fallbackStrategy: 'Look for button/link with "checkout" text',
 };
 

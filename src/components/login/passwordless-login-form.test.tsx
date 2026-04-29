@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 import { render, screen } from '@testing-library/react';
@@ -31,9 +31,9 @@ const mockNavigation = {
 };
 
 // Helper to render with router context
-function renderWithRouter(ui: React.ReactElement) {
+function renderWithRouter(ui: React.ReactElement, initialEntries: string[] = ['/']) {
     const router = createMemoryRouter([{ path: '*', element: <AllProvidersWrapper>{ui}</AllProvidersWrapper> }], {
-        initialEntries: ['/'],
+        initialEntries,
     });
     return render(<RouterProvider router={router} />);
 }
@@ -122,6 +122,18 @@ describe('PasswordlessLoginForm', () => {
             const passwordLoginLink = screen.getByRole('link', { name: t('login:loginWithPassword') });
             expect(passwordLoginLink).toBeInTheDocument();
             expect(passwordLoginLink).toHaveAttribute('href', '/global/en-GB/login?mode=password');
+        });
+
+        test('preserves returnUrl and pending action params when switching mode', () => {
+            renderWithRouter(<PasswordlessLoginForm {...defaultProps} isPasswordlessEnabled={true} />, [
+                '/login?returnUrl=%2Fsearch%3Fq%3Dshoe&action=addToWishlist&actionParams=%7B%22productId%22%3A%22abc%22%7D',
+            ]);
+
+            const passwordLoginLink = screen.getByRole('link', { name: t('login:loginWithPassword') });
+            expect(passwordLoginLink).toHaveAttribute(
+                'href',
+                '/global/en-GB/login?returnUrl=%2Fsearch%3Fq%3Dshoe&action=addToWishlist&actionParams=%7B%22productId%22%3A%22abc%22%7D&mode=password'
+            );
         });
 
         test('does not render password login link when passwordless is disabled', () => {

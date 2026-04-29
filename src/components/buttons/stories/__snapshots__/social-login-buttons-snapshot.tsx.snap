@@ -215,7 +215,7 @@ exports[`SocialLoginButtons stories snapshot > InLoginForm story renders and mat
   data-social-login-harness="true"
 >
   <div
-    class="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm"
+    class="w-full max-w-md p-6 bg-background border rounded-none"
   >
     <div
       class="mb-6"

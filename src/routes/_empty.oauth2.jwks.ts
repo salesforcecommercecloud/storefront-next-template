@@ -24,7 +24,7 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getScapiBaseUrl } from '@/lib/utils';
 import { getLogger } from '@/lib/logger.server';
 
@@ -67,7 +67,7 @@ async function fetchUpstreamJWKS(context: LoaderFunctionArgs['context']): Promis
         method: 'GET',
         headers: {
             Accept: 'application/json',
-            'User-Agent': 'Odyssey-JWKS-Proxy',
+            'User-Agent': 'Storefront-Next-JWKS-Proxy',
         },
         // Add timeout to prevent hanging
         signal: AbortSignal.timeout(10000), // 10 second timeout

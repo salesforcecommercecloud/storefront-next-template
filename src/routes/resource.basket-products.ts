@@ -21,11 +21,10 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket } from '@/middlewares/basket.server';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-import { currencyContext } from '@/lib/currency';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -63,8 +62,12 @@ export async function loader({
     try {
         const config = getConfig<AppConfig>(context);
         const clients = createApiClients(context);
-        const { site } = context.get(siteContext) as SiteContext;
-        const currency = context.get(currencyContext) as string;
+        const siteCtx = context.get(siteContext);
+        if (!siteCtx) {
+            logger.error('BasketProducts: site context is not available');
+            throw new Response('Site context is not available', { status: 500 });
+        }
+        const { site, currency } = siteCtx;
 
         // Fetch product details
         const { data: productsData } = await clients.shopperProducts.getProducts({

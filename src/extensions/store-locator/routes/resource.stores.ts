@@ -17,7 +17,7 @@
 import { data, type LoaderFunctionArgs } from 'react-router';
 import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
 import { extractResponseError } from '@/lib/utils';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getLogger } from '@/lib/logger.server';
 
 /**

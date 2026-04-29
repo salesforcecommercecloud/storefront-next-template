@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -24,6 +21,7 @@ import { useProductContent } from '@/hooks/product-content/use-product-content';
 import { useProductView } from '@/providers/product-view';
 import CollapsibleSection from '@/components/collapsible-section';
 import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
+import { isShopperAgentContextUiEnabled } from '@/lib/shopper-agent-context-ui';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import FaqQuestionItem from './faq-question-item';
 
@@ -35,7 +33,8 @@ const AI_BADGE_CLASSES =
     'inline-flex items-center justify-center rounded px-3 py-1 text-xs font-medium min-w-10 bg-muted text-foreground';
 
 /**
- * Ask assistant FAQ section for PDP. Only shown when the shopper agent is enabled and configured.
+ * Ask assistant FAQ section for PDP. Only shown when the shopper agent is enabled, configured,
+ * and {@link isShopperAgentContextUiEnabled} is true (product-context prompts).
  * Fetches questions from the product content adapter and renders a collapsible section with
  * "Ask assistant" + AI badge and clickable question rows (sparkle icon, question, chevron).
  */
@@ -48,9 +47,10 @@ export default function Faq(): ReactElement | null {
     const showShopperAgent =
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
         validateShopperAgentConfig(config.commerceAgent);
+    const showPdpAgentFaq = showShopperAgent && isShopperAgentContextUiEnabled();
 
     useEffect(() => {
-        if (!showShopperAgent) {
+        if (!showPdpAgentFaq) {
             setQuestions([]);
             return;
         }
@@ -69,9 +69,9 @@ export default function Faq(): ReactElement | null {
         return () => {
             cancelled = true;
         };
-    }, [adapter, isEnabled, product.id, showShopperAgent]);
+    }, [adapter, isEnabled, product.id, showPdpAgentFaq]);
 
-    if (!showShopperAgent) {
+    if (!showPdpAgentFaq) {
         return null;
     }
 

@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { RouterContextProvider } from 'react-router';
+import type { ActionFunctionArgs } from 'react-router';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createShippingOptionsSchema, parseShippingOptionsFromFormData } from '@/lib/checkout-schemas';
-import { createApiClients } from '@/lib/api-clients';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
-import { extractResponseError } from '@/lib/utils';
-import { getTranslation } from '@/lib/i18next';
+import { createApiClients } from '@/lib/api-clients.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
-import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options';
+import { handleMultiShipShippingOptions } from '@/extensions/multiship/lib/actions/checkout-submit-multi-options.server';
 import { getLogger } from '@/lib/logger.server';
 
 /**
  * Server action for submitting checkout shipping options.
  */
-export async function action(formData: FormData, context: RouterContextProvider) {
+export async function action(formData: FormData, context: ActionFunctionArgs['context']) {
     const logger = getLogger(context);
     const { t } = getTranslation();
     logger.debug('SubmitShippingOptions: starting');
@@ -44,7 +44,7 @@ export async function action(formData: FormData, context: RouterContextProvider)
         return Response.json(
             {
                 success: false,
-                error: t('errors:checkout.noActiveBasket'),
+                error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No active basket found' }),
                 step: 'shippingOptions',
             },
             { status: 400 }
@@ -127,24 +127,10 @@ export async function action(formData: FormData, context: RouterContextProvider)
         }
     } catch (error) {
         logger.error('SubmitShippingOptions: failed', { error });
-        let errorMessage = t('errors:api.serverError');
-        if (error instanceof ApiError) {
-            try {
-                const { responseMessage } = await extractResponseError(error);
-                if (responseMessage) {
-                    errorMessage = responseMessage;
-                }
-            } catch (extractError) {
-                logger.error('SubmitShippingOptions: failed to extract error message', {
-                    error: extractError,
-                });
-                // Use default error message
-            }
-        }
         return Response.json(
             {
                 success: false,
-                error: errorMessage,
+                error: createActionError({ error }),
                 step: 'shippingOptions',
             },
             { status: 500 }

@@ -18,17 +18,17 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperience, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import HomePage, { type HomePageData, loader } from './_app._index';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader';
+import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
 const { t } = getTranslation();
 
 // Mock data
-const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
+const mockSearchResult = {
     hits: [
         {
             productId: 'product-1',
@@ -39,10 +39,6 @@ const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
             inventory: { ats: 10 },
             representedProduct: {
                 id: 'product-1',
-                name: 'Product 1',
-                imageGroups: [],
-                variants: [],
-                type: { master: true },
             },
         },
     ],
@@ -55,7 +51,7 @@ const mockSearchResult: ShopperSearch.schemas['ProductSearchResult'] = {
     count: 1,
     offset: 0,
     limit: 10,
-};
+} as unknown as ShopperSearch.schemas['ProductSearchResult'];
 
 const mockCategories: ShopperProducts.schemas['Category'][] = [
     {
@@ -122,10 +118,18 @@ vi.mock('@/components/hero-carousel', () => ({
     HeroCarouselSkeleton: () => <div data-testid="hero-carousel-skeleton">Hero Carousel</div>,
 }));
 
-// Mock ProductCarousel component
+// Mock ProductCarousel components
 vi.mock('@/components/product-carousel', () => ({
-    ProductCarouselWithSuspense: () => <div data-testid="product-carousel">Product Carousel</div>,
     ProductCarouselSkeleton: () => <div data-testid="product-carousel-skeleton">Product Carousel</div>,
+}));
+
+vi.mock('@/components/product-carousel/carousel', () => ({
+    ProductCarouselWithData: ({ data, title }: any) => (
+        <div data-testid="product-carousel">
+            {title && <h2>{title}</h2>}
+            {data?.hits?.length ?? 0} products
+        </div>
+    ),
 }));
 
 // Mock the Button component
@@ -204,15 +208,15 @@ vi.mock('@/lib/decorators/region-definition', () => ({
     getRegionDefinition: vi.fn(() => ({ id: 'headerbanner' })),
 }));
 
-vi.mock('@/lib/util/pageLoader', () => ({
+vi.mock('@/lib/util/pageLoader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 
-vi.mock('@/lib/api/search', () => ({
+vi.mock('@/lib/api/search.server', () => ({
     fetchSearchProducts: vi.fn(() => Promise.resolve(mockSearchResult)),
 }));
 
-vi.mock('@/lib/api/categories', () => ({
+vi.mock('@/lib/api/categories.server', () => ({
     fetchCategories: vi.fn(() => Promise.resolve(mockCategories)),
 }));
 
@@ -292,7 +296,7 @@ describe('HomePage', () => {
             expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });
 
-        test('renders header banner region when headerbanner region is provided', () => {
+        test('renders header banner region when headerbanner region is provided', async () => {
             const headerBannerRegion = {
                 id: 'headerbanner',
                 components: [
@@ -317,7 +321,9 @@ describe('HomePage', () => {
 
             // Region mock always renders the error element, so check for that fallback content
             expect(screen.getByTestId('hero-carousel')).toBeInTheDocument();
-            expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
+            });
             // Should still render other sections
             expect(screen.getByText(t('home:featuredContent.women.title'))).toBeInTheDocument();
         });

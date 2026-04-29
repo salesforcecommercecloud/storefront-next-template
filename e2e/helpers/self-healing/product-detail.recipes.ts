@@ -156,19 +156,19 @@ export const addToCartButtonRecipe: HealingRecipe = {
 };
 
 /**
- * Added to Cart Message - Success confirmation
- * Primary: [data-testid*="success"], :has-text("Added to cart")
+ * Mini Cart Drawer - Opens when item is successfully added to cart
+ * Primary: [data-slot="sheet-content"][data-state="open"]
  */
-export const addedToCartMessageRecipe: HealingRecipe = {
-    name: 'addedToCartMessage',
-    description: 'Success message after adding item to cart',
+export const miniCartDrawerRecipe: HealingRecipe = {
+    name: 'miniCartDrawer',
+    description: 'Mini cart drawer that opens after adding item to cart',
     selectors: [
-        '[data-testid*="success"]',
-        '[class*="success"]',
-        ':has-text("Added to cart")',
-        ':has-text("Added to bag")',
-        '[role="alert"]:has-text("Added")',
+        '[data-slot="sheet-content"][data-state="open"]',
+        '[data-testid*="mini-cart"][data-state="open"]',
+        '[data-testid*="cart-drawer"][data-state="open"]',
+        '[role="dialog"][data-state="open"]:has-text("Cart")',
+        'aside[data-state="open"]:has-text("Cart")',
     ],
-    context: 'Confirmation message shown after successful add-to-cart',
-    fallbackStrategy: 'Look for alert/success message with "added" text',
+    context: 'Drawer/sheet component that displays cart contents after successful add-to-cart',
+    fallbackStrategy: 'Look for cart drawer/dialog element with data-state="open"',
 };

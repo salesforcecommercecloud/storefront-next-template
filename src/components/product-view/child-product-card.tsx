@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import ImageGallery from '@/components/image-gallery';
 import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { Button } from '@/components/ui/button';
@@ -27,7 +24,7 @@ import { useVariationAttributes } from '@/hooks/product/use-variation-attributes
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import ProductPrice from '@/components/product-price';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type ReactElement, useEffect, useRef } from 'react';
 import { isProductSet, isStandardProduct } from '@/lib/product-utils';
@@ -101,7 +98,7 @@ export default function ChildProductCard({
 }: ChildProductCardProps): ReactElement {
     const { t } = useTranslation('product');
     const isParentProductASet = isProductSet(parentProduct);
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     // Get current variant for UI display and parent communication
     const currentVariant = useCurrentVariant({
@@ -215,7 +212,7 @@ export default function ChildProductCard({
     }, [canAddChildToCart, product.id, onOrderabilityChange, t]);
 
     return (
-        <Card className="h-full" data-testid="child-product">
+        <Card className="h-full rounded-none shadow-none" data-testid="child-product">
             <CardHeader className="pb-4">
                 <CardTitle className="text-lg">{product?.name}</CardTitle>
                 <ProductPrice
@@ -242,7 +239,7 @@ export default function ChildProductCard({
                         const { href, name: valueName, image, value: swatchValue, orderable } = value;
                         const content = image ? (
                             <div
-                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-pill"
+                                className="w-full h-full bg-cover bg-center bg-no-repeat rounded-none"
                                 style={{ backgroundImage: `url(${image.link})` }}
                                 aria-label={image.alt || valueName}
                             />

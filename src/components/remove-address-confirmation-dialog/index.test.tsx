@@ -20,7 +20,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { RemoveAddressConfirmationDialog } from './index';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 
@@ -207,7 +207,7 @@ describe('RemoveAddressConfirmationDialog', () => {
         await user.click(confirmButton);
 
         expect(mockSubmit).toHaveBeenCalledTimes(1);
-        expect(mockSubmit).toHaveBeenCalledWith({});
+        expect(mockSubmit).toHaveBeenCalledWith();
     });
 
     test('disables confirm button when loading', () => {

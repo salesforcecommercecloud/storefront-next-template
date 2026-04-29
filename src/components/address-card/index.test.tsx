@@ -18,16 +18,23 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import AddressCard from './index';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // Mock AddressDisplay component
 vi.mock('@/components/address-display', () => ({
-    default: ({ address }: { address: ShopperCustomers.schemas['CustomerAddress'] }) => (
+    default: ({
+        address,
+        isPreferred,
+    }: {
+        address: ShopperCustomers.schemas['CustomerAddress'];
+        isPreferred?: boolean;
+    }) => (
         <div data-testid="address-display">
             {address.firstName} {address.lastName}
+            {isPreferred && <span>{t('account:addresses.default')}</span>}
             {address.address1 && `, ${address.address1}`}
         </div>
     ),
@@ -53,23 +60,15 @@ describe('AddressCard', () => {
         test('renders address card with address data', () => {
             render(<AddressCard address={mockAddress} />);
 
-            // Card title shows addressId
-            expect(screen.getByText('address-123')).toBeInTheDocument();
             expect(screen.getByTestId('address-display')).toBeInTheDocument();
         });
 
-        test('displays addressId in card title', () => {
-            const addressWithCustomName: ShopperCustomers.schemas['CustomerAddress'] = {
-                ...mockAddress,
-                addressId: 'custom-address-id',
-                firstName: 'Jane',
-                lastName: 'Smith',
-            };
+        test('does not display card header', () => {
+            const { container } = render(<AddressCard address={mockAddress} />);
 
-            render(<AddressCard address={addressWithCustomName} />);
-
-            // Card title shows addressId, name is in AddressDisplay
-            expect(screen.getByText('custom-address-id')).toBeInTheDocument();
+            // Card header should not exist
+            const cardHeader = container.querySelector('[data-slot="card-header"]');
+            expect(cardHeader).not.toBeInTheDocument();
         });
 
         test('renders AddressDisplay component with address prop', () => {
@@ -83,9 +82,10 @@ describe('AddressCard', () => {
     });
 
     describe('Default Badge', () => {
-        test('displays default badge when isPreferred is true', () => {
+        test('passes isPreferred prop to AddressDisplay when true', () => {
             render(<AddressCard address={mockAddress} isPreferred={true} />);
 
+            // Badge is now rendered inside AddressDisplay, check it exists
             expect(screen.getByText(t('account:addresses.default'))).toBeInTheDocument();
         });
 
@@ -207,12 +207,12 @@ describe('AddressCard', () => {
             expect(card).toHaveClass('border-border', 'gap-0', 'py-4');
         });
 
-        test('card header contains title and default badge', () => {
-            render(<AddressCard address={mockAddress} isPreferred={true} />);
+        test('card does not have header section', () => {
+            const { container } = render(<AddressCard address={mockAddress} isPreferred={true} />);
 
-            // Card title shows addressId
-            expect(screen.getByText('address-123')).toBeInTheDocument();
-            expect(screen.getByText(t('account:addresses.default'))).toBeInTheDocument();
+            // Card header should not exist
+            const cardHeader = container.querySelector('[data-slot="card-header"]');
+            expect(cardHeader).not.toBeInTheDocument();
         });
 
         test('card content contains AddressDisplay', () => {
@@ -232,12 +232,9 @@ describe('AddressCard', () => {
                 lastName: 'Smith',
             };
 
-            const { container } = render(<AddressCard address={minimalAddress} />);
+            render(<AddressCard address={minimalAddress} />);
 
-            // Card title shows addressId
-            const titleElement = container.querySelector('[data-slot="card-title"]');
-            expect(titleElement).toHaveTextContent('minimal-address');
-            // Display name (firstName + lastName) is shown as subtitle - check it exists
+            // Display name (firstName + lastName) is shown - check it exists
             expect(screen.getAllByText('Jane Smith').length).toBeGreaterThan(0);
             expect(screen.getByTestId('address-display')).toBeInTheDocument();
         });
@@ -250,9 +247,9 @@ describe('AddressCard', () => {
                 <AddressCard address={addressWithNoName as ShopperCustomers.schemas['CustomerAddress']} />
             );
 
-            // Query for the card title element specifically
-            const titleElement = container.querySelector('[data-slot="card-title"]');
-            expect(titleElement).toBeInTheDocument();
+            // AddressDisplay should still render
+            const addressDisplay = container.querySelector('[data-testid="address-display"]');
+            expect(addressDisplay).toBeInTheDocument();
         });
 
         test('handles multiple rapid clicks on Edit button', async () => {

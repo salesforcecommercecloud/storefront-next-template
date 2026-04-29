@@ -31,9 +31,14 @@ const defaultClientAuth: PublicSessionData = {
     customerId: 'test-customer',
     userType: 'registered',
 };
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockBuildConfig } from '@/test-utils/config';
 
-vi.mock('@/lib/i18next.client', async () => {
+const mockSite = {
+    ...mockBuildConfig.app.commerce.sites[0],
+    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+};
+
+vi.mock('@salesforce/storefront-next-runtime/i18n/client', async () => {
     const i18next = await import('i18next');
     const { initReactI18next } = await import('react-i18next');
 
@@ -41,13 +46,42 @@ vi.mock('@/lib/i18next.client', async () => {
     // (no resources pre-loaded, uses backend to fetch translations)
     const testInstance = i18next.default.createInstance();
 
-    // Mock the backend to return empty translations for testing
+    // Mock the backend to return test translations
     const mockBackend = {
         type: 'backend' as const,
         init: vi.fn(),
-        read: vi.fn((_language: string, _namespace: string, callback: (error: any, data: any) => void) => {
-            // Return empty translations to simulate the backend
-            callback(null, {});
+        read: vi.fn((_language: string, namespace: string, callback: (error: any, data: any) => void) => {
+            // Return test translations for error namespace
+            if (namespace === 'error') {
+                callback(null, {
+                    defaultTitle: 'Something went wrong',
+                    goToHomepage: 'Go to Homepage',
+                    allRightsReserved: 'All rights reserved.',
+                    '404': {
+                        title: 'Page not found',
+                        message:
+                            "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
+                        secondaryMessage: "Don't worry—you can still explore our collection or head back home.",
+                        details: 'The requested page could not be found.',
+                    },
+                    '403': {
+                        title: 'Access restricted',
+                        message:
+                            "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
+                        secondaryMessage: 'In the meantime, feel free to browse our collection.',
+                    },
+                    '500': {
+                        title: 'Something went wrong',
+                        message:
+                            "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
+                        secondaryMessage:
+                            'Please try again in a few moments, or browse our shop while we sort things out.',
+                    },
+                });
+            } else {
+                // Return empty translations for other namespaces
+                callback(null, {});
+            }
         }),
     };
 
@@ -68,17 +102,9 @@ vi.mock('@/lib/i18next.client', async () => {
     };
 });
 
-vi.mock('@/lib/load-fonts', () => ({
-    loadFonts: vi.fn(),
-}));
-
-// Mock font file imports (used in root.tsx links function)
-vi.mock('@fonts/sen/sen-500.woff2?url', () => ({
-    default: '/mocked-fonts/sen-500.woff2',
-}));
-
-vi.mock('@fonts/sen/sen-600.woff2?url', () => ({
-    default: '/mocked-fonts/sen-600.woff2',
+// Mock font file imports (used in root.tsx links function and inline @font-face)
+vi.mock('/fonts/sen-variable.woff2', () => ({
+    default: '/mocked-fonts/sen-variable.woff2',
 }));
 
 vi.mock('@/components/toast', async () => ({
@@ -105,7 +131,6 @@ vi.mock('@/extensions/hybrid-proxy/config', () => ({
 vi.mock('@salesforce/storefront-next-runtime/config', async () => {
     const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
     const { ConfigContext, createAppConfig } = await import('@salesforce/storefront-next-runtime/config');
-    const { mockBuildConfig } = await import('@/test-utils/config');
 
     return {
         ...actual,
@@ -334,7 +359,8 @@ describe('root.tsx', () => {
 
                 expect(getByText('500')).toBeInTheDocument();
                 expect(getByText('Something went wrong')).toBeInTheDocument();
-                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
+                // 500 errors now show friendly translated message instead of statusText
+                expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -395,7 +421,8 @@ describe('root.tsx', () => {
 
                 expect(getByText('500')).toBeInTheDocument();
                 expect(getByText('Something went wrong')).toBeInTheDocument();
-                expect(getByText(/Internal Server Error/)).toBeInTheDocument();
+                // 500 errors now show friendly translated message instead of statusText
+                expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
             });
@@ -432,6 +459,7 @@ describe('root.tsx', () => {
                         appConfig: mockConfig,
                         locale: 'en-US',
                         currency: 'USD',
+                        site: mockSite,
                         getI18next: () => testI18nInstance,
                     }),
                 },
@@ -472,6 +500,7 @@ describe('root.tsx', () => {
                         clientAuth: undefined, // No auth from loader, should fall back to context default
                         basketSnapshot: null,
                         appConfig: mockConfig,
+                        site: mockSite,
                     }),
                 },
             ]);
@@ -510,6 +539,7 @@ describe('root.tsx', () => {
                         basketSnapshot: null,
                         locale: 'en-US',
                         currency: 'USD',
+                        site: mockSite,
                         getI18next: () => testI18nInstance,
                         // appConfig not in loader data
                     }),
@@ -565,6 +595,7 @@ describe('root.tsx', () => {
                             appConfig: appConfigWithHybrid,
                             locale: 'en-US',
                             currency: 'USD',
+                            site: mockSite,
                             getI18next: () => testI18nInstance,
                         }),
                     },
@@ -618,6 +649,7 @@ describe('root.tsx', () => {
                             appConfig: appConfigWithHybrid,
                             locale: 'en-US',
                             currency: 'USD',
+                            site: mockSite,
                             getI18next: () => testI18nInstance,
                         }),
                     },
@@ -671,6 +703,7 @@ describe('root.tsx', () => {
                             appConfig: mockConfig,
                             locale: 'en-US',
                             currency: 'USD',
+                            site: mockSite,
                             getI18next: () => testI18nInstance,
                         }),
                     },
@@ -692,7 +725,7 @@ describe('root.tsx', () => {
 
     describe('loader function', () => {
         it('should return clientAuth and other loader data', async () => {
-            const { i18nextContext } = await import('@/lib/i18next');
+            const { mockI18nContext } = await import('@salesforce/storefront-next-runtime/i18n');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
             const resources = await import('@/locales');
@@ -709,11 +742,7 @@ describe('root.tsx', () => {
             });
 
             const context = createLoaderContext();
-            // Set up i18next context with bound functions
-            context.set(i18nextContext, {
-                getLocale: () => 'en-US',
-                getI18nextInstance: () => testInstance,
-            });
+            mockI18nContext(context, { locale: 'en-US', instance: testInstance });
 
             const result = loader({
                 context,
@@ -732,7 +761,7 @@ describe('root.tsx', () => {
         });
 
         it('should return clientAuth with non-sensitive session data', async () => {
-            const { i18nextContext } = await import('@/lib/i18next');
+            const { mockI18nContext } = await import('@salesforce/storefront-next-runtime/i18n');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
             const resources = await import('@/locales');
@@ -754,11 +783,7 @@ describe('root.tsx', () => {
             });
 
             const context = createLoaderContext({ authSession: mockClientAuth });
-            // Set up i18next context with bound functions
-            context.set(i18nextContext, {
-                getLocale: () => 'en-US',
-                getI18nextInstance: () => testInstance,
-            });
+            mockI18nContext(context, { locale: 'en-US', instance: testInstance });
 
             const result = loader({
                 context,
@@ -778,15 +803,20 @@ describe('root.tsx', () => {
 
         it('should throw error when i18next data is not found in context', () => {
             const context = createLoaderContext({ skipI18next: true });
-            // Do not set i18next context to simulate missing middleware
+            // Simulate server environment so getTranslation() checks context instead of falling back to global i18next
+            const savedWindow = global.window;
+            // @ts-expect-error — simulate server
+            delete global.window;
 
             expect(() => {
                 loader({ context, request: new Request('http://localhost'), params: {}, unstable_pattern: '/' });
             }).toThrow('i18next data not found in context. Ensure i18next middleware runs before loaders.');
+
+            global.window = savedWindow;
         });
 
         it('should return pageDesignerMode as EDIT when mode=EDIT is in URL', async () => {
-            const { i18nextContext } = await import('@/lib/i18next');
+            const { mockI18nContext } = await import('@salesforce/storefront-next-runtime/i18n');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
             const resources = await import('@/locales');
@@ -802,10 +832,7 @@ describe('root.tsx', () => {
             });
 
             const context = createLoaderContext();
-            context.set(i18nextContext, {
-                getLocale: () => 'en',
-                getI18nextInstance: () => testInstance,
-            });
+            mockI18nContext(context, { locale: 'en', instance: testInstance });
 
             const result = loader({
                 context,
@@ -818,7 +845,7 @@ describe('root.tsx', () => {
         });
 
         it('should return pageDesignerMode as PREVIEW when mode=PREVIEW is in URL', async () => {
-            const { i18nextContext } = await import('@/lib/i18next');
+            const { mockI18nContext } = await import('@salesforce/storefront-next-runtime/i18n');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
             const resources = await import('@/locales');
@@ -834,10 +861,7 @@ describe('root.tsx', () => {
             });
 
             const context = createLoaderContext();
-            context.set(i18nextContext, {
-                getLocale: () => 'en',
-                getI18nextInstance: () => testInstance,
-            });
+            mockI18nContext(context, { locale: 'en', instance: testInstance });
 
             const result = loader({
                 context,
@@ -850,7 +874,7 @@ describe('root.tsx', () => {
         });
 
         it('should return pageDesignerMode as undefined when no mode parameter is in URL', async () => {
-            const { i18nextContext } = await import('@/lib/i18next');
+            const { mockI18nContext } = await import('@salesforce/storefront-next-runtime/i18n');
             const i18next = await import('i18next');
             const { initReactI18next } = await import('react-i18next');
             const resources = await import('@/locales');
@@ -866,10 +890,7 @@ describe('root.tsx', () => {
             });
 
             const context = createLoaderContext();
-            context.set(i18nextContext, {
-                getLocale: () => 'en',
-                getI18nextInstance: () => testInstance,
-            });
+            mockI18nContext(context, { locale: 'en', instance: testInstance });
 
             const result = loader({
                 context,

@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, SITE_PREFIX } from '@/test-utils/config';
-import { CurrencyProvider } from '@/providers/currency';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import Footer from './index';
+
+// Mock useLocation to control route context
+vi.mock('react-router', async () => {
+    const actual = await vi.importActual<typeof import('react-router')>('react-router');
+    return {
+        ...actual,
+        useLocation: vi.fn(),
+    };
+});
+
+const { useLocation } = await import('react-router');
 
 // Mock categories data
 const mockCategories: ShopperProducts.schemas['Category'] = {
@@ -48,16 +58,19 @@ const mockSite: Site = {
     supportedCurrencies: ['EUR', 'GBP'],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 // Helper function to render component with router context
-const renderWithRouter = (component: React.ReactElement, currency: string = 'USD') => {
+const renderWithRouter = (component: React.ReactElement) => {
     const router = createMemoryRouter(
         [
             {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider value={mockSite}>
-                            <CurrencyProvider value={currency}>{component}</CurrencyProvider>
+                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                            {component}
                         </SiteProvider>
                     </ConfigProvider>
                 ),
@@ -71,6 +84,17 @@ const renderWithRouter = (component: React.ReactElement, currency: string = 'USD
 };
 
 describe('Footer', () => {
+    beforeEach(() => {
+        // Default to homepage route for most tests
+        vi.mocked(useLocation).mockReturnValue({
+            pathname: '/',
+            search: '',
+            hash: '',
+            state: null,
+            key: 'default',
+        });
+    });
+
     test('renders all section headings', () => {
         renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
@@ -184,7 +208,7 @@ describe('Footer', () => {
     });
 
     test('renders footer element with theme-aware classes', () => {
-        const { container } = renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />, 'USD');
+        const { container } = renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
 
         const footer = container.querySelector('footer');
         expect(footer).toBeInTheDocument();
@@ -231,5 +255,96 @@ describe('Footer', () => {
         expect(screen.getByText(t('footer:sections.shop'))).toBeInTheDocument();
         expect(screen.getByText(t('footer:sections.help'))).toBeInTheDocument();
         expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
+    });
+
+    test('renders newsletter section on homepage', () => {
+        // Explicitly mock homepage route
+        vi.mocked(useLocation).mockReturnValue({
+            pathname: '/',
+            search: '',
+            hash: '',
+            state: null,
+            key: 'default',
+        });
+
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+
+        // Newsletter should be visible
+        expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
+        expect(screen.getByText(t('footer:newsletter.description'))).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(t('footer:newsletter.emailPlaceholder'))).toBeInTheDocument();
+    });
+
+    test('renders newsletter section on site-prefixed homepage', () => {
+        // Mock site-prefixed homepage route (e.g., /RefArchGlobal/en-GB)
+        vi.mocked(useLocation).mockReturnValue({
+            pathname: '/RefArchGlobal/en-GB',
+            search: '',
+            hash: '',
+            state: null,
+            key: 'default',
+        });
+
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+
+        // Newsletter should be visible
+        expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
+        expect(screen.getByText(t('footer:newsletter.description'))).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(t('footer:newsletter.emailPlaceholder'))).toBeInTheDocument();
+    });
+
+    test('does not render newsletter section on non-homepage routes', () => {
+        // Mock non-homepage route (e.g., product page)
+        vi.mocked(useLocation).mockReturnValue({
+            pathname: '/RefArchGlobal/en-GB/product/test-product',
+            search: '',
+            hash: '',
+            state: null,
+            key: 'default',
+        });
+
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+
+        // Newsletter should NOT be visible
+        expect(screen.queryByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).not.toBeInTheDocument();
+        expect(screen.queryByText(t('footer:newsletter.description'))).not.toBeInTheDocument();
+        expect(screen.queryByPlaceholderText(t('footer:newsletter.emailPlaceholder'))).not.toBeInTheDocument();
+
+        // But other footer content should still be present
+        expect(screen.getByText(t('footer:sections.shop'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.help'))).toBeInTheDocument();
+        expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
+    });
+
+    test('does not render newsletter on cart page', () => {
+        // Mock cart route (with site prefix)
+        vi.mocked(useLocation).mockReturnValue({
+            pathname: '/RefArchGlobal/en-GB/cart',
+            search: '',
+            hash: '',
+            state: null,
+            key: 'default',
+        });
+
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+
+        // Newsletter should NOT be visible
+        expect(screen.queryByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).not.toBeInTheDocument();
+    });
+
+    test('does not render newsletter on category page', () => {
+        // Mock category route (with site prefix)
+        vi.mocked(useLocation).mockReturnValue({
+            pathname: '/RefArchGlobal/en-GB/category/mens',
+            search: '',
+            hash: '',
+            state: null,
+            key: 'default',
+        });
+
+        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+
+        // Newsletter should NOT be visible
+        expect(screen.queryByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).not.toBeInTheDocument();
     });
 });

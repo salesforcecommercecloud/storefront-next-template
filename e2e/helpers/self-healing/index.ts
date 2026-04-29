@@ -49,7 +49,7 @@ export {
     variantDropdownsRecipe,
     quantityInputRecipe,
     addToCartButtonRecipe,
-    addedToCartMessageRecipe,
+    miniCartDrawerRecipe,
 } from './product-detail.recipes';
 
 export {
@@ -213,7 +213,7 @@ import {
     variantDropdownsRecipe,
     quantityInputRecipe,
     addToCartButtonRecipe,
-    addedToCartMessageRecipe,
+    miniCartDrawerRecipe,
 } from './product-detail.recipes';
 import {
     cartItemsRecipe,
@@ -359,7 +359,7 @@ export const healingRecipes: HealingRecipe[] = [
     variantDropdownsRecipe,
     quantityInputRecipe,
     addToCartButtonRecipe,
-    addedToCartMessageRecipe,
+    miniCartDrawerRecipe,
     // Cart
     cartItemsRecipe,
     itemTitleCartRecipe,

@@ -21,8 +21,6 @@ import {
     type JSX,
     type ReactNode,
 } from 'react';
-import { NavLink } from '@/components/link';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -33,6 +31,9 @@ import {
     navigationMenuTriggerStyle,
     NavigationMenuViewport,
 } from '@/components/ui/navigation-menu';
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { NavLink } from '@/components/link';
+import { useSubCategory } from './context';
 
 export type CategoryNavigationMenuListCtx = {
     level: number;
@@ -123,7 +124,8 @@ function CategoryNavigationMenuNested(
         path: ReadonlyArray<ShopperProducts.schemas['Category']>;
     }
 ) {
-    const { category, level, maxDepth } = props;
+    const { category: rawCategory, level, maxDepth } = props;
+    const category = useSubCategory(rawCategory.id) ?? rawCategory;
     if (!hasChildren(category) || level >= maxDepth) {
         return null;
     }

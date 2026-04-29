@@ -68,6 +68,9 @@ const mockSite: Site = {
     supportedCurrencies: ['EUR', 'GBP'],
 };
 
+const mockLocale =
+    mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
+
 const renderComponent = (component: React.ReactElement) => {
     const router = createMemoryRouter(
         [
@@ -75,7 +78,9 @@ const renderComponent = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider value={mockSite}>{component}</SiteProvider>
+                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                            {component}
+                        </SiteProvider>
                     </ConfigProvider>
                 ),
             },
@@ -94,13 +99,23 @@ describe('PopularCategory', () => {
         renderComponent(<PopularCategory data={mockCategory} />);
 
         expect(screen.getByText('New Arrivals')).toBeInTheDocument();
-        expect(screen.getByText('Shop all new arrivals including women and mens clothing')).toBeInTheDocument();
+        expect(screen.queryByText('Shop all new arrivals including women and mens clothing')).not.toBeInTheDocument();
         expect(screen.getByText('Shop Now')).toBeInTheDocument();
-        expect(screen.getByRole('listitem')).toHaveAttribute('href', `${SITE_PREFIX}/category/newarrivals`);
+        expect(screen.getByRole('link', { name: /new arrivals/i })).toHaveAttribute(
+            'href',
+            `${SITE_PREFIX}/category/newarrivals`
+        );
     });
 
     test('renders category with category prop (programmatic use)', () => {
         renderComponent(<PopularCategory category={mockCategory} />);
+
+        expect(screen.getByText('New Arrivals')).toBeInTheDocument();
+        expect(screen.queryByText('Shop all new arrivals including women and mens clothing')).not.toBeInTheDocument();
+    });
+
+    test('shows description when showDescription is true', () => {
+        renderComponent(<PopularCategory data={mockCategory} showDescription />);
 
         expect(screen.getByText('New Arrivals')).toBeInTheDocument();
         expect(screen.getByText('Shop all new arrivals including women and mens clothing')).toBeInTheDocument();
@@ -130,14 +145,14 @@ describe('PopularCategory', () => {
         expect(container.firstChild).toBeNull();
     });
 
-    test('uses pageDescription over description', () => {
+    test('uses pageDescription over description when showDescription is true', () => {
         const categoryWithBoth = {
             ...mockCategory,
             pageDescription: 'Page description',
             description: 'Regular description',
         };
 
-        renderComponent(<PopularCategory data={categoryWithBoth} />);
+        renderComponent(<PopularCategory data={categoryWithBoth} showDescription />);
 
         expect(screen.getByText('Page description')).toBeInTheDocument();
         expect(screen.queryByText('Regular description')).not.toBeInTheDocument();
@@ -150,7 +165,7 @@ describe('PopularCategory', () => {
             description: 'Regular description',
         };
 
-        renderComponent(<PopularCategory data={categoryWithoutPageDesc} />);
+        renderComponent(<PopularCategory data={categoryWithoutPageDesc} showDescription />);
 
         expect(screen.getByText('Regular description')).toBeInTheDocument();
     });
@@ -184,7 +199,7 @@ describe('PopularCategory', () => {
     test('generates correct category link', () => {
         renderComponent(<PopularCategory data={mockCategory} />);
 
-        const link = screen.getByRole('listitem');
+        const link = screen.getByRole('link', { name: /new arrivals/i });
         expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/newarrivals`);
     });
 
@@ -196,7 +211,7 @@ describe('PopularCategory', () => {
 
         renderComponent(<PopularCategory data={categoryWithEmptyId} />);
 
-        const link = screen.getByRole('listitem');
+        const link = screen.getByRole('link', { name: /new arrivals/i });
         expect(link).toHaveAttribute('href', `${SITE_PREFIX}/category/`);
     });
 

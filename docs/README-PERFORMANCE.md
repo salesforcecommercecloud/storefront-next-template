@@ -1,111 +1,99 @@
-# Performance
+# Performance Best Practices
 
-## Performance Metrics
+Use optimization strategies to build fast storefronts. Follow performance best practices for web fonts, resource hints, bundle optimization, and third-party scripts.
 
-The application includes a built-in performance monitoring system that tracks and visualizes server-side and client-side operation timings. This feature helps developers understand request performance, identify bottlenecks, and optimize parallelization opportunities.
+> [!NOTE]
+> This document focuses on areas not covered elsewhere. For in-depth documentation about other performance-related topics, check out these links.
+>
+> - [Data Fetching](README-DATA.md): Server-load everything, data classification, loaders, actions, and fetchers.
+> - [Loading States](README-SUSPENSE.md): Suspense boundary granularity, lazy loading overlays, and skeleton vs. spinner tradeoffs.
+> - [State Management](README-STATE.md): URL state, optimistic UI, and avoiding derived state.
+> - [Images](README-IMAGES.md): DIS integration, `<DynamicImage>` component, `DynamicImageProvider`, image utilities, performance checklist, and alt text strategy.
 
-### Configuration
+## Optimize Web Fonts
 
-Performance metrics are controlled through feature flags in `config.server.ts`:
+To achieve optimal performance during page load, use system fonts or minimize the size of web fonts and improve their discovery. Large web font files take longer to download and negatively affect [First Contentful Paint](https://web.dev/articles/fcp) (FCP). An incorrect `font-display` value can cause layout shifts that contribute to [Cumulative Layout Shift](https://web.dev/articles/cls) (CLS).
 
-```json
-{
-    "performance": {
-        "metrics": {
-            "serverPerformanceMetricsEnabled": true,
-            "clientPerformanceMetricsEnabled": true,
-            "serverTimingHeaderEnabled": false
-        }
-    }
-}
+### Font Hosting
+
+Self-host web fonts instead of loading them from third-party CDNs like Google Fonts. Self-hosting eliminates cross-origin DNS lookups and connection setup, avoids browser cache partitioning (browsers isolate third-party CDN caches per site), and is required for GDPR compliance, since loading fonts from external CDNs transmits the visitor's IP address to that third party on every page load. A [2022 ruling by the Munich Regional Court](https://gdprhub.eu/index.php?title=LG_M%C3%BCnchen_-_3_O_17493/20) established this as a GDPR violation applicable across the EU. The alternative of gating external font loading behind a consent manager preserves CDN delivery but degrades the experience for users who haven't consented and adds implementation complexity. For details, see [Google Fonts and GDPR](https://www.cookieyes.com/documentation/google-fonts-and-gdpr/).
+
+### Font Discovery
+
+Browsers use `@font-face` to find fonts. Help the browser discover fonts earlier by inlining the `@font-face` declaration in the `<head>` and adding a `<link rel="preload">` directive. Without preload, the browser doesn't request the font until it computes a style that references it, adding a waterfall delay.
+
+### Font Download
+
+Use the WOFF2 format for its superior compression. Prefer variable fonts because a single file covers multiple weights, reducing the number of requests and preload hints. Subset fonts to include only necessary characters when the full Unicode range isn't needed.
+
+### Font Rendering
+
+The `font-display` CSS property controls how text is shown while a font loads. Use `swap` to immediately show a system fallback font and swap in the web font once loaded, avoiding Flash of Invisible Text (FOIT). Use `optional` to eliminate the swap-induced layout shift entirely. The web font is used only if it arrives before first render, otherwise the system font persists.
+
+### System Fonts
+
+Using system fonts avoids the font download entirely and eliminates render-blocking. For examples of system fonts, see [Fonts for Apple platforms](https://developer.apple.com/fonts/) and [Windows 11 font list](https://learn.microsoft.com/en-us/typography/fonts/windows_11_font_list).
+
+For more detail, see [Optimize web fonts](https://web.dev/learn/performance/optimize-web-fonts) on web.dev.
+
+### Template Implementation
+
+The template ships with **Sen**, a self-hosted variable font that applies the recommendations above:
+
+| Aspect | Implementation | File |
+|--------|---------------|------|
+| Font file | `public/fonts/sen-variable.woff2` (~22 KB, variable, weight 400–800) | — |
+| Preload | `<link rel="preload" as="font" type="font/woff2" crossorigin="anonymous">` | `src/root.tsx` |
+| `@font-face` | Inline `<style>` in `<head>` with `font-display: swap` | `src/root.tsx` |
+| Fallback stack | `'Sen', -apple-system, 'system-ui', 'Helvetica Neue', Arial, sans-serif` | `src/theme/tailwind.css` |
+
+When replacing Sen with a different font, update the font file in `public/fonts/`, the preload hint and inline `@font-face` in `src/root.tsx`, and the `--font-sans` / `--font-serif` / `--font-mono` variables in `src/theme/tailwind.css`. Choose a system fallback with similar metrics to minimize the visual shift during swap.
+
+## Resource Hints
+
+Resource hints tell the browser to start DNS lookups, TCP connections, or resource downloads before they're needed, reducing latency when those resources are eventually requested.
+
+The template renders resource hints in the `<head>` based on configuration values in `config.server.ts`, so they can be tuned per environment without code changes (`src/root.tsx`).
+
+- `appConfig.links.preconnect`: Origins the browser should open early connections to (DNS + TCP + TLS). Use for services that will definitely be contacted on every page, such as the image CDN. The template preconnects to the DIS host by default.
+- `appConfig.links.prefetchDns`: Origins for DNS-only prefetching. Lighter than `preconnect`, appropriate for services that may or may not be contacted (for example, analytics, optional third-party APIs).
+- `appConfig.links.prefetch`: Specific resources to fetch and cache in the background. Use sparingly, as prefetched resources consume bandwidth regardless of whether the user navigates to them.
+
+```bash
+# Override via environment variables
+PUBLIC__app__links__preconnect='["https://edge.dis.commercecloud.salesforce.com"]'
+PUBLIC__app__links__prefetchDns='["https://analytics.example.com"]'
 ```
 
-#### Feature Flags
+> [!WARNING]
+> Only `preconnect` to origins that are actually used on every page. Each preconnect opens a TCP and TLS connection eagerly, so unused preconnects waste the browser's connection budget and can delay more important requests. Performance audits such as Lighthouse's "Avoid unnecessary preconnects" will flag this. If an origin is only used on some pages (for example, a payment provider on checkout), prefer `dns-prefetch` instead. DNS lookups are cheaper and don't trigger warnings when unused.
 
-- **`serverPerformanceMetricsEnabled`** (default: `true`)
-    - Enables performance tracking for server-side operations (SSR, API calls, authentication)
-    - Logs detailed metrics after each server-side request completes
+## Bundle Optimization
 
-- **`clientPerformanceMetricsEnabled`** (default: `true`)
-    - Enables performance tracking for client-side operations
-    - Logs metrics for client-side navigations and API calls
+Vite handles tree-shaking, minification, and chunk splitting automatically. Follow these practices to help keep bundles small.
 
-- **`serverTimingHeaderEnabled`** (default: `false`)
-    - When enabled, adds a [`Server-Timing`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server-Timing) HTTP header to responses
-    - ⚠️ **Warning**: This **blocks** the response until all operations complete. Only enable for development/debugging.
+- Split your code. Vite automatically splits each route into its own chunk, so users only download the JavaScript for the page they're visiting. For components that aren't needed on initial render, for example modals, drawers, rich editors, or heavy below-the-fold content, use [`React.lazy()`](https://react.dev/reference/react/lazy) with deferred mounting to split them into separate chunks that are loaded on demand. See [Lazy Loading for Overlays](README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the pattern. For large route-specific component groups, use `manualChunks` in `vite.config.ts` to control how Rollup groups modules. The template uses this to split checkout components and per-locale translation files into dedicated chunks that are only loaded when needed.
+- Analyze and monitor bundle size. Run `pnpm bundlesize:analyze` to generate an interactive visualization of client and server bundles (opens `build/client-bundle-size.html` and `build/ssr-bundle-size.html`). Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these checks on every PR.
+- Avoid large dependencies for small tasks. Before adding a library, check its bundle size (for example, via [bundlephobia](https://bundlephobia.com)). A 50 KB utility library for a function you could write in 10 lines is not a good tradeoff.
+- Compression is handled automatically. Managed Runtime (CloudFront) applies Gzip/Brotli compression to responses at the edge — no application-level configuration is needed.
 
-### What Gets Tracked
+## React Rendering
 
-The performance metrics system automatically tracks:
+Unnecessary re-renders inflate [Interaction to Next Paint](https://web.dev/articles/inp) (INP) and degrade responsiveness. Here are the most impactful optimizations.
 
-- **SSR Operations**: Total rendering time and middleware execution
-- **Authentication**: Guest login, token refresh, and user authentication operations
-- **API Calls**: All SCAPI requests with their class and method names
-- **Timing Details**: Start time, end time, duration, and parallelization statistics
+- Split React Contexts by concern. One context per domain (theme, locale, and user). A single large context re-renders all consumers on every value change — even consumers that don't use the changed value. See [State Management](README-STATE.md).
+- Memoize expensive computations. Use `useMemo` for derivations that are genuinely expensive. Don't memoize everything, since the overhead of memoization exceeds the cost of cheap computations.
+- Stabilize callback references. When passing callbacks to memoized child components, wrap them in `useCallback` to prevent the child from re-rendering on every parent render.
+- Use `React.memo` selectively. Wrap components that re-render often with unchanged props. Don't apply it broadly because it adds comparison overhead and obscures the component tree.
 
-### Visualization Output
+## Third-Party Scripts
 
-When enabled, performance metrics are logged to the console with a rich visualization showing:
+Third-party scripts, such as analytics, tag managers, A/B testing, chat widgets, and consent banners, are a common source of performance degradation. Each script adds to [Total Blocking Time](https://web.dev/articles/tbt) (TBT) and can delay [Interaction to Next Paint](https://web.dev/articles/inp) (INP).
 
-1. **Header Section**: Request ID, URL, and total duration
-2. **Timeline Visualization**: Visual bar chart showing when operations started, their duration, and overlap
-3. **Time Markers**: Timeline scale showing milliseconds at regular intervals
-4. **Operations List**: Each operation with its icon, name, duration, and timing range
-5. **Summary Statistics**: Total operations, duration, sum of all operations, and parallelization percentage
-6. **Category Breakdown**: Grouped statistics by operation type (AUTH, SSR, APICALL)
+Keep these tips in mind for best performance results.
 
-#### Example Output
-
-```
-════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-🚀 Request server-1759770484104
-📍 http://localhost:5173/
-⏱️ 1409.27ms
-⚠️  SSR timing shows total processing time. With streaming enabled, UI renders progressively before completion.
-════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-
-Name                                        Duration    Timeline
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-                                                     0ms            282ms            564ms            846ms            1127ms            1409ms
-
-⚡ ssr.total                                1409.27ms ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 0→1409ms
-⚡ ssr.middleware                            693.77ms ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0→694ms
-🔐 auth.guestLogin                          657.18ms ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0→657ms
-🔐 auth.loginGuestUser                      656.71ms ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 1→657ms
-🌐 apiCall.ShopperProducts.getCategory      437.84ms ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░ 693→1130ms
-🌐 apiCall.ShopperSearch.productSearch      716.09ms ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 693→1409ms
-🌐 apiCall.ShopperProducts.getCategory      230.08ms ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 1131→1362ms
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-📊 Summary:
-   Total Operations: 7
-   Total Duration: 1409.27ms
-   Sum of All Operations: 4800.94ms
-   Parallelization: 70.6%
-
-📈 Breakdown by Category:
-   ⚡ SSR: 2 ops, 2103.04ms total, 1051.52ms avg
-   🔐 AUTH: 2 ops, 1313.89ms total, 656.95ms avg
-   🌐 APICALL: 3 ops, 1384.01ms total, 461.34ms avg
-
-════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-```
-
-> [!TIP]
-> The timeline visualization makes it easy to spot operations that could be parallelized. Look for operations with gaps in the timeline bars or those that start after others complete.
-
-### Tracked Operation Types
-
-Operations are categorized and displayed with distinct icons:
-
-- **⚡ SSR**: Server-side rendering operations
-- **🔐 AUTH**: Authentication and authorization operations
-- **🌐 APICALL**: Salesforce Commerce API calls
-- **💻 CLIENT**: Client-side operations
-
-### Best Practices
-
-1. **Development Only**: Keep metrics enabled during development to identify performance issues early
-2. **Production**: Consider disabling or sampling metrics in production to reduce overhead
-3. **Server-Timing Header**: Only enable `serverTimingHeaderEnabled` during debugging, as it blocks responses
-4. **Review Regularly**: Check the timeline visualization periodically to ensure operations remain optimized
+- Audit regularly. Every external script must justify its performance cost. Remove scripts that aren't actively used.
+- Never load synchronously. Always use `async` or `defer`. A synchronous `<script>` blocks HTML parsing entirely.
+- Lazy-load interaction-driven widgets. Chat widgets, social buttons, and similar components should load only when the user scrolls near them or clicks a placeholder — not on page load. See [Lazy Loading for Overlays](README-SUSPENSE.md#lazy-loading-for-overlays-modals-drawers-dialogs) for the deferred mounting pattern.
+- Use a Consent Management Platform (CMP). Integrate with a tag manager to prevent marketing and analytics tags from loading before user consent. This method satisfies privacy regulations and improves performance for users who haven't consented.
+- Measure impact. Use the Chrome DevTools [Coverage tab](https://developer.chrome.com/docs/devtools/coverage) to identify unused JavaScript and CSS from third-party scripts.

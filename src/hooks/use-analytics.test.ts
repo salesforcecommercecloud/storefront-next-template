@@ -37,7 +37,11 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
-    useSite: vi.fn(),
+    useSite: vi.fn(() => ({
+        site: { id: 'RefArchGlobal' },
+        language: 'en-GB',
+        currency: 'USD',
+    })),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -55,6 +59,7 @@ vi.mock('@salesforce/storefront-next-runtime/events', () => ({
 
 vi.mock('@/lib/adapters', () => ({
     getAllAdapters: vi.fn(),
+    buildConsentPreferences: vi.fn(),
 }));
 
 vi.mock('@/adapters', () => ({
@@ -69,7 +74,7 @@ import { useAuth } from '@/providers/auth';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
-import { getAllAdapters } from '@/lib/adapters';
+import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/adapters';
 import { createEvent, getEventMediator, type EventMediator } from '@salesforce/storefront-next-runtime/events';
 import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
@@ -129,10 +134,17 @@ const mockCategory: ShopperProducts.schemas['Category'] = {
 } as ShopperProducts.schemas['Category'];
 
 describe('useAnalytics', () => {
+    const mockConsentCategories = ['necessary', 'analytics', 'marketing', 'personalization'];
+    const mockConsentPreferences = [...mockConsentCategories];
     const mockConfig = {
         engagement: {
             adapters: {
                 einstein: { enabled: true },
+            },
+            analytics: {
+                trackingConsent: {
+                    consentCategories: mockConsentCategories,
+                },
             },
         },
     };
@@ -142,7 +154,11 @@ describe('useAnalytics', () => {
 
         // Setup default mocks
         vi.mocked(useConfig).mockReturnValue(mockConfig as any);
-        vi.mocked(useSite).mockReturnValue({ id: 'RefArchGlobal' } as any);
+        vi.mocked(useSite).mockReturnValue({
+            site: { id: 'RefArchGlobal' },
+            language: 'en-GB',
+            currency: 'USD',
+        } as any);
         vi.mocked(useTranslation).mockReturnValue({ i18n: { language: 'en-GB' } } as any);
         vi.mocked(getAllAdapters).mockReturnValue([]);
         vi.mocked(initializeEngagementAdapters).mockResolvedValue(undefined);
@@ -164,6 +180,9 @@ describe('useAnalytics', () => {
             setTrackingConsent: vi.fn(),
             defaultTrackingConsent: TrackingConsent.Declined,
         });
+
+        // Default: accepted consent returns all categories
+        vi.mocked(buildConsentPreferences).mockReturnValue(mockConsentPreferences);
 
         // Mock window.__APP_CONFIG__
         if (typeof window !== 'undefined') {
@@ -194,7 +213,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
 
@@ -239,7 +259,8 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -261,7 +282,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -283,7 +305,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -305,7 +328,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -333,7 +357,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -361,7 +386,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -389,7 +415,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -415,7 +442,31 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
+            );
+        });
+    });
+
+    describe('trackCommerceAgentEngagement', () => {
+        it('should track commerce agent engagement with surface', async () => {
+            vi.mocked(useAuth).mockReturnValue(mockAuth);
+
+            const { result } = renderHook(() => useAnalytics());
+
+            await result.current.trackCommerceAgentEngagement({ surface: 'header' });
+
+            expect(mockAnalytics.track).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    eventType: 'commerce_agent_engagement',
+                    surface: 'header',
+                    payload: {
+                        userType: 'registered',
+                        usid: 'test-usid',
+                    },
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -441,7 +492,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -466,7 +518,8 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
 
@@ -489,7 +542,8 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
             );
         });
     });
@@ -507,6 +561,7 @@ describe('useAnalytics', () => {
                 setTrackingConsent: vi.fn(),
                 defaultTrackingConsent: TrackingConsent.Declined,
             });
+            vi.mocked(buildConsentPreferences).mockReturnValue([]);
 
             const { result } = renderHook(() => useAnalytics());
 
@@ -523,6 +578,7 @@ describe('useAnalytics', () => {
                 setTrackingConsent: vi.fn(),
                 defaultTrackingConsent: TrackingConsent.Declined,
             });
+            vi.mocked(buildConsentPreferences).mockReturnValue(undefined);
 
             const { result } = renderHook(() => useAnalytics());
 
@@ -549,7 +605,25 @@ describe('useAnalytics', () => {
                     eventType: 'view_page',
                     path: '/test-page',
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' }
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                mockConsentPreferences
+            );
+        });
+
+        it('should pass consentPreferences to mediator.track', async () => {
+            const customPreferences = ['necessary', 'analytics'];
+            vi.mocked(buildConsentPreferences).mockReturnValue(customPreferences);
+
+            const { result } = renderHook(() => useAnalytics());
+
+            await result.current.trackViewProduct({ product: mockProduct });
+
+            expect(mockAnalytics.track).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    eventType: 'view_product',
+                }),
+                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                customPreferences
             );
         });
     });

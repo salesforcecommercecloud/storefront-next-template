@@ -14,33 +14,102 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getBasket } from '@/middlewares/basket.server';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode } from '@/lib/error-codes';
+import { extractErrorMessage } from '@/lib/auth-error-handler';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getLogger } from '@/lib/logger.server';
-
-type InitiateRegistrationResponse = {
-    success: boolean;
-    error?: string;
-    email?: string;
-};
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
+import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
+import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile-constants';
 
 /**
  * Server action to initiate passwordless registration during checkout
  * This triggers the OTP email to be sent for account creation with email verification
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<InitiateRegistrationResponse> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const logger = getLogger(context);
-    const { t } = getTranslation();
+    const locale = getLocale(context);
 
     logger.debug('InitiateCheckoutRegistration: starting');
+
+    if (request.method !== 'POST') {
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: `Expected POST, got ${request.method}`,
+                }),
+            },
+            { status: 405 }
+        );
+    }
 
     try {
         const formData = await request.formData();
         const email = formData.get('email')?.toString();
+        const turnstileToken = formData.get('turnstileToken')?.toString();
+
+        const appConfig = getConfig<AppConfig>(context);
+
+        const tvCookie = createCookie<string>(
+            COOKIE_TURNSTILE_VERIFIED,
+            getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
+            context
+        );
+        const cookieHeader = request.headers.get('Cookie');
+        const turnstileVerifiedViaCookie = (await tvCookie.parse(cookieHeader)) === '1';
+
+        let shouldSetCookie = false;
+        const turnstileVerificationEnabled =
+            appConfig.security?.turnstile?.enabled && appConfig.security?.turnstile?.verification?.enabled;
+
+        if (turnstileVerificationEnabled) {
+            if (turnstileToken) {
+                const allowed = await enforceTurnstile({
+                    request,
+                    config: appConfig,
+                    turnstileToken,
+                    logger,
+                    actionName: 'initiate-checkout-registration',
+                    email,
+                });
+                if (!allowed) {
+                    return Response.json(
+                        {
+                            success: false,
+                            error: createActionError({
+                                code: ErrorCode.NOT_AUTHORIZED,
+                                message: 'Turnstile verification failed',
+                            }),
+                        },
+                        { status: 403 }
+                    );
+                }
+                shouldSetCookie = !turnstileVerifiedViaCookie;
+            } else if (!turnstileVerifiedViaCookie) {
+                logger.warn('InitiateCheckoutRegistration: no turnstile token or verification cookie');
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.NOT_AUTHORIZED,
+                            message: 'Turnstile verification required',
+                        }),
+                    },
+                    { status: 403 }
+                );
+            }
+        }
 
         if (!email) {
             logger.debug('InitiateCheckoutRegistration: no email in form, checking basket');
@@ -50,10 +119,13 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             if (!basketEmail) {
                 logger.warn('InitiateCheckoutRegistration: email not found in form or basket');
-                return {
-                    success: false,
-                    error: t('errors:customer.emailRequired'),
-                };
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
+                    },
+                    { status: 400 }
+                );
             }
 
             // Extract customer info from basket for registration
@@ -68,12 +140,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                     hasFirstName: !!firstName,
                     hasLastName: !!lastName,
                 });
-                return {
-                    success: false,
-                    error:
-                        t('errors:customer.nameRequired') ||
-                        'First name and last name are required for account creation',
-                };
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.REQUIRED_FIELD,
+                            message: 'First name and last name are required for account creation',
+                        }),
+                    },
+                    { status: 400 }
+                );
             }
 
             const session = getAuth(context);
@@ -103,7 +179,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             await clients.auth.passwordless.authorize({
                 userId: basketEmail,
                 mode: 'email',
-                locale: 'en-US',
+                ...(locale && { locale }),
                 usid: session.usid ? String(session.usid) : undefined,
                 registerCustomer: true,
                 firstName,
@@ -114,10 +190,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             logger.info('InitiateCheckoutRegistration: succeeded with basket email');
 
-            return {
-                success: true,
-                email: basketEmail,
-            };
+            const responseBody = { success: true, email: basketEmail };
+            if (shouldSetCookie) {
+                const setCookieHeader = await tvCookie.serialize('1');
+                return Response.json(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
+            }
+            return Response.json(responseBody);
         }
 
         logger.debug('InitiateCheckoutRegistration: email provided in form');
@@ -136,11 +214,16 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 hasFirstName: !!firstName,
                 hasLastName: !!lastName,
             });
-            return {
-                success: false,
-                error:
-                    t('errors:customer.nameRequired') || 'First name and last name are required for account creation',
-            };
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'First name and last name are required for account creation',
+                    }),
+                },
+                { status: 400 }
+            );
         }
 
         const session = getAuth(context);
@@ -160,7 +243,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         await clients.auth.passwordless.authorize({
             userId: email,
             mode: 'email',
-            locale: 'en-US',
+            ...(locale && { locale }),
             usid: session.usid ? String(session.usid) : undefined,
             registerCustomer: true,
             firstName,
@@ -171,42 +254,38 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         logger.info('InitiateCheckoutRegistration: succeeded with form email');
 
-        return {
-            success: true,
-            email,
-        };
+        const responseBody = { success: true, email };
+        if (shouldSetCookie) {
+            const setCookieHeader = await tvCookie.serialize('1');
+            return Response.json(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
+        }
+        return Response.json(responseBody);
     } catch (error) {
-        logger.error('InitiateCheckoutRegistration: failed', { error });
-        let errorMessage: string = String(t('checkout:registration.initiationFailed'));
-
-        // Try to extract the actual error message from the API response
-        if (error && typeof error === 'object') {
-            if ('rawBody' in error && typeof error.rawBody === 'string') {
-                try {
-                    const parsed = JSON.parse(error.rawBody);
-                    if (parsed.message && typeof parsed.message === 'string') {
-                        errorMessage = parsed.message;
-                    }
-                } catch {
-                    // Failed to parse rawBody
-                }
-            } else if ('message' in error && typeof error.message === 'string') {
-                const msg = error.message;
-                try {
-                    const parsed = JSON.parse(msg);
-                    if (parsed.message && typeof parsed.message === 'string') {
-                        errorMessage = parsed.message;
-                    }
-                } catch {
-                    // Not JSON, use the message as-is
-                    errorMessage = msg;
-                }
+        if (error instanceof ApiError && error.status === 400) {
+            const errorMessage = extractErrorMessage(error);
+            if (/email not verified/i.test(errorMessage)) {
+                logger.info('InitiateCheckoutRegistration: email not verified, feature unavailable');
+                return Response.json({ success: false, unavailable: true });
             }
+
+            logger.error('InitiateCheckoutRegistration: bad request', { error: errorMessage });
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
+                },
+                { status: 400 }
+            );
         }
 
-        return {
-            success: false,
-            error: errorMessage,
-        };
+        logger.error('InitiateCheckoutRegistration: failed', { error });
+        const errorMessage = extractErrorMessage(error);
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
+            },
+            { status: 500 }
+        );
     }
 }

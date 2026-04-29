@@ -16,11 +16,12 @@
 import { useFetcher } from 'react-router';
 import { useCallback } from 'react';
 import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context-constants';
+import type { ActionError } from '@/lib/error-codes';
 
 type UpdateShopperContextResponse = {
     success: boolean;
     message?: string;
-    error?: string;
+    error?: ActionError;
 };
 
 /**
@@ -58,7 +59,7 @@ export function useShopperContext() {
     return {
         updateQualifiers,
         isLoading: fetcher.state === 'submitting' || fetcher.state === 'loading',
-        error: fetcher.data?.success === false ? new Error(fetcher.data.error || 'Unknown error') : null,
+        error: fetcher.data?.success === false ? new Error(fetcher.data.error?.message || 'Unknown error') : null,
         success: fetcher.data?.success === true,
     };
 }

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
 
 // React
 import { useMemo, type ReactElement } from 'react';
@@ -26,9 +25,9 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 
 // Components
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
 import { Typography } from '@/components/typography';
+import HtmlFragment from '@/components/html-fragment';
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 import BundledProductItems from './bundled-product-items';
 import ProductPrice from '../product-price';
@@ -39,7 +38,7 @@ import { getPriceData } from '../product-price/utils';
 
 // Hooks
 import { useItemFetcherLoading } from '@/hooks/use-item-fetcher';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -52,6 +51,7 @@ import { getEffectiveStockLevel } from '@/lib/inventory-utils';
 import { cn } from '@/lib/utils';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { useTranslation } from 'react-i18next';
+import { UITarget } from '@/targets/ui-target';
 
 /**
  * ProductItemVariantImage component that renders product images with fallback
@@ -74,8 +74,8 @@ export function ProductItemVariantImage({
 
     if (!productItem) {
         return (
-            <div className={cn('bg-muted rounded flex-shrink-0 w-16', className)}>
-                <div className="w-full h-full bg-muted rounded" />
+            <div className={cn('bg-muted rounded-none flex-shrink-0 w-16', className)}>
+                <div className="w-full h-full bg-muted rounded-none" />
             </div>
         );
     }
@@ -92,7 +92,7 @@ export function ProductItemVariantImage({
     return (
         <div
             className={cn(
-                'bg-muted rounded flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
+                'bg-muted rounded-none flex-shrink-0 flex items-center justify-center aspect-square overflow-hidden',
                 className
             )}>
             {image && optimizedImageUrl ? (
@@ -102,7 +102,7 @@ export function ProductItemVariantImage({
                     className="h-full w-full object-contain"
                 />
             ) : (
-                <div className="w-full h-full bg-muted rounded" />
+                <div className="w-full h-full bg-muted rounded-none" />
             )}
         </div>
     );
@@ -131,7 +131,7 @@ export function ProductItemVariantName({ productItem }: { productItem: EnrichedP
             {isBonusProduct && (
                 <Badge
                     variant="default"
-                    className="rounded-pill"
+                    className="rounded-none"
                     role="status"
                     aria-label={tProduct('bonusProductAriaLabel')}>
                     {tProduct('bonusProduct')}
@@ -203,9 +203,15 @@ export function ProductItemVariantAttributes({
 /**
  * ProductItemPromotions component that displays promotion info for a product item
  */
-export function ProductItemPromotions({ productItem }: { productItem: EnrichedProductItem }): ReactElement | null {
+export function ProductItemPromotions({
+    productItem,
+    className,
+}: {
+    productItem: EnrichedProductItem;
+    className?: string;
+}): ReactElement | null {
     const { t: tMiniCart, i18n } = useTranslation('miniCart');
-    const currency = useCurrency();
+    const { currency } = useSite();
 
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
     if (isBonusProduct) return null;
@@ -216,7 +222,7 @@ export function ProductItemPromotions({ productItem }: { productItem: EnrichedPr
     if (discount <= 0) return null;
 
     return (
-        <Badge className="bg-muted text-foreground border-0 text-xs font-medium rounded-pill">
+        <Badge className={cn('bg-muted text-foreground border-0 text-xs font-medium rounded-none', className)}>
             {tMiniCart('saved', {
                 amount: formatCurrency(discount, i18n.language, currency),
             })}
@@ -233,6 +239,7 @@ export function ProductItemPromotions({ productItem }: { productItem: EnrichedPr
  * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotions data by ID
  * @property {function} [primaryAction] - Render prop function to create primary actions
  * @property {function} [secondaryActions] - Render prop function to create secondary actions
+ * @property {function} [deliveryActions] - Render prop for per-line fulfillment (e.g. BOPIS pickup/delivery dropdown)
  */
 interface ProductItemProps {
     productItem: EnrichedProductItem | undefined;
@@ -280,8 +287,10 @@ function ProductItem({
     // Track loading state for all fetchers related to this item
     const isItemFetcherLoading = useItemFetcherLoading(productItem?.itemId);
     // Get currency from context (automatically derived from locale)
-    const currency = useCurrency();
+    const { currency } = useSite();
     const { t, i18n } = useTranslation();
+    const config = useConfig<AppConfig>();
+    const showLineItemDescription = config.pages.cart?.showLineItemDescription ?? false;
 
     // Check if this is a bonus product
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
@@ -354,8 +363,8 @@ function ProductItem({
     // Default variant - full product item with card styling
     return (
         <div className="relative" data-testid={`sf-product-item-${productItem?.productId || productItem?.id}`}>
-            <Card className="p-0 border border-none shadow-none">
-                <CardContent className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
+            <div className="bg-card text-card-foreground border-0 shadow-none rounded-none">
+                <div className="px-3 py-4 md:px-6 md:py-7 relative overflow-hidden">
                     <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
                         <div className="flex-shrink-0 flex items-start justify-center">
                             {/* Product Image */}
@@ -366,7 +375,6 @@ function ProductItem({
                         <div className="flex-1 space-y-3 min-w-0">
                             <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0">
                                 <div className="min-w-0">
-                                    {/* Delivery badge - mobile only, top-right next to name */}
                                     <div className="md:hidden float-right ml-2">{deliveryActions?.(productItem)}</div>
                                     <ProductItemVariantName productItem={productItem} />
                                     {productItem.bundledProducts && (
@@ -377,17 +385,29 @@ function ProductItem({
                                         displayVariant={displayVariant}
                                         promotions={promotions}
                                     />
+                                    {showLineItemDescription && productItem.shortDescription ? (
+                                        <Typography variant="muted" as="p" className="text-sm mt-2">
+                                            {productItem.shortDescription}
+                                        </Typography>
+                                    ) : null}
+                                    {showLineItemDescription &&
+                                    !productItem.shortDescription &&
+                                    productItem.longDescription ? (
+                                        <HtmlFragment
+                                            content={productItem.longDescription}
+                                            contentType="plain-text"
+                                            className="text-sm text-muted-foreground mt-2 leading-relaxed"
+                                        />
+                                    ) : null}
 
-                                    <Typography
-                                        variant="product-description"
-                                        className="text-xs break-words hidden md:block">
-                                        {productItem?.shortDescription}
-                                    </Typography>
+                                    {!isAutoBonusProduct && secondaryActions && (
+                                        <div className="mt-2">{secondaryActions(productItem)}</div>
+                                    )}
+
+                                    <UITarget targetId="sfcc.cart.tax.lineItemMessage" />
                                 </div>
                                 <div className="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2">
-                                    {/* Delivery Actions - desktop only */}
                                     <div className="hidden md:block">{deliveryActions?.(productItem)}</div>
-
                                     <div className="md:self-end">
                                         <div className="md:text-right" data-testid="desktop-product-price">
                                             <div className="font-semibold text-base">
@@ -414,8 +434,11 @@ function ProductItem({
                                                         }}
                                                         promoCalloutProps={{
                                                             className:
-                                                                'bg-muted text-foreground border-0 text-xs font-medium rounded-pill inline-block mt-3 mx-0',
+                                                                'bg-muted text-foreground border-0 text-xs font-medium rounded-none inline-block mt-3 mx-0',
                                                         }}
+                                                        afterPriceContent={
+                                                            <UITarget targetId="sfcc.cart.shipping.deliveryEstimate" />
+                                                        }
                                                     />
                                                 )}
                                             </div>
@@ -455,13 +478,11 @@ function ProductItem({
                                         disabled={isAutoBonusProduct}
                                     />
                                 </div>
-                                {/* Actions - at bottom on mobile, in left column on desktop */}
-                                <div className="min-w-0 md:col-start-1 md:row-start-2">
-                                    {!isAutoBonusProduct && primaryAction && (
+                                {!isAutoBonusProduct && primaryAction && (
+                                    <div className="min-w-0 md:col-start-1 md:row-start-2">
                                         <div data-testid="mobile-primary-action">{primaryAction(productItem)}</div>
-                                    )}
-                                    {!isAutoBonusProduct && secondaryActions && secondaryActions(productItem)}
-                                </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Inventory Message */}
@@ -481,8 +502,8 @@ function ProductItem({
                             <Spinner size="lg" />
                         </div>
                     )}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }

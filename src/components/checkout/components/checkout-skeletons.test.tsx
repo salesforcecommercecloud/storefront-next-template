@@ -33,11 +33,10 @@ describe('Checkout Skeleton Components', () => {
             expect(screen.getByTestId('express-payments-skeleton')).toBeInTheDocument();
         });
 
-        it('should render 4 payment button skeletons', () => {
+        it('should render 5 payment button skeletons', () => {
             const { container } = render(<ExpressPaymentsSkeleton />);
-            const skeletons = container.querySelectorAll('.h-12');
-            // 4 buttons + 2 separator lines + 1 separator text = at least 4 h-12 skeletons for buttons
-            expect(skeletons.length).toBeGreaterThanOrEqual(4);
+            const skeletons = container.querySelectorAll('.h-9');
+            expect(skeletons.length).toBe(5);
         });
     });
 
@@ -130,21 +129,19 @@ describe('Checkout Skeleton Components', () => {
 
     describe('MyCartSkeleton', () => {
         it('should render without crashing', () => {
-            const { container } = render(<MyCartSkeleton />);
-            expect(
-                container.querySelector('[data-testid="card"]') || container.querySelector('.border')
-            ).toBeInTheDocument();
+            render(<MyCartSkeleton />);
+            expect(screen.getByTestId('my-cart-skeleton')).toBeInTheDocument();
         });
 
         it('should render default number of cart items', () => {
-            const { container } = render(<MyCartSkeleton />);
-            const items = container.querySelectorAll('.flex.gap-4');
+            render(<MyCartSkeleton />);
+            const items = screen.getAllByTestId(/^my-cart-item-skeleton-/);
             expect(items.length).toBe(2);
         });
 
         it('should render specified number of cart items', () => {
-            const { container } = render(<MyCartSkeleton itemCount={4} />);
-            const items = container.querySelectorAll('.flex.gap-4');
+            render(<MyCartSkeleton itemCount={4} />);
+            const items = screen.getAllByTestId(/^my-cart-item-skeleton-/);
             expect(items.length).toBe(4);
         });
     });

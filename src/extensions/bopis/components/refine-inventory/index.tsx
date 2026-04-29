@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -121,10 +118,10 @@ export default function RefineInventory({ isFilterSelected, hasActiveFilter, tog
         <Collapsible
             open={isOpen}
             onOpenChange={setIsOpen}
-            className="border border-border rounded-md mb-4"
+            className="border border-border rounded-none mb-4"
             data-testid="sf-store-inventory-filter">
             <Typography variant="small" as="h3" className="leading-normal p-4 transition-colors hover:bg-muted/60">
-                <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-sm px-1 py-1 -mx-1 cursor-pointer">
+                <CollapsibleTrigger className="flex items-center justify-between w-full text-left rounded-none px-1 py-1 -mx-1 cursor-pointer">
                     <Typography variant="small" as="span" className="font-medium">
                         {t('storeInventoryFilter.heading')}
                     </Typography>
@@ -132,7 +129,7 @@ export default function RefineInventory({ isFilterSelected, hasActiveFilter, tog
                 </CollapsibleTrigger>
             </Typography>
             <CollapsibleContent className="px-4 pb-4">
-                <div className="flex items-start space-x-2 p-2 rounded-md">
+                <div className="flex items-start space-x-2 p-2 rounded-none">
                     <Checkbox
                         id="inventory-filter"
                         checked={isChecked}

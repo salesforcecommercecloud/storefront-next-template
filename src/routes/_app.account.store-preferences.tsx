@@ -18,9 +18,9 @@ import { type LoaderFunctionArgs } from 'react-router';
 import StorePreferences from '@/components/store-preferences';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
-import { createApiClients } from '@/lib/api-clients';
+import { createApiClients } from '@/lib/api-clients.server';
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { getLogger } from '@/lib/logger.server';
@@ -31,7 +31,6 @@ import { getLogger } from '@/lib/logger.server';
  * When the store-locator extension is installed, this loader reads the
  * selectedStoreInfo cookie and fetches full store details from SCAPI.
  */
-// eslint-disable-next-line react-refresh/only-export-components -- Loader exports are required by React Router
 export async function loader({ context }: LoaderFunctionArgs) {
     const logger = getLogger(context);
     const { t } = getTranslation(context);

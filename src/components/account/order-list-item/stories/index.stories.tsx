@@ -16,7 +16,10 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 import { OrderListItem, type OrderListItemData } from '../index';
 import heroNewArrivals from '/images/hero-02.webp';
 
@@ -63,9 +66,9 @@ const meta: Meta<typeof OrderListItem> = {
     },
     decorators: [
         (Story) => (
-            <CurrencyWrapper currency="GBP">
+            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                 <Story />
-            </CurrencyWrapper>
+            </SiteProvider>
         ),
     ],
 };

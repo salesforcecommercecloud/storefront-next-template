@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 import { Typography } from '@/components/typography';
+import { Badge } from '@/components/ui/badge';
 import { getCountryName, getStateName } from '@/components/customer-address-form';
+import { useTranslation } from 'react-i18next';
 import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 interface AddressDisplayProps {
     address: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress'];
     showName?: boolean;
+    isPreferred?: boolean;
 }
 
-export default function AddressDisplay({ address, showName = true }: AddressDisplayProps) {
+export default function AddressDisplay({ address, showName = true, isPreferred = false }: AddressDisplayProps) {
+    const { t } = useTranslation('account');
     if (!address) {
         return (
             <Typography variant="small" className="text-muted-foreground">
@@ -51,9 +55,18 @@ export default function AddressDisplay({ address, showName = true }: AddressDisp
     return (
         <div className="space-y-1">
             {showName && fullName && (
-                <Typography variant="p" className="font-medium">
-                    {fullName}
-                </Typography>
+                <div className="flex items-center gap-2">
+                    <Typography variant="p" className="font-medium">
+                        {fullName}
+                    </Typography>
+                    {isPreferred && (
+                        <Badge
+                            variant="secondary"
+                            className="text-xs font-normal bg-primary/10 text-primary rounded-none">
+                            {t('addresses.default')}
+                        </Badge>
+                    )}
+                </div>
             )}
             <Typography variant="small" className="text-muted-foreground">
                 {address.address1}

@@ -21,6 +21,7 @@ import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scap
 import {
     PageDesignerPageMetadataProvider,
     useRegionContext,
+    usePageDesignerMode,
 } from '@salesforce/storefront-next-runtime/design/react/core';
 import type {
     ComponentDecoratorProps,
@@ -43,12 +44,10 @@ interface PageRegionProps extends HTMLAttributes<HTMLDivElement> {
     regionId: string;
     fallbackElement?: ReactNode;
     errorElement?: ReactNode;
+    fallbackOnEmpty?: boolean;
 }
 
-export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']> & {
-    contentLinkUuid?: string;
-    fragment?: boolean;
-};
+export type ComponentType = ComponentDecoratorProps<ShopperExperience.schemas['Component']>;
 
 // Props when rendering a component-level region (nested)
 interface ComponentRegionProps extends HTMLAttributes<HTMLDivElement> {
@@ -57,6 +56,7 @@ interface ComponentRegionProps extends HTMLAttributes<HTMLDivElement> {
     regionId: string;
     fallbackElement?: ReactNode;
     errorElement?: ReactNode;
+    fallbackOnEmpty?: boolean;
 }
 
 // Discriminated union
@@ -77,8 +77,16 @@ function renderRegionContent(
     regionId: string,
     metadata: RegionDesignMetadata | undefined,
     className: string | undefined,
-    rest: HTMLAttributes<HTMLDivElement>
+    rest: HTMLAttributes<HTMLDivElement>,
+    errorElement?: ReactNode,
+    isDesignMode?: boolean
 ) {
+    // In MRT (not design mode), return errorElement for empty regions
+    const hasComponents = (region.components?.length ?? 0) > 0;
+    if (!hasComponents && !isDesignMode) {
+        return errorElement ?? null;
+    }
+
     return (
         <RegionWrapper
             region={region}
@@ -128,14 +136,15 @@ function renderRegionContent(
  * regions that can contain multiple components managed through the Page Designer interface.
  */
 export function Region(props: RegionProps) {
-    const { regionId, className, errorElement = <></>, fallbackElement = <></>, ...rest } = props;
+    const { regionId, className, errorElement = <></>, fallbackElement = <></>, fallbackOnEmpty, ...rest } = props;
     const regionContext = useRegionContext();
     const existingComponentData = useComponentData();
+    const { isDesignMode } = usePageDesignerMode();
 
     // COMPONENT MODE: Rendering a component-level region (nested)
     if (props.component !== undefined) {
         const region = props.component.regions?.find((r) => r.id === regionId);
-        if (!region) {
+        if (!region || (fallbackOnEmpty && !region.components?.length)) {
             return errorElement ?? null;
         }
 
@@ -155,7 +164,7 @@ export function Region(props: RegionProps) {
                     }
 
                     const region = resolvedPage.regions?.find((r) => r.id === regionId);
-                    if (!region) {
+                    if (!region || (fallbackOnEmpty && !region.components?.length)) {
                         return errorElement ?? null;
                     }
 
@@ -165,7 +174,15 @@ export function Region(props: RegionProps) {
                     const content = (
                         <>
                             {!regionContext && <PageDesignerPageMetadataProvider page={pageData} />}
-                            {renderRegionContent(region, regionId, metadata, className, rest)}
+                            {renderRegionContent(
+                                region,
+                                regionId,
+                                metadata,
+                                className,
+                                rest,
+                                errorElement,
+                                isDesignMode
+                            )}
                         </>
                     );
 

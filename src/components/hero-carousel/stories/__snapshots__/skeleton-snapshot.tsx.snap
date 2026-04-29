@@ -3,7 +3,7 @@
 exports[`HeroCarouselSkeleton stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden animate-pulse"
+    class="relative w-full overflow-hidden animate-pulse h-[400px] md:h-[500px] lg:h-[600px]"
   >
     <div
       class="relative w-full h-full overflow-hidden"
@@ -19,7 +19,7 @@ exports[`HeroCarouselSkeleton stories snapshot > Default story renders and match
         class="absolute inset-0 z-10 flex items-center"
       >
         <div
-          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+          class="section-container w-full"
         >
           <div
             class="max-w-xl flex flex-col"
@@ -33,7 +33,7 @@ exports[`HeroCarouselSkeleton stories snapshot > Default story renders and match
               data-slot="skeleton"
             />
             <div
-              class="animate-pulse h-10 sm:h-12 md:h-14 lg:h-16 w-32 sm:w-36 md:w-40 lg:w-44 bg-white/25 rounded-md"
+              class="animate-pulse h-10 sm:h-12 md:h-14 lg:h-16 w-32 sm:w-36 md:w-40 lg:w-44 bg-white/25 rounded-none"
               data-slot="skeleton"
             />
           </div>

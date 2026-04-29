@@ -3,7 +3,7 @@
 exports[`StandardLoginForm stories snapshot > Default story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm"
+    class="w-full max-w-md p-6 bg-background border rounded-none"
   >
     <div
       class="mb-6"
@@ -112,7 +112,7 @@ exports[`StandardLoginForm stories snapshot > Default story renders and matches 
 exports[`StandardLoginForm stories snapshot > InputInteractions story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm"
+    class="w-full max-w-md p-6 bg-background border rounded-none"
   >
     <div
       class="mb-6"
@@ -221,7 +221,7 @@ exports[`StandardLoginForm stories snapshot > InputInteractions story renders an
 exports[`StandardLoginForm stories snapshot > PasswordVisibility story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm"
+    class="w-full max-w-md p-6 bg-background border rounded-none"
   >
     <div
       class="mb-6"
@@ -330,7 +330,7 @@ exports[`StandardLoginForm stories snapshot > PasswordVisibility story renders a
 exports[`StandardLoginForm stories snapshot > PasswordlessDisabled story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm"
+    class="w-full max-w-md p-6 bg-background border rounded-none"
   >
     <div
       class="mb-6"
@@ -429,7 +429,7 @@ exports[`StandardLoginForm stories snapshot > PasswordlessDisabled story renders
 exports[`StandardLoginForm stories snapshot > WithError story renders and matches snapshot 1`] = `
 <div>
   <div
-    class="w-full max-w-md p-6 bg-background border rounded-lg shadow-sm"
+    class="w-full max-w-md p-6 bg-background border rounded-none"
   >
     <div
       class="mb-6"

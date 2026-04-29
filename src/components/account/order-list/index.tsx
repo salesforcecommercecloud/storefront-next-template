@@ -206,7 +206,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className: 'gap-1.5 px-4 py-2 rounded-lg shadow-sm',
+                                    className: 'gap-1.5 px-4 py-2',
                                 })}>
                                 <ChevronLeftIcon />
                                 <span className="hidden sm:inline">{t('orders.paginationPrevious')}</span>
@@ -217,8 +217,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className:
-                                        'gap-1.5 px-4 py-2 rounded-lg shadow-sm pointer-events-none opacity-50 cursor-not-allowed',
+                                    className: 'gap-1.5 px-4 py-2 pointer-events-none opacity-50 cursor-not-allowed',
                                 })}>
                                 <ChevronLeftIcon />
                                 <span className="hidden sm:inline">{t('orders.paginationPrevious')}</span>
@@ -232,7 +231,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className: 'gap-1.5 px-4 py-2 rounded-lg shadow-sm',
+                                    className: 'gap-1.5 px-4 py-2',
                                 })}>
                                 <span className="hidden sm:inline">{t('orders.paginationNext')}</span>
                                 <ChevronRightIcon />
@@ -243,8 +242,7 @@ export function OrderListBody({
                                 className={buttonVariants({
                                     variant: 'outline',
                                     size: 'default',
-                                    className:
-                                        'gap-1.5 px-4 py-2 rounded-lg shadow-sm pointer-events-none opacity-50 cursor-not-allowed',
+                                    className: 'gap-1.5 px-4 py-2 pointer-events-none opacity-50 cursor-not-allowed',
                                 })}>
                                 <span className="hidden sm:inline">{t('orders.paginationNext')}</span>
                                 <ChevronRightIcon />
@@ -289,6 +287,42 @@ export function OrderList({
                 onViewDetails={onViewDetails}
             />
         </div>
+    );
+}
+
+/**
+ * Skeleton for order list items. Renders a configurable number of placeholder
+ * cards that match the real OrderListItem layout, plus a footer bar.
+ * Used as the Suspense fallback on both the order-history page and the
+ * account-overview recent-orders section.
+ */
+export function OrderListSkeleton(): ReactElement {
+    return (
+        <>
+            <div className="space-y-4 m-0 border-x border-t border-border">
+                {Array.from({ length: 3 }, (_, i) => (
+                    <Card key={i} className="py-0 rounded-none border-0 border-border shadow-none">
+                        <CardContent className="p-6 space-y-4 border-b border-border animate-pulse">
+                            <div className="flex flex-wrap items-start justify-between border-b border-border -mx-6 -mt-6 px-6 pt-3 pb-3 mb-6 bg-muted">
+                                <div className="flex flex-wrap gap-x-8 gap-y-2">
+                                    <div className="h-10 w-24 bg-muted-foreground/20 rounded" />
+                                    <div className="h-10 w-20 bg-muted-foreground/20 rounded" />
+                                    <div className="h-10 w-16 bg-muted-foreground/20 rounded" />
+                                </div>
+                                <div className="h-8 w-24 bg-muted-foreground/20 rounded-full" />
+                            </div>
+                            <div className="flex gap-2">
+                                <div className="w-16 h-16 bg-muted-foreground/20 rounded-lg" />
+                                <div className="w-16 h-16 bg-muted-foreground/20 rounded-lg" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+            <div className="p-6 m-0 border-b border-x border-border rounded-b-xl">
+                <div className="h-5 w-32 bg-muted-foreground/20 rounded" />
+            </div>
+        </>
     );
 }
 

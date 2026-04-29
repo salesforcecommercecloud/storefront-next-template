@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router';
+import { type ActionFunctionArgs, type LoaderFunctionArgs, type RouterContextProvider } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
 import { action, loader, type ApiResponse } from './resource.api.client.$resource';
-import { createTestContext } from '@/lib/test-utils';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+
+const apiClientMocks = vi.hoisted(() => ({
+    mockShopperCustomersGetCustomer: vi.fn(),
+    mockShopperCustomersUpdateCustomer: vi.fn(),
+    mockShopperBasketsAddItemToBasket: vi.fn(),
+    mockBasketGetOrCreateBasket: vi.fn(),
+    mockAuthLoginAsGuest: vi.fn(),
+    mockLoyaltyGetLoyaltyPoints: vi.fn(),
+}));
 
 // Mock dependencies
 vi.mock('@/middlewares/auth.server');
@@ -30,14 +38,19 @@ vi.mock('@/lib/utils', () => ({
 }));
 
 // Type the mocked functions
-const mockShopperCustomersGetCustomer = vi.fn();
-const mockShopperCustomersUpdateCustomer = vi.fn();
-const mockShopperBasketsAddItemToBasket = vi.fn();
+const {
+    mockShopperCustomersGetCustomer,
+    mockShopperCustomersUpdateCustomer,
+    mockShopperBasketsAddItemToBasket,
+    mockBasketGetOrCreateBasket,
+    mockAuthLoginAsGuest,
+    mockLoyaltyGetLoyaltyPoints,
+} = apiClientMocks;
 const mockExtractResponseError = vi.mocked(extractResponseError);
 const mockGetErrorMessage = vi.mocked(getErrorMessage);
 
 // Mock the createApiClients function
-vi.mock('@/lib/api-clients', () => ({
+vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperCustomers: {
             getCustomer: mockShopperCustomersGetCustomer,
@@ -45,6 +58,15 @@ vi.mock('@/lib/api-clients', () => ({
         },
         shopperBasketsV2: {
             addItemToBasket: mockShopperBasketsAddItemToBasket,
+        },
+        basket: {
+            getOrCreateBasket: mockBasketGetOrCreateBasket,
+        },
+        auth: {
+            loginAsGuest: mockAuthLoginAsGuest,
+        },
+        loyalty: {
+            getLoyaltyPoints: mockLoyaltyGetLoyaltyPoints,
         },
     })),
 }));
@@ -58,6 +80,19 @@ vi.mock('@/lib/logger.server', () => ({
     })),
 }));
 
+const createMockContextProvider = (): RouterContextProvider => {
+    const store = new Map<unknown, unknown>();
+    return {
+        get(key: unknown) {
+            return store.get(key);
+        },
+        set(key: unknown, value: unknown) {
+            store.set(key, value);
+            return value;
+        },
+    } as unknown as RouterContextProvider;
+};
+
 describe('Commerce SDK resource', () => {
     const validResource = [
         'shopperCustomers',
@@ -70,16 +105,19 @@ describe('Commerce SDK resource', () => {
     ];
     const encodedValidResource = encodeBase64Url(JSON.stringify(validResource));
     const mockResponseData = { customerId: 'customer-123', email: 'test@example.com' };
-    let mockContextProvider: ReturnType<typeof createTestContext>;
+    let mockContextProvider: RouterContextProvider;
 
     beforeEach(() => {
         mockShopperCustomersGetCustomer.mockClear();
         mockShopperCustomersUpdateCustomer.mockClear();
         mockShopperBasketsAddItemToBasket.mockClear();
+        mockBasketGetOrCreateBasket.mockClear();
+        mockAuthLoginAsGuest.mockClear();
+        mockLoyaltyGetLoyaltyPoints.mockClear();
         mockExtractResponseError.mockClear();
         mockGetErrorMessage.mockClear();
 
-        mockContextProvider = createTestContext();
+        mockContextProvider = createMockContextProvider();
 
         // New API returns { data, response } format
         mockShopperCustomersGetCustomer.mockResolvedValue({ data: mockResponseData });
@@ -103,6 +141,34 @@ describe('Commerce SDK resource', () => {
                 expect(result).toEqual({
                     success: true,
                     data: mockResponseData,
+                });
+            });
+
+            it('should handle successful custom client loader calls', async () => {
+                const loyaltyData = { customerId: 'customer-123', points: 420 };
+                const encodedLoyaltyResource = encodeBase64Url(
+                    JSON.stringify([
+                        'loyalty',
+                        'getLoyaltyPoints',
+                        {
+                            params: {
+                                path: { customerId: 'customer-123' },
+                            },
+                        },
+                    ])
+                );
+                mockLoyaltyGetLoyaltyPoints.mockResolvedValue({ data: loyaltyData });
+
+                const result = await loader(createLoaderArgs(encodedLoyaltyResource));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: loyaltyData,
+                });
+                expect(mockLoyaltyGetLoyaltyPoints).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
                 });
             });
         });
@@ -390,6 +456,50 @@ describe('Commerce SDK resource', () => {
                     body: formData,
                 });
             });
+
+            it('should coerce known form fields to booleans and nullable numbers', async () => {
+                const formData = {
+                    preferred: '1',
+                    gender: 'not-a-number',
+                };
+
+                const result = await action(createActionArgs(encodedValidActionResource, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
+                    body: {
+                        preferred: true,
+                        gender: null,
+                    },
+                });
+            });
+
+            it('should convert an empty gender field to null', async () => {
+                const formData = {
+                    gender: '',
+                };
+
+                const result = await action(createActionArgs(encodedValidActionResource, formData));
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
+                    body: {
+                        gender: null,
+                    },
+                });
+            });
         });
 
         describe('error handling', () => {
@@ -538,6 +648,19 @@ describe('Commerce SDK resource', () => {
                 expect(result).toEqual({
                     success: false,
                     errors: ['Unknown error'],
+                });
+            });
+
+            it('should handle missing client methods in action calls', async () => {
+                const invalidResource = encodeBase64Url(
+                    JSON.stringify(['loyalty', 'missingMethod', { params: { path: { customerId: 'customer-123' } } }])
+                );
+
+                const result = await action(createActionArgs(invalidResource));
+
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Method not found: "loyalty.missingMethod"'],
                 });
             });
         });
@@ -735,6 +858,266 @@ describe('Commerce SDK resource', () => {
             expect(result).toEqual({
                 success: false,
                 errors: ['Unknown error'],
+            });
+        });
+    });
+
+    describe('helpers', () => {
+        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+            params: { resource },
+            context: mockContextProvider,
+            request: new Request('http://localhost/test'),
+            unstable_pattern: 'resource/api/client/:resource',
+        });
+
+        const createActionArgs = (resource: string, formData?: Record<string, string>): ActionFunctionArgs => {
+            const body = new URLSearchParams(formData || {}).toString();
+            const request = new Request('http://localhost/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body,
+            });
+            return {
+                params: { resource },
+                context: mockContextProvider,
+                request,
+                unstable_pattern: 'resource/api/client/:resource',
+            };
+        };
+
+        describe('loader with helpers', () => {
+            it('should handle successful helper call with options', async () => {
+                const mockBasketData = { basketId: 'basket-123', currency: 'USD' };
+                mockBasketGetOrCreateBasket.mockResolvedValue(mockBasketData);
+
+                const helperResource = [
+                    'helpers',
+                    'basket',
+                    {
+                        helperName: 'getOrCreateBasket',
+                        params: { path: { basketId: 'basket-123' } },
+                        body: { currency: 'USD' },
+                    },
+                ];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await loader(createLoaderArgs(encoded));
+                expect(result).toEqual({
+                    success: true,
+                    data: mockBasketData,
+                });
+                expect(mockBasketGetOrCreateBasket).toHaveBeenCalledWith({
+                    params: { path: { basketId: 'basket-123' } },
+                    body: { currency: 'USD' },
+                });
+            });
+
+            it('should handle successful helper call without options', async () => {
+                const mockAuthData = { access_token: 'token-123' };
+                mockAuthLoginAsGuest.mockResolvedValue(mockAuthData);
+
+                const helperResource = ['helpers', 'auth', { helperName: 'loginAsGuest' }];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await loader(createLoaderArgs(encoded));
+                expect(result).toEqual({
+                    success: true,
+                    data: mockAuthData,
+                });
+                expect(mockAuthLoginAsGuest).toHaveBeenCalledWith(undefined);
+            });
+
+            it('should handle invalid helper namespace', async () => {
+                const helperResource = ['helpers', 'nonexistent', { helperName: 'someMethod' }];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await loader(createLoaderArgs(encoded));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown helper namespace: "nonexistent"'],
+                });
+            });
+
+            it('should reject SDK client names used as helper namespaces', async () => {
+                const helperResource = ['helpers', 'shopperCustomers', { helperName: 'getCustomer' }];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await loader(createLoaderArgs(encoded));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown helper namespace: "shopperCustomers"'],
+                });
+            });
+
+            it('should handle invalid helper method name', async () => {
+                const helperResource = ['helpers', 'basket', { helperName: 'nonexistentMethod' }];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await loader(createLoaderArgs(encoded));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Helper method not found: "helpers.basket.nonexistentMethod"'],
+                });
+            });
+
+            it('should handle helper method throwing ApiError', async () => {
+                const mockApiError = new ApiError({
+                    url: 'https://api.example.com/test',
+                    method: 'POST',
+                    status: 400,
+                    statusText: 'Bad Request',
+                    headers: new Headers(),
+                    body: {
+                        type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request',
+                        title: 'Bad Request',
+                        detail: 'Basket quota exceeded',
+                    },
+                    rawBody: JSON.stringify({ message: 'Basket quota exceeded' }),
+                });
+
+                mockBasketGetOrCreateBasket.mockRejectedValue(mockApiError);
+                mockGetErrorMessage.mockReturnValue('Basket quota exceeded');
+
+                const helperResource = [
+                    'helpers',
+                    'basket',
+                    { helperName: 'getOrCreateBasket', body: { currency: 'USD' } },
+                ];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await loader(createLoaderArgs(encoded));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Basket quota exceeded'],
+                });
+                expect(mockGetErrorMessage).toHaveBeenCalledWith(mockApiError);
+            });
+        });
+
+        describe('action with helpers', () => {
+            it('should merge form data into body for basket helper', async () => {
+                const mockBasketData = { basketId: 'basket-123', currency: 'EUR' };
+                mockBasketGetOrCreateBasket.mockResolvedValue(mockBasketData);
+
+                const helperResource = [
+                    'helpers',
+                    'basket',
+                    {
+                        helperName: 'getOrCreateBasket',
+                        params: { path: { basketId: 'basket-123' } },
+                        body: { currency: 'USD' },
+                    },
+                ];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                // Submit form data with a currency override — should merge into body, not top level
+                const formData = { currency: 'EUR' };
+                const result = await action(createActionArgs(encoded, formData));
+                expect(result).toEqual({
+                    success: true,
+                    data: mockBasketData,
+                });
+                // Form data merges into body (not top level) because options has a body key
+                expect(mockBasketGetOrCreateBasket).toHaveBeenCalledWith({
+                    params: { path: { basketId: 'basket-123' } },
+                    body: { currency: 'EUR' },
+                });
+            });
+
+            it('should merge form data at top level for auth helper (not into body)', async () => {
+                const mockAuthData = { access_token: 'token-123' };
+                mockAuthLoginAsGuest.mockResolvedValue(mockAuthData);
+
+                const helperResource = ['helpers', 'auth', { helperName: 'loginAsGuest' }];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+                const formData = { usid: 'session-123' };
+
+                const result = await action(createActionArgs(encoded, formData));
+                expect(result).toEqual({
+                    success: true,
+                    data: mockAuthData,
+                });
+                // Auth helpers take flat arguments — form data merges at top level, not { body: { usid } }
+                expect(mockAuthLoginAsGuest).toHaveBeenCalledWith({ usid: 'session-123' });
+            });
+
+            it('should pass undefined when action has no form data and no options', async () => {
+                const mockAuthData = { access_token: 'token-123' };
+                mockAuthLoginAsGuest.mockResolvedValue(mockAuthData);
+
+                const helperResource = ['helpers', 'auth', { helperName: 'loginAsGuest' }];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await action(createActionArgs(encoded));
+                expect(result).toEqual({
+                    success: true,
+                    data: mockAuthData,
+                });
+                // Should pass undefined, not { body: {} }, aligning with loader behavior
+                expect(mockAuthLoginAsGuest).toHaveBeenCalledWith(undefined);
+            });
+
+            it('should handle invalid helper namespace in action', async () => {
+                const helperResource = ['helpers', 'nonexistent', { helperName: 'someMethod' }];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await action(createActionArgs(encoded));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Unknown helper namespace: "nonexistent"'],
+                });
+            });
+
+            it('should handle helper action throwing error', async () => {
+                const mockError = new Error('Network Error');
+                mockBasketGetOrCreateBasket.mockRejectedValue(mockError);
+                mockExtractResponseError.mockRejectedValue(new Error('Extract failed'));
+
+                const helperResource = [
+                    'helpers',
+                    'basket',
+                    { helperName: 'getOrCreateBasket', body: { currency: 'USD' } },
+                ];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await action(createActionArgs(encoded));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Network Error'],
+                });
+            });
+
+            it('should handle helper action throwing ApiError', async () => {
+                const mockApiError = new ApiError({
+                    url: 'https://api.example.com/test',
+                    method: 'POST',
+                    status: 400,
+                    statusText: 'Bad Request',
+                    headers: new Headers(),
+                    body: {
+                        type: 'https://api.commercecloud.salesforce.com/documentation/error/v1/errors/bad-request',
+                        title: 'Bad Request',
+                        detail: 'Invalid basket currency',
+                    },
+                    rawBody: JSON.stringify({ message: 'Invalid basket currency' }),
+                });
+
+                mockBasketGetOrCreateBasket.mockRejectedValue(mockApiError);
+                mockGetErrorMessage.mockReturnValue('Invalid basket currency');
+
+                const helperResource = [
+                    'helpers',
+                    'basket',
+                    { helperName: 'getOrCreateBasket', body: { currency: 'INVALID' } },
+                ];
+                const encoded = encodeBase64Url(JSON.stringify(helperResource));
+
+                const result = await action(createActionArgs(encoded));
+                expect(result).toEqual({
+                    success: false,
+                    errors: ['Invalid basket currency'],
+                });
+                expect(mockGetErrorMessage).toHaveBeenCalledWith(mockApiError);
             });
         });
     });

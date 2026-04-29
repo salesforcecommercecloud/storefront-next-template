@@ -194,7 +194,7 @@ export const WithCustomComponent: Story = {
             alt="Custom component example"
             widths={[400, 800]}
             as="div"
-            className="bg-muted rounded-lg p-4"
+            className="bg-muted rounded-none p-4"
         />
     ),
     parameters: {

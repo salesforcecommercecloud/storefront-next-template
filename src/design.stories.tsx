@@ -30,19 +30,61 @@ import type { ComponentType } from '@/components/region';
 /**
  * Simple placeholder component for demonstration purposes
  */
-function PlaceholderComponent({ title, description, typeId }: { title: string; description?: string; typeId: string }) {
+function PlaceholderComponent({
+    title,
+    description,
+    typeId,
+    flushAxis,
+    children,
+}: {
+    title: string;
+    description?: string;
+    typeId: string;
+    flushAxis?: 'x' | 'y';
+    children?: React.ReactNode;
+}) {
+    const padding = flushAxis === 'x' ? '1rem 0' : flushAxis === 'y' ? '0 1rem' : '1rem';
+    const inlinePad = flushAxis === 'x' ? '0 1rem' : undefined;
+
     return (
         <div
             style={{
-                padding: '1rem',
+                padding,
                 border: '2px dashed #ccc',
                 borderRadius: '8px',
                 backgroundColor: '#f9f9f9',
                 marginBottom: '1rem',
             }}>
-            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.125rem', fontWeight: '600' }}>{title}</h3>
-            {description && <p style={{ margin: 0, color: '#666', fontSize: '0.875rem' }}>{description}</p>}
-            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#999' }}>Type: {typeId}</div>
+            <h3
+                style={{
+                    margin: '0 0 0.5rem 0',
+                    fontSize: '1.125rem',
+                    fontWeight: '600',
+                    padding: inlinePad,
+                }}>
+                {title}
+            </h3>
+            {description && (
+                <p
+                    style={{
+                        margin: 0,
+                        color: '#666',
+                        fontSize: '0.875rem',
+                        padding: inlinePad,
+                    }}>
+                    {description}
+                </p>
+            )}
+            <div
+                style={{
+                    marginTop: '0.5rem',
+                    fontSize: '0.75rem',
+                    color: '#999',
+                    padding: inlinePad,
+                }}>
+                Type: {typeId}
+            </div>
+            {children && <div style={{ marginTop: flushAxis === 'y' ? 0 : '1rem' }}>{children}</div>}
         </div>
     );
 }
@@ -394,9 +436,287 @@ const pageFactories = {
                 },
             ],
         }) as unknown as ShopperExperience.schemas['Page'],
+
+    nestedRegions: (localized: boolean = true): ShopperExperience.schemas['Page'] =>
+        ({
+            id: 'nested-regions-page',
+            typeId: 'homepage',
+            regions: [
+                {
+                    id: 'main',
+                    components: [
+                        // 1 level deep: component with a single nested region
+                        {
+                            id: 'layout-1',
+                            typeId: 'one-column-layout',
+                            data: {
+                                title: '1-Level Layout (flush-x)',
+                                flushAxis: 'x',
+                            } as unknown as Record<string, never>,
+                            visible: true,
+                            localized,
+                            regions: [
+                                {
+                                    id: 'inner',
+                                    components: [
+                                        {
+                                            id: 'leaf-a',
+                                            typeId: 'text-block',
+                                            data: {
+                                                title: 'Leaf A (depth 1, flush-x)',
+                                                flushAxis: 'x',
+                                            } as unknown as Record<string, never>,
+                                            visible: true,
+                                            localized,
+                                        },
+                                        {
+                                            id: 'leaf-b',
+                                            typeId: 'image-block',
+                                            data: { title: 'Leaf B (depth 1)' } as unknown as Record<string, never>,
+                                            visible: true,
+                                            localized,
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        // 2 levels deep: component → region → component → region → leaf
+                        {
+                            id: 'layout-2',
+                            typeId: 'two-column-layout',
+                            data: { title: '2-Level Layout' } as unknown as Record<string, never>,
+                            visible: true,
+                            localized,
+                            regions: [
+                                {
+                                    id: 'left',
+                                    components: [
+                                        {
+                                            id: 'nested-2-left',
+                                            typeId: 'card-container',
+                                            data: {
+                                                title: 'Card Container (depth 1)',
+                                            } as unknown as Record<string, never>,
+                                            visible: true,
+                                            localized,
+                                            regions: [
+                                                {
+                                                    id: 'card-body',
+                                                    components: [
+                                                        {
+                                                            id: 'leaf-c',
+                                                            typeId: 'text-block',
+                                                            data: {
+                                                                title: 'Leaf C (depth 2)',
+                                                            } as unknown as Record<string, never>,
+                                                            visible: true,
+                                                            localized,
+                                                        },
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {
+                                    id: 'right',
+                                    components: [
+                                        {
+                                            id: 'nested-2-right',
+                                            typeId: 'promo-container',
+                                            data: {
+                                                title: 'Promo Container (depth 1)',
+                                            } as unknown as Record<string, never>,
+                                            visible: true,
+                                            localized,
+                                            regions: [
+                                                {
+                                                    id: 'promo-body',
+                                                    components: [
+                                                        {
+                                                            id: 'leaf-d',
+                                                            typeId: 'cta-button',
+                                                            data: {
+                                                                title: 'Leaf D (depth 2)',
+                                                            } as unknown as Record<string, never>,
+                                                            visible: true,
+                                                            localized,
+                                                        },
+                                                        {
+                                                            id: 'leaf-e',
+                                                            typeId: 'image-block',
+                                                            data: {
+                                                                title: 'Leaf E (depth 2)',
+                                                            } as unknown as Record<string, never>,
+                                                            visible: true,
+                                                            localized,
+                                                        },
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        // 3 levels deep: component → region → component → region → component → region → leaf
+                        {
+                            id: 'layout-3',
+                            typeId: 'page-section',
+                            data: { title: '3-Level Layout' } as unknown as Record<string, never>,
+                            visible: true,
+                            localized,
+                            regions: [
+                                {
+                                    id: 'section-body',
+                                    components: [
+                                        {
+                                            id: 'nested-3-row',
+                                            typeId: 'row-layout',
+                                            data: {
+                                                title: 'Row Layout (depth 1)',
+                                            } as unknown as Record<string, never>,
+                                            visible: true,
+                                            localized,
+                                            regions: [
+                                                {
+                                                    id: 'row-cell',
+                                                    components: [
+                                                        {
+                                                            id: 'nested-3-card',
+                                                            typeId: 'card-container',
+                                                            data: {
+                                                                title: 'Card Container (depth 2)',
+                                                            } as unknown as Record<string, never>,
+                                                            visible: true,
+                                                            localized,
+                                                            regions: [
+                                                                {
+                                                                    id: 'card-content',
+                                                                    components: [
+                                                                        {
+                                                                            id: 'leaf-f',
+                                                                            typeId: 'text-block',
+                                                                            data: {
+                                                                                title: 'Leaf F (depth 3)',
+                                                                            } as unknown as Record<string, never>,
+                                                                            visible: true,
+                                                                            localized,
+                                                                        },
+                                                                        {
+                                                                            id: 'leaf-g',
+                                                                            typeId: 'image-block',
+                                                                            data: {
+                                                                                title: 'Leaf G (depth 3)',
+                                                                            } as unknown as Record<string, never>,
+                                                                            visible: true,
+                                                                            localized,
+                                                                        },
+                                                                        {
+                                                                            id: 'leaf-h',
+                                                                            typeId: 'cta-button',
+                                                                            data: {
+                                                                                title: 'Leaf H (depth 3)',
+                                                                            } as unknown as Record<string, never>,
+                                                                            visible: true,
+                                                                            localized,
+                                                                        },
+                                                                    ],
+                                                                },
+                                                            ],
+                                                        },
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }) as unknown as ShopperExperience.schemas['Page'],
 };
 
 type PageFactoryKey = keyof typeof pageFactories;
+
+/**
+ * Recursively renders a component, including any nested regions it may contain.
+ */
+function ComponentRenderer({ component, depth = 0 }: { component: ComponentType; depth?: number }) {
+    const designMetadata: ComponentDesignMetadata = {
+        id: component.id,
+        name: component.typeId,
+        isFragment: false,
+        isVisible: Boolean(component.visible),
+        isLocalized: Boolean(component.localized),
+    };
+
+    const hasNestedRegions = component.regions && component.regions.length > 0;
+    const flushAxis = (component.data as Record<string, unknown>)?.flushAxis as 'x' | 'y' | undefined;
+
+    return (
+        <DecoratedPlaceholderComponent
+            designMetadata={designMetadata}
+            title={(component.data?.title as string | undefined) || `Component ${component.id}`}
+            description={`Component ID: ${component.id} | Type: ${component.typeId}${hasNestedRegions ? ` | Nested regions: ${component.regions!.length}` : ''}`}
+            typeId={component.typeId}
+            flushAxis={flushAxis}>
+            {hasNestedRegions &&
+                component.regions!.map((nestedRegion) => (
+                    <RegionRenderer key={nestedRegion.id} region={nestedRegion} depth={depth + 1} />
+                ))}
+        </DecoratedPlaceholderComponent>
+    );
+}
+
+/**
+ * Renders a region and its components, with visual nesting indicators.
+ */
+function RegionRenderer({ region, depth = 0 }: { region: ShopperExperience.schemas['Region']; depth?: number }) {
+    const nestingColors = ['#e0e0e0', '#b3d4fc', '#c3e6cb', '#f5c6cb'];
+    const borderColor = nestingColors[depth % nestingColors.length];
+
+    return (
+        <div style={{ marginBottom: depth > 0 ? '0.5rem' : '1rem' }}>
+            <h2
+                style={{
+                    marginBottom: '0.75rem',
+                    fontSize: `${Math.max(0.875, 1.25 - depth * 0.125)}rem`,
+                    fontWeight: '600',
+                    color: '#333',
+                    paddingBottom: '0.5rem',
+                    borderBottom: `2px solid ${borderColor}`,
+                }}>
+                Region: {region.id}
+                {region.components?.length !== undefined && ` (${region.components.length} components)`}
+                {depth > 0 && (
+                    <span style={{ fontSize: '0.75rem', color: '#999', marginLeft: '0.5rem' }}>depth {depth}</span>
+                )}
+            </h2>
+            <RegionWrapper region={region}>
+                {region.components && region.components.length > 0 ? (
+                    region.components.map((component: ComponentType) => (
+                        <ComponentRenderer key={component.id} component={component} depth={depth} />
+                    ))
+                ) : (
+                    <div
+                        style={{
+                            padding: '2rem',
+                            border: '2px dashed #ccc',
+                            borderRadius: '8px',
+                            backgroundColor: '#f9f9f9',
+                            textAlign: 'center',
+                            color: '#999',
+                        }}>
+                        No components in this region
+                    </div>
+                )}
+            </RegionWrapper>
+        </div>
+    );
+}
 
 /**
  * Single render function that parameterizes all story variations
@@ -417,57 +737,7 @@ function DesignLayerStory({
                 {description && <p style={{ marginBottom: '2rem', color: '#666' }}>{description}</p>}
 
                 {pageData.regions?.map((region) => (
-                    <div key={region.id} style={{ marginBottom: '2rem' }}>
-                        <h2
-                            style={{
-                                marginBottom: '1rem',
-                                fontSize: '1.25rem',
-                                fontWeight: '600',
-                                color: '#333',
-                                paddingBottom: '0.5rem',
-                                borderBottom: '2px solid #e0e0e0',
-                            }}>
-                            Region: {region.id}
-                            {region.components?.length !== undefined && ` (${region.components.length} components)`}
-                        </h2>
-                        <RegionWrapper region={region}>
-                            {region.components && region.components.length > 0 ? (
-                                region.components.map((component: ComponentType) => {
-                                    const designMetadata: ComponentDesignMetadata = {
-                                        id: component.id,
-                                        name: component.typeId,
-                                        isFragment: false,
-                                        isVisible: Boolean(component.visible),
-                                        isLocalized: Boolean(component.localized),
-                                    };
-                                    return (
-                                        <DecoratedPlaceholderComponent
-                                            key={component.id}
-                                            designMetadata={designMetadata}
-                                            title={
-                                                (component.data?.title as string | undefined) ||
-                                                `Component ${component.id}`
-                                            }
-                                            description={`Component ID: ${component.id} | Type: ${component.typeId}`}
-                                            typeId={component.typeId}
-                                        />
-                                    );
-                                })
-                            ) : (
-                                <div
-                                    style={{
-                                        padding: '2rem',
-                                        border: '2px dashed #ccc',
-                                        borderRadius: '8px',
-                                        backgroundColor: '#f9f9f9',
-                                        textAlign: 'center',
-                                        color: '#999',
-                                    }}>
-                                    No components in this region
-                                </div>
-                            )}
-                        </RegionWrapper>
-                    </div>
+                    <RegionRenderer key={region.id} region={region} depth={0} />
                 ))}
             </div>
         </PageDesignerPageMetadataProvider>
@@ -555,7 +825,7 @@ Use the \`designMode\` parameter to control the mode:
         },
         pageFactory: {
             control: 'select',
-            options: ['default', 'empty', 'singleRegion', 'multipleRegions'],
+            options: ['default', 'empty', 'singleRegion', 'multipleRegions', 'nestedRegions'],
             description: 'Selects which page data factory to use for generating the page structure',
             table: {
                 category: 'Page Data',
@@ -753,6 +1023,36 @@ export const PreviewMode: Story = {
         docs: {
             description: {
                 story: 'Shows the page in preview mode with `?mode=PREVIEW` in the URL. This enables preview functionality.',
+            },
+        },
+    },
+};
+
+export const NestedRegions: Story = {
+    args: {
+        designMode: 'design',
+        pageFactory: 'nestedRegions',
+        title: 'Nested Regions Demo',
+        description:
+            'Demonstrates components with nested regions at 1, 2, and 3 levels deep. Layout components contain regions that hold child components, which may themselves contain further regions.',
+        componentLocalized: true,
+    },
+    render: (args: StoryArgs) => {
+        const pageData = pageFactories[(args.pageFactory as PageFactoryKey) || 'nestedRegions'](
+            args.componentLocalized ?? true
+        );
+        return (
+            <DesignLayerStory
+                pageData={pageData}
+                title={args.title || 'Nested Regions Demo'}
+                description={args.description}
+            />
+        );
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Demonstrates components with nested regions. Includes 1-level (layout → leaf), 2-level (layout → container → leaf), and 3-level (section → row → card → leaf) nesting.',
             },
         },
     },

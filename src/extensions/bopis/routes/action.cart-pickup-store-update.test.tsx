@@ -19,22 +19,18 @@ import { action as actionImpl } from './action.cart-pickup-store-update';
 
 const action = actionImpl as unknown as (args: any) => ReturnType<typeof actionImpl>;
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
-import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment';
+import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment.server';
 import { isStoreOutOfStock } from '@/lib/inventory-utils';
-import { extractResponseError } from '@/lib/utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
-import { createApiClients } from '@/lib/api-clients';
-import { currencyContext } from '@/lib/currency';
+import { createApiClients } from '@/lib/api-clients.server';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 vi.mock('@/middlewares/basket.server');
-vi.mock('@/extensions/bopis/lib/api/shipment');
+vi.mock('@/extensions/bopis/lib/api/shipment.server');
 vi.mock('@/lib/inventory-utils');
 vi.mock('@/extensions/bopis/lib/basket-utils');
-vi.mock('@/lib/api-clients');
-vi.mock('@/providers/currency', () => ({
-    getCurrency: vi.fn(() => 'USD'),
-}));
+vi.mock('@/lib/api-clients.server');
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn((error) => ({
         responseMessage: error instanceof Error ? error.message : 'Unknown error',
@@ -142,8 +138,8 @@ describe('action.cart-pickup-store-update', () => {
 
     const mockContext = {
         get: vi.fn((context) => {
-            if (context === currencyContext || context?.key === 'currency') {
-                return 'USD';
+            if (context === siteContext) {
+                return { currency: 'USD', site: { id: 'test-site' }, locale: { id: 'en-US' } };
             }
             // Return undefined for any other context - tests can mock specific contexts as needed
             return undefined;
@@ -177,18 +173,22 @@ describe('action.cart-pickup-store-update', () => {
     });
 
     describe('action', () => {
-        test('throws 405 error for non-PATCH requests', async () => {
+        test('returns error for non-PATCH requests', async () => {
             const request = new Request('http://localhost/action/cart-pickup-store-update', {
                 method: 'POST',
             });
 
-            await expect(
-                action({
-                    request,
-                    context: mockContext,
-                    params: {},
-                })
-            ).rejects.toThrow();
+            const response = await action({
+                request,
+                context: mockContext,
+                params: {},
+            });
+
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(405);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.code).toBe('METHOD_NOT_ALLOWED');
         });
 
         test('returns error when basket is not found', async () => {
@@ -205,8 +205,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toBeDefined();
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(404);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error).toBeDefined();
         });
 
         test('returns error when storeId is missing', async () => {
@@ -220,8 +223,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toContain('Store ID');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(400);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toContain('Store ID');
         });
 
         test('returns error when inventoryId is missing', async () => {
@@ -235,8 +241,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toContain('Inventory ID');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(400);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toContain('Inventory ID');
         });
 
         test('returns error when no pickup shipment found', async () => {
@@ -253,8 +262,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toBe('No pickup shipment found. Cannot change pickup store.');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(404);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toBe('No pickup shipment found. Cannot change pickup store.');
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
         });
 
@@ -302,7 +314,10 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(true);
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json.success).toBe(true);
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', mockStoreId);
             expect(updateBasketResource).toHaveBeenCalled();
         });
@@ -320,8 +335,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(true);
-            expect(response.basket).toBeDefined();
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json.success).toBe(true);
+            expect(json.basket).toBeDefined();
 
             // Verify inventory validation was performed
             expect(mockShopperProducts.getProducts).toHaveBeenCalledWith({
@@ -390,9 +408,12 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toContain(mockStoreName);
-            expect(response.error).toContain('out of stock');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(422);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toContain(mockStoreName);
+            expect(json.error?.message).toContain('out of stock');
 
             // Verify shipment was NOT updated
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
@@ -414,8 +435,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toContain(mockStoreId);
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(422);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toContain(mockStoreId);
         });
 
         test('returns error when product is not found during validation', async () => {
@@ -435,8 +459,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toContain('out of stock');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(422);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toContain('out of stock');
         });
 
         test('handles items without productId gracefully', async () => {
@@ -562,7 +589,10 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should still proceed with update if no products data
-            expect(response.success).toBe(true);
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json.success).toBe(true);
             expect(updateShipmentForPickup).toHaveBeenCalled();
         });
 
@@ -581,9 +611,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toBe('API Error');
-            expect(extractResponseError).toHaveBeenCalledWith(mockError);
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(500);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toBe('API Error');
         });
 
         test('handles errors during shipment update', async () => {
@@ -601,8 +633,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toBe('Shipment update failed');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(500);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toBe('Shipment update failed');
         });
 
         test('rolls back shipment update when error occurs after shipment update', async () => {
@@ -627,8 +662,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toBe('Item update failed');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(500);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toBe('Item update failed');
 
             // Verify shipment was updated first
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', mockStoreId);
@@ -662,8 +700,11 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should still return the original error, not the rollback error
-            expect(response.success).toBe(false);
-            expect(response.error).toBe('Item update failed');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(500);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toBe('Item update failed');
 
             // Verify rollback was attempted
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', originalStoreId);
@@ -683,8 +724,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toContain('out of stock');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(422);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toContain('out of stock');
 
             // Verify shipment was NOT updated (error occurred before update)
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
@@ -726,8 +770,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toBe('No pickup shipment found. Cannot change pickup store.');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(404);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toBe('No pickup shipment found. Cannot change pickup store.');
 
             // Verify shipment was NOT updated (error occurred before update)
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
@@ -756,8 +803,11 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(false);
-            expect(response.error).toBe('Basket retrieval failed');
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(500);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error?.message).toBe('Basket retrieval failed');
 
             // Verify rollback was called
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', originalStoreId);
@@ -799,7 +849,10 @@ describe('action.cart-pickup-store-update', () => {
                 params: {},
             });
 
-            expect(response.success).toBe(true);
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            const json = await response.json();
+            expect(json.success).toBe(true);
             // Should not update items if none match the new store
             expect(mockShopperBasketsV2.updateItemsInBasket).not.toHaveBeenCalled();
         });
@@ -855,8 +908,11 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Error should be returned to user
-            expect(response.success).toBe(false);
-            expect(response.error).toBeDefined();
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(500);
+            const json = await response.json();
+            expect(json.success).toBe(false);
+            expect(json.error).toBeDefined();
         });
     });
 });

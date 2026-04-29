@@ -58,6 +58,7 @@ vi.mock('@/components/info-modal', () => ({
 }));
 
 const mockGetWriteReviewForm = vi.fn();
+
 vi.mock('@/providers/product-context', () => ({
     useProduct: () => ({ id: 'product-123' }),
 }));
@@ -67,6 +68,9 @@ vi.mock('@/hooks/product-content/use-product-content', () => ({
             getWriteReviewForm: mockGetWriteReviewForm,
         },
     }),
+}));
+vi.mock('@/hooks/use-require-auth', () => ({
+    useRequireAuth: (fn: (...args: unknown[]) => Promise<unknown>) => fn,
 }));
 
 const renderWithRouter = (component: React.ReactElement) => {

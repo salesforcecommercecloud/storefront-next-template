@@ -18,7 +18,7 @@
         "noImageAvailable": "No image available",
         "productGeneric": "Product",
         "noProductsFound": "No products found",
-        "productCarousel": "Product carousel",
+        "productCarousel": "Product Carousel",
         "productImageAlt": "Product Image",
         "suggestionImageAlt": "Suggestion Image",
         "hero": {
@@ -54,7 +54,7 @@
         },
         "messages": {
             "currentUserRecommendation": "Using your account information",
-            "guestRecommendation": "Continuing as guest. You can login later if you have an account."
+            "guestRecommendation": "Continuing as guest. You can log in later if you have an account."
         }
     },
     "removeItem": {
@@ -81,6 +81,7 @@
         "logoAlt": "Home",
         "openChat": "Open chat",
         "searchPlaceholder": "Search",
+        "searchSuggestions": "Search suggestions",
         "welcomeBack": "Welcome back!",
         "signIn": "Sign In",
         "signOut": "Sign Out",
@@ -116,8 +117,8 @@
         "emailPlaceholder": "Enter your email",
         "passwordLabel": "Password",
         "passwordPlaceholder": "Enter your password",
-        "loginWithoutPassword": "Login without password",
-        "loginWithPassword": "Login with password",
+        "loginWithoutPassword": "Log in without password",
+        "loginWithPassword": "Log in with password",
         "forgotPassword": "Forgot your password?",
         "noAccountQuestion": "Don't have an account? ",
         "signUp": "Sign up",
@@ -143,7 +144,7 @@
         "subtitle": "Enter your email to receive instructions on how to reset your password",
         "checkEmailTitle": "Check Your Email",
         "checkEmailDescription": "You will receive an email at {{email}} with a link to reset your password shortly.",
-        "backToSignIn": "Back To Sign In",
+        "backToSignIn": "Back to Sign In",
         "emailLabel": "Email address",
         "emailPlaceholder": "Enter your email",
         "or": "or ",
@@ -220,19 +221,14 @@
         "noCustomerFound": "No customer found in session",
         "api": {
             "orderNotFound": "Order not found. Check the order number and try again.",
-            "basketNotFound": "Shopping basket not found. Refresh the page and try again.",
+            "basketNotFound": "We couldn't find an active basket. Refresh the page and try again.",
             "basketQuotaExceeded": "Maximum number of baskets exceeded. Use your existing basket.",
-            "paymentFailed": "Payment failed. Check your payment information and try again.",
-            "paymentInformationRequired": "Payment information is required to complete your order.",
             "unableToLoadCustomerProfile": "Unable to load your profile. Please refresh the page and try again.",
-            "inventoryUnavailable": "Some items in your cart are no longer available. Review your cart.",
-            "invalidOrderData": "Invalid order data. Check your checkout information and try again.",
-            "shippingAddressRequired": "Shipping address is required to continue.",
-            "billingAddressRequired": "Billing address is required to complete your order.",
+            "invalidOrderData": "Invalid order data. Verify your checkout information and try again.",
             "networkError": "Network error. Check your connection and try again.",
-            "serverError": "Server error. Try again later.",
-            "unauthorized": "Your session has expired. Log in again.",
-            "badRequest": "Invalid request. Check your information and try again.",
+            "serverError": "Something went wrong. Try again later.",
+            "unauthorized": "Your session expired. Log in again.",
+            "badRequest": "You entered invalid information. Check your information and try again.",
             "forbidden": "Access denied. You don't have permission to perform this action.",
             "timeout": "Request timeout. Try again.",
             "unexpectedError": "An unexpected error occurred."
@@ -249,15 +245,14 @@
             "invalidPostalCode": "Enter a valid postal code."
         },
         "checkout": {
-            "noActiveBasket": "No active basket found. Refresh the page and try again.",
-            "basketCalculationFailed": "Failed to calculate order total. Try again.",
-            "orderCreationFailed": "Failed to create order. Try again.",
-            "paymentProcessingFailed": "Payment processing failed. Try again.",
+            "checkoutIncomplete": "Some required information is missing. Review your details and try again.",
+            "orderCreationFailed": "We couldn't create the order. Try again.",
+            "paymentProcessingFailed": "We couldn't process your payment. Try again.",
             "shippingMethodNotAvailable": "The selected shipping method isn't available. Choose another option.",
             "shippingMethodRequired": "Please select a shipping method to continue.",
-            "addressValidationFailed": "Address validation failed. Check your address and try again.",
-            "promoCodeInvalid": "Invalid promo code. Check and try again.",
-            "stockNotAvailable": "Insufficient stock for one or more items in your cart."
+            "contactInfoFailed": "We couldn't save the contact information. Try again.",
+            "addressValidationFailed": "We couldn't validate your address. Check your address and try again.",
+            "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",
@@ -307,14 +302,15 @@
     "_NOTICE_product": "Product translations have been moved to product.json as a separate namespace. Use t('product:key') to access them.",
     "cart": {
         "title": "Cart",
+        "meta": {
+            "title": "Cart",
+            "description": "View and manage items in your shopping cart"
+        },
         "delivery": {
             "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items"
         },
-        "itemCount": {
-            "zero": "Cart (0 items)",
-            "one": "Cart (1 item)",
-            "other": "Cart ({{count}} items)"
-        },
+        "itemCount_one": "Cart (1 item)",
+        "itemCount_other": "Cart ({{count}} items)",
         "empty": {
             "title": "Your cart is empty.",
             "registeredMessage": "Continue shopping to add items to your cart.",
@@ -325,6 +321,8 @@
         "summary": {
             "orderSummary": "Order Summary",
             "showOrderSummary": "Show order summary",
+            "mobileHeading_one": "Estimated Total (1 item)",
+            "mobileHeading_other": "Estimated Total ({{count}} items)",
             "subtotal": "Subtotal",
             "shipping": "Shipping",
             "shippingPromotionApplied": "(Promotion applied)",
@@ -334,6 +332,7 @@
             "taxTbd": "TBD",
             "estimatedTotal": "Estimated Total",
             "orderTotal": "Order Total",
+            "total": "Total",
             "noBasketData": "No basket data available"
         },
         "promoCode": {
@@ -343,7 +342,7 @@
             "applying": "Applying...",
             "remove": "Remove",
             "removing": "Removing...",
-            "accordionTitle": "Do you have a promo code?",
+            "accordionTitle": "Enter a Promotion Code",
             "successMessage": "Promotion was applied.",
             "errorMessage": "Check the code and try again. The promotion can already be applied or it has expired.",
             "removeSuccessMessage": "Promotion was removed.",
@@ -362,15 +361,13 @@
             }
         },
         "items": {
-            "itemsInCart": {
-                "zero": "0 items in cart",
-                "one": "1 item in cart",
-                "other": "{{count}} items in cart"
-            },
+            "itemsInCart_zero": "0 items in cart",
+            "itemsInCart_one": "1 item in cart",
+            "itemsInCart_other": "{{count}} items in cart",
             "editCart": "Edit cart"
         },
         "checkout": {
-            "proceedToCheckout": "Proceed to Checkout",
+            "continueToCheckout": "Continue to Checkout",
             "secure": "Secure"
         },
         "attributes": {
@@ -395,24 +392,25 @@
             "selectedOptions": "Selected Options"
         },
         "bonusProducts": {
-            "selectBonusProducts": "Select bonus products in Cart",
+            "selectBonusProducts": "Select bonus products in cart",
             "addedToCart": "Bonus product added to cart",
             "failedToAdd": "Failed to add bonus product: {{error}}",
             "missingRequiredInfo": "Missing required information"
         }
     },
     "checkout": {
+        "pageTitle": "Checkout",
         "contactInfo": {
             "title": "Contact Information",
             "emailLabel": "Email Address",
             "emailPlaceholder": "Email Address",
-            "emailRequired": "Please enter your email address",
-            "emailInvalid": "Please enter a valid email address",
+            "emailRequired": "Please enter your email address.",
+            "emailInvalid": "Please enter a valid email address.",
             "countryCodeLabel": "Code",
             "phoneLabel": "Phone Number",
             "phonePlaceholder": "(000) 000-0000",
-            "phoneRequired": "Please enter your phone number",
-            "phoneInvalid": "Please enter a valid phone number",
+            "phoneRequired": "Please enter your phone number.",
+            "phoneInvalid": "Please enter a valid phone number.",
             "notProvided": "Not provided yet",
             "loginSuggestion": "💡 Have an account? You can continue as guest or ",
             "loginSuggestionLink": "sign in for faster checkout",
@@ -491,7 +489,7 @@
             "enterAddressFirst": "Enter your shipping address to view available shipping methods.",
             "arrives": "Arrives: {{estimatedArrivalTime}}",
             "priceAndMethod": "{{price}} | {{methodName}}",
-            "free": "Free",
+            "free": "FREE",
             "noMethodsAvailable": "No shipping methods available",
             "noMethodsAvailableHelp": "Make sure your shipping address is complete and try again."
         },
@@ -525,8 +523,8 @@
             "cvvInvalid": "Enter a valid CVV",
             "cvvInvalidFormat": "Enter a valid CVV (3-4 digits).",
             "billingAddressRequired": "Billing address is required when different from shipping.",
-            "billingSameAsShipping": "Use a different billing address",
-            "billingSameAsShippingDescription": "Use the same address for billing and shipping",
+            "useDifferentBilling": "Use a different billing address",
+            "useDifferentBillingDescription": "Use the same address for billing and shipping",
             "sameAsShippingAddress": "Same as shipping address",
             "selectAnAddress": "Select an address",
             "noBillingAddressSaved": "No billing address saved",
@@ -551,7 +549,8 @@
             "savePaymentToProfile": "Save payment method for future use"
         },
         "expressPayments": {
-            "separator": "Or",
+            "title": "Express Checkout",
+            "separator": "or continue below",
             "venmoUnavailable": "Venmo is not available on this device.",
             "applePayLabel": "Apple Pay",
             "googlePayLabel": "Google Pay",
@@ -579,7 +578,8 @@
         },
         "myCart": {
             "title": "My Cart",
-            "saved": "Saved {{amount}}"
+            "saved": "Saved {{amount}}",
+            "delivery": "Delivery"
         },
         "placeOrder": {
             "button": "Place Order - {{total}}",
@@ -677,7 +677,7 @@
             "checkboxExpandedDescription": "When you place your order, we create an account for you and save your payment information and other details for future purchases. During your next checkout, confirm your account using the code we'll send to you.",
             "accountCreatedTitle": "Account Created",
             "verified": "Verified",
-            "accountCreatedDescription": "We've created and verified your account using the information from your order. Next time you checkout, just enter the code we send to log in - no password needed.",
+            "accountCreatedDescription": "We've created and verified your account using the information from your order. Next time you check out, just enter the code we send to log in - no password needed.",
             "accountCreationLabel": "Account Creation",
             "accountWillBeCreated": "Account will be created",
             "continueAsGuest": "Continue as guest"
@@ -728,14 +728,14 @@
                     "modalNote": "This person will be authorized to pick up orders on your behalf. They will need to show a valid ID matching the name provided when picking up orders.",
                     "cancel": "Cancel",
                     "save": "Save",
-                    "firstNameRequired": "First name is required",
-                    "firstNameMax": "First name must be 50 characters or less",
-                    "lastNameRequired": "Last name is required",
-                    "lastNameMax": "Last name must be 50 characters or less",
-                    "emailRequired": "Email is required",
-                    "emailInvalid": "Please enter a valid email address",
-                    "emailMax": "Email must be 100 characters or less",
-                    "relationshipRequired": "Please select a relationship"
+                    "firstNameRequired": "First name is required.",
+                    "firstNameMax": "First name must be 50 characters or less.",
+                    "lastNameRequired": "Last name is required.",
+                    "lastNameMax": "Last name must be 50 characters or less.",
+                    "emailRequired": "Email is required.",
+                    "emailInvalid": "Please enter a valid email address.",
+                    "emailMax": "Email must be 100 characters or less.",
+                    "relationshipRequired": "Please select a relationship."
                 },
                 "statusActive": "Active",
                 "relationshipLabel": "Relationship: {{relationship}}",
@@ -789,6 +789,17 @@
                 "appStore": "App Store",
                 "googlePlay": "Google Play",
                 "qrCode": "QR Code"
+            },
+            "recentOrders": {
+                "title": "Recent Orders",
+                "subtitle": "These are your last 5 orders",
+                "viewAll": "View All"
+            },
+            "rateRecentPurchases": {
+                "title": "Rate Your Recent Purchases",
+                "subtitle": "Share your experience and help others discover great products",
+                "orderCaption": "Order {{orderNo}} • {{status}}",
+                "cta": "Rate & review"
             }
         },
         "shopperAgentEntry": {
@@ -880,6 +891,8 @@
             "orderNotFound": "Order Not Found",
             "orderNotFoundDescription": "We couldn't find the order you're looking for.",
             "buyAgain": "Buy Again",
+            "rateAndReview": "Rate & Review",
+            "reviewSubmitted": "Review submitted",
             "emptyItemsFallback": "No items.",
             "productPlaceholderInitial": "Item",
             "quantityLabel": "Qty: {{count}}",
@@ -943,16 +956,16 @@
             "removeConfirmation": "Are you sure you want to remove this payment method?",
             "paymentMethod": "Payment Method",
             "defaultRemovalWarning": "This is your default payment method. Removing it will automatically set another payment method as default if available.",
-            "addSuccess": "Payment method added successfully",
-            "addError": "Failed to add payment method",
-            "removeSuccess": "Payment method removed successfully",
-            "removeError": "Failed to remove payment method",
-            "setDefaultSuccess": "Payment method set as default successfully",
-            "setDefaultError": "Failed to set payment method as default",
-            "validationError": "Please correct the errors in the form",
-            "addressValidationError": "Please correct the errors in the billing address",
-            "selectAddressError": "Please select a billing address",
-            "invalidExpiryFormat": "Invalid expiry date format"
+            "addSuccess": "Payment method added successfully.",
+            "addError": "Failed to add payment method.",
+            "removeSuccess": "Payment method removed successfully.",
+            "removeError": "Failed to remove payment method.",
+            "setDefaultSuccess": "Payment method set as default successfully.",
+            "setDefaultError": "Failed to set payment method as default.",
+            "validationError": "Please correct the errors in the form.",
+            "addressValidationError": "Please correct the errors in the billing address.",
+            "selectAddressError": "Please select a billing address.",
+            "invalidExpiryFormat": "Invalid expiry date format."
         },
         "addressForm": {
             "addressTitleLabel": "Address Title",
@@ -980,9 +993,9 @@
             "errorMessage": "Failed to save address. Try again.",
             "validation": {
                 "stateRequired": "State/Province is required",
-                "addressTitleRequired": "Address title is required",
-                "addressTitleMaxLength": "Address title must be 256 characters or less",
-                "phoneRequired": "Phone number is required"
+                "addressTitleRequired": "Address title is required.",
+                "addressTitleMaxLength": "Address title must be 256 characters or less.",
+                "phoneRequired": "Phone number is required."
             }
         },
         "profile": {
@@ -1013,12 +1026,12 @@
             "successMessage": "Your profile was updated.",
             "errorMessage": "We couldn't update your profile. Try again.",
             "validation": {
-                "firstNameRequired": "First name is required",
-                "lastNameRequired": "Last name is required",
-                "emailRequired": "Email is required",
-                "emailInvalid": "Enter a valid email address",
-                "phoneInvalid": "Enter a valid phone number",
-                "birthdayFuture": "Date of birth cannot be in the future"
+                "firstNameRequired": "First name is required.",
+                "lastNameRequired": "Last name is required.",
+                "emailRequired": "Email is required.",
+                "emailInvalid": "Enter a valid email address.",
+                "phoneInvalid": "Enter a valid phone number.",
+                "birthdayFuture": "Date of birth cannot be in the future."
             }
         },
         "password": {
@@ -1141,12 +1154,14 @@
         },
         "featuredProducts": {
             "title": "Featured Products",
-            "shopAll": "Shop all"
+            "shopAll": "Shop all",
+            "loadFailed": "Unable to load featured products."
         },
         "categoryGrid": {
             "title": "Style for Real Life",
             "description": "At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.",
-            "shopNowButton": "Shop Now"
+            "shopNowButton": "Shop Now",
+            "loadFailed": "Unable to load categories."
         },
         "featuredContent": {
             "women": {
@@ -1441,7 +1456,7 @@
     "writeReview": {
         "validation": {
             "pleaseFixFollowing": "Please fix the following:",
-            "ratingRequired": "Please select a rating",
+            "ratingRequired": "Please select a rating.",
             "reviewRequired": "Please fill out this field.",
             "reviewMinLength": "Your review must be at least {{count}} characters",
             "reviewMaxLength": "Please enter no more than {{count}} characters.",
@@ -1458,6 +1473,70 @@
         "sites": {
             "RefArchGlobal": "Global (UK)",
             "RefArch": "United States"
+        }
+    },
+    "security": {
+        "turnstile": {
+            "error": "Unable to verify your request. Please try again.",
+            "expired": "Verification expired. Please try again.",
+            "loading": "Verifying...",
+            "retry": "Retry Verification"
+        }
+    },
+    "category": {
+        "banner": {
+            "counting": "Counting products...",
+            "productsAvailable_one": "1 product available",
+            "productsAvailable_other": "{{count}} products available"
+        },
+        "breadcrumbs": {
+            "label": "Breadcrumb",
+            "home": "Home"
+        },
+        "pagination": {
+            "label": "Pagination",
+            "previous": "Previous",
+            "previousPage": "Previous page",
+            "next": "Next",
+            "nextPage": "Next page",
+            "page": "Page {{number}}"
+        }
+    },
+    "maintenancePage": {
+        "heading": "We're making things even better",
+        "description": "Our store is temporarily closed for scheduled maintenance. We're working to improve your shopping experience and will be back shortly.",
+        "apology": "We apologize for any inconvenience. Thank you for your patience!",
+        "checkBack": "Check back in a few minutes, or follow us for updates.",
+        "tryAgain": "Try Again"
+    },
+    "error": {
+        "defaultTitle": "Something went wrong",
+        "defaultDescription": "An error occurred",
+        "defaultDetails": "An unexpected error occurred.",
+        "notFoundTitle": "Page not found",
+        "notFoundDetails": "The requested page could not be found.",
+        "persistsMessage": "If this problem persists, please contact support.",
+        "tryAgainMessage": "An unexpected error occurred. Please try again later.",
+        "goToHomepage": "Go to Homepage",
+        "allRightsReserved": "All rights reserved.",
+        "recommendations": {
+            "title": "You might also like"
+        },
+        "404": {
+            "title": "Page not found",
+            "message": "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
+            "secondaryMessage": "Don't worry—you can still explore our collection or head back home.",
+            "details": "The requested page could not be found."
+        },
+        "403": {
+            "title": "Access restricted",
+            "message": "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
+            "secondaryMessage": "In the meantime, feel free to browse our collection."
+        },
+        "500": {
+            "title": "Something went wrong",
+            "message": "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
+            "secondaryMessage": "Please try again in a few moments, or browse our shop while we sort things out."
         }
     }
 }

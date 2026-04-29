@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-context-utils';
-import { extractStatusCode, parseJsonToStringRecord } from '@/lib/utils';
+import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-context-utils.server';
+import { parseJsonToStringRecord } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
-import { getTranslation } from '@/lib/i18next';
+import { createActionError } from '@/lib/action-error-helpers.server';
+import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
 type UpdateShopperContextResponse = {
     success: boolean;
     message?: string;
-    error?: string;
+    error?: ActionError;
 };
 
 /**
@@ -32,7 +33,6 @@ type UpdateShopperContextResponse = {
  */
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     const logger = getLogger(context);
-    const { t } = getTranslation();
 
     logger.debug('UpdateShopperContext: starting', { method: request.method });
 
@@ -42,15 +42,27 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         return Response.json(
             {
                 success: false,
-                error: t("Usid isn't available for updating shopper context."),
-            },
+                error: createActionError({
+                    code: ErrorCode.NOT_AUTHENTICATED,
+                    message: "Usid isn't available for updating shopper context.",
+                }),
+            } satisfies UpdateShopperContextResponse,
             { status: 401 }
         );
     }
 
     if (request.method !== 'PUT') {
         logger.warn('UpdateShopperContext: method not allowed', { method: request.method });
-        throw new Response(t(`This method isn't allowed to update shopper context.`), { status: 405 });
+        return Response.json(
+            {
+                success: false,
+                error: createActionError({
+                    code: ErrorCode.METHOD_NOT_ALLOWED,
+                    message: 'This method is not allowed to update shopper context.',
+                }),
+            } satisfies UpdateShopperContextResponse,
+            { status: 405 }
+        );
     }
 
     try {
@@ -75,8 +87,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             return Response.json(
                 {
                     success: false,
-                    error: t('At least one qualifier must be provided to update shopper context.'),
-                },
+                    error: createActionError({
+                        code: ErrorCode.REQUIRED_FIELD,
+                        message: 'At least one qualifier must be provided to update shopper context.',
+                    }),
+                } satisfies UpdateShopperContextResponse,
                 { status: 400 }
             );
         }
@@ -92,7 +107,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         const response = Response.json({
             success: true,
-            message: t('Shopper context has been updated.'),
+            message: 'Shopper context has been updated.',
         } satisfies UpdateShopperContextResponse);
 
         // Apply Set-Cookie headers from updateShopperContext
@@ -107,14 +122,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         return response;
     } catch (error) {
         logger.error('UpdateShopperContext: failed', { error });
-        const statusCode = extractStatusCode(error) ? Number(extractStatusCode(error)) : 500;
-        const errorMessage = error instanceof Error ? error.message : t('Shopper context failed to update.');
         return Response.json(
             {
                 success: false,
-                error: errorMessage,
+                error: createActionError({ error }),
             } satisfies UpdateShopperContextResponse,
-            { status: statusCode }
+            { status: 500 }
         );
     }
 }

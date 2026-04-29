@@ -21,9 +21,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import userEvent from '@testing-library/user-event';
 import { getAuth, authorizePasswordless, getPasswordLessAccessToken, updateAuth } from '@/middlewares/auth.server';
-import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
-import { authorizeIDP } from '@/lib/api/auth/social-login';
-import { mergeBasket } from '@/lib/api/basket';
+import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
+import { authorizeIDP } from '@/lib/api/auth/social-login.server';
+import { mergeBasket } from '@/lib/api/basket.server';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
 
@@ -34,15 +34,15 @@ vi.mock('@/middlewares/auth.server', () => ({
     updateAuth: vi.fn(),
 }));
 
-vi.mock('@/lib/api/auth/standard-login', () => ({
+vi.mock('@/lib/api/auth/standard-login.server', () => ({
     loginRegisteredUser: vi.fn(),
 }));
 
-vi.mock('@/lib/api/auth/social-login', () => ({
+vi.mock('@/lib/api/auth/social-login.server', () => ({
     authorizeIDP: vi.fn(),
 }));
 
-vi.mock('@/lib/api/basket', () => ({
+vi.mock('@/lib/api/basket.server', () => ({
     mergeBasket: vi.fn(),
 }));
 
@@ -103,7 +103,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
     };
 });
 
-vi.mock('@/lib/i18next', () => ({
+vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: vi.fn(() => ({
         t: vi.fn((key: string) => {
             if (key === 'errors:genericTryAgain') {
@@ -444,9 +444,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result).toHaveProperty('redirectUrl', '/');
-            expect(result).toHaveProperty('auth');
-            expect(result.auth).toMatchObject({ userType: 'registered' });
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toBe('/');
             expect(mockLoginRegisteredUser).toHaveBeenCalledWith(mockContext, {
                 email: 'test@example.com',
                 password: 'password123',
@@ -481,8 +481,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result).toHaveProperty('redirectUrl', '/product/123');
-            expect(result).toHaveProperty('auth');
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toBe('/product/123');
         });
 
         it('should preserve action and actionParams in returnUrl on successful login', async () => {
@@ -513,10 +514,11 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result.redirectUrl).toContain('/product/123');
-            expect(result.redirectUrl).toContain('action=addToCart');
-            expect(result.redirectUrl).toContain('actionParams=');
-            expect(result).toHaveProperty('auth');
+            expect(result).toBeInstanceOf(Response);
+            const location = (result as Response).headers.get('Location') ?? '';
+            expect(location).toContain('/product/123');
+            expect(location).toContain('action=addToCart');
+            expect(location).toContain('actionParams=');
         });
 
         it('should continue login even if basket merge fails', async () => {
@@ -543,8 +545,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result).toHaveProperty('redirectUrl', '/');
-            expect(result).toHaveProperty('auth');
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toBe('/');
             expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
             expect(mockUpdateBasketResource).not.toHaveBeenCalled();
         });
@@ -641,7 +644,9 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result.redirectUrl).toContain('oauth2/authorize');
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toContain('oauth2/authorize');
             expect(mockAuthorizeIDP).toHaveBeenCalledWith(mockContext, {
                 hint: 'Google',
                 redirectURI: 'http://localhost:5173/social-callback',
@@ -746,9 +751,11 @@ describe('Login Route', () => {
             const mockContext = { get: vi.fn(), set: vi.fn() };
             const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
 
-            expect(result.success).toBe(true);
-            expect(result.redirectUrl).toContain('/login?otp=true');
-            expect(result.redirectUrl).toContain('email=test%40example.com');
+            expect(result).not.toBeInstanceOf(Response);
+            const data = result as { success: boolean; showOTPForm?: boolean; email?: string };
+            expect(data.success).toBe(true);
+            expect(data.showOTPForm).toBe(true);
+            expect(data.email).toBe('test@example.com');
             expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
                 mockContext,
                 expect.objectContaining({

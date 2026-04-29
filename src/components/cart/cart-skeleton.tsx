@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 function CartEmptySkeleton({ isRegistered = false }: { isRegistered?: boolean }): ReactElement {
     return (
         <div className="bg-muted flex-1 min-w-full w-full" data-testid="sf-cart-empty-skeleton">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
+            <div className="section-container py-8 lg:py-14">
                 <Card className="max-w-md mx-auto">
                     <CardContent className="p-8 text-center">
                         <div className="space-y-6">
@@ -67,13 +67,13 @@ export default function CartSkeleton({
 
     return (
         <div className="flex-1 min-h-screen bg-background mb-10" data-testid="sf-cart-skeleton">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="section-container">
                 <div className="my-6">
                     <Skeleton className="h-8 w-48" />
                 </div>
 
                 <div className="md:hidden mb-3">
-                    <div className="border rounded-md bg-card px-5 py-3">
+                    <div className="border rounded-none bg-card px-5 py-3">
                         <div className="flex items-center justify-between">
                             <Skeleton className="h-6 w-48" />
                             <Skeleton className="h-4 w-4" />
@@ -83,13 +83,13 @@ export default function CartSkeleton({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[66%_1fr] lg:gap-11">
                     <div className="md:order-2 lg:order-1">
-                        <div className="md:p-8 p-3 border border-border rounded-lg shadow-sm mb-3">
+                        <div className="md:p-8 p-3 border border-border rounded-none mb-3">
                             {productItemSkeletonIds.map((id) => (
-                                <Card className="border-none shadow-none" key={id}>
-                                    <CardContent className="px-3 py-4 md:px-6 md:py-7">
+                                <div className="bg-card text-card-foreground border-0 rounded-none" key={id}>
+                                    <div className="px-3 py-4 md:px-6 md:py-7">
                                         <div className="grid md:grid-cols-[140px_1fr] grid-cols-[72px_1fr] gap-5 min-w-0">
                                             <div className="flex-shrink-0 flex items-center justify-center">
-                                                <Skeleton className="aspect-square md:w-32 w-16 rounded" />
+                                                <Skeleton className="aspect-square md:w-32 w-16 rounded-none" />
                                             </div>
                                             <div className="flex-1 space-y-3 min-w-0">
                                                 <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 min-w-0">
@@ -121,15 +121,15 @@ export default function CartSkeleton({
                                                 <Skeleton className="h-5 w-20 md:hidden" />
                                             </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Order Summary */}
                     <div className="hidden md:block md:order-1 lg:order-2">
-                        <Card className="border shadow-sm">
+                        <Card className="border rounded-none shadow-none">
                             <CardContent className="p-6 space-y-5">
                                 <Skeleton className="h-7 w-28" />
                                 <div className="space-y-4">

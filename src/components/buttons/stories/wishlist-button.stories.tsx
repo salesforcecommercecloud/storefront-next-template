@@ -505,7 +505,7 @@ This story simulates the full add-to-wishlist lifecycle:
 export const DifferentProducts: Story = {
     render: () => (
         <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 border rounded-lg relative">
+            <div className="p-4 border rounded-none relative">
                 <h4 className="font-medium mb-2">Standard Product</h4>
                 <p className="text-sm text-muted-foreground mb-2">Basic product item</p>
                 <p className="text-lg font-bold">$29.99</p>
@@ -514,7 +514,7 @@ export const DifferentProducts: Story = {
                 </div>
             </div>
 
-            <div className="p-4 border rounded-lg relative">
+            <div className="p-4 border rounded-none relative">
                 <h4 className="font-medium mb-2">Featured Product</h4>
                 <p className="text-sm text-muted-foreground mb-2">Premium product item</p>
                 <p className="text-lg font-bold">$99.99</p>

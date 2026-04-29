@@ -36,10 +36,12 @@ import {
 } from 'react-router';
 
 // Third-party libraries
-import { type i18n } from 'i18next';
-import { I18nextProvider } from 'react-i18next';
+import { createInstance, type i18n } from 'i18next';
+import { I18nextProvider, useTranslation, initReactI18next } from 'react-i18next';
+import resources from '@/locales'; // Server-side translations
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import { dataStoreMiddleware, getGcpApiKey } from '@salesforce/storefront-next-runtime/data-store';
 import { SiteProvider, siteContext, type Site, type Locale } from '@salesforce/storefront-next-runtime/site-context';
 
 // Middlewares
@@ -58,7 +60,6 @@ import { ConfigProvider, getConfig } from '@salesforce/storefront-next-runtime/c
 import type { AppConfig } from '@/types/config';
 import { siteContextMiddleware } from '@/middlewares/site-context.server';
 import { i18nextMiddleware } from '@/middlewares/i18next.server';
-import { currencyMiddleware } from '@/middlewares/currency.server';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 import {
     selectedStoreMiddleware,
@@ -68,6 +69,7 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { correlationMiddleware } from '@/middlewares/correlation.server';
 import { loggingMiddleware } from '@/middlewares/logging.server';
+import { pageDesignerResolutionMiddleware } from '@/middlewares/page-designer-page-resolution.server';
 import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/middlewares/mode-detection';
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
@@ -75,7 +77,6 @@ import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 import AuthProvider from '@/providers/auth';
 import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
-import { CurrencyProvider } from '@/providers/currency';
 import { CorrelationProvider } from '@/providers/correlation';
 import { correlationContext } from '@/lib/correlation';
 import RecommendersProvider from '@/providers/recommenders';
@@ -90,15 +91,11 @@ import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 
 // Lib/Utils
 import type { PublicSessionData } from '@/lib/api/types';
-import { i18nextContext } from '@/lib/i18next';
-import { initI18next } from '@/lib/i18next.client';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { initI18next } from '@salesforce/storefront-next-runtime/i18n/client';
 import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
 import { initializeRegistry } from '@/lib/static-registry';
-import { currencyContext } from '@/lib/currency';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
-
-// Import load-fonts to trigger module-level font loading
-import '@/lib/load-fonts';
 
 // Adapters
 import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
@@ -106,46 +103,45 @@ import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
 // Assets
 import favicon from '/favicon.ico';
 
-// Fonts (preload only the most-used weights: 500 and 600)
-import sen500 from '@fonts/sen/sen-500.woff2?url';
-import sen600 from '@fonts/sen/sen-600.woff2?url';
+// Fonts
+import sen from '/fonts/sen-variable.woff2';
 
 // Styles
 import { PageDesignerInit } from '@/page-designer-init';
-import appStylesHref from './app.css?url';
+import appStylesHref from './theme/index.css?url';
 
 // Extensions
-import { TargetProviders } from '@/targets/target-providers';
+import { UITargetProviders } from '@/targets/ui-target-providers';
 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 
-// eslint-disable-next-line react-refresh/only-export-components
+// Layout Components - logo for error page
+import logo from '/images/logo.svg';
+
 export const links: LinksFunction = () => {
     return [
         // Preload critical fonts
-        { rel: 'preload', href: sen500, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
-        { rel: 'preload', href: sen600, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+        { rel: 'preload', href: sen, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
         { rel: 'preload', href: appStylesHref, as: 'style' },
         { rel: 'stylesheet', href: appStylesHref },
     ];
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const meta: MetaFunction<typeof loader> = ({ loaderData }) => {
     return loaderData?.seoMeta ?? [];
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const middleware: MiddlewareFunction<Response>[] = [
     correlationMiddleware,
     loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
     siteContextMiddleware, // Must run after appConfig, before i18next and currency
+    ...dataStoreMiddleware,
     i18nextMiddleware,
-    currencyMiddleware,
+    pageDesignerResolutionMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,
     performanceMetricsMiddlewareServer,
     maintenanceMiddleware,
@@ -154,7 +150,6 @@ export const middleware: MiddlewareFunction<Response>[] = [
     shopperContextMiddlewareServer,
 ];
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyResult>>[] = [
     // Client middleware functions have varying return types, but React Router expects Record<string, DataStrategyResult>
     // We cast through unknown to avoid type errors while maintaining runtime correctness
@@ -168,9 +163,14 @@ export const clientMiddleware: MiddlewareFunction<Record<string, DataStrategyRes
 // (On the server side, it's initialized elsewhere in middlewares/i18next.ts file)
 // Read the language from the server-rendered HTML to avoid language detection issues
 const i18nextOnClient =
-    typeof window !== 'undefined' ? initI18next({ language: document.documentElement.lang || undefined }) : undefined;
+    typeof window !== 'undefined'
+        ? initI18next({
+              language: document.documentElement.lang || undefined,
+              // The import() must live here so Vite can resolve the path at build time
+              loadLocale: (language) => import(`@/locales/${language}/index.ts`),
+          })
+        : undefined;
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const loader = ({
     context,
     request,
@@ -188,6 +188,8 @@ export const loader = ({
     pageDesignerMode: 'EDIT' | 'PREVIEW' | undefined;
     // Pre-computed in the loader (server-only) so seo.ts stays out of the client bundle
     seoMeta: MetaDescriptor[];
+    // OOTB GCP Address Autocomplete API key sourced from the MRT data store
+    gcpApiKeyFromDAL: string;
     // Return as function to prevent i18next instance serialization
     getI18next: () => i18n;
 } => {
@@ -195,32 +197,20 @@ export const loader = ({
 
     const appConfig = getConfig<AppConfig>(context);
 
-    // Get i18next accessor functions from context (stored by middleware)
-    const i18nextData = context.get(i18nextContext);
-    if (!i18nextData) {
-        throw new Error('i18next data not found in context. Ensure i18next middleware runs before loaders.');
-    }
-
-    // Call the bound functions to get locale and i18next instance
-
     // On the server side, our middleware stores the translations in this i18next object
     // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).
-    const i18next = i18nextData.getI18nextInstance();
-
-    // Currency is already resolved by middleware
-    const currency = context.get(currencyContext) as string;
+    const { i18next } = getTranslation(context);
 
     // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
     const selectedStoreInfo = context.get(selectedStoreContext) ?? null;
     // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 
-    // Get resolved site from site context middleware
+    // Get resolved site, locale, and currency from site context middleware
     const siteCtx = context.get(siteContext);
     if (!siteCtx) {
         throw new Error('Site context not found. Ensure siteContextMiddleware runs before loaders.');
     }
-    const locale = siteCtx.locale;
-    const site = siteCtx.site;
+    const { locale, site, currency } = siteCtx;
 
     // Load the application basket provider with the basket snapshot. We are actively not loading the basket, as
     // we want to lazy load the basket when the basket is needed. This prevents low-engagement users from causing
@@ -257,6 +247,7 @@ export const loader = ({
         maintenance,
         clientAuth,
         seoMeta,
+        gcpApiKeyFromDAL: getGcpApiKey(context),
         getI18next: () => i18next,
         pageDesignerMode: isDesignModeActive(request) ? 'EDIT' : isPreviewModeActive(request) ? 'PREVIEW' : undefined,
     };
@@ -282,6 +273,7 @@ export function Layout({ children }: PropsWithChildren) {
         <html lang={lang} dir={dir}>
             <head>
                 <meta charSet="utf-8" />
+                <link rel="icon" type="image/x-icon" href={favicon} />
                 {appConfig?.links?.preconnect?.map((origin: string) => (
                     <link key={origin} rel="preconnect" href={origin} />
                 ))}
@@ -291,8 +283,12 @@ export function Layout({ children }: PropsWithChildren) {
                 {appConfig?.links?.prefetch?.map((href: string) => (
                     <link key={href} rel="prefetch" href={href} />
                 ))}
+                <style
+                    dangerouslySetInnerHTML={{
+                        __html: `@font-face{font-family:'Sen';src:url(${sen}) format('woff2');font-weight:400 800;font-style:normal;font-display:swap}`,
+                    }}
+                />
                 <script
-                    // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{
                         __html: `
                         ${appConfigScript}
@@ -300,7 +296,6 @@ export function Layout({ children }: PropsWithChildren) {
                     }}
                 />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="icon" type="image/x-icon" href={favicon} />
                 <Meta />
                 <Links />
             </head>
@@ -309,8 +304,136 @@ export function Layout({ children }: PropsWithChildren) {
                 <ToasterTheme />
                 <ScrollRestoration />
                 <Scripts />
+                {/* Dev-only overlay: mounts outside the React tree to avoid interfering with app state/context. Zero production overhead — tree-shaken by Vite when PROD=true. */}
+                <UITargetDevModeInit />
             </body>
         </html>
+    );
+}
+
+/**
+ * Error page content component with i18n support
+ */
+function ErrorPageContent({
+    status,
+    details,
+    stack,
+}: {
+    status: number | undefined;
+    details: string | undefined;
+    stack: string | undefined;
+}) {
+    const { t } = useTranslation('error');
+
+    return (
+        <>
+            {/* Simple Header */}
+            <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
+                <div className="section-container">
+                    <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
+                        <a href="/" className="flex-shrink-0 flex items-center">
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                className="h-3 lg:h-4 w-auto [filter:var(--header-logo-filter)]"
+                            />
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="grow pt-8">
+                <div className="flex items-center justify-center min-h-[60vh] px-4 py-12">
+                    <div className="mx-auto max-w-3xl w-full text-center">
+                        {/* Large status code */}
+                        {status && <div className="text-error-status font-bold leading-none mb-8">{status}</div>}
+
+                        {/* Error content - conditional based on status */}
+                        {status === 404 ? (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('404.title')}</h1>
+                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('404.message')}
+                                </p>
+                                <p className="text-base text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('404.secondaryMessage')}
+                                </p>
+                                <p className="text-sm text-muted-foreground mb-12 max-w-2xl mx-auto opacity-50">
+                                    {t('404.details')}
+                                </p>
+                            </>
+                        ) : status === 403 ? (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('403.title')}</h1>
+                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('403.message')}
+                                </p>
+                                <p className="text-base text-muted-foreground mb-12 max-w-2xl mx-auto">
+                                    {t('403.secondaryMessage')}
+                                </p>
+                            </>
+                        ) : status === 500 ? (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('500.title')}</h1>
+                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
+                                    {t('500.message')}
+                                </p>
+                                <p className="text-base text-muted-foreground mb-12 max-w-2xl mx-auto">
+                                    {t('500.secondaryMessage')}
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('defaultTitle')}</h1>
+                                {/* For other errors: show technical details */}
+                                {details && (
+                                    <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+                                        Error: {details}
+                                    </p>
+                                )}
+                            </>
+                        )}
+
+                        {/* Back to home button */}
+                        <div>
+                            <a
+                                href="/"
+                                className="inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
+                                {t('goToHomepage')}
+                            </a>
+                        </div>
+
+                        {/* Stack trace (only in dev mode with stack) */}
+                        {stack && (
+                            <div className="mt-16 border border-border rounded-none bg-muted/30 text-left">
+                                <div className="flex items-center px-4 py-3 border-b border-border">
+                                    <h2 className="text-sm font-semibold text-foreground">Stack Trace</h2>
+                                </div>
+                                <pre className="p-4 overflow-auto max-h-80 text-xs leading-relaxed text-foreground/90 font-mono">
+                                    <code>{stack}</code>
+                                </pre>
+                                <div className="px-4 py-3 border-t border-border">
+                                    <p className="text-xs text-muted-foreground">
+                                        To disable stack traces in production, turn off{' '}
+                                        <code className="text-xs">unstable_devTools</code> in your router config.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </main>
+
+            {/* Simple Footer */}
+            <footer className="mt-auto bg-background border-t border-border">
+                <div className="mx-auto max-w-7xl section-container py-8">
+                    <p className="text-center text-sm text-muted-foreground">
+                        © {new Date().getFullYear()} {t('allRightsReserved')}
+                    </p>
+                </div>
+            </footer>
+        </>
     );
 }
 
@@ -322,15 +445,14 @@ export function ErrorBoundary({ error }: { error: unknown }) {
         return <Navigate to="/maintenance" replace />;
     }
 
-    let title = 'Something went wrong';
+    // For all other errors, render error page with app layout
     let status: number | undefined;
     let details: string | undefined;
     let stack: string | undefined;
 
     if (isRouteErrorResponse(error)) {
         status = error.status;
-        title = error.status === 404 ? 'Page not found' : 'Something went wrong';
-        details = error.status === 404 ? 'The requested page could not be found.' : error.statusText;
+        details = error.statusText;
     } else if (error instanceof Error) {
         details = error.message;
         stack = error.stack;
@@ -338,72 +460,31 @@ export function ErrorBoundary({ error }: { error: unknown }) {
         details = error;
     }
 
+    // Always create a new i18next instance with pre-loaded translations for the ErrorBoundary
+    // This ensures translations are immediately available without async loading
+    const language =
+        typeof window !== 'undefined' && i18nextOnClient
+            ? i18nextOnClient.language || 'en-US'
+            : typeof document !== 'undefined'
+              ? document.documentElement.lang || 'en-US'
+              : 'en-US';
+
+    const i18nextInstance = createInstance();
+    // Initialize synchronously with pre-loaded resources
+    void i18nextInstance.use(initReactI18next).init({
+        lng: language,
+        fallbackLng: 'en-US',
+        resources,
+        interpolation: {
+            escapeValue: false,
+        },
+        initImmediate: true, // Ensures synchronous initialization with pre-loaded resources
+    });
+
     return (
-        <main className="flex items-center justify-center min-h-[60vh] p-4">
-            <div className="w-full max-w-2xl">
-                {/* Error header */}
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-0.5 rounded-full bg-destructive/20 p-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="size-5 text-destructive">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="8" x2="12" y2="12" />
-                                <line x1="12" y1="16" x2="12.01" y2="16" />
-                            </svg>
-                        </div>
-                        <div>
-                            {status && <p className="text-sm font-medium text-destructive/70 mb-1">{status}</p>}
-                            <h1 className="text-xl font-semibold text-destructive">{title}</h1>
-                            {details && <p className="mt-1.5 text-sm text-foreground/80 break-all">Error: {details}</p>}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Stack trace */}
-                {stack && (
-                    <div className="mt-4 border border-border rounded-lg bg-muted/30">
-                        <div className="flex items-center px-4 py-3 border-b border-border">
-                            <h2 className="text-sm font-semibold text-foreground">Stack Trace</h2>
-                        </div>
-                        <pre className="p-4 overflow-auto max-h-80 text-xs leading-relaxed text-foreground/90 font-mono">
-                            <code>{stack}</code>
-                        </pre>
-                        <div className="px-4 py-3 border-t border-border">
-                            <p className="text-xs text-muted-foreground">
-                                To disable stack traces in production, turn off <strong>Enable Source Maps</strong> in
-                                your Managed Runtime environment.{' '}
-                                <a
-                                    href="https://developer.salesforce.com/docs/commerce/pwa-kit-managed-runtime/guide/debugging.html#debug-on-managed-runtime"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="underline hover:no-underline">
-                                    Learn more about debugging on Managed Runtime
-                                </a>
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* No stack trace - fallback message */}
-                {!stack && (
-                    <div className="mt-4 border border-border rounded-lg bg-muted/30 px-6 py-4">
-                        <p className="text-sm text-muted-foreground">
-                            {details
-                                ? 'If this problem persists, please contact support.'
-                                : 'An unexpected error occurred. Please try again later.'}
-                        </p>
-                    </div>
-                )}
-            </div>
-        </main>
+        <I18nextProvider i18n={i18nextInstance}>
+            <ErrorPageContent status={status} details={details} stack={stack} />
+        </I18nextProvider>
     );
 }
 
@@ -416,6 +497,7 @@ export default function App({
         correlationId,
         pageDesignerMode,
         site,
+        locale,
         // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
         selectedStoreInfo,
         // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
@@ -457,8 +539,10 @@ export default function App({
             [
                 [I18nextProvider, { i18n: i18next }],
                 [ConfigProvider, { config: appConfig }],
-                [SiteProvider, { value: site }],
-                [CurrencyProvider, { value: currency }],
+                // Site provider will contain info about site/locale/currency on single request.
+                // include i18next.language since these infos tend to go together.
+                // site will drive the language/locale and currency
+                [SiteProvider, { site, locale, language: i18next.language, currency }],
                 [AuthProvider, { value: clientAuth }],
                 [BasketProvider, { snapshot: basketSnapshot }],
                 [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
@@ -475,6 +559,7 @@ export default function App({
             clientAuth,
             basketSnapshot,
             site,
+            locale,
             // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
             selectedStoreInfo,
             // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
@@ -485,11 +570,11 @@ export default function App({
 
     return (
         <ComposeProviders providers={providers}>
-            <TargetProviders>
+            <UITargetProviders>
                 <AuthActionExecutor />
                 {hybridEnabled && <BackNavigationRevalidator />}
                 <PageDesignerProvider
-                    clientId="odyssey"
+                    clientId="storefront-next"
                     targetOrigin="*"
                     usid={clientAuth?.usid}
                     mode={pageDesignerMode}>
@@ -498,7 +583,7 @@ export default function App({
                 </PageDesignerProvider>
                 <TrackingConsentBanner />
                 {typeof window !== 'undefined' && <PageViewTracker />}
-            </TargetProviders>
+            </UITargetProviders>
             {(appConfig.commerceAgent?.enabled === 'true' || appConfig.commerceAgent?.enabled === true) && (
                 <ShopperAgent
                     commerceAgentConfiguration={appConfig.commerceAgent}
@@ -536,5 +621,29 @@ function BackNavigationRevalidator() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    return null;
+}
+
+/**
+ * Initialize UITarget dev mode overlay (DEV ONLY - zero production overhead)
+ * Lazy-loads the overlay when VITE_UI_TARGET_DEV_MODE=true
+ */
+function UITargetDevModeInit() {
+    useEffect(() => {
+        // Only runs in browser
+        if (typeof window === 'undefined') return;
+
+        // Only in development
+        if (import.meta.env.PROD) return;
+
+        // Only if enabled
+        if (import.meta.env.VITE_UI_TARGET_DEV_MODE !== 'true') return;
+
+        // Lazy load the overlay
+        void import('@/lib/ui-target-dev-mode').then(({ initUITargetDevMode }) => {
+            void initUITargetDevMode();
+        });
+    }, []);
+
     return null;
 }

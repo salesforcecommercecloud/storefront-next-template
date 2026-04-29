@@ -114,7 +114,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -128,7 +128,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -142,7 +142,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -156,7 +156,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -168,7 +168,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -182,7 +182,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Classic Shirt"
@@ -196,7 +196,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Dress Pants"
@@ -214,7 +214,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
               </div>
             </div>
             <div
-              class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
+              class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -257,7 +257,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 >
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Location
                     </p>
@@ -269,7 +269,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   </div>
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Address
                     </p>
@@ -333,7 +333,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -347,7 +347,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -361,7 +361,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -375,7 +375,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -387,7 +387,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -401,7 +401,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Summer Dress"
@@ -469,7 +469,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -483,7 +483,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -497,7 +497,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -511,7 +511,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -523,7 +523,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -558,7 +558,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 1"
@@ -578,7 +578,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 2"
@@ -598,7 +598,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 3"
@@ -618,7 +618,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 4"
@@ -680,7 +680,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -694,7 +694,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -708,7 +708,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -722,7 +722,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -734,7 +734,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -769,7 +769,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Cancelled Item 1"
@@ -789,7 +789,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Cancelled Item 2"
@@ -857,7 +857,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -871,7 +871,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -885,7 +885,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -899,7 +899,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -911,7 +911,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -943,7 +943,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 1"
@@ -963,7 +963,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 2"
@@ -977,7 +977,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 3"
@@ -991,7 +991,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 4"
@@ -1011,7 +1011,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 5"
@@ -1025,7 +1025,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 6"
@@ -1039,7 +1039,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 7"
@@ -1059,7 +1059,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 8"
@@ -1073,7 +1073,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 9"
@@ -1087,7 +1087,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 10"
@@ -1107,7 +1107,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 11"
@@ -1121,7 +1121,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 12"
@@ -1132,7 +1132,7 @@ exports[`OrderList stories snapshot > BodyWithOrders story renders and matches s
                 </div>
               </div>
               <div
-                class="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center"
+                class="w-16 h-16 rounded-none bg-muted border border-border flex items-center justify-center"
               >
                 <span
                   class="text-sm font-medium leading-none text-left text-muted-foreground"
@@ -1237,7 +1237,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1251,7 +1251,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1265,7 +1265,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1279,7 +1279,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1291,7 +1291,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -1305,7 +1305,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Classic Shirt"
@@ -1319,7 +1319,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Dress Pants"
@@ -1337,7 +1337,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
               </div>
             </div>
             <div
-              class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
+              class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -1380,7 +1380,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 >
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Location
                     </p>
@@ -1392,7 +1392,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   </div>
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Address
                     </p>
@@ -1456,7 +1456,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1470,7 +1470,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1484,7 +1484,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1498,7 +1498,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1510,7 +1510,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -1524,7 +1524,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Summer Dress"
@@ -1592,7 +1592,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1606,7 +1606,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1620,7 +1620,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1634,7 +1634,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1646,7 +1646,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -1681,7 +1681,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 1"
@@ -1701,7 +1701,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 2"
@@ -1721,7 +1721,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 3"
@@ -1741,7 +1741,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Item 4"
@@ -1803,7 +1803,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1817,7 +1817,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -1831,7 +1831,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -1845,7 +1845,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -1857,7 +1857,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-critical/20 text-status-critical-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -1892,7 +1892,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Cancelled Item 1"
@@ -1912,7 +1912,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Cancelled Item 2"
@@ -1980,7 +1980,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -1994,7 +1994,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -2008,7 +2008,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -2022,7 +2022,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -2034,7 +2034,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -2066,7 +2066,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 1"
@@ -2086,7 +2086,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 2"
@@ -2100,7 +2100,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 3"
@@ -2114,7 +2114,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 4"
@@ -2134,7 +2134,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 5"
@@ -2148,7 +2148,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 6"
@@ -2162,7 +2162,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 7"
@@ -2182,7 +2182,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 8"
@@ -2196,7 +2196,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 9"
@@ -2210,7 +2210,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 10"
@@ -2230,7 +2230,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 11"
@@ -2244,7 +2244,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 12"
@@ -2255,7 +2255,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
                 </div>
               </div>
               <div
-                class="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center"
+                class="w-16 h-16 rounded-none bg-muted border border-border flex items-center justify-center"
               >
                 <span
                   class="text-sm font-medium leading-none text-left text-muted-foreground"
@@ -2475,7 +2475,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -2489,7 +2489,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -2503,7 +2503,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -2517,7 +2517,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -2529,7 +2529,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -2561,7 +2561,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 1"
@@ -2581,7 +2581,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 2"
@@ -2595,7 +2595,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 3"
@@ -2609,7 +2609,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 4"
@@ -2629,7 +2629,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 5"
@@ -2643,7 +2643,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 6"
@@ -2657,7 +2657,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 7"
@@ -2677,7 +2677,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 8"
@@ -2691,7 +2691,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 9"
@@ -2705,7 +2705,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 10"
@@ -2725,7 +2725,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 11"
@@ -2739,7 +2739,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Product 12"
@@ -2750,7 +2750,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
                 </div>
               </div>
               <div
-                class="w-16 h-16 rounded-lg bg-muted border border-border flex items-center justify-center"
+                class="w-16 h-16 rounded-none bg-muted border border-border flex items-center justify-center"
               >
                 <span
                   class="text-sm font-medium leading-none text-left text-muted-foreground"
@@ -2855,7 +2855,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -2869,7 +2869,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -2883,7 +2883,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -2897,7 +2897,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -2909,7 +2909,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -2923,7 +2923,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Classic Shirt"
@@ -2937,7 +2937,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Dress Pants"
@@ -2955,7 +2955,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
               </div>
             </div>
             <div
-              class="text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm bg-muted border-border p-0"
+              class="text-card-foreground flex flex-col gap-6 border bg-muted border-border p-0 rounded-none shadow-none"
               data-slot="card"
             >
               <div
@@ -2998,7 +2998,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                 >
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Location
                     </p>
@@ -3010,7 +3010,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
                   </div>
                   <div>
                     <p
-                      class="text-muted-foreground text-left text-xs"
+                      class="text-left text-xs font-normal text-muted-foreground"
                     >
                       Address
                     </p>
@@ -3118,7 +3118,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -3132,7 +3132,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -3146,7 +3146,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -3160,7 +3160,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -3172,7 +3172,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-status-positive text-white"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-status-positive text-white"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -3204,7 +3204,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Classic White Shirt - Front View"
@@ -3218,7 +3218,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <img
                     alt="Blue Dress Pants - Side View"
@@ -3324,7 +3324,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order ID
                   </p>
@@ -3338,7 +3338,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Order Date
                   </p>
@@ -3352,7 +3352,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Total
                   </p>
@@ -3366,7 +3366,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                   class="space-y-2"
                 >
                   <p
-                    class="text-muted-foreground text-left text-xs"
+                    class="text-left text-xs font-medium text-muted-foreground"
                   >
                     Items
                   </p>
@@ -3378,7 +3378,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                 </div>
               </div>
               <span
-                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-md w-fit border-transparent bg-info text-info-foreground"
+                class="inline-flex items-center justify-center px-2 text-xs whitespace-nowrap [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden [a&]:hover:bg-primary/90 shrink-0 font-semibold border-0 py-1 rounded-none w-fit border-transparent bg-info text-info-foreground"
                 data-slot="badge"
                 data-testid="order-status-badge"
               >
@@ -3392,7 +3392,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <div
                     class="w-full h-full bg-muted rounded"
@@ -3403,7 +3403,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
                 class="relative"
               >
                 <div
-                  class="w-16 h-16 rounded-lg overflow-hidden bg-muted border border-border"
+                  class="w-16 h-16 rounded-none overflow-hidden bg-muted border border-border"
                 >
                   <div
                     class="w-full h-full bg-muted rounded"

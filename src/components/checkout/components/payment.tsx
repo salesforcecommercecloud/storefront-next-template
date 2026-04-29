@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useForm } from 'react-hook-form';
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,35 +22,30 @@ import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronDown, Check } from 'lucide-react';
-import { useBasket } from '@/providers/basket';
-import { createPaymentSchema, getPaymentDefaultValues, type PaymentData } from '@/lib/checkout-schemas';
-import { getCardTypeDisplay, getLastFourDigits } from '@/lib/payment-utils';
-import { formatAddress, getAddressKey, isOrderBillingAddressIncomplete } from '@/lib/address-utils';
+import { getLastFourDigits } from '@/lib/payment-utils';
+import { formatAddress } from '@/lib/address-utils';
 import { getCardIcon } from '@/lib/card-icon-utils';
-import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import type { CheckoutActionData } from '../types';
-import CheckoutErrorBanner from './checkout-error-banner';
-import { getCheckoutDisplayError } from './checkout-display-error';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import CreditCardOptionIcon from '@/components/icons/credit-card-option-icon';
+import type { PaymentData } from '@/lib/checkout-schemas';
+import { usePayment, isSameBillingAndShippingAddress } from './use-payment';
 
 interface PaymentProps {
     onSubmit: (data: PaymentData) => void;
     isLoading: boolean;
     actionData?: CheckoutActionData;
-    // Step state managed by container
     isCompleted: boolean;
     isEditing: boolean;
     onEdit: () => void;
     disabled?: boolean;
-    showBillingSameAsShipping?: boolean;
+    showUseDifferentBilling?: boolean;
     paymentSubmissionRef?: PaymentSubmissionRef;
+    hidePaymentSaveCheckbox?: boolean;
 }
 
 export default function Payment({
@@ -64,448 +56,52 @@ export default function Payment({
     isEditing,
     onEdit,
     disabled = false,
-    showBillingSameAsShipping = true,
+    showUseDifferentBilling = true,
     paymentSubmissionRef,
+    hidePaymentSaveCheckbox = false,
 }: PaymentProps) {
-    const cart = useBasket();
-    const customerProfile = useCustomerProfile();
-    // 'new' or payment method ID. Use '' so we can detect "not yet initialized" and set preferred saved method once.
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
-    const selectedPaymentMethodRef = useRef(selectedPaymentMethod);
-    const userHasChosenPaymentMethodRef = useRef(false);
-    selectedPaymentMethodRef.current = selectedPaymentMethod;
-
-    /** When false, show only first INITIAL_VISIBLE_COUNT options and "View all (n more)". See Figma NEXT Design System – Login/Checkout. */
-    const [showAllPaymentOptions, setShowAllPaymentOptions] = useState(false);
-    const paymentSectionRef = useRef<HTMLDivElement | null>(null);
-    const shouldScrollToPaymentOnCollapseRef = useRef(false);
-
     const { t } = useTranslation('checkout');
-    const isUpcomingStep = disabled && !isEditing;
 
-    const INITIAL_VISIBLE_COUNT = 3;
-    const paymentFormError = getCheckoutDisplayError(actionData, 'payment');
-
-    // Get customer's saved payment methods
-    const savedPaymentMethods = getPaymentMethodsFromCustomer(customerProfile);
-    const savedAddresses = getAddressBookFromCustomer(customerProfile);
-
-    // Set default payment method only on mount or when savedPaymentMethods change. Use a ref to read
-    // current selection so we don't depend on selectedPaymentMethod and avoid an effect loop.
-    useEffect(() => {
-        if (savedPaymentMethods.length === 0) {
-            setSelectedPaymentMethod('new');
-            return;
-        }
-
-        const validIds = new Set(savedPaymentMethods.map((m) => m.id));
-        const current = selectedPaymentMethodRef.current;
-        const isValidSelection = current === 'new' || validIds.has(current);
-        const shouldReplaceBootstrapNewSelection =
-            current === 'new' && savedPaymentMethods.length > 0 && !userHasChosenPaymentMethodRef.current;
-        if (isValidSelection && current !== '' && !shouldReplaceBootstrapNewSelection) {
-            return; // Preserve user's choice
-        }
-
-        const preferredWithId = savedPaymentMethods.find((method) => method.preferred && method.id);
-        const firstWithId = savedPaymentMethods.find((method) => method.id);
-        setSelectedPaymentMethod(preferredWithId?.id ?? firstWithId?.id ?? 'new');
-    }, [savedPaymentMethods]);
-
-    const shippingAddress = cart?.shipments?.[0]?.shippingAddress;
-    const paymentMethod = cart?.paymentInstruments?.[0];
-    const billingAddress = cart?.billingAddress;
-
-    // Resolved value for RadioGroup so we always pass a valid option (handles '' before effect runs).
-    const paymentRadioValue =
-        selectedPaymentMethod ||
-        (savedPaymentMethods.length > 0
-            ? (savedPaymentMethods.find((m) => m.preferred)?.id ?? savedPaymentMethods[0]?.id ?? 'new')
-            : 'new');
-
-    const selectedSavedMethod =
-        paymentRadioValue !== 'new' ? savedPaymentMethods.find((method) => method.id === paymentRadioValue) : undefined;
-    const hasSummaryPaymentMethod = Boolean(paymentMethod || selectedSavedMethod);
-    const summaryMethodLabel = paymentMethod
-        ? getCardTypeDisplay(paymentMethod)
-        : selectedSavedMethod
-          ? getCardTypeDisplay({
-                paymentCard: { cardType: selectedSavedMethod.cardType },
-            } as ShopperBasketsV2.schemas['OrderPaymentInstrument'])
-          : '';
-    const summaryLastFour =
-        getLastFourDigits(paymentMethod?.paymentCard?.numberLastDigits || paymentMethod?.paymentCard?.maskedNumber) ||
-        getLastFourDigits(selectedSavedMethod?.maskedNumber);
-    const summaryExpiryMonthRaw = paymentMethod?.paymentCard?.expirationMonth ?? selectedSavedMethod?.expirationMonth;
-    const summaryExpiryYearRaw = paymentMethod?.paymentCard?.expirationYear ?? selectedSavedMethod?.expirationYear;
-    const summaryExpiryMonth =
-        summaryExpiryMonthRaw !== undefined && summaryExpiryMonthRaw !== null
-            ? String(summaryExpiryMonthRaw).padStart(2, '0')
-            : '';
-    const summaryExpiryYear =
-        summaryExpiryYearRaw !== undefined && summaryExpiryYearRaw !== null ? String(summaryExpiryYearRaw) : '';
-    const hasSummaryExpiry = Boolean(summaryExpiryMonth && summaryExpiryYear);
-
-    const allPaymentOptionIds = useMemo(() => [...savedPaymentMethods.map((m) => m.id), 'new'], [savedPaymentMethods]);
-    const visiblePaymentOptionIds = useMemo(() => {
-        if (showAllPaymentOptions || allPaymentOptionIds.length <= INITIAL_VISIBLE_COUNT) {
-            return allPaymentOptionIds;
-        }
-        const first = allPaymentOptionIds.slice(0, INITIAL_VISIBLE_COUNT);
-        const current = paymentRadioValue;
-        if (!first.includes(current)) {
-            return [...first, current];
-        }
-        return first;
-    }, [showAllPaymentOptions, allPaymentOptionIds, paymentRadioValue]);
-    const hiddenPaymentCount = allPaymentOptionIds.length - visiblePaymentOptionIds.length;
-    const showViewLessUnderForm =
-        savedPaymentMethods.length > 0 &&
-        allPaymentOptionIds.length > INITIAL_VISIBLE_COUNT &&
-        hiddenPaymentCount === 0;
-    const handleViewLess = () => {
-        setShowAllPaymentOptions(false);
-        shouldScrollToPaymentOnCollapseRef.current = true;
-        const firstVisible = allPaymentOptionIds.slice(0, INITIAL_VISIBLE_COUNT);
-        if (!firstVisible.includes(paymentRadioValue)) {
-            userHasChosenPaymentMethodRef.current = true;
-            setSelectedPaymentMethod(firstVisible[0]);
-        }
-    };
-
-    const handlePaymentMethodSelectionChange = (value: string) => {
-        userHasChosenPaymentMethodRef.current = true;
-        setSelectedPaymentMethod(value);
-    };
-
-    useEffect(() => {
-        if (!showAllPaymentOptions && shouldScrollToPaymentOnCollapseRef.current) {
-            paymentSectionRef.current?.scrollIntoView({ block: 'start' });
-            shouldScrollToPaymentOnCollapseRef.current = false;
-        }
-    }, [showAllPaymentOptions]);
-
-    // Helper function to check if billing address is same as shipping address
-    const isBillingSameAsShipping = (
-        billingAddr:
-            | {
-                  firstName?: string;
-                  lastName?: string;
-                  address1?: string;
-                  city?: string;
-                  stateCode?: string;
-                  postalCode?: string;
-              }
-            | undefined,
-        shippingAddr:
-            | {
-                  firstName?: string;
-                  lastName?: string;
-                  address1?: string;
-                  city?: string;
-                  stateCode?: string;
-                  postalCode?: string;
-              }
-            | undefined
-    ): boolean => {
-        if (!billingAddr || !shippingAddr) return false;
-
-        return (
-            billingAddr.firstName === shippingAddr.firstName &&
-            billingAddr.lastName === shippingAddr.lastName &&
-            billingAddr.address1 === shippingAddr.address1 &&
-            billingAddr.city === shippingAddr.city &&
-            billingAddr.stateCode === shippingAddr.stateCode &&
-            billingAddr.postalCode === shippingAddr.postalCode
-        );
-    };
-
-    const billingAddressOptions = useMemo(
-        () => savedAddresses.filter((addr) => !isBillingSameAsShipping(addr, shippingAddress)),
-        [savedAddresses, shippingAddress]
-    );
-
-    // Memoize default values to prevent infinite re-renders
-    // Only use basket payment instrument holder when user has selected that saved method.
-    const defaultValues = useMemo(() => {
-        const baseDefaults = getPaymentDefaultValues({
-            shippingAddress,
-            paymentMethod:
-                paymentRadioValue !== 'new' && paymentMethod?.paymentCard?.holder
-                    ? { holder: paymentMethod.paymentCard.holder }
-                    : undefined,
-        });
-
-        const isUsingSavedPayment = paymentRadioValue !== 'new' && savedPaymentMethods.length > 0;
-
-        // Default "same as shipping" ON for delivery checkout, but OFF when the basket already has a complete
-        // billing address that differs from shipping — avoids submitting with true and overwriting that address.
-        const basketHasDistinctBilling = Boolean(
-            showBillingSameAsShipping &&
-                billingAddress &&
-                !isOrderBillingAddressIncomplete(billingAddress) &&
-                shippingAddress &&
-                !isBillingSameAsShipping(billingAddress, shippingAddress)
-        );
-        const defaultBillingSameAsShipping = showBillingSameAsShipping ? !basketHasDistinctBilling : false;
-
-        const computedDefaults = {
-            ...baseDefaults,
-            // Do not pre-fill cardholder name; user enters it when adding a new card.
-            cardholderName: '',
-            useSavedPaymentMethod: isUsingSavedPayment,
-            selectedSavedPaymentMethod: isUsingSavedPayment ? paymentRadioValue : undefined,
-            billingSameAsShipping: defaultBillingSameAsShipping,
-            ...(basketHasDistinctBilling && billingAddress
-                ? {
-                      billingFirstName: billingAddress.firstName ?? '',
-                      billingLastName: billingAddress.lastName ?? '',
-                      billingAddress1: billingAddress.address1 ?? '',
-                      billingAddress2: billingAddress.address2 ?? '',
-                      billingCity: billingAddress.city ?? '',
-                      billingStateCode: billingAddress.stateCode ?? '',
-                      billingPostalCode: billingAddress.postalCode ?? '',
-                      billingCountryCode: billingAddress.countryCode ?? 'US',
-                  }
-                : {}),
-            // @sfdc-extension-block-start SFDC_EXT_BOPIS
-            // For BOPIS orders, don't pre-fill billing address or cardholder name from shipping (which is the store address)
-            ...(!showBillingSameAsShipping && {
-                cardholderName: '',
-                billingFirstName: '',
-                billingLastName: '',
-                billingAddress1: '',
-                billingAddress2: '',
-                billingCity: '',
-                billingStateCode: '',
-                billingPostalCode: '',
-                billingCountryCode: 'US',
-            }),
-            // @sfdc-extension-block-end SFDC_EXT_BOPIS
-        };
-
-        return computedDefaults;
-    }, [
+    const {
+        form,
+        customerProfile,
+        savedPaymentMethods,
         paymentRadioValue,
+        handlePaymentMethodSelectionChange,
+        setShowAllPaymentOptions,
+        visiblePaymentOptionIds,
+        allPaymentOptionIds,
+        hiddenPaymentCount,
+        showViewLessUnderForm,
+        handleViewLess,
+        paymentSectionRef,
         shippingAddress,
-        paymentMethod,
-        savedPaymentMethods.length,
-        showBillingSameAsShipping,
         billingAddress,
-    ]);
-
-    const schema = useMemo(() => createPaymentSchema(t), [t]);
-
-    const form = useForm<PaymentData>({
-        resolver: zodResolver(schema),
-        defaultValues,
-        mode: 'onSubmit', // Only validate on submit, not on change/blur
+        billingAddressOptions,
+        selectedBillingAddressId,
+        billingDropdownOpen,
+        setBillingDropdownOpen,
+        handleBillingAddressChange,
+        useDifferentBilling,
+        summaryMethodLabel,
+        summaryLastFour,
+        summaryExpiryMonth,
+        summaryExpiryYear,
+        hasSummaryExpiry,
+        hasSummaryPaymentMethod,
+        isUpcomingStep,
+        handleFormSubmit,
+    } = usePayment({
+        onSubmit,
+        actionData,
+        isEditing,
+        disabled,
+        showUseDifferentBilling,
+        paymentSubmissionRef,
     });
 
-    const shippingAddressSyncKey = useMemo(
-        () => (shippingAddress ? getAddressKey(shippingAddress) : ''),
-        [shippingAddress]
-    );
-    const previousBillingSameAsShippingRef = useRef<boolean | null>(null);
-
-    // Keep billing fields aligned with cart shipping while "same as shipping" is checked (e.g. after OTP / loader prefill).
-    const billingSameAsShippingWatched = form.watch('billingSameAsShipping');
-    useEffect(() => {
-        if (!showBillingSameAsShipping || !shippingAddress || !shippingAddressSyncKey) return;
-
-        const previousValue = previousBillingSameAsShippingRef.current;
-        const toggledFromSameToDifferent = previousValue === true && billingSameAsShippingWatched === false;
-        previousBillingSameAsShippingRef.current = billingSameAsShippingWatched;
-
-        if (billingSameAsShippingWatched) {
-            form.setValue('billingFirstName', shippingAddress.firstName ?? '');
-            form.setValue('billingLastName', shippingAddress.lastName ?? '');
-            form.setValue('billingAddress1', shippingAddress.address1 ?? '');
-            form.setValue('billingAddress2', shippingAddress.address2 ?? '');
-            form.setValue('billingCity', shippingAddress.city ?? '');
-            form.setValue('billingStateCode', shippingAddress.stateCode ?? '');
-            form.setValue('billingPostalCode', shippingAddress.postalCode ?? '');
-            form.setValue('billingCountryCode', shippingAddress.countryCode ?? 'US');
-            return;
-        }
-
-        if (toggledFromSameToDifferent) {
-            form.setValue('billingFirstName', '');
-            form.setValue('billingLastName', '');
-            form.setValue('billingAddress1', '');
-            form.setValue('billingAddress2', '');
-            form.setValue('billingCity', '');
-            form.setValue('billingStateCode', '');
-            form.setValue('billingPostalCode', '');
-            form.setValue('billingCountryCode', 'US');
-        }
-    }, [showBillingSameAsShipping, shippingAddress, shippingAddressSyncKey, billingSameAsShippingWatched, form]);
-
-    // Update form values when selected payment method changes
-    useEffect(() => {
-        const effectiveSelection = selectedPaymentMethod || paymentRadioValue;
-        const isUsingSavedPayment = effectiveSelection !== 'new' && savedPaymentMethods.length > 0;
-
-        form.setValue('useSavedPaymentMethod', isUsingSavedPayment);
-        form.setValue('selectedSavedPaymentMethod', isUsingSavedPayment ? effectiveSelection : undefined);
-
-        if (isUsingSavedPayment) {
-            void form.trigger();
-        }
-    }, [selectedPaymentMethod, paymentRadioValue, savedPaymentMethods.length, form]);
-
-    const handleFormSubmit = (data: PaymentData) => {
-        const effectiveSelection = selectedPaymentMethod || paymentRadioValue;
-        const isUsingSaved = effectiveSelection !== 'new' && savedPaymentMethods.length > 0;
-        const paymentData = {
-            ...data,
-            selectedSavedPaymentMethod: isUsingSaved ? effectiveSelection : undefined,
-            useSavedPaymentMethod: isUsingSaved,
-        };
-
-        onSubmit(paymentData);
-    };
-
-    // Watch billingSameAsShipping for reactive UI updates
-    const billingSameAsShipping = form.watch('billingSameAsShipping');
-
-    const [selectedBillingAddressId, setSelectedBillingAddressId] = useState('');
-    const [billingDropdownOpen, setBillingDropdownOpen] = useState(false);
-
-    const setBillingFields = (values: Record<string, string>) => {
-        for (const [key, value] of Object.entries(values)) {
-            form.setValue(key as keyof PaymentData, value, { shouldDirty: false, shouldValidate: false });
-        }
-    };
-
-    const clearBillingFields = () => {
-        setBillingFields({
-            billingFirstName: '',
-            billingLastName: '',
-            billingAddress1: '',
-            billingAddress2: '',
-            billingCity: '',
-            billingStateCode: '',
-            billingPostalCode: '',
-            billingPhone: '',
-            billingCountryCode: 'US',
-        });
-    };
-
-    const handleBillingAddressChange = (addressId: string) => {
-        setSelectedBillingAddressId(addressId);
-        if (addressId === 'new') {
-            clearBillingFields();
-            return;
-        }
-        const addr = savedAddresses.find((a) => a.id === addressId);
-        if (!addr) return;
-        setBillingFields({
-            billingFirstName: addr.firstName ?? '',
-            billingLastName: addr.lastName ?? '',
-            billingAddress1: addr.address1 ?? '',
-            billingAddress2: addr.address2 ?? '',
-            billingCity: addr.city ?? '',
-            billingStateCode: addr.stateCode ?? '',
-            billingPostalCode: addr.postalCode ?? '',
-            billingPhone: addr.phone ?? '',
-            billingCountryCode: addr.countryCode ?? 'US',
-        });
-    };
-
-    // Watch credit card and billing fields so we can clear inline errors when the user enters values
-    const cardNumber = form.watch('cardNumber');
-    const cardholderName = form.watch('cardholderName');
-    const expiryDate = form.watch('expiryDate');
-    const cvv = form.watch('cvv');
-    const billingFirstName = form.watch('billingFirstName');
-    const billingLastName = form.watch('billingLastName');
-    const billingAddress1 = form.watch('billingAddress1');
-    const billingCity = form.watch('billingCity');
-    const billingPostalCode = form.watch('billingPostalCode');
-    const billingStateCode = form.watch('billingStateCode');
-    const billingCountryCode = form.watch('billingCountryCode');
-    // Clear inline error only for the field that changed (avoids clearing all 11 on every keystroke).
-    useEffect(() => {
-        if ((cardNumber ?? '').trim().length > 0) form.clearErrors('cardNumber');
-    }, [cardNumber, form]);
-    useEffect(() => {
-        if ((cardholderName ?? '').trim().length > 0) form.clearErrors('cardholderName');
-    }, [cardholderName, form]);
-    useEffect(() => {
-        if ((expiryDate ?? '').trim().length > 0) form.clearErrors('expiryDate');
-    }, [expiryDate, form]);
-    useEffect(() => {
-        if ((cvv ?? '').trim().length > 0) form.clearErrors('cvv');
-    }, [cvv, form]);
-    useEffect(() => {
-        if ((billingFirstName ?? '').trim().length > 0) form.clearErrors('billingFirstName');
-    }, [billingFirstName, form]);
-    useEffect(() => {
-        if ((billingLastName ?? '').trim().length > 0) form.clearErrors('billingLastName');
-    }, [billingLastName, form]);
-    useEffect(() => {
-        if ((billingAddress1 ?? '').trim().length > 0) form.clearErrors('billingAddress1');
-    }, [billingAddress1, form]);
-    useEffect(() => {
-        if ((billingCity ?? '').trim().length > 0) form.clearErrors('billingCity');
-    }, [billingCity, form]);
-    useEffect(() => {
-        if ((billingPostalCode ?? '').trim().length > 0) form.clearErrors('billingPostalCode');
-    }, [billingPostalCode, form]);
-    useEffect(() => {
-        if ((billingStateCode ?? '').trim().length > 0) form.clearErrors('billingStateCode');
-    }, [billingStateCode, form]);
-    useEffect(() => {
-        if ((billingCountryCode ?? '').trim().length > 0) form.clearErrors('billingCountryCode');
-    }, [billingCountryCode, form]);
-
-    // Expose current form data to parent (single ref avoids race with place-order flow)
-    const savedPaymentMethodsRef = useRef(savedPaymentMethods);
-    savedPaymentMethodsRef.current = savedPaymentMethods;
-    useEffect(() => {
-        if (!paymentSubmissionRef) return;
-        const refCurrent = paymentSubmissionRef.current;
-        refCurrent.formDataGetter = () => {
-            const current = selectedPaymentMethodRef.current;
-            const methods = savedPaymentMethodsRef.current;
-            const effective =
-                current ||
-                (methods.length > 0 ? (methods.find((m) => m.preferred)?.id ?? methods[0]?.id ?? 'new') : 'new');
-            const isUsingSaved = effective !== 'new' && methods.length > 0;
-            return {
-                ...form.getValues(),
-                selectedSavedPaymentMethod: isUsingSaved ? effective : undefined,
-                useSavedPaymentMethod: isUsingSaved,
-            };
-        };
-        refCurrent.setFormErrors = (errors) => {
-            for (const [field, error] of Object.entries(errors)) {
-                form.setError(field as keyof PaymentData, error);
-            }
-        };
-        return () => {
-            refCurrent.formDataGetter = null;
-            refCurrent.setFormErrors = null;
-        };
-    }, [form, paymentSubmissionRef]);
-
-    // Sync server field errors into the form so they show inline (red border + message below each field)
-    useEffect(() => {
-        if (!actionData?.fieldErrors || typeof actionData.fieldErrors !== 'object') return;
-        for (const [field, error] of Object.entries(actionData.fieldErrors)) {
-            const message = Array.isArray(error) ? error[0] : String(error);
-            if (message) form.setError(field as keyof PaymentData, { type: 'server', message });
-        }
-    }, [actionData?.fieldErrors, form]);
-
-    // For single page layout, always show the component but in collapsed state when not editing
-    // The ToggleCard will handle the collapsed/expanded state based on editing prop
-
     const stepTitle = (
-        <span className="text-2xl font-bold leading-8 tracking-[-0.6px] text-card-foreground">
-            {t('payment.title')}
-        </span>
+        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('payment.title')}</span>
     );
 
     return (
@@ -523,13 +119,9 @@ export default function Payment({
                 <ToggleCardEdit>
                     <Form {...form}>
                         <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
-                            {paymentFormError && <CheckoutErrorBanner message={paymentFormError} />}
-
-                            {/* Payment Method Section */}
                             <div className="space-y-4">
-                                <UITarget targetId="checkout.payment.paymentMethods.before" />
-                                <UITarget targetId="checkout.payment.paymentMethods">
-                                    {/* Saved Payment Methods + Credit Card, with View All (n more) when > 3 options */}
+                                <UITarget targetId="sfcc.checkout.payment.paymentMethods.before" />
+                                <UITarget targetId="sfcc.checkout.payment.paymentMethods">
                                     {savedPaymentMethods.length > 0 && (
                                         <div className="space-y-4">
                                             <RadioGroup
@@ -619,7 +211,7 @@ export default function Payment({
                                                     {t('payment.viewAllMore', { count: hiddenPaymentCount })}
                                                 </Button>
                                             ) : (
-                                                allPaymentOptionIds.length > INITIAL_VISIBLE_COUNT &&
+                                                allPaymentOptionIds.length > 3 &&
                                                 paymentRadioValue !== 'new' && (
                                                     <Button
                                                         type="button"
@@ -635,7 +227,6 @@ export default function Payment({
                                         </div>
                                     )}
 
-                                    {/* Credit Card option (when no saved methods) or form when "new" selected */}
                                     {(savedPaymentMethods.length === 0 || paymentRadioValue === 'new') && (
                                         <div className="space-y-2">
                                             <div className="border border-input bg-card p-4 space-y-4">
@@ -645,8 +236,7 @@ export default function Payment({
                                                             value="new"
                                                             className="flex items-center gap-2 flex-1"
                                                             onValueChange={() => {
-                                                                userHasChosenPaymentMethodRef.current = true;
-                                                                setSelectedPaymentMethod('new');
+                                                                handlePaymentMethodSelectionChange('new');
                                                             }}>
                                                             <RadioGroupItem
                                                                 value="new"
@@ -669,7 +259,7 @@ export default function Payment({
                                                     form={form}
                                                     autoFocus={isEditing && paymentRadioValue === 'new'}
                                                 />
-                                                {customerProfile?.customer?.customerId ? (
+                                                {customerProfile?.customer?.customerId && !hidePaymentSaveCheckbox ? (
                                                     <FormField
                                                         control={form.control}
                                                         name="savePaymentToProfile"
@@ -716,17 +306,16 @@ export default function Payment({
                                         </div>
                                     )}
                                 </UITarget>
-                                <UITarget targetId="checkout.payment.paymentMethods.after" />
+                                <UITarget targetId="sfcc.checkout.payment.paymentMethods.after" />
                             </div>
-                            {/* Billing Address Section */}
                             <div className="space-y-4">
-                                <UITarget targetId="checkout.payment.billingAddress.before" />
-                                <UITarget targetId="checkout.payment.billingAddress">
+                                <UITarget targetId="sfcc.checkout.payment.billingAddress.before" />
+                                <UITarget targetId="sfcc.checkout.payment.billingAddress">
                                     <div className="border-t border-input pt-4 space-y-4">
-                                        {showBillingSameAsShipping && (
+                                        {showUseDifferentBilling && (
                                             <FormField
                                                 control={form.control}
-                                                name="billingSameAsShipping"
+                                                name="useDifferentBilling"
                                                 render={({ field }) => (
                                                     <FormItem className="space-y-0">
                                                         <label
@@ -735,15 +324,15 @@ export default function Payment({
                                                             <FormControl>
                                                                 <Checkbox
                                                                     id={field.name}
-                                                                    checked={!field.value}
+                                                                    checked={Boolean(field.value)}
                                                                     onCheckedChange={(checked) => {
-                                                                        field.onChange(checked !== true);
+                                                                        field.onChange(checked === true);
                                                                     }}
-                                                                    aria-label={t('payment.billingSameAsShipping')}
+                                                                    aria-label={t('payment.useDifferentBilling')}
                                                                 />
                                                             </FormControl>
                                                             <span className="text-sm font-normal leading-none text-foreground pt-0.5">
-                                                                {t('payment.billingSameAsShipping')}
+                                                                {t('payment.useDifferentBilling')}
                                                             </span>
                                                         </label>
                                                     </FormItem>
@@ -751,7 +340,7 @@ export default function Payment({
                                             />
                                         )}
 
-                                        {!billingSameAsShipping && (
+                                        {useDifferentBilling && (
                                             <div className="space-y-4">
                                                 {billingAddressOptions.length > 0 && (
                                                     <Popover
@@ -830,7 +419,7 @@ export default function Payment({
                                                 )}
                                                 {(selectedBillingAddressId === 'new' ||
                                                     billingAddressOptions.length === 0) && (
-                                                    <div className="bg-muted p-4">
+                                                    <div>
                                                         <AddressFormFields
                                                             form={form}
                                                             fieldPrefix="billing"
@@ -846,7 +435,7 @@ export default function Payment({
                                         )}
                                     </div>
                                 </UITarget>
-                                <UITarget targetId="checkout.payment.billingAddress.after" />
+                                <UITarget targetId="sfcc.checkout.payment.billingAddress.after" />
                             </div>
                         </form>
                     </Form>
@@ -867,9 +456,9 @@ export default function Payment({
                                             {`Expires ${summaryExpiryMonth}/${summaryExpiryYear}`}
                                         </p>
                                     )}
-                                    {billingSameAsShipping ||
+                                    {!useDifferentBilling ||
                                     !billingAddress ||
-                                    isBillingSameAsShipping(billingAddress, shippingAddress) ? (
+                                    isSameBillingAndShippingAddress(billingAddress, shippingAddress) ? (
                                         <p className="text-sm font-normal leading-5 text-foreground">
                                             {`Billing: ${t('payment.sameAsShippingAddress')}`}
                                         </p>

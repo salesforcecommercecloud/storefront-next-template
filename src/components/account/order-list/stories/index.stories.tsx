@@ -20,7 +20,10 @@ import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { OrderList, OrderListHeader, OrderListBody, type Order } from '../index';
 import heroNewArrivals from '/images/hero-02.webp';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { mockConfig, mockLocale } from '@/test-utils/config';
+
+const mockSite = mockConfig.commerce.sites[0];
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -168,9 +171,9 @@ const meta: Meta<typeof OrderList> = {
     decorators: [
         (Story) => (
             <ActionLogger>
-                <CurrencyWrapper currency="GBP">
+                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                     <Story />
-                </CurrencyWrapper>
+                </SiteProvider>
             </ActionLogger>
         ),
     ],
@@ -226,7 +229,7 @@ export const EmptyState: Story = {
         // Check Continue Shopping button is displayed
         const continueShoppingLink = canvas.getByRole('link', { name: 'Continue Shopping' });
         await expect(continueShoppingLink).toBeInTheDocument();
-        await expect(continueShoppingLink).toHaveAttribute('href', '/');
+        await expect(continueShoppingLink).toHaveAttribute('href', '/RefArchGlobal/en-GB/');
 
         // Check no View Order Details links exist
         const viewDetailsLinks = canvas.queryAllByText('View Order Details');

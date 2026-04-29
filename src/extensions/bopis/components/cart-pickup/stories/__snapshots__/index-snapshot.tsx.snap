@@ -17,7 +17,7 @@ exports[`CartPickup stories snapshot > Default story renders and matches snapsho
         >
           <svg
             aria-hidden="true"
-            class="lucide lucide-store size-4"
+            class="lucide lucide-store size-4 shrink-0"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -38,8 +38,8 @@ exports[`CartPickup stories snapshot > Default story renders and matches snapsho
               d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
             />
           </svg>
-          <div
-            class="text-lg text-left font-normal"
+          <h2
+            class="text-lg tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span
@@ -47,7 +47,8 @@ exports[`CartPickup stories snapshot > Default story renders and matches snapsho
             >
               Downtown Store
             </span>
-          </div>
+             - 1 out of 3 items
+          </h2>
         </div>
         <div
           class="ml-7"
@@ -94,7 +95,7 @@ exports[`CartPickup stories snapshot > DesktopLayout story renders and matches s
         >
           <svg
             aria-hidden="true"
-            class="lucide lucide-store size-4"
+            class="lucide lucide-store size-4 shrink-0"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -115,8 +116,8 @@ exports[`CartPickup stories snapshot > DesktopLayout story renders and matches s
               d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
             />
           </svg>
-          <div
-            class="text-lg text-left font-normal"
+          <h2
+            class="text-lg tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span
@@ -124,7 +125,8 @@ exports[`CartPickup stories snapshot > DesktopLayout story renders and matches s
             >
               Downtown Store
             </span>
-          </div>
+             - 1 out of 3 items
+          </h2>
         </div>
         <div
           class="ml-7"
@@ -171,7 +173,7 @@ exports[`CartPickup stories snapshot > LongStoreName story renders and matches s
         >
           <svg
             aria-hidden="true"
-            class="lucide lucide-store size-4"
+            class="lucide lucide-store size-4 shrink-0"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -192,8 +194,8 @@ exports[`CartPickup stories snapshot > LongStoreName story renders and matches s
               d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
             />
           </svg>
-          <div
-            class="text-lg text-left font-normal"
+          <h2
+            class="text-lg tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span
@@ -201,7 +203,8 @@ exports[`CartPickup stories snapshot > LongStoreName story renders and matches s
             >
               Downtown San Francisco Flagship Store
             </span>
-          </div>
+             - 1 out of 3 items
+          </h2>
         </div>
         <div
           class="ml-7"
@@ -248,7 +251,7 @@ exports[`CartPickup stories snapshot > MobileLayout story renders and matches sn
         >
           <svg
             aria-hidden="true"
-            class="lucide lucide-store size-4"
+            class="lucide lucide-store size-4 shrink-0"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -269,8 +272,8 @@ exports[`CartPickup stories snapshot > MobileLayout story renders and matches sn
               d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"
             />
           </svg>
-          <div
-            class="text-lg text-left font-normal"
+          <h2
+            class="text-lg tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span
@@ -278,7 +281,8 @@ exports[`CartPickup stories snapshot > MobileLayout story renders and matches sn
             >
               Downtown Store
             </span>
-          </div>
+             - 1 out of 3 items
+          </h2>
         </div>
         <div
           class="ml-7"

@@ -653,58 +653,6 @@ export const CompletedState: Story = {
     },
 };
 
-export const WithFormError: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-shipping-address')();
-        },
-        onEdit: () => {
-            action('edit-shipping-address')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: {
-            step: 'shippingAddress',
-            formError: 'Failed to save shipping address. Please try again.',
-        },
-        enableMultiAddress: false,
-        handleToggleShippingAddressMode: () => {
-            action('toggle-shipping-address-mode')();
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form with a form-level error message displayed above the input fields.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test WithFormError story: Verify form shows error state appropriately
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Standard 7 textboxes even with error (stateCode is combobox)
-        void expect(inputs.length).toBe(6);
-        void expect(buttons.length).toBeGreaterThan(0);
-
-        // Test that form labels are still present
-        void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
-
-        // Verify inputs remain functional despite error state
-        const firstNameInput = canvas.getByLabelText(/First Name/i);
-        void expect(firstNameInput).toBeInTheDocument();
-        void expect(firstNameInput).not.toBeDisabled();
-
-        // Test error handling doesn't break component structure
-        void expect(canvasElement).toBeInTheDocument();
-    },
-};
-
 export const WithValidationErrors: Story = {
     args: {
         onSubmit: () => {
@@ -741,25 +689,20 @@ export const WithValidationErrors: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test WithValidationErrors story: Verify validation error handling
         const inputs = canvas.queryAllByRole('textbox');
         const buttons = canvas.queryAllByRole('button');
 
-        // All 7 textbox fields even with validation errors (stateCode is combobox)
         void expect(inputs.length).toBe(6);
         void expect(buttons.length).toBeGreaterThan(0);
 
-        // Test that required form labels are present
         void expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
         void expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
         void expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
         void expect(canvas.getByLabelText(/City/i)).toBeInTheDocument();
 
-        // Verify inputs remain accessible for error correction
         const firstNameInput = canvas.getByLabelText(/First Name/i);
         void expect(firstNameInput).toBeInTheDocument();
 
-        // Test validation error state doesn't break component
         void expect(canvasElement).toBeInTheDocument();
     },
 };

@@ -5,7 +5,7 @@ exports[`Contact stories snapshot > Default story renders and matches snapshot 1
   class="bg-background px-6 py-10"
 >
   <div
-    class="text-card-foreground flex flex-col max-w-screen-2xl rounded-xl border-0 bg-background px-0 py-6 shadow-none sm:flex-row gap-12"
+    class="text-card-foreground flex flex-col max-w-screen-2xl border-0 bg-background px-0 py-6 sm:flex-row gap-12 rounded-none shadow-none"
     data-slot="card"
   >
     <div
@@ -184,7 +184,7 @@ exports[`Contact stories snapshot > FormValidationAndSubmission story renders an
     tabindex="-1"
   />
   <div
-    class="text-card-foreground flex flex-col max-w-screen-2xl rounded-xl border-0 bg-background px-0 py-6 shadow-none sm:flex-row gap-12"
+    class="text-card-foreground flex flex-col max-w-screen-2xl border-0 bg-background px-0 py-6 sm:flex-row gap-12 rounded-none shadow-none"
     data-slot="card"
   >
     <div

@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { useState, useRef, useEffect, useCallback, type ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -180,7 +177,7 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                                             lightboxTriggerRef.current = e.currentTarget;
                                             setLightboxPhoto({ src: photoSrc, alt: imageAlt });
                                         }}
-                                        className="block size-20 shrink-0 overflow-hidden rounded-md border border-border bg-muted cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                                        className="block size-20 shrink-0 overflow-hidden rounded-none border border-border bg-muted cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                                         <img
                                             src={photoSrc}
                                             alt={imageAlt}

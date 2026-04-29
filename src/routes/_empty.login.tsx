@@ -13,14 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement } from 'react';
-import {
-    redirect,
-    useActionData,
-    type LoaderFunctionArgs,
-    type ActionFunctionArgs,
-    // type ClientActionFunctionArgs,
-} from 'react-router';
+import { type ReactElement, useState, useCallback, useMemo, useRef } from 'react';
+import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 import { SeoMeta } from '@/components/seo-meta';
@@ -31,10 +25,13 @@ import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
 import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
-import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketResource } from '@/middlewares/basket.server';
+import { buildUrlFromContext } from '@/lib/url.server';
+import { TurnstileWidget } from '@/components/security/turnstile-widget';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
 
 // services
 import {
@@ -43,17 +40,16 @@ import {
     getPasswordLessAccessToken,
     updateAuth as updateAuthServer,
 } from '@/middlewares/auth.server';
-import { loginRegisteredUser } from '@/lib/api/auth/standard-login';
-import { authorizeIDP } from '@/lib/api/auth/social-login';
-import { mergeBasket } from '@/lib/api/basket';
+import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
+import { authorizeIDP } from '@/lib/api/auth/social-login.server';
+import { mergeBasket } from '@/lib/api/basket.server';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
 import { getLogger } from '@/lib/logger.server';
+import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
 
 type LoginActionResponse = {
     success: boolean;
     error?: string;
-    redirectUrl?: string;
-    auth?: ReturnType<typeof getAuth>;
     showOTPForm?: boolean;
     email?: string;
 };
@@ -73,7 +69,6 @@ type LoginLoaderData = {
     pageUrl: string;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ request, context }: LoaderFunctionArgs) {
     const logger = getLogger(context);
     const session = getAuth(context);
@@ -173,12 +168,16 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 }
 
 /**
- * This server action is required for authentication, because login must be handled server-side for security reasons,
- * and proper integration with session management and Salesforce Commerce Cloud's authentication system. It operates
- * together with the client action to ensure a smooth login process.
+ * Server action for authentication. Login is handled server-side for security (httpOnly cookies,
+ * PKCE code verifier storage) and integration with SLAS.
+ *
+ * Returns `LoginActionResponse | Response` because the action has two distinct outcomes:
+ * - `Response` (redirect) — successful login or social IDP authorization. React Router intercepts
+ *   the redirect before it reaches the component, so `useActionData()` never sees it.
+ * - `LoginActionResponse` — errors or intermediate states (e.g., OTP form). This data is
+ *   serialized and delivered to the component via `useActionData()` for rendering.
  */
-// eslint-disable-next-line react-refresh/only-export-components
-export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse | Response> {
     const logger = getLogger(context);
     const config = getConfig<AppConfig>(context);
     const { t } = getTranslation(context);
@@ -202,7 +201,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             const socialCallback = config.features.socialLogin.callbackUri;
             const socialLoginRedirectURI = isAbsoluteURL(socialCallback)
                 ? socialCallback
-                : `${getAppOrigin()}${socialCallback}`;
+                : `${getAppOrigin()}${buildUrlFromContext(socialCallback, context)}`;
             const finalRedirectURI = redirectPath
                 ? `${socialLoginRedirectURI}?redirectUrl=${redirectPath}`
                 : socialLoginRedirectURI;
@@ -212,7 +211,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             });
             if (result.success && result.redirectUrl) {
                 logger.info('Login: social redirect initiated', { provider });
-                return { success: true, redirectUrl: result.redirectUrl };
+                return redirect(result.redirectUrl);
             }
             logger.warn('Login: social authorization failed', { provider });
             return { success: false, error: genericError };
@@ -220,6 +219,19 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             // Passwordless login flow
             if (!email) {
                 return { success: false, error: genericError };
+            }
+
+            const turnstileToken = formData.get('turnstileToken')?.toString();
+            const allowed = await enforceTurnstile({
+                request,
+                config,
+                turnstileToken,
+                logger,
+                actionName: 'login-passwordless',
+                email,
+            });
+            if (!allowed) {
+                return { success: false, error: t('errors:api.forbidden') };
             }
 
             // Build redirectPath from returnUrl, action, and actionParams for passwordless flow
@@ -258,7 +270,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 if (actionParams) {
                     params.set('actionParams', actionParams);
                 }
-                return { success: true, redirectUrl: `/login?${params.toString()}`, showOTPForm: true, email };
+                return { success: true, showOTPForm: true, email };
             } catch (error) {
                 const errorMessage = extractErrorMessage(error);
                 const errorKey = getPasswordlessErrorMessageKey(errorMessage);
@@ -302,9 +314,8 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             const pendingAction = actionFromForm || actionFromUrl;
             const actionParams = actionParamsFromForm || actionParamsFromUrl;
 
-            // Build final redirect URL with returnUrl and preserved action params
+            // Redirect to returnUrl (with preserved action params) or home
             if (returnUrl) {
-                // If we have action/actionParams, append them to returnUrl
                 if (pendingAction || actionParams) {
                     const returnUrlObj = new URL(returnUrl, getAppOrigin());
                     if (pendingAction) {
@@ -313,18 +324,12 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                     if (actionParams) {
                         returnUrlObj.searchParams.set('actionParams', actionParams);
                     }
-                    // Return relative path with query params
-                    return {
-                        success: true,
-                        redirectUrl: returnUrlObj.pathname + returnUrlObj.search,
-                        auth: getAuth(context),
-                    };
+                    return redirect(returnUrlObj.pathname + returnUrlObj.search);
                 }
-                return { success: true, redirectUrl: returnUrl, auth: getAuth(context) };
+                return redirect(returnUrl);
             }
 
-            // No returnUrl - redirect to home
-            return { success: true, redirectUrl: '/', auth: getAuth(context) };
+            return redirect('/');
         }
     } catch {
         return { success: false, error: genericError };
@@ -334,6 +339,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 export default function Login({ loaderData }: { loaderData: LoginLoaderData }): ReactElement {
     const { t } = useTranslation('login');
     const actionData = useActionData<typeof action>();
+    const config = useConfig<AppConfig>();
 
     const {
         error: loaderError,
@@ -350,6 +356,30 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         pageUrl,
     } = loaderData;
 
+    // Turnstile for OTP resend — the PasswordlessLoginForm has its own widget for the
+    // initial submit, but once the OTP modal opens the resend needs a fresh token.
+    const [resendTurnstileToken, setResendTurnstileToken] = useState<string | null>(null);
+    const resendTurnstileResetRef = useRef<(() => void) | null>(null);
+    const turnstileEnabled = config ? isTurnstileEnabled(config) : false;
+    const turnstileSiteKey = useMemo(() => {
+        if (!config || !turnstileEnabled) return null;
+        if (typeof window !== 'undefined') {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            return getTurnstileSiteKey(config, baseUrl);
+        }
+        return null;
+    }, [config, turnstileEnabled]);
+
+    const handleResendTurnstileSuccess = useCallback((token: string) => {
+        setResendTurnstileToken(token);
+    }, []);
+    const handleResendTurnstileError = useCallback(() => {
+        setResendTurnstileToken(null);
+    }, []);
+    const handleResendTurnstileExpire = useCallback(() => {
+        setResendTurnstileToken(null);
+    }, []);
+
     // Prefer actionData error (from form submission) over loaderData error (from URL params)
     const error = actionData?.error || loaderError || undefined;
 
@@ -361,9 +391,9 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     // Show passwordless success state
     if (passwordlessSent && email) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         <div className="text-center space-y-4">
                             <h2 className="text-2xl font-semibold">{t('checkEmailTitle')}</h2>
                             <p className="text-sm text-muted-foreground">{t('checkEmailDescription', { email })}</p>
@@ -410,19 +440,31 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                 })}
                 openGraph={{ type: 'website', url: pageUrl }}
             />
-            <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen flex items-center justify-center bg-background py-12 section-container">
                 <div className="max-w-md w-full space-y-8">
                     <div>
                         <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
 
-                    <Card className="p-8">
+                    <Card className="p-8 rounded-none shadow-none">
                         {renderForm()}
                         {isSocialLoginEnabled ? <SocialLoginButtons /> : null}
                     </Card>
                 </div>
             </div>
+
+            {/* Turnstile widget for OTP resend — hidden, generates tokens for the resend fetch */}
+            {showOTPModal && turnstileEnabled && turnstileSiteKey && (
+                <TurnstileWidget
+                    siteKey={turnstileSiteKey}
+                    onSuccess={handleResendTurnstileSuccess}
+                    onError={handleResendTurnstileError}
+                    onExpire={handleResendTurnstileExpire}
+                    enabled={turnstileEnabled}
+                    resetRef={resendTurnstileResetRef}
+                />
+            )}
 
             {/* OTP Modal - appears over the login page */}
             <OtpModal
@@ -452,10 +494,18 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                     if (returnUrl) {
                         formData.append('redirectPath', returnUrl);
                     }
+                    if (resendTurnstileToken) {
+                        formData.append('turnstileToken', resendTurnstileToken);
+                    }
                     await fetch(window.location.pathname, {
                         method: 'POST',
                         body: formData,
                     });
+                    // Token is single-use — reset for the next resend
+                    if (turnstileEnabled) {
+                        setResendTurnstileToken(null);
+                        resendTurnstileResetRef.current?.();
+                    }
                 }}
             />
         </>

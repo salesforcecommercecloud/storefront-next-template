@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { Link } from '@/components/link';
 import SuggestionsList from './suggestions-list';
 import SuggestionsGrid from './suggestions-grid';
@@ -49,7 +47,7 @@ const DidYouMean = ({ suggestion, searchPhrase, onLinkClick }: DidYouMeanProps) 
 
     return (
         <div className="mb-2">
-            <p className="text-base text-header-foreground pl-12">
+            <p className="text-base text-header-foreground">
                 {t('suggestions.didYouMean')}{' '}
                 <Link
                     to={suggestion.link}
@@ -102,7 +100,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
     };
 
     return (
-        <div className="p-6 space-y-0">
+        <div className="section-container py-6 space-y-0">
             {/* Mobile - Vertical alignment */}
             <div className="block md:hidden">
                 {showDidYouMean && firstPhraseSuggestion && (
@@ -115,7 +113,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                 {hasCategories && (
                     <div className="mb-2">
-                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
+                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
                             {t('suggestions.categories')}
                         </div>
                         <SuggestionsList
@@ -128,7 +126,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                 {hasProducts && (
                     <div className="mb-2">
-                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
+                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
                             {t('suggestions.products')}
                         </div>
                         <SuggestionsList
@@ -141,7 +139,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                 {hasPopularSearches && (
                     <div className="mb-2">
-                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
+                        <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
                             {t('suggestions.popularSearches')}
                         </div>
                         <SuggestionsList
@@ -166,7 +164,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                     {hasCategories && (
                         <div className="mb-2">
-                            <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
+                            <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
                                 {t('suggestions.categories')}
                             </div>
                             <SuggestionsList
@@ -179,7 +177,7 @@ export default function SuggestionSection({ searchSuggestions, closeAndNavigate 
 
                     {hasPopularSearches && (
                         <div className="mb-2">
-                            <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2 pl-12">
+                            <div className="text-sm font-semibold text-muted-foreground tracking-wide mb-2">
                                 {t('suggestions.popularSearches')}
                             </div>
                             <SuggestionsList

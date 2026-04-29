@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement } from 'react';
 import { formatCurrency } from '@/lib/currency';
 import { Typography } from '@/components/typography';
@@ -159,7 +157,7 @@ export function PaymentScheduleModalContent({
             )}
 
             {disclaimer != null && disclaimer !== '' && (
-                <div className="rounded-lg bg-muted p-4">
+                <div className="rounded-none bg-muted p-4">
                     <Typography variant="muted" className="text-xs leading-relaxed">
                         {disclaimer}
                     </Typography>

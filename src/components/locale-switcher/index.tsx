@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use client';
-
 import { type ReactElement, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFetcher, useLocation } from 'react-router';
@@ -30,14 +28,12 @@ export default function LocaleSwitcher(): ReactElement {
     const { t, i18n } = useTranslation('localeSwitcher');
     const fetcher = useFetcher();
     const config = useConfig<AppConfig>();
-    const site = useSite();
+    const { site } = useSite();
 
     // Show only languages the app has translations for AND the current site supports.
     // This ensures each site's locale-switcher only shows relevant options.
-    const siteLocaleIds = site ? new Set(site.supportedLocales.map((l) => l.id)) : null;
-    const supportedLngs = siteLocaleIds
-        ? config.i18n.supportedLngs.filter((lng) => siteLocaleIds.has(lng))
-        : config.i18n.supportedLngs;
+    const siteLocaleIds = new Set(site.supportedLocales.map((l) => l.id));
+    const supportedLngs = config.i18n.supportedLngs.filter((lng) => siteLocaleIds.has(lng));
 
     const location = useLocation();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
@@ -60,8 +56,8 @@ export default function LocaleSwitcher(): ReactElement {
         });
 
         const formData = new FormData();
-        formData.append('locale', newLocale);
-        formData.append('pathname', pathname);
+        formData.append('type', 'locale');
+        formData.append('payload', JSON.stringify({ locale: newLocale, pathname }));
 
         // Update i18next client-side so the selector reflects the new value immediately
         await i18n.changeLanguage(newLocale);
@@ -71,7 +67,7 @@ export default function LocaleSwitcher(): ReactElement {
         // with the new locale.
         await fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-locale',
+            action: '/action/set-site-context',
         });
         window.location.href = pathname;
     };

@@ -18,11 +18,13 @@ import ChildProducts from '../child-products';
 import { setProduct } from '../../__mocks__/set-product';
 import { bundleProd } from '../../__mocks__/bundle-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockLocale } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ProductViewProvider from '@/providers/product-view';
-import { CurrencyWrapper } from '@/test-utils/context-provider';
+import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+
+const mockSite = mockConfig.commerce.sites[0];
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 
@@ -87,13 +89,13 @@ const meta: Meta<typeof ChildProducts> = {
 
             return (
                 <ConfigProvider config={mockConfig}>
-                    <CurrencyWrapper currency="GBP">
+                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
                         <ProductViewProvider product={context.args.parentProduct as any} mode="add">
                             <ActionLogger>
                                 <Story />
                             </ActionLogger>
                         </ProductViewProvider>
-                    </CurrencyWrapper>
+                    </SiteProvider>
                 </ConfigProvider>
             );
         },

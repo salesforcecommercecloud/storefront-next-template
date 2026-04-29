@@ -25,9 +25,9 @@ import {
     getDecoratedVariationAttributes,
     type DecoratedVariationAttributeValue,
 } from '@/lib/product-utils';
-import { getProductBrand, getProductShortDescription, getProductRating } from '@/lib/product-utils-plp';
+import { getProductRating } from '@/lib/product-utils-plp';
 import { useProductTileContext } from './context';
-import { WishlistButton } from '@/components/buttons/wishlist-button';
+import { DeferredWishlistButton } from './deferred-wishlist-button';
 import { PickupIcon } from '@/components/icons';
 import { QuickAddButton } from './quick-add-button';
 import { ProductTileSwatchesSkeleton } from '@/components/category-skeleton';
@@ -38,7 +38,9 @@ import type { ComponentType } from '@/components/region';
 import { ProductImageContainer } from '@/components/product-image';
 import ProductPrice from '@/components/product-price';
 import { StarRating } from '@/components/product-ratings/star-rating';
+import { UITarget } from '@/targets/ui-target';
 import { Card } from '@/components/ui/card';
+import { loader as loaders } from './loaders';
 
 const LazySwatches = lazy(() => import('./swatches').then((m) => ({ default: m.ProductTileSwatches })));
 
@@ -49,9 +51,18 @@ const PRODUCT_TILE_MAX_SWATCHES = 3;
 @Component('productTile', {
     name: 'Product Tile',
     description: 'Configurable product tile with customizable styling for images, typography, and hover effects',
+    group: 'Content',
 })
 @RegionDefinition([])
 export class ProductTileMetadata {
+    @AttributeDefinition({
+        id: 'productId',
+        name: 'Product',
+        description: 'Select a product to render in this tile.',
+        type: 'product',
+    })
+    productId?: string;
+
     @AttributeDefinition({
         id: 'objectFit',
         name: 'Image Object Fit',
@@ -67,7 +78,7 @@ export class ProductTileMetadata {
         name: 'Border Radius',
         description: 'Corner roundness of the tile card',
         type: 'enum',
-        values: ['none', 'sm', 'md', 'lg', 'xl', '2xl'],
+        values: ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', 'full'],
         defaultValue: 'xl',
     })
     borderRadius?: string;
@@ -158,15 +169,19 @@ const getPageDesignerStyleClasses = ({
     }
 
     if (borderRadius) {
-        const radiusMap = {
+        const radiusMap: Record<string, string> = {
             none: '!rounded-none',
+            xs: '!rounded-xs',
             sm: '!rounded-sm',
             md: '!rounded-md',
             lg: '!rounded-lg',
             xl: '!rounded-xl',
             '2xl': '!rounded-2xl',
+            '3xl': '!rounded-3xl',
+            '4xl': '!rounded-4xl',
+            full: '!rounded-full',
         };
-        classes.push(radiusMap[borderRadius]);
+        classes.push(radiusMap[borderRadius] || '!rounded-none');
     }
 
     if (boxShadow === 'none') {
@@ -224,7 +239,8 @@ const getPageDesignerStyleClasses = ({
 };
 
 export interface ProductTileProps extends ComponentProps<'div'> {
-    product: ShopperSearch.schemas['ProductSearchHit'];
+    product?: ShopperSearch.schemas['ProductSearchHit'];
+    productId?: string;
     maxSwatches?: number;
     handleProductClick?: (product: ShopperSearch.schemas['ProductSearchHit']) => void;
     /** For variant products, filter swatches to only show this variant's color value */
@@ -242,7 +258,7 @@ export interface ProductTileProps extends ComponentProps<'div'> {
 
     // Page Designer styling props
     objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
-    borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    borderRadius?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full';
     boxShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     padding?: '0' | '2' | '4' | '6' | '8';
     margin?: '0' | '2' | '4' | '6' | '8';
@@ -262,7 +278,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
     (
         {
             className,
-            product,
+            product: productProp,
+            productId: _productId,
             maxSwatches = PRODUCT_TILE_MAX_SWATCHES,
             selectedVariantColorValue,
             handleProductClick,
@@ -285,16 +302,23 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             component: _component,
             componentData: _componentData,
             designMetadata: _designMetadata,
-            data: _data,
+            data,
             ...props
         },
         ref
     ) => {
+        // Prioritize loader data (Page Designer) over prop (programmatic use)
+        const product = (data as ShopperSearch.schemas['ProductSearchHit'] | undefined) || productProp;
+
         const { config, t, currency, getBadges, swatchMode } = useProductTileContext();
-        const { hasBadges, badges } = useMemo(() => getBadges(product), [getBadges, product]);
-        const brand = useMemo(() => getProductBrand(product), [product]);
-        const description = useMemo(() => getProductShortDescription(product), [product]);
-        const ratingData = useMemo(() => getProductRating(product), [product]);
+
+        const productData = useMemo(() => {
+            if (!product) return null;
+            return {
+                badges: getBadges(product),
+                rating: getProductRating(product),
+            };
+        }, [product, getBadges]);
 
         const effectiveImgAspectRatio = imgAspectRatio ?? config.global.productListing.defaultProductTileImgAspectRatio;
 
@@ -319,7 +343,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             }
         }, [selectedVariantColorValue]);
 
-        const variationAttributes = useMemo(() => getDecoratedVariationAttributes(product), [product]);
+        const variationAttributes = useMemo(() => (product ? getDecoratedVariationAttributes(product) : []), [product]);
         const colorAttributes = variationAttributes.filter(({ id }) => PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === id);
         const colorValues = (colorAttributes[0]?.values?.slice(0, maxSwatches) ??
             []) as DecoratedVariationAttributeValue[];
@@ -332,9 +356,12 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             },
             [swatchMode]
         );
+        const handleClick = useCallback(() => {
+            product && handleProductClick?.(product);
+        }, [handleProductClick, product]);
 
-        const productUrl = createProductUrl(product.productId);
-        const productName = product.productName ?? '';
+        const productUrl = createProductUrl(product?.productId ?? '');
+        const productName = product?.productName ?? '';
 
         const pageDesignerStyles = getPageDesignerStyleClasses({
             objectFit,
@@ -347,11 +374,26 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             hoverEffect,
         });
 
+        if (!product) {
+            return (
+                <Card
+                    ref={ref}
+                    className={cn(
+                        'product-card group w-full min-w-0 max-w-full overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none',
+                        pageDesignerStyles,
+                        className
+                    )}
+                    {...props}>
+                    <div className="p-4 text-sm text-muted-foreground">{t('selectProduct')}</div>
+                </Card>
+            );
+        }
+
         return (
             <Card
                 ref={ref}
                 className={cn(
-                    'product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 rounded-xl',
+                    'product-card group w-full min-w-0 max-w-full cursor-pointer overflow-hidden gap-0 py-0 !rounded-none !border-0 !shadow-none',
                     pageDesignerStyles,
                     className
                 )}
@@ -368,20 +410,21 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             className="w-full aspect-square [&_img]:object-cover! [&_img]:h-full! [&_img]:max-w-full! [&_img]:mx-auto!"
                             handleProductClick={handleProductClick}
                         />
+                        <UITarget targetId="sfcc.plp.shipping.deliveryEstimate" />
 
                         {/* Clickable product link overlay */}
                         <Link
                             to={productUrl}
                             className="absolute inset-0 z-[1] cursor-pointer"
                             aria-label={`View ${productName}`}
-                            onClick={() => handleProductClick?.(product)}
+                            onClick={handleClick}
                             tabIndex={-1}
                         />
 
                         {/* Badges — top-left */}
-                        {hasBadges && (
+                        {productData?.badges.hasBadges && (
                             <div className="absolute top-2 left-2 flex flex-col items-start gap-1 z-20">
-                                {badges.map((badge) => (
+                                {productData.badges.badges.map((badge) => (
                                     <span
                                         key={badge.label}
                                         className="px-2 py-1 text-xs font-semibold uppercase inline-block bg-foreground text-background leading-none">
@@ -391,10 +434,10 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             </div>
                         )}
 
-                        {/* Action icons — top-right (aria-hidden: SR reaches PDP via product name link; tabIndex={-1} on children keeps them out of keyboard tab order) */}
-                        <div aria-hidden="true" className="absolute top-2 right-2 flex flex-col items-end gap-2 z-20">
+                        {/* Action icons — top-right */}
+                        <div className="absolute top-2 right-2 flex flex-col items-end gap-2 z-20">
                             {showPickupAvailable && (
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div>
                                     <div className="group/pickup relative" data-testid="pickup-available-indicator">
                                         <div className="w-9 h-9 p-2 bg-muted text-muted-foreground flex items-center justify-center">
                                             <PickupIcon className="w-4 h-4" />
@@ -409,7 +452,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             )}
 
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <WishlistButton
+                                <DeferredWishlistButton
                                     product={product}
                                     size="sm"
                                     tabIndex={-1}
@@ -421,10 +464,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                         {/* Hover overlay — subtle dark tint */}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-opacity duration-300 pointer-events-none" />
 
-                        {/* Quick Add button — aria-hidden: mouse/touch only, keyboard reaches cart via PDP */}
-                        <div
-                            aria-hidden="true"
-                            className="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                        {/* Quick Add button */}
+                        <div className="absolute bottom-4 left-0 right-0 px-4 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 z-20">
                             <QuickAddButton
                                 productId={product.productId ?? ''}
                                 productName={productName}
@@ -437,15 +478,15 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
 
                 {/* Info section */}
                 <div className="relative p-4">
-                    {/* Color swatches — aria-hidden: visual/mouse preview only, SR navigates via product name link */}
+                    {/* Color swatches */}
                     {colorValues.length > 0 && (
-                        <div aria-hidden="true">
+                        <div>
                             <Suspense fallback={<ProductTileSwatchesSkeleton count={maxSwatches} />}>
                                 <LazySwatches
                                     colorValues={colorValues}
                                     selectedAttributeValue={selectedAttributeValue}
                                     onSwatchHover={handleSwatchHover}
-                                    onSwatchClick={() => handleProductClick?.(product)}
+                                    onSwatchClick={handleClick}
                                     productName={productName}
                                     totalColorCount={colorAttributes[0]?.values?.length ?? colorValues.length}
                                     maxSwatches={maxSwatches}
@@ -456,22 +497,19 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     )}
 
                     {/* Store name */}
-                    <p className="text-xs text-muted-foreground mb-1 uppercase">{config.global.branding.name}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{config.global.branding.name}</p>
 
                     {/* Top category */}
                     {topCategoryName && (
                         <p className="text-xs text-muted-foreground mb-1 uppercase">{topCategoryName}</p>
                     )}
 
-                    {/* Brand */}
-                    {brand && <p className="text-xs text-muted-foreground mb-1">{brand}</p>}
-
                     {/* Product name — the single keyboard/SR tab stop for this tile */}
                     <h3 className="text-sm font-medium text-card-foreground mb-2">
                         <Link
                             to={productUrl}
-                            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm"
-                            onClick={() => handleProductClick?.(product)}>
+                            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
+                            onClick={handleClick}>
                             {productName}
                         </Link>
                     </h3>
@@ -483,18 +521,11 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                         </p>
                     )}
 
-                    {/* Short description */}
-                    {description && (
-                        <p className="text-xs text-muted-foreground mb-2" data-testid="product-tile-description">
-                            {description}
-                        </p>
-                    )}
-
                     {/* Star ratings */}
                     <div className="mb-2">
                         <StarRating
-                            rating={ratingData.rating}
-                            reviewCount={ratingData.reviewCount}
+                            rating={productData?.rating.rating ?? 0}
+                            reviewCount={productData?.rating.reviewCount ?? 0}
                             starSize="sm"
                             starClassName="text-foreground"
                             showRatingLink
@@ -502,6 +533,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             ratingLinkClassName="text-xs text-muted-foreground"
                         />
                     </div>
+                    <UITarget targetId="sfcc.productCard.reviews.rating" />
 
                     {/* Price */}
                     <div>
@@ -522,6 +554,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             className="text-sm"
                         />
                     </div>
+                    <UITarget targetId="sfcc.productCard.loyalty.points" />
+                    <UITarget targetId="sfcc.productCard.bnpl.message" />
                 </div>
             </Card>
         );
@@ -530,6 +564,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
 
 ProductTile.displayName = 'ProductTile';
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const loader = loaders.server;
 export { ProductTile };
 // eslint-disable-next-line react-refresh/only-export-components
 export { ProductTileProvider, useProductTileContext } from './context';

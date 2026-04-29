@@ -248,3 +248,49 @@ export const WithBanners: Story = {
         await expect(menu || canvasElement).toBeInTheDocument();
     },
 };
+
+export const KeyboardAccessibility: Story = {
+    args: {
+        resolve: Promise.resolve(mockRootCategory),
+        defer: Promise.resolve(
+            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
+        ),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Verifies keyboard users can expand dropdowns without navigating away. Uses onPointerDown for mouse navigation while preserving keyboard dropdown expansion.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+
+        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
+        await expect(menu || canvasElement).toBeInTheDocument();
+
+        // Find first trigger with subcategories
+        const triggers = canvasElement.querySelectorAll('[data-slot="navigation-menu-trigger"]');
+        if (triggers.length === 0) return;
+
+        const firstTrigger = triggers[0] as HTMLElement;
+
+        // Verify dropdown is closed initially
+        const viewport = canvasElement.querySelector('[data-slot="navigation-menu-viewport"]');
+
+        // Simulate keyboard interaction (Enter key)
+        firstTrigger.focus();
+        await userEvent.keyboard('{Enter}');
+
+        // Wait for animation
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // Verify dropdown opened (keyboard users should be able to expand without navigation)
+        const openState = viewport?.getAttribute('data-state');
+        await expect(openState).toBe('open');
+
+        // Verify subcategories are now visible
+        const content = canvasElement.querySelector('[data-slot="navigation-menu-content"]');
+        await expect(content).toBeInTheDocument();
+    },
+};

@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use client';
-
 import { type ReactElement, Suspense, lazy, startTransition, useState, useEffect } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { Button } from '@/components/ui/button';
@@ -109,8 +106,11 @@ export default function ProductCartActions({
     });
 
     const onAddOrUpdateToCart = async () => {
-        // Call before callback (e.g., for optimistic UI like closing modal in edit mode)
-        onBeforeCartAction?.();
+        // Keep edit-mode optimistic close behavior, but for add-mode quick-add we
+        // wait for success so the mounted hook can emit toast + open mini-cart.
+        if (isEditMode) {
+            onBeforeCartAction?.();
+        }
 
         try {
             // Use handleUpdateCart in edit mode, handleAddToCart in add mode
@@ -142,6 +142,7 @@ export default function ProductCartActions({
             {isMasterOrVariantProduct && !currentVariant && !isProductASet && !isProductABundle && (
                 <div className="text-destructive font-medium">{t('selectAllOptions')}</div>
             )}
+            <UITarget targetId="sfcc.pdp.tax.productMessage" />
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
@@ -155,14 +156,16 @@ export default function ProductCartActions({
                             size="lg">
                             {isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
                         </Button>
-                        <Button
-                            onClick={onBuyNow}
-                            disabled={!canAddToCart}
-                            variant="outline"
-                            className="w-full"
-                            size="lg">
-                            {t('buyItNow')}
-                        </Button>
+                        <UITarget targetId="sfcc.quickAdd.payments.expressCheckout">
+                            <Button
+                                onClick={onBuyNow}
+                                disabled={!canAddToCart}
+                                variant="outline"
+                                className="w-full"
+                                size="lg">
+                                {t('buyItNow')}
+                            </Button>
+                        </UITarget>
                     </div>
                 )}
 
@@ -184,21 +187,24 @@ export default function ProductCartActions({
                     !isProductABundle &&
                     !isEditMode &&
                     shouldLoadExpressPayments && (
-                        <Suspense fallback={null}>
-                            <ExpressPayments
-                                layout="vertical"
-                                separatorPosition="top"
-                                separatorText={t('expressPayments.separatorBuyWith')}
-                                disabled={!canAddToCart}
-                            />
-                        </Suspense>
+                        <UITarget targetId="sfcc.pdp.payments.expressCheckout">
+                            <Suspense fallback={null}>
+                                <ExpressPayments
+                                    layout="vertical"
+                                    separatorPosition="top"
+                                    separatorText={t('expressPayments.separatorBuyWith')}
+                                    disabled={!canAddToCart}
+                                />
+                            </Suspense>
+                        </UITarget>
                     )}
 
-                <UITarget targetId="pdp.after.addToCart">
+                <UITarget targetId="sfcc.pdp.after.addToCart">
                     {!isCompactAddMode && !isEditMode && currentProductId && (
                         <BuyNowPayLater productId={String(currentProductId)} />
                     )}
                 </UITarget>
+                <UITarget targetId="sfcc.pdp.bnpl.message" />
             </div>
         </div>
     );

@@ -21,7 +21,7 @@ import { convertProductToProductSearchHit } from '@/lib/product-conversion';
 import { encodeBase64Url } from '@/lib/url';
 import { getBasePath } from '@/lib/utils';
 import { useAuth } from '@/providers/auth';
-import { useCurrency } from '@/providers/currency';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 
 /**
  * Union type for products from either Shopper Products API or Shopper Search API
@@ -155,7 +155,7 @@ function enrichRecommendationsWithProducts(
 export const useRecommenders = (isEnabled: boolean = true) => {
     const adapter = useRecommendersAdapter();
     const auth = useAuth();
-    const currency = useCurrency();
+    const { currency } = useSite();
     const [isLoading, setIsLoading] = useState(false);
     const [recommendations, setRecommendations] = useState<Recommendation>({});
     const [error, setError] = useState<Error | null>(null);

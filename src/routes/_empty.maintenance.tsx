@@ -18,8 +18,9 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { Link } from '@/components/link';
 import { getLogger } from '@/lib/logger.server';
+import { Settings } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader(args: LoaderFunctionArgs) {
     const logger = getLogger(args.context);
     logger.debug('MaintenancePage: loader starting');
@@ -36,8 +37,9 @@ export async function loader(args: LoaderFunctionArgs) {
                 },
             });
 
-            if (!response.ok) {
-                logger.warn('MaintenancePage: CDN fetch returned non-OK status', { status: response.status });
+            if (!response.ok && response.status !== 503) {
+                // Server returns text but 503 as well
+                logger.warn('MaintenancePage: CDN fetch returned non-OK status', { status: response.status, cdnUrl });
                 return null;
             }
 
@@ -59,6 +61,7 @@ export async function loader(args: LoaderFunctionArgs) {
 }
 
 export default function MaintenancePage() {
+    const { t } = useTranslation('maintenancePage');
     const htmlContent = useLoaderData<typeof loader>();
     const [searchParams] = useSearchParams();
     const returnTo = searchParams.get('returnTo') || '/';
@@ -82,20 +85,8 @@ export default function MaintenancePage() {
                     <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
                     <Link
                         to={returnTo}
-                        style={{
-                            marginTop: '2rem',
-                            padding: '0.75rem 2rem',
-                            backgroundColor: '#667eea',
-                            color: 'white',
-                            textDecoration: 'none',
-                            borderRadius: '6px',
-                            fontWeight: '600',
-                            fontSize: '1rem',
-                            display: 'inline-block',
-                            transition: 'background-color 0.2s',
-                        }}>
-                        {/* Not Translated yet - awaiting for the final page from UX*/}
-                        Try Again
+                        className="mt-8 inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
+                        {t('tryAgain')}
                     </Link>
                 </div>
             </>
@@ -104,62 +95,32 @@ export default function MaintenancePage() {
 
     // Fallback maintenance page if fetch failed
     return (
-        <div style={{ height: '100%' }}>
-            <style>{`
-                * {
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                }
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-height: 100vh;
-                    color: #333;
-                }
-                .container {
-                    text-align: center;
-                    background: white;
-                    padding: 3rem 2rem;
-                    border-radius: 12px;
-                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                    max-width: 500px;
-                    width: 90%;
-                }
-                h1 {
-                    font-size: 2rem;
-                    margin-bottom: 1rem;
-                    color: #2d3748;
-                }
-                p {
-                    font-size: 1.125rem;
-                    color: #718096;
-                    line-height: 1.6;
-                    margin-bottom: 2rem;
-                }
-                .retry-button {
-                    display: inline-block;
-                    padding: 0.75rem 2rem;
-                    background-color: #667eea;
-                    color: white;
-                    text-decoration: none;
-                    border-radius: 6px;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    transition: background-color 0.2s;
-                }
-                .retry-button:hover {
-                    background-color: #5568d3;
-                }
-            `}</style>
-            <div className="container">
-                <h1>Site Under Maintenance</h1>
-                <p>We&apos;re currently performing scheduled maintenance. Please check back soon.</p>
-                <Link to={returnTo} className="retry-button">
-                    {/* Not Translated yet - awaiting for the final page from UX*/}
-                    Try Again
+        <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+            <div className="mx-auto max-w-4xl text-center">
+                {/* Icon */}
+                <div className="mb-12 flex justify-center">
+                    <Settings className="h-20 w-20 text-foreground" strokeWidth={2} />
+                </div>
+
+                {/* Heading */}
+                <h1 className="mb-8 text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
+                    {t('heading')}
+                </h1>
+
+                {/* Body text */}
+                <p className="mb-6 text-lg text-muted-foreground sm:text-xl">{t('description')}</p>
+
+                {/* Apology text */}
+                <p className="mb-12 text-base text-muted-foreground sm:text-lg">{t('apology')}</p>
+
+                {/* Footer text */}
+                <p className="mb-8 text-base text-muted-foreground sm:text-lg">{t('checkBack')}</p>
+
+                {/* Try Again button */}
+                <Link
+                    to={returnTo}
+                    className="inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
+                    {t('tryAgain')}
                 </Link>
             </div>
         </div>

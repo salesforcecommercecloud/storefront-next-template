@@ -37,6 +37,7 @@ import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import type { AppConfig } from '@/types/config';
+import { UITarget } from '@/targets/ui-target';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -227,11 +228,17 @@ function AccountDetailsContent({
                 urlConfig: config.url,
                 params: { siteId: siteRef, localeId: localeRef },
             });
+            const accountUrl = buildUrl({
+                to: '/account',
+                urlConfig: config.url,
+                params: { siteId: siteRef, localeId: localeRef },
+            });
             void loginFetcher.submit(
                 {
                     email: userInfo.email,
                     password: formData.password,
                     loginMode: 'password',
+                    returnUrl: accountUrl,
                 },
                 {
                     method: 'POST',
@@ -276,7 +283,7 @@ function AccountDetailsContent({
     return (
         <div className="space-y-5">
             {/* Page Header Card */}
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
                     <h1
                         className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
@@ -288,7 +295,7 @@ function AccountDetailsContent({
             </Card>
 
             {/* Personal Information – same layout as Interests & Preferences (header actions top right) */}
-            <Card data-testid="profile-card" className="bg-card border-border">
+            <Card data-testid="profile-card" className="bg-card border-border rounded-none shadow-none">
                 <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
                     <div className="space-y-1.5">
                         <CardTitle className="text-base font-semibold text-foreground">{t('profile.title')}</CardTitle>
@@ -301,7 +308,7 @@ function AccountDetailsContent({
                                 form="customer-profile-form"
                                 size="sm"
                                 disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-sm">
+                                className="rounded-none">
                                 {updateProfileFetcher.state === FETCHER_STATES.SUBMITTING
                                     ? t('common.saving')
                                     : t('common.save')}
@@ -312,7 +319,7 @@ function AccountDetailsContent({
                                 size="sm"
                                 onClick={handleCustomerProfileCancel}
                                 disabled={updateProfileFetcher.state === FETCHER_STATES.SUBMITTING}
-                                className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                                 {t('common.cancel')}
                             </Button>
                         </div>
@@ -321,7 +328,7 @@ function AccountDetailsContent({
                             variant="outline"
                             size="sm"
                             onClick={handleProfileEdit}
-                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('common.edit')}
                         </Button>
                     )}
@@ -392,6 +399,7 @@ function AccountDetailsContent({
                     )}
                 </CardContent>
             </Card>
+            <UITarget targetId="sfcc.myAccount.identity.verification" />
 
             {/* Interests & Preferences Section */}
             {customerId && (
@@ -422,7 +430,7 @@ function AccountDetailsContent({
                             variant="outline"
                             size="sm"
                             onClick={handlePasswordEdit}
-                            className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                            className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('password.changePassword')}
                         </Button>
                     </div>
@@ -437,6 +445,8 @@ function AccountDetailsContent({
                     />
                 </ToggleCardEdit>
             </ToggleCard>
+            <UITarget targetId="sfcc.myAccount.gdpr.dataRequest" />
+            <UITarget targetId="sfcc.myAccount.gdpr.deleteAccount" />
 
             {/* Email Preferences – MarketingConsent (part of My Account) */}
             <MarketingConsent

@@ -25,16 +25,12 @@ import { canadianPostalCodeRegex, usPostalCodeRegex } from './constants';
  *
  * @example const schema = createCustomerAddressFormSchema(t);
  */
-// eslint-disable-next-line react-refresh/only-export-components
-export const createCustomerAddressFormSchema = (t: TFunction<['errors', 'account']>) => {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, react-refresh/only-export-components
+export const createCustomerAddressFormSchema = (t: TFunction<any, any>) => {
     return z
         .object({
-            addressId: z
-                .string()
-                .min(1, {
-                    message: t('account:addressForm.validation.addressTitleRequired'),
-                })
-                .max(256),
+            addressId: z.string().optional(),
             firstName: z
                 .string()
                 .min(1, {

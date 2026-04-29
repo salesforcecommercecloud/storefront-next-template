@@ -15,7 +15,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { createCustomerProfileFormSchema } from './index';
-import { getTranslation } from '@/lib/i18next';
+import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
 const customerProfileFormSchema = createCustomerProfileFormSchema(t);
