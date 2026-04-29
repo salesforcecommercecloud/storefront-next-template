@@ -41,6 +41,40 @@ function getWorkspaceHmrConfig(httpServer) {
 //#endregion
 //#region src/lib/dev.ts
 /**
+* Resolve Node.js custom export conditions from process arguments.
+*
+* Reads both `process.execArgv` and `NODE_OPTIONS` so conditions passed through
+* wrapper CLIs are still applied to Vite and SSR resolution.
+*
+* Environment variables:
+* - `NODE_OPTIONS` (optional): Node runtime flags that may include one or more
+*   `--conditions` entries.
+*
+* @returns Ordered, de-duplicated list of `--conditions` values.
+*/
+function getNodeResolveConditions() {
+	const conditions = [];
+	const args = [...process.execArgv];
+	const nodeOptions = process.env.NODE_OPTIONS ?? "";
+	if (nodeOptions.trim()) args.push(...nodeOptions.split(/\s+/).filter(Boolean));
+	for (let i = 0; i < args.length; i += 1) {
+		const arg = args[i];
+		if (arg.startsWith("--conditions=")) {
+			const value = arg.slice(13).trim();
+			if (value) conditions.push(value);
+			continue;
+		}
+		if (arg === "--conditions") {
+			const value = args[i + 1]?.trim();
+			if (value) {
+				conditions.push(value);
+				i += 1;
+			}
+		}
+	}
+	return [...new Set(conditions)];
+}
+/**
 * Start the development server with Vite in middleware mode
 */
 async function dev(options = {}) {
@@ -53,8 +87,17 @@ async function dev(options = {}) {
 	const config = await loadProjectConfig(projectDir);
 	const httpServer = createServer();
 	const hmr = getWorkspaceHmrConfig(httpServer);
+	const resolveConditions = getNodeResolveConditions();
 	const vite = await createServer$1({
 		root: projectDir,
+		...resolveConditions.length > 0 ? {
+			resolve: { conditions: resolveConditions },
+			optimizeDeps: { esbuildOptions: { conditions: resolveConditions } },
+			ssr: { resolve: {
+				conditions: resolveConditions,
+				externalConditions: resolveConditions
+			} }
+		} : {},
 		server: {
 			middlewareMode: true,
 			...hmr && { hmr }

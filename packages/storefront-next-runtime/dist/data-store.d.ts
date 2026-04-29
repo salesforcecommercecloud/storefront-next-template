@@ -1,59 +1,23 @@
 import { a as sitePreferencesContext, i as getSitePreferences, n as SitePreferences, t as DEFAULT_SITE_PREFERENCES_KEY } from "./custom-site-preferences.js";
 import { a as getCustomGlobalPreferences, n as DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, r as customGlobalPreferencesContext, t as CustomGlobalPreferences } from "./custom-global-preferences.js";
 import { a as getGcpApiKey, n as GcpPreferences, o as getGcpPreferences, r as gcpPreferencesContext, t as DEFAULT_GCP_PREFERENCES_KEY } from "./gcp-preferences.js";
-import * as react_router12 from "react-router";
+import * as react_router7 from "react-router";
 import { MiddlewareFunction, RouterContextProvider, createContext } from "react-router";
-import { DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities";
+import { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities/data-store";
 
-//#region src/data-store/provider.d.ts
+//#region src/data-store/utils.d.ts
 
-/**
- * Copyright 2026 Salesforce, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+type DataStoreContextKey<T> = ReturnType<typeof createContext<T | null>>;
+type DataStoreEntryKey = string | ((context: Readonly<RouterContextProvider>) => string);
 type DataStoreEntry<TValue = unknown> = {
   value?: TValue;
 };
-type DataStoreProvider = {
-  kind: 'mrt' | 'local';
-  getEntry: <TValue = unknown>(key: string) => Promise<DataStoreEntry<TValue> | null>;
-};
-/**
- * Resolve the default data-store provider based on MRT environment variables.
- *
- * Environment variables:
- * - `AWS_REGION` (required for MRT): AWS region for the data store table (e.g., "us-east-1")
- * - `MOBIFY_PROPERTY_ID` (required for MRT): MRT property identifier (e.g., "abcd1234")
- * - `DEPLOY_TARGET` (required for MRT): MRT deploy target (e.g., "production")
- * - `SFNEXT_DATA_STORE_ALLOW_LOCAL` (optional): allow local provider outside development ("true")
- * - `CI` (optional): allow local provider when set to "true"
- *
- * @returns Provider promise resolved for the current environment.
- * @example
- * const provider = await getDefaultDataStoreProvider();
- * const entry = await provider.getEntry('custom-global-preferences');
- */
-declare function getDefaultDataStoreProvider(): Promise<DataStoreProvider>;
-//#endregion
-//#region src/data-store/utils.d.ts
-type DataStoreContextKey<T> = ReturnType<typeof createContext<T | null>>;
-type DataStoreEntryKey = string | ((context: Readonly<RouterContextProvider>) => string);
 type DataStoreMiddlewareOptions<T> = {
   entryKey: DataStoreEntryKey;
   context: DataStoreContextKey<T>;
   transform?: (value: Record<string, unknown>) => T;
-  provider?: DataStoreProvider | Promise<DataStoreProvider>;
+  onUnavailable?: 'throw' | 'fallback';
+  fallbackValue?: T | ((context: Readonly<RouterContextProvider>) => T);
 };
 /**
  * Creates a typed React Router context for data store entries.
@@ -76,12 +40,21 @@ declare function createDataStoreContext<T>(): DataStoreContextKey<T>;
  * @returns React Router middleware for server requests
  */
 declare function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response>;
+/**
+ * Read a data-store entry through the singleton MRT utilities API.
+ * The underlying implementation (production DynamoDB vs development pseudo store)
+ * is resolved by `@salesforce/mrt-utilities/data-store` export conditions.
+ *
+ * @param key - Data-store entry key
+ * @returns Data-store entry or null when missing/invalid shape
+ */
+declare function getDataStoreEntry<TValue = unknown>(key: string): Promise<DataStoreEntry<TValue> | null>;
 //#endregion
 //#region src/data-store/middleware/login-preferences.d.ts
 type LoginPreferences = {
   emailVerificationEnabled?: boolean;
 };
-declare const loginPreferencesContext: react_router12.RouterContext<LoginPreferences | null>;
+declare const loginPreferencesContext: react_router7.RouterContext<LoginPreferences | null>;
 /**
  * Read login preferences from router context.
  *
@@ -91,7 +64,7 @@ declare const loginPreferencesContext: react_router12.RouterContext<LoginPrefere
 declare function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences;
 //#endregion
 //#region src/data-store/index.d.ts
-declare const dataStoreMiddleware: react_router12.MiddlewareFunction<Response>[];
+declare const dataStoreMiddleware: react_router7.MiddlewareFunction<Response>[];
 //#endregion
-export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, type DataStoreProvider, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDefaultDataStoreProvider, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, sitePreferencesContext };
+export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, sitePreferencesContext };
 //# sourceMappingURL=data-store.d.ts.map

@@ -2,6 +2,7 @@ import { n as createDataStoreMiddleware, t as createDataStoreContext } from "./u
 
 //#region src/data-store/middleware/gcp-preferences.ts
 const DEFAULT_GCP_PREFERENCES_KEY = "gcp";
+const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Map keys inside the `gcp` data store entry. The ECOM MRT sync job writes
 * to these exact keys; keep in sync with the sync job contract.
@@ -50,6 +51,8 @@ function getGcpApiKey(context) {
 const gcpPreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: DEFAULT_GCP_PREFERENCES_KEY,
 	context: gcpPreferencesContext,
+	onUnavailable: DATA_STORE_UNAVAILABLE_MODE === "fallback" ? "fallback" : "throw",
+	fallbackValue: { apiKey: "" },
 	transform: (value) => {
 		const rawKey = value[API_KEY_MAP_KEY];
 		return { apiKey: typeof rawKey === "string" ? rawKey : "" };

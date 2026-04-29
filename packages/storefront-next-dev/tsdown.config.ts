@@ -16,7 +16,6 @@ export default defineConfig([
     {
         entry: {
             index: 'src/index.ts',
-            'data-store/local-provider': 'src/data-store/local-provider.ts',
         },
         platform: 'node',
         target: 'node24',

@@ -95,16 +95,20 @@ vi.mock('../utils/logger', () => ({
 
 describe('dev command', () => {
     const originalEnv = process.env;
+    const originalExecArgv = process.execArgv;
 
     beforeEach(() => {
         vi.clearAllMocks();
         process.env = { ...originalEnv };
+        process.execArgv = [];
         delete process.env.NODE_ENV;
         delete process.env.EXTERNAL_DOMAIN_NAME;
+        delete process.env.NODE_OPTIONS;
     });
 
     afterEach(() => {
         process.env = originalEnv;
+        process.execArgv = originalExecArgv;
         vi.restoreAllMocks();
     });
 
@@ -261,6 +265,65 @@ describe('dev command', () => {
                         clientPort: 443,
                         server: mockHttpServer,
                     },
+                },
+            });
+        });
+
+        it('should pass node resolution conditions from process.execArgv into Vite', async () => {
+            const { dev } = await import('./dev');
+
+            process.execArgv = ['--conditions=dev-data-store', '--conditions', 'custom-condition'];
+            await dev();
+
+            expect(mockCreateViteServer).toHaveBeenCalledWith({
+                root: expect.any(String),
+                resolve: {
+                    conditions: ['dev-data-store', 'custom-condition'],
+                },
+                optimizeDeps: {
+                    esbuildOptions: {
+                        conditions: ['dev-data-store', 'custom-condition'],
+                    },
+                },
+                ssr: {
+                    resolve: {
+                        conditions: ['dev-data-store', 'custom-condition'],
+                        externalConditions: ['dev-data-store', 'custom-condition'],
+                    },
+                },
+                server: {
+                    middlewareMode: true,
+                },
+            });
+        });
+
+        it('should merge and dedupe node resolution conditions from execArgv and NODE_OPTIONS', async () => {
+            const { dev } = await import('./dev');
+
+            process.execArgv = ['--conditions=dev-data-store', '--conditions', 'custom-condition'];
+            process.env.NODE_OPTIONS =
+                '--conditions=dev-data-store --trace-warnings --conditions another-condition --conditions=';
+
+            await dev();
+
+            expect(mockCreateViteServer).toHaveBeenCalledWith({
+                root: expect.any(String),
+                resolve: {
+                    conditions: ['dev-data-store', 'custom-condition', 'another-condition'],
+                },
+                optimizeDeps: {
+                    esbuildOptions: {
+                        conditions: ['dev-data-store', 'custom-condition', 'another-condition'],
+                    },
+                },
+                ssr: {
+                    resolve: {
+                        conditions: ['dev-data-store', 'custom-condition', 'another-condition'],
+                        externalConditions: ['dev-data-store', 'custom-condition', 'another-condition'],
+                    },
+                },
+                server: {
+                    middlewareMode: true,
                 },
             });
         });

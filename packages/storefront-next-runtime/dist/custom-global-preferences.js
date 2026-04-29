@@ -3,6 +3,7 @@ import { n as createDataStoreMiddleware, t as createDataStoreContext } from "./u
 //#region src/data-store/middleware/custom-global-preferences.ts
 const DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY = "custom-global-preferences";
 const customGlobalPreferencesContext = createDataStoreContext();
+const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Read custom global preferences from router context.
 *
@@ -20,7 +21,9 @@ function getCustomGlobalPreferences(context) {
 }
 const customGlobalPreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY,
-	context: customGlobalPreferencesContext
+	context: customGlobalPreferencesContext,
+	onUnavailable: DATA_STORE_UNAVAILABLE_MODE === "fallback" ? "fallback" : "throw",
+	fallbackValue: {}
 });
 
 //#endregion

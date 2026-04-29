@@ -15,7 +15,7 @@
  */
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -70,20 +70,6 @@ export default defineConfig(({ mode }) => {
                 'See .env.default for a complete example.'
         );
     }
-
-    const localProviderPath = resolve(__dirname, '../storefront-next-dev/dist/data-store/local-provider.js');
-    const mrtUtilitiesPath = resolve(
-        __dirname,
-        '../storefront-next-runtime/node_modules/@salesforce/mrt-utilities/dist/esm/middleware/index.js'
-    );
-    const localDevAliases: Record<string, string> = {};
-    if (existsSync(localProviderPath)) {
-        localDevAliases['@salesforce/storefront-next-dev/data-store/local-provider'] = localProviderPath;
-    }
-    if (existsSync(mrtUtilitiesPath)) {
-        localDevAliases['@salesforce/mrt-utilities/middleware'] = mrtUtilitiesPath;
-    }
-
     return {
         build: {
             sourcemap: true,
@@ -180,20 +166,11 @@ export default defineConfig(({ mode }) => {
                 // Server-only config access (must be before '@' to take precedence)
                 '@/config/server': resolve(__dirname, './config.server.ts'),
                 '@': resolve(__dirname, './src'),
-                // Fonts alias for easy customization
-                ...localDevAliases,
                 // Fonts alias — uses root-absolute path (not a filesystem resolve) because fonts
                 // live in public/. Vite serves public assets at the root, so '/fonts' maps to
                 // public/fonts/. Using resolve(__dirname, './public/fonts') would trigger Vite
                 // warnings about importing from the public directory.
                 '@fonts': '/fonts',
-                // The mrt-utilities package's "development" export condition points to
-                // ./src/index.ts which doesn't exist in the published package. Alias to
-                // the ESM dist to fix module resolution in tests and dev.
-                '@salesforce/mrt-utilities': resolve(
-                    __dirname,
-                    '../storefront-next-runtime/node_modules/@salesforce/mrt-utilities/dist/esm/index.js'
-                ),
             },
             // Prevent duplicate React instances in the monorepo. hooks break if multiple copies are loaded
             dedupe: ['react', 'react-dom', 'react-router'],

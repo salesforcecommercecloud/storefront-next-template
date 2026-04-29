@@ -1,13 +1,14 @@
-import { i as getDefaultDataStoreProvider, n as createDataStoreMiddleware, r as prefixWithSiteId, t as createDataStoreContext } from "./utils.js";
 import "./site-context2.js";
 import "./apply-url-config.js";
+import { i as prefixWithSiteId, n as createDataStoreMiddleware, r as getDataStoreEntry, t as createDataStoreContext } from "./utils.js";
 import { i as sitePreferencesContext, n as customSitePreferencesMiddleware, r as getSitePreferences, t as DEFAULT_SITE_PREFERENCES_KEY } from "./custom-site-preferences.js";
 import { i as getCustomGlobalPreferences, n as customGlobalPreferencesContext, r as customGlobalPreferencesMiddleware, t as DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY } from "./custom-global-preferences.js";
 import { a as getGcpPreferences, i as getGcpApiKey, n as gcpPreferencesContext, r as gcpPreferencesMiddleware, t as DEFAULT_GCP_PREFERENCES_KEY } from "./gcp-preferences.js";
-import { DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities";
+import { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities/data-store";
 
 //#region src/data-store/middleware/login-preferences.ts
 const loginPreferencesContext = createDataStoreContext();
+const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Read login preferences from router context.
 *
@@ -25,6 +26,8 @@ function getLoginPreferences(context) {
 const loginPreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: prefixWithSiteId("login-preferences"),
 	context: loginPreferencesContext,
+	onUnavailable: DATA_STORE_UNAVAILABLE_MODE === "fallback" ? "fallback" : "throw",
+	fallbackValue: { emailVerificationEnabled: false },
 	transform: (value) => value.data
 });
 
@@ -38,5 +41,5 @@ const dataStoreMiddleware = [
 ];
 
 //#endregion
-export { DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDefaultDataStoreProvider, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, sitePreferencesContext };
+export { DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, sitePreferencesContext };
 //# sourceMappingURL=data-store.js.map

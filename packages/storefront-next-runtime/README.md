@@ -55,6 +55,9 @@ Utilities and middleware for reading scoped entries from the MRT data access lay
 - `AWS_REGION` (required): AWS region for the data store table (e.g., `us-east-1`)
 - `MOBIFY_PROPERTY_ID` (required): MRT property identifier (e.g., `abcd1234`)
 - `DEPLOY_TARGET` (required): MRT deploy target (e.g., `production`)
+- `SFNEXT_DATA_STORE_UNAVAILABLE_MODE` (optional): controls middleware behavior when MRT data store is unavailable
+  - `throw` (default): fail fast by throwing
+  - `fallback`: use middleware-defined safe fallback values and continue request execution
 
 These are managed by Managed Runtime and are not typically set by SDK consumers directly.
 
@@ -62,12 +65,7 @@ These are managed by Managed Runtime and are not typically set by SDK consumers 
 
 The runtime auto-selects the MRT provider when all MRT environment variables are present.
 If any are missing, it loads a local provider from `@salesforce/storefront-next-dev` in
-development or when explicitly allowed.
-
-Local provider opt-in outside development:
-
-- `SFNEXT_DATA_STORE_ALLOW_LOCAL` (optional): set to `true` to allow local provider
-- `CI` (optional): when set to `true`, allows the local provider
+development.
 
 Local provider environment variables (development only):
 

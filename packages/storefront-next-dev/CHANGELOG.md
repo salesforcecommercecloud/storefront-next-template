@@ -1,6 +1,8 @@
 ## v0.4.0-dev (Apr 24, 2026)
 
 - Extract i18n locale chunking into SDK Vite plugin (`i18nPlugin`): splits translation files into per-language chunks automatically
+- Remove local data-store provider export/build artifacts and rely on `@salesforce/mrt-utilities` data-store behavior ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
+- Update `sfnext dev` to forward Node `--conditions` (from `process.execArgv` and `NODE_OPTIONS`) into Vite client + SSR resolution for conditional exports ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Add `sfnext locales aggregate-extensions` CLI command: generates per-locale barrel files aggregating extension translations under `extPascalCase` namespaces
 - Add action hooks Vite plugin: generates `virtual:action-hooks` module from extension `target-config.json` registrations, enabling server-side extension points in checkout actions
 - Warn at build time when multiple UITarget components or action hook handlers share the same target ID and order value (non-deterministic execution order)

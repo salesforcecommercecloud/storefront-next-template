@@ -21,6 +21,7 @@ export type CustomGlobalPreferences = Record<string, unknown>;
 
 export const DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY = 'custom-global-preferences';
 export const customGlobalPreferencesContext = createDataStoreContext<CustomGlobalPreferences>();
+const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 
 /**
  * Read custom global preferences from router context.
@@ -44,4 +45,6 @@ export function getCustomGlobalPreferences(context: Readonly<RouterContextProvid
 export const customGlobalPreferencesMiddleware = createDataStoreMiddleware({
     entryKey: DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY,
     context: customGlobalPreferencesContext,
+    onUnavailable: DATA_STORE_UNAVAILABLE_MODE === 'fallback' ? 'fallback' : 'throw',
+    fallbackValue: {},
 });

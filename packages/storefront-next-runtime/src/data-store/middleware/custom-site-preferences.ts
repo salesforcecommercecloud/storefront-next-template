@@ -21,6 +21,7 @@ export type SitePreferences = Record<string, unknown>;
 
 export const DEFAULT_SITE_PREFERENCES_KEY = 'site-preferences';
 export const sitePreferencesContext = createDataStoreContext<SitePreferences>();
+const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 
 /**
  * Read site preferences from router context.
@@ -44,4 +45,6 @@ export function getSitePreferences(context: Readonly<RouterContextProvider>): Si
 export const customSitePreferencesMiddleware = createDataStoreMiddleware({
     entryKey: prefixWithSiteId('custom-site-preferences'),
     context: sitePreferencesContext,
+    onUnavailable: DATA_STORE_UNAVAILABLE_MODE === 'fallback' ? 'fallback' : 'throw',
+    fallbackValue: {},
 });

@@ -5,6 +5,8 @@
   - Add `name`, `fragment`, `localized`, `visible` fields to Component schema
   - Regenerate TypeScript types for all SCAPI clients
   - Remove unused `@ts-expect-error` directives from page processor now that schema includes the missing fields
+- Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
+- Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Add `/i18n` and `/i18n/client` subpath exports: `createI18nMiddleware`, `getTranslation`, `getLocale`, `mockI18nContext`, `initI18next`, and shared `defaultInterpolation`
 
 ## v0.4.0-dev (Apr 07, 2026)

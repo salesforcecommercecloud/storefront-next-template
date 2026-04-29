@@ -1,21 +1,8 @@
-import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     plugins: [react()],
-    resolve: {
-        alias: {
-            '@salesforce/mrt-utilities/middleware': resolve(
-                __dirname,
-                'node_modules/@salesforce/mrt-utilities/dist/esm/middleware/index.js'
-            ),
-            '@salesforce/storefront-next-dev/data-store/local-provider': resolve(
-                __dirname,
-                '../storefront-next-dev/src/data-store/local-provider.ts'
-            ),
-        },
-    },
     test: {
         environment: 'happy-dom',
         coverage: {

@@ -14,44 +14,22 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { MiddlewareFunction, RouterContextProvider } from 'react-router';
-import { createDataStoreMiddleware } from '../utils';
-import type { DataStoreEntry, DataStoreProvider } from '../provider';
-import {
-    DEFAULT_GCP_PREFERENCES_KEY,
-    gcpPreferencesContext,
-    getGcpApiKey,
-    getGcpPreferences,
-    type GcpPreferences,
-} from './gcp-preferences';
+import { DataStore } from '@salesforce/mrt-utilities/middleware';
+import { gcpPreferencesMiddleware, gcpPreferencesContext, getGcpApiKey, getGcpPreferences } from './gcp-preferences';
 
 type MiddlewareNext = Parameters<MiddlewareFunction<Response>>[1];
-
-// Rebuild the transform the same way the shipped middleware does, so we can wire
-// a deterministic provider without depending on the module-level instance (which
-// resolves its provider at import time before env vars are set in tests).
-function buildTestMiddleware(getEntry: (key: string) => Promise<DataStoreEntry<unknown> | null>) {
-    const provider: DataStoreProvider = {
-        kind: 'local',
-        getEntry: (<TValue = unknown>(key: string) =>
-            getEntry(key) as Promise<DataStoreEntry<TValue> | null>) as DataStoreProvider['getEntry'],
-    };
-    return createDataStoreMiddleware<GcpPreferences>({
-        entryKey: DEFAULT_GCP_PREFERENCES_KEY,
-        context: gcpPreferencesContext,
-        transform: (value) => ({
-            apiKey: typeof value['api-key'] === 'string' ? value['api-key'] : '',
-        }),
-        provider,
-    });
-}
 
 describe('gcpPreferencesMiddleware', () => {
     let context: RouterContextProvider;
     let next: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
+        process.env.AWS_REGION = 'us-east-1';
+        process.env.MOBIFY_PROPERTY_ID = 'prop-1';
+        process.env.DEPLOY_TARGET = 'production';
+
         const store = new Map<unknown, unknown>();
         context = {
             set: (ctx: unknown, value: unknown) => store.set(ctx, value),
@@ -62,15 +40,19 @@ describe('gcpPreferencesMiddleware', () => {
     });
 
     it('stores preferences in context when the entry is valid', async () => {
-        const getEntry = vi.fn().mockResolvedValue({ value: { 'api-key': 'gcp-ootb-key' } });
-        const middleware = buildTestMiddleware(getEntry);
+        const sendMock = vi.fn().mockResolvedValue({
+            Item: { value: { 'api-key': 'gcp-ootb-key' } },
+        });
+        DataStore._testDocumentClient = {
+            send: sendMock,
+        } as unknown as typeof DataStore._testDocumentClient;
 
-        await middleware(
+        await gcpPreferencesMiddleware(
             { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
             next as MiddlewareNext
         );
 
-        expect(getEntry).toHaveBeenCalledWith(DEFAULT_GCP_PREFERENCES_KEY);
+        expect(sendMock).toHaveBeenCalled();
         expect(getGcpPreferences(context)).toEqual({ apiKey: 'gcp-ootb-key' });
         expect(getGcpApiKey(context)).toBe('gcp-ootb-key');
         expect(context.get(gcpPreferencesContext)).toEqual({ apiKey: 'gcp-ootb-key' });
@@ -78,9 +60,13 @@ describe('gcpPreferencesMiddleware', () => {
     });
 
     it('coerces non-string api-key values to an empty string', async () => {
-        const middleware = buildTestMiddleware(() => Promise.resolve({ value: { 'api-key': 12345 } }));
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({
+                Item: { value: { 'api-key': 12345 } },
+            }),
+        } as unknown as typeof DataStore._testDocumentClient;
 
-        await middleware(
+        await gcpPreferencesMiddleware(
             { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
             next as MiddlewareNext
         );
@@ -91,9 +77,13 @@ describe('gcpPreferencesMiddleware', () => {
     });
 
     it('coerces a missing api-key map key to an empty string', async () => {
-        const middleware = buildTestMiddleware(() => Promise.resolve({ value: {} }));
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({
+                Item: { value: {} },
+            }),
+        } as unknown as typeof DataStore._testDocumentClient;
 
-        await middleware(
+        await gcpPreferencesMiddleware(
             { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
             next as MiddlewareNext
         );
@@ -105,9 +95,13 @@ describe('gcpPreferencesMiddleware', () => {
 
     it('calls next without populating the context when the entry value is missing or non-object', async () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-        const middleware = buildTestMiddleware(() => Promise.resolve({ value: undefined }));
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({
+                Item: { value: undefined },
+            }),
+        } as unknown as typeof DataStore._testDocumentClient;
 
-        await middleware(
+        await gcpPreferencesMiddleware(
             { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
             next as MiddlewareNext
         );
@@ -118,11 +112,13 @@ describe('gcpPreferencesMiddleware', () => {
         warnSpy.mockRestore();
     });
 
-    it('calls next without populating the context when the entry itself is null', async () => {
+    it('calls next without populating the context when the entry is missing', async () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-        const middleware = buildTestMiddleware(() => Promise.resolve(null));
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({}),
+        } as unknown as typeof DataStore._testDocumentClient;
 
-        await middleware(
+        await gcpPreferencesMiddleware(
             { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
             next as MiddlewareNext
         );
@@ -135,12 +131,13 @@ describe('gcpPreferencesMiddleware', () => {
 
     it('calls next without populating the context when the entry value is not an object', async () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-        // The factory guards `typeof entry.value !== 'object'` — exercise that path.
-        const middleware = buildTestMiddleware(() =>
-            Promise.resolve({ value: 'not-an-object' } as unknown as { value?: unknown })
-        );
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({
+                Item: { value: 'not-an-object' },
+            }),
+        } as unknown as typeof DataStore._testDocumentClient;
 
-        await middleware(
+        await gcpPreferencesMiddleware(
             { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
             next as MiddlewareNext
         );
@@ -149,6 +146,14 @@ describe('gcpPreferencesMiddleware', () => {
         expect(next).toHaveBeenCalledOnce();
 
         warnSpy.mockRestore();
+    });
+
+    afterEach(() => {
+        delete process.env.AWS_REGION;
+        delete process.env.MOBIFY_PROPERTY_ID;
+        delete process.env.DEPLOY_TARGET;
+        DataStore._testDocumentClient = null;
+        DataStore._testLogMRTError = null;
     });
 });
 

@@ -1,8 +1,9 @@
-import { n as createDataStoreMiddleware, r as prefixWithSiteId, t as createDataStoreContext } from "./utils.js";
+import { i as prefixWithSiteId, n as createDataStoreMiddleware, t as createDataStoreContext } from "./utils.js";
 
 //#region src/data-store/middleware/custom-site-preferences.ts
 const DEFAULT_SITE_PREFERENCES_KEY = "site-preferences";
 const sitePreferencesContext = createDataStoreContext();
+const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Read site preferences from router context.
 *
@@ -20,7 +21,9 @@ function getSitePreferences(context) {
 }
 const customSitePreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: prefixWithSiteId("custom-site-preferences"),
-	context: sitePreferencesContext
+	context: sitePreferencesContext,
+	onUnavailable: DATA_STORE_UNAVAILABLE_MODE === "fallback" ? "fallback" : "throw",
+	fallbackValue: {}
 });
 
 //#endregion

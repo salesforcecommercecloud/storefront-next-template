@@ -22,6 +22,7 @@ export type LoginPreferences = {
 };
 
 export const loginPreferencesContext = createDataStoreContext<LoginPreferences>();
+const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 
 /**
  * Read login preferences from router context.
@@ -44,5 +45,7 @@ export function getLoginPreferences(context: Readonly<RouterContextProvider>): L
 export const loginPreferencesMiddleware = createDataStoreMiddleware<LoginPreferences>({
     entryKey: prefixWithSiteId('login-preferences'),
     context: loginPreferencesContext,
+    onUnavailable: DATA_STORE_UNAVAILABLE_MODE === 'fallback' ? 'fallback' : 'throw',
+    fallbackValue: { emailVerificationEnabled: false },
     transform: (value) => value.data as LoginPreferences,
 });

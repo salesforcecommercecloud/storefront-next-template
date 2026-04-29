@@ -16,22 +16,27 @@
 
 import { type MiddlewareFunction, type RouterContextProvider, createContext } from 'react-router';
 import {
+    DataStore,
     DataStoreNotFoundError,
     DataStoreServiceError,
     DataStoreUnavailableError,
-} from '@salesforce/mrt-utilities/middleware';
-import { getDefaultDataStoreProvider, type DataStoreProvider } from './provider';
+} from '@salesforce/mrt-utilities/data-store';
 import { siteContext } from '../site-context';
 
 export type DataStoreContextKey<T> = ReturnType<typeof createContext<T | null>>;
 
 export type DataStoreEntryKey = string | ((context: Readonly<RouterContextProvider>) => string);
 
+export type DataStoreEntry<TValue = unknown> = {
+    value?: TValue;
+};
+
 export type DataStoreMiddlewareOptions<T> = {
     entryKey: DataStoreEntryKey;
     context: DataStoreContextKey<T>;
     transform?: (value: Record<string, unknown>) => T;
-    provider?: DataStoreProvider | Promise<DataStoreProvider>;
+    onUnavailable?: 'throw' | 'fallback';
+    fallbackValue?: T | ((context: Readonly<RouterContextProvider>) => T);
 };
 
 /**
@@ -58,15 +63,13 @@ export function createDataStoreContext<T>(): DataStoreContextKey<T> {
  * @returns React Router middleware for server requests
  */
 export function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response> {
-    const { entryKey, context: contextKey } = options;
+    const { entryKey, context: contextKey, onUnavailable = 'throw', fallbackValue } = options;
     const transform = options.transform ?? ((value: Record<string, unknown>) => value as T);
-    const providerPromise = options.provider ? Promise.resolve(options.provider) : getDefaultDataStoreProvider();
 
     const dataStoreMiddleware: MiddlewareFunction<Response> = async ({ context }, next) => {
         const resolvedEntryKey = typeof entryKey === 'function' ? entryKey(context) : entryKey;
         try {
-            const provider = await providerPromise;
-            const entry = await provider.getEntry(resolvedEntryKey);
+            const entry = await getDataStoreEntry(resolvedEntryKey);
 
             if (!entry?.value || typeof entry.value !== 'object') {
                 // eslint-disable-next-line no-console
@@ -76,6 +79,16 @@ export function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions
             context.set(contextKey, transform(entry.value as Record<string, unknown>));
         } catch (error) {
             if (error instanceof DataStoreUnavailableError) {
+                if (onUnavailable === 'fallback' && typeof fallbackValue !== 'undefined') {
+                    const resolvedFallbackValue =
+                        typeof fallbackValue === 'function'
+                            ? (fallbackValue as (ctx: Readonly<RouterContextProvider>) => T)(context)
+                            : fallbackValue;
+                    context.set(contextKey, resolvedFallbackValue);
+                    // eslint-disable-next-line no-console
+                    console.warn(`Data store unavailable for '${resolvedEntryKey}'. Using configured fallback value.`);
+                    return next();
+                }
                 throw new Error(
                     'Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.'
                 );
@@ -98,50 +111,19 @@ export function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions
 }
 
 /**
- * Check whether MRT environment variables are present.
+ * Read a data-store entry through the singleton MRT utilities API.
+ * The underlying implementation (production DynamoDB vs development pseudo store)
+ * is resolved by `@salesforce/mrt-utilities/data-store` export conditions.
  *
- * @returns True when all MRT environment variables are set.
- * @example
- * if (hasMrtEnvironment()) {
- *   // Use MRT provider
- * }
+ * @param key - Data-store entry key
+ * @returns Data-store entry or null when missing/invalid shape
  */
-export function hasMrtEnvironment(): boolean {
-    return Boolean(process.env.AWS_REGION && process.env.MOBIFY_PROPERTY_ID && process.env.DEPLOY_TARGET);
-}
-
-/**
- * Check whether the runtime is in a development environment.
- *
- * @returns True when NODE_ENV is not "production".
- * @example
- * if (isDevelopmentEnvironment()) {
- *   // Load local provider
- * }
- */
-export function isDevelopmentEnvironment(): boolean {
-    return process.env.NODE_ENV !== 'production';
-}
-
-/**
- * Attempt to import the local provider from the dev package or workspace path.
- *
- * @returns Local provider module.
- * @throws Error when the provider cannot be resolved.
- * @example
- * const module = await tryImportLocalProvider();
- * const provider = module.createLocalDataStoreProvider();
- */
-export async function tryImportLocalProvider() {
-    try {
-        // @ts-expect-error - resolved at runtime from dev package
-        return await import(/* @vite-ignore */ '@salesforce/storefront-next-dev/data-store/local-provider');
-    } catch (error) {
-        throw new Error(
-            'Failed to load local data-store provider. Ensure @salesforce/storefront-next-dev is installed.',
-            { cause: error }
-        );
+export async function getDataStoreEntry<TValue = unknown>(key: string): Promise<DataStoreEntry<TValue> | null> {
+    const entry = (await DataStore.getDataStore().getEntry(key)) as DataStoreEntry<TValue> | undefined;
+    if (!entry || typeof entry !== 'object') {
+        return null;
     }
+    return entry;
 }
 
 /**

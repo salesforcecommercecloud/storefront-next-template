@@ -13,12 +13,6 @@
         "default": "./dist/index.js"
       }
     },
-    "./data-store/local-provider": {
-      "import": {
-        "types": "./dist/data-store/local-provider.d.ts",
-        "default": "./dist/data-store/local-provider.js"
-      }
-    },
     "./logger": {
       "import": {
         "types": "./dist/logger/index.d.ts",

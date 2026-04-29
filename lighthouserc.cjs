@@ -17,7 +17,7 @@ module.exports = {
     ci: {
         collect: {
             numberOfRuns: 5,
-            startServerCommand: 'pnpm start --port 3001',
+            startServerCommand: 'cross-env NODE_OPTIONS=--conditions=dev-data-store pnpm start --port 3001',
             startServerReadyPattern: 'SFCC Storefront Next',
             startServerReadyTimeout: 30000,
             url: [
