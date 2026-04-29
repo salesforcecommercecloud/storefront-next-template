@@ -83,6 +83,11 @@ const meta: Meta<typeof CartPickup> = {
     title: 'Extensions/BOPIS/CartPickup',
     component: CartPickup,
     tags: ['autodocs', 'interaction'],
+    args: {
+        store: mockStore,
+        pickupCount: 1,
+        totalCount: 3,
+    },
     parameters: {
         layout: 'padded',
         docs: {
@@ -109,6 +114,14 @@ This component is used on the cart page to show customers where they can pick up
             description: 'Store object containing store information',
             control: 'object',
         },
+        pickupCount: {
+            description: 'Number of basket line items in this pickup section',
+            control: 'number',
+        },
+        totalCount: {
+            description: 'Total basket line items (pickup + delivery) for the heading',
+            control: 'number',
+        },
     },
     decorators: [
         (Story: React.ComponentType) => (
@@ -123,15 +136,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    args: {
-        store: mockStore,
-    },
     parameters: {
         docs: {
             description: {
                 story: `
 Default pickup store info display showing:
-- Store icon and "Pick up in store" label with store name
+- Store icon and heading with store name and line counts (e.g. "1 out of 3 items")
 - Store address
 - "Change Store" button
 

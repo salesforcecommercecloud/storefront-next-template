@@ -288,6 +288,19 @@ PUBLIC__app__pages__cart__ruleBasedProductLimit=100
 
 ---
 
+### pages.cart.showLineItemDescription
+
+Type: `boolean` | Optional | Default: `false`
+
+When `true`, each cart line item shows the product short description (plain text) when available, otherwise the long description (HTML via `HtmlFragment`). When `false` (default), descriptions are hidden so the cart stays compact.
+
+Example:
+```bash
+PUBLIC__app__pages__cart__showLineItemDescription=true
+```
+
+---
+
 ### pages.cart.miniCart.enableViewCartButton
 
 Type: `boolean` Optional | Default: `true`

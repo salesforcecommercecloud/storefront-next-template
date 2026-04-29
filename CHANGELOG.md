@@ -1,3 +1,7 @@
+## v0.4.0-dev (Apr 28, 2026)
+
+- **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.
+
 ## v0.4.0-dev (Apr 24, 2026)
 
 - Fix promotions always showing as 0 in order summary and order confirmation when only item-level discounts are applied — now includes `productItems[].priceAdjustments` alongside `orderPriceAdjustments` ([#1557](https://github.com/commerce-emu/storefront-next/pull/1557))

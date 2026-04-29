@@ -15,8 +15,9 @@
  */
 import type { ReactElement } from 'react';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import { Info } from 'lucide-react';
+import { Truck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@/components/typography';
 
 interface CartTitleProps {
     basket: ShopperBasketsV2.schemas['Basket'];
@@ -36,11 +37,11 @@ export default function CartTitle({ basket, deliveryCount }: CartTitleProps): Re
 
     return (
         <div className="flex items-center gap-2 mb-6">
-            <Info className="w-4.5 h-4.5 text-foreground shrink-0" />
+            <Truck className="size-[1.125rem] text-foreground shrink-0" aria-hidden />
             <div>
-                <h2 className="text-lg-xl font-medium text-foreground">
+                <Typography variant="h5" as="h2" className="leading-none font-normal">
                     {t('delivery.heading', { deliveryCount, totalCount })}
-                </h2>
+                </Typography>
                 {formattedAddress && (
                     <p className="text-xs md:text-sm text-muted-foreground mt-1">{formattedAddress}</p>
                 )}

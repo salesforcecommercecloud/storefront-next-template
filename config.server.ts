@@ -30,6 +30,7 @@ import { TrackingConsent } from './src/types/tracking-consent';
  *    - PUBLIC__app__commerce__api__clientId → app.commerce.api.clientId
  *    - PUBLIC__app__site__locale → app.site.locale
  *    - PUBLIC__app__pages__cart__quantityUpdateDebounce → app.pages.cart.quantityUpdateDebounce
+ *    - PUBLIC__app__pages__cart__showLineItemDescription → app.pages.cart.showLineItemDescription
  *    - PUBLIC__app__site__features__socialLogin__providers=["Apple","Google"] → app.features.socialLogin.providers
  *
  * The PUBLIC__ prefix indicates these values are SAFE TO EXPOSE to the client.
@@ -91,6 +92,7 @@ export default defineConfig<Config>(
                     enableSaveForLater: false,
                     removeAction: '/action/cart-item-remove',
                     ruleBasedProductLimit: 50,
+                    showLineItemDescription: false,
                     miniCart: {
                         enableViewCartButton: true,
                     },

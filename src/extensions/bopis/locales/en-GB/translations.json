@@ -53,8 +53,11 @@
         "pickupLastName": "Pickup"
     },
     "cart": {
-        "deliveryItemsHeading": "Delivery - {{deliveryCount}} out of {{totalCount}} items",
+        "deliveryItemsHeading_one": "Delivery - {{deliveryCount}} out of {{count}} item",
+        "deliveryItemsHeading_other": "Delivery - {{deliveryCount}} out of {{count}} items",
         "pickupStoreInfo": {
+            "pickupHeadingWithCounts_one": "Pick up in <0>{{storeName}}</0> - {{pickupCount}} out of {{count}} item",
+            "pickupHeadingWithCounts_other": "Pick up in <0>{{storeName}}</0> - {{pickupCount}} out of {{count}} items",
             "pickupInStore": "Pick up in {{storeName}}",
             "changeStore": "Change Store",
             "storeChanged": "The pickup store was changed.",

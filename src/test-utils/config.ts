@@ -57,6 +57,7 @@ export const mockBuildConfig: Config = {
                 removeAction: '/action/cart-item-remove',
                 ruleBasedProductLimit: 4,
                 confirmDescription: 'Are you sure you want to remove this item from your cart?',
+                showLineItemDescription: false,
                 miniCart: {
                     enableViewCartButton: true,
                 },

@@ -40,7 +40,9 @@
     "updatingCart": "Aggiornamento in corso...",
     "updateCart": "Aggiorna",
     "addingToWishlist": "Aggiunta alla lista desideri in corso...",
+    "removingFromWishlist": "Rimozione dalla lista desideri in corso...",
     "addToWishlist": "Aggiungi alla lista desideri",
+    "inWishlist": "Nella lista desideri",
     "updatingWishlist": "Aggiornamento lista desideri",
     "share": "Condividi",
     "expressPayments": {

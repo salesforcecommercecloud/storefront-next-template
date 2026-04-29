@@ -206,6 +206,8 @@ export type AppConfig = {
             removeAction: string;
             ruleBasedProductLimit: number;
             confirmDescription?: string;
+            /** When true, cart line items show product short/long description (default false). */
+            showLineItemDescription?: boolean;
             miniCart?: {
                 enableViewCartButton: boolean;
             };

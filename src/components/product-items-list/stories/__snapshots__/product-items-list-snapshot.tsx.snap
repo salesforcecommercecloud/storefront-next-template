@@ -76,11 +76,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
-                      >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -162,9 +157,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         </div>
                       </div>
                     </div>
-                    <div
-                      class="min-w-0 md:col-start-1 md:row-start-2"
-                    />
                   </div>
                 </div>
               </div>
@@ -240,11 +232,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
-                      >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -332,9 +319,6 @@ exports[`ProductItemsList stories snapshot > Default story renders and matches s
                         </div>
                       </div>
                     </div>
-                    <div
-                      class="min-w-0 md:col-start-1 md:row-start-2"
-                    />
                   </div>
                 </div>
               </div>
@@ -423,11 +407,16 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          data-testid="edit-item"
+                          type="button"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -523,12 +512,6 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           item-1
                         </button>
                       </div>
-                      <button
-                        data-testid="edit-item"
-                        type="button"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -605,11 +588,16 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          data-testid="edit-item"
+                          type="button"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -711,12 +699,6 @@ exports[`ProductItemsList stories snapshot > Interactive story renders and match
                           item-2
                         </button>
                       </div>
-                      <button
-                        data-testid="edit-item"
-                        type="button"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -981,11 +963,15 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          class="text-primary"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -1080,11 +1066,6 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           item-1
                         </button>
                       </div>
-                      <button
-                        class="text-primary"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -1161,11 +1142,15 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           </div>
                         </div>
                       </div>
-                      <p
-                        class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                      <div
+                        class="mt-2"
                       >
-                        These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                      </p>
+                        <button
+                          class="text-primary"
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                     <div
                       class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -1266,11 +1251,6 @@ exports[`ProductItemsList stories snapshot > WithActions story renders and match
                           item-2
                         </button>
                       </div>
-                      <button
-                        class="text-primary"
-                      >
-                        Edit
-                      </button>
                     </div>
                   </div>
                 </div>

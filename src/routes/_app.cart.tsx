@@ -27,10 +27,12 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Middlewares
+import { getAuth } from '@/middlewares/auth.server';
 import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares/basket.server';
 
 // API
 import { createApiClients } from '@/lib/api-clients.server';
+import { getWishlist } from '@/lib/api/wishlist.server';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 // Logging
@@ -59,10 +61,39 @@ type CartPageData = {
         bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
         promotions: Record<string, ShopperPromotions.schemas['Promotion']>;
         storesByStoreId: Record<string, ShopperStores.schemas['Store']>;
+        /** Product IDs in the shopper wishlist (registered sessions only); hydrates cart wishlist controls after refresh */
+        wishlistProductIds: string[];
     }>;
     basketSnapshot: BasketSnapshot | null;
     pageUrl: string;
 };
+
+/**
+ * Loads wishlist product IDs for the signed-in customer so cart line wishlist UI matches server state after refresh.
+ */
+async function fetchWishlistProductIds(context: LoaderFunctionArgs['context']): Promise<string[]> {
+    try {
+        const session = getAuth(context);
+        const isRegistered =
+            session.userType === 'registered' &&
+            Boolean(session.customerId) &&
+            Boolean(session.accessToken) &&
+            typeof session.accessTokenExpiry === 'number' &&
+            session.accessTokenExpiry > Date.now();
+
+        if (!isRegistered || !session.customerId) {
+            return [];
+        }
+
+        const { items } = await getWishlist(context, session.customerId);
+        const wishlistItems = Array.isArray(items) ? items : [];
+        return wishlistItems
+            .map((item: { productId?: string }) => item.productId)
+            .filter((id): id is string => typeof id === 'string' && id.trim().length > 0);
+    } catch {
+        return [];
+    }
+}
 
 /**
  * Fetches promotion details for promotion IDs found in basket items.
@@ -290,6 +321,7 @@ export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs)
     const promotionsPromise = basketPromise.then((basket) =>
         fetchPromotionsForBasket(context, basket?.productItems ?? [])
     );
+    const wishlistProductIdsPromise = fetchWishlistProductIds(context);
 
     // Default when BOPIS is stripped; reassigned inside BOPIS block when extension is present
     let storesByStoreIdPromise: Promise<
@@ -305,8 +337,9 @@ export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs)
         bonusProductsByIdPromise,
         promotionsPromise,
         storesByStoreIdPromise,
+        wishlistProductIdsPromise,
     ]).then((results) => {
-        const [basket, productsByItemId, bonusProductsById, promotions, storesByStoreId] = results;
+        const [basket, productsByItemId, bonusProductsById, promotions, storesByStoreId, wishlistProductIds] = results;
         return {
             basket,
             productsByItemId,
@@ -314,6 +347,7 @@ export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs)
             promotions,
             storesByStoreId:
                 storesByStoreId instanceof Map ? Object.fromEntries(storesByStoreId) : (storesByStoreId ?? {}),
+            wishlistProductIds,
         };
     });
 
@@ -349,6 +383,7 @@ export default function Cart(): ReactElement {
                         productsByItemId={basketData.productsByItemId}
                         bonusProductsById={basketData.bonusProductsById}
                         promotions={basketData.promotions}
+                        wishlistProductIds={basketData.wishlistProductIds}
                     />
                 );
             }}

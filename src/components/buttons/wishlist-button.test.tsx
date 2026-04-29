@@ -26,6 +26,7 @@ const mockIsItemInWishlist = vi.fn().mockReturnValue(false);
 vi.mock('@/hooks/use-wishlist', () => ({
     useWishlist: () => ({
         isLoading: mockIsLoading,
+        pendingOperation: null,
         toggleWishlist: mockToggleWishlist,
         isItemInWishlist: mockIsItemInWishlist,
     }),

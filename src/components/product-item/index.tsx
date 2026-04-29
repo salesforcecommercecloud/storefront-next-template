@@ -27,6 +27,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 import { Badge } from '@/components/ui/badge';
 import { Spinner } from '@/components/spinner';
 import { Typography } from '@/components/typography';
+import HtmlFragment from '@/components/html-fragment';
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 import BundledProductItems from './bundled-product-items';
 import ProductPrice from '../product-price';
@@ -238,6 +239,7 @@ export function ProductItemPromotions({
  * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotions data by ID
  * @property {function} [primaryAction] - Render prop function to create primary actions
  * @property {function} [secondaryActions] - Render prop function to create secondary actions
+ * @property {function} [deliveryActions] - Render prop for per-line fulfillment (e.g. BOPIS pickup/delivery dropdown)
  */
 interface ProductItemProps {
     productItem: EnrichedProductItem | undefined;
@@ -287,6 +289,8 @@ function ProductItem({
     // Get currency from context (automatically derived from locale)
     const { currency } = useSite();
     const { t, i18n } = useTranslation();
+    const config = useConfig<AppConfig>();
+    const showLineItemDescription = config.pages.cart?.showLineItemDescription ?? false;
 
     // Check if this is a bonus product
     const isBonusProduct = Boolean(productItem?.bonusProductLineItem);
@@ -371,7 +375,6 @@ function ProductItem({
                         <div className="flex-1 space-y-3 min-w-0">
                             <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-2 md:gap-x-6 md:gap-y-1 min-w-0">
                                 <div className="min-w-0">
-                                    {/* Delivery badge - mobile only, top-right next to name */}
                                     <div className="md:hidden float-right ml-2">{deliveryActions?.(productItem)}</div>
                                     <ProductItemVariantName productItem={productItem} />
                                     {productItem.bundledProducts && (
@@ -382,18 +385,29 @@ function ProductItem({
                                         displayVariant={displayVariant}
                                         promotions={promotions}
                                     />
+                                    {showLineItemDescription && productItem.shortDescription ? (
+                                        <Typography variant="muted" as="p" className="text-sm mt-2">
+                                            {productItem.shortDescription}
+                                        </Typography>
+                                    ) : null}
+                                    {showLineItemDescription &&
+                                    !productItem.shortDescription &&
+                                    productItem.longDescription ? (
+                                        <HtmlFragment
+                                            content={productItem.longDescription}
+                                            contentType="plain-text"
+                                            className="text-sm text-muted-foreground mt-2 leading-relaxed"
+                                        />
+                                    ) : null}
 
-                                    <Typography
-                                        variant="product-description"
-                                        className="text-xs break-words hidden md:block">
-                                        {productItem?.shortDescription}
-                                    </Typography>
+                                    {!isAutoBonusProduct && secondaryActions && (
+                                        <div className="mt-2">{secondaryActions(productItem)}</div>
+                                    )}
+
                                     <UITarget targetId="sfcc.cart.tax.lineItemMessage" />
                                 </div>
                                 <div className="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2">
-                                    {/* Delivery Actions - desktop only */}
                                     <div className="hidden md:block">{deliveryActions?.(productItem)}</div>
-
                                     <div className="md:self-end">
                                         <div className="md:text-right" data-testid="desktop-product-price">
                                             <div className="font-semibold text-base">
@@ -464,13 +478,11 @@ function ProductItem({
                                         disabled={isAutoBonusProduct}
                                     />
                                 </div>
-                                {/* Actions - at bottom on mobile, in left column on desktop */}
-                                <div className="min-w-0 md:col-start-1 md:row-start-2">
-                                    {!isAutoBonusProduct && primaryAction && (
+                                {!isAutoBonusProduct && primaryAction && (
+                                    <div className="min-w-0 md:col-start-1 md:row-start-2">
                                         <div data-testid="mobile-primary-action">{primaryAction(productItem)}</div>
-                                    )}
-                                    {!isAutoBonusProduct && secondaryActions && secondaryActions(productItem)}
-                                </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Inventory Message */}

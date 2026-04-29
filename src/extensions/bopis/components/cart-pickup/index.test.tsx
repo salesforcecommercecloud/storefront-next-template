@@ -94,20 +94,32 @@ describe('CartPickup', () => {
         it('renders store name and address', () => {
             render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
             expect(screen.getByText(/Pick up in/)).toBeInTheDocument();
+            expect(screen.getByText(/1 out of 4 items/)).toBeInTheDocument();
             expect(screen.getByText('Somerville Square')).toBeInTheDocument();
             expect(screen.getByText(/478 Artisan Way/)).toBeInTheDocument();
             expect(screen.getByText(/Somerville, MA 02145/)).toBeInTheDocument();
         });
 
+        it('uses singular item when basket has one line item', () => {
+            render(
+                <AllProvidersWrapper>
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={1} />
+                </AllProvidersWrapper>
+            );
+
+            expect(screen.getByText(/1 out of 1 item$/)).toBeInTheDocument();
+            expect(screen.queryByText(/1 out of 1 items/)).not.toBeInTheDocument();
+        });
+
         it('renders Change Store button', () => {
             render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -117,7 +129,7 @@ describe('CartPickup', () => {
         it('renders with data-testid attribute', () => {
             render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -127,7 +139,7 @@ describe('CartPickup', () => {
         it('renders store icon', () => {
             const { container } = render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -139,7 +151,7 @@ describe('CartPickup', () => {
         it('renders StoreAddress component with store prop', () => {
             render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -156,14 +168,14 @@ describe('CartPickup', () => {
 
             render(
                 <AllProvidersWrapper>
-                    <CartPickup store={storeWithoutName} />
+                    <CartPickup store={storeWithoutName} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
             // Should still render "Pick up in" text
             expect(screen.getByText(/Pick up in/)).toBeInTheDocument();
-            // Store name should not be displayed when name is undefined
-            expect(screen.queryByText('store-001')).not.toBeInTheDocument();
+            // Heading uses store id when name is missing
+            expect(screen.getByText('store-001')).toBeInTheDocument();
         });
     });
 
@@ -173,7 +185,7 @@ describe('CartPickup', () => {
 
             render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -197,7 +209,7 @@ describe('CartPickup', () => {
 
             render(
                 <AllProvidersWrapper>
-                    <CartPickup store={storeWithoutName} />
+                    <CartPickup store={storeWithoutName} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -224,14 +236,14 @@ describe('CartPickup', () => {
 
             const { rerender } = render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
             // Trigger re-render to simulate store selection change
             rerender(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -257,14 +269,14 @@ describe('CartPickup', () => {
 
             const { rerender } = render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -291,14 +303,14 @@ describe('CartPickup', () => {
 
             const { rerender } = render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -319,14 +331,14 @@ describe('CartPickup', () => {
 
             const { rerender } = render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
@@ -353,14 +365,14 @@ describe('CartPickup', () => {
 
             const { rerender } = render(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 
             // Trigger re-render
             rerender(
                 <AllProvidersWrapper>
-                    <CartPickup store={mockStore} />
+                    <CartPickup store={mockStore} pickupCount={1} totalCount={4} />
                 </AllProvidersWrapper>
             );
 

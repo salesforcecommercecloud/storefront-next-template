@@ -245,11 +245,83 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-item-1"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-item-1"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-item-1"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-item-1"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -263,7 +335,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_2_"
+                                  id="radix-_r_8_"
                                   type="button"
                                 >
                                   <span
@@ -398,83 +470,6 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-item-1"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-item-1"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-item-1"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-item-1"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -1144,11 +1139,83 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-pd-item-1"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-pd-item-1"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-pd-item-1"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-pd-item-1"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -1162,7 +1229,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_56_"
+                                  id="radix-_r_5c_"
                                   type="button"
                                 >
                                   <span
@@ -1286,83 +1353,6 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-pd-item-1"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-pd-item-1"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-pd-item-1"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-pd-item-1"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -1545,11 +1535,83 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-pd-item-2"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-pd-item-2"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-pd-item-2"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-pd-item-2"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -1563,7 +1625,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_5j_"
+                                  id="radix-_r_5p_"
                                   type="button"
                                 >
                                   <span
@@ -1702,83 +1764,6 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                 </div>
                               </div>
                             </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-pd-item-2"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-pd-item-2"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-pd-item-2"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-pd-item-2"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -1903,11 +1888,83 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-pd-item-3"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-pd-item-3"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-pd-item-3"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-pd-item-3"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -1921,7 +1978,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_60_"
+                                  id="radix-_r_66_"
                                   type="button"
                                 >
                                   <span
@@ -2062,83 +2119,6 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-pd-item-3"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-pd-item-3"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-pd-item-3"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-pd-item-3"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -2806,11 +2786,83 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-promo-item-1"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-promo-item-1"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-promo-item-1"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-promo-item-1"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -2824,7 +2876,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_i_"
+                                  id="radix-_r_o_"
                                   type="button"
                                 >
                                   <span
@@ -2963,83 +3015,6 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 </div>
                               </div>
                             </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-promo-item-1"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-promo-item-1"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-promo-item-1"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-promo-item-1"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -3164,11 +3139,83 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-promo-item-2"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-promo-item-2"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-promo-item-2"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-promo-item-2"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -3182,7 +3229,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_v_"
+                                  id="radix-_r_15_"
                                   type="button"
                                 >
                                   <span
@@ -3317,83 +3364,6 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-promo-item-2"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-promo-item-2"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-promo-item-2"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-promo-item-2"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -4111,11 +4081,83 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-hq-item-1"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-hq-item-1"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-hq-item-1"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-hq-item-1"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -4129,7 +4171,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_3m_"
+                                  id="radix-_r_3s_"
                                   type="button"
                                 >
                                   <span
@@ -4270,83 +4312,6 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-hq-item-1"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-hq-item-1"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-hq-item-1"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-hq-item-1"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -5014,11 +4979,83 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-large-item-1"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-large-item-1"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-large-item-1"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-large-item-1"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -5032,7 +5069,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_1v_"
+                                  id="radix-_r_25_"
                                   type="button"
                                 >
                                   <span
@@ -5177,83 +5214,6 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 </div>
                               </div>
                             </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-large-item-1"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-large-item-1"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-large-item-1"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-large-item-1"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -5378,11 +5338,83 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-large-item-2"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-large-item-2"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-large-item-2"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-large-item-2"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -5396,7 +5428,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_2c_"
+                                  id="radix-_r_2i_"
                                   type="button"
                                 >
                                   <span
@@ -5535,83 +5567,6 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 </div>
                               </div>
                             </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-large-item-2"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-large-item-2"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-large-item-2"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-large-item-2"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -5736,11 +5691,83 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-large-item-3"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-large-item-3"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-large-item-3"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-large-item-3"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -5754,7 +5781,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_2p_"
+                                  id="radix-_r_2v_"
                                   type="button"
                                 >
                                   <span
@@ -5899,83 +5926,6 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 </div>
                               </div>
                             </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-large-item-3"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-large-item-3"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-large-item-3"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-large-item-3"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -6100,11 +6050,83 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-large-item-4"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-large-item-4"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-large-item-4"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-large-item-4"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -6118,7 +6140,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_36_"
+                                  id="radix-_r_3c_"
                                   type="button"
                                 >
                                   <span
@@ -6253,83 +6275,6 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-large-item-4"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-large-item-4"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-large-item-4"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-large-item-4"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -6997,11 +6942,83 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   </div>
                                 </div>
                               </div>
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                              <div
+                                class="mt-2"
                               >
-                                These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                              </p>
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-long-item-1"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-long-item-1"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Very Long Product Name That Should Wrap Properly In The Cart Display Area"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-long-item-1"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-long-item-1"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -7015,7 +7032,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_4m_"
+                                  id="radix-_r_4s_"
                                   type="button"
                                 >
                                   <span
@@ -7150,83 +7167,6 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-long-item-1"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-long-item-1"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Very Long Product Name That Should Wrap Properly In The Cart Display Area"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-long-item-1"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-long-item-1"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -7880,9 +7820,83 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                 </h2>
                               </div>
                               <div />
-                              <p
-                                class="text-muted-foreground text-left text-xs break-words hidden md:block"
-                              />
+                              <div
+                                class="mt-2"
+                              >
+                                <div
+                                  class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                                >
+                                  <div
+                                    class="flex items-center gap-2"
+                                  >
+                                    <button
+                                      aria-checked="false"
+                                      class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                      data-slot="checkbox"
+                                      data-state="unchecked"
+                                      id="gift-item-1"
+                                      role="checkbox"
+                                      type="button"
+                                      value="on"
+                                    />
+                                    <label
+                                      class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                      data-slot="label"
+                                      for="gift-item-1"
+                                    >
+                                      This is a gift.
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="flex items-center gap-3 flex-nowrap"
+                                  >
+                                    <button
+                                      aria-label="Edit Men's Classic Deer Gloves"
+                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                      data-size="default"
+                                      data-slot="button"
+                                      data-testid="edit-item-item-1"
+                                      data-variant="link"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      aria-busy="false"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
+                                      data-slot="button"
+                                      data-testid="remove-item-item-1"
+                                      data-variant="link"
+                                      title="Remove item"
+                                    >
+                                      Remove
+                                    </button>
+                                    <button
+                                      class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                      type="button"
+                                    >
+                                      <svg
+                                        aria-hidden="true"
+                                        class="lucide lucide-heart size-3.5"
+                                        fill="none"
+                                        height="24"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        viewBox="0 0 24 24"
+                                        width="24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                        />
+                                      </svg>
+                                      Add to Wishlist
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div
                               class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -7896,7 +7910,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   class="cursor-pointer"
                                   data-slot="dropdown-menu-trigger"
                                   data-state="closed"
-                                  id="radix-_r_46_"
+                                  id="radix-_r_4c_"
                                   type="button"
                                 >
                                   <span
@@ -8009,83 +8023,6 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                     data-testid="quantity-increment"
                                   >
                                     +
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              class="min-w-0 md:col-start-1 md:row-start-2"
-                            >
-                              <div
-                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                              >
-                                <div
-                                  class="flex items-center gap-2"
-                                >
-                                  <button
-                                    aria-checked="false"
-                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-slot="checkbox"
-                                    data-state="unchecked"
-                                    id="gift-item-1"
-                                    role="checkbox"
-                                    type="button"
-                                    value="on"
-                                  />
-                                  <label
-                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                    data-slot="label"
-                                    for="gift-item-1"
-                                  >
-                                    This is a gift.
-                                  </label>
-                                </div>
-                                <div
-                                  class="flex items-center gap-3 flex-nowrap"
-                                >
-                                  <button
-                                    aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
-                                    data-slot="button"
-                                    data-testid="edit-item-item-1"
-                                    data-variant="link"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                    data-size="sm"
-                                    data-slot="button"
-                                    data-testid="remove-item-item-1"
-                                    data-variant="link"
-                                    title="Remove item"
-                                  >
-                                    Remove
-                                  </button>
-                                  <button
-                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                    type="button"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="lucide lucide-heart size-3.5"
-                                      fill="none"
-                                      height="24"
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      viewBox="0 0 24 24"
-                                      width="24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                      />
-                                    </svg>
-                                    Add to Wishlist
                                   </button>
                                 </div>
                               </div>
@@ -9144,11 +9081,83 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 </div>
                               </div>
                             </div>
-                            <p
-                              class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                            <div
+                              class="mt-2"
                             >
-                              These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                            </p>
+                              <div
+                                class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
+                              >
+                                <div
+                                  class="flex items-center gap-2"
+                                >
+                                  <button
+                                    aria-checked="false"
+                                    class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                                    data-slot="checkbox"
+                                    data-state="unchecked"
+                                    id="gift-item-1"
+                                    role="checkbox"
+                                    type="button"
+                                    value="on"
+                                  />
+                                  <label
+                                    class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
+                                    data-slot="label"
+                                    for="gift-item-1"
+                                  >
+                                    This is a gift.
+                                  </label>
+                                </div>
+                                <div
+                                  class="flex items-center gap-3 flex-nowrap"
+                                >
+                                  <button
+                                    aria-label="Edit Men's Classic Deer Gloves"
+                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
+                                    data-size="default"
+                                    data-slot="button"
+                                    data-testid="edit-item-item-1"
+                                    data-variant="link"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    aria-busy="false"
+                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                    data-size="sm"
+                                    data-slot="button"
+                                    data-testid="remove-item-item-1"
+                                    data-variant="link"
+                                    title="Remove item"
+                                  >
+                                    Remove
+                                  </button>
+                                  <button
+                                    class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
+                                    type="button"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="lucide lucide-heart size-3.5"
+                                      fill="none"
+                                      height="24"
+                                      stroke="currentColor"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      viewBox="0 0 24 24"
+                                      width="24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
+                                      />
+                                    </svg>
+                                    Add to Wishlist
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                           <div
                             class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -9162,7 +9171,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 class="cursor-pointer"
                                 data-slot="dropdown-menu-trigger"
                                 data-state="closed"
-                                id="radix-_r_1i_"
+                                id="radix-_r_1o_"
                                 type="button"
                               >
                                 <span
@@ -9297,83 +9306,6 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                   data-testid="quantity-increment"
                                 >
                                   +
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="min-w-0 md:col-start-1 md:row-start-2"
-                          >
-                            <div
-                              class="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3"
-                            >
-                              <div
-                                class="flex items-center gap-2"
-                              >
-                                <button
-                                  aria-checked="false"
-                                  class="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                                  data-slot="checkbox"
-                                  data-state="unchecked"
-                                  id="gift-item-1"
-                                  role="checkbox"
-                                  type="button"
-                                  value="on"
-                                />
-                                <label
-                                  class="flex items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground cursor-pointer"
-                                  data-slot="label"
-                                  for="gift-item-1"
-                                >
-                                  This is a gift.
-                                </label>
-                              </div>
-                              <div
-                                class="flex items-center gap-3 flex-nowrap"
-                              >
-                                <button
-                                  aria-label="Edit Men's Classic Deer Gloves"
-                                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                  data-size="default"
-                                  data-slot="button"
-                                  data-testid="edit-item-item-1"
-                                  data-variant="link"
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  aria-busy="false"
-                                  class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
-                                  data-size="sm"
-                                  data-slot="button"
-                                  data-testid="remove-item-item-1"
-                                  data-variant="link"
-                                  title="Remove item"
-                                >
-                                  Remove
-                                </button>
-                                <button
-                                  class="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap"
-                                  type="button"
-                                >
-                                  <svg
-                                    aria-hidden="true"
-                                    class="lucide lucide-heart size-3.5"
-                                    fill="none"
-                                    height="24"
-                                    stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
-                                    width="24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
-                                    />
-                                  </svg>
-                                  Add to Wishlist
                                 </button>
                               </div>
                             </div>

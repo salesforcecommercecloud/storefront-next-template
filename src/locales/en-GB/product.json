@@ -38,7 +38,9 @@
     "updatingCart": "Updating...",
     "updateCart": "Update",
     "addingToWishlist": "Adding to Wishlist...",
+    "removingFromWishlist": "Removing from wishlist...",
     "addToWishlist": "Add to Wishlist",
+    "inWishlist": "In your wishlist",
     "updatingWishlist": "Updating Wishlist",
     "share": "Share",
     "expressPayments": {
@@ -131,7 +133,7 @@
     "signInToContinue": "Sign in to continue.",
     "removedFromWishlist": "Removed from wishlist.",
     "failedToRemoveFromWishlist": "Failed to remove item from wishlist.",
-    "removeFromWishlist": "Remove from wishlist.",
+    "removeFromWishlist": "Remove from wishlist",
     "removedLabel": "Removed",
     "remove": "Remove",
     "selectVariantPlaceholder": "Select",

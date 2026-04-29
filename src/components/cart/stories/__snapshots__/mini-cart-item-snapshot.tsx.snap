@@ -22,7 +22,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -33,21 +33,29 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -634,7 +642,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -645,21 +653,29 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -1237,7 +1253,7 @@ exports[`MiniCartItem stories snapshot > EmptyCart story renders and matches sna
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -1248,21 +1264,29 @@ exports[`MiniCartItem stories snapshot > EmptyCart story renders and matches sna
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 0 out of 0 items
                 </h2>
@@ -1475,7 +1499,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -1486,21 +1510,29 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -2078,7 +2110,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -2089,21 +2121,29 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -2682,7 +2722,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -2693,21 +2733,29 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -3286,7 +3334,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -3297,21 +3345,29 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -3879,7 +3935,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -3890,21 +3946,29 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -4472,7 +4536,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -4483,21 +4547,29 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -5117,7 +5189,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -5128,21 +5200,29 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -5758,7 +5838,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -5769,21 +5849,29 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -6362,7 +6450,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -6373,21 +6461,29 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>
@@ -6961,7 +7057,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
             >
               <svg
                 aria-hidden="true"
-                class="lucide lucide-info w-4.5 h-4.5 text-foreground shrink-0"
+                class="lucide lucide-truck size-[1.125rem] text-foreground shrink-0"
                 fill="none"
                 height="24"
                 stroke="currentColor"
@@ -6972,21 +7068,29 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                 width="24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <path
+                  d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+                />
+                <path
+                  d="M15 18H9"
+                />
+                <path
+                  d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+                />
                 <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
+                  cx="17"
+                  cy="18"
+                  r="2"
                 />
-                <path
-                  d="M12 16v-4"
-                />
-                <path
-                  d="M12 8h.01"
+                <circle
+                  cx="7"
+                  cy="18"
+                  r="2"
                 />
               </svg>
               <div>
                 <h2
-                  class="text-lg-xl font-medium text-foreground"
+                  class="text-lg tracking-tight text-left leading-none font-normal"
                 >
                   Delivery - 1 out of 1 items
                 </h2>

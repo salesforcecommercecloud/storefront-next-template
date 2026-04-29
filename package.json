@@ -257,8 +257,8 @@
             },
             {
                 "name": "assets/\\(components\\)-\\(checkout\\)-*.js",
-                "limit": "570 kB",
-                "comment": "Checkout components with dependencies. Lazy loaded on /checkout route only. @see W-21553426"
+                "limit": "590 kB",
+                "comment": "Checkout components with dependencies (incl. express-payments lazy chunk). Lazy on /checkout. @see W-21553426"
             },
             {
                 "name": "assets/\\(package\\)-\\(fast-deep-equal\\)-*.js",

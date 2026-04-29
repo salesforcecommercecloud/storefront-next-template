@@ -78,11 +78,6 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       </div>
                     </div>
                   </div>
-                  <p
-                    class="text-muted-foreground text-left text-xs break-words hidden md:block"
-                  >
-                    This is a bonus product added to your cart
-                  </p>
                 </div>
                 <div
                   class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -150,9 +145,6 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                     </div>
                   </div>
                 </div>
-                <div
-                  class="min-w-0 md:col-start-1 md:row-start-2"
-                />
               </div>
             </div>
           </div>
@@ -241,11 +233,15 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       </div>
                     </div>
                   </div>
-                  <p
-                    class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                  <div
+                    class="mt-2"
                   >
-                    This is a choice-based bonus product that you can select and adjust quantity
-                  </p>
+                    <button
+                      class="text-primary"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
                 <div
                   class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -323,11 +319,6 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       Remove
                     </button>
                   </div>
-                  <button
-                    class="text-primary"
-                  >
-                    Edit
-                  </button>
                 </div>
               </div>
             </div>
@@ -409,11 +400,6 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       </div>
                     </div>
                   </div>
-                  <p
-                    class="text-muted-foreground text-left text-xs break-words hidden md:block"
-                  >
-                    These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                  </p>
                 </div>
                 <div
                   class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -495,9 +481,6 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                     </div>
                   </div>
                 </div>
-                <div
-                  class="min-w-0 md:col-start-1 md:row-start-2"
-                />
               </div>
             </div>
           </div>
@@ -664,11 +647,15 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       </div>
                     </div>
                   </div>
-                  <p
-                    class="text-muted-foreground text-left text-xs break-words hidden md:block"
+                  <div
+                    class="mt-2"
                   >
-                    These simple, stylish gloves have a great look and feel, with outseam construction for rugged character and select deerskin leather for premium quality. The fleece lining provides essential winter warmth, with a lightly tailored cuff for extra protection – featuring a Commerce Cloud grommet button for detail. A classic glove for men.
-                  </p>
+                    <button
+                      class="text-primary"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
                 <div
                   class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
@@ -762,11 +749,6 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       Remove
                     </button>
                   </div>
-                  <button
-                    class="text-primary"
-                  >
-                    Edit
-                  </button>
                 </div>
               </div>
             </div>
