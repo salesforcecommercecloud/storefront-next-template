@@ -528,11 +528,40 @@ async function getAndUnpackDataStoreEntry(
     }
 }
 
+/** Reused across calls — TextEncoder is stateless and has no configuration. */
+const keyEncoder = new TextEncoder();
+
+/**
+ * Encodes a string for use as a segment in a Data Store key.
+ *
+ * Data Store keys are restricted to `[A-Za-z0-9._-]`. This function encodes
+ * any byte outside `[A-Za-z0-9-]` as `.XX` (uppercase hex), using `.` as the
+ * escape prefix. Both `.` and `_` are always encoded (`.2E` and `.5F`) — `.`
+ * because it is the escape prefix itself, and `_` because it is the segment
+ * delimiter in key templates. This ensures `.` and `_` never appear bare in
+ * output, making the encoding collision-free and unambiguously reversible.
+ *
+ * The encoding is byte-for-byte identical to the Java implementation in ecom.
+ */
+function sanitizeKeySegment(value: string): string {
+    return [...keyEncoder.encode(value)]
+        .map((b) => {
+            const c = String.fromCharCode(b);
+            return /[A-Za-z0-9-]/.test(c) ? c : `.${b.toString(16).toUpperCase().padStart(2, '0')}`;
+        })
+        .join('');
+}
+
 /**
  * Returns the Data Store key for a page or site manifest.
+ *
+ * Both `siteId` and `pageId` are sanitized via {@link sanitizeKeySegment}
+ * before inclusion in the key, ensuring the key only contains characters
+ * in `[A-Za-z0-9._-]` regardless of the input values.
  */
 function getStorageKey(siteId: string, pageId?: string): string {
-    return pageId ? `siteId:${siteId}:pageId:${pageId}:MANIFEST` : `siteId:${siteId}:MANIFEST`;
+    const safeSiteId = sanitizeKeySegment(siteId);
+    return pageId ? `page-manifest_${safeSiteId}_${sanitizeKeySegment(pageId)}` : `site-manifest_${safeSiteId}`;
 }
 
 /**
