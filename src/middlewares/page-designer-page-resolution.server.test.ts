@@ -20,6 +20,7 @@ import { createTestContext } from '@/lib/test-utils';
 import { scapiMiddlewareContext, type ScapiMiddlewareEntry } from '@/lib/scapi-middleware';
 import { resolvePage } from '@salesforce/storefront-next-runtime/design/data';
 import {
+    DataStore,
     DataStoreNotFoundError,
     DataStoreUnavailableError,
     DataStoreServiceError,
@@ -27,8 +28,6 @@ import {
 
 const mockGetEntry = vi.fn();
 const mockResolveQualifiers = vi.fn();
-const mockDataStoreProvider = { kind: 'mrt' as const, getEntry: mockGetEntry };
-const mockGetDefaultDataStoreProvider = vi.fn().mockResolvedValue(mockDataStoreProvider);
 
 const mockLogger = vi.hoisted(() => ({
     error: vi.fn(),
@@ -47,10 +46,15 @@ const mockClients = {
     },
 } as any;
 
-vi.mock('@salesforce/storefront-next-runtime/data-store', async (importOriginal) => ({
-    ...(await importOriginal()),
-    getDefaultDataStoreProvider: (...args: unknown[]) => mockGetDefaultDataStoreProvider(...args),
-}));
+vi.mock('@salesforce/storefront-next-runtime/data-store', async (importOriginal) => {
+    const original = await importOriginal<typeof import('@salesforce/storefront-next-runtime/data-store')>();
+    return {
+        ...original,
+        DataStore: {
+            getDataStore: vi.fn(() => ({ getEntry: mockGetEntry })),
+        },
+    };
+});
 
 vi.mock('@salesforce/storefront-next-runtime/design/data', () => ({
     resolvePage: vi.fn(),
@@ -145,7 +149,8 @@ describe('pageDesignerResolutionMiddleware', () => {
         mockGetEntry.mockReset();
         mockResolveQualifiers.mockReset();
         mockedResolvePage.mockReset();
-        mockGetDefaultDataStoreProvider.mockReset().mockResolvedValue(mockDataStoreProvider);
+        DataStore._testDocumentClient = null;
+        DataStore._testLogMRTError = null;
     });
 
     describe('factory registration', () => {
@@ -177,16 +182,6 @@ describe('pageDesignerResolutionMiddleware', () => {
             expect(scapiMiddlewares[0].clients).toEqual(['shopperExperience']);
             expect(typeof scapiMiddlewares[0].factory).toBe('function');
             expect(next).toHaveBeenCalled();
-        });
-
-        it('should return undefined from onRequest when data store provider is not available', async () => {
-            mockGetDefaultDataStoreProvider.mockResolvedValue(null);
-            const handler = await setupHandler();
-
-            const result = await handler(middlewareParams(new Request(getPageUrl('homepage'))));
-
-            expect(result).toBeUndefined();
-            expect(mockedResolvePage).not.toHaveBeenCalled();
         });
 
         it('should return an onRequest handler from factory when feature flag is enabled', async () => {

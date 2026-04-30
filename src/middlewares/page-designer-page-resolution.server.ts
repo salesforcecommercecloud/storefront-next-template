@@ -23,8 +23,7 @@ import {
     type SiteManifest,
 } from '@salesforce/storefront-next-runtime/design/data';
 import {
-    getDefaultDataStoreProvider,
-    type DataStoreProvider,
+    DataStore,
     DataStoreNotFoundError,
     DataStoreUnavailableError,
     DataStoreServiceError,
@@ -32,8 +31,8 @@ import {
 import type { ShopperExperience, Middleware, Clients } from '@salesforce/storefront-next-runtime/scapi';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
-import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import type { AppConfig } from '@/types/config';
 import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
 import { getLogger } from '@/lib/logger.server';
 import type { Logger } from '@/lib/logger';
@@ -56,6 +55,7 @@ type ManifestWrapperKey<TType extends ManifestType> = TType extends 'page' ? 'co
 type ManifestValue<TType extends ManifestType> = {
     [K in ManifestWrapperKey<TType>]: string;
 };
+type DataStoreClient = Pick<DataStore, 'getEntry'>;
 
 /**
  * Thrown when a Data Store entry cannot be decoded (base64), decompressed
@@ -127,16 +127,11 @@ function createPageResolutionMiddleware(
     const locale = i18next.language ?? config.i18n.fallbackLng;
     const logger = getLogger(context);
     const onError = getErrorHandler(logger);
-    const dataStorePromise = getDefaultDataStoreProvider();
+    const dataStore = DataStore.getDataStore();
 
     return {
         async onRequest({ request }) {
             const metrics: Metrics = {};
-            const dataStore = await dataStorePromise;
-
-            if (!dataStore) {
-                return;
-            }
 
             const response = await resolveGetPageRequest({
                 metrics,
@@ -280,7 +275,7 @@ async function resolveGetPageRequest({
 }: {
     request: Request;
     context: RouterContextProvider | Readonly<RouterContextProvider>;
-    dataStore: DataStoreProvider;
+    dataStore: DataStoreClient;
     siteId: string;
     locale: string;
     metrics: Metrics;
@@ -367,7 +362,7 @@ function getPageResolutionParams({
     onError,
     clients,
 }: {
-    dataStore: DataStoreProvider;
+    dataStore: DataStoreClient;
     siteId: string;
     locale: string;
     pageId: string;
@@ -456,7 +451,7 @@ function getPageManifestStorage({
     onError,
     metrics,
 }: {
-    dataStore: DataStoreProvider;
+    dataStore: DataStoreClient;
     siteId: string;
     onError: (error: unknown) => void;
     metrics: Metrics;
@@ -489,14 +484,14 @@ function getPageManifestStorage({
  * @throws {DataStoreEntryUnpackError} If decoding, decompression, or parsing fails.
  */
 async function getAndUnpackDataStoreEntry(
-    dataStore: DataStoreProvider,
+    dataStore: DataStoreClient,
     key: string,
     manifestType: ManifestType,
     metrics: Metrics
 ): Promise<PageManifest | SiteManifest> {
     metrics[`${manifestType}ManifestRetrievalStart`] = performance.now();
 
-    const entry = await dataStore.getEntry<ManifestValue<typeof manifestType>>(key);
+    const entry = (await dataStore.getEntry(key)) as { value?: ManifestValue<typeof manifestType> } | undefined;
 
     metrics[`${manifestType}ManifestRetrievalEnd`] = performance.now();
 
@@ -509,7 +504,7 @@ async function getAndUnpackDataStoreEntry(
 
         metrics[`${manifestType}ManifestUnpackStart`] = performance.now();
 
-        if (!entry.value?.compressedData && !entry.value?.data) {
+        if (!entry.value) {
             // This will get caught so the error message doesn't
             // really matter here.
             throw new Error('Data store entry is blank');
