@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
@@ -168,7 +168,7 @@ describe('CartContent', () => {
     });
 
     describe('Line item secondary actions', () => {
-        test('renders remove and wishlist controls for each cart item with itemId', async () => {
+        test('renders remove, edit, and wishlist controls for each cart item with itemId', async () => {
             renderCartContent({
                 basket: mockBasket,
                 productsByItemId: mockProductMap,
@@ -177,6 +177,8 @@ describe('CartContent', () => {
 
             expect(screen.getByTestId('remove-item-item-1')).toBeInTheDocument();
             expect(screen.getByTestId('remove-item-item-2')).toBeInTheDocument();
+            expect(screen.getByTestId('edit-item-item-1')).toBeInTheDocument();
+            expect(screen.getByTestId('edit-item-item-2')).toBeInTheDocument();
             expect(await screen.findByTestId('cart-add-wishlist-item-1')).toBeInTheDocument();
             expect(await screen.findByTestId('cart-add-wishlist-item-2')).toBeInTheDocument();
         });
@@ -197,8 +199,10 @@ describe('CartContent', () => {
             });
 
             expect(screen.queryByTestId('remove-item-item-1')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('edit-item-item-1')).not.toBeInTheDocument();
             expect(screen.queryByTestId('cart-add-wishlist-item-1')).not.toBeInTheDocument();
             expect(screen.getByTestId('remove-item-item-2')).toBeInTheDocument();
+            expect(screen.getByTestId('edit-item-item-2')).toBeInTheDocument();
             expect(await screen.findByTestId('cart-add-wishlist-item-2')).toBeInTheDocument();
         });
 
@@ -267,6 +271,193 @@ describe('CartContent', () => {
 
             expect(screen.queryByTestId('edit-item-item-1')).not.toBeInTheDocument();
             expect(screen.queryByTestId('cart-add-wishlist-item-1')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('CartItemEditButton Integration', () => {
+        test('renders edit buttons for each cart item', () => {
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            expect(screen.getByTestId('edit-item-item-1')).toBeInTheDocument();
+            expect(screen.getByTestId('edit-item-item-2')).toBeInTheDocument();
+
+            const editButtons = screen.getAllByText(t('actionCard:edit'));
+            expect(editButtons).toHaveLength(2);
+        });
+
+        test('applies correct className to edit buttons', () => {
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            const editButton1 = screen.getByTestId('edit-item-item-1');
+            const editButton2 = screen.getByTestId('edit-item-item-2');
+
+            expect(editButton1).toHaveClass('pl-0');
+            expect(editButton2).toHaveClass('pl-0');
+        });
+
+        test('opens product modal when edit button is clicked', () => {
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+            const editButton = screen.getByTestId('edit-item-item-1');
+            fireEvent.click(editButton);
+
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+            expect(screen.getByText(t('editItem:title'))).toBeInTheDocument();
+        });
+
+        test('can close modal using close button', () => {
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            const editButton = screen.getByTestId('edit-item-item-1');
+            fireEvent.click(editButton);
+
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+            const closeButton = screen.getByRole('button', { name: /close/i });
+            fireEvent.click(closeButton);
+
+            expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        });
+
+        test('does not render edit buttons when product has no itemId', () => {
+            const basketWithoutItemIds = {
+                ...mockBasket,
+                productItems: [
+                    { quantity: 2, productId: 'product-1' },
+                    { itemId: 'item-2', quantity: 1, productId: 'product-2' },
+                ],
+            };
+
+            renderCartContent({
+                basket: basketWithoutItemIds,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            expect(screen.queryByTestId('edit-item-item-1')).not.toBeInTheDocument();
+            expect(screen.getByTestId('edit-item-item-2')).toBeInTheDocument();
+        });
+    });
+
+    describe('Edit button visibility (CartItemEditButton presence)', () => {
+        function renderWith(productsByItemId: Record<string, any>) {
+            const basket = {
+                basketId: 'b1',
+                productItems: [{ itemId: 'item-1', quantity: 1, productId: 'p1' }],
+            };
+            return renderCartContent({ basket, productsByItemId, bonusProductsById: mockBonusProductsById });
+        }
+
+        const editBtn = () => screen.queryByTestId('edit-item-item-1');
+
+        test('standard product does not show CartItemEditButton', () => {
+            renderWith({ 'item-1': { id: 'p1', type: { item: true } } } as any);
+            expect(editBtn()).not.toBeInTheDocument();
+        });
+
+        test('product with variants shows CartItemEditButton', () => {
+            renderWith({ 'item-1': { id: 'p1', variants: [{} as any] } } as any);
+            expect(editBtn()).toBeInTheDocument();
+        });
+
+        test('missing product details mapping shows CartItemEditButton', () => {
+            const basket = { basketId: 'b1', productItems: [{ itemId: 'item-1', quantity: 1, productId: 'p1' }] };
+            renderCartContent({
+                basket,
+                productsByItemId: {} as any,
+                bonusProductsById: mockBonusProductsById,
+            });
+            expect(editBtn()).toBeInTheDocument();
+        });
+
+        test('bundle product shows CartItemEditButton', () => {
+            renderWith({ 'item-1': { id: 'p1', type: { bundle: true } } } as any);
+            expect(editBtn()).toBeInTheDocument();
+        });
+
+        test('parent product shows CartItemEditButton', () => {
+            renderWith({ 'item-1': { id: 'p1', type: { master: true } } } as any);
+            expect(editBtn()).toBeInTheDocument();
+        });
+
+        test('choice-based bonus product does not show CartItemEditButton', () => {
+            const basket = {
+                basketId: 'b1',
+                productItems: [
+                    {
+                        itemId: 'item-1',
+                        quantity: 1,
+                        productId: 'p1',
+                        bonusProductLineItem: true,
+                        bonusDiscountLineItemId: 'bonus-discount-choice-1',
+                    },
+                ],
+                bonusDiscountLineItems: [
+                    {
+                        id: 'bonus-discount-choice-1',
+                        promotionId: 'promo-choice-1',
+                        maxBonusItems: 3,
+                        bonusProducts: [{ productId: 'p1', productName: 'Choice Bonus Product 1' }],
+                    },
+                ],
+            };
+
+            renderCartContent({
+                basket: basket as any,
+                productsByItemId: { 'item-1': { id: 'p1', variants: [{} as any] } } as any,
+                bonusProductsById: { p1: { id: 'p1', name: 'Choice Bonus Product 1' } } as any,
+            });
+
+            expect(editBtn()).not.toBeInTheDocument();
+            expect(screen.getByTestId('remove-item-item-1')).toBeInTheDocument();
+        });
+
+        test('auto bonus product does not show CartItemEditButton', () => {
+            const basket = {
+                basketId: 'b1',
+                productItems: [
+                    {
+                        itemId: 'item-1',
+                        quantity: 1,
+                        productId: 'p1',
+                        bonusProductLineItem: true,
+                        bonusDiscountLineItemId: 'bonus-discount-auto-1',
+                    },
+                ],
+                bonusDiscountLineItems: [
+                    {
+                        id: 'bonus-discount-auto-1',
+                        promotionId: 'promo-auto-1',
+                        maxBonusItems: 1,
+                    },
+                ],
+            };
+
+            renderCartContent({
+                basket: basket as any,
+                productsByItemId: { 'item-1': { id: 'p1', variants: [{} as any] } } as any,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            expect(editBtn()).not.toBeInTheDocument();
         });
     });
 });

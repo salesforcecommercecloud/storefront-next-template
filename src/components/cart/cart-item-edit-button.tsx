@@ -24,6 +24,7 @@ import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-n
 import { CartItemModal } from '@/components/cart-item-modal';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 
 // Constants
 
@@ -45,7 +46,7 @@ interface CartItemEditButtonProps {
  * @param props - Component props
  * @returns JSX element with edit button and product modal
  */
-export function CartItemEditButton({ product, className = '' }: CartItemEditButtonProps): ReactElement {
+export function CartItemEditButton({ product, className }: CartItemEditButtonProps): ReactElement {
     // Modal state management
     const { t } = useTranslation('actionCard');
     const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +55,8 @@ export function CartItemEditButton({ product, className = '' }: CartItemEditButt
         <>
             <Button
                 variant="link"
-                className={`text-xs cursor-pointer hover:no-underline h-auto p-0 ${className ?? ''}`}
+                size="sm"
+                className={cn('text-xs cursor-pointer hover:no-underline', className)}
                 aria-label={`${t('edit')} ${product.productName ?? ''}`}
                 data-testid={`edit-item-${product.itemId}`}
                 onClick={() => setIsOpen(true)}>

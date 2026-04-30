@@ -21,6 +21,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 // Components
 import ProductItemsList from '@/components/product-items-list';
 import { RemoveItemButtonWithConfirmation } from '@/components/buttons/remove-item-button-with-confirmation';
+import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
@@ -39,7 +40,7 @@ import CartDeliveryOption from '@/extensions/bopis/components/delivery-options/c
 import { UITarget } from '@/targets/ui-target';
 
 // utils
-import { isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product-utils';
+import { isStandardProduct, isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product-utils';
 
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>
@@ -160,11 +161,14 @@ export default function CartContent({
         }
 
         const isBonusProd = isBonusProduct(product);
+        const isStandardProd = isStandardProduct(product);
+        const shouldShowEditButton = !isStandardProd && !isBonusProd;
         const shouldShowWishlist = !isBonusProd;
 
         return (
             <div className="flex gap-2">
                 <RemoveItemButtonWithConfirmation itemId={product.itemId} className="pl-0" />
+                {shouldShowEditButton && <CartItemEditButton product={product} className="pl-0" />}
                 {shouldShowWishlist && (
                     <Suspense fallback={null}>
                         <LazyCartItemAddToWishlistButton

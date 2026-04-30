@@ -1,3 +1,7 @@
+## v0.4.0-dev (Apr 30, 2026)
+
+- **Cart line item:** Restore the edit button for non-standard, non-bonus products alongside the newly added wishlist toggle and remove action.
+
 ## v0.4.0-dev (Apr 28, 2026)
 
 - **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.

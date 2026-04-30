@@ -277,8 +277,8 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-item-1"
                                       data-variant="link"
@@ -1171,8 +1171,8 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-pd-item-1"
                                       data-variant="link"
@@ -1567,8 +1567,8 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-pd-item-2"
                                       data-variant="link"
@@ -1920,8 +1920,8 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-pd-item-3"
                                       data-variant="link"
@@ -2818,8 +2818,8 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-promo-item-1"
                                       data-variant="link"
@@ -3171,8 +3171,8 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-promo-item-2"
                                       data-variant="link"
@@ -4113,8 +4113,8 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-hq-item-1"
                                       data-variant="link"
@@ -5011,8 +5011,8 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-large-item-1"
                                       data-variant="link"
@@ -5370,8 +5370,8 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-large-item-2"
                                       data-variant="link"
@@ -5723,8 +5723,8 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-large-item-3"
                                       data-variant="link"
@@ -6082,8 +6082,8 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-large-item-4"
                                       data-variant="link"
@@ -6974,8 +6974,8 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   >
                                     <button
                                       aria-label="Edit Very Long Product Name That Should Wrap Properly In The Cart Display Area"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-long-item-1"
                                       data-variant="link"
@@ -7852,8 +7852,8 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   >
                                     <button
                                       aria-label="Edit Men's Classic Deer Gloves"
-                                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                      data-size="default"
+                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      data-size="sm"
                                       data-slot="button"
                                       data-testid="edit-item-item-1"
                                       data-variant="link"
@@ -9113,8 +9113,8 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 >
                                   <button
                                     aria-label="Edit Men's Classic Deer Gloves"
-                                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 has-[>svg]:px-3 text-xs cursor-pointer hover:no-underline h-auto p-0 px-0"
-                                    data-size="default"
+                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                    data-size="sm"
                                     data-slot="button"
                                     data-testid="edit-item-item-1"
                                     data-variant="link"
