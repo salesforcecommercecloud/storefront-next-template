@@ -306,7 +306,8 @@
             "description": "View and manage items in your shopping cart"
         },
         "delivery": {
-            "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items"
+            "heading_one": "Delivery - {{deliveryCount}} out of {{count}} item",
+            "heading_other": "Delivery - {{deliveryCount}} out of {{count}} items"
         },
         "itemCount_one": "Cart (1 item)",
         "itemCount_other": "Cart ({{count}} items)",

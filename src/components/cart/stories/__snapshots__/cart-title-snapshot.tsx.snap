@@ -91,7 +91,7 @@ exports[`CartTitle stories snapshot > LargeItemCount story renders and matches s
       <h2
         class="text-lg tracking-tight text-left leading-none font-normal"
       >
-        Delivery - 1 out of 1 items
+        Delivery - 1 out of 1 item
       </h2>
     </div>
   </div>
@@ -149,7 +149,7 @@ exports[`CartTitle stories snapshot > SingleAndMultipleItems story renders and m
           <h2
             class="text-lg tracking-tight text-left leading-none font-normal"
           >
-            Delivery - 1 out of 1 items
+            Delivery - 1 out of 1 item
           </h2>
         </div>
       </div>

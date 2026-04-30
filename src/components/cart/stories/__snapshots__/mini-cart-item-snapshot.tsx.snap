@@ -57,7 +57,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -677,7 +677,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -1534,7 +1534,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -2145,7 +2145,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -2757,7 +2757,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -3369,7 +3369,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -3970,7 +3970,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -4571,7 +4571,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -5224,7 +5224,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -5873,7 +5873,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -6485,7 +6485,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>
@@ -7092,7 +7092,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                 <h2
                   class="text-lg tracking-tight text-left leading-none font-normal"
                 >
-                  Delivery - 1 out of 1 items
+                  Delivery - 1 out of 1 item
                 </h2>
               </div>
             </div>

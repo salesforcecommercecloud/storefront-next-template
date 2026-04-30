@@ -306,7 +306,8 @@
             "description": "Visualizza e gestisci gli articoli nel carrello"
         },
         "delivery": {
-            "heading": "Consegna - {{deliveryCount}} di {{totalCount}} articoli"
+            "heading_one": "Consegna - {{deliveryCount}} di {{count}} articolo",
+            "heading_other": "Consegna - {{deliveryCount}} di {{count}} articoli"
         },
         "itemCount_one": "Carrello (1 articolo)",
         "itemCount_other": "Carrello ({{count}} articoli)",
