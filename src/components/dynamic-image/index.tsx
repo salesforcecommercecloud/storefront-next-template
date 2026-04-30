@@ -24,6 +24,7 @@ import {
     type DynamicImageDimensions,
     getResponsivePictureAttributes,
     replaceImageFormat,
+    toDisBaseUrl,
     toImageUrl,
 } from '@/lib/dynamic-image';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
@@ -360,11 +361,16 @@ const DynamicImage = ({
     const parsedWidths = useMemo(() => parseDimensionsString(widths), [widths]);
     const parsedHeights = useMemo(() => parseDimensionsString(heights), [heights]);
 
-    // When DIS is disabled, transform the source URL to relative static paths
-    // and skip all DIS-dependent behavior (format conversion, responsive <source> generation).
+    // Normalize the source URL so downstream format/query generation operates on a DIS base URL.
+    // - enableDis=true:  rewrite host + insert /dw/image/v2/{realm}/ prefix (no format/query changes);
+    //                    `getResponsivePictureAttributes` + `getSrc` handle sfrm/q/sw/sh per breakpoint.
+    // - enableDis=false: rewrite to relative static paths and skip all DIS-dependent behavior.
+    // Non-SFCC URLs fall through as-is.
     const transformedSrc = useMemo(() => {
-        if (enableDis) return resolvedSrc;
-        return toImageUrl({ src: resolvedSrc, config }) || resolvedSrc;
+        return (
+            (enableDis ? toDisBaseUrl({ src: resolvedSrc, config }) : toImageUrl({ src: resolvedSrc, config })) ||
+            resolvedSrc
+        );
     }, [resolvedSrc, config, enableDis]);
 
     // When DIS is disabled, use empty formats to skip <source> generation and format conversion.

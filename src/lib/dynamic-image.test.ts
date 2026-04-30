@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 import { test } from 'vitest';
-import { getResponsivePictureAttributes, getSrc, replaceImageFormat, toDisImageUrl, toImageUrl } from './dynamic-image';
+import {
+    getResponsivePictureAttributes,
+    getSrc,
+    replaceImageFormat,
+    toDisBaseUrl,
+    toDisImageUrl,
+    toImageUrl,
+} from './dynamic-image';
 import { mockConfig } from '@/test-utils/config';
 
 const disImageURL = {
@@ -1000,6 +1007,16 @@ describe('toDisImageUrl()', () => {
             expect(result).toContain('.webp');
             expect(result).toContain('sfrm=png');
         });
+
+        test('converts URL from MyDomain host (.my.cc.salesforce.com)', () => {
+            const staticUrl =
+                'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw945986e2/images/swatch/B0574182_001_sw.jpg';
+            const result = toDisImageUrl({ src: staticUrl, config: mockConfig });
+
+            expect(result).toContain('/dw/image/v2/DEMO_001/');
+            expect(result).toContain('.webp');
+            expect(result).toContain('sfrm=jpg');
+        });
     });
 
     describe('handles undefined and invalid inputs', () => {
@@ -1441,5 +1458,93 @@ describe('toImageUrl()', () => {
 
             expect(result).toBe('/on/demandware.static/-/Sites-catalog/default/image.jpg[?sw={width}]');
         });
+    });
+});
+
+describe('toDisBaseUrl()', () => {
+    test('rewrites MyDomain URL to DIS-hosted URL, preserving extension and query', () => {
+        const src =
+            'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg';
+        const result = toDisBaseUrl({ src, config: mockConfig });
+
+        expect(result).toBe(
+            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg'
+        );
+    });
+
+    test('rewrites classic SFCC host to DIS-hosted URL', () => {
+        const src =
+            'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+        const result = toDisBaseUrl({ src, config: mockConfig });
+
+        expect(result).toBe(
+            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-catalog/default/image.jpg'
+        );
+    });
+
+    test('does not convert format or append sfrm/q parameters', () => {
+        const src =
+            'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+        const result = toDisBaseUrl({ src, config: mockConfig });
+
+        expect(result).toContain('.jpg');
+        expect(result).not.toContain('.webp');
+        expect(result).not.toContain('sfrm=');
+        expect(result).not.toContain('q=');
+    });
+
+    test('preserves existing query string', () => {
+        const src =
+            'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg?foo=bar';
+        const result = toDisBaseUrl({ src, config: mockConfig });
+
+        expect(result).toBe(
+            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-catalog/default/image.jpg?foo=bar'
+        );
+    });
+
+    test('returns DIS URL unchanged when already on configured host', () => {
+        const src =
+            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-catalog/default/image.jpg';
+        expect(toDisBaseUrl({ src, config: mockConfig })).toBe(src);
+    });
+
+    test('rewrites DIS URL on different host and preserves realm from path', () => {
+        const src =
+            'https://some-other-host.com/dw/image/v2/ABCD_123/on/demandware.static/-/Sites-catalog/default/image.jpg';
+        const result = toDisBaseUrl({ src, config: mockConfig });
+
+        expect(result).toBe(
+            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ABCD_123/on/demandware.static/-/Sites-catalog/default/image.jpg'
+        );
+    });
+
+    test('preserves DynamicImage placeholder syntax', () => {
+        const src =
+            'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg[?sw={width}&q=60]';
+        const result = toDisBaseUrl({ src, config: mockConfig });
+
+        expect(result).toBe(
+            'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-catalog/default/image.jpg[?sw={width}&q=60]'
+        );
+    });
+
+    test('returns non-SFCC URL unchanged', () => {
+        const src = 'https://example.com/image.jpg';
+        expect(toDisBaseUrl({ src, config: mockConfig })).toBe(src);
+    });
+
+    test('returns original src when no disHost is configured', () => {
+        const src =
+            'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/image.jpg';
+        expect(toDisBaseUrl({ src })).toBe(src);
+    });
+
+    test('returns undefined for undefined input', () => {
+        expect(toDisBaseUrl({ src: undefined })).toBeUndefined();
+    });
+
+    test('returns original src for invalid URL', () => {
+        expect(toDisBaseUrl({ src: 'not-a-valid-url', config: mockConfig })).toBe('not-a-valid-url');
     });
 });

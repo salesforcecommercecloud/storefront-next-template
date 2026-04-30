@@ -2,7 +2,7 @@
 
 ## Dynamic Imaging Service (DIS)
 
-Salesforce Commerce Cloud's [Dynamic Imaging Service](https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm&type=5) (DIS) is an image transformation service that optimizes images on-the-fly. Instead of storing pre-generated image variants, DIS transforms images at request time based on URL parameters. CDNs in front of DIS can then cache the transformed results at the edge.
+Salesforce B2C Commerce's [Dynamic Imaging Service](https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm&type=5) (DIS) is an image transformation service that optimizes images on-the-fly. Instead of storing pre-generated image variants, DIS transforms images at request time based on URL parameters. CDNs in front of DIS can then cache the transformed results at the edge.
 
 ### Why Use DIS
 
@@ -14,14 +14,14 @@ Images are typically the single largest contributor to page weight. Unoptimized 
 
 ### DIS URL Anatomy
 
-The application rewrites static Commerce Cloud image URLs into DIS URLs with transformation parameters:
+Storefront Next rewrites static B2C Commerce image URLs into DIS URLs with transformation parameters:
 
 ```
 Original (static asset):
-https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/.../image.jpg
+https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-catalog/default/.../image.jpg
 
 DIS URL:
-https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-catalog/default/.../image.webp?sfrm=jpg&sw=720&sh=480&q=70
+https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-catalog/default/.../image.webp?sfrm=jpg&sw=720&sh=480&q=70
         └─────────────── DIS Host ──────────────┘           └ Realm ┘                                                       └─ Format(s) ─┘└──── Params ────┘
 ```
 
@@ -151,9 +151,9 @@ Use fixed px widths when the image container has a predetermined size (e.g., car
 
 Use vw-based widths when the image scales with the viewport (e.g., product grids, hero banners).
 
-### Server-Side Cropping with Heights
+### Server-Side Scaling with Heights
 
-The `heights` prop enables DIS server-side cropping via the `sh` parameter. When provided alongside `widths`, it defines the exact crop box on the DIS server, giving you precise aspect ratio control across responsive breakpoints.
+The `heights` prop enables DIS server-side scaling via the `sh` parameter. When provided alongside `widths`, it defines exact output dimensions, giving you precise aspect ratio control across responsive breakpoints.
 
 ```jsx
 // 4:3 aspect ratio maintained across all breakpoints
@@ -164,7 +164,7 @@ The `heights` prop enables DIS server-side cropping via the `sh` parameter. When
 />
 ```
 
-DIS crops the image to the exact `sw` x `sh` box, then scales accordingly. Both values are multiplied by the DPR factor. At 2x, `widths={[400]}` and `heights={[300]}` generates srcSet entries for `sw=400&sh=300` (1x) and `sw=800&sh=600` (2x).
+Both values are multiplied by the DPR factor. At 2x, `widths={[400]}` and `heights={[300]}` generates srcSet entries for `sw=400&sh=300` (1x) and `sw=800&sh=600` (2x).
 
 `heights` supports the same formats as `widths` (arrays, objects with breakpoint keys, comma-separated strings for Page Designer).
 
@@ -315,8 +315,8 @@ Converts an image URL to a DIS-optimized URL with graceful fallback. Safe to use
 import { toImageUrl } from '@/lib/dynamic-image';
 
 // SFCC URL → DIS WebP
-toImageUrl({ src: 'https://zzrf-001.dx.commercecloud.salesforce.com/.../image.jpg', config })
-// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/.../image.webp?sfrm=jpg&q=70'
+toImageUrl({ src: 'https://demo-001.dx.commercecloud.salesforce.com/.../image.jpg', config })
+// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/.../image.webp?sfrm=jpg&q=70'
 
 // Non-SFCC URL → returned as-is (fallback)
 toImageUrl({ src: 'https://example.com/image.jpg', config })
@@ -329,11 +329,27 @@ Use this when rendering images outside of `<DynamicImage>`, for example category
 
 Strict variant that only handles SFCC URLs. Returns `undefined` if the URL can't be converted (non-SFCC host, missing realm, missing DIS config). Use this when you need to know definitively whether DIS transformation succeeded.
 
+Recognized SFCC hostnames are `*.commercecloud.salesforce.com`, `*.demandware.net`, and `*.my.cc.salesforce.com`. The realm is derived from the first subdomain (e.g. `demo-001` → `DEMO_001`).
+
 ```typescript
 import { toDisImageUrl } from '@/lib/dynamic-image';
 
 toDisImageUrl({ src: sfccUrl, options: { width: 720, height: 480, quality: 80 }, config })
-// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/.../image.webp?sfrm=jpg&sw=720&sh=480&q=80'
+// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/.../image.webp?sfrm=jpg&sw=720&sh=480&q=80'
+```
+
+### `toDisBaseUrl()`
+
+Rewrites a raw SFCC static image URL into a DIS-hosted URL by inserting the `/dw/image/v2/{realm}/` prefix and switching to the configured DIS host. Unlike `toDisImageUrl()`, it **preserves the original file extension and query string** — it does not perform format conversion or append DIS transformation parameters (`sfrm`, `q`, `sw`, `sh`). Use this when downstream code (e.g. `getResponsivePictureAttributes`) handles per-breakpoint format/query generation and just needs a clean DIS-hosted base URL.
+
+```typescript
+import { toDisBaseUrl } from '@/lib/dynamic-image';
+
+toDisBaseUrl({
+    src: 'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/.../image.jpg',
+    config,
+})
+// → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/.../image.jpg'
 ```
 
 ### `transformHtmlImageUrls()`
@@ -383,14 +399,14 @@ Use this fallback order consistently for product images:
 1. SCAPI image alt (`image.alt`)
 2. Product name (`productName` / `name`)
 3. Localized generic fallback (for example `t('common:productImageAlt')`)
-4. Hardcoded English fallback as a final safety net (for example `'Product Image'`)
+4. Non-localized English fallback as a final safety net (for example `'Product Image'`)
 
 Use explicit `||` fallback chains in components to preserve this order.
 
 ### Rules
 
 - Always provide an `alt` attribute on rendered `<img>` elements.
-- Use localized strings for generic fallback alt text, then a hardcoded English fallback as the last fallback.
+- Use localized strings for generic fallback alt text, then a hardcoded English fallback as the last resort.
 - Decorative images must set `alt=""` when the image is purely decorative and has no meaningful text equivalent.
 
 ### Why This Exists

@@ -152,6 +152,71 @@ describe('Dynamic Image Component', () => {
         expect(img).toHaveAttribute('title', 'Custom title');
     });
 
+    describe('DIS host rewrite', () => {
+        test('rewrites raw classic SFCC URL to DIS-hosted URL in srcSet and <img src>', () => {
+            const rawSrc =
+                'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg';
+            render(<DynamicImage src={rawSrc} alt="Test image" widths={[288]} />);
+
+            const img = screen.getByRole('img');
+            expect(img.getAttribute('src')).toContain(
+                'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg'
+            );
+            expect(img.getAttribute('src')).not.toContain('zzrf-001.dx.commercecloud.salesforce.com');
+
+            const source = img.closest('picture')?.querySelector('source');
+            expect(source?.getAttribute('srcset')).toContain('/dw/image/v2/DEMO_001/');
+            expect(source?.getAttribute('srcset')).toContain('.webp');
+            expect(source?.getAttribute('srcset')).toContain('sfrm=jpg');
+        });
+
+        test('rewrites raw MyDomain URL to DIS-hosted URL in srcSet and <img src>', () => {
+            const rawSrc =
+                'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg';
+            render(<DynamicImage src={rawSrc} alt="Test image" widths={[288]} />);
+
+            const img = screen.getByRole('img');
+            expect(img.getAttribute('src')).toContain(
+                'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg'
+            );
+            expect(img.getAttribute('src')).not.toContain('demo-001.my.cc.salesforce.com');
+
+            const source = img.closest('picture')?.querySelector('source');
+            expect(source?.getAttribute('srcset')).toContain('/dw/image/v2/DEMO_001/');
+            expect(source?.getAttribute('srcset')).toContain('.webp');
+            expect(source?.getAttribute('srcset')).toContain('sfrm=jpg');
+        });
+
+        test('leaves raw MyDomain URL as-is when DIS is disabled', () => {
+            mockConfigImages = { ...mockConfig.images, enableDis: false };
+            const rawSrc =
+                'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg';
+            render(<DynamicImage src={rawSrc} alt="Test image" />);
+
+            const img = screen.getByRole('img');
+            // DIS disabled → relative static path, no DIS host/prefix
+            expect(img.getAttribute('src')).toBe(
+                '/on/demandware.static/-/Sites-apparel-m-catalog/default/dwffa6be72/images/medium/PG.10232700.JJ0DDXX.PZ.jpg'
+            );
+        });
+
+        test('does not rewrite host for non-SFCC URL when DIS is enabled', () => {
+            const externalSrc = 'https://cdn.example.com/images/product.jpg';
+            render(<DynamicImage src={externalSrc} alt="Test image" widths={[288]} />);
+
+            const img = screen.getByRole('img');
+            const imgSrc = img.getAttribute('src') ?? '';
+            expect(imgSrc).toContain('cdn.example.com');
+            expect(imgSrc).not.toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(imgSrc).not.toMatch(/\/dw\/image\/v\d+\//);
+
+            const srcset = img.closest('picture')?.querySelector('source')?.getAttribute('srcset') ?? '';
+            expect(srcset).toContain('cdn.example.com');
+            expect(srcset).not.toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(srcset).not.toMatch(/\/dw\/image\/v\d+\//);
+        });
+    });
+
     describe('responsive images', () => {
         test('renders responsive image with widths array', () => {
             render(<DynamicImage src={src} alt="Test image" widths={[100, 200, 400]} />);

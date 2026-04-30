@@ -33,7 +33,7 @@ const PLACEHOLDER_REGEX = /\[[^\]]*]/g;
 const FILE_EXTENSION_REGEX = /\.([^.]+)$/;
 /** Tests if URL contains DIS path structure */
 const IS_DIS_URL_REGEX = /\/dw\/image\/v\d+\//i;
-/** Matches dashes for realm conversion (zzrf-001 -> ZZRF_001) */
+/** Matches dashes for realm conversion (demo-001 -> DEMO_001) */
 const DASH_REGEX = /-/g;
 /** Tests if URL contains sfrm query parameter (must be preceded by ? or &) */
 const HAS_SFRM_PARAM_REGEX = /[?&]sfrm=/;
@@ -67,10 +67,14 @@ export type ImageUrlParams = {
 };
 
 function getRealmFromUrl(url: URL): string | undefined {
-    // Only extract realm from SFCC Commerce Cloud URLs
-    // Example host: zzrf-001.dx.commercecloud.salesforce.com -> realm ZZRF_001
+    // Only extract realm from Salesforce B2C Commerce URLs
+    // Example hosts:
+    //   demo-001.dx.commercecloud.salesforce.com -> realm DEMO_001
+    //   demo-001.my.cc.salesforce.com            -> realm DEMO_001
     const isSfccHost =
-        url.hostname.endsWith('.commercecloud.salesforce.com') || url.hostname.endsWith('.demandware.net');
+        url.hostname.endsWith('.commercecloud.salesforce.com') ||
+        url.hostname.endsWith('.demandware.net') ||
+        url.hostname.endsWith('.my.cc.salesforce.com');
     if (!isSfccHost) {
         return undefined;
     }
@@ -97,15 +101,119 @@ function stripDisPath(pathname: string): string {
 }
 
 /**
+ * Shared parsing step for the DIS URL helpers. Extracts placeholders, parses the URL, and resolves
+ * the effective `disHost`, `realm`, and `normalizedPathname`. Returns `undefined` only when the URL
+ * is unparseable — `disHost` / `realm` may still be `undefined` on the parts object and callers
+ * decide how to handle each case.
+ */
+function parseDisUrlParts(
+    src: string,
+    options: DisImageOptions,
+    config?: AppConfig
+):
+    | {
+          /** DynamicImage placeholder fragments (e.g. `[?sw={width}]`) extracted from `src`. */
+          placeholders: string[];
+          /** `src` with all placeholders removed — safe to pass to `new URL()` / regex checks. */
+          cleanUrl: string;
+          /** Parsed URL object for `cleanUrl`. */
+          url: URL;
+          /** Resolved DIS host from `options.disHost` or `config.images.host`. `undefined` if neither is set. */
+          disHost: string | undefined;
+          /** Realm derived from the URL path (existing DIS URL) or subdomain (raw SFCC URL). */
+          realm: string | undefined;
+          /** URL pathname with any existing `/dw/image/v2/{realm}` prefix stripped. */
+          normalizedPathname: string;
+      }
+    | undefined {
+    try {
+        const placeholders = src.match(PLACEHOLDER_REGEX) || [];
+        const cleanUrl = src.replace(PLACEHOLDER_REGEX, '');
+        const url = new URL(cleanUrl);
+        return {
+            placeholders,
+            cleanUrl,
+            url,
+            disHost: options.disHost || config?.images?.host,
+            realm: getRealm(url),
+            normalizedPathname: stripDisPath(url.pathname),
+        };
+    } catch {
+        return undefined;
+    }
+}
+
+/**
+ * Converts a full image URL into a relative `/on/demandware.static/...` path, preserving any
+ * DynamicImage placeholders. Used by the `enableDis=false` branches where the Vite dev server or
+ * proxy serves static assets directly. Returns `undefined` when `src` is not a parseable URL.
+ */
+function toRelativeStaticPath(src: string): string | undefined {
+    try {
+        const placeholders = src.match(PLACEHOLDER_REGEX) || [];
+        const cleanUrl = src.replace(PLACEHOLDER_REGEX, '');
+        const url = new URL(cleanUrl);
+        const normalizedPathname = stripDisPath(url.pathname);
+        return placeholders.length > 0 ? `${normalizedPathname}${placeholders.join('')}` : normalizedPathname;
+    } catch {
+        return undefined;
+    }
+}
+
+/**
+ * Rewrites raw SFCC static image URLs into DIS-hosted URLs by inserting the `/dw/image/v2/{realm}/` prefix and
+ * switching to the configured DIS host. Preserves the original file extension and query string — does NOT perform
+ * format conversion or append DIS transformation parameters (sfrm, q, sw, sh). Use this when downstream code (e.g.
+ * `getResponsivePictureAttributes`) handles per-breakpoint format/query generation and expects a clean base URL.
+ *
+ * Behavior:
+ * - Raw SFCC URL with derivable realm → DIS-hosted URL, same extension, same query.
+ * - Already a DIS URL on the configured host → returned unchanged.
+ * - Already a DIS URL on a different host → host rewritten, realm from path preserved.
+ * - Non-SFCC URL (no realm derivable) → returned unchanged.
+ * - Falsy `src` or invalid URL → returns `src` unchanged.
+ * @example
+ * toDisBaseUrl({
+ *     src: 'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/.../image.jpg',
+ *     config,
+ * })
+ * // → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/.../image.jpg'
+ */
+export function toDisBaseUrl({ src, options = {}, config }: ImageUrlParams): string | undefined {
+    if (!src) {
+        return src;
+    }
+    const parts = parseDisUrlParts(src, options, config);
+    if (!parts) {
+        return src;
+    }
+
+    const { cleanUrl, disHost } = parts;
+    const isDisUrl = IS_DIS_URL_REGEX.test(cleanUrl);
+    if (isDisUrl && (!disHost || cleanUrl.startsWith(disHost))) {
+        return src;
+    }
+
+    const { realm } = parts;
+    if (!disHost || !realm) {
+        return src;
+    }
+
+    const { url, placeholders, normalizedPathname } = parts;
+    const rewritten = `${disHost}/dw/image/v2/${realm}${normalizedPathname}${url.search}`;
+    return placeholders.length > 0 ? `${rewritten}${placeholders.join('')}` : rewritten;
+}
+
+/**
  * Utility helper to convert B2C Commerce static asset URLs into Dynamic Imaging Service (DIS) URLs.
  *
  * When `config.images.enableDis` is false, skips DIS transformation and returns
  * relative static paths for environments that serve images directly.
  *
  * Example:
- * https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dwa6379acf/images/slot/landing/cat-landing-slotbanner-mens.jpg
+ * https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dwa6379acf/images/slot/landing/cat-landing-slotbanner-mens.jpg
  * becomes
- * https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dwa6379acf/images/slot/landing/cat-landing-slotbanner-mens.webp?sfrm=jpg
+ * https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dwa6379acf/images/slot/landing/cat-landing-slotbanner-mens.webp?sfrm=jpg
  *
  * @see {@link https://help.salesforce.com/s/articleView?id=cc.b2c_image_transformation_service.htm&type=5}
  */
@@ -114,60 +222,41 @@ export function toDisImageUrl({ src, options = {}, config }: ImageUrlParams): st
         return undefined;
     }
 
-    try {
-        // Extract and preserve any DynamicImage placeholder syntax (e.g., [?sw={width}])
-        // These will be appended to the final URL for DynamicImage to process
-        const placeholders = src.match(PLACEHOLDER_REGEX) || [];
-        const cleanUrl = src.replace(PLACEHOLDER_REGEX, '');
-        const url = new URL(cleanUrl);
+    // When DIS is disabled, skip transformation and use direct static paths
+    // (/on/demandware.static paths proxied through Vite dev server config)
+    if (config?.images?.enableDis === false) {
+        return toRelativeStaticPath(src);
+    }
 
-        // When DIS is disabled, skip transformation and use direct static paths
-        // (/on/demandware.static paths proxied through Vite dev server config)
-        if (config?.images?.enableDis === false) {
-            const normalizedPathname = stripDisPath(url.pathname);
-            return placeholders.length > 0 ? `${normalizedPathname}${placeholders.join('')}` : normalizedPathname;
-        }
-
-        const disHost = options.disHost || config?.images?.host;
-        if (!disHost) {
-            return undefined;
-        }
-        const realm = getRealm(url);
-        if (!realm) {
-            return undefined;
-        }
-
-        // Remove any existing DIS prefix so we don't duplicate /dw/image/v2/{realm}
-        const normalizedPathname = stripDisPath(url.pathname);
-
-        // Derive formats
-        const extMatch = normalizedPathname.match(FILE_EXTENSION_REGEX);
-        const sourceFormat = options.sourceFormat || extMatch?.[1]?.toLowerCase() || 'jpg';
-        const targetFormat = options.format || config?.images?.formats?.[0] || config?.images?.fallbackFormat || 'webp';
-
-        // Replace the extension with target format
-        const disPath = normalizedPathname.replace(FILE_EXTENSION_REGEX, `.${targetFormat}`);
-
-        // Build query params
-        const search = new URLSearchParams(url.search);
-        search.set('sfrm', sourceFormat);
-        if (options.width) {
-            search.set('sw', String(options.width));
-        }
-        if (options.height) {
-            search.set('sh', String(options.height));
-        }
-        const quality = options.quality ?? config?.images?.quality;
-        search.set('q', String(quality));
-
-        const query = search.toString();
-        const baseUrl = `${disHost}/dw/image/v2/${realm}${disPath}${query ? `?${query}` : ''}`;
-
-        // Append preserved placeholders for DynamicImage to process
-        return placeholders.length > 0 ? `${baseUrl}${placeholders.join('')}` : baseUrl;
-    } catch {
+    const parts = parseDisUrlParts(src, options, config);
+    if (!parts || !parts.disHost || !parts.realm) {
         return undefined;
     }
+    const { placeholders, url, disHost, realm, normalizedPathname } = parts;
+
+    // Derive formats
+    const extMatch = normalizedPathname.match(FILE_EXTENSION_REGEX);
+    const sourceFormat = options.sourceFormat || extMatch?.[1]?.toLowerCase() || 'jpg';
+    const targetFormat = options.format || config?.images?.formats?.[0] || config?.images?.fallbackFormat || 'webp';
+    const disPath = normalizedPathname.replace(FILE_EXTENSION_REGEX, `.${targetFormat}`);
+
+    // Build query params
+    const search = new URLSearchParams(url.search);
+    search.set('sfrm', sourceFormat);
+    if (options.width) {
+        search.set('sw', String(options.width));
+    }
+    if (options.height) {
+        search.set('sh', String(options.height));
+    }
+    const quality = options.quality ?? config?.images?.quality;
+    if (quality != null) {
+        search.set('q', String(quality));
+    }
+
+    const query = search.toString();
+    const baseUrl = `${disHost}/dw/image/v2/${realm}${disPath}${query ? `?${query}` : ''}`;
+    return placeholders.length > 0 ? `${baseUrl}${placeholders.join('')}` : baseUrl;
 }
 
 /**
@@ -185,8 +274,8 @@ export function toDisImageUrl({ src, options = {}, config }: ImageUrlParams): st
  *
  * @example
  * // SFCC URL - transforms to DIS WebP
- * toImageUrl({ src: 'https://zzrf-001.dx.commercecloud.salesforce.com/.../image.jpg', config })
- * // → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/.../image.webp?sfrm=jpg&q=70'
+ * toImageUrl({ src: 'https://demo-001.dx.commercecloud.salesforce.com/.../image.jpg', config })
+ * // → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/.../image.webp?sfrm=jpg&q=70'
  *
  * // Already DIS URL - ensures WebP format
  * toImageUrl({ src: 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/.../image.jpg', config })
@@ -210,40 +299,31 @@ export function toImageUrl({ src, options = {}, config, image }: ImageUrlParams)
 
         // When DIS is disabled, convert all image URLs to relative static paths
         if (config?.images?.enableDis === false) {
-            try {
-                const url = new URL(cleanUrl);
-                const normalizedPathname = stripDisPath(url.pathname);
-                return placeholders.length > 0 ? `${normalizedPathname}${placeholders.join('')}` : normalizedPathname;
-            } catch {
-                return imageUrl;
-            }
+            return toRelativeStaticPath(imageUrl) ?? imageUrl;
         }
 
-        // If already a DIS URL, check if the host needs rewriting
-        const isDisUrl = IS_DIS_URL_REGEX.test(cleanUrl);
-        if (isDisUrl) {
-            const disHost = options.disHost || config?.images?.host;
-            const needsHostRewrite = disHost && !cleanUrl.startsWith(disHost);
+        // Fast path: source is already a DIS URL. Use `toDisBaseUrl` to normalize host/realm
+        // (no-op when already on the configured host) and then apply only format + quality,
+        // leaving per-breakpoint params (sw/sh) for downstream code.
+        if (IS_DIS_URL_REGEX.test(cleanUrl)) {
+            const normalized = toDisBaseUrl({ src: imageUrl, options, config }) ?? imageUrl;
+            const normalizedClean = normalized.replace(PLACEHOLDER_REGEX, '');
 
-            if (!needsHostRewrite) {
-                const targetFormat =
-                    options.format || config?.images?.formats?.[0] || config?.images?.fallbackFormat || 'webp';
-                let transformedUrl = replaceImageFormat(cleanUrl, targetFormat);
+            const targetFormat =
+                options.format || config?.images?.formats?.[0] || config?.images?.fallbackFormat || 'webp';
+            let transformedUrl = replaceImageFormat(normalizedClean, targetFormat);
 
-                // Add quality parameter if not already present
-                const quality = options.quality ?? config?.images?.quality;
-                if (quality && !HAS_QUALITY_PARAM_REGEX.test(transformedUrl)) {
-                    const separator = transformedUrl.includes('?') ? '&' : '?';
-                    transformedUrl = `${transformedUrl}${separator}q=${quality}`;
-                }
-
-                return placeholders.length > 0 ? `${transformedUrl}${placeholders.join('')}` : transformedUrl;
+            const quality = options.quality ?? config?.images?.quality;
+            if (quality && !HAS_QUALITY_PARAM_REGEX.test(transformedUrl)) {
+                const separator = transformedUrl.includes('?') ? '&' : '?';
+                transformedUrl = `${transformedUrl}${separator}q=${quality}`;
             }
+
+            return placeholders.length > 0 ? `${transformedUrl}${placeholders.join('')}` : transformedUrl;
         }
 
-        // Try to convert to DIS URL (also handles host rewriting for existing DIS URLs)
+        // Raw SFCC URL — full DIS conversion applies width/height/quality/format.
         const disUrl = toDisImageUrl({ src: imageUrl, options, config });
-        // If conversion succeeded, return DIS URL; otherwise return original URL as fallback
         return disUrl ?? imageUrl;
     } catch {
         // On any error, return the original URL
@@ -273,7 +353,9 @@ export function transformHtmlImageUrls(html: string, config: AppConfig): string 
     }
 
     // Short-circuit if no image tags present (performance optimization)
-    if (!html.includes('<img')) return html;
+    if (!html.includes('<img')) {
+        return html;
+    }
 
     // Regular expression to match <img> tags with src attributes
     const imgTagRegex = /<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi;
