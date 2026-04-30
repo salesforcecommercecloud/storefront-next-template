@@ -323,13 +323,17 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
         const effectiveImgAspectRatio = imgAspectRatio ?? config.global.productListing.defaultProductTileImgAspectRatio;
 
         const isMasterProd = !!product?.variants;
+        const isBundleOrSet = product?.productType?.bundle || product?.productType?.set;
+        const representedVariant = isMasterProd
+            ? product?.variants?.find((variant) => variant?.productId === product?.representedProduct?.id)
+            : undefined;
+        const defaultVariantPid = isMasterProd && !isBundleOrSet ? (product?.representedProduct?.id ?? null) : null;
+
+        // use the representedVariant values to get a product for PDP
         const initialVariationValue =
             selectedVariantColorValue !== undefined && selectedVariantColorValue !== null
                 ? selectedVariantColorValue
-                : isMasterProd && !!product?.representedProduct
-                  ? product?.variants?.find((variant) => variant?.productId == product?.representedProduct?.id)
-                        ?.variationValues?.[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID]
-                  : undefined;
+                : (representedVariant?.variationValues?.[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID] ?? undefined);
 
         // Local swatch selection state — drives image switching and selected ring on swatches.
         // Initialized from the URL-driven prop; updates when the user clicks a swatch on the tile.
@@ -360,7 +364,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             product && handleProductClick?.(product);
         }, [handleProductClick, product]);
 
-        const productUrl = createProductUrl(product?.productId ?? '');
+        const productUrl = createProductUrl(product?.productId ?? '', null, 'color', defaultVariantPid);
         const productName = product?.productName ?? '';
 
         const pageDesignerStyles = getPageDesignerStyleClasses({

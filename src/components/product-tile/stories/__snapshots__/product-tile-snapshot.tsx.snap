@@ -70,9 +70,9 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -131,10 +131,10 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
             style="background-color: navy;"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
           >
             <img
               alt=""
@@ -147,9 +147,9 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
           >
             <img
               alt=""
@@ -170,8 +170,8 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25686571M"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -376,9 +376,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         <a
           aria-label="View Long Sleeve Embellished Boat Neck Top"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
         />
         <div
           class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -480,9 +480,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX&pid=701642823872M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX&pid=701642823872M"
           >
             <img
               alt=""
@@ -495,9 +495,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
             aria-current="true"
             aria-label="View Long Sleeve Embellished Boat Neck Top in Grey Heather"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX&pid=701642823919M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX&pid=701642823919M"
           >
             <img
               alt=""
@@ -523,8 +523,8 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25518101M"
-          to="/RefArchGlobal/en-GB/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
+          to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
         >
           Long Sleeve Embellished Boat Neck Top
         </a>
@@ -744,9 +744,9 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         />
         <div
           class="absolute top-2 left-2 flex flex-col items-start gap-1 z-20"
@@ -819,10 +819,10 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
             style="background-color: navy;"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
           >
             <img
               alt=""
@@ -835,9 +835,9 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
           >
             <img
               alt=""
@@ -858,8 +858,8 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25686571M"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -1064,9 +1064,9 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -1159,10 +1159,10 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
             style="background-color: navy;"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
           >
             <img
               alt=""
@@ -1175,9 +1175,9 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
           >
             <img
               alt=""
@@ -1198,8 +1198,8 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25686571M"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -1404,9 +1404,9 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -1465,10 +1465,10 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
             style="background-color: navy;"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
           >
             <img
               alt=""
@@ -1481,9 +1481,9 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
           >
             <img
               alt=""
@@ -1504,8 +1504,8 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25686571M"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -1710,9 +1710,9 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -1771,10 +1771,10 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
             style="background-color: navy;"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
           >
             <img
               alt=""
@@ -1787,9 +1787,9 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
           >
             <img
               alt=""
@@ -1810,8 +1810,8 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25686571M"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -2016,9 +2016,9 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         <a
           aria-label="View Long Sleeve Embellished Boat Neck Top"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -2077,9 +2077,9 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX&pid=701642823872M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX&pid=701642823872M"
           >
             <img
               alt=""
@@ -2091,10 +2091,10 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           <a
             aria-label="View all 2 colors for Long Sleeve Embellished Boat Neck Top"
             class="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
-            href="/RefArchGlobal/en-GB/product/25518101M"
+            href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
             tabindex="-1"
             title="+1 more"
-            to="/RefArchGlobal/en-GB/product/25518101M"
+            to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
           >
             <svg
               class="shrink-0"
@@ -2121,8 +2121,8 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25518101M"
-          to="/RefArchGlobal/en-GB/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
+          to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
         >
           Long Sleeve Embellished Boat Neck Top
         </a>
@@ -2342,9 +2342,9 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         <a
           aria-label="View Long Sleeve Embellished Boat Neck Top"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25518101M"
+          to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -2403,9 +2403,9 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX&pid=701642823872M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ5QZXX&pid=701642823872M"
           >
             <img
               alt=""
@@ -2418,9 +2418,9 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
             aria-current="true"
             aria-label="View Long Sleeve Embellished Boat Neck Top in Grey Heather"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
+            href="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX&pid=701642823919M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX"
+            to="/RefArchGlobal/en-GB/product/25518101M?color=JJ908XX&pid=701642823919M"
           >
             <img
               alt=""
@@ -2441,8 +2441,8 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25518101M"
-          to="/RefArchGlobal/en-GB/product/25518101M"
+          href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
+          to="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
         >
           Long Sleeve Embellished Boat Neck Top
         </a>
@@ -2662,9 +2662,9 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -2723,10 +2723,10 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
             style="background-color: navy;"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
           >
             <img
               alt=""
@@ -2739,9 +2739,9 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
           >
             <img
               alt=""
@@ -2767,8 +2767,8 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25686571M"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
           Charcoal Single Pleat Wool Suit
         </a>
@@ -2973,9 +2973,9 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         <a
           aria-label="View Charcoal Single Pleat Wool Suit"
           class="absolute inset-0 z-[1] cursor-pointer"
-          href="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
           tabindex="-1"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         />
         <div
           class="absolute top-2 right-2 flex flex-col items-end gap-2 z-20"
@@ -3034,10 +3034,10 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
             style="background-color: navy;"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=NAVYWL&pid=750518548272M"
           >
             <img
               alt=""
@@ -3050,9 +3050,9 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
             aria-current="true"
             aria-label="View Charcoal Single Pleat Wool Suit in Charcoal"
             class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            href="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
             tabindex="-1"
-            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL"
+            to="/RefArchGlobal/en-GB/product/25686571M?color=CHARCWL&pid=750518894461M"
           >
             <img
               alt=""
@@ -3073,8 +3073,8 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-          href="/RefArchGlobal/en-GB/product/25686571M"
-          to="/RefArchGlobal/en-GB/product/25686571M"
+          href="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
+          to="/RefArchGlobal/en-GB/product/25686571M?pid=750518894461M"
         >
           Charcoal Single Pleat Wool Suit
         </a>

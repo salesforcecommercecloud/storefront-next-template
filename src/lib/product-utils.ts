@@ -172,29 +172,41 @@ export const getDisplayVariationValues = (
 };
 
 /**
- * Creates a product URL with optional attribute parameter.
+ * Creates a product URL with optional attribute and variant parameters.
  * Centralizes the path creation logic for product links.
  *
  * @param {string | undefined} productId - The product ID to create the URL for.
  * @param {string | null} [selectedAttributeValue=null] - Optional attribute value to append as a query parameter.
  * @param {string} [attributeType='color'] - The attribute type for the query parameter.
+ * @param {string | null} [variantPid=null] - Optional variant product ID. When provided, adds a `pid` query
+ *   parameter so the PDP loads a specific variant directly.
  * @returns {string} The formatted product URL or '#' if productId is undefined.
  *
  * @example
  * createProductUrl('12345'); // => '/product/12345'
  * createProductUrl('12345', 'red'); // => '/product/12345?color=red'
  * createProductUrl('12345', 'L', 'size'); // => '/product/12345?size=L'
- * createProductUrl('12345', null); // => '/product/12345'
+ * createProductUrl('12345', null, 'color', 'V001'); // => '/product/12345?pid=V001'
+ * createProductUrl('12345', 'red', 'color', 'V001'); // => '/product/12345?color=red&pid=V001'
  * createProductUrl(undefined); // => '#'
  */
 export const createProductUrl = (
     productId: string | undefined,
     selectedAttributeValue: string | null = null,
-    attributeType: string = 'color'
+    attributeType: string = 'color',
+    variantPid: string | null = null
 ): string => {
     if (!productId) return '#';
     const baseUrl = `/product/${productId}`;
-    return selectedAttributeValue ? `${baseUrl}?${attributeType}=${selectedAttributeValue}` : baseUrl;
+    const params = new URLSearchParams();
+    if (selectedAttributeValue) {
+        params.set(attributeType, selectedAttributeValue);
+    }
+    if (variantPid) {
+        params.set('pid', variantPid);
+    }
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 };
 
 /**
@@ -272,6 +284,15 @@ export const getDecoratedVariationAttributes = (
             const searchParams = new URLSearchParams();
             if (variationAttribute.id && value.value) {
                 searchParams.set(variationAttribute.id, value.value);
+            }
+
+            // Find variant matching this attribute value to include pid
+            const attrId = variationAttribute.id;
+            if (attrId && value.value && product.variants) {
+                const matchingVariant = product.variants.find((v) => v.variationValues?.[attrId] === value.value);
+                if (matchingVariant?.productId) {
+                    searchParams.set('pid', matchingVariant.productId);
+                }
             }
 
             // Build href for this variation
