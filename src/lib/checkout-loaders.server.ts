@@ -331,7 +331,8 @@ function shouldPrefillBasket(
         return false;
     }
 
-    const missingEmail = !basket?.customerInfo?.email;
+    const basketEmail = basket?.customerInfo?.email;
+    const missingOrInvalidEmail = !basketEmail || !basketEmail.includes('@');
     const basketCustomerId = basket?.customerInfo?.customerId;
     const profileCustomerId = customerProfile.customer.customerId;
     const customerMismatch = !basketCustomerId || basketCustomerId !== profileCustomerId;
@@ -346,7 +347,7 @@ function shouldPrefillBasket(
      * Guest adds items → basket has no customerId. User logs in. We need to update the basket with the logged-in customer.
      * basketCustomerId !== profileCustomerId: basket has a different customerId (e.g. before merge completed).
      */
-    if (missingEmail || customerMismatch) {
+    if (missingOrInvalidEmail || customerMismatch) {
         return true;
     }
     if (missingShippingAddress && hasAddresses) {
@@ -389,10 +390,11 @@ export async function initializeBasketForReturningCustomer(
 
         const basketCustomerId = updatedBasket.customerInfo?.customerId;
         const profileCustomerId = customerProfile.customer.customerId;
+        const basketEmail = updatedBasket.customerInfo?.email;
         const needsCustomerAssociation =
-            !updatedBasket.customerInfo?.email || !basketCustomerId || basketCustomerId !== profileCustomerId;
+            !basketEmail || !basketEmail.includes('@') || !basketCustomerId || basketCustomerId !== profileCustomerId;
 
-        // Set customer info when missing or when basket customer doesn't match.
+        // Set customer info when missing, invalid (social login ID), or when basket customer doesn't match.
         // For social login users, customer.login is the provider's external ID (e.g. "Google-123...")
         // not an email. Prefer customer.email, fall back to login only if it contains "@".
         const customerEmail =

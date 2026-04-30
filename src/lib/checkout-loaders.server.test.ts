@@ -531,6 +531,70 @@ describe('Checkout Loaders', () => {
             expect(result).toEqual(mockBasket);
         });
 
+        it('should update email when basket has social login ID instead of a valid email', async () => {
+            const { getBasket, updateBasketResource } = await import('@/middlewares/basket.server');
+            const mockBasket = {
+                basketId: 'test-basket',
+                customerInfo: { email: 'Google-111292267709658666876', customerId: 'cust-123' },
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { firstName: 'John', lastName: 'Doe', address1: '123 Main St' },
+                    },
+                ],
+            };
+
+            vi.mocked(getBasket).mockResolvedValue({ current: mockBasket } as any);
+            vi.mocked(updateBasketResource).mockImplementation(() => {});
+
+            mockShopperBasketsClient.updateCustomerForBasket.mockResolvedValue({
+                data: { ...mockBasket, customerInfo: { email: 'user@example.com', customerId: 'cust-123' } },
+            });
+
+            const mockCustomerProfile = {
+                customer: { login: 'Google-111292267709658666876', email: 'user@example.com', customerId: 'cust-123' },
+                addresses: [{ addressId: 'addr-1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [],
+            } as CustomerProfile;
+
+            const result = await initializeBasketForReturningCustomer({} as any, mockCustomerProfile);
+
+            // Should call updateCustomerForBasket with the correct email, not the social login ID
+            expect(mockShopperBasketsClient.updateCustomerForBasket).toHaveBeenCalledWith({
+                params: { path: { basketId: 'test-basket' } },
+                body: { email: 'user@example.com' },
+            });
+            expect(result).toBeTruthy();
+        });
+
+        it('should not update email when basket already has a valid email address', async () => {
+            const { getBasket } = await import('@/middlewares/basket.server');
+            const mockBasket = {
+                basketId: 'test-basket',
+                customerInfo: { email: 'user@example.com', customerId: 'cust-123' },
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { firstName: 'John', lastName: 'Doe', address1: '123 Main St' },
+                    },
+                ],
+            };
+
+            vi.mocked(getBasket).mockResolvedValue({ current: mockBasket } as any);
+
+            const mockCustomerProfile = {
+                customer: { login: 'Google-111292267709658666876', email: 'user@example.com', customerId: 'cust-123' },
+                addresses: [{ addressId: 'addr-1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [],
+            } as CustomerProfile;
+
+            const result = await initializeBasketForReturningCustomer({} as any, mockCustomerProfile);
+
+            // Should NOT call updateCustomerForBasket since email is already valid
+            expect(mockShopperBasketsClient.updateCustomerForBasket).not.toHaveBeenCalled();
+            expect(result).toEqual(mockBasket);
+        });
+
         it('should handle API errors gracefully', async () => {
             const { getBasket } = await import('@/middlewares/basket.server');
             vi.mocked(getBasket).mockResolvedValue({
