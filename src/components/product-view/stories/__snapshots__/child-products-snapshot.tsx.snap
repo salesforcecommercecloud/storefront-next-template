@@ -425,7 +425,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             data-slot="label"
             for="quantity"
           >
-            Quantity:
+            Quantity
           </label>
           <div
             class="inline-flex items-center border border-input rounded-none"
@@ -439,7 +439,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               −
             </button>
             <input
-              aria-label="Quantity:"
+              aria-label="Quantity"
               class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               min="1"
               step="1"
@@ -902,7 +902,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               data-slot="label"
               for="quantity"
             >
-              Quantity:
+              Quantity
             </label>
             <div
               class="inline-flex items-center border border-input rounded-none"
@@ -916,7 +916,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 −
               </button>
               <input
-                aria-label="Quantity:"
+                aria-label="Quantity"
                 class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
@@ -1360,7 +1360,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               data-slot="label"
               for="quantity"
             >
-              Quantity:
+              Quantity
             </label>
             <div
               class="inline-flex items-center border border-input rounded-none"
@@ -1374,7 +1374,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 −
               </button>
               <input
-                aria-label="Quantity:"
+                aria-label="Quantity"
                 class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
@@ -1975,7 +1975,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               data-slot="label"
               for="quantity"
             >
-              Quantity:
+              Quantity
             </label>
             <div
               class="inline-flex items-center border border-input rounded-none"
@@ -1989,7 +1989,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 −
               </button>
               <input
-                aria-label="Quantity:"
+                aria-label="Quantity"
                 class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"

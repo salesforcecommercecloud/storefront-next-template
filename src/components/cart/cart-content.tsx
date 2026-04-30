@@ -27,6 +27,8 @@ import OrderSummary from '@/components/order-summary';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
 import { Link } from '@/components/link';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { useBasketUpdater } from '@/providers/basket';
@@ -90,8 +92,6 @@ export default function CartContent({
     wishlistProductIds = [],
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
-    // @sfdc-extension-line SFDC_EXT_BOPIS
-    const { t: tBopis } = useTranslation('extBopis');
 
     // Calculate total item count for page heading
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
@@ -178,6 +178,33 @@ export default function CartContent({
         );
     };
 
+    /**
+     * Line-item gift checkbox (layout only). Not persisted: no SCAPI / basket update is wired yet.
+     * Wire to updateItemInBasket (or equivalent) when line-level gift is supported — see e2e/specs/checkout/gift-message.spec.md.
+     * "Learn more" is a non-navigating control until a destination (e.g. modal or policy page) is defined.
+     */
+    const cartLineItemTrailing = (product: EnrichedProductItem) => {
+        if (!product.itemId || isBonusProduct(product)) {
+            return undefined;
+        }
+        const fieldId = `cart-gift-${product.itemId}`;
+        return (
+            <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 md:justify-end">
+                <Checkbox id={fieldId} />
+                <div className="flex flex-wrap items-center gap-1">
+                    <Label htmlFor={fieldId} className="text-sm text-muted-foreground cursor-pointer font-normal">
+                        {t('lineItem.giftLabel')}
+                    </Label>
+                    <button
+                        type="button"
+                        className="text-sm text-muted-foreground cursor-pointer font-normal shrink-0 border-0 bg-transparent p-0 shadow-none h-auto min-h-0 font-inherit text-left">
+                        {t('lineItem.giftLearnMore')}
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
     // Per-line pickup vs delivery (BOPIS). Defined only inside the extension block so a
     // storefront that strips SFDC_EXT_BOPIS does not reference CartDeliveryOption after its import is removed.
     let cartDeliveryActions: ((product: EnrichedProductItem) => ReactElement) | undefined = undefined;
@@ -238,6 +265,7 @@ export default function CartContent({
                                         bonusDiscountLineItems={bonusDiscountItems}
                                         secondaryActions={cartSecondaryActions}
                                         deliveryActions={cartDeliveryActions}
+                                        lineItemTrailing={cartLineItemTrailing}
                                         isPickup={true}
                                     />
                                 </div>
@@ -248,16 +276,6 @@ export default function CartContent({
                         {deliveryItems.length > 0 && (
                             <div className="md:p-8 p-3 border border-muted-foreground/10 rounded-none mb-3">
                                 <CartTitle basket={basket} deliveryCount={deliveryItems.length} />
-                                {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
-                                {pickupItems.length > 0 && (
-                                    <h2 className="text-lg font-semibold mb-4">
-                                        {tBopis('cart.deliveryItemsHeading', {
-                                            deliveryCount: deliveryItems.length,
-                                            count: basket?.productItems?.length ?? 0,
-                                        })}
-                                    </h2>
-                                )}
-                                {/* @sfdc-extension-block-end SFDC_EXT_BOPIS */}
                                 <ProductItemsList
                                     promotions={promotions}
                                     productItems={deliveryItems}
@@ -265,6 +283,7 @@ export default function CartContent({
                                     bonusDiscountLineItems={bonusDiscountItems}
                                     secondaryActions={cartSecondaryActions}
                                     deliveryActions={cartDeliveryActions}
+                                    lineItemTrailing={cartLineItemTrailing}
                                 />
                             </div>
                         )}

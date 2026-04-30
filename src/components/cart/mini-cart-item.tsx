@@ -250,8 +250,8 @@ export default function MiniCartItem({
                     </div>
                 </div>
 
-                {/* Quantity Picker */}
-                <div className="mb-2 flex w-full flex-col items-start gap-1">
+                {/* Quantity Picker — w-fit keeps stepper compact; avoid w-full so layout stays independent of main cart */}
+                <div className="mb-2 flex w-fit max-w-full flex-col items-start gap-1">
                     <Label htmlFor={`quantity-${product.itemId}`} className="text-xs font-bold text-foreground">
                         {tMiniCart('quantityLabel')}
                     </Label>
@@ -261,7 +261,7 @@ export default function MiniCartItem({
                         min={1}
                         max={stockMax}
                         productName={product.productName}
-                        className="flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                        className="h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     />
                     {stockValidationError && (
                         <Typography variant="small" className="text-destructive mt-1" role="alert" aria-live="polite">

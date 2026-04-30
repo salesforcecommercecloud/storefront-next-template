@@ -32,9 +32,6 @@ import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 import BundledProductItems from './bundled-product-items';
 import ProductPrice from '../product-price';
 import { getPriceData } from '../product-price/utils';
-// TODO: uncomment after integrate gift basket api
-// import { Checkbox } from '@/components/ui/checkbox';
-// import { Label } from '@/components/ui/label';
 
 // Hooks
 import { useItemFetcherLoading } from '@/hooks/use-item-fetcher';
@@ -206,9 +203,12 @@ export function ProductItemVariantAttributes({
 export function ProductItemPromotions({
     productItem,
     className,
+    /** Full-width row with badge aligned to the end (cart line / price column). */
+    alignEnd = false,
 }: {
     productItem: EnrichedProductItem;
     className?: string;
+    alignEnd?: boolean;
 }): ReactElement | null {
     const { t: tMiniCart, i18n } = useTranslation('miniCart');
     const { currency } = useSite();
@@ -221,13 +221,23 @@ export function ProductItemPromotions({
     const discount = (listPrice - currentPrice) * (productItem?.quantity ?? 1);
     if (discount <= 0) return null;
 
-    return (
-        <Badge className={cn('bg-muted text-foreground border-0 text-xs font-medium rounded-none', className)}>
+    const badge = (
+        <Badge
+            className={cn(
+                'h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground',
+                className
+            )}>
             {tMiniCart('saved', {
                 amount: formatCurrency(discount, i18n.language, currency),
             })}
         </Badge>
     );
+
+    if (alignEnd) {
+        return <div className="flex w-full justify-end">{badge}</div>;
+    }
+
+    return badge;
 }
 
 /**
@@ -240,6 +250,7 @@ export function ProductItemPromotions({
  * @property {function} [primaryAction] - Render prop function to create primary actions
  * @property {function} [secondaryActions] - Render prop function to create secondary actions
  * @property {function} [deliveryActions] - Render prop for per-line fulfillment (e.g. BOPIS pickup/delivery dropdown)
+ * @property {function} [lineItemTrailing] - Optional render prop for the end of the cart line right column (e.g. gift checkbox)
  */
 interface ProductItemProps {
     productItem: EnrichedProductItem | undefined;
@@ -248,6 +259,8 @@ interface ProductItemProps {
     primaryAction?: (productItem: EnrichedProductItem) => ReactElement | undefined;
     secondaryActions?: (productItem: EnrichedProductItem) => ReactElement | undefined;
     deliveryActions?: (productItem: EnrichedProductItem) => ReactElement | undefined;
+    /** Rendered last in the cart line right column (e.g. gift checkbox) */
+    lineItemTrailing?: (productItem: EnrichedProductItem) => ReactElement | undefined;
     bonusDiscountLineItems?: ShopperBasketsV2.schemas['BonusDiscountLineItem'][];
     maxBonusQuantity?: number;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -281,6 +294,7 @@ function ProductItem({
     deliveryActions,
     bonusDiscountLineItems,
     maxBonusQuantity,
+    lineItemTrailing,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup = false,
 }: ProductItemProps): ReactElement {
@@ -360,6 +374,8 @@ function ProductItem({
             </div>
         );
     }
+    const trailing = !isAutoBonusProduct ? lineItemTrailing?.(productItem) : undefined;
+
     // Default variant - full product item with card styling
     return (
         <div className="relative" data-testid={`sf-product-item-${productItem?.productId || productItem?.id}`}>
@@ -406,11 +422,14 @@ function ProductItem({
 
                                     <UITarget targetId="sfcc.cart.tax.lineItemMessage" />
                                 </div>
-                                <div className="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2">
-                                    <div className="hidden md:block">{deliveryActions?.(productItem)}</div>
-                                    <div className="md:self-end">
-                                        <div className="md:text-right" data-testid="desktop-product-price">
-                                            <div className="font-semibold text-base">
+                                <div className="flex min-w-0 flex-shrink-0 flex-col items-end gap-2 md:gap-4 md:row-span-2">
+                                    <div className="hidden w-full shrink-0 justify-end md:flex">
+                                        {deliveryActions?.(productItem)}
+                                    </div>
+
+                                    <div className="flex w-full max-w-full shrink-0 flex-col items-end gap-2 md:gap-3">
+                                        <div className="text-right" data-testid="desktop-product-price">
+                                            <div className="inline-flex flex-col items-end font-semibold text-base">
                                                 {(productItem.priceAfterItemDiscount ?? productItem.price ?? 0) ===
                                                 0 ? (
                                                     <span className="text-[var(--cart-free-price)] text-[length:var(--cart-free-price-size)] font-semibold">
@@ -423,18 +442,15 @@ function ProductItem({
                                                         quantity={productItem.quantity ?? 1}
                                                         currency={currency}
                                                         labelForA11y={productItem?.productName}
-                                                        className="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
+                                                        hidePromo
+                                                        className="flex flex-row flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                                                         currentPriceProps={{
                                                             className:
-                                                                'text-card-foreground text-lg md:text-right font-semibold leading-none relative',
+                                                                'text-card-foreground text-lg text-right font-semibold leading-none relative',
                                                         }}
                                                         listPriceProps={{
                                                             className:
-                                                                'text-muted-foreground md:text-right text-sm leading-none relative',
-                                                        }}
-                                                        promoCalloutProps={{
-                                                            className:
-                                                                'bg-muted text-foreground border-0 text-xs font-medium rounded-none inline-block mt-3 mx-0',
+                                                                'text-muted-foreground text-right text-sm leading-none relative',
                                                         }}
                                                         afterPriceContent={
                                                             <UITarget targetId="sfcc.cart.shipping.deliveryEstimate" />
@@ -443,7 +459,7 @@ function ProductItem({
                                                 )}
                                             </div>
                                             {(productItem.quantity ?? 1) > 1 && (
-                                                <div className="text-muted-foreground text-sm">
+                                                <div className="text-right text-muted-foreground text-sm">
                                                     {formatCurrency(
                                                         (productItem.priceAfterItemDiscount ?? productItem.price ?? 0) /
                                                             (productItem.quantity ?? 1),
@@ -454,29 +470,22 @@ function ProductItem({
                                                 </div>
                                             )}
                                         </div>
-                                        {/*Comment out since this is not integrated with api yet*/}
-                                        {/*<div className="text-sm flex items-center gap-3">*/}
-                                        {/*    <Checkbox id="isGift" />*/}
-                                        {/*    <Label htmlFor="isGift">This is a gift</Label>*/}
-                                        {/*    <a*/}
-                                        {/*        className="text-primary"*/}
-                                        {/*        href="https://https://developer.salesforce.com/docs/commerce/commerce-api/references">*/}
-                                        {/*        Learn more*/}
-                                        {/*    </a>*/}
-                                        {/*</div>*/}
+                                        <ProductItemPromotions productItem={productItem} alignEnd />
                                     </div>
 
-                                    {/* Promotions Info */}
-                                    <ProductItemPromotions productItem={productItem} />
+                                    <div className="flex shrink-0 justify-end">
+                                        <CartQuantityPicker
+                                            value={String(productItem.quantity)}
+                                            itemId={productItem.itemId || ''}
+                                            stockLevel={stockLevel}
+                                            max={isBonusProduct ? maxBonusQuantity : undefined}
+                                            disabled={isAutoBonusProduct}
+                                        />
+                                    </div>
 
-                                    {/* Quantity Display/Selector */}
-                                    <CartQuantityPicker
-                                        value={String(productItem.quantity)}
-                                        itemId={productItem.itemId || ''}
-                                        stockLevel={stockLevel}
-                                        max={isBonusProduct ? maxBonusQuantity : undefined}
-                                        disabled={isAutoBonusProduct}
-                                    />
+                                    {trailing && (
+                                        <div className="flex w-full min-w-0 shrink-0 justify-end">{trailing}</div>
+                                    )}
                                 </div>
                                 {!isAutoBonusProduct && primaryAction && (
                                     <div className="min-w-0 md:col-start-1 md:row-start-2">

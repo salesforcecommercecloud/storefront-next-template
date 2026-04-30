@@ -80,20 +80,20 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                   </div>
                 </div>
                 <div
-                  class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
+                  class="flex min-w-0 flex-shrink-0 flex-col items-end gap-2 md:gap-4 md:row-span-2"
                 >
                   <div
-                    class="hidden md:block"
+                    class="hidden w-full shrink-0 justify-end md:flex"
                   />
                   <div
-                    class="md:self-end"
+                    class="flex w-full max-w-full shrink-0 flex-col items-end gap-2 md:gap-3"
                   >
                     <div
-                      class="md:text-right"
+                      class="text-right"
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="font-semibold text-base"
+                        class="inline-flex flex-col items-end font-semibold text-base"
                       >
                         <span
                           class="text-[var(--cart-free-price)] text-[length:var(--cart-free-price-size)] font-semibold"
@@ -104,44 +104,48 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                     </div>
                   </div>
                   <div
-                    class=" relative"
+                    class="flex shrink-0 justify-end"
                   >
-                    <label
-                      class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
-                      data-slot="label"
-                      for="quantity"
-                    >
-                      Quantity:
-                    </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
-                      <button
-                        aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-decrement"
-                        disabled=""
+                      <label
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        data-slot="label"
+                        for="quantity"
                       >
-                        −
-                      </button>
-                      <input
-                        aria-label="Quantity:"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        disabled=""
-                        max="98"
-                        min="0"
-                        step="1"
-                        type="number"
-                        value="1"
-                      />
-                      <button
-                        aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-increment"
-                        disabled=""
+                        Quantity
+                      </label>
+                      <div
+                        class="inline-flex items-center border border-input rounded-none"
                       >
-                        +
-                      </button>
+                        <button
+                          aria-label="Decrement Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-decrement"
+                          disabled=""
+                        >
+                          −
+                        </button>
+                        <input
+                          aria-label="Quantity"
+                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          disabled=""
+                          max="98"
+                          min="0"
+                          step="1"
+                          type="number"
+                          value="1"
+                        />
+                        <button
+                          aria-label="Increment Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-increment"
+                          disabled=""
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -244,20 +248,20 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                   </div>
                 </div>
                 <div
-                  class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
+                  class="flex min-w-0 flex-shrink-0 flex-col items-end gap-2 md:gap-4 md:row-span-2"
                 >
                   <div
-                    class="hidden md:block"
+                    class="hidden w-full shrink-0 justify-end md:flex"
                   />
                   <div
-                    class="md:self-end"
+                    class="flex w-full max-w-full shrink-0 flex-col items-end gap-2 md:gap-3"
                   >
                     <div
-                      class="md:text-right"
+                      class="text-right"
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="font-semibold text-base"
+                        class="inline-flex flex-col items-end font-semibold text-base"
                       >
                         <span
                           class="text-[var(--cart-free-price)] text-[length:var(--cart-free-price-size)] font-semibold"
@@ -268,42 +272,46 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                     </div>
                   </div>
                   <div
-                    class=" relative"
+                    class="flex shrink-0 justify-end"
                   >
-                    <label
-                      class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
-                      data-slot="label"
-                      for="quantity"
-                    >
-                      Quantity:
-                    </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
-                      <button
-                        aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-decrement"
-                        disabled=""
+                      <label
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        data-slot="label"
+                        for="quantity"
                       >
-                        −
-                      </button>
-                      <input
-                        aria-label="Quantity:"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        max="3"
-                        min="0"
-                        step="1"
-                        type="number"
-                        value="1"
-                      />
-                      <button
-                        aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-increment"
+                        Quantity
+                      </label>
+                      <div
+                        class="inline-flex items-center border border-input rounded-none"
                       >
-                        +
-                      </button>
+                        <button
+                          aria-label="Decrement Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-decrement"
+                          disabled=""
+                        >
+                          −
+                        </button>
+                        <input
+                          aria-label="Quantity"
+                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          max="3"
+                          min="0"
+                          step="1"
+                          type="number"
+                          value="1"
+                        />
+                        <button
+                          aria-label="Increment Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-increment"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -402,28 +410,28 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                   </div>
                 </div>
                 <div
-                  class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
+                  class="flex min-w-0 flex-shrink-0 flex-col items-end gap-2 md:gap-4 md:row-span-2"
                 >
                   <div
-                    class="hidden md:block"
+                    class="hidden w-full shrink-0 justify-end md:flex"
                   />
                   <div
-                    class="md:self-end"
+                    class="flex w-full max-w-full shrink-0 flex-col items-end gap-2 md:gap-3"
                   >
                     <div
-                      class="md:text-right"
+                      class="text-right"
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="font-semibold text-base"
+                        class="inline-flex flex-col items-end font-semibold text-base"
                       >
                         <div
-                          class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
+                          class="flex flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                         >
                           <span
                             aria-label="Current price: £99.99"
                             aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
+                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
                           >
                             £99.99
                           </span>
@@ -442,42 +450,46 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                     </div>
                   </div>
                   <div
-                    class=" relative"
+                    class="flex shrink-0 justify-end"
                   >
-                    <label
-                      class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
-                      data-slot="label"
-                      for="quantity"
-                    >
-                      Quantity:
-                    </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
-                      <button
-                        aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-decrement"
-                        disabled=""
+                      <label
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        data-slot="label"
+                        for="quantity"
                       >
-                        −
-                      </button>
-                      <input
-                        aria-label="Quantity:"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        max="98"
-                        min="0"
-                        step="1"
-                        type="number"
-                        value="1"
-                      />
-                      <button
-                        aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-increment"
+                        Quantity
+                      </label>
+                      <div
+                        class="inline-flex items-center border border-input rounded-none"
                       >
-                        +
-                      </button>
+                        <button
+                          aria-label="Decrement Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-decrement"
+                          disabled=""
+                        >
+                          −
+                        </button>
+                        <input
+                          aria-label="Quantity"
+                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          max="98"
+                          min="0"
+                          step="1"
+                          type="number"
+                          value="1"
+                        />
+                        <button
+                          aria-label="Increment Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-increment"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -658,28 +670,28 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                   </div>
                 </div>
                 <div
-                  class="grid gap-2 md:gap-4 justify-items-start md:justify-items-end content-start flex-shrink-0 md:row-span-2"
+                  class="flex min-w-0 flex-shrink-0 flex-col items-end gap-2 md:gap-4 md:row-span-2"
                 >
                   <div
-                    class="hidden md:block"
+                    class="hidden w-full shrink-0 justify-end md:flex"
                   />
                   <div
-                    class="md:self-end"
+                    class="flex w-full max-w-full shrink-0 flex-col items-end gap-2 md:gap-3"
                   >
                     <div
-                      class="md:text-right"
+                      class="text-right"
                       data-testid="desktop-product-price"
                     >
                       <div
-                        class="font-semibold text-base"
+                        class="inline-flex flex-col items-end font-semibold text-base"
                       >
                         <div
-                          class="flex flex-row md:flex-col items-baseline md:items-end gap-2 md:gap-0"
+                          class="flex flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                         >
                           <span
                             aria-label="Current price: £99.99"
                             aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-left text-card-foreground text-lg md:text-right font-semibold leading-none relative"
+                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
                           >
                             £99.99
                           </span>
@@ -698,42 +710,46 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                     </div>
                   </div>
                   <div
-                    class=" relative"
+                    class="flex shrink-0 justify-end"
                   >
-                    <label
-                      class="items-center gap-2 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-sm text-muted-foreground md:mb-2 md:block inline mr-2 md:mr-0 md:text-right"
-                      data-slot="label"
-                      for="quantity"
-                    >
-                      Quantity:
-                    </label>
                     <div
-                      class="inline-flex items-center border border-input rounded-none"
+                      class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
-                      <button
-                        aria-label="Decrement Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-decrement"
-                        disabled=""
+                      <label
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        data-slot="label"
+                        for="quantity"
                       >
-                        −
-                      </button>
-                      <input
-                        aria-label="Quantity:"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        max="98"
-                        min="0"
-                        step="1"
-                        type="number"
-                        value="1"
-                      />
-                      <button
-                        aria-label="Increment Quantity for the product"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        data-testid="quantity-increment"
+                        Quantity
+                      </label>
+                      <div
+                        class="inline-flex items-center border border-input rounded-none"
                       >
-                        +
-                      </button>
+                        <button
+                          aria-label="Decrement Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-decrement"
+                          disabled=""
+                        >
+                          −
+                        </button>
+                        <input
+                          aria-label="Quantity"
+                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          max="98"
+                          min="0"
+                          step="1"
+                          type="number"
+                          value="1"
+                        />
+                        <button
+                          aria-label="Increment Quantity for the product"
+                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          data-testid="quantity-increment"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

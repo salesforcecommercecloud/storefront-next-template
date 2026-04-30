@@ -10,7 +10,7 @@ exports[`ProductQuantityPicker stories snapshot > BundleProduct story renders an
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -24,7 +24,7 @@ exports[`ProductQuantityPicker stories snapshot > BundleProduct story renders an
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         min="1"
         step="1"
@@ -53,7 +53,7 @@ exports[`ProductQuantityPicker stories snapshot > BundleWithLowStock story rende
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -67,7 +67,7 @@ exports[`ProductQuantityPicker stories snapshot > BundleWithLowStock story rende
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         min="1"
         step="1"
@@ -96,7 +96,7 @@ exports[`ProductQuantityPicker stories snapshot > CustomStyling story renders an
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -110,7 +110,7 @@ exports[`ProductQuantityPicker stories snapshot > CustomStyling story renders an
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         min="1"
         step="1"
@@ -139,7 +139,7 @@ exports[`ProductQuantityPicker stories snapshot > Default story renders and matc
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -153,7 +153,7 @@ exports[`ProductQuantityPicker stories snapshot > Default story renders and matc
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         min="1"
         step="1"
@@ -182,7 +182,7 @@ exports[`ProductQuantityPicker stories snapshot > Disabled story renders and mat
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -196,7 +196,7 @@ exports[`ProductQuantityPicker stories snapshot > Disabled story renders and mat
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         disabled=""
         min="1"
@@ -227,7 +227,7 @@ exports[`ProductQuantityPicker stories snapshot > HighStock story renders and ma
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -241,7 +241,7 @@ exports[`ProductQuantityPicker stories snapshot > HighStock story renders and ma
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         min="1"
         step="1"
@@ -270,7 +270,7 @@ exports[`ProductQuantityPicker stories snapshot > OutOfStock story renders and m
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -284,7 +284,7 @@ exports[`ProductQuantityPicker stories snapshot > OutOfStock story renders and m
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         disabled=""
         min="1"
@@ -322,7 +322,7 @@ exports[`ProductQuantityPicker stories snapshot > WithStockWarning story renders
       data-slot="label"
       for="quantity"
     >
-      Quantity:
+      Quantity
     </label>
     <div
       class="inline-flex items-center border border-input rounded-none"
@@ -336,7 +336,7 @@ exports[`ProductQuantityPicker stories snapshot > WithStockWarning story renders
         −
       </button>
       <input
-        aria-label="Quantity:"
+        aria-label="Quantity"
         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         min="1"
         step="1"

@@ -14,7 +14,7 @@ exports[`QuantityPicker stories snapshot > Default story renders and matches sna
       −
     </button>
     <input
-      aria-label="Quantity:"
+      aria-label="Quantity"
       class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
@@ -46,7 +46,7 @@ exports[`QuantityPicker stories snapshot > Disabled story renders and matches sn
       −
     </button>
     <input
-      aria-label="Quantity:"
+      aria-label="Quantity"
       class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       disabled=""
       min="0"
@@ -79,7 +79,7 @@ exports[`QuantityPicker stories snapshot > HighQuantity story renders and matche
       −
     </button>
     <input
-      aria-label="Quantity:"
+      aria-label="Quantity"
       class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
@@ -110,7 +110,7 @@ exports[`QuantityPicker stories snapshot > Interactive story renders and matches
       −
     </button>
     <input
-      aria-label="Quantity:"
+      aria-label="Quantity"
       class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
@@ -141,7 +141,7 @@ exports[`QuantityPicker stories snapshot > MinimumValue story renders and matche
       −
     </button>
     <input
-      aria-label="Quantity:"
+      aria-label="Quantity"
       class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"
@@ -173,7 +173,7 @@ exports[`QuantityPicker stories snapshot > MinimumValueOne story renders and mat
       −
     </button>
     <input
-      aria-label="Quantity:"
+      aria-label="Quantity"
       class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="1"
       step="1"
@@ -204,7 +204,7 @@ exports[`QuantityPicker stories snapshot > WithProductName story renders and mat
       −
     </button>
     <input
-      aria-label="Quantity:"
+      aria-label="Quantity"
       class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
       step="1"

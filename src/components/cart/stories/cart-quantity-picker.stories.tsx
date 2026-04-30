@@ -136,12 +136,12 @@ A cart-specific quantity picker that wraps the base \`QuantityPicker\` with API 
 
 ## Design
 
-Renders a right-aligned "Quantity:" label above a compact stepper control. The stepper uses a single \`border border-input rounded-none\` wrapper with flush −/+ buttons and a borderless numeric input — matching the reference cart item design.
+Renders a **"Quantity"** label (no colon) above the stepper, left-aligned with the control, using \`text-sm font-semibold leading-5 text-muted-foreground\`. The stepper uses a single \`border border-input rounded-none\` wrapper with flush −/+ buttons and a borderless numeric input — matching the cart line layout.
 
 ## Features
 
 - **Single-border stepper**: Clean picker with \`−\` and \`+\` buttons inside one rounded border
-- **Right-aligned label**: "Quantity:" text in \`text-sm text-muted-foreground\` aligned right above the picker
+- **Label typography**: \`font-sans\`, \`font-semibold\`, \`text-sm\`, \`leading-5\`, \`text-muted-foreground\`, aligned with the picker’s leading edge; wrapper \`w-fit\` so the block can sit flush right in the cart column
 - **Debounced API calls**: Configurable delay (default from \`config.pages.cart.quantityUpdateDebounce\`) prevents request spam
 - **Stock validation**: Warns when quantity exceeds available stock with a destructive-coloured message
 - **Remove confirmation**: Shows a \`ConfirmationDialog\` when quantity is set to 0
@@ -153,8 +153,8 @@ Renders a right-aligned "Quantity:" label above a compact stepper control. The s
 \`\`\`tsx
 import CartQuantityPicker from '@/components/cart/cart-quantity-picker';
 
-// In a cart item row — right column on desktop
-<div className="hidden md:flex flex-col items-end">
+// In a cart item row — right column on desktop (picker wrapper is justify-end; label aligns with stepper)
+<div className="hidden md:flex justify-end">
   <CartQuantityPicker
     value={item.quantity.toString()}
     itemId={item.itemId}
@@ -618,7 +618,9 @@ export const InCartItem: Story = {
                         <div className="text-right mb-4">
                             <span className="text-lg font-semibold text-foreground">$59.00</span>
                         </div>
-                        <CartQuantityPicker value="2" itemId="item-123" stockLevel={10} />
+                        <div className="flex justify-end">
+                            <CartQuantityPicker value="2" itemId="item-123" stockLevel={10} />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -166,8 +166,8 @@ describe('MiniCartItem', () => {
 
     it('renders quantity picker with stepper controls', () => {
         renderWithRouter(<MiniCartItem product={mockProduct} />);
-        expect(screen.getByText('Quantity:')).toBeInTheDocument();
-        const input = screen.getByLabelText('Quantity:');
+        expect(screen.getByText('Quantity')).toBeInTheDocument();
+        const input = screen.getByLabelText('Quantity');
         expect(input).toBeInTheDocument();
         expect(input).toHaveValue(1);
         expect(screen.getByTestId('quantity-decrement')).toBeInTheDocument();

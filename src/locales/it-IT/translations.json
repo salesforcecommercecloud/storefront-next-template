@@ -286,7 +286,7 @@
         }
     },
     "quantitySelector": {
-        "quantity": "Quantità:",
+        "quantity": "Quantità",
         "decreaseQuantity": "Diminuisci quantità",
         "increaseQuantity": "Aumenta quantità",
         "decreaseQuantityForProduct": "Diminuisci quantità per {{productName}}",
@@ -372,6 +372,10 @@
         "attributes": {
             "quantity": "Qtà:",
             "promotions": "Promozioni:"
+        },
+        "lineItem": {
+            "giftLabel": "È un regalo.",
+            "giftLearnMore": "Scopri di più."
         },
         "product": {
             "defaultName": "Nome prodotto"
@@ -1326,7 +1330,7 @@
     },
     "miniCart": {
         "noImage": "Nessuna immagine",
-        "quantityLabel": "Quantità:",
+        "quantityLabel": "Quantità",
         "quantityAriaLabel": "Quantità",
         "customQuantityAriaLabel": "Quantità personalizzata",
         "customOption": "Personalizzato...",

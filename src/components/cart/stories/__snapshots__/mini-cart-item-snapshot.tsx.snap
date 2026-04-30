@@ -305,7 +305,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £65.00
@@ -313,17 +313,17 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -333,7 +333,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         max="4"
                         min="1"
@@ -925,7 +925,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £285.00
@@ -933,17 +933,17 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -953,7 +953,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -1782,7 +1782,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £85.00
@@ -1790,17 +1790,17 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -1810,7 +1810,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -2393,7 +2393,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -2401,17 +2401,17 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -2422,7 +2422,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -3005,7 +3005,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -3013,17 +3013,17 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for This is a very long product name that should be truncated to prevent layout issues"
@@ -3034,7 +3034,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -3606,7 +3606,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -3614,17 +3614,17 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -3635,7 +3635,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -4207,7 +4207,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -4215,17 +4215,17 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -4236,7 +4236,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -4859,7 +4859,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           </span>
                         </div>
                         <span
-                          class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                          class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                           data-slot="badge"
                         >
                           Saved £5.00
@@ -4867,17 +4867,17 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                       </div>
                     </div>
                     <div
-                      class="mb-2 flex w-full flex-col items-start gap-1"
+                      class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                     >
                       <label
                         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                         data-slot="label"
                         for="quantity-1"
                       >
-                        Quantity:
+                        Quantity
                       </label>
                       <div
-                        class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                        class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                       >
                         <button
                           aria-label="Decrement Quantity for Product Name"
@@ -4888,7 +4888,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           −
                         </button>
                         <input
-                          aria-label="Quantity:"
+                          aria-label="Quantity"
                           class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           min="1"
                           step="1"
@@ -5508,7 +5508,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           </span>
                         </div>
                         <span
-                          class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                          class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                           data-slot="badge"
                         >
                           Saved £5.00
@@ -5516,17 +5516,17 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                       </div>
                     </div>
                     <div
-                      class="mb-2 flex w-full flex-col items-start gap-1"
+                      class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                     >
                       <label
                         class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                         data-slot="label"
                         for="quantity-1"
                       >
-                        Quantity:
+                        Quantity
                       </label>
                       <div
-                        class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                        class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                       >
                         <button
                           aria-label="Decrement Quantity for Product Name"
@@ -5537,7 +5537,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           −
                         </button>
                         <input
-                          aria-label="Quantity:"
+                          aria-label="Quantity"
                           class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           min="1"
                           step="1"
@@ -6121,7 +6121,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -6129,17 +6129,17 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -6150,7 +6150,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -6728,7 +6728,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 bg-muted text-foreground border-0 text-xs font-medium rounded-none mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -6736,17 +6736,17 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -6757,7 +6757,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
@@ -7273,17 +7273,17 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                     </div>
                   </div>
                   <div
-                    class="mb-2 flex w-full flex-col items-start gap-1"
+                    class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
                       class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
-                      Quantity:
+                      Quantity
                     </label>
                     <div
-                      class="border border-input rounded-none flex h-9 w-full items-center gap-2 self-stretch px-4 py-2"
+                      class="inline-flex border border-input rounded-none h-9 w-fit max-w-full items-center gap-2 px-2 py-2"
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
@@ -7294,7 +7294,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         −
                       </button>
                       <input
-                        aria-label="Quantity:"
+                        aria-label="Quantity"
                         class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"

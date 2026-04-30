@@ -1,3 +1,7 @@
+## v0.4.0-dev (Apr 29, 2026)
+
+- **Cart line right column:** Reworked the `ProductItem` price column so list and sale prices stay on one horizontal row with right alignment, hid the `ProductPrice` promotion callout on cart lines (no long promo copy under prices), and tightened the Saved badge with smaller typography plus an `alignEnd` wrapper so it sits flush right. The quantity block uses `CartQuantityPicker` with a `w-fit` wrapper and right-aligned desktop stacking (`items-end`). Line-item trailing adds the gift row at the end of the right column: checkbox, “This is a gift.” label, and a “Learn more” text control (no URL) styled like the label with a narrow gap between label and learn-more; locale strings drop the colon from the quantity label and carry gift copy only.
+
 ## v0.4.0-dev (Apr 28, 2026)
 
 - **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.

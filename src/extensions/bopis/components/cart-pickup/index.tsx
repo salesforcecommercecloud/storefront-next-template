@@ -92,6 +92,7 @@ export default function CartPickup({ store, pickupCount, totalCount }: CartPicku
                             <Trans
                                 ns="extBopis"
                                 i18nKey="cart.pickupStoreInfo.pickupHeadingWithCounts"
+                                count={totalCount}
                                 values={{
                                     storeName: store.name ?? store.id ?? '',
                                     pickupCount,

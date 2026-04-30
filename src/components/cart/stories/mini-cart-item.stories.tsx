@@ -414,8 +414,8 @@ Mini cart item within the cart sheet context showing:
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 
-        // Verify cart title (CartTitle renders "Delivery - 1 out of 1 items")
-        const cartTitle = await canvas.findByText(/Delivery - 1 out of 1 items/);
+        // Verify cart title (CartTitle pluralizes: singular "item" when count is 1)
+        const cartTitle = await canvas.findByText(/Delivery - 1 out of 1 item/);
         await expect(cartTitle).toBeInTheDocument();
 
         // Verify close button
@@ -446,9 +446,9 @@ Mini cart item within the cart sheet context showing:
         });
 
         // Verify quantity label and stepper controls
-        const quantityLabel = await canvas.findByText('Quantity:');
+        const quantityLabel = await canvas.findByText('Quantity');
         await expect(quantityLabel).toBeInTheDocument();
-        const quantityInput = await canvas.findByLabelText('Quantity:');
+        const quantityInput = await canvas.findByLabelText('Quantity');
         await expect(quantityInput).toBeInTheDocument();
         await expect(quantityInput).toHaveValue(1);
 
@@ -590,7 +590,7 @@ Product with quantity greater than 1. Demonstrates:
         const canvas = within(canvasElement);
 
         // Wait for quantity stepper (use findBy to wait for async loading)
-        const quantityInput = await canvas.findByLabelText('Quantity:');
+        const quantityInput = await canvas.findByLabelText('Quantity');
         await expect(quantityInput).toBeInTheDocument();
         await expect(quantityInput).toHaveValue(5);
     },
@@ -710,7 +710,7 @@ Product with custom quantity greater than 10. Demonstrates:
         await expect(productName).toBeInTheDocument();
 
         // Verify the quantity input shows 15
-        const quantityInput = await canvas.findByLabelText('Quantity:');
+        const quantityInput = await canvas.findByLabelText('Quantity');
         await expect(quantityInput).toBeInTheDocument();
         await expect(quantityInput).toHaveValue(15);
     },
@@ -818,7 +818,7 @@ Product at the stock/allocation limit. Demonstrates:
         const canvas = within(canvasElement);
 
         // Verify quantity is at stock limit
-        const quantityInput = await canvas.findByLabelText('Quantity:');
+        const quantityInput = await canvas.findByLabelText('Quantity');
         await expect(quantityInput).toBeInTheDocument();
         await expect(quantityInput).toHaveValue(4);
 
@@ -929,7 +929,7 @@ Interactive mini cart item for testing user interactions. Demonstrates:
         const canvas = within(canvasElement);
 
         // Verify quantity stepper is present with initial value
-        const quantityInput = await canvas.findByLabelText('Quantity:');
+        const quantityInput = await canvas.findByLabelText('Quantity');
         await expect(quantityInput).toBeInTheDocument();
         await expect(quantityInput).toHaveValue(1);
 

@@ -291,7 +291,7 @@ export const InCartItem: Story = {
                                 <span className="text-sm font-semibold text-foreground">$59.00</span>
                             </div>
                             <div className="flex items-center gap-3 mb-2">
-                                <span className="text-xs text-muted-foreground">Quantity:</span>
+                                <span className="text-xs text-muted-foreground">Quantity</span>
                                 <StoryQuantityPicker />
                             </div>
                         </div>
@@ -338,7 +338,7 @@ export const InCartItem: Story = {
                             <span className="text-lg font-semibold text-foreground">$59.00</span>
                         </div>
                         <div>
-                            <span className="block text-sm text-muted-foreground mb-2 text-right">Quantity:</span>
+                            <span className="block text-sm text-muted-foreground mb-2 text-right">Quantity</span>
                             <StoryQuantityPicker />
                         </div>
                     </div>

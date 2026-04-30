@@ -317,7 +317,7 @@ describe('QuantityPicker', () => {
             render(<QuantityPicker {...defaultProps} />);
 
             const input = screen.getByDisplayValue('2');
-            expect(input).toHaveAttribute('aria-label', 'Quantity:');
+            expect(input).toHaveAttribute('aria-label', 'Quantity');
         });
 
         test('should have correct input attributes', () => {

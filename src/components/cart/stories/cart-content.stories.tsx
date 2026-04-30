@@ -39,6 +39,7 @@ import {
     BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -46,7 +47,6 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Label } from '@/components/ui/label';
 import { isStandardProduct, isBonusProduct, type EnrichedProductItem } from '@/lib/product-utils';
 import emptyBasket from '@/components/__mocks__/empty-basket';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
@@ -215,7 +215,7 @@ The CartContent component displays the shopping cart with items or an empty stat
 - **Component Composition**: Composes Breadcrumb, ProductItemsList, OrderSummary, and action render props
 - **Data Integration**: Accepts basket, product mappings, promotion mappings, and bonus product data
 - **Delivery / Pickup Fulfillment**: Supports delivery and pickup badges with dropdown selectors per item (BOPIS extension)
-- **Item Actions**: Gift checkbox, Edit, Remove, and Add to Wishlist action row per product item via \`secondaryActions\` render prop
+- **Item Actions**: Edit, Remove, and Add to Wishlist via \`secondaryActions\`; optional \`lineItemTrailing\` (e.g. gift) renders last in the line-item right column
 - **Delivery Actions**: Delivery/Pickup badge with dropdown menu per product item via \`deliveryActions\` render prop
 - **Bonus Products**: Carousel and modal for bonus product selection tied to promotions
 - **Mobile Optimization**: Stacked layout — OrderSummary appears first (non-collapsible), then product cards; inline quantity picker with label; touch-friendly action rows
@@ -223,8 +223,8 @@ The CartContent component displays the shopping cart with items or an empty stat
 
 ## Layout Behavior
 
-- **Desktop**: Grid layout with product items on left (66%) and sticky OrderSummary on right (33%). Each product card shows image, name, attributes, delivery badge, price, quantity picker, and action row (gift checkbox + Edit/Remove/Add to Wishlist on one line)
-- **Mobile**: Stacked layout — OrderSummary at top (non-collapsible), then product cards below. Each card shows image + name + delivery badge, then price, "each" unit price (if qty > 1), inline quantity picker, then stacked gift checkbox and action links
+- **Desktop**: Grid layout with product items on left (66%) and sticky OrderSummary on right (33%). Each product card shows image, name, attributes, delivery badge, strikethrough and sale price on one line, Saved badge, quantity picker, gift row, and secondary actions (Edit/Remove/Add to Wishlist)
+- **Mobile**: Stacked layout — OrderSummary at top (non-collapsible), then product cards below. Each card follows the same line-item column order as desktop (price row, Saved badge, quantity, gift), with secondary actions below attributes
 - **Empty State**: Shows CartEmpty component when basket has no items
 - **Pickup + Delivery Split**: When BOPIS is active, pickup items are grouped in a separate card with store info and "Change Store" button; delivery items appear in their own card with a "Delivery (X of Y items)" header
 
@@ -233,14 +233,14 @@ The CartContent component displays the shopping cart with items or an empty stat
 Each cart item uses a flex-based layout (not grid):
 - **Image**: Linked product thumbnail (96px mobile, 112px desktop) with rounded corners
 - **Details column**: Product name (line-clamped), variation attributes, promotions, mobile price/quantity, and action row
-- **Desktop right column**: Delivery badge, price (with "each" breakdown), and quantity picker aligned right
+- **Desktop right column**: Delivery badge, list and sale price on one line, Saved badge when applicable, quantity picker, then \`lineItemTrailing\` (e.g. gift)
 - **Mobile**: Price, unit price, and quantity picker render inline below attributes; delivery badge appears next to product name
 
 ## Integration
 
 This component integrates with:
 - **Breadcrumb** — Home > Cart navigation at the top
-- **ProductItemsList** — Renders cart items with \`secondaryActions\` and \`deliveryActions\` render props
+- **ProductItemsList** — Renders cart items with \`secondaryActions\`, \`deliveryActions\`, and optional \`lineItemTrailing\`
 - **OrderSummary** — Displays subtotal, shipping, tax, promotions, promo code form, and checkout CTA
 - **CartEmpty** — Empty cart state with continue shopping and sign-in buttons
 - **RemoveItemButtonWithConfirmation** — Remove item with confirmation dialog
@@ -404,12 +404,6 @@ const cartSecondaryActions = (product: EnrichedProductItem) => {
     const shouldShowEditButton = !isStandardProd && !isBonusProd;
     return (
         <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 md:gap-3">
-            <div className="flex items-center gap-2">
-                <Checkbox id={`gift-${product.itemId}`} />
-                <Label htmlFor={`gift-${product.itemId}`} className="text-sm text-muted-foreground cursor-pointer">
-                    This is a gift.
-                </Label>
-            </div>
             <div className="flex items-center gap-3 flex-nowrap">
                 {shouldShowEditButton && <CartItemEditButton product={product} className="px-0" />}
                 <RemoveItemButtonWithConfirmation itemId={product.itemId} className="px-0" />
@@ -418,6 +412,30 @@ const cartSecondaryActions = (product: EnrichedProductItem) => {
                     className="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap">
                     <Heart className="size-3.5" />
                     Add to Wishlist
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// Story-only mirror of cart gift row; not backed by basket API (same as CartContent cartLineItemTrailing).
+const cartLineItemTrailing = (product: EnrichedProductItem) => {
+    if (!product.itemId || isBonusProduct(product)) {
+        return undefined;
+    }
+    const { t } = getTranslation();
+    const fieldId = `cart-gift-${product.itemId}`;
+    return (
+        <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 md:justify-end">
+            <Checkbox id={fieldId} />
+            <div className="flex flex-wrap items-center gap-1">
+                <Label htmlFor={fieldId} className="text-sm text-muted-foreground cursor-pointer font-normal">
+                    {t('cart:lineItem.giftLabel')}
+                </Label>
+                <button
+                    type="button"
+                    className="text-sm text-muted-foreground cursor-pointer font-normal shrink-0 border-0 bg-transparent p-0 shadow-none h-auto min-h-0 font-inherit text-left">
+                    {t('cart:lineItem.giftLearnMore')}
                 </button>
             </div>
         </div>
@@ -527,6 +545,7 @@ Cart with items composing ProductItemsList and OrderSummary (DesktopWithItems co
                                 productsByItemId={cartWithItemsProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                     </div>
@@ -620,6 +639,7 @@ Cart with 2 items and a qualified promotion. Shows:
                                 productsByItemId={cartWithPromotionsProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                     </div>
@@ -718,6 +738,7 @@ Cart layout optimized for mobile devices. Shows:
                             productsByItemId={cartWithItemsProductMap}
                             secondaryActions={cartSecondaryActions}
                             deliveryActions={cartDeliveryActions}
+                            lineItemTrailing={cartLineItemTrailing}
                         />
                     </div>
                 </div>
@@ -841,6 +862,7 @@ Cart with 4 items. Demonstrates:
                                 productsByItemId={largeOrderProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                     </div>
@@ -952,6 +974,7 @@ This demonstrates how the component handles items with high quantities.
                                 productsByItemId={highQtyProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                     </div>
@@ -1032,6 +1055,7 @@ This demonstrates the component's resilience to missing data.
                                 productsByItemId={{}}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                     </div>
@@ -1140,6 +1164,7 @@ This verifies the component handles long product names gracefully.
                                 productsByItemId={longNameProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                     </div>
@@ -1259,7 +1284,8 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                                     <div>
                                         <div className="text-sm font-semibold">
                                             Pickup in <span className="font-bold">Dorchester</span> -{' '}
-                                            {pickupItems.length} out of {pickupItems.length} items available
+                                            {pickupItems.length} out of {pickupDeliveryBasketItems.length}{' '}
+                                            {pickupDeliveryBasketItems.length === 1 ? 'item' : 'items'} available
                                         </div>
                                         <div className="text-sm text-muted-foreground">
                                             26 District Avenue, Dorchester, MA 02125
@@ -1275,6 +1301,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                                 productsByItemId={pickupDeliveryProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartPickupActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                         {/* Delivery card */}
@@ -1284,7 +1311,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                                 <div>
                                     <div className="text-sm font-semibold">
                                         Delivery - {deliveryItems.length} out of {pickupDeliveryBasketItems.length}{' '}
-                                        items
+                                        {pickupDeliveryBasketItems.length === 1 ? 'item' : 'items'}
                                     </div>
                                     <div className="text-sm text-muted-foreground">
                                         478 Artisan Way, Somerville, MA 02145
@@ -1296,6 +1323,7 @@ Cart with 3 items mixing pickup and delivery fulfillment. Shows:
                                 productsByItemId={pickupDeliveryProductMap}
                                 secondaryActions={cartSecondaryActions}
                                 deliveryActions={cartDeliveryActions}
+                                lineItemTrailing={cartLineItemTrailing}
                             />
                         </div>
                     </div>
