@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach, type Mock, type MockInstance } from 'vitest';
 import { Project as TsMorphProject, Project } from 'ts-morph';
 import { filePathToRoute, generateMetadata } from '../generate-cartridge';
-import { testRoutes } from './generate-cartridge.data';
+import { testRoutes, testRoutesWithSiteContext } from './generate-cartridge.data';
 
 // Import the actual functions from generate-cartridge for testing
 import { readdir, readFile, writeFile, mkdir, access, rm } from 'node:fs/promises';
@@ -240,6 +240,42 @@ describe('filePathToRoute', () => {
     ])('should convert file path to route: %s -> %s (%s)', (filePath, projectRoot, expected) => {
         const result = filePathToRoute(filePath, projectRoot);
         expect(result).toBe(expected);
+    });
+
+    describe('with site-context URL prefix', () => {
+        beforeEach(() => {
+            (readFileSync as Mock).mockReturnValue(JSON.stringify(testRoutesWithSiteContext));
+        });
+
+        test.each([
+            [
+                '/Users/test/project/src/routes/_app._index.tsx',
+                '/Users/test/project',
+                '/:siteId/:localeId',
+                'homepage resolves to prefixed route, not root duplicate',
+            ],
+            [
+                '/Users/test/project/src/routes/_app.product.$productId.tsx',
+                '/Users/test/project',
+                '/:siteId/:localeId/product/:productId',
+                'product page under prefix',
+            ],
+            [
+                '/Users/test/project/src/routes/_app.search.tsx',
+                '/Users/test/project',
+                '/:siteId/:localeId/search',
+                'search page under prefix',
+            ],
+            [
+                '/Users/test/project/src/routes/action.set-locale.ts',
+                '/Users/test/project',
+                '/action/set-locale',
+                'excluded route stays at root',
+            ],
+        ])('should convert file path to route: %s -> %s (%s)', (filePath, projectRoot, expected) => {
+            const result = filePathToRoute(filePath, projectRoot);
+            expect(result).toBe(expected);
+        });
     });
 });
 

@@ -3204,12 +3204,11 @@ function getReactRouterRoutes(projectDirectory) {
 */
 function filePathToRoute(filePath, projectRoot) {
 	const filePathPosix = filePath.replace(/\\/g, "/");
-	const flatRoutes = flattenRoutes(getReactRouterRoutes(projectRoot));
-	for (const route of flatRoutes) {
+	const canonicalRoutes = flattenRoutes(getReactRouterRoutes(projectRoot)).filter((route) => !route.id.endsWith("--root-duplicate"));
+	for (const route of canonicalRoutes) {
 		const routeFilePosix = route.file.replace(/\\/g, "/");
-		if (filePathPosix.endsWith(routeFilePosix) || filePathPosix.endsWith(`/${routeFilePosix}`)) return route.path;
 		const routeFileNormalized = routeFilePosix.replace(/^\.\//, "");
-		if (filePathPosix.endsWith(routeFileNormalized) || filePathPosix.endsWith(`/${routeFileNormalized}`)) return route.path;
+		if (filePathPosix.endsWith(routeFilePosix) || filePathPosix.endsWith(`/${routeFilePosix}`) || filePathPosix.endsWith(routeFileNormalized) || filePathPosix.endsWith(`/${routeFileNormalized}`)) return route.path;
 	}
 	logger.warn(`Could not find route for file: ${filePath}`);
 	return "/unknown";

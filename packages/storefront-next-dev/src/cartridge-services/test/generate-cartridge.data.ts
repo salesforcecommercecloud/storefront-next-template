@@ -271,3 +271,63 @@ export const testRoutes = [
         ],
     },
 ];
+
+/**
+ * Route tree after applyUrlConfig wraps routes under /:siteId/:localeId.
+ * The homepage index route is duplicated at "/" (with --root-duplicate IDs) so the
+ * bare root URL still works, but cartridge generation should resolve to the
+ * canonical prefixed route.
+ */
+export const testRoutesWithSiteContext = [
+    {
+        id: 'root',
+        path: '',
+        file: 'root.tsx',
+        children: [
+            {
+                id: 'routes/_app--root-duplicate',
+                file: 'routes/_app.tsx',
+                children: [
+                    {
+                        id: 'routes/_app._index--root-duplicate',
+                        index: true,
+                        file: 'routes/_app._index.tsx',
+                    },
+                ],
+            },
+            {
+                id: 'site-context-wrapper',
+                file: 'site-context-wrapper.tsx',
+                path: ':siteId/:localeId',
+                children: [
+                    {
+                        id: 'routes/_app',
+                        file: 'routes/_app.tsx',
+                        children: [
+                            {
+                                id: 'routes/_app._index',
+                                index: true,
+                                file: 'routes/_app._index.tsx',
+                            },
+                            {
+                                id: 'routes/_app.product.$productId',
+                                path: 'product/:productId',
+                                file: 'routes/_app.product.$productId.tsx',
+                            },
+                            {
+                                id: 'routes/_app.search',
+                                path: 'search',
+                                file: 'routes/_app.search.tsx',
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                id: 'routes/action.set-locale',
+                path: 'action/set-locale',
+                file: 'routes/action.set-locale.ts',
+            },
+        ],
+    },
+];

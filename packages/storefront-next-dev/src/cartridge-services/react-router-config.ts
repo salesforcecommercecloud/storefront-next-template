@@ -104,19 +104,24 @@ export function filePathToRoute(filePath: string, projectRoot: string): string {
     const routes = getReactRouterRoutes(projectRoot);
     const flatRoutes = flattenRoutes(routes);
 
+    // Skip root-duplicate routes — these are convenience clones created by applyUrlConfig
+    // so the bare "/" URL still works. The canonical route (under the site-context prefix)
+    // is the one that should appear in cartridge metadata.
+    const canonicalRoutes = flatRoutes.filter((route) => !route.id.endsWith('--root-duplicate'));
+
     // Find the route that matches this file
-    for (const route of flatRoutes) {
+    for (const route of canonicalRoutes) {
         // Normalize the route file path for comparison
         const routeFilePosix = route.file.replace(/\\/g, '/');
+        const routeFileNormalized = routeFilePosix.replace(/^\.\//, '');
 
         // Check if the file path ends with the route file (handles relative vs. absolute paths)
-        if (filePathPosix.endsWith(routeFilePosix) || filePathPosix.endsWith(`/${routeFilePosix}`)) {
-            return route.path;
-        }
-
-        // Also check without leading ./
-        const routeFileNormalized = routeFilePosix.replace(/^\.\//, '');
-        if (filePathPosix.endsWith(routeFileNormalized) || filePathPosix.endsWith(`/${routeFileNormalized}`)) {
+        if (
+            filePathPosix.endsWith(routeFilePosix) ||
+            filePathPosix.endsWith(`/${routeFilePosix}`) ||
+            filePathPosix.endsWith(routeFileNormalized) ||
+            filePathPosix.endsWith(`/${routeFileNormalized}`)
+        ) {
             return route.path;
         }
     }
