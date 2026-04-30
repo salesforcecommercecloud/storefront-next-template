@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import {
+    type ShopperBasketsV2,
+    type ShopperCustomers,
+    type ShopperOrders,
+} from '@salesforce/storefront-next-runtime/scapi';
 import { customAlphabet, nanoid } from 'nanoid';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.server';
@@ -854,6 +858,50 @@ export async function savePaymentMethodToCustomer(
         return true;
     } catch {
         // Failed to save payment method to customer profile
+        return false;
+    }
+}
+
+/**
+ * Save a payment method to a customer's profile via the order payment instrument endpoint.
+ * Uses shopperOrders.createPaymentInstrumentForOrder with createCustomerPaymentInstrument: true,
+ * which triggers the platform's internal copy that preserves creditCardToken — unlike the direct
+ * shopperCustomers.createCustomerPaymentInstrument endpoint which silently drops the token.
+ */
+export async function savePaymentMethodToCustomerViaOrder(
+    context: ActionFunctionArgs['context'],
+    orderNo: string,
+    paymentInstrument: PaymentInstrumentForSave
+): Promise<boolean> {
+    const logger = getLogger(context);
+    try {
+        const clients = createApiClients(context);
+        const card = paymentInstrument.paymentCard;
+
+        await clients.shopperOrders.createPaymentInstrumentForOrder({
+            params: {
+                path: { orderNo },
+            },
+            body: {
+                paymentMethodId: paymentInstrument.paymentMethodId,
+                amount: 0,
+                paymentCard: card
+                    ? {
+                          cardType: card.cardType,
+                          holder: card.holder,
+                          expirationMonth: card.expirationMonth,
+                          expirationYear: card.expirationYear,
+                          maskedNumber: card.maskedNumber,
+                          creditCardToken: (card as { creditCardToken?: string }).creditCardToken,
+                      }
+                    : undefined,
+                createCustomerPaymentInstrument: true,
+            } as ShopperOrders.schemas['OrderPaymentInstrumentRequest'],
+        });
+
+        return true;
+    } catch (error) {
+        logger.error('Failed to save payment method via order', { error, orderNo });
         return false;
     }
 }

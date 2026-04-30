@@ -344,6 +344,56 @@ Scenario('Registered shopper can save new card during checkout and card is saved
     .tag('@payment-persistence')
     .tag('@place-order');
 
+Scenario('Registered shopper places order with new card without saving and card is NOT saved to profile', async () => {
+    await registeredShopperSetupFlow.execute();
+
+    accountPaymentMethodsPage.navigate();
+    accountPaymentMethodsPage.validatePageLoaded();
+    const initialPaymentCount = await accountPaymentMethodsPage.getPaymentMethodCount();
+
+    const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
+    expect(productInfo, 'Product should be added to cart').to.not.be.undefined;
+
+    checkoutPage.validatePageLoaded();
+    await checkoutPage.validateAllCheckoutSectionsPrefilled();
+
+    await checkoutPage.expandPaymentStep();
+    checkoutPage.waitForUiSettle(1);
+
+    await checkoutPage.selectNewCardPaymentMethod();
+    checkoutPage.waitForUiSettle(1);
+
+    checkoutPage.fillPaymentFieldsOnly({
+        cardNumber: '4012888888881881',
+        cardholderName: 'Unsaved Card Test',
+        expiryDate: '09/31',
+        cvv: '789',
+    });
+
+    const saveCheckboxVisible = await checkoutPage.isSavePaymentCheckboxVisible();
+    expect(saveCheckboxVisible, 'Save payment checkbox should be visible for registered shoppers').to.be.true;
+
+    checkoutPage.clickPlaceOrder();
+    checkoutPage.waitForOrderConfirmation();
+    checkoutPage.validateOrderConfirmation();
+    const orderNumber = await checkoutPage.getOrderNumber();
+
+    expect(orderNumber, 'Order number should be returned').to.not.be.empty;
+    expect(orderNumber, 'Order number should be numeric').to.match(/^\d+$/);
+
+    accountPaymentMethodsPage.navigate();
+    accountPaymentMethodsPage.validatePageLoaded();
+
+    const finalPaymentCount = await accountPaymentMethodsPage.getPaymentMethodCount();
+    expect(finalPaymentCount, 'Profile should have same number of payment methods (new card was not saved)').to.equal(
+        initialPaymentCount
+    );
+})
+    .tag('@registered-shopper')
+    .tag('@no-save-card')
+    .tag('@payment-persistence')
+    .tag('@place-order');
+
 Scenario('Registered shopper can select different saved payment method and place order', async () => {
     await registeredShopperSetupFlow.execute();
 

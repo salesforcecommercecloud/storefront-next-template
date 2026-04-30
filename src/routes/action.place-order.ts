@@ -24,7 +24,7 @@ import {
     updateBillingAddressForBasket,
 } from '@/lib/api/basket.server';
 import {
-    savePaymentMethodToCustomer,
+    savePaymentMethodToCustomerViaOrder,
     type PaymentInstrumentForSave,
     saveShippingAddressToCustomer,
     saveBillingAddressToCustomer,
@@ -448,7 +448,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
             );
         }
 
-        logger.info('PlaceOrder: order created', { orderNo: order.orderNo, basketId: calculatedBasket.basketId });
+        const orderNo = order.orderNo;
+        logger.info('PlaceOrder: order created', { orderNo, basketId: calculatedBasket.basketId });
 
         // Extension hook: post-processing after order creation (e.g. capture, fulfillment triggers).
         // Order is already placed — never abort the action. Log at warn level with order
@@ -525,11 +526,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
                 if (order.paymentInstruments?.[0]) {
                     const instrument = order.paymentInstruments[0] as PaymentInstrumentForSave;
-                    const instrumentWithDefault = { ...instrument, default: instrument.default ?? true };
                     if (!orderPaymentMatchesSavedProfile(instrument, profileSnapshot ?? undefined)) {
                         savePromises.push(
                             retryProfileSave(
-                                () => savePaymentMethodToCustomer(context, customerId, instrumentWithDefault),
+                                () => savePaymentMethodToCustomerViaOrder(context, orderNo, instrument),
                                 'payment method save',
                                 logger
                             )
@@ -587,9 +587,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
             // Do not automatically save addresses to avoid creating duplicates.
             else if (savePaymentToProfile && order.paymentInstruments?.[0]) {
                 savePromises.push(
-                    savePaymentMethodToCustomer(
+                    savePaymentMethodToCustomerViaOrder(
                         context,
-                        customerId,
+                        orderNo,
                         order.paymentInstruments[0] as PaymentInstrumentForSave
                     ).catch((error) => {
                         logger.error('PlaceOrder: failed to save payment method', { error });
