@@ -32,6 +32,7 @@ import { workspacePlugin } from './plugins/workspace';
 import { componentLoadersPlugin } from './plugins/componentLoaders';
 import { ssrSourcemapFixPlugin } from './plugins/ssrSourcemapFix';
 import { i18nPlugin } from './plugins/i18n';
+import { baseConfigPlugin } from './plugins/baseConfig';
 
 /**
  * Configuration options for the Storefront Next Vite plugin.
@@ -117,6 +118,7 @@ export function storefrontNextTargets(config: StorefrontNextTargetsConfig = {}):
     } = config;
 
     const plugins: Plugin[] = [
+        baseConfigPlugin(),
         ...(process.env.SCAPI_PROXY_HOST ? [workspacePlugin()] : []),
         i18nPlugin(),
         managedRuntimeBundlePlugin(),

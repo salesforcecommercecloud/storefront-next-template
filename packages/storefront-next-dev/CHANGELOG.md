@@ -1,5 +1,6 @@
 ## v0.4.0-dev (Apr 24, 2026)
 
+- Add `baseConfigPlugin` that contributes framework-wide Vite defaults (React/React Router dedupe, pre-bundled React Router entries) so these don't have to live in the template's `vite.config.ts` ([#1541](https://github.com/commerce-emu/storefront-next/pull/1541))
 - Extract i18n locale chunking into SDK Vite plugin (`i18nPlugin`): splits translation files into per-language chunks automatically
 - Remove local data-store provider export/build artifacts and rely on `@salesforce/mrt-utilities` data-store behavior ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Update `sfnext dev` to forward Node `--conditions` (from `process.execArgv` and `NODE_OPTIONS`) into Vite client + SSR resolution for conditional exports ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))

@@ -20,7 +20,7 @@ import { defineConfig, perEnvironmentPlugin, loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import devtoolsJson from 'vite-plugin-devtools-json';
-import storefrontNextTargets, {
+import storefrontNext, {
     hybridProxyPlugin,
     shouldRouteToNext,
     uiTargetDevModePlugin,
@@ -95,14 +95,14 @@ export default defineConfig(({ mode }) => {
             tailwindcss(),
             tsconfigPaths(),
             devtoolsJson(),
-            // UITarget dev mode - visual markers (runs BEFORE storefrontNextTargets)
+            // UITarget dev mode - visual markers (runs BEFORE storefrontNext)
             uiTargetDevModePlugin({
                 enabled: process.env.VITE_UI_TARGET_DEV_MODE === 'true',
                 filterCategory: process.env.VITE_TARGET_FILTER_CATEGORY,
                 hintMap: loadUiTargetHintMap(),
             } as Parameters<typeof uiTargetDevModePlugin>[0]),
             // Target system - extension transforms (always needed)
-            storefrontNextTargets({
+            storefrontNext({
                 readableChunkNames: enableReadableChunkNames,
                 staticRegistry: {
                     componentPath: 'src/components',
@@ -172,11 +172,6 @@ export default defineConfig(({ mode }) => {
                 // warnings about importing from the public directory.
                 '@fonts': '/fonts',
             },
-            // Prevent duplicate React instances in the monorepo. hooks break if multiple copies are loaded
-            dedupe: ['react', 'react-dom', 'react-router'],
-        },
-        optimizeDeps: {
-            include: ['react-router', 'react-router/internal/react-server-client'],
         },
     };
 });

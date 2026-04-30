@@ -1841,6 +1841,39 @@ function i18nPlugin(config) {
 }
 
 //#endregion
+//#region src/plugins/baseConfig.ts
+/**
+* Vite plugin contributing the baseline Vite config required by the
+* Storefront Next framework. These settings are uniform across every
+* customer project and are not intended to be customized.
+*
+* Additional framework-level Vite defaults should be added here rather
+* than in the template's vite.config.ts or in a new single-purpose plugin.
+*
+* Current defaults:
+* - `resolve.dedupe`: prevents duplicate React / React Router copies.
+*   Duplicate React instances cause hooks to throw "Invalid hook call".
+* - `optimizeDeps.include`: forces Vite's dep optimizer to pre-bundle
+*   `react-router` and its `/internal/react-server-client` entry so the
+*   React Router dev plugin resolves a single shared instance.
+*
+* @returns {Plugin} A Vite plugin contributing the framework's base config.
+*/
+const baseConfigPlugin = () => ({
+	name: "storefront-next:base-config",
+	config() {
+		return {
+			resolve: { dedupe: [
+				"react",
+				"react-dom",
+				"react-router"
+			] },
+			optimizeDeps: { include: ["react-router", "react-router/internal/react-server-client"] }
+		};
+	}
+});
+
+//#endregion
 //#region src/storefront-next-targets.ts
 /**
 * Storefront Next Vite plugin that powers the React Router app.
@@ -1871,6 +1904,7 @@ function storefrontNextTargets(config = {}) {
 		failOnMissing: false
 	} } = config;
 	const plugins = [
+		baseConfigPlugin(),
 		...process.env.SCAPI_PROXY_HOST ? [workspacePlugin()] : [],
 		i18nPlugin(),
 		managedRuntimeBundlePlugin(),
