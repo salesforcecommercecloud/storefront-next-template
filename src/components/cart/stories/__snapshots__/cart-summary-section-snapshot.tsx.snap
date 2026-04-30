@@ -63,16 +63,6 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
               <div
                 class="flex justify-between items-center"
               >
-                <span>
-                  Tax
-                </span>
-                <span>
-                  £6.00
-                </span>
-              </div>
-              <div
-                class="flex justify-between items-center"
-              >
                 <span
                   class="font-bold"
                 >

@@ -577,3 +577,63 @@ export const MobileExpanded: Story = {
         }
     },
 };
+
+const mockBasketGross = {
+    ...basketWithMultipleItems,
+    taxation: 'gross' as const,
+    taxTotal: 5.25,
+    orderTotal: 118.5,
+} as ShopperBasketsV2.schemas['Basket'];
+
+const mockBasketNet = {
+    ...basketWithMultipleItems,
+    taxation: 'net' as const,
+    taxTotal: 5.25,
+    orderTotal: 118.5,
+} as ShopperBasketsV2.schemas['Basket'];
+
+export const GrossTaxation: Story = {
+    args: {
+        basket: mockBasketGross,
+        showPromoCodeForm: false,
+        showCartItems: false,
+        showHeading: true,
+        isEstimate: false,
+        productsByItemId: mockProductMap,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Gross taxation (e.g. RefArchGlobal): tax is included in product prices, so the tax line is hidden.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const taxLabel = Array.from(canvasElement.querySelectorAll('span')).find((el) => el.textContent === 'Tax');
+        void expect(taxLabel).toBeUndefined();
+    },
+};
+
+export const NetTaxation: Story = {
+    args: {
+        basket: mockBasketNet,
+        showPromoCodeForm: false,
+        showCartItems: false,
+        showHeading: true,
+        isEstimate: false,
+        productsByItemId: mockProductMap,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Net taxation (e.g. RefArch): tax is added on top of product prices, so the tax line is shown.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const taxLabel = Array.from(canvasElement.querySelectorAll('span')).find((el) => el.textContent === 'Tax');
+        void expect(taxLabel).toBeInTheDocument();
+    },
+};

@@ -151,18 +151,6 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
             <div
               class="flex justify-between items-center"
             >
-              <span>
-                Tax
-              </span>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
               <span
                 class="font-bold"
               >
@@ -328,16 +316,6 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
                 class="text-primary font-medium"
               >
                 FREE
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
-              <span>
-                Tax
-              </span>
-              <span>
-                £0.00
               </span>
             </div>
             <div
@@ -513,9 +491,76 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
             <div
               class="flex justify-between items-center"
             >
-              <span>
-                Tax
+              <span
+                class="font-bold"
+              >
+                Estimated Total
               </span>
+              <span
+                class="font-bold"
+              >
+                £73.57
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OrderSummary stories snapshot > GrossTaxation story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+    data-slot="card"
+  >
+    <div
+      class="px-[var(--cart-summary-px)]"
+      data-slot="card-content"
+    >
+      <div
+        class="space-y-4"
+        data-testid="sf-order-summary"
+      >
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
+          id="order-summary-heading-desktop"
+        >
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
+        <div
+          aria-label="Order Summary"
+          class="space-y-2"
+          role="region"
+        >
+          <div
+            class="space-y-2 text-sm"
+          >
+            <div
+              class="flex justify-between items-center"
+            >
+              <span>
+                Subtotal
+              </span>
+              <span>
+                £73.57
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <div
+                class="flex items-center"
+              >
+                <span>
+                  Shipping
+                </span>
+              </div>
               <span
                 class="text-muted-foreground"
               >
@@ -528,12 +573,12 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
               <span
                 class="font-bold"
               >
-                Estimated Total
+                Total
               </span>
               <span
                 class="font-bold"
               >
-                £73.57
+                £118.50
               </span>
             </div>
           </div>
@@ -929,18 +974,6 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
             <div
               class="flex justify-between items-center"
             >
-              <span>
-                Tax
-              </span>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
               <span
                 class="font-bold"
               >
@@ -1002,18 +1035,6 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
                   Shipping
                 </span>
               </div>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
-              <span>
-                Tax
-              </span>
               <span
                 class="text-muted-foreground"
               >
@@ -1230,18 +1251,6 @@ exports[`OrderSummary stories snapshot > MobileExpanded story renders and matche
                     <div
                       class="flex justify-between items-center"
                     >
-                      <span>
-                        Tax
-                      </span>
-                      <span
-                        class="text-muted-foreground"
-                      >
-                        TBD
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
                       <span
                         class="font-bold"
                       >
@@ -1256,6 +1265,95 @@ exports[`OrderSummary stories snapshot > MobileExpanded story renders and matche
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OrderSummary stories snapshot > NetTaxation story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 border py-6 !py-4 rounded-none shadow-none"
+    data-slot="card"
+  >
+    <div
+      class="px-[var(--cart-summary-px)]"
+      data-slot="card-content"
+    >
+      <div
+        class="space-y-4"
+        data-testid="sf-order-summary"
+      >
+        <h2
+          class="tracking-tight text-left text-base font-semibold text-foreground"
+          id="order-summary-heading-desktop"
+        >
+          Order Summary
+        </h2>
+        <hr
+          class="mx-[calc(var(--cart-summary-px)*-1)] border-border"
+        />
+        <div
+          aria-label="Order Summary"
+          class="space-y-2"
+          role="region"
+        >
+          <div
+            class="space-y-2 text-sm"
+          >
+            <div
+              class="flex justify-between items-center"
+            >
+              <span>
+                Subtotal
+              </span>
+              <span>
+                £73.57
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <div
+                class="flex items-center"
+              >
+                <span>
+                  Shipping
+                </span>
+              </div>
+              <span
+                class="text-muted-foreground"
+              >
+                TBD
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <span>
+                Tax
+              </span>
+              <span>
+                £5.25
+              </span>
+            </div>
+            <div
+              class="flex justify-between items-center"
+            >
+              <span
+                class="font-bold"
+              >
+                Total
+              </span>
+              <span
+                class="font-bold"
+              >
+                £118.50
+              </span>
             </div>
           </div>
         </div>
@@ -1419,18 +1517,6 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                   Shipping
                 </span>
               </div>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
-              <span>
-                Tax
-              </span>
               <span
                 class="text-muted-foreground"
               >
@@ -1713,18 +1799,6 @@ exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders a
             <div
               class="flex justify-between items-center"
             >
-              <span>
-                Tax
-              </span>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
               <span
                 class="font-bold"
               >
@@ -1886,18 +1960,6 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                   Shipping
                 </span>
               </div>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
-              <span>
-                Tax
-              </span>
               <span
                 class="text-muted-foreground"
               >
@@ -2105,18 +2167,6 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
             <div
               class="flex justify-between items-center"
             >
-              <span>
-                Tax
-              </span>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
               <span
                 class="font-bold"
               >
@@ -2269,18 +2319,6 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
                   Shipping
                 </span>
               </div>
-              <span
-                class="text-muted-foreground"
-              >
-                TBD
-              </span>
-            </div>
-            <div
-              class="flex justify-between items-center"
-            >
-              <span>
-                Tax
-              </span>
               <span
                 class="text-muted-foreground"
               >

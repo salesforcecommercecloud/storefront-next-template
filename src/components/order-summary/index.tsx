@@ -247,21 +247,25 @@ function SummaryBodyContent({
                 </UITarget>
                 <UITarget targetId="sfcc.orderSummary.shipping.after" />
 
-                {/* Tax */}
-                <UITarget targetId="sfcc.orderSummary.tax.before" />
-                <UITarget targetId="sfcc.orderSummary.tax">
-                    <UITarget targetId="sfcc.orderSummary.tax.line">
-                        <div className="flex justify-between items-center">
-                            <span>{t('summary.tax')}</span>
-                            {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
-                                <span>{formatCurrency(basket.taxTotal, i18nLanguage, currency)}</span>
-                            ) : (
-                                <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
-                            )}
-                        </div>
-                    </UITarget>
-                </UITarget>
-                <UITarget targetId="sfcc.orderSummary.tax.after" />
+                {/* Tax — hidden for gross taxation since tax is already included in prices */}
+                {basket.taxation !== 'gross' && (
+                    <>
+                        <UITarget targetId="sfcc.orderSummary.tax.before" />
+                        <UITarget targetId="sfcc.orderSummary.tax">
+                            <UITarget targetId="sfcc.orderSummary.tax.line">
+                                <div className="flex justify-between items-center">
+                                    <span>{t('summary.tax')}</span>
+                                    {typeof basket.taxTotal === 'number' && basket.taxTotal >= 0 ? (
+                                        <span>{formatCurrency(basket.taxTotal, i18nLanguage, currency)}</span>
+                                    ) : (
+                                        <span className="text-muted-foreground">{t('summary.taxTbd')}</span>
+                                    )}
+                                </div>
+                            </UITarget>
+                        </UITarget>
+                        <UITarget targetId="sfcc.orderSummary.tax.after" />
+                    </>
+                )}
 
                 {/* Total */}
                 <UITarget targetId="sfcc.orderSummary.total.before" />

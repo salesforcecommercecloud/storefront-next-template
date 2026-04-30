@@ -333,6 +333,39 @@ describe('OrderSummary', () => {
         expect(screen.queryByText(t('cart:summary.taxTbd'))).not.toBeInTheDocument();
     });
 
+    test('hides tax line when taxation is gross', () => {
+        const grossBasket = {
+            ...mockBasket,
+            taxation: 'gross' as const,
+        };
+
+        renderWithProviders(<OrderSummary basket={grossBasket} />);
+
+        expect(screen.queryByText(t('cart:summary.tax'))).not.toBeInTheDocument();
+        expect(screen.queryByText('$8.50')).not.toBeInTheDocument();
+        expect(screen.getByText(t('cart:summary.subtotal'))).toBeInTheDocument();
+        expect(screen.getByText(t('cart:summary.total'))).toBeInTheDocument();
+    });
+
+    test('shows tax line when taxation is net', () => {
+        const netBasket = {
+            ...mockBasket,
+            taxation: 'net' as const,
+        };
+
+        renderWithProviders(<OrderSummary basket={netBasket} />);
+
+        expect(screen.getByText(t('cart:summary.tax'))).toBeInTheDocument();
+        expect(screen.getByText('$8.50')).toBeInTheDocument();
+    });
+
+    test('shows tax line when taxation is undefined', () => {
+        renderWithProviders(<OrderSummary basket={mockBasket} />);
+
+        expect(screen.getByText(t('cart:summary.tax'))).toBeInTheDocument();
+        expect(screen.getByText('$8.50')).toBeInTheDocument();
+    });
+
     test('displays item-level price adjustments from productItems', () => {
         const basketWithItemPromos = {
             ...mockBasket,

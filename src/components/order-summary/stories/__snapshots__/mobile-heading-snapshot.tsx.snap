@@ -181,18 +181,6 @@ exports[`OrderSummary mobile-heading stories snapshot > Expanded story renders a
                   <div
                     class="flex justify-between items-center"
                   >
-                    <span>
-                      Tax
-                    </span>
-                    <span
-                      class="text-muted-foreground"
-                    >
-                      TBD
-                    </span>
-                  </div>
-                  <div
-                    class="flex justify-between items-center"
-                  >
                     <span
                       class="font-bold"
                     >

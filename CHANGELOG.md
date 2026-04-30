@@ -5,6 +5,7 @@
 ## v0.4.0-dev (Apr 28, 2026)
 
 - **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.
+- Fix tax line in Order summary [#1571]https://github.com/commerce-emu/storefront-next/pull/1571
 
 ## v0.4.0-dev (Apr 24, 2026)
 

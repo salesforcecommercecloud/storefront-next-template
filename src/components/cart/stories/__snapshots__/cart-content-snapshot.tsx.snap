@@ -565,16 +565,6 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                     <div
                       class="flex justify-between items-center"
                     >
-                      <span>
-                        Tax
-                      </span>
-                      <span>
-                        $3.36
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
                       <span
                         class="font-bold"
                       >
@@ -2284,16 +2274,6 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                     <div
                       class="flex justify-between items-center"
                     >
-                      <span>
-                        Tax
-                      </span>
-                      <span>
-                        $11.20
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
                       <span
                         class="font-bold"
                       >
@@ -3573,16 +3553,6 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                     <div
                       class="flex justify-between items-center"
                     >
-                      <span>
-                        Tax
-                      </span>
-                      <span>
-                        $6.00
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
                       <span
                         class="font-bold"
                       >
@@ -4538,16 +4508,6 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                         class="text-primary font-medium"
                       >
                         FREE
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
-                      <span>
-                        Tax
-                      </span>
-                      <span>
-                        $33.60
                       </span>
                     </div>
                     <div
@@ -6594,16 +6554,6 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                     <div
                       class="flex justify-between items-center"
                     >
-                      <span>
-                        Tax
-                      </span>
-                      <span>
-                        $20.40
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
                       <span
                         class="font-bold"
                       >
@@ -7506,16 +7456,6 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                     <div
                       class="flex justify-between items-center"
                     >
-                      <span>
-                        Tax
-                      </span>
-                      <span>
-                        $3.36
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
                       <span
                         class="font-bold"
                       >
@@ -8380,16 +8320,6 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                     <div
                       class="flex justify-between items-center"
                     >
-                      <span>
-                        Tax
-                      </span>
-                      <span>
-                        $3.36
-                      </span>
-                    </div>
-                    <div
-                      class="flex justify-between items-center"
-                    >
                       <span
                         class="font-bold"
                       >
@@ -8851,16 +8781,6 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                     </div>
                     <span>
                       $5.99
-                    </span>
-                  </div>
-                  <div
-                    class="flex justify-between items-center"
-                  >
-                    <span>
-                      Tax
-                    </span>
-                    <span>
-                      $3.36
                     </span>
                   </div>
                   <div
