@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import BuyNowPayLater from '@/components/buy-now-pay-later';
 
+/** @feature-stub Express checkout buttons — remove this import and its JSX below to strip the stub */
 const ExpressPayments = lazy(() => import('@/components/checkout/components/express-payments'));
 
 interface ProductCartActionsProps {

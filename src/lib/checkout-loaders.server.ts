@@ -392,15 +392,21 @@ export async function initializeBasketForReturningCustomer(
         const needsCustomerAssociation =
             !updatedBasket.customerInfo?.email || !basketCustomerId || basketCustomerId !== profileCustomerId;
 
-        // Set customer info when missing or when basket customer doesn't match
-        if (needsCustomerAssociation && customerProfile.customer.login) {
+        // Set customer info when missing or when basket customer doesn't match.
+        // For social login users, customer.login is the provider's external ID (e.g. "Google-123...")
+        // not an email. Prefer customer.email, fall back to login only if it contains "@".
+        const customerEmail =
+            customerProfile.customer.email ||
+            (customerProfile.customer.login?.includes('@') ? customerProfile.customer.login : undefined);
+
+        if (needsCustomerAssociation && customerEmail) {
             const { data } = await clients.shopperBasketsV2.updateCustomerForBasket({
                 params: {
                     path: {
                         basketId,
                     },
                 },
-                body: { email: customerProfile.customer.login },
+                body: { email: customerEmail },
             });
             updatedBasket = data;
             updateBasketResource(context, updatedBasket);

@@ -46,79 +46,39 @@ interface ExpressPaymentsProps {
 }
 
 /**
- * Express Payments Component (Placeholder Implementation)
+ * @feature-stub Express checkout buttons
+ * @status stub — no backend integration
  *
- * This is a PLACEHOLDER component that provides visual representations of express payment buttons
- * (Apple Pay, Google Pay, Amazon Pay, PayPal, and Venmo) with alert messages instead of real
- * payment processing. It serves as a UI demonstration and should be replaced with actual payment
- * provider integrations in production.
+ * These feature stubs are included to help accelerate your storefront
+ * development. They give you a working UI scaffold — layout, styling,
+ * interaction states, and accessibility — so you can focus on wiring up
+ * the business logic and backend integrations that are unique to your
+ * brand, rather than building everything from scratch.
  *
- * IMPORTANT: This component uses translation keys that should be REMOVED if this component is replaced.
+ * See docs/README-FEATURE-STUBS.md for the full list and guidance on
+ * productionizing or removing stubs.
  *
- * ## Translation Keys Used:
+ * Current behavior:
+ *   Renders Apple Pay, Google Pay, Amazon Pay, PayPal, and Venmo buttons.
+ *   Clicking any button triggers an alert() dialog. No payment is processed
+ *   and no order is created.
  *
- * ### Checkout Page (checkout namespace):
- * - `checkout.expressPayments.separator` - "Or" text between buttons and form
- * - `checkout.expressPayments.venmoUnavailable` - Venmo unavailable message (currently unused)
+ * To productionize:
+ *   Replace this component with your payment provider's SDK integration
+ *   (e.g., Stripe, Adyen, Braintree). Each provider requires:
+ *   1. Loading the provider's client-side SDK
+ *   2. Initializing a payment session with your merchant credentials
+ *   3. Collecting the payment token on approval
+ *   4. Submitting the token through your checkout flow
+ *      (SCAPI `/checkout/shopper-orders` or provider-specific endpoint)
  *
- * ### Product Page (product namespace):
- * - `product.expressPayments.separatorBuyWith` - "Or buy with" text on PDP
- * - `product.expressPayments.venmoUnavailable` - Venmo unavailable message (currently unused)
+ * To remove:
+ *   Delete this file and its related components (see docs/README-FEATURE-STUBS.md
+ *   for the full file list), then remove the <ExpressPayments /> usage from:
+ *   - src/components/checkout/checkout-form-page.tsx
+ *   - src/components/product-cart-actions/index.tsx
  *
- * ## Where It's Used:
- * - Checkout page: `src/components/checkout/checkout-form-page.tsx` (line ~382)
- * - Product page: `src/components/product-cart-actions/index.tsx` (line ~170)
- *
- * ## Files to Update When Removing This Component:
- *
- * ### 1. Translation Files (Remove the `expressPayments` objects):
- * - `src/locales/en-GB/translations.json` (lines 281-284, 580-583)
- * - `src/locales/it-IT/translations.json` (lines 281-284, 580-583)
- * - Any additional locale files in `src/locales/`
- *
- * ### 2. Parent Components (Remove ExpressPayments usage):
- * - `src/components/checkout/checkout-form-page.tsx`
- * - `src/components/product-cart-actions/index.tsx`
- *
- * ### 3. Test Files:
- * - `src/components/checkout/components/express-payments.test.tsx`
- * - Update any tests in parent components that reference express payments
- *
- * ### 4. Related Component Files:
- * - `src/components/checkout/components/static-paypal-button.tsx`
- * - `src/components/checkout/components/static-venmo-button.tsx`
- * - `src/components/checkout/components/apple-pay-logo.tsx`
- * - `src/components/checkout/components/google-pay-logo.tsx`
- * - `src/components/checkout/components/paypal-logo.tsx`
- * - `src/components/checkout/components/venmo-logo.tsx`
- *
- * ## Example: Removing Translation Keys
- *
- * In `src/locales/en-GB/translations.json`, remove these blocks:
- *
- * ```json
- * // Remove from "product" namespace (lines ~281-284)
- * "expressPayments": {
- *     "separatorBuyWith": "Or buy with",
- *     "venmoUnavailable": "Venmo is not available on this device."
- * },
- *
- * // Remove from "checkout" namespace (lines ~580-583)
- * "expressPayments": {
- *     "separator": "Or",
- *     "venmoUnavailable": "Venmo is not available on this device."
- * },
- * ```
- *
- * ## Replacement Guidelines:
- * When implementing real payment providers (Stripe, Adyen, etc.), create new components that:
- * 1. Load actual payment SDKs
- * 2. Handle real payment processing
- * 3. Use provider-specific translation keys (e.g., `payment.stripe.*`, `payment.adyen.*`)
- * 4. Implement proper error handling and security
- *
- * All express payment handlers are self-contained within this component to avoid duplication
- * across PDP and checkout pages.
+ * Remove this block once the real integration is wired up.
  */
 export default function ExpressPayments({
     disabled = false,

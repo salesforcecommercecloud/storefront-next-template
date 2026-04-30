@@ -23,9 +23,11 @@ interface StaticPayPalButtonProps {
 }
 
 /**
- * Static PayPal Button Component
- * Matches the exact appearance of PayPal SDK gold button
- * Uses official PayPal gold color (#FFC439) and logo
+ * @feature-stub Express checkout buttons (PayPal)
+ * @status stub — no backend integration
+ *
+ * Static PayPal button matching the official SDK appearance.
+ * Part of the express-payments stub. See docs/README-FEATURE-STUBS.md.
  */
 export default function StaticPayPalButton({ onClick, disabled = false }: StaticPayPalButtonProps) {
     const { t } = useTranslation('checkout');

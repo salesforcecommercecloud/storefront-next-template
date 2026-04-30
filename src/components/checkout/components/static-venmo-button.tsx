@@ -23,9 +23,11 @@ interface StaticVenmoButtonProps {
 }
 
 /**
- * Static Venmo Button Component
- * Matches the exact appearance of Venmo SDK button
- * Uses official Venmo blue color (#3D95CE) and logo
+ * @feature-stub Express checkout buttons (Venmo)
+ * @status stub — no backend integration
+ *
+ * Static Venmo button matching the official SDK appearance.
+ * Part of the express-payments stub. See docs/README-FEATURE-STUBS.md.
  */
 export default function StaticVenmoButton({ onClick, disabled = false }: StaticVenmoButtonProps) {
     const { t } = useTranslation('checkout');

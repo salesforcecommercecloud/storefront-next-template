@@ -18,9 +18,11 @@ import paypalLogo from '/images/paypal.svg';
 import { useTranslation } from 'react-i18next';
 
 /**
- * PayPal Logo SVG Component
- * Official PayPal wordmark logo matching SDK button appearance
- * Uses local PayPal SVG file from public/images
+ * @feature-stub Express checkout buttons (PayPal logo)
+ * @status stub — no backend integration
+ *
+ * PayPal wordmark logo matching SDK button appearance.
+ * Part of the express-payments stub. See docs/README-FEATURE-STUBS.md.
  */
 export default function PayPalLogo({
     className,

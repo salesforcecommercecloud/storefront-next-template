@@ -56,6 +56,7 @@ const Payment = lazy(() => import('./components/payment'));
 const RegisterCustomerSelection = lazy(() => import('./components/register-customer-selection'));
 const OrderSummary = lazy(() => import('@/components/order-summary'));
 const MyCart = lazy(() => import('@/components/my-cart'));
+/** @feature-stub Express checkout buttons — remove this import and its JSX below to strip the stub */
 const ExpressPayments = lazy(() => import('./components/express-payments'));
 
 // Import skeleton components for accurate loading states

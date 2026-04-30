@@ -26,8 +26,9 @@ export function getContactInfoFromCustomer(customerProfile?: CustomerProfile) {
 
     const customer = customerProfile.customer;
     return {
-        // SCAPI Customer uses login as the email/username identifier
-        email: customer.login || customer.email || '',
+        // For social login users, customer.login is the provider's external ID (e.g. "Google-123...")
+        // not an email. Prefer customer.email, fall back to login only if it looks like an email.
+        email: customer.email || (customer.login?.includes('@') ? customer.login : '') || '',
         firstName: customer.firstName || '',
         lastName: customer.lastName || '',
         phone: customer.phoneHome || customer.phoneBusiness || customer.phoneMobile || '',

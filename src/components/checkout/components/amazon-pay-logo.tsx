@@ -18,7 +18,11 @@ import amazonPayLogo from '/images/amazon-pay-logo.png';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Amazon Pay Logo Component
+ * @feature-stub Express checkout buttons (Amazon Pay logo)
+ * @status stub — no backend integration
+ *
+ * Amazon Pay logo component.
+ * Part of the express-payments stub. See docs/README-FEATURE-STUBS.md.
  */
 export default function AmazonPayLogo({
     className,

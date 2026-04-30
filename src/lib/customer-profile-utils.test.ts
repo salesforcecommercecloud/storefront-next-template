@@ -68,6 +68,55 @@ describe('Checkout Prefill Utilities', () => {
             const result = getContactInfoFromCustomer(undefined);
             expect(result).toEqual({});
         });
+
+        it('should use customer.email over login for social login users', () => {
+            const customerProfile = {
+                customer: {
+                    login: 'Google-111292267709658666876',
+                    email: 'user@example.com',
+                    firstName: 'Social',
+                    lastName: 'User',
+                },
+                addresses: [],
+                paymentInstruments: [],
+            };
+
+            const result = getContactInfoFromCustomer(customerProfile);
+
+            expect(result.email).toBe('user@example.com');
+        });
+
+        it('should not use login as email when it is a social provider ID', () => {
+            const customerProfile = {
+                customer: {
+                    login: 'Google-111292267709658666876',
+                    firstName: 'Social',
+                    lastName: 'User',
+                },
+                addresses: [],
+                paymentInstruments: [],
+            };
+
+            const result = getContactInfoFromCustomer(customerProfile);
+
+            expect(result.email).toBe('');
+        });
+
+        it('should fall back to login when it looks like an email', () => {
+            const customerProfile = {
+                customer: {
+                    login: 'john@example.com',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                },
+                addresses: [],
+                paymentInstruments: [],
+            };
+
+            const result = getContactInfoFromCustomer(customerProfile);
+
+            expect(result.email).toBe('john@example.com');
+        });
     });
 
     describe('getShippingAddressFromCustomer', () => {
