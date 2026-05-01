@@ -74,27 +74,29 @@ const meta: Meta<typeof Payment> = {
                 component: `
 ### Payment Component
 
-This component handles the payment step of the checkout process - collecting payment information including card details and billing address. It uses a ToggleCard to show either an editable form or a summary view based on the step state.
+This component handles the payment step of the checkout process, collecting payment information including card details and billing address. It supports both new payment entry and selection from saved payment methods.
 
 **Key Features:**
-- **Form Validation**: Uses react-hook-form with Zod schema validation for payment fields
-- **Card Formatting**: Automatically formats card numbers and expiry dates as user types
-- **Card Type Detection**: Detects and displays card type (Visa, Mastercard, etc.)
-- **Billing Address**: Option to use same billing address as shipping or enter separate billing details
-- **Toggle States**: Shows edit form when \`isEditing\` is true, summary when \`isCompleted\` is true
+- **Saved Payment Methods**: For logged-in customers, displays saved payment methods as radio options with view more/less functionality (shows 3 initially, expandable to all)
+- **New Payment Entry**: Credit card input fields with validation and formatting (handled by CreditCardInputFields)
+- **Save to Profile**: Optional checkbox to save payment method for future use (registered customers only)
+- **Billing Address Management**: Toggle to use shipping address or enter separate billing address, with dropdown for selecting from saved addresses
+- **Form Validation**: Uses react-hook-form with Zod schema validation for all payment fields
+- **Toggle States**: Shows edit form when \`isEditing\` is true, summary view otherwise
 - **Loading States**: Displays loading spinner and disabled state during submission
-- **Error Handling**: Shows form errors and validation messages
+- **Error Handling**: Shows form-level errors via CheckoutErrorBanner and field-level validation messages
 - **Basket Integration**: Pre-fills payment data from existing basket data
 
 **Dependencies:**
 - \`react-hook-form\`: Form state management and validation
 - \`@hookform/resolvers/zod\`: Zod schema validation integration
 - \`@/providers/basket\`: Access to current basket data
+- \`@/hooks/checkout/use-customer-profile\`: Access to saved payment methods and addresses
 - \`@/components/toggle-card\`: Toggle between edit and summary views
 - \`@/lib/checkout-schemas\`: Payment validation schema
-- \`@/lib/form-utils\`: Card number and expiry date formatting
-- \`@/lib/payment-utils\`: Card type detection and formatting
-- \`@/lib/card-icon-utils\`: Card type icons
+- \`CreditCardInputFields\`: Card input component with formatting and validation
+- \`PaymentMethodsList\`: Radio list of saved payment methods
+- \`SavedAddressesList\`: Dropdown for selecting saved billing addresses
                 `,
             },
         },
@@ -112,25 +114,73 @@ This component handles the payment step of the checkout process - collecting pay
     argTypes: {
         onSubmit: {
             description: 'Callback function called when the form is submitted with valid payment data',
+            table: {
+                type: { summary: '(data: PaymentData) => void' },
+            },
         },
         onEdit: {
             description: 'Callback function called when the edit button is clicked',
+            table: {
+                type: { summary: '() => void' },
+            },
         },
         isLoading: {
             control: 'boolean',
             description: 'Whether the form is in a loading/submitting state',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
         },
         isCompleted: {
             control: 'boolean',
-            description: 'Whether this step has been completed (shows summary view)',
+            description:
+                'Whether this step has been completed (affects summary view display, but isEditing controls the actual toggle)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
         },
         isEditing: {
             control: 'boolean',
-            description: 'Whether this step is currently being edited (shows form view)',
+            description:
+                'Whether this step is currently being edited (shows form view when true, summary view when false)',
+            table: {
+                defaultValue: { summary: 'true' },
+            },
+        },
+        disabled: {
+            control: 'boolean',
+            description: 'Disables the entire step (used for upcoming steps that should not be accessible yet)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        showUseDifferentBilling: {
+            control: 'boolean',
+            description:
+                'Whether to show the "Use different billing address" checkbox. When false, always uses separate billing.',
+            table: {
+                defaultValue: { summary: 'true' },
+            },
+        },
+        hidePaymentSaveCheckbox: {
+            control: 'boolean',
+            description: 'Whether to hide the "Save payment to profile" checkbox for logged-in customers',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        paymentSubmissionRef: {
+            description: 'Ref object used to access form data and set errors from parent checkout flow (internal use)',
+            table: {
+                type: { summary: 'MutableRefObject<PaymentSubmissionRef> | undefined' },
+            },
         },
         actionData: {
             control: 'object',
-            description: 'Action data containing form errors or success state',
+            description: 'Action data containing form errors or success state from server action',
+            table: {
+                type: { summary: 'CheckoutActionData | undefined' },
+            },
         },
     },
     play: async ({ canvasElement }) => {

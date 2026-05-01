@@ -435,21 +435,35 @@ const meta: Meta<typeof ContactInfo> = {
                 component: `
 ### ContactInfo Component
 
-This component handles the first step of the checkout process - collecting the customer's email address. It uses a ToggleCard to show either an editable form or a summary view based on the step state.
+This component handles the first step of the checkout process - collecting customer contact information including email address and phone number. It supports both guest and registered customer flows with optional passwordless OTP authentication.
 
 **Key Features:**
-- **Form Validation**: Uses react-hook-form with Zod schema validation for email input
-- **Toggle States**: Shows edit form when \`isEditing\` is true, summary when \`isCompleted\` is true
-- **Loading States**: Displays loading spinner and disabled state during submission
-- **Error Handling**: Shows form errors and validation messages
-- **Basket Integration**: Pre-fills email from existing basket data
+- **Dual Input Collection**: Collects both email address and phone number with country code selector
+- **Form Validation**: Uses react-hook-form with Zod schema validation for email and phone (10-digit minimum)
+- **Phone Formatting**: Real-time phone formatting as user types with country code handling (US format: (123) 456-7890)
+- **Passwordless OTP Flow**: Automatically triggers passwordless email OTP authentication on email blur for registered users
+- **Security Integration**: Cloudflare Turnstile widget integration for bot protection during OTP flows (when enabled)
+- **Login Suggestion**: Shows contextual login prompt when registered email is detected but user is not authenticated
+- **Customer Profile Integration**: Pre-fills email and phone from authenticated customer profile or basket data
+- **Toggle States**: Shows edit form when \`isEditing\` is true, summary view when \`isCompleted\` is true
+- **Loading States**: Displays loading spinner during OTP authorization and form submission
+- **Error Handling**: Shows both form-level and field-level validation errors
+- **Guest Checkout**: Supports "Checkout as guest" option during OTP flow via \`onRegisteredUserChoseGuest\` callback
+- **OTP Flow Coordination**: Prevents checkout advancement while OTP modal is open via \`otpFlowActiveRef\` synchronization
+- **Revalidation After Login**: Automatically revalidates checkout data and advances to next step after successful OTP login
 
 **Dependencies:**
 - \`react-hook-form\`: Form state management and validation
 - \`@hookform/resolvers/zod\`: Zod schema validation integration
-- \`@/providers/basket\`: Access to current basket data
+- \`@/providers/basket\`: Access to current basket data (email, phone pre-fill)
+- \`@/hooks/checkout/use-customer-profile\`: Access to authenticated customer profile
+- \`@/hooks/use-customer-lookup\`: Login suggestion logic for registered emails
 - \`@/components/toggle-card\`: Toggle between edit and summary views
-- \`@/lib/checkout-schemas\`: Email validation schema
+- \`@/components/security/turnstile-widget\`: Bot protection widget
+- \`@/components/login/otp-modal\`: Lazy-loaded OTP verification modal
+- \`@/lib/checkout-schemas\`: Email and phone validation schema
+- \`@/lib/phone-utils\`: Phone number formatting and country code utilities
+- \`react-router\`: useFetcher for OTP authorization, useRevalidator for post-login refresh
                 `,
             },
         },
@@ -467,26 +481,77 @@ This component handles the first step of the checkout process - collecting the c
     ],
     argTypes: {
         onSubmit: {
-            description: 'Callback function called when the form is submitted with valid data',
+            description:
+                'Callback function called when the form is submitted with valid contact data (email, countryCode, phone)',
+            table: {
+                type: { summary: '(data: ContactInfoData) => void' },
+            },
         },
         onEdit: {
-            description: 'Callback function called when the edit button is clicked',
+            description: 'Callback function called when the edit button is clicked to re-open the form',
+            table: {
+                type: { summary: '() => void' },
+            },
         },
         isLoading: {
             control: 'boolean',
-            description: 'Whether the form is in a loading/submitting state',
+            description:
+                'Whether the form is in a loading/submitting state (disables submit button, shows loading text)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
         },
         isCompleted: {
             control: 'boolean',
-            description: 'Whether this step has been completed (shows summary view)',
+            description: 'Whether this step has been completed (shows summary view with customer contact info)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
         },
         isEditing: {
             control: 'boolean',
-            description: 'Whether this step is currently being edited (shows form view)',
+            description:
+                'Whether this step is currently being edited (shows form view with email, phone, and country code inputs)',
+            table: {
+                defaultValue: { summary: 'true' },
+            },
         },
         actionData: {
             control: 'object',
-            description: 'Action data containing form errors or success state',
+            description:
+                'Action data containing form errors (formError for general errors, fieldErrors.email/fieldErrors.phone for field-specific validation)',
+            table: {
+                type: { summary: 'CheckoutActionData | undefined' },
+            },
+        },
+        onRegisteredUserChoseGuest: {
+            description:
+                'Optional callback invoked when a registered user chooses "Checkout as guest" during OTP flow. Parent should suppress login hints and unblock contact step.',
+            table: {
+                type: { summary: '(isGuest: boolean) => void | undefined' },
+            },
+        },
+        onPasswordlessOtpVerified: {
+            description:
+                'Optional callback invoked when shopper successfully completes passwordless OTP login at contact step. Resets UI that was applied for "checkout as guest" skip.',
+            table: {
+                type: { summary: '() => void | undefined' },
+            },
+        },
+        suppressRegisteredEmailLoginHints: {
+            control: 'boolean',
+            description:
+                'When true, hide login suggestion hints in summary view (used after "Checkout as guest" on passwordless OTP to treat as plain guest UX)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        otpFlowActiveRef: {
+            description:
+                'Optional ref object kept in sync to prevent checkout from advancing to next step while OTP modal is open or OTP authorization is in flight',
+            table: {
+                type: { summary: 'MutableRefObject<boolean> | undefined' },
+            },
         },
     },
 };

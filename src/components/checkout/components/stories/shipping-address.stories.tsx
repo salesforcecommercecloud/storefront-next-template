@@ -405,22 +405,41 @@ const meta: Meta<typeof ShippingAddress> = {
                 component: `
 ### ShippingAddress Component
 
-This component handles the shipping address step of the checkout process - collecting the customer's shipping information including name, address, city, state, and postal code. It uses a ToggleCard to show either an editable form or a summary view based on the step state.
+This component handles the shipping address step of the checkout process. It supports two modes based on customer profile data:
+
+**With Saved Addresses:**
+- Displays a list of saved addresses from the customer's address book
+- Allows selection via radio buttons
+- Provides "Edit" functionality for each saved address via modal
+- Offers "Add new address" button to create additional addresses
+- Auto-selects current basket address or preferred address
+
+**Without Saved Addresses (Guest or First-Time):**
+- Displays a standard address form with validation
+- Collects: firstName, lastName, address1, address2, city, stateCode, postalCode, countryCode
+- Auto-populates from customer profile data when available
+- Phone is handled separately (not shown in this form, managed at contact info step)
 
 **Key Features:**
-- **Form Validation**: Uses react-hook-form with Zod schema validation for address fields
-- **Toggle States**: Shows edit form when \`isEditing\` is true, summary when \`isCompleted\` is true
-- **Loading States**: Displays loading spinner and disabled state during submission
-- **Error Handling**: Shows form errors and validation messages
-- **Basket Integration**: Pre-fills address data from existing basket data
-- **International Support**: Handles optional state and postal code fields for international addresses
+- **Form Validation**: Uses react-hook-form with Zod schema validation
+- **Toggle States**: Edit form vs. summary view controlled by isEditing/isCompleted props
+- **Loading States**: Disabled buttons and loading text during submission
+- **Error Handling**: Displays form-level errors and field-level validation messages
+- **Modal Management**: AddressModal for add/edit flows with separate loading states
+- **Auto-population**: Pre-fills from basket or customer profile
+- **International Support**: Supports multiple countries (via countryCode field)
+- **Multi-Address Extension**: Optional toggle for multi-shipment mode (extension point)
 
 **Dependencies:**
 - \`react-hook-form\`: Form state management and validation
 - \`@hookform/resolvers/zod\`: Zod schema validation integration
 - \`@/providers/basket\`: Access to current basket data
-- \`@/components/toggle-card\`: Toggle between edit and summary views
+- \`@/providers/auth\`: Customer ID for saved address operations
 - \`@/lib/checkout-schemas\`: Shipping address validation schema
+- \`@/components/toggle-card\`: Toggle between edit and summary views
+- \`SavedAddressesList\`: Radio list of saved addresses
+- \`AddressModal\`: Modal for adding/editing addresses
+- \`ShippingAddressDisplay\`: Summary view of selected address
                 `,
             },
         },
@@ -438,25 +457,56 @@ This component handles the shipping address step of the checkout process - colle
     argTypes: {
         onSubmit: {
             description: 'Callback function called when the form is submitted with valid shipping address data',
+            table: {
+                type: { summary: '(data: ShippingAddressData) => void' },
+            },
         },
         onEdit: {
-            description: 'Callback function called when the edit button is clicked',
+            description: 'Callback function called when the edit button is clicked to re-open the form',
+            table: {
+                type: { summary: '() => void' },
+            },
         },
         isLoading: {
             control: 'boolean',
             description: 'Whether the form is in a loading/submitting state',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
         },
         isCompleted: {
             control: 'boolean',
             description: 'Whether this step has been completed (shows summary view)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
         },
         isEditing: {
             control: 'boolean',
             description: 'Whether this step is currently being edited (shows form view)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
         },
         actionData: {
             control: 'object',
             description: 'Action data containing form errors or success state',
+            table: {
+                type: { summary: 'CheckoutActionData | undefined' },
+            },
+        },
+        enableMultiAddress: {
+            control: 'boolean',
+            description: 'Whether to show the "Deliver to multiple addresses" toggle button (extension feature)',
+            table: {
+                defaultValue: { summary: 'false' },
+            },
+        },
+        handleToggleShippingAddressMode: {
+            description: 'Callback function invoked when the multi-address mode toggle is clicked (extension feature)',
+            table: {
+                type: { summary: '() => void | undefined' },
+            },
         },
     },
     decorators: [

@@ -232,7 +232,7 @@ export function AddressModal({
                         className="text-base font-bold tracking-tight text-card-foreground">
                         {isEditMode ? t('addressModal.editTitle') : t('addressModal.title')}
                     </DialogTitle>
-                    <DialogDescription className="sr-only">
+                    <DialogDescription id="address-modal-desc" className="sr-only">
                         {isEditMode ? t('addressModal.editDescription') : t('addressModal.description')}
                     </DialogDescription>
                 </DialogHeader>

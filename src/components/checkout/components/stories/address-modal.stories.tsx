@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import { expect, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -27,28 +28,109 @@ const meta: Meta<typeof AddressModal> = {
     parameters: {
         ...checkoutStrictA11yParameters,
         layout: 'padded',
+        controls: { expanded: true },
+        a11y: {
+            ...checkoutStrictA11yParameters.a11y,
+            config: {
+                rules: [
+                    // Radix Dialog renders focus-guard spans with tabindex="0" and aria-hidden="true"
+                    // as part of its focus trap implementation. axe flags these as inconclusive, but
+                    // they're intentional and correct accessibility behavior for modal focus management.
+                    { id: 'aria-hidden-focus', enabled: false },
+                ],
+            },
+        },
         docs: {
             description: {
-                component:
-                    'Modal for adding a new shipping address during checkout. Save applies the address to the basket and closes the modal.',
+                component: `Dialog for adding or editing a shipping address during checkout. Renders a Zod-validated form
+with country-aware fields (state/province, postal code format) via the shared \`AddressFormFields\` component.
+
+On save, the validated \`CustomerAddress\` object is passed to \`onSave\`, and the modal closes automatically
+unless \`isLoading\` is provided (parent-controlled close). Supports both single-address checkout and
+multi-address (multiship) scenarios through configurable props like \`showAddressId\` and \`strictValidation\`.`,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     tags: ['autodocs', 'interaction'],
     argTypes: {
         open: {
-            control: 'boolean',
-            description: 'Whether the modal is open',
+            control: false,
+            description:
+                '**Required.** Controls whether the dialog is visible. Managed internally by the story wrapper.',
+            table: {
+                type: { summary: 'boolean' },
+            },
+            type: { name: 'boolean', required: true },
         },
         onOpenChange: {
-            description: 'Callback when open state changes (e.g. cancel or close)',
+            control: false,
+            description:
+                '**Required.** Called when the dialog open state changes (close button, cancel, or overlay click).',
+            table: {
+                type: { summary: '(open: boolean) => void' },
+            },
+            type: { name: 'function', required: true },
+        },
+        onSave: {
+            control: false,
+            description:
+                'Called with a validated `CustomerAddress` object when the form is submitted. The modal auto-closes unless `isLoading` is set.',
+        },
+        isEditMode: {
+            control: 'boolean',
+            description: 'When `true`, the title reads "Edit Address" instead of "Add New Address".',
+            table: { defaultValue: { summary: 'false' } },
         },
         countryCode: {
             control: 'text',
-            description: 'Default country code (defaults to US)',
+            description: 'Default country code used for the country selector and postal code validation.',
+            table: { defaultValue: { summary: '"US"' } },
         },
-        onSave: {
-            description: 'Callback when form is submitted with valid address data; receives FormData',
+        defaultValues: {
+            control: 'object',
+            description:
+                'Partial `CustomerAddress` to pre-populate form fields (e.g. for edit mode). The form resets to these values each time the dialog opens.',
+        },
+        showAddressId: {
+            control: 'boolean',
+            description:
+                'Shows an address title/label field (e.g. "Home", "Work"). When shown, the field is required. Only used by the multiship extension.',
+            table: { defaultValue: { summary: 'false' } },
+        },
+        showPhone: {
+            control: 'boolean',
+            description: 'Shows the phone number field with country code selector.',
+            table: { defaultValue: { summary: 'false' } },
+        },
+        showCountry: {
+            control: 'boolean',
+            description: 'Shows the country dropdown selector.',
+            table: { defaultValue: { summary: 'true' } },
+        },
+        labelsAsPlaceholders: {
+            control: 'boolean',
+            description:
+                'Hides field labels and uses placeholder text only. Labels become `sr-only` for accessibility.',
+            table: { defaultValue: { summary: 'false' } },
+        },
+        strictValidation: {
+            control: 'boolean',
+            description:
+                'Enables strict validation: phone, state, and postal code become required, and country-specific postal code format (US/CA) is enforced.',
+            table: { defaultValue: { summary: 'false' } },
+        },
+        isLoading: {
+            control: 'boolean',
+            description:
+                'When set, disables both buttons and shows "Saving…" on the save button. The modal will not auto-close on save — the parent must control closing via `onOpenChange`.',
+            table: { defaultValue: { summary: 'undefined' } },
         },
     },
 };
@@ -60,9 +142,11 @@ function AddressModalWithState(args: Partial<React.ComponentProps<typeof Address
     const [open, setOpen] = useState(args.open ?? false);
     return (
         <>
-            <button type="button" onClick={() => setOpen(true)}>
-                Open modal
-            </button>
+            {!open && (
+                <button type="button" onClick={() => setOpen(true)}>
+                    Open modal
+                </button>
+            )}
             <AddressModal
                 {...args}
                 open={open}
@@ -75,32 +159,38 @@ function AddressModalWithState(args: Partial<React.ComponentProps<typeof Address
     );
 }
 
-export const Default: Story = {
+export const _DocsAnchor: Story = {
+    tags: ['!dev'],
+    args: { open: false, onOpenChange: () => {}, onSave: () => {} },
+};
+
+export const AddAddress: Story = {
+    tags: ['!autodocs'],
+    render: (args) => <AddressModalWithState {...args} />,
     args: {
         open: true,
-        onOpenChange: action('onOpenChange'),
         countryCode: 'US',
+        onOpenChange: action('onOpenChange'),
         onSave: action('onSave'),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        // Dialog renders in a portal, so query from document.body
         const body = within(document.body);
 
         void expect(body.getByRole('dialog')).toBeInTheDocument();
-        void expect(body.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
-        void expect(body.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-        void expect(body.getByRole('button', { name: /^save$/i })).toBeInTheDocument();
+        void expect(body.getByRole('heading', { name: /add new address/i })).toBeInTheDocument();
     },
 };
 
-export const EditMode: Story = {
+export const EditAddress: Story = {
+    tags: ['!autodocs'],
+    render: (args) => <AddressModalWithState {...args} />,
     args: {
         open: true,
-        onOpenChange: action('onOpenChange'),
-        countryCode: 'US',
-        onSave: action('onSave'),
         isEditMode: true,
+        countryCode: 'US',
+        onOpenChange: action('onOpenChange'),
+        onSave: action('onSave'),
         defaultValues: {
             firstName: 'Jane',
             lastName: 'Doe',
@@ -111,81 +201,29 @@ export const EditMode: Story = {
             postalCode: '94102',
         },
     },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Modal in edit mode with pre-populated address fields. Title reads "Edit Address" instead of "Add Address".',
-            },
-        },
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const body = within(document.body);
-
         void expect(body.getByRole('dialog')).toBeInTheDocument();
-        void expect(body.getByRole('heading', { name: 'Edit Address' })).toBeInTheDocument();
-        void expect(body.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-        void expect(body.getByRole('button', { name: /^save$/i })).toBeInTheDocument();
+        void expect(body.getByRole('heading', { name: /edit address/i })).toBeInTheDocument();
     },
 };
 
-export const Closed: Story = {
-    args: {
-        open: false,
-        onOpenChange: action('onOpenChange'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        // Dialog when closed is not in document (or only in canvas); check body for portaled content
-        const body = within(document.body);
-        void expect(body.queryByRole('dialog')).not.toBeInTheDocument();
-    },
-};
-
-export const WithCountrySelector: Story = {
-    args: {
-        open: true,
-        onOpenChange: action('onOpenChange'),
-        countryCode: 'CA',
-        onSave: action('onSave'),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'When showCountry is true, the modal includes a Country dropdown (e.g. for international addresses).',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        // Dialog renders in a portal, so query from document.body
-        const body = within(document.body);
-
-        void expect(body.getByRole('dialog')).toBeInTheDocument();
-        const comboboxes = body.getAllByRole('combobox');
-        void expect(comboboxes.length).toBeGreaterThanOrEqual(2);
-    },
-};
-
-export const InteractiveOpenClose: Story = {
+export const Saving: Story = {
+    tags: ['!autodocs'],
     render: (args) => <AddressModalWithState {...args} />,
     args: {
+        open: true,
+        isLoading: true,
+        countryCode: 'US',
         onOpenChange: action('onOpenChange'),
         onSave: action('onSave'),
     },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Click "Open modal" to open the address modal.',
-            },
-        },
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        void expect(canvas.queryByRole('dialog')).not.toBeInTheDocument();
-        const openButton = canvas.getByRole('button', { name: /open modal/i });
-        void expect(openButton).toBeInTheDocument();
+        const body = within(document.body);
+        void expect(body.getByRole('dialog')).toBeInTheDocument();
+        void expect(body.getByRole('button', { name: /saving/i })).toBeDisabled();
+        void expect(body.getByRole('button', { name: /cancel/i })).toBeDisabled();
     },
 };

@@ -1,17 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AddressModal stories snapshot > Closed story renders and matches snapshot 1`] = `null`;
+exports[`AddressModal stories snapshot > _DocsAnchor story renders and matches snapshot 1`] = `null`;
 
-exports[`AddressModal stories snapshot > Default story renders and matches snapshot 1`] = `null`;
+exports[`AddressModal stories snapshot > AddAddress story renders and matches snapshot 1`] = `null`;
 
-exports[`AddressModal stories snapshot > EditMode story renders and matches snapshot 1`] = `null`;
+exports[`AddressModal stories snapshot > EditAddress story renders and matches snapshot 1`] = `null`;
 
-exports[`AddressModal stories snapshot > InteractiveOpenClose story renders and matches snapshot 1`] = `
-<button
-  type="button"
->
-  Open modal
-</button>
-`;
-
-exports[`AddressModal stories snapshot > WithCountrySelector story renders and matches snapshot 1`] = `null`;
+exports[`AddressModal stories snapshot > Saving story renders and matches snapshot 1`] = `null`;
