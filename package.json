@@ -13,6 +13,7 @@
         "dev:log": "cross-env NODE_OPTIONS=--conditions=dev-data-store SFCC_LOG_LEVEL=debug sfnext dev",
         "dev:ui-targets": "cross-env VITE_UI_TARGET_DEV_MODE=true pnpm dev",
         "smoke-test:generate": "node src/lib/ui-target-dev-mode/smoke-test/generate-config.cjs",
+        "list:extension-points": "node scripts/list-extension-points.js",
         "deploy:cartridge": "sfnext deploy-cartridge",
         "deploy:cartridge:clean": "sfnext deploy-cartridge --delete",
         "generate:cartridge": "sfnext generate-cartridge",
