@@ -413,7 +413,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Product 1 in Black"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-1?color=BLACKWL&pid=750518703077M"
+                href="/product/MASTER-1?color=BLACKWL"
                 style="background-color: black;"
                 tabindex="-1"
               />
@@ -692,7 +692,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-MULTI-1?color=JJ5QZXX&pid=701642823872M"
+                href="/product/MASTER-MULTI-1?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
@@ -706,7 +706,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Multi 1 in Grey Heather"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-MULTI-1?color=JJ908XX&pid=701642823919M"
+                href="/product/MASTER-MULTI-1?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
@@ -1000,7 +1000,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-label="View Master Product 2 in Navy"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-2?color=NAVYWL&pid=750518548272M"
+                href="/product/MASTER-2?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
@@ -1015,7 +1015,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Product 2 in Charcoal"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-2?color=CHARCWL&pid=750518894461M"
+                href="/product/MASTER-2?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
@@ -1822,7 +1822,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-MULTI-2?color=JJ5QZXX&pid=701642823872M"
+                href="/product/MASTER-MULTI-2?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
@@ -1836,7 +1836,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Multi 2 in Grey Heather"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-MULTI-2?color=JJ908XX&pid=701642823919M"
+                href="/product/MASTER-MULTI-2?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
@@ -2130,7 +2130,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
               <a
                 aria-label="View Master Product 3 in Navy"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-3?color=NAVYWL&pid=750518548272M"
+                href="/product/MASTER-3?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
@@ -2145,7 +2145,7 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Product 3 in Charcoal"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-3?color=CHARCWL&pid=750518894461M"
+                href="/product/MASTER-3?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
@@ -2717,7 +2717,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Product 1 in Black"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-1?color=BLACKWL&pid=750518703077M"
+                href="/product/MASTER-1?color=BLACKWL"
                 style="background-color: black;"
                 tabindex="-1"
               />
@@ -2996,7 +2996,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-MULTI-1?color=JJ5QZXX&pid=701642823872M"
+                href="/product/MASTER-MULTI-1?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
@@ -3010,7 +3010,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Multi 1 in Grey Heather"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-MULTI-1?color=JJ908XX&pid=701642823919M"
+                href="/product/MASTER-MULTI-1?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
@@ -3304,7 +3304,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-label="View Master Product 2 in Navy"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-2?color=NAVYWL&pid=750518548272M"
+                href="/product/MASTER-2?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
@@ -3319,7 +3319,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Product 2 in Charcoal"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-2?color=CHARCWL&pid=750518894461M"
+                href="/product/MASTER-2?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
@@ -4126,7 +4126,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-MULTI-2?color=JJ5QZXX&pid=701642823872M"
+                href="/product/MASTER-MULTI-2?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
@@ -4140,7 +4140,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Multi 2 in Grey Heather"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-MULTI-2?color=JJ908XX&pid=701642823919M"
+                href="/product/MASTER-MULTI-2?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
@@ -4434,7 +4434,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
               <a
                 aria-label="View Master Product 3 in Navy"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-3?color=NAVYWL&pid=750518548272M"
+                href="/product/MASTER-3?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
@@ -4449,7 +4449,7 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
                 aria-current="true"
                 aria-label="View Master Product 3 in Charcoal"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-3?color=CHARCWL&pid=750518894461M"
+                href="/product/MASTER-3?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
@@ -11542,7 +11542,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 aria-current="true"
                 aria-label="View Master Product 1 in Black"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-1?color=BLACKWL&pid=750518703077M"
+                href="/product/MASTER-1?color=BLACKWL"
                 style="background-color: black;"
                 tabindex="-1"
               />
@@ -11821,7 +11821,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-MULTI-1?color=JJ5QZXX&pid=701642823872M"
+                href="/product/MASTER-MULTI-1?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
@@ -11835,7 +11835,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 aria-current="true"
                 aria-label="View Master Multi 1 in Grey Heather"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-MULTI-1?color=JJ908XX&pid=701642823919M"
+                href="/product/MASTER-MULTI-1?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
@@ -12129,7 +12129,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-label="View Master Product 2 in Navy"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-2?color=NAVYWL&pid=750518548272M"
+                href="/product/MASTER-2?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
@@ -12144,7 +12144,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 aria-current="true"
                 aria-label="View Master Product 2 in Charcoal"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-2?color=CHARCWL&pid=750518894461M"
+                href="/product/MASTER-2?color=CHARCWL"
                 tabindex="-1"
               >
                 <img
@@ -12951,7 +12951,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-MULTI-2?color=JJ5QZXX&pid=701642823872M"
+                href="/product/MASTER-MULTI-2?color=JJ5QZXX"
                 tabindex="-1"
               >
                 <img
@@ -12965,7 +12965,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 aria-current="true"
                 aria-label="View Master Multi 2 in Grey Heather"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-MULTI-2?color=JJ908XX&pid=701642823919M"
+                href="/product/MASTER-MULTI-2?color=JJ908XX"
                 tabindex="-1"
               >
                 <img
@@ -13259,7 +13259,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
               <a
                 aria-label="View Master Product 3 in Navy"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-                href="/product/MASTER-3?color=NAVYWL&pid=750518548272M"
+                href="/product/MASTER-3?color=NAVYWL"
                 style="background-color: navy;"
                 tabindex="-1"
               >
@@ -13274,7 +13274,7 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
                 aria-current="true"
                 aria-label="View Master Product 3 in Charcoal"
                 class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-                href="/product/MASTER-3?color=CHARCWL&pid=750518894461M"
+                href="/product/MASTER-3?color=CHARCWL"
                 tabindex="-1"
               >
                 <img

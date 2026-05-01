@@ -286,15 +286,6 @@ export const getDecoratedVariationAttributes = (
                 searchParams.set(variationAttribute.id, value.value);
             }
 
-            // Find variant matching this attribute value to include pid
-            const attrId = variationAttribute.id;
-            if (attrId && value.value && product.variants) {
-                const matchingVariant = product.variants.find((v) => v.variationValues?.[attrId] === value.value);
-                if (matchingVariant?.productId) {
-                    searchParams.set('pid', matchingVariant.productId);
-                }
-            }
-
             // Build href for this variation
             const href = `/product/${product.productId}?${searchParams.toString()}`;
 

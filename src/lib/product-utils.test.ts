@@ -230,6 +230,24 @@ describe('product-utils', () => {
 
             expect(result).toBe('/product/12345?color=blue');
         });
+
+        it('should create product URL with variant pid', () => {
+            const result = createProductUrl('master-123', null, 'color', 'variant-456');
+
+            expect(result).toBe('/product/master-123?pid=variant-456');
+        });
+
+        it('should create product URL with both color and variant pid', () => {
+            const result = createProductUrl('master-123', 'red', 'color', 'variant-456');
+
+            expect(result).toBe('/product/master-123?color=red&pid=variant-456');
+        });
+
+        it('should not include pid when variantPid is null', () => {
+            const result = createProductUrl('12345', 'red', 'color', null);
+
+            expect(result).toBe('/product/12345?color=red');
+        });
     });
 
     describe('getImagesForColor', () => {

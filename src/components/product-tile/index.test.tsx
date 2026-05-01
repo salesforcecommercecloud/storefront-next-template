@@ -28,7 +28,9 @@ vi.mock('@/lib/product-utils', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@/lib/product-utils')>();
     return {
         ...actual,
-        createProductUrl: vi.fn(() => '/product/test-product'),
+        createProductUrl: vi.fn((...args: Parameters<typeof actual.createProductUrl>) =>
+            actual.createProductUrl(...args)
+        ),
         getDecoratedVariationAttributes: vi.fn(() => [
             {
                 id: 'color',
@@ -352,5 +354,71 @@ describe('ProductTile — accessibility', () => {
         renderTile();
         const heading = screen.getByRole('heading', { name: 'Test Product' });
         expect(heading.querySelector('a')).toHaveAttribute('href', '/global/en-GB/product/test-product');
+    });
+});
+
+describe('ProductTile — variant URL', () => {
+    const mockMasterProduct: ShopperSearch.schemas['ProductSearchHit'] = {
+        productId: 'master-001',
+        productName: 'Master Product',
+        price: 59.99,
+        productType: { master: true },
+        representedProduct: { id: 'variant-red-M' },
+        variants: [
+            { productId: 'variant-red-M', variationValues: { color: 'red', size: 'M' } },
+            { productId: 'variant-blue-L', variationValues: { color: 'blue', size: 'L' } },
+        ],
+        variationAttributes: [
+            {
+                id: 'color',
+                values: [
+                    { value: 'red', name: 'Red' },
+                    { value: 'blue', name: 'Blue' },
+                ],
+            },
+        ],
+        imageGroups: [
+            {
+                viewType: 'medium',
+                images: [
+                    { alt: 'Image', link: 'https://example.com/img.jpg', disBaseLink: 'https://example.com/img.jpg' },
+                ],
+            },
+        ],
+    };
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        vi.spyOn(ReactRouter, 'useNavigate').mockReturnValue(mockNavigate);
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    test('master product tile URL includes pid of represented variant', () => {
+        renderTile({ product: mockMasterProduct });
+        const nameLink = screen.getByRole('link', { name: 'Master Product' });
+        expect(nameLink).toHaveAttribute('href', '/global/en-GB/product/master-001?pid=variant-red-M');
+    });
+
+    test('bundle product tile URL does not include pid', () => {
+        const bundleProduct = { ...mockMasterProduct, productType: { bundle: true } };
+        renderTile({ product: bundleProduct });
+        const nameLink = screen.getByRole('link', { name: 'Master Product' });
+        expect(nameLink).toHaveAttribute('href', '/global/en-GB/product/master-001');
+    });
+
+    test('set product tile URL does not include pid', () => {
+        const setProduct = { ...mockMasterProduct, productType: { set: true } };
+        renderTile({ product: setProduct });
+        const nameLink = screen.getByRole('link', { name: 'Master Product' });
+        expect(nameLink).toHaveAttribute('href', '/global/en-GB/product/master-001');
+    });
+
+    test('standard product tile URL does not include pid', () => {
+        renderTile();
+        const nameLink = screen.getByRole('link', { name: 'Test Product' });
+        expect(nameLink).toHaveAttribute('href', '/global/en-GB/product/test-product');
     });
 });
