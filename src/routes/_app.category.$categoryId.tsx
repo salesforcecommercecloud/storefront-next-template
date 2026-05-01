@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 import { Suspense, use, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
-import { ApiError, type ShopperProducts, type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import {
+    type LoaderFunctionArgs,
+    type ShouldRevalidateFunctionArgs,
+    useAsyncError,
+    useLocation,
+    useNavigation,
+} from 'react-router';
+import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { fetchSearchProducts } from '@/lib/api/search.server';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
@@ -39,6 +46,7 @@ import CategoryBanner from '@/components/category-banner';
 import CategoryBannerSkeleton from '@/components/category-banner/skeleton';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
+import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { getPublicOrigin } from '@/utils/schema-url';
@@ -128,20 +136,10 @@ export async function loader(args: LoaderFunctionArgs): Promise<CategoryPageData
 
     let categoryData: ShopperProducts.schemas['Category'] | undefined;
     try {
-        // Fetch one level of child categories so quick filters can render direct subcategories
-        // (e.g. suits/shorts/pants) from category.categories instead of falling back to refinements.
         categoryData = await fetchCategory(context, categoryId, 1);
     } catch (e) {
-        // Category data is considered critical, i.e., if the related SCAPI request fails, out-of-the-box we either
-        // throw a `Response` with all the available information from the underlying `ApiError`, or we fall back to
-        // simply throwing a generic 500 error. If that out-of-the-box behavior needs to be tweaked, e.g., for more
-        // sophisticated SEO or error handling, this is the place to do it.
-        if (e instanceof ApiError) {
-            throw new Response(e.body.title || e.statusText, {
-                status: e.status,
-                statusText: e.body.detail || e.statusText,
-                headers: e.headers,
-            });
+        if (e instanceof NormalizedApiError && e.status) {
+            throw new Response(e.message, { status: e.status });
         }
         throw new Response('Internal Server Error', { status: 500 });
     }
@@ -248,6 +246,23 @@ export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate 
  * This component uses the createPage factory to handle Suspense patterns.
  * @returns JSX element representing the category page
  */
+function ProductGridError() {
+    const rawError = useAsyncError();
+    const error = rawError instanceof NormalizedApiError ? rawError : null;
+    const { t } = useTranslation('common');
+    return (
+        <div role="alert" className="col-span-full py-8 text-center text-muted-foreground">
+            <p>{t('productGrid.loadFailed')}</p>
+            {import.meta.env.DEV && error && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground/70">
+                    {error.status && <span>{error.status} </span>}
+                    {error.message && <p>{error.message}</p>}
+                </div>
+            )}
+        </div>
+    );
+}
+
 /**
  * Component that renders JSON-LD schema when categorySchema promise resolves.
  * Must be inside Suspense boundary to ensure it streams correctly in SSR.
@@ -448,6 +463,7 @@ export default function CategoryPage({
                                     topCategoryName={
                                         category.parentCategoryTree?.find((p) => p.id !== 'root')?.name ?? category.name
                                     }
+                                    errorElement={<ProductGridError />}
                                 />
                             </UITarget>
 

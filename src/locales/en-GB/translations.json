@@ -18,6 +18,9 @@
         "noImageAvailable": "No image available",
         "productGeneric": "Product",
         "noProductsFound": "No products found",
+        "productGrid": {
+            "loadFailed": "Unable to load additional products."
+        },
         "productCarousel": "Product carousel",
         "productImageAlt": "Product Image",
         "suggestionImageAlt": "Suggestion Image",

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, Suspense, use, useCallback } from 'react';
+import { type ReactElement, Suspense, useCallback } from 'react';
+import { Await } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDeferredRender } from '@/hooks/use-deferred-render';
 // @sfdc-extension-line SFDC_EXT_BOPIS
@@ -62,7 +63,7 @@ function NoProductsMessage({ criticalSize, nonCriticalSize }: { criticalSize: nu
 }
 
 function NonCriticalContent({
-    nonCritical,
+    products,
     criticalSize,
     responsiveImageWidths,
     handleProductClick,
@@ -70,7 +71,7 @@ function NonCriticalContent({
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable,
 }: {
-    nonCritical: Promise<ProductSearchHit[]>;
+    products: ProductSearchHit[];
     criticalSize: number;
     responsiveImageWidths: string[];
     handleProductClick?: (product: ProductSearchHit) => void;
@@ -78,7 +79,6 @@ function NonCriticalContent({
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable?: boolean;
 }) {
-    const products = use(nonCritical);
     return (
         <DynamicImageProvider value={{ widths: responsiveImageWidths }}>
             {products.map((product) => (
@@ -133,6 +133,7 @@ export default function ProductGrid({
     handleProductClick,
     topCategoryName,
     isLoading = false,
+    errorElement,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable: showPickupAvailableProp,
 }: {
@@ -143,6 +144,7 @@ export default function ProductGrid({
     handleProductClick?: (product: ProductSearchHit) => void;
     topCategoryName?: string;
     isLoading?: boolean;
+    errorElement?: ReactElement;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable?: boolean;
 }): ReactElement {
@@ -214,20 +216,24 @@ export default function ProductGrid({
                     - Skeletons are replaced with actual product tiles
                 */}
                 {nonCritical && shouldRenderNonCritical ? (
-                    // Phase 2 & 3: Post-idle — mount Suspense boundary and render tiles
+                    // Phase 2 & 3: Post-idle — mount Suspense + Await boundary and render tiles
                     <Suspense
                         fallback={Array.from({ length: nonCriticalCount }, (_, i) => (
                             <ProductTileSkeleton key={i} />
                         ))}>
-                        <NonCriticalContent
-                            nonCritical={nonCritical}
-                            criticalSize={l}
-                            responsiveImageWidths={responsiveImageWidths}
-                            handleProductClick={handleProductClick}
-                            topCategoryName={topCategoryName}
-                            // @sfdc-extension-line SFDC_EXT_BOPIS
-                            showPickupAvailable={showPickupAvailable}
-                        />
+                        <Await resolve={nonCritical} errorElement={errorElement}>
+                            {(products: ProductSearchHit[]) => (
+                                <NonCriticalContent
+                                    products={products}
+                                    criticalSize={l}
+                                    responsiveImageWidths={responsiveImageWidths}
+                                    handleProductClick={handleProductClick}
+                                    topCategoryName={topCategoryName}
+                                    // @sfdc-extension-line SFDC_EXT_BOPIS
+                                    showPickupAvailable={showPickupAvailable}
+                                />
+                            )}
+                        </Await>
                     </Suspense>
                 ) : nonCritical ? (
                     // Phase 1: Pre-idle — show lightweight skeletons before Suspense boundary mounts

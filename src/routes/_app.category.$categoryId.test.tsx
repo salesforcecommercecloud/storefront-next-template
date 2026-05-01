@@ -25,6 +25,7 @@ import {
     type ShopperProducts,
     type ShopperSearch,
 } from '@salesforce/storefront-next-runtime/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import CategoryPage, { loader, ProductListingPageMetadata, shouldRevalidate } from './_app.category.$categoryId';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchCategory } from '@/lib/api/categories.server';
@@ -397,7 +398,7 @@ describe('CategoryPage', () => {
             expect(closedResult.initialFiltersOpen).toBe(false);
         });
 
-        test('should throw 404 when category fetch fails with ApiError 404', async () => {
+        test('should throw 404 when category fetch fails with NormalizedApiError 404', async () => {
             const mockApiError = new ApiError({
                 status: 404,
                 statusText: 'Not Found',
@@ -416,7 +417,7 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(
@@ -428,12 +429,11 @@ describe('CategoryPage', () => {
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(404);
-                expect(await error.text()).toBe('Category Not Found');
-                expect(error.statusText).toBe('The requested category does not exist');
+                expect(await error.text()).toBe('The requested category does not exist');
             }
         });
 
-        test('should throw 500 when category fetch fails with ApiError 500', async () => {
+        test('should throw 500 when category fetch fails with NormalizedApiError 500', async () => {
             const mockApiError = new ApiError({
                 status: 500,
                 statusText: 'Internal Server Error',
@@ -452,7 +452,7 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(createLoaderArgs('https://example.com/category/electronics'));
@@ -460,12 +460,11 @@ describe('CategoryPage', () => {
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(500);
-                expect(await error.text()).toBe('Internal Server Error');
-                expect(error.statusText).toBe('An unexpected error occurred while processing the request');
+                expect(await error.text()).toBe('An unexpected error occurred while processing the request');
             }
         });
 
-        test('should throw 403 when category fetch fails with ApiError 403', async () => {
+        test('should throw 403 when category fetch fails with NormalizedApiError 403', async () => {
             const mockApiError = new ApiError({
                 status: 403,
                 statusText: 'Forbidden',
@@ -484,7 +483,7 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(
@@ -496,12 +495,11 @@ describe('CategoryPage', () => {
             } catch (error: any) {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(403);
-                expect(await error.text()).toBe('Access Denied');
-                expect(error.statusText).toBe('You do not have permission to access this category');
+                expect(await error.text()).toBe('You do not have permission to access this category');
             }
         });
 
-        test('should use statusText as fallback when ApiError body.title is missing', async () => {
+        test('should use body.detail as message when NormalizedApiError body.title is missing', async () => {
             const mockApiError = new ApiError({
                 status: 404,
                 statusText: 'Not Found',
@@ -516,7 +514,38 @@ describe('CategoryPage', () => {
                 method: 'GET',
             });
 
-            (fetchCategory as any).mockRejectedValue(mockApiError);
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
+
+            try {
+                await loader(
+                    createLoaderArgs('https://example.com/category/invalid', {
+                        params: { categoryId: 'invalid' },
+                    })
+                );
+                expect.fail('Expected loader to throw');
+            } catch (error: any) {
+                expect(error).toBeInstanceOf(Response);
+                expect(error.status).toBe(404);
+                expect(await error.text()).toBe('Category not available');
+            }
+        });
+
+        test('should use statusText as fallback when NormalizedApiError body.detail is missing', async () => {
+            const mockApiError = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers({ 'content-type': 'application/json' }),
+                body: {
+                    type: 'https://api.example.com/errors/not-found',
+                    title: 'Category Not Found',
+                    detail: '',
+                },
+                rawBody: '{}',
+                url: 'https://api.example.com/categories/invalid',
+                method: 'GET',
+            });
+
+            (fetchCategory as any).mockRejectedValue(new NormalizedApiError(mockApiError));
 
             try {
                 await loader(
@@ -532,37 +561,7 @@ describe('CategoryPage', () => {
             }
         });
 
-        test('should use statusText as fallback when ApiError body.detail is missing', async () => {
-            const mockApiError = new ApiError({
-                status: 404,
-                statusText: 'Not Found',
-                headers: new Headers({ 'content-type': 'application/json' }),
-                body: {
-                    type: 'https://api.example.com/errors/not-found',
-                    title: 'Category Not Found',
-                    detail: '',
-                },
-                rawBody: '{}',
-                url: 'https://api.example.com/categories/invalid',
-                method: 'GET',
-            });
-
-            (fetchCategory as any).mockRejectedValue(mockApiError);
-
-            try {
-                await loader(
-                    createLoaderArgs('https://example.com/category/invalid', {
-                        params: { categoryId: 'invalid' },
-                    })
-                );
-                expect.fail('Expected loader to throw');
-            } catch (error: any) {
-                expect(error).toBeInstanceOf(Response);
-                expect(error.statusText).toBe('Not Found');
-            }
-        });
-
-        test('should throw 500 when category fetch fails with generic error', async () => {
+        test('should throw 500 when category fetch fails with non-ApiError error', async () => {
             (fetchCategory as any).mockRejectedValue(new Error('Unexpected error'));
 
             try {
@@ -589,48 +588,6 @@ describe('CategoryPage', () => {
                 expect(error).toBeInstanceOf(Response);
                 expect(error.status).toBe(500);
                 expect(await error.text()).toBe('Internal Server Error');
-            }
-        });
-
-        test('should preserve headers from ApiError in response', async () => {
-            const customHeaders = new Headers({
-                'content-type': 'application/json',
-                'x-request-id': 'test-request-123',
-                'x-correlation-id': 'correlation-456',
-            });
-
-            const mockApiError = new ApiError({
-                status: 404,
-                statusText: 'Not Found',
-                headers: customHeaders,
-                body: {
-                    type: 'https://api.example.com/errors/not-found',
-                    title: 'Category Not Found',
-                    detail: 'The requested category does not exist',
-                },
-                rawBody: JSON.stringify({
-                    type: 'https://api.example.com/errors/not-found',
-                    title: 'Category Not Found',
-                    detail: 'The requested category does not exist',
-                }),
-                url: 'https://api.example.com/categories/invalid',
-                method: 'GET',
-            });
-
-            (fetchCategory as any).mockRejectedValue(mockApiError);
-
-            try {
-                await loader(
-                    createLoaderArgs('https://example.com/category/invalid', {
-                        params: { categoryId: 'invalid' },
-                    })
-                );
-                expect.fail('Expected loader to throw');
-            } catch (error: any) {
-                expect(error).toBeInstanceOf(Response);
-                expect(error.headers.get('content-type')).toBe('application/json');
-                expect(error.headers.get('x-request-id')).toBe('test-request-123');
-                expect(error.headers.get('x-correlation-id')).toBe('correlation-456');
             }
         });
 

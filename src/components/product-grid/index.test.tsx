@@ -84,6 +84,7 @@ interface RenderOptions {
     handleProductClick?: (p: ProductHit) => void;
     topCategoryName?: string;
     isLoading?: boolean;
+    errorElement?: React.ReactElement;
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable?: boolean;
 }
@@ -96,6 +97,7 @@ const renderGrid = ({
     handleProductClick,
     topCategoryName,
     isLoading,
+    errorElement,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     showPickupAvailable,
 }: RenderOptions = {}) => {
@@ -113,6 +115,7 @@ const renderGrid = ({
                             handleProductClick={handleProductClick}
                             topCategoryName={topCategoryName}
                             isLoading={isLoading}
+                            errorElement={errorElement}
                             // @sfdc-extension-line SFDC_EXT_BOPIS
                             showPickupAvailable={showPickupAvailable}
                         />
@@ -438,6 +441,47 @@ describe('ProductGrid — deferred rendering', () => {
 
         // Skeletons should be shown instead
         expect(screen.getAllByTestId('product-tile-skeleton')).toHaveLength(6);
+    });
+});
+
+describe('ProductGrid — error handling', () => {
+    beforeEach(() => vi.clearAllMocks());
+    afterEach(() => vi.clearAllMocks());
+
+    test('renders errorElement when non-critical promise rejects', async () => {
+        vi.mocked(useDeferredRender).mockReturnValue(true);
+        const rejectedPromise = Promise.reject(new Error('API failed'));
+        rejectedPromise.catch(() => {});
+
+        await act(() =>
+            renderGrid({
+                critical: [p1],
+                nonCritical: rejectedPromise,
+                nonCriticalCount: 4,
+                errorElement: <div data-testid="grid-error">Products failed to load</div>,
+            })
+        );
+
+        expect(screen.getByTestId('grid-error')).toBeInTheDocument();
+        expect(screen.getByText('Products failed to load')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p1')).toBeInTheDocument();
+    });
+
+    test('does not render errorElement when non-critical promise resolves', async () => {
+        vi.mocked(useDeferredRender).mockReturnValue(true);
+
+        await act(() =>
+            renderGrid({
+                critical: [p1],
+                nonCritical: Promise.resolve([p2]),
+                nonCriticalCount: 4,
+                errorElement: <div data-testid="grid-error">Products failed to load</div>,
+            })
+        );
+
+        expect(screen.queryByTestId('grid-error')).not.toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p1')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p2')).toBeInTheDocument();
     });
 });
 

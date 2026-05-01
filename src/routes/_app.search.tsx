@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs, useLocation, useNavigation } from 'react-router';
+import {
+    type LoaderFunctionArgs,
+    type ShouldRevalidateFunctionArgs,
+    useAsyncError,
+    useLocation,
+    useNavigation,
+} from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchSearchProducts } from '@/lib/api/search.server';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -159,6 +166,23 @@ export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate 
     }
 
     return defaultShouldRevalidate;
+}
+
+function ProductGridError() {
+    const rawError = useAsyncError();
+    const error = rawError instanceof NormalizedApiError ? rawError : null;
+    const { t } = useTranslation('common');
+    return (
+        <div role="alert" className="col-span-full py-8 text-center text-muted-foreground">
+            <p>{t('productGrid.loadFailed')}</p>
+            {import.meta.env.DEV && error && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground/70">
+                    {error.status && <span>{error.status} </span>}
+                    {error.message && <p>{error.message}</p>}
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default function SearchPage({
@@ -339,6 +363,7 @@ export default function SearchPage({
                                 hasRefinementsPanel={filtersOpen}
                                 isLoading={isProductGridLoading}
                                 handleProductClick={handleProductClick}
+                                errorElement={<ProductGridError />}
                             />
 
                             {searchResultCritical.total > 1 && (
