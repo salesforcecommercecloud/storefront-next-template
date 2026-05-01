@@ -5,6 +5,7 @@
 ## v0.4.0-dev (Apr 30, 2026)
 
 - **Cart line item:** Restore the edit button for non-standard, non-bonus products alongside the newly added wishlist toggle and remove action.
+- Broke down app.css into a more organized system for readability and discoverability [#1474](https://github.com/commerce-emu/storefront-next/pull/1474)
 
 ## v0.4.0-dev (Apr 28, 2026)
 
