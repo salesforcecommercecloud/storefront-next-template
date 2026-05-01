@@ -367,7 +367,7 @@ describe('Region', () => {
 
         describe('when rendering page region with region context', () => {
             beforeEach(() => {
-                vi.mocked(useRegionContext).mockReturnValue({ regionId: 'test-region', componentIds: [] });
+                vi.mocked(useRegionContext).mockReturnValue({ regionId: 'test-region', contentLinkUuids: [] });
             });
             it('does not render the page designer page metadata provider', async () => {
                 render(<Region page={mockPage} regionId="test-region" />);

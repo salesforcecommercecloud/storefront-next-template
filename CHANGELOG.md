@@ -1,3 +1,7 @@
+## v0.4.0-dev (May 1, 2026)
+
+- Design layer: Wire `contentLinkUuid` through regions and story fixtures to support content blocks (@W-21609036)
+
 ## v0.4.0-dev (Apr 30, 2026)
 
 - **Cart line item:** Restore the edit button for non-standard, non-bonus products alongside the newly added wishlist toggle and remove action.

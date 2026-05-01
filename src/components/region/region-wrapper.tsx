@@ -28,7 +28,7 @@ import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scap
 export interface RegionRendererProps extends React.HTMLAttributes<HTMLDivElement> {
     region: ShopperExperience.schemas['Region'];
     children: ReactNode;
-    designMetadata?: Omit<RegionDesignMetadata, 'componentIds'>;
+    designMetadata?: Omit<RegionDesignMetadata, 'contentLinkUuids'>;
 }
 
 /**
@@ -74,7 +74,7 @@ export function RegionWrapper({ region, children, className, designMetadata, ...
                 region={region}
                 designMetadata={{
                     id: region.id,
-                    componentIds: region?.components?.map((cmp) => cmp.id) || [],
+                    contentLinkUuids: region?.components?.map((cmp) => cmp.contentLinkUuid ?? cmp.id) || [],
                     componentTypeExclusions: designMetadata?.componentTypeExclusions || [],
                     componentTypeInclusions: designMetadata?.componentTypeInclusions || [],
                 }}

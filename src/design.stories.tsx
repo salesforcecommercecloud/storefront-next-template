@@ -109,13 +109,23 @@ const pageFactories = {
                         {
                             id: 'header-1',
                             typeId: 'banner',
-                            data: { title: 'Welcome Banner' } as unknown as Record<string, never>,
+                            contentLinkUuid: 'uuid-header-1',
+                            data: { title: 'Welcome Banner Content Block' } as unknown as Record<string, never>,
+                            visible: true,
+                            localized,
+                        },
+                        {
+                            id: 'header-1-dup',
+                            typeId: 'banner',
+                            contentLinkUuid: 'uuid-header-1-dup',
+                            data: { title: 'Welcome Banner Content Block' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
                         },
                         {
                             id: 'header-2',
                             typeId: 'navigation',
+                            contentLinkUuid: 'uuid-header-2',
                             data: { title: 'Main Navigation' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -128,6 +138,7 @@ const pageFactories = {
                         {
                             id: 'main-1',
                             typeId: 'hero',
+                            contentLinkUuid: 'uuid-main-1',
                             data: { title: 'Hero Section' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -135,6 +146,7 @@ const pageFactories = {
                         {
                             id: 'main-2',
                             typeId: 'content',
+                            contentLinkUuid: 'uuid-main-2',
                             data: { title: 'Content Block' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -142,6 +154,7 @@ const pageFactories = {
                         {
                             id: 'main-3',
                             typeId: 'product-grid',
+                            contentLinkUuid: 'uuid-main-3',
                             data: { title: 'Product Grid' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -154,6 +167,7 @@ const pageFactories = {
                         {
                             id: 'sidebar-1',
                             typeId: 'filter',
+                            contentLinkUuid: 'uuid-sidebar-1',
                             data: { title: 'Filters' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -161,6 +175,7 @@ const pageFactories = {
                         {
                             id: 'sidebar-2',
                             typeId: 'promo',
+                            contentLinkUuid: 'uuid-sidebar-2',
                             data: { title: 'Promotional Banner' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -173,6 +188,7 @@ const pageFactories = {
                         {
                             id: 'footer-1',
                             typeId: 'links',
+                            contentLinkUuid: 'uuid-footer-1',
                             data: { title: 'Footer Links' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -209,6 +225,7 @@ const pageFactories = {
                         {
                             id: 'comp-1',
                             typeId: 'hero',
+                            contentLinkUuid: 'uuid-comp-1',
                             data: { title: 'Hero Component' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -216,6 +233,7 @@ const pageFactories = {
                         {
                             id: 'comp-2',
                             typeId: 'content',
+                            contentLinkUuid: 'uuid-comp-2',
                             data: { title: 'Content Component' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -223,6 +241,7 @@ const pageFactories = {
                         {
                             id: 'comp-3',
                             typeId: 'cta',
+                            contentLinkUuid: 'uuid-comp-3',
                             data: { title: 'Call to Action' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -243,6 +262,7 @@ const pageFactories = {
                         {
                             id: 'banner-1',
                             typeId: 'promo-banner',
+                            contentLinkUuid: 'uuid-banner-1',
                             data: { title: 'Summer Sale Banner' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -250,6 +270,7 @@ const pageFactories = {
                         {
                             id: 'banner-2',
                             typeId: 'announcement',
+                            contentLinkUuid: 'uuid-banner-2',
                             data: { title: 'Free Shipping Announcement' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -257,6 +278,7 @@ const pageFactories = {
                         {
                             id: 'banner-3',
                             typeId: 'newsletter',
+                            contentLinkUuid: 'uuid-banner-3',
                             data: { title: 'Newsletter Signup' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -269,6 +291,7 @@ const pageFactories = {
                         {
                             id: 'hero-1',
                             typeId: 'hero-carousel',
+                            contentLinkUuid: 'uuid-hero-1',
                             data: { title: 'Hero Carousel Slide 1' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -276,6 +299,7 @@ const pageFactories = {
                         {
                             id: 'hero-2',
                             typeId: 'hero-carousel',
+                            contentLinkUuid: 'uuid-hero-2',
                             data: { title: 'Hero Carousel Slide 2' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -283,6 +307,7 @@ const pageFactories = {
                         {
                             id: 'hero-3',
                             typeId: 'hero-carousel',
+                            contentLinkUuid: 'uuid-hero-3',
                             data: { title: 'Hero Carousel Slide 3' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -290,6 +315,7 @@ const pageFactories = {
                         {
                             id: 'hero-cta',
                             typeId: 'cta-button',
+                            contentLinkUuid: 'uuid-hero-cta',
                             data: { title: 'Shop Now CTA' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -302,6 +328,7 @@ const pageFactories = {
                         {
                             id: 'product-1',
                             typeId: 'product-card',
+                            contentLinkUuid: 'uuid-product-1',
                             data: { title: 'Featured Product 1' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -309,6 +336,7 @@ const pageFactories = {
                         {
                             id: 'product-2',
                             typeId: 'product-card',
+                            contentLinkUuid: 'uuid-product-2',
                             data: { title: 'Featured Product 2' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -316,6 +344,7 @@ const pageFactories = {
                         {
                             id: 'product-3',
                             typeId: 'product-card',
+                            contentLinkUuid: 'uuid-product-3',
                             data: { title: 'Featured Product 3' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -323,12 +352,14 @@ const pageFactories = {
                         {
                             id: 'product-4',
                             typeId: 'product-card',
+                            contentLinkUuid: 'uuid-product-4',
                             data: { title: 'Featured Product 4' } as unknown as Record<string, never>,
                             visible: true,
                         },
                         {
                             id: 'product-5',
                             typeId: 'product-card',
+                            contentLinkUuid: 'uuid-product-5',
                             data: { title: 'Featured Product 5' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -341,6 +372,7 @@ const pageFactories = {
                         {
                             id: 'content-1',
                             typeId: 'text-block',
+                            contentLinkUuid: 'uuid-content-1',
                             data: { title: 'About Us Section' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -348,6 +380,7 @@ const pageFactories = {
                         {
                             id: 'content-2',
                             typeId: 'image-block',
+                            contentLinkUuid: 'uuid-content-2',
                             data: { title: 'Brand Image' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -355,6 +388,7 @@ const pageFactories = {
                         {
                             id: 'content-3',
                             typeId: 'video-block',
+                            contentLinkUuid: 'uuid-content-3',
                             data: { title: 'Brand Video' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -362,6 +396,7 @@ const pageFactories = {
                         {
                             id: 'content-4',
                             typeId: 'testimonial',
+                            contentLinkUuid: 'uuid-content-4',
                             data: { title: 'Customer Testimonial' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -374,6 +409,7 @@ const pageFactories = {
                         {
                             id: 'sidebar-filter',
                             typeId: 'filter-panel',
+                            contentLinkUuid: 'uuid-sidebar-filter',
                             data: { title: 'Product Filters' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -381,6 +417,7 @@ const pageFactories = {
                         {
                             id: 'sidebar-promo',
                             typeId: 'promo-card',
+                            contentLinkUuid: 'uuid-sidebar-promo',
                             data: { title: 'Special Offer' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -388,6 +425,7 @@ const pageFactories = {
                         {
                             id: 'sidebar-recommendations',
                             typeId: 'recommendations',
+                            contentLinkUuid: 'uuid-sidebar-recommendations',
                             data: { title: 'Recommended Products' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -395,6 +433,7 @@ const pageFactories = {
                         {
                             id: 'sidebar-newsletter',
                             typeId: 'newsletter-signup',
+                            contentLinkUuid: 'uuid-sidebar-newsletter',
                             data: { title: 'Newsletter Sidebar' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -407,6 +446,7 @@ const pageFactories = {
                         {
                             id: 'footer-links',
                             typeId: 'link-list',
+                            contentLinkUuid: 'uuid-footer-links',
                             data: { title: 'Footer Navigation Links' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -414,6 +454,7 @@ const pageFactories = {
                         {
                             id: 'footer-social',
                             typeId: 'social-media',
+                            contentLinkUuid: 'uuid-footer-social',
                             data: { title: 'Social Media Icons' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -421,6 +462,7 @@ const pageFactories = {
                         {
                             id: 'footer-legal',
                             typeId: 'legal-links',
+                            contentLinkUuid: 'uuid-footer-legal',
                             data: { title: 'Legal & Privacy Links' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -428,6 +470,7 @@ const pageFactories = {
                         {
                             id: 'footer-copyright',
                             typeId: 'copyright',
+                            contentLinkUuid: 'uuid-footer-copyright',
                             data: { title: 'Copyright Notice' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -449,6 +492,7 @@ const pageFactories = {
                         {
                             id: 'layout-1',
                             typeId: 'one-column-layout',
+                            contentLinkUuid: 'uuid-layout-1',
                             data: {
                                 title: '1-Level Layout (flush-x)',
                                 flushAxis: 'x',
@@ -462,6 +506,7 @@ const pageFactories = {
                                         {
                                             id: 'leaf-a',
                                             typeId: 'text-block',
+                                            contentLinkUuid: 'uuid-leaf-a',
                                             data: {
                                                 title: 'Leaf A (depth 1, flush-x)',
                                                 flushAxis: 'x',
@@ -472,6 +517,7 @@ const pageFactories = {
                                         {
                                             id: 'leaf-b',
                                             typeId: 'image-block',
+                                            contentLinkUuid: 'uuid-leaf-b',
                                             data: { title: 'Leaf B (depth 1)' } as unknown as Record<string, never>,
                                             visible: true,
                                             localized,
@@ -484,6 +530,7 @@ const pageFactories = {
                         {
                             id: 'layout-2',
                             typeId: 'two-column-layout',
+                            contentLinkUuid: 'uuid-layout-2',
                             data: { title: '2-Level Layout' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -494,6 +541,7 @@ const pageFactories = {
                                         {
                                             id: 'nested-2-left',
                                             typeId: 'card-container',
+                                            contentLinkUuid: 'uuid-nested-2-left',
                                             data: {
                                                 title: 'Card Container (depth 1)',
                                             } as unknown as Record<string, never>,
@@ -506,6 +554,7 @@ const pageFactories = {
                                                         {
                                                             id: 'leaf-c',
                                                             typeId: 'text-block',
+                                                            contentLinkUuid: 'uuid-leaf-c',
                                                             data: {
                                                                 title: 'Leaf C (depth 2)',
                                                             } as unknown as Record<string, never>,
@@ -524,6 +573,7 @@ const pageFactories = {
                                         {
                                             id: 'nested-2-right',
                                             typeId: 'promo-container',
+                                            contentLinkUuid: 'uuid-nested-2-right',
                                             data: {
                                                 title: 'Promo Container (depth 1)',
                                             } as unknown as Record<string, never>,
@@ -536,6 +586,7 @@ const pageFactories = {
                                                         {
                                                             id: 'leaf-d',
                                                             typeId: 'cta-button',
+                                                            contentLinkUuid: 'uuid-leaf-d',
                                                             data: {
                                                                 title: 'Leaf D (depth 2)',
                                                             } as unknown as Record<string, never>,
@@ -545,6 +596,7 @@ const pageFactories = {
                                                         {
                                                             id: 'leaf-e',
                                                             typeId: 'image-block',
+                                                            contentLinkUuid: 'uuid-leaf-e',
                                                             data: {
                                                                 title: 'Leaf E (depth 2)',
                                                             } as unknown as Record<string, never>,
@@ -563,6 +615,7 @@ const pageFactories = {
                         {
                             id: 'layout-3',
                             typeId: 'page-section',
+                            contentLinkUuid: 'uuid-layout-3',
                             data: { title: '3-Level Layout' } as unknown as Record<string, never>,
                             visible: true,
                             localized,
@@ -573,6 +626,7 @@ const pageFactories = {
                                         {
                                             id: 'nested-3-row',
                                             typeId: 'row-layout',
+                                            contentLinkUuid: 'uuid-nested-3-row',
                                             data: {
                                                 title: 'Row Layout (depth 1)',
                                             } as unknown as Record<string, never>,
@@ -585,6 +639,7 @@ const pageFactories = {
                                                         {
                                                             id: 'nested-3-card',
                                                             typeId: 'card-container',
+                                                            contentLinkUuid: 'uuid-nested-3-card',
                                                             data: {
                                                                 title: 'Card Container (depth 2)',
                                                             } as unknown as Record<string, never>,
@@ -597,6 +652,7 @@ const pageFactories = {
                                                                         {
                                                                             id: 'leaf-f',
                                                                             typeId: 'text-block',
+                                                                            contentLinkUuid: 'uuid-leaf-f',
                                                                             data: {
                                                                                 title: 'Leaf F (depth 3)',
                                                                             } as unknown as Record<string, never>,
@@ -606,6 +662,7 @@ const pageFactories = {
                                                                         {
                                                                             id: 'leaf-g',
                                                                             typeId: 'image-block',
+                                                                            contentLinkUuid: 'uuid-leaf-g',
                                                                             data: {
                                                                                 title: 'Leaf G (depth 3)',
                                                                             } as unknown as Record<string, never>,
@@ -615,6 +672,7 @@ const pageFactories = {
                                                                         {
                                                                             id: 'leaf-h',
                                                                             typeId: 'cta-button',
+                                                                            contentLinkUuid: 'uuid-leaf-h',
                                                                             data: {
                                                                                 title: 'Leaf H (depth 3)',
                                                                             } as unknown as Record<string, never>,
@@ -648,6 +706,7 @@ function ComponentRenderer({ component, depth = 0 }: { component: ComponentType;
     const designMetadata: ComponentDesignMetadata = {
         id: component.id,
         name: component.typeId,
+        contentLinkUuid: (component as any).contentLinkUuid,
         isFragment: false,
         isVisible: Boolean(component.visible),
         isLocalized: Boolean(component.localized),
