@@ -15,12 +15,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-    cartItemUpdateSchema,
-    parseCartItemUpdateFromFormData,
-    pickupStoreUpdateSchema,
-    parsePickupStoreUpdateFromFormData,
-} from './basket-schemas';
+import { cartItemUpdateSchema, pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from './basket-schemas';
 
 describe('cartItemUpdateSchema', () => {
     describe('valid data', () => {
@@ -273,65 +268,6 @@ describe('cartItemUpdateSchema', () => {
                 expect(result.data.productId).toBe('product-456');
             }
         });
-    });
-});
-
-describe('parseCartItemUpdateFromFormData', () => {
-    it('should parse FormData with all fields', () => {
-        const formData = new FormData();
-        formData.set('itemId', 'item-123');
-        formData.set('productId', 'product-456');
-        formData.set('quantity', '3');
-
-        const result = parseCartItemUpdateFromFormData(formData);
-        expect(result.itemId).toBe('item-123');
-        expect(result.productId).toBe('product-456');
-        expect(result.quantity).toBe('3');
-    });
-
-    it('should parse FormData without optional productId', () => {
-        const formData = new FormData();
-        formData.set('itemId', 'item-123');
-        formData.set('quantity', '2');
-
-        const result = parseCartItemUpdateFromFormData(formData);
-        expect(result.itemId).toBe('item-123');
-        expect(result.productId).toBeUndefined();
-        expect(result.quantity).toBe('2');
-    });
-
-    it('should handle missing fields with empty strings', () => {
-        const formData = new FormData();
-
-        const result = parseCartItemUpdateFromFormData(formData);
-        expect(result.itemId).toBe('');
-        expect(result.productId).toBeUndefined();
-        expect(result.quantity).toBe('');
-    });
-
-    it('should handle empty string values', () => {
-        const formData = new FormData();
-        formData.set('itemId', '');
-        formData.set('productId', '');
-        formData.set('quantity', '');
-
-        const result = parseCartItemUpdateFromFormData(formData);
-        expect(result.itemId).toBe('');
-        // Empty string productId becomes undefined due to || undefined (empty strings are falsy)
-        expect(result.productId).toBeUndefined();
-        expect(result.quantity).toBe('');
-    });
-
-    it('should handle whitespace in values', () => {
-        const formData = new FormData();
-        formData.set('itemId', '  item-123  ');
-        formData.set('productId', '  product-456  ');
-        formData.set('quantity', '  3  ');
-
-        const result = parseCartItemUpdateFromFormData(formData);
-        expect(result.itemId).toBe('  item-123  ');
-        expect(result.productId).toBe('  product-456  ');
-        expect(result.quantity).toBe('  3  ');
     });
 });
 

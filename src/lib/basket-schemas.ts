@@ -41,24 +41,6 @@ export const cartItemUpdateSchema = z.object({
 });
 
 /**
- * Parses FormData into cart item update data object
- * @param formData - FormData from cart item update form submission
- * @returns Parsed cart item update data
- */
-export const parseCartItemUpdateFromFormData = (formData: FormData) => {
-    return {
-        itemId: formData.get('itemId')?.toString() || '',
-        productId: formData.get('productId')?.toString() || undefined,
-        quantity: formData.get('quantity')?.toString() || '',
-        // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        deliveryOption: formData.get('deliveryOption')?.toString() || undefined,
-        storeId: formData.get('storeId')?.toString() || undefined,
-        inventoryId: formData.get('inventoryId')?.toString() || undefined,
-        // @sfdc-extension-block-end SFDC_EXT_BOPIS
-    };
-};
-
-/**
  * Schema for bonus product add form data
  * Used when adding bonus products to cart - supports multiple slots and items
  */
@@ -90,17 +72,6 @@ export const bonusProductAddSchema = z.object({
 });
 
 /**
- * Parses FormData into bonus product add data object
- * @param formData - FormData from bonus product add form submission
- * @returns Parsed bonus product add data
- */
-export const parseBonusProductAddFromFormData = (formData: FormData) => {
-    return {
-        bonusItems: formData.get('bonusItems')?.toString() || '',
-    };
-};
-
-/**
  * Schema for pickup store update form data
  * Used when changing the pickup store for all pickup items in the basket
  */
@@ -125,5 +96,3 @@ export const parsePickupStoreUpdateFromFormData = (formData: FormData) => {
 
 // Type exports
 export type CartItemUpdateData = z.infer<typeof cartItemUpdateSchema>;
-export type BonusProductAddData = z.infer<typeof bonusProductAddSchema>;
-export type PickupStoreUpdateData = z.infer<typeof pickupStoreUpdateSchema>;

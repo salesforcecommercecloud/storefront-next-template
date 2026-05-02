@@ -1,3 +1,6 @@
+## v0.4.0-dev (Apr 30, 2026)
+- Refactor basket actions to reduce code duplication
+
 ## v0.4.0-dev (Apr 29, 2026)
 
 - Standardize SCAPI requests error handling - Product List Page ([#1584](https://github.com/commerce-emu/storefront-next/pull/1584))
