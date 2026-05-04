@@ -128,23 +128,7 @@ export default defineConfig(({ mode }) => {
                 }
                 return visualizer({ filename: `./build/${env.name}-bundle-size.html`, open: true });
             }),
-            // Hybrid proxy: routes matching eCDN rules → Storefront Next, everything else → SFCC.
-            //
-            // The `routeMatcher` callback controls which routes are handled by Storefront Next.
-            // The default `shouldRouteToNext` parses Cloudflare eCDN routing expressions.
-            //
-            // To customize routing, you can wrap or replace the default matcher:
-            //
-            //   // Add custom overrides on top of eCDN rules:
-            //   routeMatcher: (pathname, rules) => {
-            //       if (pathname === '/my-custom-page') return true;  // always route to Next
-            //       if (pathname === '/legacy-page') return false;    // always proxy to SFCC
-            //       return shouldRouteToNext(pathname, rules);
-            //   },
-            //
-            //   // Or replace entirely with custom logic:
-            //   routeMatcher: (pathname) => myCustomMatcher(pathname),
-            //
+            // Hybrid proxy — see docs/README-HYBRID-PROXY.md#custom-route-matching to customize routeMatcher.
             mode === 'development' &&
                 hybridProxyPlugin({
                     enabled: process.env.HYBRID_PROXY_ENABLED === 'true',
