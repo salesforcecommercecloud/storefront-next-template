@@ -15,9 +15,9 @@
  */
 
 import type { ReactElement } from 'react';
-import type { HtmlContentType } from '@/lib/adapters/product-content-data-types';
+import type { HtmlContentType } from '@/lib/adapters/product-content/data-types';
 import { HTML_CONTENT_STYLES } from './styles';
-import { transformHtmlImageUrls } from '@/lib/dynamic-image';
+import { transformHtmlImageUrls } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 

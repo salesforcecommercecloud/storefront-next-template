@@ -62,11 +62,11 @@ vi.mock('@/lib/adapters', () => ({
     buildConsentPreferences: vi.fn(),
 }));
 
-vi.mock('@/adapters', () => ({
+vi.mock('@/lib/adapters/engagement/register', () => ({
     initializeEngagementAdapters: vi.fn(),
 }));
 
-vi.mock('@/lib/adapters/initialize-adapters', () => ({
+vi.mock('@/lib/adapters/engagement/initialize', () => ({
     ensureAdaptersInitialized: vi.fn(),
 }));
 
@@ -75,9 +75,9 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
-import { initializeEngagementAdapters } from '@/adapters';
+import { initializeEngagementAdapters } from '@/lib/adapters/engagement/register';
 import { createEvent, getEventMediator, type EventMediator } from '@salesforce/storefront-next-runtime/events';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { useTrackingConsent } from './use-tracking-consent';
 
 const mockAnalytics: EventMediator = {

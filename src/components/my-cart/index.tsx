@@ -33,9 +33,9 @@ import type { AppConfig } from '@/types/config';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
-import { createProductUrl, getDisplayVariationValues } from '@/lib/product-utils';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import { createProductUrl, getDisplayVariationValues } from '@/lib/product/product-utils';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 
 /**
  * Props for the MyCart component

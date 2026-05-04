@@ -22,7 +22,7 @@ import {
     type StorageMetaData,
     unpackStorage,
     updateStorageObject,
-} from '@/lib/middleware';
+} from '@/lib/storage-map';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { TrackingConsent, booleanToTrackingConsent } from '@/types/tracking-consent';

@@ -1694,7 +1694,7 @@ When deploying a new Page Designer-enabled route:
 
 ```tsx
 // Check registry
-import { registry } from '@/lib/registry';
+import { registry } from '@/lib/page-designer/registry';
 console.log(registry.getComponent('myComponent')); // Should not be null
 ```
 

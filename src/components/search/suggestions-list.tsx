@@ -17,7 +17,7 @@ import type React from 'react';
 import { cn } from '@/lib/utils';
 import { DynamicImage } from '@/components/dynamic-image';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';

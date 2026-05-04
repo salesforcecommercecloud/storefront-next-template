@@ -19,7 +19,7 @@ import type {
     EstimatedDeliveryData,
     ReturnsAndWarrantyData,
     ReviewItem,
-} from '@/lib/adapters/product-content-data-types';
+} from '@/lib/adapters/product-content/data-types';
 
 /**
  * Payment schedule data for installment payment modal

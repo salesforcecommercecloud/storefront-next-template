@@ -17,7 +17,7 @@
 import type { RouterContextProvider } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
-import { isAddressEmpty } from '@/lib/address-utils';
+import { isAddressEmpty } from '@/lib/address/address-utils';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods.server';
 import { generateRandomShipmentId, isDeliveryShipment } from '@/extensions/multiship/lib/basket-utils.server';
 

@@ -26,7 +26,7 @@ import {
     replaceImageFormat,
     toDisBaseUrl,
     toImageUrl,
-} from '@/lib/dynamic-image';
+} from '@/lib/images/dynamic-image';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';

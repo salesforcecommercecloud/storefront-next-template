@@ -37,7 +37,7 @@ import SelectBonusProductsCard from '@/components/cart/select-bonus-products-car
 import { formatCurrency } from '@/lib/currency';
 import { useBasketWithProducts, type BasketItemWithProduct } from '@/hooks/use-basket-with-products';
 import { useBasketWithPromotions } from '@/hooks/use-basket-with-promotions';
-import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/bonus-product-utils';
+import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/cart/bonus-product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { useToast } from '@/components/toast';

@@ -28,8 +28,8 @@ import {
     buildBonusPromotionMap,
     getAttachedBonusPromotions,
     calculateMaxQuantityForBonusProduct,
-} from '@/lib/bonus-product-utils';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+} from '@/lib/cart/bonus-product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 /**
  * Spacing constants for different display variants

@@ -21,7 +21,7 @@ import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scap
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import AboutUs, { type AboutUsPageData, loader } from './_app.about-us';
 import { createTestContext } from '@/lib/test-utils';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 
 const { t } = getTranslation();
 
@@ -149,7 +149,7 @@ vi.mock('@/lib/decorators/region-definition', () => ({
     RegionDefinition: () => (target: any) => target,
 }));
 
-vi.mock('@/lib/util/pageLoader.server', () => ({
+vi.mock('@/lib/page-designer/page-loader.server', () => ({
     fetchPageWithComponentData: vi.fn(),
 }));
 

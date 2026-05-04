@@ -17,7 +17,7 @@ import { useFetcher } from 'react-router';
 import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketUpdater } from '@/providers/basket';
-import type { ContactInfoData, PaymentData } from '@/lib/checkout-schemas';
+import type { ContactInfoData, PaymentData } from '@/lib/checkout/schemas';
 import type { CheckoutActionData } from '@/components/checkout/types';
 import {
     CHECKOUT_STEPS,

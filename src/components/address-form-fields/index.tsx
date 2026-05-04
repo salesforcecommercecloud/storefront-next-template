@@ -23,10 +23,10 @@ import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { COUNTRY_CODES } from '@/components/customer-address-form/constants';
 import AddressSuggestionDropdown, { type AddressSuggestion } from '@/components/address-suggestion-dropdown';
 import { MIN_INPUT_LENGTH, useAutocompleteSuggestions } from '@/hooks/use-autocomplete-suggestions';
-import { processAddressSuggestion } from '@/lib/address-suggestions';
+import { processAddressSuggestion } from '@/lib/address/address-suggestions';
 import { UITarget } from '@/targets/ui-target';
-import { getCommonPhoneCountryCodes } from '@/lib/country-codes';
-import { formatPhoneInput, stripNonDigits, stripCountryCode } from '@/lib/phone-utils';
+import { getCommonPhoneCountryCodes } from '@/lib/address/country-codes';
+import { formatPhoneInput, stripNonDigits, stripCountryCode } from '@/lib/address/phone-utils';
 
 /**
  * Control slot for address inputs: sets `aria-describedby` only when a validation message exists.

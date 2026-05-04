@@ -36,12 +36,12 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
-import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
+import { getDefaultShippingMethod } from '@/lib/customer/profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { CheckoutActionData } from '@/components/checkout/types';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
-import { formatAddress } from '@/lib/address-utils';
+import { formatAddress } from '@/lib/address/address-utils';
 
 /**
  * Represents a shipping method option available for selection.

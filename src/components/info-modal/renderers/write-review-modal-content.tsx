@@ -22,7 +22,7 @@ import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
 import { filterAcceptedFiles, getFileUploadConfig } from '@/lib/file-upload-utils';
 import { cn } from '@/lib/utils';
-import type { ReviewItem, WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
+import type { ReviewItem, WriteReviewFormData } from '@/lib/adapters/product-content/data-types';
 import { useProductReviews } from '@/hooks/product-reviews/use-product-reviews';
 
 /** Inline field error — plain text, no border or padding. */

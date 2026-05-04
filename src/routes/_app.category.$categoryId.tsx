@@ -41,7 +41,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import CategoryBanner from '@/components/category-banner';
 import CategoryBannerSkeleton from '@/components/category-banner/skeleton';
 import { JsonLd } from '@/components/json-ld';

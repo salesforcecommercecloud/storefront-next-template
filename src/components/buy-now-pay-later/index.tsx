@@ -19,7 +19,7 @@ import type { InfoModalData } from '@/components/info-modal/types';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { formatCurrency } from '@/lib/currency';
-import type { BuyNowPayLaterMessageData, BuyNowPayLaterLearnMoreData } from '@/lib/adapters/product-content-data-types';
+import type { BuyNowPayLaterMessageData, BuyNowPayLaterLearnMoreData } from '@/lib/adapters/product-content/data-types';
 
 const InfoModal = lazy(() => import('@/components/info-modal'));
 

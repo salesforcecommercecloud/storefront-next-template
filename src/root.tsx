@@ -93,12 +93,12 @@ import { useExecutePendingAction } from '@/hooks/use-execute-pending-action';
 import type { PublicSessionData } from '@/lib/api/types';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { initI18next } from '@salesforce/storefront-next-runtime/i18n/client';
-import { PageViewTracker } from '@/lib/analytics/page-view-tracker';
-import { initializeRegistry } from '@/lib/static-registry';
+import { PageViewTracker } from '@/analytics/page-view-tracker';
+import { initializeRegistry } from '@/lib/page-designer/static-registry';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
 
 // Adapters
-import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
+import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
 
 // Assets
 import favicon from '/favicon.ico';

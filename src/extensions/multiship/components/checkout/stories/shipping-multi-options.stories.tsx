@@ -248,7 +248,7 @@ This component handles the shipping method selection step for multi-address chec
 - \`@/hooks/checkout/use-customer-profile\`: Access customer profile for auto-selection
 - \`@/providers/basket\`: Access to current basket and shipment data
 - \`@/components/toggle-card\`: Toggle between edit and summary views
-- \`@/lib/customer-profile-utils\`: Default shipping method selection utilities
+- \`@/lib/customer/profile-utils\`: Default shipping method selection utilities
                 `,
             },
         },

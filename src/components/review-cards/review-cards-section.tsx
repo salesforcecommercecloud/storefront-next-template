@@ -19,7 +19,7 @@ import { ChevronLeft, ChevronRight, Search, ImageIcon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
-import type { ReviewItem } from '@/lib/adapters/product-content-data-types';
+import type { ReviewItem } from '@/lib/adapters/product-content/data-types';
 import { useProductReviews } from '@/hooks/product-reviews/use-product-reviews';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { getPaginationItems } from '@/lib/pagination-utils';

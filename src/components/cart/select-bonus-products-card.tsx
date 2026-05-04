@@ -15,7 +15,7 @@
  */
 import { type ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
-import type { BonusPromotionInfo } from '@/lib/bonus-product-utils';
+import type { BonusPromotionInfo } from '@/lib/cart/bonus-product-utils';
 import { useTranslation } from 'react-i18next';
 
 interface SelectBonusProductsCardProps {

@@ -16,7 +16,7 @@
 
 import { type FormEvent, useEffect, useMemo, useRef, useCallback, type MutableRefObject } from 'react';
 import { useBasket } from '@/providers/basket';
-import { getDefaultShippingMethod } from '@/lib/customer-profile-utils';
+import { getDefaultShippingMethod } from '@/lib/customer/profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { CheckoutActionData } from '../types';

@@ -23,7 +23,7 @@ import { RemovePaymentMethodDialog } from './remove-payment-method-dialog';
 import { AddPaymentMethodDialog } from './add-payment-method-dialog';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/toast';
-import { getLastFourDigits } from '@/lib/payment-utils';
+import { getLastFourDigits } from '@/lib/payment/payment-utils';
 import { UITarget } from '@/targets/ui-target';
 
 export interface PaymentMethodsProps {

@@ -16,7 +16,7 @@
 import type { ReactElement } from 'react';
 import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getPasswordResetErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
 
 // Components
 import { Link } from '@/components/link';

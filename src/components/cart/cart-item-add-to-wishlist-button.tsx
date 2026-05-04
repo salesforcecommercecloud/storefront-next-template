@@ -18,7 +18,7 @@ import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { useWishlist } from '@/hooks/use-wishlist';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 interface CartItemAddToWishlistButtonProps {
     product: EnrichedProductItem;

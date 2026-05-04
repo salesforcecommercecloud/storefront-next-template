@@ -23,7 +23,7 @@ import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig, BadgeDetail } from '@/types/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import { getProductBadges } from '@/lib/product-badges';
+import { getProductBadges } from '@/lib/product/product-badges';
 
 type ProductBadgesResult = { badges: BadgeDetail[]; hasBadges: boolean };
 

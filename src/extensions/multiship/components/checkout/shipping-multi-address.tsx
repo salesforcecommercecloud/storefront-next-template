@@ -40,7 +40,7 @@ import {
     getEnrichedProducts,
     convertProductsByItemIdToProductId,
     type EnrichedProductItem,
-} from '@/lib/product-utils';
+} from '@/lib/product/product-utils';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { useBasket } from '@/providers/basket';
 import { Button } from '@/components/ui/button';
@@ -57,8 +57,8 @@ import {
     updateItemAddresses,
     initializeItemAddresses,
 } from '@/extensions/multiship/lib/multi-address';
-import { getAddressKey, formatAddress } from '@/lib/address-utils';
-import { generateAddressId } from '@/lib/address-id-utils';
+import { getAddressKey, formatAddress } from '@/lib/address/address-utils';
+import { generateAddressId } from '@/lib/address/address-id-utils';
 import { AddressModal } from '@/components/checkout/components/address-modal';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import type { CheckoutActionData } from '@/components/checkout/types';

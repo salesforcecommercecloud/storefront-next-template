@@ -16,8 +16,8 @@
 import { createContext, type PropsWithChildren, useContext, useEffect, useState } from 'react';
 import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
 import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
-import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
+import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { createLogger } from '@/lib/logger';

@@ -21,8 +21,8 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatCardNumber, formatExpiryDate } from '@/lib/form-utils';
-import { detectCardType } from '@/lib/payment-utils';
-import { getCardIcon } from '@/lib/card-icon-utils';
+import { detectCardType } from '@/lib/payment/payment-utils';
+import { getCardIcon } from '@/lib/payment/card-icon-utils';
 import { Info, Eye, EyeOff } from 'lucide-react';
 
 // Define the field structure for credit card forms (optional to support forms where card fields are conditionally required, e.g. payment step)

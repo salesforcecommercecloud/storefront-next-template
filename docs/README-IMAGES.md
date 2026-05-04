@@ -305,14 +305,14 @@ A more selective container could supply a `hasSource` that checks whether a spec
 
 ## Dynamic Image Utility Functions
 
-The `@/lib/dynamic-image` module exports lower-level utilities for working with DIS URLs outside the `<DynamicImage>` component.
+The `@/lib/images/dynamic-image` module exports lower-level utilities for working with DIS URLs outside the `<DynamicImage>` component.
 
 ### `toImageUrl()`
 
 Converts an image URL to a DIS-optimized URL with graceful fallback. Safe to use with any image URL; returns the original if transformation isn't possible.
 
 ```typescript
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 
 // SFCC URL → DIS WebP
 toImageUrl({ src: 'https://demo-001.dx.commercecloud.salesforce.com/.../image.jpg', config })
@@ -332,7 +332,7 @@ Strict variant that only handles SFCC URLs. Returns `undefined` if the URL can't
 Recognized SFCC hostnames are `*.commercecloud.salesforce.com`, `*.demandware.net`, and `*.my.cc.salesforce.com`. The realm is derived from the first subdomain (e.g. `demo-001` → `DEMO_001`).
 
 ```typescript
-import { toDisImageUrl } from '@/lib/dynamic-image';
+import { toDisImageUrl } from '@/lib/images/dynamic-image';
 
 toDisImageUrl({ src: sfccUrl, options: { width: 720, height: 480, quality: 80 }, config })
 // → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/.../image.webp?sfrm=jpg&sw=720&sh=480&q=80'
@@ -343,7 +343,7 @@ toDisImageUrl({ src: sfccUrl, options: { width: 720, height: 480, quality: 80 },
 Rewrites a raw SFCC static image URL into a DIS-hosted URL by inserting the `/dw/image/v2/{realm}/` prefix and switching to the configured DIS host. Unlike `toDisImageUrl()`, it **preserves the original file extension and query string** — it does not perform format conversion or append DIS transformation parameters (`sfrm`, `q`, `sw`, `sh`). Use this when downstream code (e.g. `getResponsivePictureAttributes`) handles per-breakpoint format/query generation and just needs a clean DIS-hosted base URL.
 
 ```typescript
-import { toDisBaseUrl } from '@/lib/dynamic-image';
+import { toDisBaseUrl } from '@/lib/images/dynamic-image';
 
 toDisBaseUrl({
     src: 'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/.../image.jpg',
@@ -357,7 +357,7 @@ toDisBaseUrl({
 Batch-transforms all `<img>` tags in an HTML string to use DIS URLs. Useful for rich text content from SCAPI or Page Designer that contains embedded images.
 
 ```typescript
-import { transformHtmlImageUrls } from '@/lib/dynamic-image';
+import { transformHtmlImageUrls } from '@/lib/images/dynamic-image';
 
 const html = '<p>Text</p><img src="/on/demandware.static/.../banner.jpg" alt="Sale">';
 const optimized = transformHtmlImageUrls(html, config);
@@ -369,7 +369,7 @@ const optimized = transformHtmlImageUrls(html, config);
 Replaces the file extension in an image URL and adds the `sfrm` parameter to track the original format. Used internally by the component, but available for custom image handling.
 
 ```typescript
-import { replaceImageFormat } from '@/lib/dynamic-image';
+import { replaceImageFormat } from '@/lib/images/dynamic-image';
 
 replaceImageFormat('https://example.com/image.jpg?sw=460&q=60')
 // → 'https://example.com/image.webp?sw=460&q=60&sfrm=jpg'

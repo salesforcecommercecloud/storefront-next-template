@@ -16,10 +16,10 @@
 import { render, screen } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { ProductMainSkeleton, ProductRecommendationSkeleton, ProductRecommendationsSkeleton } from './skeletons';
-import { getEnabledRecommendationTypes } from '@/lib/recommendations';
+import { getEnabledRecommendationTypes } from '@/lib/product/recommendations';
 
 // Mock the recommendations module
-vi.mock('@/lib/recommendations', () => ({
+vi.mock('@/lib/product/recommendations', () => ({
     getEnabledRecommendationTypes: vi.fn(),
 }));
 
@@ -39,7 +39,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 }));
 
 // Mock the recommendations library
-vi.mock('@/lib/recommendations', () => ({
+vi.mock('@/lib/product/recommendations', () => ({
     getEnabledRecommendationTypes: vi.fn(() => ['you-may-also-like', 'complete-the-look']),
 }));
 

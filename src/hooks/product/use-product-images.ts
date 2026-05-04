@@ -16,8 +16,8 @@
 import { useMemo } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { GalleryImage } from '@/components/image-gallery';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 

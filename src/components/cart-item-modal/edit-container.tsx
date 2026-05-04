@@ -20,7 +20,7 @@ import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useProductFetcher } from '@/hooks/product/use-product-fetcher';
 import { useModalStateReset } from '@/hooks/use-modal-state-reset';
 import { useProductImages } from '@/hooks/product/use-product-images';
-import { isProductBundle, isProductSet } from '@/lib/product-utils';
+import { isProductBundle, isProductSet } from '@/lib/product/product-utils';
 import { CartItemModalView } from './view';
 import type { CartItemModalProps } from './types';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS

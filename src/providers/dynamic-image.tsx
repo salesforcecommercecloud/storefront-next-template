@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, type PropsWithChildren, useCallback, useContext, useState } from 'react';
-import type { DynamicImageDimensions } from '@/lib/dynamic-image';
+import type { DynamicImageDimensions } from '@/lib/images/dynamic-image';
 
 type DynamicImageContextValue = {
     hasSource: (src: string) => boolean;

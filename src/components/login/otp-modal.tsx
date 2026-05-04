@@ -19,7 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useFetcher } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
-import { getPasswordlessErrorMessageKey } from '@/lib/auth-error-handler';
+import { getPasswordlessErrorMessageKey } from '@/lib/auth/error-handler';
 
 type VerifyOtpResponse = {
     success: boolean;

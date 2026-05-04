@@ -22,7 +22,7 @@ import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
-import { extractErrorMessage } from '@/lib/auth-error-handler';
+import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { getLogger } from '@/lib/logger.server';
 
 /**

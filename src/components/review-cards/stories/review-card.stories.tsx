@@ -15,7 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ReviewCard } from '../review-card';
-import type { ReviewItem } from '@/lib/adapters/product-content-data-types';
+import type { ReviewItem } from '@/lib/adapters/product-content/data-types';
 
 const sampleReview: ReviewItem = {
     id: 'story-1',

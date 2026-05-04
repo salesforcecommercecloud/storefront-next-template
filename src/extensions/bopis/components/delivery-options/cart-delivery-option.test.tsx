@@ -20,7 +20,7 @@ import type { ReactNode } from 'react';
 import CartDeliveryOption from './cart-delivery-option';
 import { DELIVERY_OPTIONS } from '@/extensions/bopis/constants';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 // Mock PickupOrDeliveryDropdown
 vi.mock('./pickup-or-delivery-dropdown', () => ({

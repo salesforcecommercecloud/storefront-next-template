@@ -15,7 +15,7 @@
  */
 
 /**
- * Storybook-only shim: Vite aliases `@/lib/shopper-agent-context-ui` to this file when building Storybook.
+ * Storybook-only shim: Vite aliases `@/lib/shopper-context/agent-ui` to this file when building Storybook.
  * Keeps production bundles free of Storybook/test branching. See `.storybook/README-STORYBOOK.md`.
  */
 export const SHOPPER_AGENT_CONTEXT_UI_ENABLED = false;

@@ -461,8 +461,8 @@ This component handles the first step of the checkout process - collecting custo
 - \`@/components/toggle-card\`: Toggle between edit and summary views
 - \`@/components/security/turnstile-widget\`: Bot protection widget
 - \`@/components/login/otp-modal\`: Lazy-loaded OTP verification modal
-- \`@/lib/checkout-schemas\`: Email and phone validation schema
-- \`@/lib/phone-utils\`: Phone number formatting and country code utilities
+- \`@/lib/checkout/schemas\`: Email and phone validation schema
+- \`@/lib/address/phone-utils\`: Phone number formatting and country code utilities
 - \`react-router\`: useFetcher for OTP authorization, useRevalidator for post-login refresh
                 `,
             },

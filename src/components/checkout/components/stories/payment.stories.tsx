@@ -93,7 +93,10 @@ This component handles the payment step of the checkout process, collecting paym
 - \`@/providers/basket\`: Access to current basket data
 - \`@/hooks/checkout/use-customer-profile\`: Access to saved payment methods and addresses
 - \`@/components/toggle-card\`: Toggle between edit and summary views
-- \`@/lib/checkout-schemas\`: Payment validation schema
+- \`@/lib/checkout/schemas\`: Payment validation schema
+- \`@/lib/form-utils\`: Card number and expiry date formatting
+- \`@/lib/payment/payment-utils\`: Card type detection and formatting
+- \`@/lib/payment/card-icon-utils\`: Card type icons
 - \`CreditCardInputFields\`: Card input component with formatting and validation
 - \`PaymentMethodsList\`: Radio list of saved payment methods
 - \`SavedAddressesList\`: Dropdown for selecting saved billing addresses

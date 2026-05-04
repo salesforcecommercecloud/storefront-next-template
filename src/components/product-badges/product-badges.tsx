@@ -24,7 +24,7 @@ import {
     type ProductBadgesVariantsProps,
 } from './product-badge-variants';
 import { Badge } from '@/components/ui/badge';
-import { getProductBadges } from '@/lib/product-badges';
+import { getProductBadges } from '@/lib/product/product-badges';
 
 /**
  * Product Badge Component - Wrapper around core Badge with semantic styling

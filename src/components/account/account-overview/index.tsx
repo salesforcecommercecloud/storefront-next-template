@@ -26,7 +26,7 @@ import { User, CreditCard, Receipt, MapPin } from 'lucide-react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
-import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';
 import { AppDownloadSection } from '@/components/account/app-download-section';
 import { AccountHelp } from '@/components/account/account-help';
 import type { CustomerOrdersResult } from '@/lib/api/order.server';

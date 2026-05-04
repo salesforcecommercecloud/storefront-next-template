@@ -152,11 +152,11 @@ vi.mock('@/hooks/use-checkout', () => ({
     useCheckoutContext: () => mockUseCheckoutContext(),
 }));
 
-vi.mock('@/lib/customer-profile-utils', () => ({
+vi.mock('@/lib/customer/profile-utils', () => ({
     getContactInfoFromCustomer: () => ({}),
 }));
 
-vi.mock('@/lib/country-codes', () => ({
+vi.mock('@/lib/address/country-codes', () => ({
     getCommonPhoneCountryCodes: () => [{ dialingCode: '+1', countryName: 'United States' }],
 }));
 

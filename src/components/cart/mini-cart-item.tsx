@@ -31,12 +31,12 @@ import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 
 // Utils
-import { findImageGroupBy } from '@/lib/image-groups-utils';
-import { getDisplayVariationValues } from '@/lib/product-utils';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import { getDisplayVariationValues } from '@/lib/product/product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
-import { getEffectiveStockLevel } from '@/lib/inventory-utils';
+import { getEffectiveStockLevel } from '@/lib/product/inventory-utils';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import ProductPrice from '@/components/product-price';
 import { Typography } from '@/components/typography';
 import QuantityPicker from '@/components/quantity-picker/quantity-picker';

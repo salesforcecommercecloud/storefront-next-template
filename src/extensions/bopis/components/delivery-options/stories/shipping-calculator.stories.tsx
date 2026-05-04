@@ -20,8 +20,8 @@ import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import ShippingCalculator from '../shipping-calculator';
 import ProductContentProvider from '@/providers/product-content';
-import type { ShippingEstimate } from '@/lib/adapters/product-content-data-types';
-import { addProductContentAdapter } from '@/lib/adapters/product-content-store';
+import type { ShippingEstimate } from '@/lib/adapters/product-content/data-types';
+import { addProductContentAdapter } from '@/lib/adapters/product-content/store';
 
 // Register a mock adapter for Storybook
 addProductContentAdapter('mock', {

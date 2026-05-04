@@ -18,7 +18,7 @@ import { expect, within, userEvent } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { SavedAddressesList } from '../saved-addresses-list';
-import type { AddressBookItem } from '@/lib/customer-profile-utils';
+import type { AddressBookItem } from '@/lib/customer/profile-utils';
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 const addresses: AddressBookItem[] = [

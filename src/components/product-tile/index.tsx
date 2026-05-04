@@ -24,8 +24,8 @@ import {
     createProductUrl,
     getDecoratedVariationAttributes,
     type DecoratedVariationAttributeValue,
-} from '@/lib/product-utils';
-import { getProductRating } from '@/lib/product-utils-plp';
+} from '@/lib/product/product-utils';
+import { getProductRating } from '@/lib/product/product-utils-plp';
 import { useProductTileContext } from './context';
 import { DeferredWishlistButton } from './deferred-wishlist-button';
 import { PickupIcon } from '@/components/icons';

@@ -15,7 +15,7 @@
  */
 import { useFetcher } from 'react-router';
 import { useCallback } from 'react';
-import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context-constants';
+import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context/constants';
 import type { ActionError } from '@/lib/error-codes';
 
 type UpdateShopperContextResponse = {

@@ -19,7 +19,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { Order } from '@/components/account/order-list';
 import { useTranslation } from 'react-i18next';
-import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
+import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order/status';
 
 const MAX_THUMBNAILS = 2;
 

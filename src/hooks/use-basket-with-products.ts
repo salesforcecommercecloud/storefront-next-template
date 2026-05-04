@@ -22,7 +22,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useFetcher } from 'react-router';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 
 /**
  * A basket product item enriched with full product details (images, variations, etc.)

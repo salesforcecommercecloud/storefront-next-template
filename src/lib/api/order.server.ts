@@ -17,7 +17,7 @@ import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperCustomers, ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 import type { Order } from '@/components/account/order-list';
 
 export type OrderProductDataById = Record<string, ShopperProducts.schemas['Product'] | undefined>;

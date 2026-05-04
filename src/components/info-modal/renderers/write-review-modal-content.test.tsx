@@ -18,7 +18,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WriteReviewModalContent } from './write-review-modal-content';
-import type { WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
+import type { WriteReviewFormData } from '@/lib/adapters/product-content/data-types';
 
 const mockFormConfig: WriteReviewFormData = {
     title: 'Write a Review',

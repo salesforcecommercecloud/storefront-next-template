@@ -22,7 +22,7 @@ import type {
     PreferenceValue,
     CustomerInterests,
     CustomerPreferences,
-} from '@/lib/adapters/customer-preferences-types';
+} from '@/lib/adapters/customer-preferences/types';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();

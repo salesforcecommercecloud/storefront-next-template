@@ -435,7 +435,7 @@ This component handles the shipping address step of the checkout process. It sup
 - \`@hookform/resolvers/zod\`: Zod schema validation integration
 - \`@/providers/basket\`: Access to current basket data
 - \`@/providers/auth\`: Customer ID for saved address operations
-- \`@/lib/checkout-schemas\`: Shipping address validation schema
+- \`@/lib/checkout/schemas\`: Shipping address validation schema
 - \`@/components/toggle-card\`: Toggle between edit and summary views
 - \`SavedAddressesList\`: Radio list of saved addresses
 - \`AddressModal\`: Modal for adding/editing addresses

@@ -24,8 +24,8 @@ import { ProductTile } from './index';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
-vi.mock('@/lib/product-utils', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/product-utils')>();
+vi.mock('@/lib/product/product-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/product/product-utils')>();
     return {
         ...actual,
         createProductUrl: vi.fn((...args: Parameters<typeof actual.createProductUrl>) =>
@@ -54,7 +54,7 @@ vi.mock('@/lib/product-utils', async (importOriginal) => {
     };
 });
 
-vi.mock('@/lib/product-utils-plp', () => ({
+vi.mock('@/lib/product/product-utils-plp', () => ({
     getProductRating: vi.fn(() => ({ rating: 4.2, reviewCount: 218 })),
 }));
 
@@ -62,7 +62,7 @@ vi.mock('@/lib/currency', () => ({
     formatCurrency: vi.fn((price) => `$${price}`),
 }));
 
-vi.mock('@/lib/product-badges', () => ({
+vi.mock('@/lib/product/product-badges', () => ({
     getProductBadges: vi.fn(() => ({
         hasBadges: false,
         badges: [],
@@ -170,7 +170,7 @@ describe('ProductTile — rendering', () => {
     });
 
     test('renders badges when hasBadges is true', async () => {
-        const { getProductBadges } = await import('@/lib/product-badges');
+        const { getProductBadges } = await import('@/lib/product/product-badges');
         vi.mocked(getProductBadges).mockReturnValueOnce({
             hasBadges: true,
             badges: [
@@ -315,7 +315,7 @@ describe('ProductTile — swatch rendering', () => {
     });
 
     test('does not render swatch container when getDecoratedVariationAttributes returns empty', async () => {
-        const { getDecoratedVariationAttributes } = await import('@/lib/product-utils');
+        const { getDecoratedVariationAttributes } = await import('@/lib/product/product-utils');
         vi.mocked(getDecoratedVariationAttributes).mockReturnValueOnce([]);
         const { container } = renderTile();
         expect(container.querySelector('[aria-label="Available colors"]')).not.toBeInTheDocument();

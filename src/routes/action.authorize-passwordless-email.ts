@@ -15,15 +15,15 @@
  */
 import type { ActionFunctionArgs } from 'react-router';
 import { authorizePasswordless } from '@/middlewares/auth.server';
-import { extractErrorMessage } from '@/lib/auth-error-handler';
+import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
+import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
-import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile-constants';
+import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile/constants';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 export type AuthorizePasswordlessEmailResponse = {

@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 
 type CategoryRouteData = {
     category: ShopperProducts.schemas['Category'];

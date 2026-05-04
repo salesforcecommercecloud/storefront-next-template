@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { useAuth } from '@/providers/auth';
-import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout-schemas';
+import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout/schemas';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
@@ -30,17 +30,17 @@ import {
     getShippingAddressFromCustomer,
     getAddressBookFromCustomer,
     type AddressBookItem,
-} from '@/lib/customer-profile-utils';
+} from '@/lib/customer/profile-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
 import SavedAddressesList from './saved-addresses-list';
 import AddressModal from './address-modal';
 import type { CheckoutActionData } from '../types';
-import { addressToFormData, findMatchingSavedAddressId, isAddressEmpty } from '@/lib/address-utils';
+import { addressToFormData, findMatchingSavedAddressId, isAddressEmpty } from '@/lib/address/address-utils';
 import ShippingAddressDisplay from './shipping-address-display';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { DEFAULT_COUNTRY_CODE } from '@/components/customer-address-form/constants';
-import { stripCountryCode, extractCountryCode } from '@/lib/phone-utils';
+import { stripCountryCode, extractCountryCode } from '@/lib/address/phone-utils';
 
 interface ShippingAddressProps {
     onSubmit: (formData: FormData) => void;

@@ -21,7 +21,7 @@ import {
 } from 'react-router';
 import { type AuthResponse, AuthTokenInvalidError } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData as AuthData } from '@/lib/api/types';
-import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/middleware';
+import { clearStorage, type StorageErrorData, unpackStorage } from '@/lib/storage-map';
 import {
     authContext,
     authStorageContext,
@@ -54,7 +54,7 @@ import type { AppConfig } from '@/types/config';
 import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies } from '@/lib/cookie-utils.server';
 import { getTranslation, getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
-import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context-constants';
+import { SHOPPER_CONTEXT_COOKIE_NAME_BASE, SOURCE_CODE_COOKIE_NAME_BASE } from '@/lib/shopper-context/constants';
 
 /**
  * Refresh access token using refresh token.

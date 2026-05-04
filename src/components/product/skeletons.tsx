@@ -15,7 +15,7 @@
  */
 import { Skeleton } from '@/components/ui/skeleton';
 import ProductCarouselSkeleton from '@/components/product-carousel/skeleton';
-import { getEnabledRecommendationTypes } from '@/lib/recommendations';
+import { getEnabledRecommendationTypes } from '@/lib/product/recommendations';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 

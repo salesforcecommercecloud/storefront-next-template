@@ -32,7 +32,7 @@ import {
     getCustomerProfileForCheckout,
 } from '@/lib/api/customer.server';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
-import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { buildUrlFromContext } from '@/lib/url.server';

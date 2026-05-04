@@ -18,7 +18,7 @@ import { action } from './action.authorize-passwordless-email';
 import type { ActionFunctionArgs } from 'react-router';
 
 vi.mock('@/middlewares/auth.server');
-vi.mock('@/lib/auth-error-handler');
+vi.mock('@/lib/auth/error-handler');
 vi.mock('@salesforce/storefront-next-runtime/i18n');
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({
@@ -31,7 +31,7 @@ vi.mock('@/lib/logger.server', () => ({
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(() => ({})),
 }));
-vi.mock('@/lib/turnstile-enforce.server', () => ({
+vi.mock('@/lib/turnstile/enforce.server', () => ({
     enforceTurnstile: vi.fn(),
 }));
 vi.mock('@/lib/cookie-utils.server', () => ({
@@ -60,11 +60,11 @@ describe('action.authorize-passwordless-email', () => {
         const { authorizePasswordless } = await import('@/middlewares/auth.server');
         vi.mocked(authorizePasswordless).mockImplementation(mockAuthorizePasswordless as typeof authorizePasswordless);
 
-        const { extractErrorMessage, getPasswordlessErrorMessageKey } = await import('@/lib/auth-error-handler');
+        const { extractErrorMessage, getPasswordlessErrorMessageKey } = await import('@/lib/auth/error-handler');
         vi.mocked(extractErrorMessage).mockReturnValue('error');
         vi.mocked(getPasswordlessErrorMessageKey).mockReturnValue('errors:genericTryAgain');
 
-        mockEnforceTurnstile = vi.mocked((await import('@/lib/turnstile-enforce.server')).enforceTurnstile);
+        mockEnforceTurnstile = vi.mocked((await import('@/lib/turnstile/enforce.server')).enforceTurnstile);
         mockEnforceTurnstile.mockResolvedValue(true);
 
         mockContext = {} as ActionFunctionArgs['context'];
@@ -182,7 +182,7 @@ describe('action.authorize-passwordless-email', () => {
             method: 'POST',
         });
         mockAuthorizePasswordless.mockRejectedValue(apiError);
-        const { extractErrorMessage } = await import('@/lib/auth-error-handler');
+        const { extractErrorMessage } = await import('@/lib/auth/error-handler');
         vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
 
         const formData = new FormData();

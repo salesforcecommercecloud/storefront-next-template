@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { createContext, type PropsWithChildren, useContext, useEffect, useState } from 'react';
-import type { CustomerInterestsPreferencesAdapter } from '@/lib/adapters/customer-preferences-types';
+import type { CustomerInterestsPreferencesAdapter } from '@/lib/adapters/customer-preferences/types';
 import {
     getCustomerPreferencesAdapter,
     CUSTOMER_PREFERENCES_MOCK_ADAPTER_NAME,
-} from '@/lib/adapters/customer-preferences-store';
-import { ensureCustomerPreferencesAdapterRegistered } from '@/lib/adapters/ensure-customer-preferences-adapter';
+} from '@/lib/adapters/customer-preferences/store';
+import { ensureCustomerPreferencesAdapterRegistered } from '@/lib/adapters/customer-preferences/ensure-registered';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { createLogger } from '@/lib/logger';

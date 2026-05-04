@@ -19,7 +19,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { CartItemAddToWishlistButton } from './cart-item-add-to-wishlist-button';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 const { t } = getTranslation();
 

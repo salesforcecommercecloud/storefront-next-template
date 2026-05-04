@@ -69,7 +69,7 @@ vi.mock('@/hooks/use-basket-with-promotions', () => ({
     useBasketWithPromotions: () => ({ productsWithPromotions: {} }),
 }));
 
-vi.mock('@/lib/bonus-product-utils', () => ({
+vi.mock('@/lib/cart/bonus-product-utils', () => ({
     buildBonusPromotionMap: () => new Map(),
     getAttachedBonusPromotions: () => new Map(),
 }));

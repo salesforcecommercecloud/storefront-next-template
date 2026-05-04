@@ -15,7 +15,7 @@
  */
 import { lazy, Suspense, useState, useCallback, type MouseEvent } from 'react';
 import { Button } from '@/components/ui/button';
-import { createProductUrl } from '@/lib/product-utils';
+import { createProductUrl } from '@/lib/product/product-utils';
 import { useProductTileContext } from './context';
 
 interface QuickAddButtonProps {

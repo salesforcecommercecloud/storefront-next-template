@@ -21,7 +21,7 @@ import { useMemo, type ReactElement } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 // Utils
-import { getDisplayVariationValues } from '@/lib/product-utils';
+import { getDisplayVariationValues } from '@/lib/product/product-utils';
 import { useTranslation } from 'react-i18next';
 
 // Constants

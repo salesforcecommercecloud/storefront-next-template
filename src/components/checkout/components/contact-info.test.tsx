@@ -71,12 +71,12 @@ vi.mock('@/hooks/use-checkout', () => ({
 }));
 
 const mockGetContactInfoFromCustomer = vi.fn((_customerProfile?: unknown) => ({}));
-vi.mock('@/lib/customer-profile-utils', () => ({
+vi.mock('@/lib/customer/profile-utils', () => ({
     getContactInfoFromCustomer: (customerProfile?: unknown) => mockGetContactInfoFromCustomer(customerProfile),
 }));
 
 const mockGetCommonPhoneCountryCodes = vi.fn(() => [{ dialingCode: '+1', countryName: 'United States' }]);
-vi.mock('@/lib/country-codes', () => ({
+vi.mock('@/lib/address/country-codes', () => ({
     getCommonPhoneCountryCodes: () => mockGetCommonPhoneCountryCodes(),
 }));
 

@@ -21,7 +21,7 @@ import { useProductContent } from '@/hooks/product-content/use-product-content';
 import { useProductView } from '@/providers/product-view';
 import CollapsibleSection from '@/components/collapsible-section';
 import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
-import { isShopperAgentContextUiEnabled } from '@/lib/shopper-agent-context-ui';
+import { isShopperAgentContextUiEnabled } from '@/lib/shopper-context/agent-ui';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import FaqQuestionItem from './faq-question-item';
 

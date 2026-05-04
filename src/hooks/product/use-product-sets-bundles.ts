@@ -16,13 +16,13 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { isProductSet, isProductBundle, isStandardProduct } from '@/lib/product-utils';
+import { isProductSet, isProductBundle, isStandardProduct } from '@/lib/product/product-utils';
 import {
     type ChildProductSelection,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isStoreOutOfStock as storeOutOfStockFor,
     isSiteOutOfStock as siteOutOfStockFor,
-} from '@/lib/inventory-utils';
+} from '@/lib/product/inventory-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import { useBulkChildProductInventory } from './use-bulk-child-product-inventory';

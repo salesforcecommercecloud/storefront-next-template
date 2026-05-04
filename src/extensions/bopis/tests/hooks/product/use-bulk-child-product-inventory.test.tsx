@@ -19,7 +19,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { useBulkChildProductInventory } from '@/hooks/product/use-bulk-child-product-inventory';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import type { ChildProductSelection } from '@/lib/inventory-utils';
+import type { ChildProductSelection } from '@/lib/product/inventory-utils';
 
 // Mock useScapiFetcher directly
 // Store fetcher properties separately and return new object each time so React detects changes

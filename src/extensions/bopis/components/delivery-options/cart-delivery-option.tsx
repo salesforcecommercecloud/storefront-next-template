@@ -23,7 +23,7 @@ import { useStoreLocator } from '@/extensions/store-locator/providers/store-loca
 import { useBasket } from '@/providers/basket';
 import { useToast } from '@/components/toast';
 import { useTranslation } from 'react-i18next';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 interface CartDeliveryOptionProps {
     product: EnrichedProductItem;

@@ -21,7 +21,7 @@ import { createBasketSuccessResponse } from '@/routes/types/action-responses';
 import type { RouterContextProvider } from 'react-router';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
-import type { CartItemUpdateData } from '@/lib/basket-schemas';
+import type { CartItemUpdateData } from '@/lib/cart/basket-schemas';
 
 /**
  * Handles delivery option changes for cart items.

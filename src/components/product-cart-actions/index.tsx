@@ -18,7 +18,7 @@ import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi'
 import { Button } from '@/components/ui/button';
 import { useProductView } from '@/providers/product-view';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';

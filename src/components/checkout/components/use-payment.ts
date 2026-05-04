@@ -18,11 +18,11 @@ import { useState, useEffect, useMemo, useRef, useCallback, type MutableRefObjec
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBasket } from '@/providers/basket';
-import { createPaymentSchema, getPaymentDefaultValues, type PaymentData } from '@/lib/checkout-schemas';
-import { getCardTypeDisplay, getLastFourDigits } from '@/lib/payment-utils';
-import { getAddressKey, isOrderBillingAddressIncomplete } from '@/lib/address-utils';
+import { createPaymentSchema, getPaymentDefaultValues, type PaymentData } from '@/lib/checkout/schemas';
+import { getCardTypeDisplay, getLastFourDigits } from '@/lib/payment/payment-utils';
+import { getAddressKey, isOrderBillingAddressIncomplete } from '@/lib/address/address-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import type { CheckoutActionData } from '../types';

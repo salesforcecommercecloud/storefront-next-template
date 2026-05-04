@@ -22,8 +22,8 @@ import { getAuth } from './auth.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 
-vi.mock('@/lib/shopper-context-constants', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/shopper-context-constants')>();
+vi.mock('@/lib/shopper-context/constants', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/shopper-context/constants')>();
     return {
         ...actual,
         SHOPPER_CONTEXT_SEARCH_PARAMS: {
@@ -307,7 +307,7 @@ describe('shopper-context.server', () => {
 
         test('should set context cookie when hasNewContext is true', async () => {
             // Mock extractQualifiersFromUrl to return qualifiers (not sourceCode) to trigger hasNewContext path
-            const shopperContextUtils = await import('@/lib/shopper-context-utils.server');
+            const shopperContextUtils = await import('@/lib/shopper-context/server-utils.server');
             const extractQualifiersFromUrlSpy = vi
                 .spyOn(shopperContextUtils, 'extractQualifiersFromUrl')
                 .mockReturnValue({
@@ -343,7 +343,7 @@ describe('shopper-context.server', () => {
 
         test('should set both sourceCode and context cookies when both are present', async () => {
             // Mock extractQualifiersFromUrl to return both sourceCode and qualifiers
-            const shopperContextUtils = await import('@/lib/shopper-context-utils.server');
+            const shopperContextUtils = await import('@/lib/shopper-context/server-utils.server');
             const extractQualifiersFromUrlSpy = vi
                 .spyOn(shopperContextUtils, 'extractQualifiersFromUrl')
                 .mockReturnValue({

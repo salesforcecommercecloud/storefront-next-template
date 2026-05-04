@@ -15,7 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import SelectBonusProductsCard from '../select-bonus-products-card';
-import type { BonusPromotionInfo } from '@/lib/bonus-product-utils';
+import type { BonusPromotionInfo } from '@/lib/cart/bonus-product-utils';
 import { action } from 'storybook/actions';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';

@@ -31,10 +31,10 @@ import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { AddressFormFields, AddressFormControl } from '@/components/address-form-fields';
-import { createShippingAddressSchema } from '@/lib/checkout-schemas';
+import { createShippingAddressSchema } from '@/lib/checkout/schemas';
 import { usPostalCodeRegex, canadianPostalCodeRegex } from '@/components/customer-address-form/constants';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
-import { stripCountryCode, extractCountryCode } from '@/lib/phone-utils';
+import { stripCountryCode, extractCountryCode } from '@/lib/address/phone-utils';
 
 function createAddressModalSchema(
     t: TFunction,

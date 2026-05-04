@@ -40,7 +40,7 @@ vi.mock('./context', () => ({
     }),
 }));
 
-vi.mock('@/lib/product-utils', () => ({
+vi.mock('@/lib/product/product-utils', () => ({
     createProductUrl: vi.fn((id: string, color: string | null) =>
         color ? `/product/${id}?color=${color}` : `/product/${id}`
     ),

@@ -27,9 +27,9 @@ import {
     type PickupLocation,
 } from '@/components/account/order-list-item';
 import { getOffsetLimitPaginationState } from '@/lib/pagination-utils';
-import type { OrderStatusType } from '@/lib/order-status';
+import type { OrderStatusType } from '@/lib/order/status';
 
-/** Re-export for consumers. Single source of truth: @/lib/order-status */
+/** Re-export for consumers. Single source of truth: @/lib/order/status */
 export type { OrderStatusType };
 
 /**

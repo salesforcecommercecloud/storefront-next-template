@@ -24,7 +24,7 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 interface RegisterCustomerSelectionProps {
     /** Callback when checkbox state changes - receives boolean value */

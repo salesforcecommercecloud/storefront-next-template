@@ -17,8 +17,11 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { DELIVERY_OPTIONS, type DeliveryOption } from '@/extensions/bopis/constants';
-import { isStoreOutOfStock as storeOutOfStockFor, isSiteOutOfStock as siteOutOfStockFor } from '@/lib/inventory-utils';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import {
+    isStoreOutOfStock as storeOutOfStockFor,
+    isSiteOutOfStock as siteOutOfStockFor,
+} from '@/lib/product/inventory-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';

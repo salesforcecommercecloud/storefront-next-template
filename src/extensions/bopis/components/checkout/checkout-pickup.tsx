@@ -28,7 +28,7 @@ import {
     getDisplayVariationValues,
     getEnrichedProducts,
     convertProductsByItemIdToProductId,
-} from '@/lib/product-utils';
+} from '@/lib/product/product-utils';
 import { ProductItemVariantImage } from '@/components/product-item';
 import CurrentPrice from '@/components/product-price/current-price';
 import { getPriceData } from '@/components/product-price/utils';

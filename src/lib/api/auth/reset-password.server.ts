@@ -21,7 +21,7 @@ import {
     resetMarketingCloudTokenCache,
     sendMarketingCloudEmail,
     validateSlasCallbackToken,
-} from '@/lib/marketing-cloud.server';
+} from '@/lib/marketing/marketing-cloud.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getLogger } from '@/lib/logger.server';
 

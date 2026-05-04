@@ -47,7 +47,7 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { isStandardProduct, isBonusProduct, type EnrichedProductItem } from '@/lib/product-utils';
+import { isStandardProduct, isBonusProduct, type EnrichedProductItem } from '@/lib/product/product-utils';
 import emptyBasket from '@/components/__mocks__/empty-basket';
 import { basketWithOneItem } from '@/components/__mocks__/basket-with-dress';
 import { mockStandardProductOrderable } from '@/components/__mocks__/standard-product';

@@ -753,7 +753,7 @@ export const createContactInfoSchema = (t: TFunction) => {
 ```typescript
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createContactInfoSchema } from '@/lib/checkout-schemas';
+import { createContactInfoSchema } from '@/lib/checkout/schemas';
 
 function ContactForm() {
     const { t } = useTranslation();

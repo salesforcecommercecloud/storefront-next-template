@@ -25,7 +25,7 @@ import { getAuth, clearInvalidSessionAndRestoreGuest } from '@/middlewares/auth.
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
 import { extractResponseError } from '@/lib/utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { orderAddressToCustomerAddress } from '@/lib/address-utils';
+import { orderAddressToCustomerAddress } from '@/lib/address/address-utils';
 import { getLogger } from '@/lib/logger.server';
 
 /**

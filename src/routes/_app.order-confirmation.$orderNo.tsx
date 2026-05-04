@@ -35,12 +35,12 @@ import type {
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
 } from '@salesforce/storefront-next-runtime/scapi';
-import { getCardTypeDisplay } from '@/lib/payment-utils';
-import { getDisplayVariationValues } from '@/lib/product-utils';
+import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
+import { getDisplayVariationValues } from '@/lib/product/product-utils';
 import OrderSkeleton from '@/components/order-skeleton';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { getLogger } from '@/lib/logger.server';
 import { getLoginPreferences } from '@/lib/login-preferences.server';
 import { isRegisteredCustomer } from '@/lib/api/customer.server';

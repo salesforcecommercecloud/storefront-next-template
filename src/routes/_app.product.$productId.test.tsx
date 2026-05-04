@@ -90,7 +90,7 @@ vi.mock('@/components/product-carousel', () => ({
     },
 }));
 
-vi.mock('@/lib/product-utils', () => ({
+vi.mock('@/lib/product/product-utils', () => ({
     isProductSet: vi.fn(),
     isProductBundle: vi.fn(),
 }));
@@ -132,7 +132,7 @@ vi.mock('@/extensions/bopis/context/pickup-context', () => ({
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 // Import the functions we want to test
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 
 // Import the route module after mocks are set up
 

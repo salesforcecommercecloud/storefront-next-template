@@ -9,10 +9,16 @@ This file is the single source of truth for AI coding agents (Claude Code, Curso
 - `./src/` — Application source code
   - `./src/routes/` — React Router file-based routes
   - `./src/components/` — React components (`./src/components/ui/` for Radix + Tailwind primitives)
-  - `./src/lib/` — Shared utilities, hooks, business logic (adapters, adapter registry, decorators)
   - `./src/hooks/`, `./src/providers/` — React hooks and context providers
+  - `./src/analytics/` — Analytics tracking components (e.g. `PageViewTracker`)
+  - `./src/middlewares/` — React Router server middlewares
   - `./src/extensions/` — Optional feature extensions
   - `./src/locales/` — i18n translation files
+  - `./src/lib/` — Shared utilities, business logic, and framework plumbing. Domain-first organization:
+    - Commerce domains (each a self-contained folder): `address/`, `auth/`, `cart/`, `checkout/`, `customer/`, `images/`, `marketing/`, `order/`, `payment/`, `product/`, `shopper-context/`, `turnstile/`
+    - Framework: `adapters/` (engagement, product-content, customer-preferences — each with its own store, types, mock/impl), `decorators/` (Page Designer), `page-designer/` (registry + loader), `api/` (SCAPI wrappers)
+    - Root-level files are cross-cutting only: `logger.server.ts`, `correlation.ts`, `currency.ts`, `date-utils.ts`, `url.ts`, `cookie-utils.server.ts`, etc.
+    - **Rule**: a new commerce concept gets its own folder. Cross-domain utilities (no commerce knowledge) go at the `lib/` root.
   - `./src/types/config.ts` — Template-specific config types
 - `./config.server.ts` — Configuration defaults
 - `./.storybook/` — Storybook configuration

@@ -22,9 +22,9 @@ import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronDown, Check } from 'lucide-react';
-import { getLastFourDigits } from '@/lib/payment-utils';
-import { formatAddress } from '@/lib/address-utils';
-import { getCardIcon } from '@/lib/card-icon-utils';
+import { getLastFourDigits } from '@/lib/payment/payment-utils';
+import { formatAddress } from '@/lib/address/address-utils';
+import { getCardIcon } from '@/lib/payment/card-icon-utils';
 import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import type { PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
@@ -32,7 +32,7 @@ import type { CheckoutActionData } from '../types';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 import CreditCardOptionIcon from '@/components/icons/credit-card-option-icon';
-import type { PaymentData } from '@/lib/checkout-schemas';
+import type { PaymentData } from '@/lib/checkout/schemas';
 import { usePayment, isSameBillingAndShippingAddress } from './use-payment';
 
 interface PaymentProps {

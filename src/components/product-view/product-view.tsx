@@ -23,13 +23,13 @@ import { useProductImages } from '@/hooks/product/use-product-images';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 import EstimatedDelivery from '@/components/estimated-delivery';
 import ReturnsAndWarranty from '@/components/returns-and-warranty';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import CollapsibleHtmlSection from '@/components/collapsible-section/collapsible-html-section';
 import CollapsibleSection from '@/components/collapsible-section';
 import ProductAdapterSection from '@/components/product-adapter-section';
 import Faq from '@/components/faq';
 import { useTranslation } from 'react-i18next';
-import { resolvePdpSections } from '@/lib/pdp-sections';
+import { resolvePdpSections } from '@/lib/product/pdp-sections';
 import { UITarget } from '@/targets/ui-target';
 
 interface ProductViewProps {

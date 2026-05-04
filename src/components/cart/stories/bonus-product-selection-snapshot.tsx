@@ -62,8 +62,8 @@ vi.mock('@/hooks/use-rule-based-bonus-products', () => ({
 }));
 
 // Mock product-utils
-vi.mock('@/lib/product-utils', async () => {
-    const actual = await vi.importActual('@/lib/product-utils');
+vi.mock('@/lib/product/product-utils', async () => {
+    const actual = await vi.importActual('@/lib/product/product-utils');
     return {
         ...actual,
         isRuleBasedPromotion: () => false, // Default to list-based for storybook

@@ -25,7 +25,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { useCustomerInterests, useCustomerPreferences } from '@/hooks/customer-preferences/use-customer-preferences';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import type { PreferenceValue } from '@/lib/adapters/customer-preferences-types';
+import type { PreferenceValue } from '@/lib/adapters/customer-preferences/types';
 
 export interface InterestsPreferencesSectionProps {
     /** Customer ID for fetching/updating interests and preferences */

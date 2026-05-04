@@ -25,7 +25,7 @@ import {
 import ProductPrice from '@/components/product-price';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { OrderLineRateReview } from '@/components/account/order-details/order-line-rate-review';
 import { getOrderLineReviewKey } from '@/components/account/order-details/order-line-review-key';

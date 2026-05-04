@@ -24,7 +24,7 @@ import { Check, ChevronRight, MapPin, X } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { cn } from '@/lib/utils';
-import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order-status';
+import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order/status';
 
 const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
 const ON_MUTED_CAPTION_CLASS = 'text-xs font-normal text-muted-foreground';

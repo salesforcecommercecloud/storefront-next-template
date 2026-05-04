@@ -21,8 +21,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { accountDestructiveButtonClasses } from '@/lib/account-action-styles';
-import { getCardIcon } from '@/lib/card-icon-utils';
-import { getCardTypeDisplay } from '@/lib/payment-utils';
+import { getCardIcon } from '@/lib/payment/card-icon-utils';
+import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { PaymentMethod } from './payment-method-card';
 

@@ -31,7 +31,7 @@ import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 // services
 import {
@@ -43,9 +43,9 @@ import {
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
 import { authorizeIDP } from '@/lib/api/auth/social-login.server';
 import { mergeBasket } from '@/lib/api/basket.server';
-import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth-error-handler';
+import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
 import { getLogger } from '@/lib/logger.server';
-import { enforceTurnstile } from '@/lib/turnstile-enforce.server';
+import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
 
 type LoginActionResponse = {
     success: boolean;

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useEffect, useContext } from 'react';
-import type { HtmlContent } from '@/lib/adapters/product-content-data-types';
-import type { HtmlContentAdapterMethod } from '@/lib/adapters/product-content-types';
+import type { HtmlContent } from '@/lib/adapters/product-content/data-types';
+import type { HtmlContentAdapterMethod } from '@/lib/adapters/product-content/types';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
 import HtmlFragment from '@/components/html-fragment';
 import { useTranslation } from 'react-i18next';

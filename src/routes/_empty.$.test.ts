@@ -15,13 +15,13 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loader, action } from './_empty.$';
-import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login.server';
+import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/auth/passwordless-login.server';
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login.server';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password.server';
 import { createActionArgs, createLoaderArgs } from '@/lib/test-utils/loader-action-args';
 
 // Mock passwordless-login handlers
-vi.mock('@/lib/passwordless-login.server', () => ({
+vi.mock('@/lib/auth/passwordless-login.server', () => ({
     handlePasswordlessCallback: vi.fn(),
     handlePasswordlessLanding: vi.fn(),
 }));

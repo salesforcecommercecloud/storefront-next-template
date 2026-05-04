@@ -29,7 +29,7 @@ import {
 } from '@/lib/api/customer.server';
 import { getBasketCurrency, calculateBasket } from '@/lib/api/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer-profile-utils';
+import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 
 vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
@@ -56,7 +56,7 @@ vi.mock('@/extensions/multiship/lib/api/basket.server', () => ({
 vi.mock('@/lib/api-clients.server');
 vi.mock('@/lib/api/basket.server');
 vi.mock('@/lib/api/customer.server');
-vi.mock('@/lib/customer-profile-utils');
+vi.mock('@/lib/customer/profile-utils');
 vi.mock('@/lib/error-handler');
 vi.mock('@/lib/url.server', () => ({
     buildUrlFromContext: vi.fn((to: string) => to),

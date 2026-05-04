@@ -23,7 +23,7 @@ import { getLoginModeHref } from './get-login-mode-href';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 interface PasswordlessLoginFormProps {
     error?: string;

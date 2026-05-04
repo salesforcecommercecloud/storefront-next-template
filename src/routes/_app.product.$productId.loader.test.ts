@@ -49,7 +49,7 @@ const mockFetchPageWithComponentData = vi.hoisted(() =>
     )
 );
 
-vi.mock('@/lib/util/pageLoader.server', () => ({
+vi.mock('@/lib/page-designer/page-loader.server', () => ({
     fetchPageWithComponentData: mockFetchPageWithComponentData,
 }));
 

@@ -28,9 +28,13 @@ import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useRequireAuth } from '@/hooks/use-require-auth';
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { useAnalytics } from '../use-analytics';
-import { getEffectiveStockLevel, getEffectiveInventory, isInStock as isProductInStock } from '@/lib/inventory-utils';
+import {
+    getEffectiveStockLevel,
+    getEffectiveInventory,
+    isInStock as isProductInStock,
+} from '@/lib/product/inventory-utils';
 interface ProductSelectionValues {
     product: ShopperProducts.schemas['Product'];
     variant?: ShopperProducts.schemas['Variant'];

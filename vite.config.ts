@@ -106,7 +106,7 @@ export default defineConfig(({ mode }) => {
                 readableChunkNames: enableReadableChunkNames,
                 staticRegistry: {
                     componentPath: 'src/components',
-                    registryPath: 'src/lib/static-registry.ts',
+                    registryPath: 'src/lib/page-designer/static-registry.ts',
                 },
             }),
             perEnvironmentPlugin('bundlesize', (env) => {

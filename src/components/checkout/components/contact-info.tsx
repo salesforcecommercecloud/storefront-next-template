@@ -24,11 +24,11 @@ import { NativeSelect } from '@/components/ui/native-select';
 import { Typography } from '@/components/typography';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
-import { createContactInfoSchema, type ContactInfoData } from '@/lib/checkout-schemas';
+import { createContactInfoSchema, type ContactInfoData } from '@/lib/checkout/schemas';
 import { useLoginSuggestion } from '@/hooks/use-customer-lookup';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import { getContactInfoFromCustomer } from '@/lib/customer-profile-utils';
-import { getCommonPhoneCountryCodes } from '@/lib/country-codes';
+import { getContactInfoFromCustomer } from '@/lib/customer/profile-utils';
+import { getCommonPhoneCountryCodes } from '@/lib/address/country-codes';
 import type { CheckoutActionData } from '../types';
 import type { AuthorizePasswordlessEmailResponse } from '@/routes/action.authorize-passwordless-email';
 import { useTranslation } from 'react-i18next';
@@ -39,13 +39,13 @@ import {
     stripCountryCode,
     formatPhoneDisplay,
     extractCountryCode,
-} from '@/lib/phone-utils';
+} from '@/lib/address/phone-utils';
 import type { OtpFlowActiveRef } from '@/hooks/use-checkout-actions';
 import { Spinner } from '@/components/spinner';
 import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile-utils';
+import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
 const LoginModal = lazy(() => import('@/components/login/login-modal'));

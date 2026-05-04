@@ -38,7 +38,7 @@ import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 
 //lib
 import { FETCHER_STATES } from '@/lib/fetcher-states';
-import { generateAddressId } from '@/lib/address-id-utils';
+import { generateAddressId } from '@/lib/address/address-id-utils';
 
 //types
 import { createCustomerAddressFormSchema, type CustomerAddressFormData } from './index';

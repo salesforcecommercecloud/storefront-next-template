@@ -41,12 +41,12 @@ import type { AppConfig } from '@/types/config';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
-import { createProductUrl, getDisplayVariationValues, type EnrichedProductItem } from '@/lib/product-utils';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import { createProductUrl, getDisplayVariationValues, type EnrichedProductItem } from '@/lib/product/product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
-import { getEffectiveStockLevel } from '@/lib/inventory-utils';
+import { getEffectiveStockLevel } from '@/lib/product/inventory-utils';
 import { cn } from '@/lib/utils';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
 

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { createContext, type PropsWithChildren, useContext, useEffect, useState } from 'react';
-import type { ProductContentAdapter } from '@/lib/adapters/product-content-types';
-import { getProductContentAdapter, PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME } from '@/lib/adapters/product-content-store';
-import { ensureProductContentAdapterRegistered } from '@/lib/adapters/ensure-product-content-adapter';
+import type { ProductContentAdapter } from '@/lib/adapters/product-content/types';
+import { getProductContentAdapter, PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME } from '@/lib/adapters/product-content/store';
+import { ensureProductContentAdapterRegistered } from '@/lib/adapters/product-content/ensure-registered';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { createLogger } from '@/lib/logger';

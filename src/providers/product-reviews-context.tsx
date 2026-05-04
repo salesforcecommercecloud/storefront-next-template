@@ -17,7 +17,7 @@
 import { createContext, useCallback, type PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { useProductContentAdapter } from '@/providers/product-content';
 import { useProduct } from '@/providers/product-context';
-import type { ReviewItem, ReviewsSummaryData } from '@/lib/adapters/product-content-data-types';
+import type { ReviewItem, ReviewsSummaryData } from '@/lib/adapters/product-content/data-types';
 
 export type ExpandReviewsFn = (() => void) | null;
 

@@ -22,7 +22,7 @@ import CollapsibleSection from '@/components/collapsible-section';
 import ProductContentProvider from '@/providers/product-content';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
-import { addProductContentAdapter, removeProductContentAdapter } from '@/lib/adapters/product-content-store';
+import { addProductContentAdapter, removeProductContentAdapter } from '@/lib/adapters/product-content/store';
 
 const NULL_ADAPTER_NAME = 'product-null-adapter';
 

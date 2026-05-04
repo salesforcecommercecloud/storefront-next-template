@@ -531,7 +531,7 @@ describe('Payment Integration Tests', () => {
             };
 
             useCustomerProfile.mockReturnValue(mockProfile);
-            const customerProfileUtils = await import('@/lib/customer-profile-utils');
+            const customerProfileUtils = await import('@/lib/customer/profile-utils');
             const spy = vi.spyOn(customerProfileUtils, 'getPaymentMethodsFromCustomer').mockReturnValue([
                 {
                     id: '', // Simulate corrupted data with missing id

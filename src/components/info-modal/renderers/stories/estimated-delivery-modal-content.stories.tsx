@@ -21,7 +21,7 @@ import { mockConfig, mockLocale } from '@/test-utils/config';
 
 const mockSite = mockConfig.commerce.sites[0];
 import { EstimatedDeliveryModalContent } from '../estimated-delivery-modal-content';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
 
 const mockDeliveryData: EstimatedDeliveryData = {
     title: 'Fulfillment & Shipping',

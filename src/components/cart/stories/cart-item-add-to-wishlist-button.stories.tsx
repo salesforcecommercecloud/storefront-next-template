@@ -18,7 +18,7 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import type { ReactElement } from 'react';
 import { CartItemAddToWishlistButton } from '../cart-item-add-to-wishlist-button';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import type { EnrichedProductItem } from '@/lib/product-utils';
+import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 const sampleLine: EnrichedProductItem = {
     itemId: 'cart-wl-story-line',

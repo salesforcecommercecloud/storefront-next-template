@@ -28,7 +28,7 @@ import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { toImageUrl, transformHtmlImageUrls } from '@/lib/dynamic-image';
+import { toImageUrl, transformHtmlImageUrls } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';

@@ -22,7 +22,7 @@ import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 import OrderItemsList, { type ProductDataById } from '@/components/account/order-details/order-items-list';
 import OrderSummary from '@/components/order-summary';
 import ShippingAddressDisplay from '@/components/checkout/components/shipping-address-display';
-import { formatStatusFallbackLabel, getOrderStatusConfig, getShippingStatusConfig } from '@/lib/order-status';
+import { formatStatusFallbackLabel, getOrderStatusConfig, getShippingStatusConfig } from '@/lib/order/status';
 import { cn } from '@/lib/utils';
 import { UITarget } from '@/targets/ui-target';
 

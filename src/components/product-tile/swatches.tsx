@@ -16,8 +16,8 @@
 import { Link } from '@/components/link';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
-import { toImageUrl } from '@/lib/dynamic-image';
+import type { DecoratedVariationAttributeValue } from '@/lib/product/product-utils';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { cn } from '@/lib/utils';
 
 const MAX_VISIBLE_INDICATOR_COUNT = 99;

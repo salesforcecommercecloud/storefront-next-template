@@ -174,7 +174,7 @@ This component handles the multi-address shipping step of the checkout process -
 **Dependencies:**
 - \`@/providers/basket\`: Access to current basket data (provides product items)
 - \`@/components/toggle-card\`: Toggle between edit and summary views
-- \`@/lib/product-utils\`: Product variation display utilities
+- \`@/lib/product/product-utils\`: Product variation display utilities
                 `,
             },
         },

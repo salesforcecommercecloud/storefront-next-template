@@ -28,9 +28,9 @@ import { CategoryBreadcrumbsSkeleton } from '@/components/category-breadcrumbs/s
 const CustomerReviewsSection = lazy(() =>
     import('@/components/customer-reviews-section').then((m) => ({ default: m.CustomerReviewsSection }))
 );
-import { isProductSet, isProductBundle } from '@/lib/product-utils';
+import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import ProductRecommendations from '@/components/product-recommendations';
-import { EINSTEIN_RECOMMENDERS } from '@/adapters/einstein';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
@@ -39,7 +39,7 @@ import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/providers/product-reviews-context';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import { JsonLd } from '@/components/json-ld';
 import { SeoMeta } from '@/components/seo-meta';
 import { generateProductSchema } from '@/utils/product-schema';

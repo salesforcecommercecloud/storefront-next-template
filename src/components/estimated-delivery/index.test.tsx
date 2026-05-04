@@ -19,7 +19,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type React from 'react';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
 import EstimatedDelivery from './index';
 
 const mockDeliveryData: EstimatedDeliveryData = {

@@ -30,8 +30,8 @@ import { AddressFormFields } from '@/components/address-form-fields';
 import { CreditCardInputFields } from '@/components/credit-card-input-fields';
 import { Form } from '@/components/ui/form';
 import { accountDestructiveAlertClasses } from '@/lib/account-action-styles';
-import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
-import { detectCardType } from '@/lib/payment-utils';
+import { createPaymentSchema, type PaymentData } from '@/lib/checkout/schemas';
+import { detectCardType } from '@/lib/payment/payment-utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 type AddPaymentData = PaymentData & { saveAsDefault?: boolean };

@@ -146,21 +146,21 @@ Instead of top-level `import` (which pulls code into the main bundle), adapters 
 
 ```typescript
 // ❌ Static import – adapter code is in the main bundle
-import { initializeEngagementAdapters } from '@/adapters';
+import { initializeEngagementAdapters } from '@/lib/adapters/engagement/register';
 
 // ✅ Dynamic import – adapter code is in a separate chunk, loaded when this runs
-const { initializeEngagementAdapters } = await import('@/adapters');
+const { initializeEngagementAdapters } = await import('@/lib/adapters/engagement/register');
 ```
 
-- **Engagement adapters** (Einstein, Active Data): The `@/adapters` module is loaded only when `ensureAdaptersInitialized()` runs (e.g. when a provider that needs engagement adapters first mounts). See `src/lib/adapters/initialize-adapters.ts`.
-- **Product content adapter**: The product-content-mock module is loaded only when the Product Content provider mounts (e.g. on the PDP). Registration is done via `ensureProductContentAdapterRegistered()` in `src/lib/adapters/ensure-product-content-adapter.ts`, which uses `await import('@/adapters/product-content-mock')`.
-- **Customer preferences adapter**: The customer-preferences-mock module is loaded only when the Customer Preferences provider mounts. Registration is done via `ensureCustomerPreferencesAdapterRegistered()` in `src/lib/adapters/ensure-customer-preferences-adapter.ts`, which uses `await import('@/adapters/customer-preferences-mock')`.
+- **Engagement adapters** (Einstein, Active Data): The `@/lib/adapters/engagement/register` module is loaded only when `ensureAdaptersInitialized()` runs (e.g. when a provider that needs engagement adapters first mounts). See `src/lib/adapters/engagement/initialize.ts`.
+- **Product content adapter**: The product-content-mock module is loaded only when the Product Content provider mounts (e.g. on the PDP). Registration is done via `ensureProductContentAdapterRegistered()` in `src/lib/adapters/product-content/ensure-registered.ts`, which uses `await import('@/lib/adapters/product-content/mock')`.
+- **Customer preferences adapter**: The customer-preferences-mock module is loaded only when the Customer Preferences provider mounts. Registration is done via `ensureCustomerPreferencesAdapterRegistered()` in `src/lib/adapters/customer-preferences/ensure-registered.ts`, which uses `await import('@/lib/adapters/customer-preferences/mock')`.
 
 ### Bundle Size Impact
 
 | What | When it loads | Bundle impact |
 |------|----------------|----------------|
-| Engagement adapters (`@/adapters`: Einstein, Active Data) | When `ensureAdaptersInitialized()` is first called (e.g. by a provider that uses engagement adapters) | Separate chunk; not in initial bundle |
+| Engagement adapters (`@/lib/adapters/engagement/register`: Einstein, Active Data) | When `ensureAdaptersInitialized()` is first called (e.g. by a provider that uses engagement adapters) | Separate chunk; not in initial bundle |
 | Product content mock | When Product Content provider mounts (e.g. PDP) | Separate chunk; not in initial bundle |
 | Customer preferences mock | When Customer Preferences provider mounts | Separate chunk; not in initial bundle |
 
@@ -257,7 +257,7 @@ export function getAllAdapters(): EngagementAdapter[] {
 // src/providers/recommenders.tsx
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
@@ -560,7 +560,7 @@ Create concrete implementations of your adapter interface for each service.
 **Factory Function Pattern (Recommended)**:
 
 ```typescript
-import type { YourFeatureAdapter, YourFeatureAdapterConfig } from '@/lib/adapters/types';
+import type { YourFeatureAdapter, YourFeatureAdapterConfig } from '@/lib/adapters/engagement/types';
 
 /**
  * Configuration for [Service Name] adapter
@@ -754,10 +754,10 @@ Create a React Context provider and custom hook to inject the adapter into your 
 ```typescript
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import type { YourFeatureAdapter } from '@/lib/adapters/types';
+import type { YourFeatureAdapter } from '@/lib/adapters/engagement/types';
 
 /**
  * Context for YourFeature adapter
@@ -857,8 +857,8 @@ export function useYourFeatureAdapter(): YourFeatureAdapter | undefined {
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
 import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
-import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
+import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -927,12 +927,12 @@ export default RecommendersProvider;
 
 Register your adapter instances during application startup using lazy initialization.
 
-**Location**: `src/lib/adapters/initialize-adapters.ts` and `src/adapters/index.ts`
+**Location**: `src/lib/adapters/engagement/initialize.ts` and `src/adapters/index.ts`
 
 **Lazy Initialization Pattern**:
 
 ```typescript
-// src/lib/adapters/initialize-adapters.ts
+// src/lib/adapters/engagement/initialize.ts
 import type { AppConfig } from '@/types/config';
 import { getAllAdapters } from './adapter-store';
 
@@ -972,7 +972,7 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
     // Start initialization with lazy loading
     adaptersInitializationPromise = (async () => {
         // Dynamically import adapter initialization code to keep it out of initial bundle
-        const { initializeEngagementAdapters } = await import('@/adapters');
+        const { initializeEngagementAdapters } = await import('@/lib/adapters/engagement/register');
 
         // Initialize adapters only if config is available
         if (appConfig) {
@@ -1583,8 +1583,8 @@ export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAda
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
 import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
-import { EINSTEIN_ADAPTER_NAME } from '@/adapters/einstein';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
+import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -1775,7 +1775,7 @@ export default function ProductRecommendations({
 **Lazy Initialization Helper**:
 
 ```typescript
-// src/lib/adapters/initialize-adapters.ts
+// src/lib/adapters/engagement/initialize.ts
 import type { AppConfig } from '@/types/config';
 import { getAllAdapters } from './adapter-store';
 
@@ -1809,7 +1809,7 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
     // Start initialization with lazy loading
     adaptersInitializationPromise = (async () => {
         // Dynamically import adapter initialization code to keep it out of initial bundle
-        const { initializeEngagementAdapters } = await import('@/adapters');
+        const { initializeEngagementAdapters } = await import('@/lib/adapters/engagement/register');
 
         if (appConfig) {
             initializeEngagementAdapters(appConfig);
@@ -1936,7 +1936,7 @@ This allows deploying the same build to different environments that point to dif
 
 ```typescript
 // src/adapters/[service-name].ts
-import type { YourAdapter, YourAdapterConfig, Params, Result } from '@/lib/adapters/types';
+import type { YourAdapter, YourAdapterConfig, Params, Result } from '@/lib/adapters/engagement/types';
 
 export type ServiceNameConfig = YourAdapterConfig & {
     apiKey: string;
@@ -2020,7 +2020,7 @@ function getDefaultResult(): Result {
 
 ```typescript
 // src/adapters/[service-name].ts
-import type { YourAdapter, Params, Result } from '@/lib/adapters/types';
+import type { YourAdapter, Params, Result } from '@/lib/adapters/engagement/types';
 
 export type ServiceNameConfig = {
     apiKey: string;
@@ -2059,10 +2059,10 @@ export function createServiceNameAdapter(config: ServiceNameConfig): YourAdapter
 // src/providers/your-feature.tsx
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import type { YourAdapter } from '@/lib/adapters/types';
+import type { YourAdapter } from '@/lib/adapters/engagement/types';
 
 const YourFeatureContext = createContext<YourAdapter | undefined>(undefined);
 
@@ -2116,7 +2116,7 @@ export function useYourFeatureAdapter(): YourAdapter | undefined {
 // src/components/your-component/index.tsx
 import { useEffect, useRef, useMemo } from 'react';
 import { useYourFeature } from '@/hooks/your-feature/use-your-feature';
-import type { YourParams } from '@/lib/adapters/types';
+import type { YourParams } from '@/lib/adapters/engagement/types';
 
 export function YourComponent({ params }: { params: YourParams }) {
     const { yourMethod, data, isLoading, error } = useYourFeature();
@@ -2153,7 +2153,7 @@ export function YourComponent({ params }: { params: YourParams }) {
 // src/components/your-component/index.tsx
 import { useEffect, useState } from 'react';
 import { useYourFeatureAdapter } from '@/providers/your-feature';
-import type { YourParams, YourResult } from '@/lib/adapters/types';
+import type { YourParams, YourResult } from '@/lib/adapters/engagement/types';
 
 export function YourComponent({ params }: { params: YourParams }) {
     const adapter = useYourFeatureAdapter();
@@ -2209,7 +2209,7 @@ Create a mock adapter that implements your interface for testing.
 
 ```typescript
 // src/adapters/__mocks__/mock-adapter.ts
-import type { YourAdapter, Params, Result } from '@/lib/adapters/types';
+import type { YourAdapter, Params, Result } from '@/lib/adapters/engagement/types';
 
 export class MockAdapter implements YourAdapter {
     private mockData: Result;
@@ -2246,8 +2246,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { YourComponent } from '../index';
 import { YourFeatureProvider } from '@/providers/your-feature';
 import { addAdapter } from '@/lib/adapters';
-import { MockAdapter } from '@/adapters/__mocks__/mock-adapter';
-import { resetAdaptersInitialization } from '@/lib/adapters/initialize-adapters';
+import { MockAdapter } from '@/lib/adapters/__mocks__/mock-adapter';
+import { resetAdaptersInitialization } from '@/lib/adapters/engagement/initialize';
 
 // Mock the config
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
@@ -2387,8 +2387,8 @@ describe('EinsteinAdapter', () => {
 import { render, screen, waitFor } from '@testing-library/react';
 import { App } from '../app';
 import { addAdapter } from '@/lib/adapters';
-import { createEinsteinAdapter } from '@/adapters/einstein';
-import { resetAdaptersInitialization } from '@/lib/adapters/initialize-adapters';
+import { createEinsteinAdapter } from '@/lib/adapters/engagement/einstein';
+import { resetAdaptersInitialization } from '@/lib/adapters/engagement/initialize';
 
 // Mock the config
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({

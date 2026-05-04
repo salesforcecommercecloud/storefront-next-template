@@ -28,7 +28,7 @@ import {
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { ensureAdaptersInitialized } from '@/lib/adapters/initialize-adapters';
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { useTrackingConsent } from './use-tracking-consent';
 

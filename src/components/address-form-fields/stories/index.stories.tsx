@@ -23,7 +23,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { AddressFormFields } from '../index';
-import { createShippingAddressSchema } from '@/lib/checkout-schemas';
+import { createShippingAddressSchema } from '@/lib/checkout/schemas';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 /**

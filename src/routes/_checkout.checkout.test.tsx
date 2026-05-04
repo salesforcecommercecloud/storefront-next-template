@@ -27,7 +27,7 @@ const mockGetServerShippingMethodsMapData = vi.fn();
 const mockGetClientLoaderData = vi.fn();
 const mockGetAuthServer = vi.fn();
 
-vi.mock('@/lib/checkout-loaders.server', () => ({
+vi.mock('@/lib/checkout/loaders.server', () => ({
     loader: mockCheckoutLoadersLoader,
     serverLoader: mockUniversalServerLoader,
     getServerCustomerProfileData: mockGetServerCustomerProfileData,

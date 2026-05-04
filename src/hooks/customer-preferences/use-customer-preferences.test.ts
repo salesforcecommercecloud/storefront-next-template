@@ -17,7 +17,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useCustomerInterests, useCustomerPreferences } from './use-customer-preferences';
-import type { CustomerInterestsPreferencesAdapter } from '@/lib/adapters/customer-preferences-types';
+import type { CustomerInterestsPreferencesAdapter } from '@/lib/adapters/customer-preferences/types';
 
 // Mock the provider hook
 const mockAdapter: CustomerInterestsPreferencesAdapter = {

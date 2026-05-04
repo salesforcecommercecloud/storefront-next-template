@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { DecoratedVariationAttributeValue } from '@/lib/product-utils';
+import type { DecoratedVariationAttributeValue } from '@/lib/product/product-utils';
 import { action } from 'storybook/actions';
 import { ProductTileSwatches } from '../swatches';
 

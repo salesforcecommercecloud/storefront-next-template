@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import { createPaymentSchema, type PaymentData } from '@/lib/checkout-schemas';
+import { createPaymentSchema, type PaymentData } from '@/lib/checkout/schemas';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { UITarget } from '@/targets/ui-target';
 import { Spinner } from '@/components/spinner';

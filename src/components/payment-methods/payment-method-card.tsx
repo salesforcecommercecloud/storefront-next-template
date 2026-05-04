@@ -18,8 +18,8 @@ import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getCardIcon } from '@/lib/card-icon-utils';
-import { getCardTypeDisplay } from '@/lib/payment-utils';
+import { getCardIcon } from '@/lib/payment/card-icon-utils';
+import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 
 export interface PaymentMethod {

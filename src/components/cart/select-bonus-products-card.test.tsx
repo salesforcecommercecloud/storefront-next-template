@@ -18,7 +18,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import SelectBonusProductsCard from './select-bonus-products-card';
-import type { BonusPromotionInfo } from '@/lib/bonus-product-utils';
+import type { BonusPromotionInfo } from '@/lib/cart/bonus-product-utils';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 

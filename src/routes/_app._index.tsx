@@ -27,7 +27,7 @@ import type { AppConfig } from '@/types/config';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import { getLogger } from '@/lib/logger.server';
 
 import hero01 from '/images/hero-01.webp';

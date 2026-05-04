@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { Typography } from '@/components/typography';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
 
 /**
  * Renders estimated delivery / fulfillment & shipping modal content.

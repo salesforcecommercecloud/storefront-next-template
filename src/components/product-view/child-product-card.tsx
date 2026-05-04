@@ -27,7 +27,7 @@ import ProductPrice from '@/components/product-price';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { type ReactElement, useEffect, useRef } from 'react';
-import { isProductSet, isStandardProduct } from '@/lib/product-utils';
+import { isProductSet, isStandardProduct } from '@/lib/product/product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 import { useTranslation } from 'react-i18next';

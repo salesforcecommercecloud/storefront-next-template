@@ -41,7 +41,7 @@ import CartDeliveryOption from '@/extensions/bopis/components/delivery-options/c
 import { UITarget } from '@/targets/ui-target';
 
 // utils
-import { isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product-utils';
+import { isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product/product-utils';
 
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>

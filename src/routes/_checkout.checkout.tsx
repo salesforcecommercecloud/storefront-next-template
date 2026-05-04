@@ -15,7 +15,7 @@
  */
 import { use, useLayoutEffect } from 'react';
 import type { ActionFunctionArgs } from 'react-router';
-import { loader, type CheckoutPageData } from '@/lib/checkout-loaders.server';
+import { loader, type CheckoutPageData } from '@/lib/checkout/loaders.server';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
@@ -29,10 +29,10 @@ import { useToast } from '@/components/toast';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 import GoogleCloudApiProvider from '@/providers/google-cloud-api';
 import { CHECKOUT_ACTION_INTENTS } from '@/components/checkout/utils/checkout-context-types';
-import { action as submitContactInfo } from '@/lib/actions/action.submit-contact-info.server';
-import { action as submitShippingAddress } from '@/lib/actions/action.submit-shipping-address.server';
-import { action as submitShippingOptions } from '@/lib/actions/action.submit-shipping-options.server';
-import { action as submitPayment } from '@/lib/actions/action.submit-payment.server';
+import { action as submitContactInfo } from '@/lib/checkout/actions/submit-contact-info.server';
+import { action as submitShippingAddress } from '@/lib/checkout/actions/submit-shipping-address.server';
+import { action as submitShippingOptions } from '@/lib/checkout/actions/submit-shipping-options.server';
+import { action as submitPayment } from '@/lib/checkout/actions/submit-payment.server';
 import { getLogger } from '@/lib/logger.server';
 
 export { loader };

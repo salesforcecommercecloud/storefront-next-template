@@ -21,7 +21,7 @@ import { SparklesIcon } from '@/components/icons';
 import { openShopperAgent } from '@/components/shopper-agent';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { isShopperAgentContextUiEnabled } from '@/lib/shopper-agent-context-ui';
+import { isShopperAgentContextUiEnabled } from '@/lib/shopper-context/agent-ui';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 
 /**

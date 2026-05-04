@@ -17,7 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useBasketWithProducts } from './use-basket-with-products';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { findImageGroupBy } from '@/lib/image-groups-utils';
+import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 
 // Mock React Router's useFetcher
 const mockFetcher = {
@@ -31,7 +31,7 @@ vi.mock('react-router', () => ({
 }));
 
 // Mock image group utility
-vi.mock('@/lib/image-groups-utils', () => ({
+vi.mock('@/lib/product/image-groups-utils', () => ({
     findImageGroupBy: vi.fn(() => ({
         viewType: 'small',
         images: [{ link: 'https://example.com/small.jpg', alt: 'Small image' }],

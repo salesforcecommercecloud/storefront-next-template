@@ -19,7 +19,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useDeliveryOptions } from './use-delivery-options';
 import { DELIVERY_OPTIONS } from '../constants';
 import { masterProductWithInventories } from '@/components/__mocks__/master-product-with-inventories';
-import { isStoreOutOfStock, isSiteOutOfStock } from '@/lib/inventory-utils';
+import { isStoreOutOfStock, isSiteOutOfStock } from '@/lib/product/inventory-utils';
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 
 // Mock the pickup context
@@ -42,8 +42,8 @@ vi.mock('@/extensions/store-locator/providers/store-locator', () => ({
 }));
 
 // Mock the inventory utils
-vi.mock('@/lib/inventory-utils', async () => {
-    const actual = await vi.importActual('@/lib/inventory-utils');
+vi.mock('@/lib/product/inventory-utils', async () => {
+    const actual = await vi.importActual('@/lib/product/inventory-utils');
     return {
         ...actual,
         isStoreOutOfStock: vi.fn(),

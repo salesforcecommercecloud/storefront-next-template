@@ -17,7 +17,7 @@ import { type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays } from 'lucide-react';
 import type { InfoModalData } from '@/components/info-modal/types';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
 import ProductInfoCard from '@/components/product-info-card';
 

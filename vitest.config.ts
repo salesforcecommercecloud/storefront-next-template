@@ -48,7 +48,7 @@ export default defineConfig((configEnv) =>
                         'src/test-utils/*',
                         'src/lib/test-utils/*',
                         'src/**/__tests__/*',
-                        'src/lib/static-registry.ts',
+                        'src/lib/page-designer/static-registry.ts',
                     ],
                     reportOnFailure: true,
                     thresholds: { lines: 73, statements: 73, functions: 72, branches: 67 },

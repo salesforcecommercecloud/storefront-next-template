@@ -29,8 +29,8 @@ vi.mock('@/components/shopper-agent', () => ({
     openShopperAgentAndSendMessage: mockOpenShopperAgentAndSendMessage,
 }));
 
-vi.mock('@/lib/shopper-agent-context-ui', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/shopper-agent-context-ui')>();
+vi.mock('@/lib/shopper-context/agent-ui', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/shopper-context/agent-ui')>();
     return {
         ...actual,
         isShopperAgentContextUiEnabled: () => mockIsShopperAgentContextUiEnabled(),

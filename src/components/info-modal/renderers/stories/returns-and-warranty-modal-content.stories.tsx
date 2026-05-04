@@ -17,7 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { ReturnsAndWarrantyModalContent } from '../returns-and-warranty-modal-content';
-import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content-data-types';
+import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content/data-types';
 
 const mockData: ReturnsAndWarrantyData = {
     title: 'Returns & Warranty',

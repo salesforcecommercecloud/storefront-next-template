@@ -18,7 +18,7 @@ import { renderHook } from '@testing-library/react';
 import { useCustomerLookup, useLoginSuggestion } from './use-customer-lookup';
 
 // Mock the utility functions
-vi.mock('@/lib/customer-lookup-utils', () => ({
+vi.mock('@/lib/customer/lookup-utils', () => ({
     getCustomerLookupFromStorage: vi.fn(),
     getLoginSuggestion: vi.fn(),
 }));
@@ -36,7 +36,7 @@ describe('Customer Lookup Hooks', () => {
                 message: 'Using your account information',
             };
 
-            const { getCustomerLookupFromStorage } = await import('@/lib/customer-lookup-utils');
+            const { getCustomerLookupFromStorage } = await import('@/lib/customer/lookup-utils');
             vi.mocked(getCustomerLookupFromStorage).mockReturnValue(lookupData);
 
             const { result } = renderHook(() => useCustomerLookup());
@@ -46,7 +46,7 @@ describe('Customer Lookup Hooks', () => {
         });
 
         test('should return null when utility returns null', async () => {
-            const { getCustomerLookupFromStorage } = await import('@/lib/customer-lookup-utils');
+            const { getCustomerLookupFromStorage } = await import('@/lib/customer/lookup-utils');
             vi.mocked(getCustomerLookupFromStorage).mockReturnValue(null);
 
             const { result } = renderHook(() => useCustomerLookup());
@@ -70,7 +70,7 @@ describe('Customer Lookup Hooks', () => {
                 isCurrentUser: false,
             };
 
-            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer-lookup-utils');
+            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer/lookup-utils');
             vi.mocked(getCustomerLookupFromStorage).mockReturnValue(lookupData);
             vi.mocked(getLoginSuggestion).mockReturnValue(expectedResult);
 
@@ -86,7 +86,7 @@ describe('Customer Lookup Hooks', () => {
                 isCurrentUser: false,
             };
 
-            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer-lookup-utils');
+            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer/lookup-utils');
             vi.mocked(getCustomerLookupFromStorage).mockReturnValue(null);
             vi.mocked(getLoginSuggestion).mockReturnValue(expectedResult);
 
@@ -109,7 +109,7 @@ describe('Customer Lookup Hooks', () => {
                 isCurrentUser: true,
             };
 
-            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer-lookup-utils');
+            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer/lookup-utils');
             vi.mocked(getCustomerLookupFromStorage).mockReturnValue(lookupData);
             vi.mocked(getLoginSuggestion).mockReturnValue(expectedResult);
 
@@ -132,7 +132,7 @@ describe('Customer Lookup Hooks', () => {
                 isCurrentUser: false,
             };
 
-            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer-lookup-utils');
+            const { getCustomerLookupFromStorage, getLoginSuggestion } = await import('@/lib/customer/lookup-utils');
             vi.mocked(getCustomerLookupFromStorage).mockReturnValue(lookupData);
             vi.mocked(getLoginSuggestion).mockReturnValue(expectedResult);
 

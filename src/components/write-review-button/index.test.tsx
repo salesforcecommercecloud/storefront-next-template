@@ -20,7 +20,7 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type React from 'react';
 import WriteReviewButton from './index';
-import type { WriteReviewFormData } from '@/lib/adapters/product-content-data-types';
+import type { WriteReviewFormData } from '@/lib/adapters/product-content/data-types';
 
 const mockFormConfig: WriteReviewFormData = {
     title: 'Write a Review',

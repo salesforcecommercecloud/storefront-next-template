@@ -16,7 +16,7 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/components/typography';
-import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content-data-types';
+import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content/data-types';
 
 /**
  * Renders returns & warranty modal content.

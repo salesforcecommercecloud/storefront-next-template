@@ -23,7 +23,7 @@ import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
 import { cn } from '@/lib/utils';
 import { carouselItemImageWidths } from '@/components/carousel-section';
 import { DynamicImage } from '@/components/dynamic-image';
-import { toImageUrl } from '@/lib/dynamic-image';
+import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-01.webp';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BasketAction, createBasketAction } from '@/lib/basket-action.server';
+import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS

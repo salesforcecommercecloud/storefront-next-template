@@ -16,7 +16,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import { convertGoogleMapsSuggestions, type GoogleMapsSuggestion } from '@/lib/address-suggestions';
+import { convertGoogleMapsSuggestions, type GoogleMapsSuggestion } from '@/lib/address/address-suggestions';
 import type { AddressSuggestion } from '@/components/address-suggestion-dropdown';
 
 export const DEBOUNCE_DELAY = 300;

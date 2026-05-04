@@ -30,7 +30,7 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 // Mock registry
-vi.mock('@/lib/registry', () => ({
+vi.mock('@/lib/page-designer/registry', () => ({
     registry: {
         getFallback: vi.fn(),
         getComponent: vi.fn(),
@@ -62,7 +62,7 @@ vi.mock('./component-data-context', () => ({
     useComponentDataById: (id: string) => mockUseComponentDataById(id),
 }));
 
-import { registry } from '@/lib/registry';
+import { registry } from '@/lib/page-designer/registry';
 
 // Helper for creating deferred promises
 const deferred = <T,>() => {

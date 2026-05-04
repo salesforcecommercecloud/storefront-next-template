@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { useProductContentAdapter } from '@/providers/product-content';
-import type { ProductContentAdapter } from '@/lib/adapters/product-content-types';
+import type { ProductContentAdapter } from '@/lib/adapters/product-content/types';
 
 // Re-export for consumers
-export type { ProductContentAdapter } from '@/lib/adapters/product-content-types';
+export type { ProductContentAdapter } from '@/lib/adapters/product-content/types';
 
 /**
  * Return type for the useProductContent hook

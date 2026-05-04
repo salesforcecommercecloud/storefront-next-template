@@ -17,7 +17,7 @@ import { type LoaderFunctionArgs, type ActionFunctionArgs, type RouterContextPro
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/passwordless-login.server';
+import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/auth/passwordless-login.server';
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login.server';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password.server';
 import { isAbsoluteURL } from '@/lib/utils';

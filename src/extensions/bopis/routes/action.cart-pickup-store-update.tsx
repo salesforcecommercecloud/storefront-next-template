@@ -27,9 +27,9 @@ import { ErrorCode } from '@/lib/error-codes';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 
 import { updateShipmentForPickup } from '@/extensions/bopis/lib/api/shipment.server';
-import { isStoreOutOfStock } from '@/lib/inventory-utils';
+import { isStoreOutOfStock } from '@/lib/product/inventory-utils';
 import { getPickupShipment, getPickupProductItemsForStore } from '@/extensions/bopis/lib/basket-utils';
-import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/basket-schemas';
+import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/lib/cart/basket-schemas';
 
 /**
  * Server action for changing the pickup store for all pickup items in the basket.

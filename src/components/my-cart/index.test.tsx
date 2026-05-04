@@ -86,7 +86,7 @@ vi.mock('@/targets/ui-target', () => ({
     UITarget: () => null,
 }));
 
-vi.mock('@/lib/dynamic-image', () => ({
+vi.mock('@/lib/images/dynamic-image', () => ({
     toImageUrl: () => '',
 }));
 

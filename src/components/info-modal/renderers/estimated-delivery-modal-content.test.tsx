@@ -21,7 +21,7 @@ import { EstimatedDeliveryModalContent } from './estimated-delivery-modal-conten
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content-data-types';
+import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
 
 const mockSite: Site = {
     id: 'RefArchGlobal',

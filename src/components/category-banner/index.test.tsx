@@ -25,7 +25,7 @@ import CategoryBanner from './index';
 
 const mockToImageUrl = vi.fn((params: { src?: string }) => params.src);
 
-vi.mock('@/lib/dynamic-image', () => ({
+vi.mock('@/lib/images/dynamic-image', () => ({
     toImageUrl: (params: { src?: string }) => mockToImageUrl(params),
 }));
 

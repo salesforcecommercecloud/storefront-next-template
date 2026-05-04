@@ -46,7 +46,7 @@ vi.mock('@/extensions/bopis/context/pickup-context', () => ({
 }));
 
 // Mock inventory utils
-vi.mock('@/lib/inventory-utils', () => ({
+vi.mock('@/lib/product/inventory-utils', () => ({
     isStoreOutOfStock: vi.fn(() => false),
     isSiteOutOfStock: vi.fn(() => false),
 }));

@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, ThumbsUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { StarIcon } from '@/components/product-ratings/star-icon';
-import type { ReviewItem } from '@/lib/adapters/product-content-data-types';
+import type { ReviewItem } from '@/lib/adapters/product-content/data-types';
 import { REVIEW_CARD_IMAGES } from './review-card-images';
 
 const BODY_TRUNCATE_LENGTH = 400;

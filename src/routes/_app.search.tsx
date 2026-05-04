@@ -41,7 +41,7 @@ import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { Region } from '@/components/region';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
-import { fetchPageWithComponentData } from '@/lib/util/pageLoader.server';
+import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
 import {
     getInitialFiltersOpen,
     getSearchWithoutClientOnlyParams,

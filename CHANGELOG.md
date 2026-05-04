@@ -1,4 +1,6 @@
 ## v0.4.0-dev (Apr 30, 2026)
+
+- Reorganize `src/lib/` into domain-first folders: each commerce concept (`address/`, `auth/`, `cart/`, `checkout/`, `customer/`, `images/`, `marketing/`, `order/`, `payment/`, `product/`, `shopper-context/`, `turnstile/`) is now a self-contained folder, and adapters are consolidated under `lib/adapters/<type>/`. Cross-cutting utilities remain at the `lib/` root.
 - Refactor basket actions to reduce code duplication
 
 ## v0.4.0-dev (Apr 29, 2026)

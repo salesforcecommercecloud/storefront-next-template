@@ -18,12 +18,12 @@ import { composeStories } from '@storybook/react-vite';
 // eslint-disable-next-line import/no-namespace
 import * as ProductAdapterSectionStories from './index.stories';
 import { render, cleanup, act } from '@testing-library/react';
-import { createProductContentMockAdapter } from '@/adapters/product-content-mock';
+import { createProductContentMockAdapter } from '@/lib/adapters/product-content/mock';
 import {
     addProductContentAdapter,
     removeProductContentAdapter,
     PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME,
-} from '@/lib/adapters/product-content-store';
+} from '@/lib/adapters/product-content/store';
 
 const composed = composeStories(ProductAdapterSectionStories);
 

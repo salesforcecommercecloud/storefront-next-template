@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { AlertCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useProductContentAdapter } from '@/providers/product-content';
-import type { ShippingEstimate } from '@/lib/adapters/product-content-data-types';
+import type { ShippingEstimate } from '@/lib/adapters/product-content/data-types';
 
 // US Postal Code validation (5 digits or 5+4 format)
 const US_POSTAL_CODE_REGEX = /^\d{5}(-\d{4})?$/;

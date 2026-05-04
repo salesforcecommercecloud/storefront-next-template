@@ -22,8 +22,8 @@ import { createApiClients } from '@/lib/api-clients.server';
 import { updateShipmentAddress, createDeliveryShipment } from '@/extensions/multiship/lib/api/basket.server';
 import { updateBasketWithCustomerInfoFallback } from '@/extensions/multiship/lib/basket-utils.server';
 import { isRegisteredCustomer, getCurrentCustomer, saveCustomerAddress } from '@/lib/api/customer.server';
-import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/lib/address-utils';
-import { fetchShippingMethodsMapForBasket } from '@/lib/checkout-loaders.server';
+import { getAddressKey, isAddressEqual, customerAddressToOrderAddress } from '@/lib/address/address-utils';
+import { fetchShippingMethodsMapForBasket } from '@/lib/checkout/loaders.server';
 import { extractResponseError } from '@/lib/utils';
 
 // Mock dependencies
@@ -46,8 +46,8 @@ vi.mock('@/lib/api/customer.server', () => ({
     saveCustomerAddress: vi.fn(),
 }));
 
-vi.mock('@/lib/address-utils', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('@/lib/address-utils')>();
+vi.mock('@/lib/address/address-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/address/address-utils')>();
     return {
         ...actual,
         getAddressKey: vi.fn((addr) => `${addr.firstName}-${addr.lastName}-${addr.address1}`),
@@ -80,7 +80,7 @@ vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     })),
 }));
 
-vi.mock('@/lib/checkout-loaders.server', () => ({
+vi.mock('@/lib/checkout/loaders.server', () => ({
     fetchShippingMethodsMapForBasket: vi.fn(),
 }));
 
