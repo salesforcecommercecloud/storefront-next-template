@@ -60,7 +60,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 440000, aggregationMethod: 'median' },
+                            { maxNumericValue: 391000, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',
@@ -100,7 +100,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 490000, aggregationMethod: 'median' },
+                            { maxNumericValue: 438000, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',
@@ -120,7 +120,7 @@ module.exports = {
                         'categories:best-practices': ['error', { minScore: 0.96, aggregationMethod: 'median' }],
                         'resource-summary:script:size': [
                             'error',
-                            { maxNumericValue: 460000, aggregationMethod: 'median' },
+                            { maxNumericValue: 415000, aggregationMethod: 'median' },
                         ],
                         'resource-summary:document:size': [
                             'error',

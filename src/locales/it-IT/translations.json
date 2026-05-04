@@ -1472,7 +1472,7 @@
         "checkBack": "Ricontrolla tra qualche minuto o seguici per aggiornamenti.",
         "tryAgain": "Riprova"
     },
-    "error": {
+    "routeError": {
         "403": {
             "title": "Accesso limitato",
             "message": "Non hai il permesso di visualizzare questa pagina. Se ritieni che questo sia un errore, contatta il nostro team di supporto.",

@@ -32,6 +32,14 @@ const defaultClientAuth: PublicSessionData = {
     userType: 'registered',
 };
 import { mockConfig, mockBuildConfig } from '@/test-utils/config';
+// ErrorBoundary creates its own isolated i18next instance from errorTranslations —
+// it does not use the global i18next singleton, so getTranslation() would return key strings here.
+// Importing the JSON directly is the correct source of truth for the translated path assertion.
+// The fallback path (no loader data) renders hardcoded inline English strings — no JSON import needed.
+import itITTranslations from '@/locales/it-IT/translations.json';
+const itITRouteError = itITTranslations.routeError;
+import enGBTranslations from '@/locales/en-GB/translations.json';
+const enGBRouteError = enGBTranslations.routeError;
 
 const mockSite = {
     ...mockBuildConfig.app.commerce.sites[0],
@@ -46,42 +54,11 @@ vi.mock('@salesforce/storefront-next-runtime/i18n/client', async () => {
     // (no resources pre-loaded, uses backend to fetch translations)
     const testInstance = i18next.default.createInstance();
 
-    // Mock the backend to return test translations
     const mockBackend = {
         type: 'backend' as const,
         init: vi.fn(),
-        read: vi.fn((_language: string, namespace: string, callback: (error: any, data: any) => void) => {
-            // Return test translations for error namespace
-            if (namespace === 'error') {
-                callback(null, {
-                    defaultTitle: 'Something went wrong',
-                    goToHomepage: 'Go to Homepage',
-                    allRightsReserved: 'All rights reserved.',
-                    '404': {
-                        title: 'Page not found',
-                        message:
-                            "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
-                        secondaryMessage: "Don't worry—you can still explore our collection or head back home.",
-                        details: 'The requested page could not be found.',
-                    },
-                    '403': {
-                        title: 'Access restricted',
-                        message:
-                            "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
-                        secondaryMessage: 'In the meantime, feel free to browse our collection.',
-                    },
-                    '500': {
-                        title: 'Something went wrong',
-                        message:
-                            "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
-                        secondaryMessage:
-                            'Please try again in a few moments, or browse our shop while we sort things out.',
-                    },
-                });
-            } else {
-                // Return empty translations for other namespaces
-                callback(null, {});
-            }
+        read: vi.fn((_language: string, _namespace: string, callback: (error: any, data: any) => void) => {
+            callback(null, {});
         }),
     };
 
@@ -159,6 +136,22 @@ vi.mock('@salesforce/storefront-next-runtime/design/react/core', async (importOr
         PageDesignerProvider: ({ children }: PropsWithChildren) => (
             <div data-testid="page-designer-provider">{children}</div>
         ),
+    };
+});
+
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
+    const realUseRouteLoaderData = actual.useRouteLoaderData;
+    return {
+        ...actual,
+        // ErrorBoundary tests render outside a router context; swallow the invariant and return null.
+        useRouteLoaderData: vi.fn((routeId: string) => {
+            try {
+                return realUseRouteLoaderData(routeId);
+            } catch {
+                return null;
+            }
+        }),
     };
 });
 
@@ -305,6 +298,16 @@ describe('root.tsx', () => {
         const stackText = 'Error: Test error with stack';
 
         describe('development mode', () => {
+            beforeEach(async () => {
+                const reactRouter = await import('react-router');
+                vi.mocked(reactRouter.useRouteLoaderData).mockReturnValue({
+                    errorTranslations: enGBRouteError,
+                    appConfig: { i18n: { fallbackLng: 'en-GB' } },
+                    locale: { id: 'en-GB' },
+                    site: mockSite,
+                } as any);
+            });
+
             it('should render normal error with message', () => {
                 const error = new Error('Test error');
                 error.stack = stackText;
@@ -359,7 +362,7 @@ describe('root.tsx', () => {
 
                 expect(getByText('500')).toBeInTheDocument();
                 expect(getByText('Something went wrong')).toBeInTheDocument();
-                // 500 errors now show friendly translated message instead of statusText
+                // 500 errors show friendly translated message instead of statusText
                 expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
@@ -369,9 +372,16 @@ describe('root.tsx', () => {
         describe('production mode', () => {
             let originalEnv = import.meta.env.DEV;
 
-            beforeEach(() => {
+            beforeEach(async () => {
                 originalEnv = import.meta.env.DEV;
                 import.meta.env.DEV = false;
+                const reactRouter = await import('react-router');
+                vi.mocked(reactRouter.useRouteLoaderData).mockReturnValue({
+                    errorTranslations: enGBRouteError,
+                    appConfig: { i18n: { fallbackLng: 'en-GB' } },
+                    locale: { id: 'en-GB' },
+                    site: mockSite,
+                } as any);
             });
 
             afterEach(() => {
@@ -421,10 +431,44 @@ describe('root.tsx', () => {
 
                 expect(getByText('500')).toBeInTheDocument();
                 expect(getByText('Something went wrong')).toBeInTheDocument();
-                // 500 errors now show friendly translated message instead of statusText
+                // 500 errors show friendly translated message instead of statusText
                 expect(getByText(/We're sorry, but something unexpected happened on our end/)).toBeInTheDocument();
                 expect(container.querySelector('pre')).not.toBeInTheDocument();
                 expect(container.querySelector('code')).not.toBeInTheDocument();
+            });
+        });
+
+        describe('translation source', () => {
+            afterEach(async () => {
+                // Reset so the mock's try/catch default behaviour is restored for other tests.
+                const reactRouter = await import('react-router');
+                vi.mocked(reactRouter.useRouteLoaderData).mockRestore();
+            });
+
+            it('should use errorTranslations from rootData when available', async () => {
+                const reactRouter = await import('react-router');
+                vi.mocked(reactRouter.useRouteLoaderData).mockReturnValue({
+                    errorTranslations: itITRouteError,
+                    appConfig: { i18n: { fallbackLng: 'en-GB' } },
+                    locale: { id: 'it-IT' },
+                    site: mockSite,
+                } as any);
+
+                const error = { status: 404, statusText: 'Not Found', data: {}, internal: false };
+                const { getByText } = render(<ErrorBoundary error={error} />);
+
+                expect(getByText('404')).toBeInTheDocument();
+                expect(getByText(itITRouteError['404'].title)).toBeInTheDocument();
+            });
+
+            it('should render hardcoded English fallback when no errorTranslations are available', () => {
+                // useRouteLoaderData returns null (outside router context — default mock behaviour).
+                // ErrorBoundary skips i18next entirely and renders hardcoded inline English strings.
+                const error = { status: 404, statusText: 'Not Found', data: {}, internal: false };
+                const { getByText } = render(<ErrorBoundary error={error} />);
+
+                expect(getByText('404')).toBeInTheDocument();
+                expect(getByText('Page not found')).toBeInTheDocument();
             });
         });
     });

@@ -25,6 +25,7 @@
 - Update Page Designer middleware and `vite.config.ts` to align with upstream `@salesforce/mrt-utilities` conditional export flow (no local Vite alias requirement) ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Standardize behaviors of API errors in Checkout (@W-22199926) ([#1521](https://github.com/commerce-emu/storefront-next/pull/1521))
 - Migrate i18n infrastructure to SDK: replace `src/lib/i18next.ts`, `src/lib/i18next.client.ts`, and `scripts/aggregate-extension-locales.js` with imports from `@salesforce/storefront-next-runtime/i18n` and `sfnext locales aggregate-extensions`
+- Fix locale bundle bloat, SSR 404 plain-text response, and homepage links ignoring active locale on error pages
 
 ## v0.4.0-dev (Apr 15, 2026)
 

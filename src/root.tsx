@@ -38,11 +38,16 @@ import {
 // Third-party libraries
 import { createInstance, type i18n } from 'i18next';
 import { I18nextProvider, useTranslation, initReactI18next } from 'react-i18next';
-import resources from '@/locales'; // Server-side translations
 import { PageDesignerProvider } from '@salesforce/storefront-next-runtime/design/react/core';
 import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
 import { dataStoreMiddleware, getGcpApiKey } from '@salesforce/storefront-next-runtime/data-store';
-import { SiteProvider, siteContext, type Site, type Locale } from '@salesforce/storefront-next-runtime/site-context';
+import {
+    buildUrl,
+    SiteProvider,
+    siteContext,
+    type Site,
+    type Locale,
+} from '@salesforce/storefront-next-runtime/site-context';
 
 // Middlewares
 import authMiddlewareServer, { getAuth as getAuthServer } from '@/middlewares/auth.server';
@@ -192,6 +197,8 @@ export const loader = ({
     gcpApiKeyFromDAL: string;
     // Return as function to prevent i18next instance serialization
     getI18next: () => i18n;
+    // Serialized error namespace for the active locale — used by ErrorBoundary on SSR/hydration
+    errorTranslations: Record<string, unknown>;
 } => {
     const session = getAuthServer(context);
 
@@ -249,6 +256,7 @@ export const loader = ({
         seoMeta,
         gcpApiKeyFromDAL: getGcpApiKey(context),
         getI18next: () => i18next,
+        errorTranslations: (i18next.getResourceBundle(i18next.language, 'routeError') as Record<string, unknown>) ?? {},
         pageDesignerMode: isDesignModeActive(request) ? 'EDIT' : isPreviewModeActive(request) ? 'PREVIEW' : undefined,
     };
 };
@@ -312,26 +320,40 @@ export function Layout({ children }: PropsWithChildren) {
 }
 
 /**
- * Error page content component with i18n support
+ * Error page content component with i18n support.
+ * When called without an I18nextProvider (early error before loader ran), t falls back to
+ * the key string — callers must pass translated strings directly via props in that case.
  */
 function ErrorPageContent({
     status,
     details,
     stack,
+    homepageUrl,
+    title,
+    message,
+    secondaryMessage,
+    statusDetails,
+    goToHomepageLabel,
+    allRightsReservedLabel,
 }: {
     status: number | undefined;
     details: string | undefined;
     stack: string | undefined;
+    homepageUrl: string;
+    title: string;
+    message?: string;
+    secondaryMessage?: string;
+    statusDetails?: string;
+    goToHomepageLabel: string;
+    allRightsReservedLabel: string;
 }) {
-    const { t } = useTranslation('error');
-
     return (
         <>
             {/* Simple Header */}
             <header className="bg-header-background text-header-foreground border-b border-border sticky top-0 z-50">
                 <div className="section-container">
                     <div className="flex items-center gap-x-4 lg:gap-x-6 h-16">
-                        <a href="/" className="flex-shrink-0 flex items-center">
+                        <a href={homepageUrl} className="flex-shrink-0 flex items-center">
                             <img
                                 src={logo}
                                 alt="Logo"
@@ -349,58 +371,29 @@ function ErrorPageContent({
                         {/* Large status code */}
                         {status && <div className="text-error-status font-bold leading-none mb-8">{status}</div>}
 
-                        {/* Error content - conditional based on status */}
-                        {status === 404 ? (
-                            <>
-                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('404.title')}</h1>
-                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
-                                    {t('404.message')}
-                                </p>
-                                <p className="text-base text-muted-foreground mb-4 max-w-2xl mx-auto">
-                                    {t('404.secondaryMessage')}
-                                </p>
-                                <p className="text-sm text-muted-foreground mb-12 max-w-2xl mx-auto opacity-50">
-                                    {t('404.details')}
-                                </p>
-                            </>
-                        ) : status === 403 ? (
-                            <>
-                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('403.title')}</h1>
-                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
-                                    {t('403.message')}
-                                </p>
-                                <p className="text-base text-muted-foreground mb-12 max-w-2xl mx-auto">
-                                    {t('403.secondaryMessage')}
-                                </p>
-                            </>
-                        ) : status === 500 ? (
-                            <>
-                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('500.title')}</h1>
-                                <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">
-                                    {t('500.message')}
-                                </p>
-                                <p className="text-base text-muted-foreground mb-12 max-w-2xl mx-auto">
-                                    {t('500.secondaryMessage')}
-                                </p>
-                            </>
-                        ) : (
-                            <>
-                                <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('defaultTitle')}</h1>
-                                {/* For other errors: show technical details */}
-                                {details && (
-                                    <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-                                        Error: {details}
-                                    </p>
-                                )}
-                            </>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-6">{title}</h1>
+
+                        {message && <p className="text-lg text-muted-foreground mb-4 max-w-2xl mx-auto">{message}</p>}
+                        {secondaryMessage && (
+                            <p className="text-base text-muted-foreground mb-4 max-w-2xl mx-auto">{secondaryMessage}</p>
+                        )}
+                        {statusDetails && (
+                            <p className="text-sm text-muted-foreground mb-12 max-w-2xl mx-auto opacity-50">
+                                {statusDetails}
+                            </p>
+                        )}
+
+                        {/* For non-route errors: show technical details */}
+                        {!status && details && (
+                            <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">Error: {details}</p>
                         )}
 
                         {/* Back to home button */}
                         <div>
                             <a
-                                href="/"
+                                href={homepageUrl}
                                 className="inline-block rounded-none bg-primary px-12 py-3 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary/90">
-                                {t('goToHomepage')}
+                                {goToHomepageLabel}
                             </a>
                         </div>
 
@@ -429,7 +422,7 @@ function ErrorPageContent({
             <footer className="mt-auto bg-background border-t border-border">
                 <div className="mx-auto max-w-7xl section-container py-8">
                     <p className="text-center text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} {t('allRightsReserved')}
+                        © {new Date().getFullYear()} {allRightsReservedLabel}
                     </p>
                 </div>
             </footer>
@@ -437,15 +430,111 @@ function ErrorPageContent({
     );
 }
 
+/**
+ * Renders the error page using translations from the root loader payload.
+ * Requires an I18nextProvider wrapping it.
+ */
+function TranslatedErrorPageContent({
+    status,
+    details,
+    stack,
+    homepageUrl,
+}: {
+    status: number | undefined;
+    details: string | undefined;
+    stack: string | undefined;
+    homepageUrl: string;
+}) {
+    const { t } = useTranslation('routeError');
+
+    let title: string;
+    let message: string | undefined;
+    let secondaryMessage: string | undefined;
+    let statusDetails: string | undefined;
+
+    if (status === 404) {
+        title = t('404.title');
+        message = t('404.message');
+        secondaryMessage = t('404.secondaryMessage');
+        statusDetails = t('404.details');
+    } else if (status === 403) {
+        title = t('403.title');
+        message = t('403.message');
+        secondaryMessage = t('403.secondaryMessage');
+    } else if (status === 500) {
+        title = t('500.title');
+        message = t('500.message');
+        secondaryMessage = t('500.secondaryMessage');
+    } else {
+        title = t('defaultTitle');
+    }
+
+    return (
+        <ErrorPageContent
+            status={status}
+            details={details}
+            stack={stack}
+            homepageUrl={homepageUrl}
+            title={title}
+            message={message}
+            secondaryMessage={secondaryMessage}
+            statusDetails={statusDetails}
+            goToHomepageLabel={t('goToHomepage')}
+            allRightsReservedLabel={t('allRightsReserved')}
+        />
+    );
+}
+
 export function ErrorBoundary({ error }: { error: unknown }) {
-    // Handle maintenance mode errors
-    // Error is serialized when crossing server->client boundary, so we check the string representation
-    if (error && error.toString().indexOf('MAINTENANCE_ERROR') >= 0) {
-        // Use React Router Navigate for smooth client-side navigation
+    // All hooks must be called unconditionally before any early returns.
+    const rootData = useRouteLoaderData<typeof loader>('root');
+
+    const language =
+        (typeof window !== 'undefined' && i18nextOnClient ? i18nextOnClient.language : undefined) ||
+        (typeof document !== 'undefined' ? document.documentElement.lang : undefined) ||
+        rootData?.locale?.id ||
+        'en';
+
+    const errorTranslations = rootData?.errorTranslations;
+    const fallbackLng = rootData?.appConfig.i18n.fallbackLng ?? 'en';
+
+    // Only created when errorTranslations is available (root loader ran).
+    // When the loader did not run (e.g. middleware crash), errorTranslations is undefined and we
+    // skip i18next entirely — rendering hardcoded English strings directly avoids any static import
+    // of locale JSON that would cause Vite to bundle/preload locale chunks on every page.
+    const i18nextInstance = useMemo(() => {
+        if (!errorTranslations || Object.keys(errorTranslations).length === 0) return null;
+        const resources: Record<string, { routeError: Record<string, unknown> }> = {
+            [fallbackLng]: { routeError: errorTranslations },
+            [language]: { routeError: errorTranslations },
+        };
+        const instance = createInstance();
+        void instance.use(initReactI18next).init({
+            lng: language,
+            fallbackLng,
+            resources,
+            interpolation: { escapeValue: false },
+            initAsync: false,
+        });
+        return instance;
+    }, [language, errorTranslations, fallbackLng]);
+
+    const homepageUrl = rootData?.site
+        ? buildUrl({
+              to: '/',
+              urlConfig: rootData.appConfig.url,
+              params: {
+                  siteId: rootData.site.alias ?? rootData.site.id,
+                  localeId: rootData.appConfig.localeAliasMap?.[rootData.locale.id] ?? rootData.locale.id,
+              },
+          })
+        : '/';
+
+    // Redirect maintenance errors before rendering.
+    if (error && error.toString().includes('MAINTENANCE_ERROR')) {
         return <Navigate to="/maintenance" replace />;
     }
 
-    // For all other errors, render error page with app layout
     let status: number | undefined;
     let details: string | undefined;
     let stack: string | undefined;
@@ -460,31 +549,38 @@ export function ErrorBoundary({ error }: { error: unknown }) {
         details = error;
     }
 
-    // Always create a new i18next instance with pre-loaded translations for the ErrorBoundary
-    // This ensures translations are immediately available without async loading
-    const language =
-        typeof window !== 'undefined' && i18nextOnClient
-            ? i18nextOnClient.language || 'en-US'
-            : typeof document !== 'undefined'
-              ? document.documentElement.lang || 'en-US'
-              : 'en-US';
+    // Root loader ran — render with active locale translations.
+    if (i18nextInstance) {
+        return (
+            <I18nextProvider i18n={i18nextInstance}>
+                <TranslatedErrorPageContent status={status} details={details} stack={stack} homepageUrl={homepageUrl} />
+            </I18nextProvider>
+        );
+    }
 
-    const i18nextInstance = createInstance();
-    // Initialize synchronously with pre-loaded resources
-    void i18nextInstance.use(initReactI18next).init({
-        lng: language,
-        fallbackLng: 'en-US',
-        resources,
-        interpolation: {
-            escapeValue: false,
-        },
-        initImmediate: true, // Ensures synchronous initialization with pre-loaded resources
-    });
+    // Root loader did not run (e.g. middleware crash before loader executed).
+    // No locale context available — render hardcoded English strings with no i18next dependency.
+    const englishContent = {
+        404: { title: 'Page not found', message: 'The requested page could not be found.' },
+        403: { title: 'Access restricted', message: "You don't have permission to view this page." },
+        500: { title: 'Something went wrong', message: 'An unexpected error occurred. Please try again later.' },
+    };
+    const fallbackContent =
+        status && status in englishContent
+            ? englishContent[status as keyof typeof englishContent]
+            : { title: 'Something went wrong', message: undefined };
 
     return (
-        <I18nextProvider i18n={i18nextInstance}>
-            <ErrorPageContent status={status} details={details} stack={stack} />
-        </I18nextProvider>
+        <ErrorPageContent
+            status={status}
+            details={details}
+            stack={stack}
+            homepageUrl={homepageUrl}
+            title={fallbackContent.title}
+            message={fallbackContent.message}
+            goToHomepageLabel="Go to Homepage"
+            allRightsReservedLabel="All rights reserved."
+        />
     );
 }
 

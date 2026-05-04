@@ -1509,7 +1509,7 @@
         "checkBack": "Check back in a few minutes, or follow us for updates.",
         "tryAgain": "Try Again"
     },
-    "error": {
+    "routeError": {
         "defaultTitle": "Something went wrong",
         "defaultDescription": "An error occurred",
         "defaultDetails": "An unexpected error occurred.",
