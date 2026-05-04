@@ -31,6 +31,11 @@ const RouterWrapper = ({
     // like CategoryBanner receive loader data without modifying the component itself.
     const routeLoaderData = context.parameters?.routeLoaderData as Record<string, unknown> | undefined;
 
+    // When a story provides `parameters.scapiMock`, override the default product fixture
+    // returned by the `/resource/api/client/:resource` route. Used by components whose
+    // play functions assert against story-specific product data (e.g. BonusProductModal)
+    const scapiMock = context.parameters?.scapiMock as { data?: unknown } | undefined;
+
     const WrappedStory = (
         <StorybookWrapper>
             <UITargetProviders>
@@ -166,8 +171,13 @@ const RouterWrapper = ({
                         // Mock loader for SCAPI resource calls (e.g. product fetches inside CartItemModal).
                         // useScapiFetcher calls fetcher.load('/resource/api/client/:resource') — without a
                         // loader here React Router throws a 404 when Quick Add opens the modal.
+                        //
+                        // Stories can override the returned fixture by setting
+                        //   parameters: { scapiMock: { data: myFixture } }
+                        // This is required when a play function asserts against story-specific product data
+                        // (e.g. BonusProductModal's tie fixture) instead of the default masterProduct.
                         path: '/resource/api/client/:resource',
-                        loader: () => ({ success: true, data: masterProduct }),
+                        loader: () => ({ success: true, data: scapiMock?.data ?? masterProduct }),
                     },
                     {
                         // Catch-all: absorbs navigations triggered by interactive components
@@ -182,7 +192,7 @@ const RouterWrapper = ({
                 }
             ),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [WrappedStory, routeLoaderData]
+        [WrappedStory, routeLoaderData, scapiMock]
     );
 
     return <RouterProvider router={router} />;

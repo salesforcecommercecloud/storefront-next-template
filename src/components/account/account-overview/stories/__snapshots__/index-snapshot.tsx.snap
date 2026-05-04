@@ -381,7 +381,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account"
+          href="/global/en-GB/account"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -418,7 +418,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/addresses"
+          href="/global/en-GB/account/addresses"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -455,7 +455,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/payment-methods"
+          href="/global/en-GB/account/payment-methods"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -497,7 +497,7 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/orders"
+          href="/global/en-GB/account/orders"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -919,7 +919,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account"
+          href="/global/en-GB/account"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -956,7 +956,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/addresses"
+          href="/global/en-GB/account/addresses"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -993,7 +993,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/payment-methods"
+          href="/global/en-GB/account/payment-methods"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -1035,7 +1035,7 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/orders"
+          href="/global/en-GB/account/orders"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -1784,7 +1784,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
       <a
         class="group"
         data-discover="true"
-        href="/RefArchGlobal/en-GB/account"
+        href="/global/en-GB/account"
       >
         <div
           class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -1821,7 +1821,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
       <a
         class="group"
         data-discover="true"
-        href="/RefArchGlobal/en-GB/account/addresses"
+        href="/global/en-GB/account/addresses"
       >
         <div
           class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -1858,7 +1858,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
       <a
         class="group"
         data-discover="true"
-        href="/RefArchGlobal/en-GB/account/payment-methods"
+        href="/global/en-GB/account/payment-methods"
       >
         <div
           class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -1900,7 +1900,7 @@ exports[`AccountOverview stories snapshot > QuickLinksSectionDefault story rende
       <a
         class="group"
         data-discover="true"
-        href="/RefArchGlobal/en-GB/account/orders"
+        href="/global/en-GB/account/orders"
       >
         <div
           class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -2881,7 +2881,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account"
+          href="/global/en-GB/account"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -2918,7 +2918,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/addresses"
+          href="/global/en-GB/account/addresses"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -2955,7 +2955,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/payment-methods"
+          href="/global/en-GB/account/payment-methods"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"
@@ -2997,7 +2997,7 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
         <a
           class="group"
           data-discover="true"
-          href="/RefArchGlobal/en-GB/account/orders"
+          href="/global/en-GB/account/orders"
         >
           <div
             class="h-full flex flex-col items-center justify-center gap-3 p-6 rounded-none border transition-all duration-200 hover:shadow-md hover:border-primary/50 group-focus-visible:ring-2 group-focus-visible:ring-primary"

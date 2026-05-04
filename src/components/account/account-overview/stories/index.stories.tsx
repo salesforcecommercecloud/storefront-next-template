@@ -17,10 +17,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { MemoryRouter } from 'react-router';
-import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import RecommendersProvider from '@/providers/recommenders';
 import {
     AccountOverview,
@@ -101,9 +99,9 @@ const emptyOrders: CustomerOrdersResult = {
 const meta: Meta<typeof AccountOverview> = {
     title: 'ACCOUNT/Account Overview',
     component: AccountOverview,
-    // Note: 'skip-a11y' tag added because this component uses MemoryRouter and
-    // ProductRecommendations which require proper context setup in test environments
-    tags: ['autodocs', 'skip-a11y'],
+    // 'skip-a11y' retained because ProductRecommendations requires provider context
+    // beyond what the a11y runner can set up.
+    tags: ['autodocs', 'skip-a11y', 'interaction'],
     parameters: {
         layout: 'padded',
         docs: {
@@ -123,17 +121,22 @@ This component is typically rendered as the default view when users navigate to 
         },
     },
     decorators: [
-        (Story) => (
-            <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="GBP">
+        // Storybook's global preview already provides a RouterProvider, but
+        // Vitest snapshot tests (composeStories) run outside that context and
+        // need a MemoryRouter. Guard with useInRouterContext to avoid nesting.
+        (Story) => {
+            const inRouter = useInRouterContext();
+            const content = (
+                <AllProvidersWrapper>
                     <RecommendersProvider>
-                        <MemoryRouter>
-                            <Story />
-                        </MemoryRouter>
+                        <Story />
                     </RecommendersProvider>
-                </SiteProvider>
-            </ConfigProvider>
-        ),
+                </AllProvidersWrapper>
+            );
+            if (inRouter) return content;
+            const router = createMemoryRouter([{ path: '/', element: content }], { initialEntries: ['/'] });
+            return <RouterProvider router={router} />;
+        },
     ],
 };
 
@@ -152,8 +155,10 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
+        // Welcome renders synchronously; Recent Orders is wrapped in <Suspense> + <Await>,
+        // so use findByText to await the deferred resolution.
         await expect(canvas.getByText(/Welcome back, John!/i)).toBeInTheDocument();
-        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(await canvas.findByText(/Recent Orders/i)).toBeInTheDocument();
         await expect(canvas.getByText(/Quick Links/i)).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Account Details/i })).toBeInTheDocument();
         await expect(canvas.getByRole('heading', { name: /Manage Addresses/i })).toBeInTheDocument();
@@ -264,10 +269,11 @@ export const RecentOrdersDefault: StoryObj<typeof AccountOverviewOrdersAwait> = 
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('link', { name: /View All/i })).toBeInTheDocument();
-        await expect(canvas.getByText('INV001')).toBeInTheDocument();
-        await expect(canvas.getByText('INV002')).toBeInTheDocument();
+        // Content is inside <Suspense> + <Await>, so use findByText.
+        await expect(await canvas.findByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(await canvas.findByRole('link', { name: /View All/i })).toBeInTheDocument();
+        await expect(await canvas.findByText('#INV001')).toBeInTheDocument();
+        await expect(await canvas.findByText('#INV002')).toBeInTheDocument();
     },
 };
 
@@ -287,8 +293,9 @@ export const RecentOrdersEmpty: StoryObj<typeof AccountOverviewOrdersAwait> = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByText(/Recent Orders/i)).toBeInTheDocument();
-        await expect(canvas.getByRole('link', { name: /View All/i })).toBeInTheDocument();
+        // Content is inside <Suspense> + <Await>, so use findByText.
+        await expect(await canvas.findByText(/Recent Orders/i)).toBeInTheDocument();
+        await expect(await canvas.findByRole('link', { name: /View All/i })).toBeInTheDocument();
     },
 };
 
