@@ -29,12 +29,23 @@ class AccountWishlistPage {
     locators = {
         wishlistItem: locate(this.wishlistItemSelector).as('Wishlist Item'),
         removeButton: locate(this.wishlistItemSelector).first().find('button').as('Remove Button'),
+        pageTitle: locate('h1').withText('Wishlist').as('Page Title'),
     };
 
     readonly maxPollAttempts = 3;
 
     navigate(): void {
         I.amOnPage(buildSitePath(this.path));
+    }
+
+    /**
+     * Validate that the page loaded successfully.
+     * The wishlist page header renders before the item list resolves from Suspense,
+     * so asserting on the heading gives a stable readiness signal regardless of
+     * whether the user has any saved items.
+     */
+    validatePageLoaded(): void {
+        I.seeElement(this.locators.pageTitle);
     }
 
     async getItemCount(): Promise<number> {

@@ -30,16 +30,29 @@ import { buildSitePath } from '../utils/url-utils';
  *
  * Uses direct URL navigation for reliability and speed.
  */
+interface AddToWishlistOptions {
+    /** Direct URL to category page. */
+    categoryUrl?: string;
+    /**
+     * Skip the internal login step. Set to true when the caller has already
+     * authenticated the session and wants to reuse it.
+     */
+    skipLogin?: boolean;
+}
+
 class AddToWishlistFlow {
     /**
      * Execute the complete add-to-wishlist flow
      *
-     * @param categoryUrl - Direct URL to category page (default: '/category/mens-clothing-jackets')
+     * @param options - Flow options
      * @returns Promise<string> - Title of the product that was added to wishlist
      */
-    async execute(categoryUrl: string = '/category/mens-clothing-jackets'): Promise<string> {
+    async execute(options: AddToWishlistOptions = {}): Promise<string> {
+        const { categoryUrl = '/category/mens-clothing-jackets', skipLogin = false } = options;
         try {
-            await loginFlow.execute();
+            if (!skipLogin) {
+                await loginFlow.execute();
+            }
 
             I.amOnPage(buildSitePath(categoryUrl));
             const productUrl = await productListPage.getFirstProductUrl();
