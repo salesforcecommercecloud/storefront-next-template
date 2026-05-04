@@ -16,7 +16,7 @@
 import { type ReactElement, Suspense, useEffect } from 'react';
 import { UITarget } from '@/targets/ui-target';
 import AddressDisplay from '@/components/address-display';
-import { Await, type LoaderFunctionArgs } from 'react-router';
+import { Await, type LoaderFunctionArgs, useFetcher } from 'react-router';
 import { Link } from '@/components/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,6 +42,9 @@ import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import { toImageUrl } from '@/lib/dynamic-image';
 import { getLogger } from '@/lib/logger.server';
+import { getLoginPreferences } from '@/lib/login-preferences.server';
+import { isRegisteredCustomer } from '@/lib/api/customer.server';
+import { PostOrderRegistration } from '@/components/post-order-registration/post-order-registration';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForOrder } from '@/extensions/bopis/lib/api/stores.server';
 import { getOrderDeliveryShipments, getOrderPickupShipment } from '@/extensions/bopis/lib/order-utils';
@@ -60,6 +63,7 @@ type OrderConfirmationData = {
 
 type CheckoutConfirmationLoaderData = {
     orderData: Promise<OrderConfirmationData>;
+    showPostOrderRegistration: boolean;
 };
 
 type ImageSource = {
@@ -106,6 +110,11 @@ export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirm
     logger.debug('OrderConfirmation: loader starting', { orderNo });
     const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo as string);
 
+    // Determine if we should show post-order registration (guest + email verification disabled)
+    const userIsRegistered = isRegisteredCustomer(context);
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    const showPostOrderRegistration = !userIsRegistered && !emailVerificationEnabled;
+
     // @sfdc-extension-line SFDC_EXT_BOPIS
     const storesByStoreIdPromise = orderPromise.then((order) => fetchStoresForOrder(context, order));
 
@@ -127,6 +136,7 @@ export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirm
 
     return {
         orderData: combinedPromise,
+        showPostOrderRegistration,
     };
 }
 
@@ -177,11 +187,18 @@ function OrderConfirmationContent({
     productsById,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     storesByStoreId,
-}: OrderConfirmationData): ReactElement {
+    showPostOrderRegistration,
+}: OrderConfirmationData & { showPostOrderRegistration: boolean }): ReactElement {
     const config = useConfig<AppConfig>();
     const { t, i18n } = useTranslation('checkout');
     const { currency } = useSite();
     const resetBasket = useBasketReset();
+
+    // Track registration fetcher to keep showing the card after revalidation
+    // (loader flips showPostOrderRegistration to false once the user is logged in)
+    const registerFetcher = useFetcher<{ success: boolean }>({ key: 'post-order-register' });
+    const registrationSuccess = registerFetcher.data?.success === true;
+
     let deliveryShipments = order.shipments;
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -290,6 +307,16 @@ function OrderConfirmationContent({
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Post-order registration for guest shoppers when email verification is disabled */}
+                {(showPostOrderRegistration || registrationSuccess) && order.customerInfo?.email && (
+                    <PostOrderRegistration
+                        email={order.customerInfo.email}
+                        firstName={order.billingAddress?.firstName || order.shipments?.[0]?.shippingAddress?.firstName}
+                        lastName={order.billingAddress?.lastName || order.shipments?.[0]?.shippingAddress?.lastName}
+                        orderNo={order.orderNo}
+                    />
+                )}
 
                 {/* @sfdc-extension-block-start SFDC_EXT_BOPIS */}
                 {/* Pickup Details */}
@@ -556,7 +583,14 @@ export default function OrderConfirmationPage({
         <>
             <SeoMeta title={t('meta.confirmationTitle', { defaultValue: 'Order Confirmation' })} noIndex />
             <Suspense fallback={<OrderSkeleton />}>
-                <Await resolve={loaderData.orderData}>{(data) => <OrderConfirmationContent {...data} />}</Await>
+                <Await resolve={loaderData.orderData}>
+                    {(data) => (
+                        <OrderConfirmationContent
+                            {...data}
+                            showPostOrderRegistration={loaderData.showPostOrderRegistration}
+                        />
+                    )}
+                </Await>
             </Suspense>
         </>
     );

@@ -662,6 +662,20 @@
                 "placeholder": "Email address",
                 "cta": "Join"
             },
+            "postOrderRegistration": {
+                "title": "Create an account for a faster checkout next time",
+                "subtitle": "Save your details and track your orders by creating an account with your email.",
+                "emailLabel": "Email",
+                "passwordLabel": "Password",
+                "passwordPlaceholder": "Create a password",
+                "confirmPasswordLabel": "Confirm Password",
+                "confirmPasswordPlaceholder": "Confirm your password",
+                "passwordMismatch": "Passwords do not match",
+                "createAccountButton": "Create Account",
+                "creating": "Creating Account...",
+                "successTitle": "Account Created!",
+                "successDescription": "Your account has been created with {{email}}. You're now logged in and can track your orders."
+            },
             "summaryTitle": "Summary",
             "emptyItemsFallback": "Your items are being prepared.",
             "productPlaceholderInitial": "Item"

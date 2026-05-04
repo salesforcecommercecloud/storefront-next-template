@@ -43,6 +43,14 @@ vi.mock('@/providers/basket', () => ({
     useBasketReset: () => vi.fn(),
 }));
 
+vi.mock('@/lib/api/customer.server', () => ({
+    isRegisteredCustomer: vi.fn(() => false),
+}));
+
+vi.mock('@salesforce/storefront-next-runtime/data-store', () => ({
+    getLoginPreferences: vi.fn(() => ({ emailVerificationEnabled: false })),
+}));
+
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 vi.mock('@/extensions/bopis/lib/api/stores.server', () => ({
     fetchStoresForOrder: vi.fn(),
@@ -139,6 +147,7 @@ function renderRoute(order: ShopperOrders.schemas['Order']) {
                     productsById: {},
                     storesByStoreId: new Map(),
                 }),
+                showPostOrderRegistration: false,
             }),
         },
     ]);

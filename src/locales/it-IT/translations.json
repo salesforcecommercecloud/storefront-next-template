@@ -670,6 +670,20 @@
                 "placeholder": "Indirizzo email",
                 "cta": "Iscriviti"
             },
+            "postOrderRegistration": {
+                "title": "Crea un account per un checkout più veloce la prossima volta",
+                "subtitle": "Salva i tuoi dati e traccia i tuoi ordini creando un account con la tua email.",
+                "emailLabel": "Email",
+                "passwordLabel": "Password",
+                "passwordPlaceholder": "Crea una password",
+                "confirmPasswordLabel": "Conferma Password",
+                "confirmPasswordPlaceholder": "Conferma la tua password",
+                "passwordMismatch": "Le password non corrispondono",
+                "createAccountButton": "Crea Account",
+                "creating": "Creazione Account...",
+                "successTitle": "Account Creato!",
+                "successDescription": "Il tuo account è stato creato con {{email}}. Sei ora connesso e puoi tracciare i tuoi ordini."
+            },
             "summaryTitle": "Riepilogo",
             "emptyItemsFallback": "I Suoi articoli sono in preparazione.",
             "productPlaceholderInitial": "Articolo"

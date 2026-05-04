@@ -133,7 +133,7 @@ function GuestAccountCreation({
     const justRegistered =
         typeof sessionStorage !== 'undefined' && sessionStorage.getItem('registeredViaCheckout') === 'true';
 
-    // Guest chose to skip passwordless OTP — treat like guest checkout but without create-account checkbox
+    // When email verification is disabled, registration is offered on the order confirmation page instead
     if (hideCreateAccountOption && !justRegistered) {
         return null;
     }
