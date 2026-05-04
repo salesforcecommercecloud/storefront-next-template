@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useCallback, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import { useProductFetcher } from '@/hooks/product/use-product-fetcher';
-import { useModalStateReset } from '@/hooks/use-modal-state-reset';
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { isProductBundle, isProductSet } from '@/lib/product-utils';
 import { CartItemModalView } from './view';
@@ -27,8 +25,10 @@ import type { CartItemModalProps } from './types';
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+type Product = ShopperProducts.schemas['Product'];
+
 interface CartItemModalEditContainerProps extends CartItemModalProps {
-    product: ShopperProducts.schemas['Product'];
+    product: Product;
     itemId: string;
 }
 
@@ -40,59 +40,105 @@ export function CartItemModalEditContainer({
     onBuyNow,
     open = false,
 }: CartItemModalEditContainerProps): ReactElement {
-    const [currentProduct, setCurrentProduct] = useState<ShopperProducts.schemas['Product'] | null>(product);
-    const [variationValues, setVariationValues] = useState<Record<string, string>>(product.variationValues || {});
     const { t } = useTranslation('editItem');
-
-    useModalStateReset({
-        open,
-        onReset: useCallback(() => {
-            setCurrentProduct(product);
-            setVariationValues(product.variationValues || {});
-        }, [product]),
-        resetOn: 'open',
-    });
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const pickupContext = usePickup();
     const pickupInfo = pickupContext?.pickupBasketItems?.get(product.id ?? '');
+    const inventoryIds = pickupInfo?.inventoryId ? [pickupInfo.inventoryId] : undefined;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    const matchingVariant = useMemo(() => {
-        if (!currentProduct) return undefined;
-        return currentProduct.variants?.find((variant) =>
-            Object.keys(variationValues).every((key) => variant.variationValues?.[key] === variationValues[key])
-        );
-    }, [currentProduct, variationValues]);
+    const productId = product.id ?? '';
 
-    const variantFetcher = useScapiFetcher('shopperProducts', 'getProduct', {
+    const [variationValues, setVariationValues] = useState<Record<string, string>>(product.variationValues ?? {});
+
+    useEffect(() => {
+        if (open) {
+            setVariationValues(product.variationValues ?? {});
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
+
+    const fullProductFetcher = useScapiFetcher('shopperProducts', 'getProduct', {
         params: {
-            path: { id: matchingVariant?.productId || '' },
+            path: { id: productId },
             query: {
                 allImages: true,
+                expand: [
+                    'variations',
+                    'availability',
+                    'images',
+                    'prices',
+                    'promotions',
+                    'set_products',
+                    'bundled_products',
+                ],
                 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                ...(pickupInfo?.inventoryId ? { inventoryIds: [pickupInfo.inventoryId] } : {}),
+                ...(inventoryIds ? { inventoryIds } : {}),
                 // @sfdc-extension-block-end SFDC_EXT_BOPIS
             },
         },
     });
 
-    useProductFetcher({
-        targetProductId: matchingVariant?.productId,
-        fetcher: variantFetcher,
-        currentProductId: currentProduct?.id,
-        onDataReceived: useCallback((p: ShopperProducts.schemas['Product']) => {
-            setCurrentProduct((prev) => {
-                if (!prev) return p;
-                return {
-                    ...p,
-                    variants: prev.variants || p.variants,
-                    variationAttributes: prev.variationAttributes || p.variationAttributes,
-                };
-            });
-        }, []),
-        enabled: open,
+    useEffect(() => {
+        if (open && fullProductFetcher.state === 'idle' && !fullProductFetcher.data) {
+            void fullProductFetcher.load();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, fullProductFetcher.state, fullProductFetcher.data]);
+
+    const fullProduct: Product = fullProductFetcher.data ?? product;
+
+    const matchingVariant = useMemo(() => {
+        if (!fullProduct.variants) return undefined;
+        return fullProduct.variants.find((variant) =>
+            Object.keys(variationValues).every((key) => variant.variationValues?.[key] === variationValues[key])
+        );
+    }, [fullProduct, variationValues]);
+
+    const variantProductId = matchingVariant?.productId;
+    const needsVariantFetch = !!variantProductId && variantProductId !== productId;
+
+    const variantFetcher = useScapiFetcher('shopperProducts', 'getProduct', {
+        params: {
+            path: { id: needsVariantFetch ? variantProductId : '' },
+            query: {
+                allImages: true,
+                expand: ['availability', 'images', 'prices', 'promotions'],
+                // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                ...(inventoryIds ? { inventoryIds } : {}),
+                // @sfdc-extension-block-end SFDC_EXT_BOPIS
+            },
+        },
     });
+
+    useEffect(() => {
+        if (
+            open &&
+            needsVariantFetch &&
+            variantFetcher.state === 'idle' &&
+            variantFetcher.data?.id !== variantProductId
+        ) {
+            void variantFetcher.load();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, needsVariantFetch, variantFetcher.state, variantFetcher.data?.id, variantProductId]);
+
+    const variantData =
+        needsVariantFetch && variantFetcher.data?.id === variantProductId ? variantFetcher.data : undefined;
+
+    const currentProduct: Product = useMemo(() => {
+        if (!variantData) return fullProduct;
+        return {
+            ...fullProduct,
+            ...variantData,
+            id: fullProduct.id,
+            variants: fullProduct.variants,
+            variationAttributes: fullProduct.variationAttributes,
+        };
+    }, [fullProduct, variantData]);
+
+    const isLoading = !fullProductFetcher.data && fullProductFetcher.state !== 'idle';
 
     const handleAttributeChange = useCallback((attributeId: string, value: string) => {
         setVariationValues((prev) => {
@@ -101,11 +147,10 @@ export function CartItemModalEditContainer({
         });
     }, []);
 
-    const safeProduct = currentProduct ?? ({} as ShopperProducts.schemas['Product']);
-    const { galleryImages } = useProductImages({ product: safeProduct, selectedAttributes: variationValues });
+    const { galleryImages } = useProductImages({ product: currentProduct, selectedAttributes: variationValues });
 
-    const isProductASet = currentProduct ? isProductSet(currentProduct) : false;
-    const isProductABundle = currentProduct ? isProductBundle(currentProduct) : false;
+    const isProductASet = isProductSet(currentProduct);
+    const isProductABundle = isProductBundle(currentProduct);
 
     const handleCloseModal = useCallback(() => {
         onOpenChange?.(false);
@@ -116,7 +161,7 @@ export function CartItemModalEditContainer({
             open={open}
             onOpenChange={onOpenChange}
             dialogTitle={t('title')}
-            isLoading={false}
+            isLoading={isLoading}
             hasError={false}
             retryLabel={t('retry')}
             loadingLabel={t('loadingProduct')}

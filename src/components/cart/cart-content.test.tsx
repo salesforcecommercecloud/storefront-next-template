@@ -22,6 +22,17 @@ const { t } = getTranslation();
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
 
+vi.mock('@/hooks/use-scapi-fetcher', () => ({
+    useScapiFetcher: vi.fn(() => ({
+        load: vi.fn(),
+        submit: vi.fn(),
+        data: null,
+        errors: undefined,
+        success: false,
+        state: 'idle' as const,
+    })),
+}));
+
 // Components
 import CartContent from './cart-content';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
