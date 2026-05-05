@@ -26,31 +26,26 @@ const fetcherMock = {
     Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
 };
 
-vi.mock('react-router', async (importOriginal) => {
-    const actual = await importOriginal<Record<string, unknown>>();
-    return {
-        ...actual,
-        createContext: vi.fn().mockImplementation(() => ({})),
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        useSearchParams: () => [new URLSearchParams(), vi.fn()],
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
+vi.mock('react-router', () => ({
+    createContext: vi.fn().mockImplementation(() => ({})),
+    useFetcher: () => fetcherMock,
+    useFetchers: () => [],
+    useNavigate: () => () => {},
+    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
+    useNavigation: () => ({
+        state: 'idle',
+        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
+    }),
+    useSearchParams: () => [new URLSearchParams(), vi.fn()],
+    Link: (props: MockLinkProps) => {
+        const { to, href, children, ...rest } = props ?? {};
+        return (
+            <a href={to ?? href} {...rest}>
+                {children}
+            </a>
+        );
+    },
+}));
 vi.mock('react-router-dom', async (importOriginal) => {
     const actual = await importOriginal<object>();
     return {
@@ -157,7 +152,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
 
 import { composeStories } from '@storybook/react-vite';
 
-import * as ProductGridStories from './index.stories';
+import * as ProductGridStories from './grid.stories';
 import { render, cleanup, waitFor, act } from '@testing-library/react';
 
 const composed = composeStories(ProductGridStories);

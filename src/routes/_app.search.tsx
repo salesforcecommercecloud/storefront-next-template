@@ -33,7 +33,7 @@ import ActiveFilters from '@/components/category-refinements/active-filters';
 import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
-import ProductGrid from '@/components/product-grid';
+import DeferredProductGrid from '@/components/product-grid';
 import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
@@ -355,7 +355,7 @@ export default function SearchPage({
                             {/* searchTopContent */}
                             <Region className="mb-8" page={page} regionId="searchTopContent" />
 
-                            <ProductGrid
+                            <DeferredProductGrid
                                 key={productGridDataKey}
                                 critical={searchResultCritical.hits ?? []}
                                 nonCritical={nonCriticalPromise}

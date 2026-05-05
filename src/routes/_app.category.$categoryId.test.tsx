@@ -124,9 +124,9 @@ vi.mock('@/components/region', () => ({
     Region: () => null,
 }));
 
-// Mock ProductGrid component
+// Mock DeferredProductGrid component
 vi.mock('@/components/product-grid', () => ({
-    default: function ProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
+    default: function DeferredProductGridMock({ critical, nonCriticalCount, handleProductClick }: any) {
         return (
             <div data-testid="product-grid">
                 <div data-testid="critical-count" style={{ display: 'none' }}>

@@ -35,7 +35,7 @@ import ActiveFilters from '@/components/category-refinements/active-filters';
 import FiltersButton from '@/components/category-refinements/filters-button';
 import CategoryRefinements from '@/components/category-refinements';
 import CategorySorting from '@/components/category-sorting';
-import ProductGrid from '@/components/product-grid';
+import DeferredProductGrid from '@/components/product-grid';
 import QuickFilters from '@/components/quick-filters';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { PageType } from '@/lib/decorators/page-type';
@@ -452,7 +452,7 @@ export default function CategoryPage({
 
                             <UITarget targetId="sfcc.plp.agent.categoryHelper" />
                             <UITarget targetId="sfcc.plp.search.results">
-                                <ProductGrid
+                                <DeferredProductGrid
                                     key={productGridDataKey}
                                     critical={searchResultCritical.hits ?? []}
                                     nonCritical={nonCriticalPromise}

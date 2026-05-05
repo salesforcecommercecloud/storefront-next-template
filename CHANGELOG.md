@@ -5,6 +5,7 @@
 
 ## v0.4.0-dev (Apr 29, 2026)
 
+- Hoist `Suspense`/`Await` from `ProductGrid` to route level via new `DeferredProductGrid` wrapper for consistent deferred data pattern ([#1594](https://github.com/commerce-emu/storefront-next/pull/1594))
 - Standardize SCAPI requests error handling - Product List Page ([#1584](https://github.com/commerce-emu/storefront-next/pull/1584))
 - Add `list:extension-points` script to enumerate all UITarget IDs and server action hook IDs in the template
 - **Cart line right column:** Reworked the `ProductItem` price column so list and sale prices stay on one horizontal row with right alignment, hid the `ProductPrice` promotion callout on cart lines (no long promo copy under prices), and tightened the Saved badge with smaller typography plus an `alignEnd` wrapper so it sits flush right. The quantity block uses `CartQuantityPicker` with a `w-fit` wrapper and right-aligned desktop stacking (`items-end`). Line-item trailing adds the gift row at the end of the right column: checkbox, “This is a gift.” label, and a “Learn more” text control (no URL) styled like the label with a narrow gap between label and learn-more; locale strings drop the colon from the quantity label and carry gift copy only.

@@ -19,7 +19,7 @@ import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
-import ProductGrid from '../index';
+import ProductGrid from '../grid';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig, mockLocale } from '@/test-utils/config';
 
@@ -189,7 +189,7 @@ const defaultProducts: ShopperSearch.schemas['ProductSearchHit'][] = [
 export const DefaultGrid: Story = {
     args: {
         critical: defaultProducts.slice(0, 1),
-        nonCritical: Promise.resolve(defaultProducts.slice(1)),
+        nonCritical: defaultProducts.slice(1),
     },
     parameters: {
         docs: {
@@ -243,9 +243,7 @@ export const SingleProductCritical: Story = {
 
 export const SingleProductNonCritical: Story = {
     args: {
-        nonCritical: Promise.resolve([
-            cloneHit(mockStandardProductHit, { productId: 'STD-ONLY', productName: 'Standard Only' }),
-        ]),
+        nonCritical: [cloneHit(mockStandardProductHit, { productId: 'STD-ONLY', productName: 'Standard Only' })],
     },
     parameters: {
         docs: {
@@ -299,7 +297,7 @@ const manyProducts: ShopperSearch.schemas['ProductSearchHit'][] = Array.from({ l
 export const ManyProducts: Story = {
     args: {
         critical: manyProducts.slice(0, 2),
-        nonCritical: Promise.resolve(manyProducts.slice(2)),
+        nonCritical: manyProducts.slice(2),
     },
     parameters: {
         docs: {
@@ -321,7 +319,7 @@ export const ManyProducts: Story = {
 export const MobileView: Story = {
     args: {
         critical: defaultProducts.slice(0, 2),
-        nonCritical: Promise.resolve(defaultProducts.slice(2)),
+        nonCritical: defaultProducts.slice(2),
     },
     parameters: {
         docs: {
@@ -349,7 +347,7 @@ export const MobileView: Story = {
 export const DesktopView: Story = {
     args: {
         critical: defaultProducts.slice(0, 2),
-        nonCritical: Promise.resolve(defaultProducts.slice(2)),
+        nonCritical: defaultProducts.slice(2),
     },
     parameters: {
         docs: {

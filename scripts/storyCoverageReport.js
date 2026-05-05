@@ -59,6 +59,9 @@ const EXCLUDED_COMPONENTS = new Set([
     'product-view/index',
     'theme-switcher/components/footer/index',
     'store-locator/components/footer/index',
+    // Thin async wrapper (Suspense/Await) and barrel re-export, no visual rendering of their own
+    'product-grid/deferred',
+    'product-grid/index',
     // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these
     'region/component',
     'region/component-data-context',
