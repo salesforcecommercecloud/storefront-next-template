@@ -11,5 +11,5 @@
             "required": false
         }
     ],
-    "supported_object_types": ["product"]
+    "supported_object_types": ["category", "product"]
 }
