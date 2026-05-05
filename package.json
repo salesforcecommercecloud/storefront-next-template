@@ -1,6 +1,6 @@
 {
     "name": "template-retail-rsc-app",
-    "version": "0.4.0-alpha.2",
+    "version": "0.4.0-alpha.3",
     "description": "Production-ready React storefront template for Salesforce Commerce Cloud.",
     "private": true,
     "type": "module",
@@ -57,7 +57,7 @@
         "a11y:headless": "pnpm --filter ./e2e a11y:headless",
         "a11y:report": "pnpm --filter ./e2e a11y:report",
         "a11y:update-baseline": "pnpm --filter ./e2e a11y:update-baseline",
-        "config:inspect": "sfnext config inspect",
+        "config:inspect": "sfnext config inspect && echo \"Tip: Run \\`pnpm config:push-env\\` to sync local .env overrides to MRT.\"",
         "config:push-env": "b2c mrt env var push",
         "b2c": "b2c"
     },
@@ -82,8 +82,8 @@
         "@radix-ui/react-switch": "1.2.2",
         "@radix-ui/react-tooltip": "1.2.8",
         "@react-router/node": "7.12.0",
-        "@salesforce/storefront-next-dev": "0.4.0-alpha.2",
-        "@salesforce/storefront-next-runtime": "0.4.0-alpha.2",
+        "@salesforce/storefront-next-dev": "0.4.0-alpha.3",
+        "@salesforce/storefront-next-runtime": "0.4.0-alpha.3",
         "@vis.gl/react-google-maps": "1.7.1",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
