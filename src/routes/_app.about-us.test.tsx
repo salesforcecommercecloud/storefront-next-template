@@ -16,8 +16,8 @@
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { Route } from './+types/_app.about-us';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import AboutUs, { type AboutUsPageData, loader } from './_app.about-us';
 import { createTestContext } from '@/lib/test-utils';
@@ -451,13 +451,13 @@ describe('AboutUs', () => {
 
     describe('Loaders', () => {
         let mockContext: ReturnType<typeof createTestContext>;
-        let baseLoaderArgs: LoaderFunctionArgs;
+        let baseLoaderArgs: Route.LoaderArgs;
 
         beforeEach(() => {
             mockContext = createTestContext();
             baseLoaderArgs = {
                 request: new Request('http://localhost/about-us'),
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: '/about-us',
             };

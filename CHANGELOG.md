@@ -1,3 +1,6 @@
+## v0.4.0-dev (May 4, 2026)
+- Refactor routes to use React Router v7 generated route type imports
+
 ## v0.4.0-dev (Apr 30, 2026)
 
 - Reorganize `src/lib/` into domain-first folders: each commerce concept (`address/`, `auth/`, `cart/`, `checkout/`, `customer/`, `images/`, `marketing/`, `order/`, `payment/`, `product/`, `shopper-context/`, `turnstile/`) is now a self-contained folder, and adapters are consolidated under `lib/adapters/<type>/`. Cross-cutting utilities remain at the `lib/` root.

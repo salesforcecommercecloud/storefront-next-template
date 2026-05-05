@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.authorize-passwordless-email';
 import { authorizePasswordless } from '@/middlewares/auth.server';
 import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { createActionError } from '@/lib/action-error-helpers.server';
@@ -38,7 +38,7 @@ export type AuthorizePasswordlessEmailResponse = {
  * Called when the shopper tabs or clicks out of the email field at checkout contact step.
  * Uses passwordless authorize with mode from config (email); does not register a customer.
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {

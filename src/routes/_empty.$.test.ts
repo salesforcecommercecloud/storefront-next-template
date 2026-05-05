@@ -15,6 +15,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loader, action } from './_empty.$';
+import type { Route } from './+types/_empty.$';
 import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/auth/passwordless-login.server';
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login.server';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password.server';
@@ -87,7 +88,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockPasswordlessLanding.mockResolvedValue(mockResponse);
 
-            const args = createLoaderArgs(
+            const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/passwordless-login-landing?token=test'),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -105,7 +106,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockResetPasswordLanding.mockResolvedValue(mockResponse);
 
-            const args = createLoaderArgs(
+            const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/reset-password-landing?token=test&email=test@example.com'),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -123,7 +124,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockSocialLoginCallback.mockResolvedValue(mockResponse);
 
-            const args = createLoaderArgs(
+            const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/social-callback?code=auth_code_123&usid=user_session_id'),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -135,7 +136,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
         });
 
         it('should throw 404 for unmatched paths', async () => {
-            const args = createLoaderArgs(new Request('http://localhost/unknown-path'), mockContext, {
+            const args = createLoaderArgs<Route.LoaderArgs>(new Request('http://localhost/unknown-path'), mockContext, {
                 unstable_pattern: '*',
             });
 
@@ -155,7 +156,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const mockResult = { success: true, data: {} };
             mockPasswordlessCallback.mockResolvedValue(mockResult);
 
-            const args = createActionArgs(
+            const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/passwordless-login-callback', { method: 'POST' }),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -170,7 +171,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const mockResult = { success: true, result: {} };
             mockResetPasswordCallback.mockResolvedValue(mockResult);
 
-            const args = createActionArgs(
+            const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/reset-password-callback', { method: 'POST' }),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -182,7 +183,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
         });
 
         it('should throw 405 for unmatched paths', async () => {
-            const args = createActionArgs(
+            const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/unknown-path', { method: 'POST' }),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -202,7 +203,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
     describe('getHandler (indirectly tested)', () => {
         it('should correctly route based on pathname from config', async () => {
             // Test that the handler correctly identifies routes from config
-            const loaderArgs = createLoaderArgs(
+            const loaderArgs = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/passwordless-login-landing'),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -215,9 +216,13 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
         });
 
         it('should return null for paths not in config', async () => {
-            const args = createLoaderArgs(new Request('http://localhost/some-random-path'), mockContext, {
-                unstable_pattern: '*',
-            });
+            const args = createLoaderArgs<Route.LoaderArgs>(
+                new Request('http://localhost/some-random-path'),
+                mockContext,
+                {
+                    unstable_pattern: '*',
+                }
+            );
 
             try {
                 await loader(args);
@@ -258,7 +263,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockSocialLoginCallback.mockResolvedValue(mockResponse);
 
-            const args = createLoaderArgs(
+            const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/social-callback?code=auth_code_123'),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -295,7 +300,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             });
             mockPasswordlessLanding.mockResolvedValue(mockResponse);
 
-            const args = createLoaderArgs(
+            const args = createLoaderArgs<Route.LoaderArgs>(
                 new Request('http://localhost/passwordless-login-landing?token=test'),
                 mockContext,
                 { unstable_pattern: '*' }
@@ -329,7 +334,7 @@ describe('_empty.$.ts - Catch-all route (no layout)', () => {
             const mockResult = { success: true, result: {} };
             mockResetPasswordCallback.mockResolvedValue(mockResult);
 
-            const args = createActionArgs(
+            const args = createActionArgs<Route.ActionArgs>(
                 new Request('http://localhost/reset-password-callback', { method: 'POST' }),
                 mockContext,
                 { unstable_pattern: '*' }

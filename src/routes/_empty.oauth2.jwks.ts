@@ -21,7 +21,7 @@
  * SLAS JWKS endpoint, reducing network latency and server load.
  *
  */
-import type { LoaderFunctionArgs } from 'react-router';
+import type { Route } from './+types/_empty.oauth2.jwks';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
@@ -47,7 +47,7 @@ interface JWKSResponse {
 /**
  * Fetch JWKS from upstream SLAS server
  */
-async function fetchUpstreamJWKS(context: LoaderFunctionArgs['context']): Promise<JWKSResponse> {
+async function fetchUpstreamJWKS(context: Route.LoaderArgs['context']): Promise<JWKSResponse> {
     const { t } = getTranslation(context);
     const config = getConfig<AppConfig>(context);
     if (!config) {
@@ -91,7 +91,7 @@ async function fetchUpstreamJWKS(context: LoaderFunctionArgs['context']): Promis
  * JWKS proxy loader - serves JWKS in standard format for jose library compatibility
  */
 // Resource route for JWKS proxy serving
-export async function loader({ context }: LoaderFunctionArgs) {
+export async function loader({ context }: Route.LoaderArgs) {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
     logger.debug('JWKSProxy: loader starting');

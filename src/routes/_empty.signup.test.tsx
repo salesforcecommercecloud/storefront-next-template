@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRoutesStub, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { createRoutesStub } from 'react-router';
 import Signup, { loader, action } from './_empty.signup';
 import { registerCustomer } from '@/lib/api/auth/register.server';
 import { isPasswordValid } from '@/lib/utils';
@@ -99,9 +99,9 @@ describe('signup route', () => {
             } as any);
 
             const mockRequest = new Request('http://localhost/signup');
-            const args: LoaderFunctionArgs = {
+            const args = {
                 request: mockRequest,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: 'signup',
             };
@@ -122,9 +122,9 @@ describe('signup route', () => {
             } as any);
 
             const mockRequest = new Request('http://localhost/signup');
-            const args: LoaderFunctionArgs = {
+            const args = {
                 request: mockRequest,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: 'signup',
             };
@@ -160,9 +160,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -190,9 +190,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -220,9 +220,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -250,9 +250,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -280,9 +280,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -311,9 +311,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -344,9 +344,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -381,9 +381,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -426,9 +426,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -464,9 +464,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -498,9 +498,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -530,9 +530,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -563,9 +563,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -602,9 +602,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -639,9 +639,9 @@ describe('signup route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'signup',
                 };
@@ -698,7 +698,12 @@ describe('signup route', () => {
                 {
                     path: '/',
                     Component: Signup,
-                    action: async ({ request }) => action({ request, params: {}, context: mockContext } as any),
+                    action: async ({ request }) =>
+                        action({
+                            request,
+                            params: { siteId: 'test-site', localeId: 'en-US' },
+                            context: mockContext,
+                        } as any),
                 },
             ]);
             render(
@@ -732,7 +737,12 @@ describe('signup route', () => {
                 {
                     path: '/',
                     Component: Signup,
-                    action: async ({ request }) => action({ request, params: {}, context: mockContext } as any),
+                    action: async ({ request }) =>
+                        action({
+                            request,
+                            params: { siteId: 'test-site', localeId: 'en-US' },
+                            context: mockContext,
+                        } as any),
                 },
             ]);
             render(

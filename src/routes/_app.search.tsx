@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import {
-    type LoaderFunctionArgs,
-    type ShouldRevalidateFunctionArgs,
-    useAsyncError,
-    useLocation,
-    useNavigation,
-} from 'react-router';
+import { type ShouldRevalidateFunctionArgs, useAsyncError, useLocation, useNavigation } from 'react-router';
+import type { Route } from './+types/_app.search';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchSearchProducts } from '@/lib/api/search.server';
@@ -93,7 +88,7 @@ export type SearchPageData = {
  * This function runs on the server during SSR and prepares data for the search page.
  * @returns Object containing search results, refinements, and page metadata
  */
-export async function loader(args: LoaderFunctionArgs): Promise<SearchPageData> {
+export async function loader(args: Route.LoaderArgs): Promise<SearchPageData> {
     const { context, request } = args;
     const requestUrl = new URL(request.url);
     const { searchParams } = requestUrl;

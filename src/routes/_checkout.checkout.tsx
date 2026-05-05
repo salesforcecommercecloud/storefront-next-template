@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { use, useLayoutEffect } from 'react';
-import type { ActionFunctionArgs } from 'react-router';
 import { loader, type CheckoutPageData } from '@/lib/checkout/loaders.server';
 import { createPage, type RouteComponentProps } from '@/components/create-page';
+import type { Route } from './+types/_checkout.checkout';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
 import CheckoutFormPage from '@/components/checkout/checkout-form-page';
@@ -37,7 +37,7 @@ import { getLogger } from '@/lib/logger.server';
 
 export { loader };
 
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
     const formData = await request.formData();
     const intent = formData.get('intent')?.toString();

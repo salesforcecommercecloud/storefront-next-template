@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { use, useEffect, useRef, useMemo, Suspense, Fragment, lazy } from 'react';
-import { Await, type LoaderFunctionArgs } from 'react-router';
+import { Await } from 'react-router';
+import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
@@ -87,10 +88,10 @@ export type ProductPageData = {
  * This function runs on the server during SSR and can access cookies for store information.
  * @returns Object containing product, category, page data, and component data promises
  */
-export function loader(args: LoaderFunctionArgs): ProductPageData {
+export function loader(args: Route.LoaderArgs): ProductPageData {
     const { request, params, context } = args;
     const logger = getLogger(context);
-    const { productId = '' } = params;
+    const { productId } = params;
     const requestUrl = new URL(request.url);
     const { searchParams } = requestUrl;
     const variantPid = searchParams.get('pid');

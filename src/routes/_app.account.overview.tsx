@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense } from 'react';
-import { useOutletContext, Await, useLoaderData, type LoaderFunctionArgs } from 'react-router';
+import { useOutletContext, Await, useLoaderData } from 'react-router';
+import type { Route } from './+types/_app.account.overview';
 import { AccountOverview, AccountOverviewSkeleton } from '@/components/account/account-overview';
 import { SeoMeta } from '@/components/seo-meta';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +43,7 @@ const RECENT_ORDERS_LIMIT = 5;
  * runs, the user is authenticated. Falls back to an empty result if customerId
  * is somehow missing (defensive).
  */
-export function loader({ context }: LoaderFunctionArgs): OverviewLoaderData {
+export function loader({ context }: Route.LoaderArgs): OverviewLoaderData {
     const session = getAuth(context);
     const customerId = session.customerId ?? '';
 

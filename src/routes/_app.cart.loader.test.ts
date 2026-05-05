@@ -15,9 +15,9 @@
  */
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { LoaderFunctionArgs } from 'react-router';
 import { loader } from './_app.cart';
-import { createTestContext } from '@/lib/test-utils';
+import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import type { Route } from './+types/_app.cart';
 
 vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
@@ -74,12 +74,12 @@ describe('Cart route loader', () => {
         imageGroups: [{ viewType: 'small', images: [{ link: 'https://example.com/1.jpg' }] }],
     };
 
-    const createLoaderArgs = (): LoaderFunctionArgs =>
-        ({
-            params: {},
-            context: createTestContext({ currency: 'USD' }),
-            request: new Request('http://localhost/cart'),
-        }) as LoaderFunctionArgs;
+    const createLoaderArgs = (): Route.LoaderArgs => ({
+        params: { siteId: 'test-site', localeId: 'en-US' },
+        context: createTestContext({ currency: 'USD' }),
+        request: new Request('http://localhost/cart'),
+        unstable_pattern: UNSTABLE_PATTERN,
+    });
 
     beforeEach(() => {
         vi.clearAllMocks();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.initiate-checkout-registration';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { getLocale } from '@salesforce/storefront-next-runtime/i18n';
@@ -35,7 +35,7 @@ import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/tur
  * Server action to initiate passwordless registration during checkout
  * This triggers the OTP email to be sent for account creation with email verification
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
     const locale = getLocale(context);
 

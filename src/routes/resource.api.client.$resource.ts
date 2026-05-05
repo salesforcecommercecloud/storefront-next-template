@@ -20,7 +20,7 @@ import { createApiClients } from '@/lib/api-clients.server';
 import type { AppClients } from '@/scapi/custom-clients';
 import { ApiError, type OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
 
-import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import type { Route } from './+types/resource.api.client.$resource';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -187,7 +187,7 @@ function resolveHelper(clients: ReturnType<typeof createApiClients>, resource: [
  * The loader expects a Commerce SDK client's name, a method name and method parameters to be passed as route
  * parameters. It then instantiates the targeted client, invokes the method and returns structured data.
  * If an error occurs, it returns an ApiResponse with success: false and error message.
- * @see {@link import('react-router').ClientLoaderFunction}
+ * @see {@link Route.LoaderArgs}
  * @see {@link import('@/hooks/use-scapi-fetcher.ts').useScapiFetcher}
  * @see {@link import('@/lib/api-clients.ts').createApiClients}
  */
@@ -196,7 +196,7 @@ export async function loader<
     C extends CommerceSdkKeyMap,
     M extends CommerceSdkMethodName<C>,
     P extends CommerceSdkMethodParameters<C, M>,
->({ params, context }: LoaderFunctionArgs): Promise<ApiResponse<Awaited<R>>> {
+>({ params, context }: Route.LoaderArgs): Promise<ApiResponse<Awaited<R>>> {
     const logger = getLogger(context);
     logger.debug('ApiClientResource: loader starting', { resource: params.resource });
 
@@ -284,7 +284,7 @@ export async function loader<
  *
  * This action is specifically designed for non-GET requests (PUT, POST, DELETE, etc.) and uses the shared `act` function
  * to handle the actual Commerce SDK method invocation.
- * @see {@link import('react-router').ActionFunction}
+ * @see {@link Route.ActionArgs}
  * @see {@link import('@/hooks/use-scapi-fetcher.ts').useScapiFetcher}
  * @see {@link import('@/lib/api-clients.server').createApiClients}
  */
@@ -293,7 +293,7 @@ export async function action<
     C extends CommerceSdkKeyMap,
     M extends CommerceSdkMethodName<C>,
     P extends CommerceSdkMethodParameters<C, M>,
->({ params, context, request }: ActionFunctionArgs): Promise<ApiResponse<Awaited<R>>> {
+>({ params, context, request }: Route.ActionArgs): Promise<ApiResponse<Awaited<R>>> {
     const logger = getLogger(context);
     logger.debug('ApiClientResource: action starting', { resource: params.resource });
 

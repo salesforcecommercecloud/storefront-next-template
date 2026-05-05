@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.payment-method-add';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { savePaymentMethodToCustomer } from '@/lib/api/customer.server';
 import { getAuth } from '@/middlewares/auth.server';
@@ -25,7 +25,7 @@ import { getLogger } from '@/lib/logger.server';
  * Server action for adding a payment method to customer profile.
  * Dialog does validation and parsing (expiry, card type); this action only reads FormData and calls the API.
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {

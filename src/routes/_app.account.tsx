@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { useMemo, type ReactElement } from 'react';
-import { Outlet, type LoaderFunctionArgs, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
+import { Outlet, redirect, type ShouldRevalidateFunctionArgs } from 'react-router';
+import type { Route } from './+types/_app.account';
 import { useTranslation } from 'react-i18next';
 import { House, User, Heart, ShoppingBag, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
 
@@ -51,7 +52,7 @@ type AccountPageData = {
  * @param args - Loader function arguments containing request context
  * @returns Promise containing customer data or redirects to login
  */
-export function loader(args: LoaderFunctionArgs) {
+export function loader(args: Route.LoaderArgs) {
     const logger = getLogger(args.context);
     logger.debug('Account: loader starting');
 

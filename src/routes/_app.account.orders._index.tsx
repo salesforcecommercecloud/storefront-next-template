@@ -16,7 +16,8 @@
 
 import { type ReactElement, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Await, useLoaderData, type LoaderFunctionArgs, redirect } from 'react-router';
+import { Await, useLoaderData, redirect } from 'react-router';
+import type { Route } from './+types/_app.account.orders._index';
 import { useNavigate } from '@/hooks/use-navigate';
 import { OrderListHeader, OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
 import {
@@ -41,7 +42,7 @@ type OrderListLoaderData = {
  * Loader fetches all customer orders via SCAPI getCustomerOrders endpoint.
  * Returns a deferred promise for streaming/suspense support.
  */
-export function loader({ context, request }: LoaderFunctionArgs): OrderListLoaderData {
+export function loader({ context, request }: Route.LoaderArgs): OrderListLoaderData {
     const logger = getLogger(context);
     logger.debug('OrderList: loader starting');
 

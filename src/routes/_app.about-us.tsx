@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import type { LoaderFunctionArgs } from 'react-router';
+import type { Route } from './+types/_app.about-us';
 import { Link } from '@/components/link';
 import {
     Breadcrumb,
@@ -65,7 +65,7 @@ export type AboutUsPageData = {
     ogImageUrl: string;
 };
 
-export async function loader(args: LoaderFunctionArgs): Promise<AboutUsPageData> {
+export async function loader(args: Route.LoaderArgs): Promise<AboutUsPageData> {
     const logger = getLogger(args.context);
     logger.debug('AboutUs: loader starting');
 

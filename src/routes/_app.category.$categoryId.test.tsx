@@ -18,7 +18,7 @@ import 'reflect-metadata';
 import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { type LoaderFunctionArgs, MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router';
 import {
     ApiError,
     type ShopperExperience,
@@ -37,6 +37,7 @@ import { getRegionDefinition } from '@/lib/decorators/region-definition';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { generateCategorySchema } from '@/utils/category-schema';
 import { useAnalytics } from '@/hooks/use-analytics';
+import type { Route } from './+types/_app.category.$categoryId';
 
 vi.mock('react-router', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router')>();
@@ -266,13 +267,10 @@ describe('CategoryPage', () => {
         },
     } as AppConfig;
 
-    const createLoaderArgs = (
-        url: string,
-        overrides?: Partial<Pick<LoaderFunctionArgs, 'params'>>
-    ): LoaderFunctionArgs => ({
+    const createLoaderArgs = (url: string, overrides?: { params?: Record<string, string> }): Route.LoaderArgs => ({
         request: new Request(url),
         context: mockContext,
-        params: { categoryId: 'electronics', ...overrides?.params },
+        params: { siteId: 'test-site', localeId: 'en-US', categoryId: 'electronics', ...overrides?.params },
         unstable_pattern: '/category/:categoryId',
     });
 

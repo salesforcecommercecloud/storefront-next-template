@@ -17,7 +17,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
-import { MemoryRouter, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { MemoryRouter } from 'react-router';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
@@ -87,9 +87,9 @@ describe('forgot-password route', () => {
             } as ReturnType<typeof getAuth>);
 
             const mockRequest = new Request('http://localhost/forgot-password');
-            const args: LoaderFunctionArgs = {
+            const args = {
                 request: mockRequest,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: 'forgot-password',
             };
@@ -110,9 +110,9 @@ describe('forgot-password route', () => {
             } as ReturnType<typeof getAuth>);
 
             const mockRequest = new Request('http://localhost/forgot-password');
-            const args: LoaderFunctionArgs = {
+            const args = {
                 request: mockRequest,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: 'forgot-password',
             };
@@ -129,9 +129,9 @@ describe('forgot-password route', () => {
             } as ReturnType<typeof getAuth>);
 
             const mockRequest = new Request('http://localhost/forgot-password');
-            const args: LoaderFunctionArgs = {
+            const args = {
                 request: mockRequest,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 context: mockContext,
                 unstable_pattern: 'forgot-password',
             };
@@ -155,9 +155,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -181,9 +181,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -212,9 +212,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -245,9 +245,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -280,9 +280,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -313,9 +313,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -343,9 +343,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -372,9 +372,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -403,9 +403,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };
@@ -434,9 +434,9 @@ describe('forgot-password route', () => {
                     body: formData.toString(),
                 });
 
-                const args: ActionFunctionArgs = {
+                const args = {
                     request: mockRequest,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     context: mockContext,
                     unstable_pattern: 'forgot-password',
                 };

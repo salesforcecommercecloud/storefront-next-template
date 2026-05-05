@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.update-shopper-context';
 import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-context/server-utils.server';
 import { parseJsonToStringRecord } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
@@ -31,7 +31,7 @@ type UpdateShopperContextResponse = {
  * Server action to update all qualifiers in shopper context.
  * Supports customQualifiers, assignmentQualifiers, couponCodes, sourceCode, and other root-level qualifiers.
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<Response> {
     const logger = getLogger(context);
 
     logger.debug('UpdateShopperContext: starting', { method: request.method });

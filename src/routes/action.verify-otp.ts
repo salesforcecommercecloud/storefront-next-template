@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.verify-otp';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
@@ -29,7 +29,7 @@ import { getLogger } from '@/lib/logger.server';
  * Server action to verify OTP code and authenticate the user
  * This is called when the user submits the OTP code from the modal
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
 
     try {

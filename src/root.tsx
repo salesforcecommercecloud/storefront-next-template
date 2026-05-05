@@ -20,11 +20,8 @@ import {
     type DataStrategyResult,
     isRouteErrorResponse,
     Links,
-    type LinksFunction,
-    type LoaderFunctionArgs,
     Meta,
     type MetaDescriptor,
-    type MetaFunction,
     type MiddlewareFunction,
     Navigate,
     Outlet,
@@ -34,6 +31,7 @@ import {
     useRevalidator,
     useRouteLoaderData,
 } from 'react-router';
+import type { Route } from './+types/root';
 
 // Third-party libraries
 import { createInstance, type i18n } from 'i18next';
@@ -120,7 +118,7 @@ import { type Maintenance, maintenanceContext } from '@/lib/maintenance';
 // Layout Components - logo for error page
 import logo from '/images/logo.svg';
 
-export const links: LinksFunction = () => {
+export const links: Route.LinksFunction = () => {
     return [
         // Preload critical fonts
         { rel: 'preload', href: sen, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
@@ -129,7 +127,7 @@ export const links: LinksFunction = () => {
     ];
 };
 
-export const meta: MetaFunction<typeof loader> = ({ loaderData }) => {
+export const meta: Route.MetaFunction = ({ loaderData }) => {
     return loaderData?.seoMeta ?? [];
 };
 
@@ -174,7 +172,7 @@ const i18nextOnClient =
 export const loader = ({
     context,
     request,
-}: LoaderFunctionArgs): {
+}: Route.LoaderArgs): {
     // Public auth data - only non-sensitive fields, safe to serialize
     clientAuth: PublicSessionData;
     appConfig: AppConfig;

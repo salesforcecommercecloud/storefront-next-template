@@ -137,7 +137,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             expect(result).toHaveProperty('product');
             expect(result).toHaveProperty('category');
@@ -158,7 +163,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'nonexistent' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // The product promise should reject with the error
             await expect(result.product).rejects.toThrow('Product not found');
@@ -175,7 +185,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Product should still resolve
             const productData = await result.product;
@@ -211,7 +226,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const productData = await result.product;
             expect(productData).toEqual(variantProduct);
@@ -231,7 +251,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Should use the pid parameter instead of productId
             expect(mockGetProduct).toHaveBeenCalledWith({
@@ -260,7 +285,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Verify getProduct was called with inventoryIds parameter
             expect(mockGetProduct).toHaveBeenCalledWith({
@@ -286,7 +316,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Verify getProduct was called without inventoryIds parameter
             const callArgs = mockGetProduct.mock.calls[0]?.[0];
@@ -307,7 +342,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Verify getProduct was called without inventoryIds parameter
             const callArgs = mockGetProduct.mock.calls[0][0];
@@ -327,7 +367,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Should use the pid parameter instead of productId
             expect(mockGetProduct).toHaveBeenCalledWith({
@@ -347,7 +392,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             // Should use the productId from params
             expect(mockGetProduct).toHaveBeenCalledWith({
@@ -367,7 +417,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const callArgs = mockGetProduct.mock.calls[0][0];
             expect(callArgs.params.query.expand).toContain('availability');
@@ -395,7 +450,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const categoryData = await result.category;
             expect(categoryData).toBeUndefined();
@@ -416,7 +476,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const categoryData = await result.category;
             expect(categoryData).toBeUndefined();
@@ -448,7 +513,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const categoryData = await result.category;
             expect(categoryData).toBeUndefined();
@@ -464,7 +534,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'test-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const categoryData = await result.category;
             expect(categoryData).toBeUndefined();
@@ -495,7 +570,12 @@ describe('Product Route Loaders', () => {
             const params = { productId: 'variant-product-123' };
             const context = mockContext;
 
-            const result = loader({ request, params, context, unstable_pattern: '/product/:productId' });
+            const result = loader({
+                request,
+                params: { siteId: 'test-site', localeId: 'en-US', ...params },
+                context,
+                unstable_pattern: '/product/:productId',
+            });
 
             const productData = await result.product;
             expect(productData).toEqual(variantProduct);

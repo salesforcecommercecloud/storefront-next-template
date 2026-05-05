@@ -16,7 +16,8 @@
 import { type ReactElement, Suspense, useEffect } from 'react';
 import { UITarget } from '@/targets/ui-target';
 import AddressDisplay from '@/components/address-display';
-import { Await, type LoaderFunctionArgs, useFetcher } from 'react-router';
+import { Await, useFetcher } from 'react-router';
+import type { Route } from './+types/_app.order-confirmation.$orderNo';
 import { Link } from '@/components/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -104,11 +105,11 @@ const getPrimaryImageFromProduct = (product: ShopperProducts.schemas['Product'] 
  * @param args - Loader function arguments containing context and parameters
  * @returns Promise that resolves to an object containing the order data promise
  */
-export function loader({ context, params }: LoaderFunctionArgs): CheckoutConfirmationLoaderData {
+export function loader({ context, params }: Route.LoaderArgs): CheckoutConfirmationLoaderData {
     const { orderNo } = params;
     const logger = getLogger(context);
     logger.debug('OrderConfirmation: loader starting', { orderNo });
-    const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo as string);
+    const { orderDataPromise, orderPromise } = fetchOrderWithProducts(context, orderNo);
 
     // Determine if we should show post-order registration (guest + email verification disabled)
     const userIsRegistered = isRegisteredCustomer(context);

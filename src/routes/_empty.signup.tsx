@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { redirect, Form, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { redirect, Form, useActionData } from 'react-router';
+import type { Route } from './+types/_empty.signup';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 // services
@@ -36,7 +37,7 @@ type SignupActionResponse = {
     error?: string;
 };
 
-export function loader({ context }: LoaderFunctionArgs): null | Response {
+export function loader({ context }: Route.LoaderArgs): null | Response {
     const session = getAuth(context);
     if (session.userType === 'registered') {
         return redirect('/');
@@ -49,7 +50,7 @@ export function loader({ context }: LoaderFunctionArgs): null | Response {
  * This server action is required for authentication, because registration must be handled server-side for security reasons,
  * and proper integration with session management and Salesforce Commerce Cloud's authentication system.
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<SignupActionResponse | Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<SignupActionResponse | Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();

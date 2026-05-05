@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { useRef } from 'react';
-import { type LoaderFunctionArgs, Outlet } from 'react-router';
+import { Outlet } from 'react-router';
+import type { Route } from './+types/_app';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCategory } from '@/lib/api/categories.server';
@@ -45,7 +46,7 @@ export function shouldRevalidate() {
     return false;
 }
 
-export function loader({ context }: LoaderFunctionArgs): LoaderData {
+export function loader({ context }: Route.LoaderArgs): LoaderData {
     const logger = getLogger(context);
     const config = getConfig<AppConfig>(context);
     const { rootCategoryId, maxDepth } = config.pages.navigation;

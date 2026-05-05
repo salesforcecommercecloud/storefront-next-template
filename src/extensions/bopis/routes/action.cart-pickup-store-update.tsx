@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // React Router
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.cart-pickup-store-update';
 
 // Middlewares
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
@@ -60,7 +60,7 @@ import { pickupStoreUpdateSchema, parsePickupStoreUpdateFromFormData } from '@/l
  * @throws Error if no basket is found in the session
  * @throws Error if any items are out of stock at the selected store
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<Response> {
     if (request.method !== 'PATCH') {
         return Response.json(
             {

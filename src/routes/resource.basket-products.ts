@@ -18,7 +18,7 @@
  * Called by the mini cart to enrich basket items with images and variation data
  */
 
-import type { LoaderFunctionArgs } from 'react-router';
+import type { Route } from './+types/resource.basket-products';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
@@ -36,7 +36,7 @@ import { getLogger } from '@/lib/logger.server';
  */
 export async function loader({
     context,
-}: LoaderFunctionArgs): Promise<Record<string, ShopperProducts.schemas['Product']>> {
+}: Route.LoaderArgs): Promise<Record<string, ShopperProducts.schemas['Product']>> {
     const logger = getLogger(context);
     logger.debug('BasketProducts: loader starting');
     const basket = (await getBasket(context)).current;

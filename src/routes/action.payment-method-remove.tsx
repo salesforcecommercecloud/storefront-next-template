@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.payment-method-remove';
 import { deleteCustomerPaymentInstrument } from '@/lib/api/customer.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
@@ -23,7 +23,7 @@ import { getLogger } from '@/lib/logger.server';
 /**
  * Server action for removing a payment method from customer profile
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {

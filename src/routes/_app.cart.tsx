@@ -16,7 +16,8 @@
 import { type ReactElement, Suspense } from 'react';
 
 // React Router
-import { Await, useLoaderData, type LoaderFunction, type LoaderFunctionArgs } from 'react-router';
+import { Await, useLoaderData } from 'react-router';
+import type { Route } from './+types/_app.cart';
 
 // Commerce SDK
 import {
@@ -71,7 +72,7 @@ type CartPageData = {
 /**
  * Loads wishlist product IDs for the signed-in customer so cart line wishlist UI matches server state after refresh.
  */
-async function fetchWishlistProductIds(context: LoaderFunctionArgs['context']): Promise<string[]> {
+async function fetchWishlistProductIds(context: Route.LoaderArgs['context']): Promise<string[]> {
     try {
         const session = getAuth(context);
         const isRegistered =
@@ -103,7 +104,7 @@ async function fetchWishlistProductIds(context: LoaderFunctionArgs['context']): 
  * @returns Promise that resolves to a mapping of promotion IDs to promotion data
  */
 async function fetchPromotionsForBasket(
-    context: LoaderFunctionArgs['context'],
+    context: Route.LoaderArgs['context'],
     productItems: ShopperBasketsV2.schemas['ProductItem'][]
 ): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
     const productIds = productItems?.map((item) => item.productId).filter(Boolean);
@@ -168,7 +169,7 @@ async function fetchPromotionsForBasket(
  * @returns Promise that resolves to a mapping of item IDs to product data.
  */
 async function fetchProductsInBasket(
-    context: LoaderFunctionArgs['context'],
+    context: Route.LoaderArgs['context'],
     basket: ShopperBasketsV2.schemas['Basket'] | null
 ): Promise<{
     productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
@@ -304,7 +305,7 @@ async function fetchProductsInBasket(
  * - Returns promises for async data loading
  * @returns Promise resolving to cart page data with basket and product details
  */
-export const loader: LoaderFunction = ({ context, request }: LoaderFunctionArgs): CartPageData => {
+export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => {
     const logger = getLogger(context);
     logger.debug('Cart: loader starting');
 

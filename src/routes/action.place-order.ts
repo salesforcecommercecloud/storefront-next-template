@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { redirect, type ActionFunctionArgs } from 'react-router';
+import { redirect } from 'react-router';
+import type { Route } from './+types/action.place-order';
 import { getBasket, updateBasketResource, destroyBasket } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
@@ -157,7 +158,7 @@ function orderPaymentMatchesSavedProfile(
 /**
  * Server action for placing an order.
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
     try {
         // Parse form data to get create account preference and save-payment option

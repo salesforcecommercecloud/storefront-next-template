@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.wishlist-add';
 import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
@@ -37,7 +37,7 @@ const WISHLIST_RETRY_DELAY_MS = 2000; // Time to wait before retrying to fetch w
  * Get or create the default wishlist (product list) for a customer
  */
 async function getOrCreateWishlist(
-    context: ActionFunctionArgs['context'],
+    context: Route.ActionArgs['context'],
     customerId: string
 ): Promise<CustomerProductList> {
     const { t } = getTranslation();
@@ -111,7 +111,7 @@ async function getOrCreateWishlist(
  * Add a product to the customer's wishlist
  */
 async function addToWishlist(
-    context: ActionFunctionArgs['context'],
+    context: Route.ActionArgs['context'],
     productId: string
 ): Promise<WishlistActionResponse & { productList?: CustomerProductList }> {
     // Check if user is authenticated as registered customer
@@ -192,7 +192,7 @@ async function addToWishlist(
 /**
  * Server action to add a product to the wishlist
  */
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {

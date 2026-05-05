@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createRoutesStub, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
-import { createActionArgs, createLoaderArgs } from '@/lib/test-utils/loader-action-args';
+import { createRoutesStub } from 'react-router';
+import { createActionArgs, createLoaderArgs, UNSTABLE_PATTERN } from '@/lib/test-utils/loader-action-args';
 import Login, { loader, action } from './_empty.login';
+import type { Route } from './+types/_empty.login';
 import { render, screen, waitFor } from '@testing-library/react';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import userEvent from '@testing-library/user-event';
@@ -150,7 +151,9 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('status', 302);
             expect(result).toHaveProperty('headers');
@@ -169,7 +172,9 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login?returnUrl=/product/123');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('status', 302);
             if (result instanceof Response) {
@@ -184,7 +189,9 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             // Check if result is not a Response (redirect)
             if (!(result instanceof Response)) {
@@ -198,7 +205,9 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login?passwordless=sent&email=test@example.com');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             if (!(result instanceof Response)) {
                 expect(result.passwordlessSent).toBe(true);
@@ -211,7 +220,9 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login?mode=passwordless');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             if (!(result instanceof Response)) {
                 expect(result.mode).toBe('passwordless');
@@ -223,7 +234,9 @@ describe('Login Route', () => {
 
             const mockRequest = new Request('http://localhost:5173/login');
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             if (!(result instanceof Response)) {
                 expect(result.isSocialLoginEnabled).toBe(true);
@@ -252,14 +265,11 @@ describe('Login Route', () => {
                     'http://localhost:5173/login?email=test@example.com&token=otp-token-123'
                 );
                 const mockContext = { get: vi.fn(), set: vi.fn() };
-                const args: LoaderFunctionArgs = {
-                    request: mockRequest,
-                    params: {},
-                    context: mockContext,
-                    unstable_pattern: '/login',
-                } as any;
-
-                const result = await loader(args);
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, {
+                        unstable_pattern: UNSTABLE_PATTERN,
+                    })
+                );
 
                 expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'otp-token-123');
                 expect(mockUpdateAuth).toHaveBeenCalled();
@@ -291,14 +301,11 @@ describe('Login Route', () => {
                     'http://localhost:5173/login?email=test@example.com&token=otp-token-123'
                 );
                 const mockContext = { get: vi.fn(), set: vi.fn() };
-                const args: LoaderFunctionArgs = {
-                    request: mockRequest,
-                    params: {},
-                    context: mockContext,
-                    unstable_pattern: '/login',
-                } as any;
-
-                const result = await loader(args);
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, {
+                        unstable_pattern: UNSTABLE_PATTERN,
+                    })
+                );
 
                 expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'otp-token-123');
                 expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
@@ -317,14 +324,11 @@ describe('Login Route', () => {
                     'http://localhost:5173/login?email=test@example.com&token=invalid-token&otp=true'
                 );
                 const mockContext = { get: vi.fn(), set: vi.fn() };
-                const args: LoaderFunctionArgs = {
-                    request: mockRequest,
-                    params: {},
-                    context: mockContext,
-                    unstable_pattern: '/login',
-                } as any;
-
-                const result = await loader(args);
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, {
+                        unstable_pattern: UNSTABLE_PATTERN,
+                    })
+                );
 
                 expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'invalid-token');
                 expect(mockMergeBasket).not.toHaveBeenCalled();
@@ -361,14 +365,11 @@ describe('Login Route', () => {
                     'http://localhost:5173/login?email=test@example.com&token=otp-token-123&returnUrl=/checkout'
                 );
                 const mockContext = { get: vi.fn(), set: vi.fn() };
-                const args: LoaderFunctionArgs = {
-                    request: mockRequest,
-                    params: {},
-                    context: mockContext,
-                    unstable_pattern: '/login',
-                } as any;
-
-                const result = await loader(args);
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, {
+                        unstable_pattern: UNSTABLE_PATTERN,
+                    })
+                );
 
                 expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
 
@@ -398,14 +399,11 @@ describe('Login Route', () => {
                     'http://localhost:5173/login?email=test@example.com&otpCode=legacy-otp-123'
                 );
                 const mockContext = { get: vi.fn(), set: vi.fn() };
-                const args: LoaderFunctionArgs = {
-                    request: mockRequest,
-                    params: {},
-                    context: mockContext,
-                    unstable_pattern: '/login',
-                } as any;
-
-                const result = await loader(args);
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, {
+                        unstable_pattern: UNSTABLE_PATTERN,
+                    })
+                );
 
                 expect(mockGetPasswordLessAccessToken).toHaveBeenCalledWith(mockContext, 'legacy-otp-123');
                 expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
@@ -442,7 +440,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toBeInstanceOf(Response);
             expect((result as Response).status).toBe(302);
@@ -479,7 +479,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toBeInstanceOf(Response);
             expect((result as Response).status).toBe(302);
@@ -512,7 +514,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toBeInstanceOf(Response);
             const location = (result as Response).headers.get('Location') ?? '';
@@ -543,7 +547,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toBeInstanceOf(Response);
             expect((result as Response).status).toBe(302);
@@ -572,7 +578,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
@@ -594,7 +602,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
@@ -614,7 +624,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockLoginRegisteredUser).not.toHaveBeenCalled();
@@ -642,7 +654,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toBeInstanceOf(Response);
             expect((result as Response).status).toBe(302);
@@ -672,14 +686,11 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const args: ActionFunctionArgs = {
-                request: mockRequest,
-                params: {},
-                context: mockContext,
-                unstable_pattern: '/login',
-            } as any;
-
-            await action(args);
+            await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, {
+                    unstable_pattern: UNSTABLE_PATTERN,
+                })
+            );
 
             expect(mockAuthorizeIDP).toHaveBeenCalledWith(
                 expect.anything(),
@@ -704,7 +715,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizeIDP).not.toHaveBeenCalled();
@@ -726,7 +739,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
         });
@@ -749,7 +764,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).not.toBeInstanceOf(Response);
             const data = result as { success: boolean; showOTPForm?: boolean; email?: string };
@@ -779,7 +796,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
@@ -802,7 +821,9 @@ describe('Login Route', () => {
                 body: formData.toString(),
             });
             const mockContext = { get: vi.fn(), set: vi.fn() };
-            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
@@ -823,8 +844,13 @@ describe('Login Route', () => {
                 {
                     path: '/',
                     Component: WrappedComponent,
+                    // Route-typed action needs cast for createRoutesStub's generic args
                     action: async ({ request }) =>
-                        action({ request, params: {}, context: actionContext, unstable_pattern: '/login' } as any),
+                        action(
+                            createActionArgs<Route.ActionArgs>(request, actionContext, {
+                                unstable_pattern: UNSTABLE_PATTERN,
+                            })
+                        ),
                 },
             ]);
             return render(

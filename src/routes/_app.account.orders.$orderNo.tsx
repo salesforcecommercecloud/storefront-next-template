@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense } from 'react';
-import { Await, type LoaderFunctionArgs, redirect, useLoaderData, useParams } from 'react-router';
+import { Await, redirect, useLoaderData, useParams } from 'react-router';
+import type { Route } from './+types/_app.account.orders.$orderNo';
 import { Link } from '@/components/link';
 import {
     Breadcrumb,
@@ -48,7 +49,7 @@ type OrderDetailsPageLoaderData = {
 };
 
 /** Loader fetches order and product details via SCAPI (getOrder + getProducts). */
-export function loader({ context, params }: LoaderFunctionArgs): OrderDetailsPageLoaderData {
+export function loader({ context, params }: Route.LoaderArgs): OrderDetailsPageLoaderData {
     const { orderNo } = params;
     const logger = getLogger(context);
     logger.debug('OrderDetail: loader starting', { orderNo });

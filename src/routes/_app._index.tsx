@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { Suspense } from 'react';
-import { Await, type LoaderFunctionArgs, redirect, useAsyncError } from 'react-router';
+import { Await, redirect, useAsyncError } from 'react-router';
+import type { Route } from './+types/_app._index';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { fetchCarouselProducts } from '@/components/product-carousel/loaders';
 import { fetchCategories } from '@/lib/api/categories.server';
@@ -92,7 +93,7 @@ export type HomePageData = {
  * This function runs on the server during SSR and prepares data for the home page.
  * @returns Promise that resolves to an object containing search result promise
  */
-export function loader(args: LoaderFunctionArgs): HomePageData {
+export function loader(args: Route.LoaderArgs): HomePageData {
     const logger = getLogger(args.context);
     logger.debug('HomePage: loader starting');
 

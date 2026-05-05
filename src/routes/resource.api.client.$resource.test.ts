@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ActionFunctionArgs, type LoaderFunctionArgs, type RouterContextProvider } from 'react-router';
+import { type RouterContextProvider } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
 import { action, loader, type ApiResponse } from './resource.api.client.$resource';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
@@ -128,7 +128,7 @@ describe('Commerce SDK resource', () => {
     });
 
     describe('loader()', () => {
-        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+        const createLoaderArgs = (resource: string) => ({
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
@@ -266,7 +266,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle loader with null resource parameter', async () => {
-                const createLoaderArgsWithNullResource = (): LoaderFunctionArgs => ({
+                const createLoaderArgsWithNullResource = () => ({
                     params: { resource: null as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
@@ -281,7 +281,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle loader with undefined resource parameter', async () => {
-                const createLoaderArgsWithUndefinedResource = (): LoaderFunctionArgs => ({
+                const createLoaderArgsWithUndefinedResource = () => ({
                     params: { resource: undefined as any },
                     context: mockContextProvider,
                     request: new Request('http://localhost/test'),
@@ -321,7 +321,7 @@ describe('Commerce SDK resource', () => {
         const encodedValidActionResource = encodeBase64Url(JSON.stringify(validActionResource));
         const mockActionResponseData = { customerId: 'customer-123', email: 'updated@example.com' };
 
-        const createActionArgs = (resource: string, formData?: Record<string, string>): ActionFunctionArgs => {
+        const createActionArgs = (resource: string, formData?: Record<string, string>) => {
             const body = new URLSearchParams(formData || {}).toString();
 
             const request = new Request('http://localhost/test', {
@@ -595,7 +595,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle action with null resource parameter', async () => {
-                const createActionArgsWithNullResource = (): ActionFunctionArgs => {
+                const createActionArgsWithNullResource = () => {
                     const request = new Request('http://localhost/test', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -618,7 +618,7 @@ describe('Commerce SDK resource', () => {
             });
 
             it('should handle action with undefined resource parameter', async () => {
-                const createActionArgsWithUndefinedResource = (): ActionFunctionArgs => {
+                const createActionArgsWithUndefinedResource = () => {
                     const request = new Request('http://localhost/test', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -701,7 +701,7 @@ describe('Commerce SDK resource', () => {
     });
 
     describe('Edge cases and comprehensive coverage', () => {
-        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+        const createLoaderArgs = (resource: string) => ({
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
@@ -723,7 +723,7 @@ describe('Commerce SDK resource', () => {
             // Set up the mock for this specific test
             mockShopperCustomersUpdateCustomer.mockResolvedValue({ data: mockResponseData });
 
-            const createActionArgsWithEmptyForm = (): ActionFunctionArgs => {
+            const createActionArgsWithEmptyForm = () => {
                 const request = new Request('http://localhost/test', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -863,14 +863,14 @@ describe('Commerce SDK resource', () => {
     });
 
     describe('helpers', () => {
-        const createLoaderArgs = (resource: string): LoaderFunctionArgs => ({
+        const createLoaderArgs = (resource: string) => ({
             params: { resource },
             context: mockContextProvider,
             request: new Request('http://localhost/test'),
             unstable_pattern: 'resource/api/client/:resource',
         });
 
-        const createActionArgs = (resource: string, formData?: Record<string, string>): ActionFunctionArgs => {
+        const createActionArgs = (resource: string, formData?: Record<string, string>) => {
             const body = new URLSearchParams(formData || {}).toString();
             const request = new Request('http://localhost/test', {
                 method: 'POST',

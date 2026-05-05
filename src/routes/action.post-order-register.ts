@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.post-order-register';
 import { registerCustomer } from '@/lib/api/auth/register.server';
 import { isPasswordValid } from '@/lib/utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
@@ -37,7 +37,7 @@ export type PostOrderRegisterResponse = {
  * Registers the guest shopper with their order email and chosen password,
  * then auto-logs them in and saves order data (addresses, payment) to the new profile.
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<PostOrderRegisterResponse> {
+export async function action({ request, context }: Route.ActionArgs): Promise<PostOrderRegisterResponse> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
 

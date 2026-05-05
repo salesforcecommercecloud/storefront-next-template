@@ -77,7 +77,8 @@ function createOrderDetailsRouter(orderNo: string) {
             {
                 path: '/account/orders/:orderNo',
                 element: <OrderDetailsPage />,
-                loader,
+                // Route-typed loader needs cast for createMemoryRouter's generic LoaderFunction signature
+                loader: loader as any,
             },
         ],
         { initialEntries: [`/account/orders/${orderNo}`] }
@@ -103,7 +104,8 @@ function createRouterWithRejectingLoader(orderNo: string) {
             {
                 path: '/account/orders/:orderNo',
                 element: <OrderDetailsPage />,
-                loader,
+                // Route-typed loader needs cast for createMemoryRouter's generic LoaderFunction signature
+                loader: loader as any,
             },
         ],
         { initialEntries: [`/account/orders/${orderNo}`] }

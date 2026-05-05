@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import type { Route } from './+types/action.update-marketing-consent';
 import { type UpdateSubscriptionBody, updateSubscriptionsBulk } from '@/lib/api/consent.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -45,7 +45,7 @@ function validateUpdatesInput(updates: unknown[]): string | null {
  * Server action: POST JSON { updates: [{ subscriptionId, channel, contactPointValue, status }, ...] }.
  * Validates input via validateUpdatesInput; calls SCAPI bulk endpoint (1–50 per request).
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<Response> {
     const logger = getLogger(context);
 
     logger.debug('UpdateMarketingConsent: starting', { method: request.method });

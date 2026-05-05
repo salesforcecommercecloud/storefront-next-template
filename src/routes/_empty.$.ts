@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type LoaderFunctionArgs, type ActionFunctionArgs, type RouterContextProvider } from 'react-router';
+import { type RouterContextProvider } from 'react-router';
+import type { Route } from './+types/_empty.$';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
@@ -23,8 +24,8 @@ import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/a
 import { isAbsoluteURL } from '@/lib/utils';
 import { getLogger } from '@/lib/logger.server';
 
-type LoaderHandler = (args: LoaderFunctionArgs) => Promise<Response> | Response;
-type ActionHandler = (args: ActionFunctionArgs) => Promise<Record<string, unknown>>;
+type LoaderHandler = (args: Route.LoaderArgs) => Promise<Response> | Response;
+type ActionHandler = (args: Route.ActionArgs) => Promise<Record<string, unknown>>;
 
 /**
  * Catch-all route that handles configurable authentication routes
@@ -108,7 +109,7 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
     return null;
 }
 
-export async function loader(args: LoaderFunctionArgs) {
+export async function loader(args: Route.LoaderArgs) {
     const logger = getLogger(args.context);
     const config = getConfig<AppConfig>(args.context);
     const url = new URL(args.request.url);
@@ -126,7 +127,7 @@ export async function loader(args: LoaderFunctionArgs) {
     throw new Response('Not Found', { status: 404 });
 }
 
-export async function action(args: ActionFunctionArgs) {
+export async function action(args: Route.ActionArgs) {
     const logger = getLogger(args.context);
     const config = getConfig<AppConfig>(args.context);
     const url = new URL(args.request.url);

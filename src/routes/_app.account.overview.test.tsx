@@ -20,6 +20,7 @@ import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { createTestContext, createLoaderArgs } from '@/lib/test-utils';
 import { loader } from './_app.account.overview';
+import type { Route } from './+types/_app.account.overview';
 
 let capturedOverviewProps: { customer?: any; ordersPromise?: any } = {};
 
@@ -74,7 +75,7 @@ describe('Account Overview page', () => {
     describe('loader', () => {
         test('fetches the 5 most recent orders for the authenticated customer', async () => {
             const context = createTestContext();
-            const args = createLoaderArgs(new Request('http://localhost/account/overview'), context, {
+            const args = createLoaderArgs<Route.LoaderArgs>(new Request('http://localhost/account/overview'), context, {
                 unstable_pattern: '/account/overview',
             });
 

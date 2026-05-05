@@ -20,7 +20,7 @@ import OrderListPage, { loader } from './_app.account.orders._index';
 import { fetchCustomerOrders } from '@/lib/api/order.server';
 import { getAuth } from '@/middlewares/auth.server';
 import type { Order } from '@/components/account/order-list';
-import { createTestContext } from '@/lib/test-utils';
+import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 vi.mock('@/lib/api/order.server', () => ({
@@ -113,7 +113,8 @@ describe('AccountOrders Page', () => {
                 {
                     path: '/',
                     element: <OrderListPage />,
-                    loader,
+                    // Route-typed loader needs cast for createMemoryRouter's generic LoaderFunction signature
+                    loader: loader as any,
                 },
             ],
             {
@@ -154,9 +155,9 @@ describe('AccountOrders Page', () => {
 
             const result = loader({
                 context,
-                params: {},
+                params: { siteId: 'test-site', localeId: 'en-US' },
                 request: new Request('http://localhost'),
-                unstable_pattern: '/' as never,
+                unstable_pattern: UNSTABLE_PATTERN,
             });
 
             expect(fetchCustomerOrders).toHaveBeenCalledWith(context, 'customer-123', {
@@ -173,9 +174,9 @@ describe('AccountOrders Page', () => {
             expect(() =>
                 loader({
                     context,
-                    params: {},
+                    params: { siteId: 'test-site', localeId: 'en-US' },
                     request: new Request('http://localhost'),
-                    unstable_pattern: '/' as never,
+                    unstable_pattern: UNSTABLE_PATTERN,
                 })
             ).toThrow();
         });
@@ -264,7 +265,8 @@ describe('AccountOrders Page', () => {
                     {
                         path: '/',
                         element: <OrderListPage />,
-                        loader,
+                        // Route-typed loader needs cast for createMemoryRouter's generic LoaderFunction signature
+                        loader: loader as any,
                     },
                 ],
                 {
@@ -301,7 +303,8 @@ describe('AccountOrders Page', () => {
                     {
                         path: '/',
                         element: <OrderListPage />,
-                        loader,
+                        // Route-typed loader needs cast for createMemoryRouter's generic LoaderFunction signature
+                        loader: loader as any,
                     },
                 ],
                 {

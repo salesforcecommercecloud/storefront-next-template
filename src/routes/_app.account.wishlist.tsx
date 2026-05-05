@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense } from 'react';
-import { Await, type LoaderFunctionArgs, type ShouldRevalidateFunctionArgs } from 'react-router';
+import { Await, type ShouldRevalidateFunctionArgs } from 'react-router';
+import type { Route } from './+types/_app.account.wishlist';
 import { type ShopperCustomers, type ShopperProducts, ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getAuth } from '@/middlewares/auth.server';
 import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist.server';
@@ -32,7 +33,7 @@ type Product = ShopperProducts.schemas['Product'];
  * Product details are returned as a Promise for streaming — the Suspense boundary
  * in the component shows a skeleton until they resolve.
  */
-export async function loader({ context }: LoaderFunctionArgs): Promise<{
+export async function loader({ context }: Route.LoaderArgs): Promise<{
     wishlist: CustomerProductList | null;
     items: CustomerProductListItem[];
     productsByProductId: Promise<Record<string, Product>>;

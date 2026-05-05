@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { LoaderFunctionArgs } from 'react-router';
+import type { Route } from './+types/resource.basket-products-promotions';
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
@@ -27,7 +27,7 @@ import { getLogger } from '@/lib/logger.server';
  * Fetches product promotion data for all items in the basket
  * Returns a mapping of productId to product data with promotions
  */
-export async function loader({ context }: LoaderFunctionArgs): Promise<Record<string, ProductWithPromotions>> {
+export async function loader({ context }: Route.LoaderArgs): Promise<Record<string, ProductWithPromotions>> {
     const logger = getLogger(context);
     logger.debug('BasketProductsPromotions: loader starting');
     const basket = (await getBasket(context)).current;

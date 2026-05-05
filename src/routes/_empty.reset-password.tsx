@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { redirect, useActionData } from 'react-router';
+import type { Route } from './+types/_empty.reset-password';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { ResetPasswordForm } from '@/components/reset-password-form';
@@ -34,7 +35,7 @@ type ResetPasswordActionData = {
     error?: string;
 };
 
-export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordLoaderData | Response {
+export function loader({ request, context }: Route.LoaderArgs): ResetPasswordLoaderData | Response {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');
     const email = url.searchParams.get('email');
@@ -51,7 +52,7 @@ export function loader({ request, context }: LoaderFunctionArgs): ResetPasswordL
 
 // Server action required for authentication - password reset must be handled
 // server-side to maintain security and proper integration with SFCC's authentication system
-export async function action({ request, context }: ActionFunctionArgs): Promise<ResetPasswordActionData | Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<ResetPasswordActionData | Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();

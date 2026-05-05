@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useCallback, useMemo, useRef } from 'react';
-import { redirect, useActionData, type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { redirect, useActionData } from 'react-router';
+import type { Route } from './+types/_empty.login';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 import { SeoMeta } from '@/components/seo-meta';
@@ -69,7 +70,7 @@ type LoginLoaderData = {
     pageUrl: string;
 };
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
     const logger = getLogger(context);
     const session = getAuth(context);
     const url = new URL(request.url);
@@ -177,7 +178,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  * - `LoginActionResponse` — errors or intermediate states (e.g., OTP form). This data is
  *   serialized and delivered to the component via `useActionData()` for rendering.
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<LoginActionResponse | Response> {
+export async function action({ request, context }: Route.ActionArgs): Promise<LoginActionResponse | Response> {
     const logger = getLogger(context);
     const config = getConfig<AppConfig>(context);
     const { t } = getTranslation(context);
