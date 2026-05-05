@@ -17,12 +17,12 @@ onlyBuiltDependencies:
 # (https://pnpm.io/settings#minimumreleaseage)
 minimumReleaseAge: 2880
 
-# Storefront Next SDK packages are exempt.
+# These Salesforce-published packages are exempt from the quarantine window.
 # (https://pnpm.io/settings#minimumreleaseageexclude)
 minimumReleaseAgeExclude:
   - '@salesforce/storefront-next-dev@0.4.0-alpha.2'
   - '@salesforce/storefront-next-runtime@0.4.0-alpha.2'
-  - '@salesforce/mrt-utilities'
+  - '@salesforce/mrt-utilities@0.1.6'
 
 # Prevent lockfile version downgrades.
 # (https://pnpm.io/settings#trustpolicy)
