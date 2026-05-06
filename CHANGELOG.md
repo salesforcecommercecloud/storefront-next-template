@@ -1,18 +1,9 @@
-## v0.4.0-dev (May 1, 2026)
+## v0.4.0 (May 5, 2026)
 
 - Design layer: Wire `contentLinkUuid` through regions and story fixtures to support content blocks (@W-21609036)
-
-## v0.4.0-dev (Apr 30, 2026)
-
 - **Cart line item:** Restore the edit button for non-standard, non-bonus products alongside the newly added wishlist toggle and remove action.
 - Broke down app.css into a more organized system for readability and discoverability [#1474](https://github.com/commerce-emu/storefront-next/pull/1474)
-
-## v0.4.0-dev (Apr 28, 2026)
-
 - **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.
-
-## v0.4.0-dev (Apr 24, 2026)
-
 - Fix promotions always showing as 0 in order summary and order confirmation when only item-level discounts are applied — now includes `productItems[].priceAdjustments` alongside `orderPriceAdjustments` ([#1557](https://github.com/commerce-emu/storefront-next/pull/1557))
 - Remove dead `ssr.noExternal` / `ssr.target` block from `vite.config.ts` — production SSR inlining is handled by the SDK's `managedRuntimeBundlePlugin`, and dev works with Vite's default ESM externalization ([#1540](https://github.com/commerce-emu/storefront-next/pull/1540))
 - Standardize SCAPI requests error handling - Homepage ([#1537](https://github.com/commerce-emu/storefront-next/pull/1537))
@@ -26,9 +17,6 @@
 - Standardize behaviors of API errors in Checkout (@W-22199926) ([#1521](https://github.com/commerce-emu/storefront-next/pull/1521))
 - Migrate i18n infrastructure to SDK: replace `src/lib/i18next.ts`, `src/lib/i18next.client.ts`, and `scripts/aggregate-extension-locales.js` with imports from `@salesforce/storefront-next-runtime/i18n` and `sfnext locales aggregate-extensions`
 - Fix locale bundle bloat, SSR 404 plain-text response, and homepage links ignoring active locale on error pages
-
-## v0.4.0-dev (Apr 15, 2026)
-
 - [UX Fix] Promo code component to match design ([#1525](https://github.com/commerce-emu/storefront-next/pull/1525))
 - Mini cart item UX refresh: update product/price hierarchy, stack quantity controls, and improve long promotion wrapping behavior ([#1510](https://github.com/commerce-emu/storefront-next/pull/1510))
 - Standardize action error handling with semantic error codes: actions return structured `{ code, message }` errors instead of plain strings (@W-21952674) ([#1508](https://github.com/commerce-emu/storefront-next/pull/1508))
@@ -57,17 +45,11 @@
 - Remove unused /callback route
 - Remove unused Page Designer dev proxy from vite.config.ts (@W-22154589@)
 - Rename server-only source files to `.server.ts` so the React Router build plugin enforces the server/client boundary at compile time
-
-## v0.4.0-dev (Apr 10, 2026)
-
 - Checkout: Shipping method styling as per UX (@W-21512931)
 - Added SDD (Spec-Driven Development) support with multi-agent code generation
 - ProductCarousel: fix category-driven product fetching in Page Designer — loader now correctly invoked when `categoryId` attribute is set
 - ProductCarousel: hide empty-state placeholder on live storefront; "Select a product" now only shown in Page Designer design mode
 - ProductCarousel: add `categoryId` and `limit` Page Designer attribute definitions; update cartridge metadata
-
-## v0.4.0-dev (Apr 07, 2026)
-
 - Fix social login redirect flow and callback handler ([#1386](https://github.com/commerce-emu/storefront-next/pull/1386))
 - Extend `useSite()` to return `{ site, language, locale, currency }` and remove `CurrencyProvider`/`useCurrency()` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))
 - Add Cloudflare Turnstile bot protection integration for passwordless login with graceful degradation
