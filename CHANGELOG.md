@@ -3,6 +3,7 @@
 
 ## v0.4.0-dev (Apr 30, 2026)
 
+- Pre-select all quick-add swatches on product tiles from `representedProduct`'s variant (`variationValues`), so every axis (color, size, …) in the quick-add modal matches the variant the tile advertises ([#1598](https://github.com/commerce-emu/storefront-next/pull/1598))
 - Reorganize `src/lib/` into domain-first folders: each commerce concept (`address/`, `auth/`, `cart/`, `checkout/`, `customer/`, `images/`, `marketing/`, `order/`, `payment/`, `product/`, `shopper-context/`, `turnstile/`) is now a self-contained folder, and adapters are consolidated under `lib/adapters/<type>/`. Cross-cutting utilities remain at the `lib/` root.
 - Refactor basket actions to reduce code duplication
 

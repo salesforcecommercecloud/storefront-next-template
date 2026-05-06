@@ -347,6 +347,18 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
             }
         }, [selectedVariantColorValue]);
 
+        // Pre-seed every quick-add swatch from the tile's represented variant, with the
+        // locally-selected color overriding the represented variant's color when set.
+        const initialVariantSelections = useMemo<Record<string, string> | undefined>(() => {
+            const representedVariantSelections: Record<string, string> = {
+                ...(representedVariant?.variationValues ?? {}),
+            };
+            if (selectedAttributeValue) {
+                representedVariantSelections[PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID] = selectedAttributeValue;
+            }
+            return Object.keys(representedVariantSelections).length > 0 ? representedVariantSelections : undefined;
+        }, [representedVariant, selectedAttributeValue]);
+
         const variationAttributes = useMemo(() => (product ? getDecoratedVariationAttributes(product) : []), [product]);
         const colorAttributes = variationAttributes.filter(({ id }) => PRODUCT_TILE_SELECTABLE_ATTRIBUTE_ID === id);
         const colorValues = (colorAttributes[0]?.values?.slice(0, maxSwatches) ??
@@ -474,6 +486,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                                 productId={product.productId ?? ''}
                                 productName={productName}
                                 selectedColorValue={selectedAttributeValue}
+                                initialVariantSelections={initialVariantSelections}
                                 label={quickAddLabel ?? t('quickAdd')}
                             />
                         </div>

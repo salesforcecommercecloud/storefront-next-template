@@ -23,6 +23,11 @@ interface QuickAddButtonProps {
     productName: string;
     /** Currently selected color value — pre-seeds the PDP URL when "Buy it Now" is clicked */
     selectedColorValue?: string | null;
+    /**
+     * Full variant selections (all axes) from the tile's represented variant. Pre-seeds
+     * every swatch in the quick-add modal so the modal matches the variant the tile advertises.
+     */
+    initialVariantSelections?: Record<string, string>;
     /** Custom button label. Defaults to the `product.quickAdd` locale key */
     label?: string;
 }
@@ -38,7 +43,13 @@ const CartItemModal = lazy(() =>
  * Clicking the button opens the modal; the modal fetches the full product internally.
  * "Buy it Now" closes the modal and navigates to the PDP with the selected color pre-seeded.
  */
-export function QuickAddButton({ productId, productName, selectedColorValue, label }: QuickAddButtonProps) {
+export function QuickAddButton({
+    productId,
+    productName,
+    selectedColorValue,
+    initialVariantSelections,
+    label,
+}: QuickAddButtonProps) {
     const [loaded, setLoaded] = useState(false);
     const [open, setOpen] = useState(false);
     const { navigate, t } = useProductTileContext();
@@ -73,7 +84,7 @@ export function QuickAddButton({ productId, productName, selectedColorValue, lab
                         open={open}
                         onOpenChange={setOpen}
                         onBuyNow={handleBuyItNow}
-                        initialVariantSelections={selectedColorValue ? { color: selectedColorValue } : undefined}
+                        initialVariantSelections={initialVariantSelections}
                     />
                 </Suspense>
             )}
