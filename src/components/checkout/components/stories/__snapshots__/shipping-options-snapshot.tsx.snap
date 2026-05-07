@@ -79,27 +79,15 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
         method="post"
       >
         <div
+          aria-label="Shipping Method"
+          aria-required="true"
           class="flex flex-col gap-4"
-        >
-          <div
-            class="flex justify-center rounded-none border-2 border-dashed border-muted p-8"
-          >
-            <div
-              class="space-y-2 text-center"
-            >
-              <p
-                class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
-              >
-                No shipping methods available
-              </p>
-              <p
-                class="text-sm font-medium leading-none text-left text-muted-foreground"
-              >
-                Make sure your shipping address is complete and try again.
-              </p>
-            </div>
-          </div>
-        </div>
+          data-slot="radio-group"
+          dir="ltr"
+          role="radiogroup"
+          style="outline: none;"
+          tabindex="-1"
+        />
         <div
           class="w-full pt-2"
         >
@@ -239,27 +227,15 @@ exports[`ShippingOptions stories snapshot > LoadingState story renders and match
         method="post"
       >
         <div
+          aria-label="Shipping Method"
+          aria-required="true"
           class="flex flex-col gap-4"
-        >
-          <div
-            class="flex justify-center rounded-none border-2 border-dashed border-muted p-8"
-          >
-            <div
-              class="space-y-2 text-center"
-            >
-              <p
-                class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
-              >
-                No shipping methods available
-              </p>
-              <p
-                class="text-sm font-medium leading-none text-left text-muted-foreground"
-              >
-                Make sure your shipping address is complete and try again.
-              </p>
-            </div>
-          </div>
-        </div>
+          data-slot="radio-group"
+          dir="ltr"
+          role="radiogroup"
+          style="outline: none;"
+          tabindex="-1"
+        />
         <div
           class="w-full pt-2"
         >
@@ -328,144 +304,140 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
         method="post"
       >
         <div
+          aria-label="Shipping Method"
+          aria-required="true"
           class="flex flex-col gap-4"
+          data-slot="radio-group"
+          dir="ltr"
+          role="radiogroup"
+          style="outline: none;"
+          tabindex="0"
         >
-          <div
-            aria-label="Shipping Method"
-            aria-required="true"
-            class="flex flex-col gap-4"
-            data-slot="radio-group"
-            dir="ltr"
-            role="radiogroup"
-            style="outline: none;"
-            tabindex="0"
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="standard"
           >
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="standard"
+            <div
+              class="flex items-center gap-2"
             >
-              <div
-                class="flex items-center gap-2"
+              <button
+                aria-checked="true"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="checked"
+                id="standard"
+                role="radio"
+                tabindex="0"
+                type="button"
+                value="standard"
               >
-                <button
-                  aria-checked="true"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
+                <span
+                  class="relative flex items-center justify-center"
+                  data-slot="radio-group-indicator"
                   data-state="checked"
-                  id="standard"
-                  role="radio"
-                  tabindex="0"
-                  type="button"
-                  value="standard"
                 >
-                  <span
-                    class="relative flex items-center justify-center"
-                    data-slot="radio-group-indicator"
-                    data-state="checked"
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                      fill="none"
-                      height="24"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <input
-                  aria-hidden="true"
-                  checked=""
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="standard"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  5-7 business days
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                    />
+                  </svg>
                 </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £9.99
-                  </span>
-                </span>
-              </div>
+              </button>
+              <input
+                aria-hidden="true"
+                checked=""
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="standard"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Standard Shipping
+                5-7 business days
               </span>
-            </label>
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="express"
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £9.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
             >
-              <div
-                class="flex items-center gap-2"
-              >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="express"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="express"
-                />
-                <input
-                  aria-hidden="true"
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="express"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  2-3 business days
-                </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £19.99
-                  </span>
-                </span>
-              </div>
+              Standard Shipping
+            </span>
+          </label>
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="express"
+          >
+            <div
+              class="flex items-center gap-2"
+            >
+              <button
+                aria-checked="false"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="unchecked"
+                id="express"
+                role="radio"
+                tabindex="-1"
+                type="button"
+                value="express"
+              />
+              <input
+                aria-hidden="true"
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="express"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Express Shipping
+                2-3 business days
               </span>
-            </label>
-          </div>
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £19.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
+            >
+              Express Shipping
+            </span>
+          </label>
         </div>
         <div
           class="w-full pt-2"
@@ -523,27 +495,15 @@ exports[`ShippingOptions stories snapshot > NoShippingMethods story renders and 
         method="post"
       >
         <div
+          aria-label="Shipping Method"
+          aria-required="true"
           class="flex flex-col gap-4"
-        >
-          <div
-            class="flex justify-center rounded-none border-2 border-dashed border-muted p-8"
-          >
-            <div
-              class="space-y-2 text-center"
-            >
-              <p
-                class="leading-7 [&:not(:first-child)]:mt-6 text-left text-muted-foreground"
-              >
-                No shipping methods available
-              </p>
-              <p
-                class="text-sm font-medium leading-none text-left text-muted-foreground"
-              >
-                Make sure your shipping address is complete and try again.
-              </p>
-            </div>
-          </div>
-        </div>
+          data-slot="radio-group"
+          dir="ltr"
+          role="radiogroup"
+          style="outline: none;"
+          tabindex="-1"
+        />
         <div
           class="w-full pt-2"
         >
@@ -601,144 +561,140 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
         method="post"
       >
         <div
+          aria-label="Shipping Method"
+          aria-required="true"
           class="flex flex-col gap-4"
+          data-slot="radio-group"
+          dir="ltr"
+          role="radiogroup"
+          style="outline: none;"
+          tabindex="0"
         >
-          <div
-            aria-label="Shipping Method"
-            aria-required="true"
-            class="flex flex-col gap-4"
-            data-slot="radio-group"
-            dir="ltr"
-            role="radiogroup"
-            style="outline: none;"
-            tabindex="0"
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="standard"
           >
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="standard"
+            <div
+              class="flex items-center gap-2"
             >
-              <div
-                class="flex items-center gap-2"
+              <button
+                aria-checked="true"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="checked"
+                id="standard"
+                role="radio"
+                tabindex="0"
+                type="button"
+                value="standard"
               >
-                <button
-                  aria-checked="true"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
+                <span
+                  class="relative flex items-center justify-center"
+                  data-slot="radio-group-indicator"
                   data-state="checked"
-                  id="standard"
-                  role="radio"
-                  tabindex="0"
-                  type="button"
-                  value="standard"
                 >
-                  <span
-                    class="relative flex items-center justify-center"
-                    data-slot="radio-group-indicator"
-                    data-state="checked"
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                      fill="none"
-                      height="24"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <input
-                  aria-hidden="true"
-                  checked=""
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="standard"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  5-7 business days
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                    />
+                  </svg>
                 </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £9.99
-                  </span>
-                </span>
-              </div>
+              </button>
+              <input
+                aria-hidden="true"
+                checked=""
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="standard"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Standard Shipping
+                5-7 business days
               </span>
-            </label>
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="express"
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £9.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
             >
-              <div
-                class="flex items-center gap-2"
-              >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="express"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="express"
-                />
-                <input
-                  aria-hidden="true"
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="express"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  2-3 business days
-                </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £19.99
-                  </span>
-                </span>
-              </div>
+              Standard Shipping
+            </span>
+          </label>
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="express"
+          >
+            <div
+              class="flex items-center gap-2"
+            >
+              <button
+                aria-checked="false"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="unchecked"
+                id="express"
+                role="radio"
+                tabindex="-1"
+                type="button"
+                value="express"
+              />
+              <input
+                aria-hidden="true"
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="express"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Express Shipping
+                2-3 business days
               </span>
-            </label>
-          </div>
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £19.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
+            >
+              Express Shipping
+            </span>
+          </label>
         </div>
         <div
           class="w-full pt-2"
@@ -796,144 +752,140 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
         method="post"
       >
         <div
+          aria-label="Shipping Method"
+          aria-required="true"
           class="flex flex-col gap-4"
+          data-slot="radio-group"
+          dir="ltr"
+          role="radiogroup"
+          style="outline: none;"
+          tabindex="0"
         >
-          <div
-            aria-label="Shipping Method"
-            aria-required="true"
-            class="flex flex-col gap-4"
-            data-slot="radio-group"
-            dir="ltr"
-            role="radiogroup"
-            style="outline: none;"
-            tabindex="0"
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="free"
           >
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="free"
+            <div
+              class="flex items-center gap-2"
             >
-              <div
-                class="flex items-center gap-2"
+              <button
+                aria-checked="true"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="checked"
+                id="free"
+                role="radio"
+                tabindex="0"
+                type="button"
+                value="free"
               >
-                <button
-                  aria-checked="true"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
+                <span
+                  class="relative flex items-center justify-center"
+                  data-slot="radio-group-indicator"
                   data-state="checked"
-                  id="free"
-                  role="radio"
-                  tabindex="0"
-                  type="button"
-                  value="free"
                 >
-                  <span
-                    class="relative flex items-center justify-center"
-                    data-slot="radio-group-indicator"
-                    data-state="checked"
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                      fill="none"
-                      height="24"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <input
-                  aria-hidden="true"
-                  checked=""
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="free"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  5-7 business days
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                    />
+                  </svg>
                 </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    FREE
-                  </span>
-                </span>
-              </div>
+              </button>
+              <input
+                aria-hidden="true"
+                checked=""
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="free"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Free Standard Shipping
+                5-7 business days
               </span>
-            </label>
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="express"
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  FREE
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
             >
-              <div
-                class="flex items-center gap-2"
-              >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="express"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="express"
-                />
-                <input
-                  aria-hidden="true"
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="express"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  2-3 business days
-                </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £19.99
-                  </span>
-                </span>
-              </div>
+              Free Standard Shipping
+            </span>
+          </label>
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="express"
+          >
+            <div
+              class="flex items-center gap-2"
+            >
+              <button
+                aria-checked="false"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="unchecked"
+                id="express"
+                role="radio"
+                tabindex="-1"
+                type="button"
+                value="express"
+              />
+              <input
+                aria-hidden="true"
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="express"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Express Shipping
+                2-3 business days
               </span>
-            </label>
-          </div>
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £19.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
+            >
+              Express Shipping
+            </span>
+          </label>
         </div>
         <div
           class="w-full pt-2"
@@ -991,193 +943,189 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
         method="post"
       >
         <div
+          aria-label="Shipping Method"
+          aria-required="true"
           class="flex flex-col gap-4"
+          data-slot="radio-group"
+          dir="ltr"
+          role="radiogroup"
+          style="outline: none;"
+          tabindex="0"
         >
-          <div
-            aria-label="Shipping Method"
-            aria-required="true"
-            class="flex flex-col gap-4"
-            data-slot="radio-group"
-            dir="ltr"
-            role="radiogroup"
-            style="outline: none;"
-            tabindex="0"
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="standard"
           >
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="standard"
+            <div
+              class="flex items-center gap-2"
             >
-              <div
-                class="flex items-center gap-2"
+              <button
+                aria-checked="true"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="checked"
+                id="standard"
+                role="radio"
+                tabindex="0"
+                type="button"
+                value="standard"
               >
-                <button
-                  aria-checked="true"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
+                <span
+                  class="relative flex items-center justify-center"
+                  data-slot="radio-group-indicator"
                   data-state="checked"
-                  id="standard"
-                  role="radio"
-                  tabindex="0"
-                  type="button"
-                  value="standard"
                 >
-                  <span
-                    class="relative flex items-center justify-center"
-                    data-slot="radio-group-indicator"
-                    data-state="checked"
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="lucide lucide-circle fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2"
-                      fill="none"
-                      height="24"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <input
-                  aria-hidden="true"
-                  checked=""
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="standard"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  5-7 business days
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                    />
+                  </svg>
                 </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £9.99
-                  </span>
-                </span>
-              </div>
+              </button>
+              <input
+                aria-hidden="true"
+                checked=""
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="standard"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Standard Shipping
+                5-7 business days
               </span>
-            </label>
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="express"
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £9.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
             >
-              <div
-                class="flex items-center gap-2"
-              >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="express"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="express"
-                />
-                <input
-                  aria-hidden="true"
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="express"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  2-3 business days
-                </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £19.99
-                  </span>
-                </span>
-              </div>
-              <span
-                class="pl-6 text-sm text-foreground"
-              >
-                Express Shipping
-              </span>
-            </label>
-            <label
-              class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
-              for="overnight"
+              Standard Shipping
+            </span>
+          </label>
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="express"
+          >
+            <div
+              class="flex items-center gap-2"
             >
-              <div
-                class="flex items-center gap-2"
-              >
-                <button
-                  aria-checked="false"
-                  class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
-                  data-radix-collection-item=""
-                  data-slot="radio-group-item"
-                  data-state="unchecked"
-                  id="overnight"
-                  role="radio"
-                  tabindex="-1"
-                  type="button"
-                  value="overnight"
-                />
-                <input
-                  aria-hidden="true"
-                  name="shippingMethodId"
-                  required=""
-                  style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
-                  tabindex="-1"
-                  type="radio"
-                  value="overnight"
-                />
-                <span
-                  class="flex-1 text-sm font-medium leading-none"
-                >
-                  Next business day
-                </span>
-                <span
-                  class="flex shrink-0 items-center gap-1.5"
-                >
-                  <span
-                    class="text-sm font-semibold leading-none"
-                  >
-                    £29.99
-                  </span>
-                </span>
-              </div>
+              <button
+                aria-checked="false"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="unchecked"
+                id="express"
+                role="radio"
+                tabindex="-1"
+                type="button"
+                value="express"
+              />
+              <input
+                aria-hidden="true"
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="express"
+              />
               <span
-                class="pl-6 text-sm text-foreground"
+                class="flex-1 text-sm font-medium leading-none"
               >
-                Overnight Shipping
+                2-3 business days
               </span>
-            </label>
-          </div>
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £19.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
+            >
+              Express Shipping
+            </span>
+          </label>
+          <label
+            class="group flex cursor-pointer flex-col gap-1 rounded-none border border-border-subtle p-4 transition-all duration-200 has-[[data-state=checked]]:border-foreground"
+            for="overnight"
+          >
+            <div
+              class="flex items-center gap-2"
+            >
+              <button
+                aria-checked="false"
+                class="border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
+                data-radix-collection-item=""
+                data-slot="radio-group-item"
+                data-state="unchecked"
+                id="overnight"
+                role="radio"
+                tabindex="-1"
+                type="button"
+                value="overnight"
+              />
+              <input
+                aria-hidden="true"
+                name="shippingMethodId"
+                required=""
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+                tabindex="-1"
+                type="radio"
+                value="overnight"
+              />
+              <span
+                class="flex-1 text-sm font-medium leading-none"
+              >
+                Next business day
+              </span>
+              <span
+                class="flex shrink-0 items-center gap-1.5"
+              >
+                <span
+                  class="text-sm font-semibold leading-none"
+                >
+                  £29.99
+                </span>
+              </span>
+            </div>
+            <span
+              class="pl-6 text-sm text-foreground"
+            >
+              Overnight Shipping
+            </span>
+          </label>
         </div>
         <div
           class="w-full pt-2"

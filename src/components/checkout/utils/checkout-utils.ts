@@ -176,6 +176,29 @@ export function getCompletedSteps(
     return completed;
 }
 
+/**
+ * Returns true when the shipping-methods map contains at least one valid, selectable method
+ * across all shipments. A method is valid when it has an id, a name, and a numeric price.
+ * Used to block advancing past the Shipping Address step when the submitted address yields
+ * no deliverable options.
+ */
+export function hasAnyValidShippingMethod(
+    map: Record<string, ShopperBasketsV2.schemas['ShippingMethodResult']> | undefined
+): boolean {
+    if (!map) return false;
+    for (const result of Object.values(map)) {
+        const methods = result?.applicableShippingMethods;
+        if (
+            methods &&
+            methods.length > 0 &&
+            methods.some((m) => m.id && m.name && typeof m.price === 'number' && !Number.isNaN(m.price))
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function shouldAutoAdvanceForReturningCustomer(
     isRegisteredCustomer: boolean,
     customerProfile?: CustomerProfile

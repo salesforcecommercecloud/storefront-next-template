@@ -16,25 +16,27 @@
 import { useInteraction } from './useInteraction';
 
 export interface SelectInteraction {
-    selectedComponentId: string;
-    setSelectedComponent: (componentId: string) => void;
+    selectedContentLinkUuid: string;
+    setSelectedComponent: (contentLinkUuid: string) => void;
 }
 
 /**
  * Custom hook that manages component selection state and handles
  * client-host communication for selection events.
  *
- * @param isDesignMode - Whether design mode is active
- * @param clientApi - Client API for host communication
  * @returns Selection state and interaction methods
  */
-export function useSelectInteraction(): SelectInteraction {
-    const { state: selectedComponentId, setSelectedComponent } = useInteraction({
+export function useSelectInteraction({
+    contentLinkMap,
+}: {
+    contentLinkMap: Record<string, string>;
+}): SelectInteraction {
+    const { state: selectedContentLinkUuid, setSelectedComponent } = useInteraction({
         initialState: '',
         eventHandlers: {
             ComponentSelected: {
                 handler: (event, setState) => {
-                    setState(event.componentId);
+                    setState(event.contentLinkUuid);
                 },
             },
             ComponentDeselected: {
@@ -44,15 +46,18 @@ export function useSelectInteraction(): SelectInteraction {
             },
         },
         actions: (_state, setState, clientApi) => ({
-            setSelectedComponent: (componentId: string) => {
-                setState(componentId);
-                clientApi?.selectComponent({ componentId });
+            setSelectedComponent: (contentLinkUuid: string) => {
+                setState(contentLinkUuid);
+                clientApi?.selectComponent({
+                    componentId: contentLinkMap[contentLinkUuid] ?? '',
+                    contentLinkUuid,
+                });
             },
         }),
     });
 
     return {
-        selectedComponentId,
+        selectedContentLinkUuid,
         setSelectedComponent,
     };
 }

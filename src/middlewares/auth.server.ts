@@ -201,6 +201,9 @@ export async function authorizePasswordless(
         userid: string;
         callbackUri?: string;
         redirectPath?: string;
+        registerCustomer?: boolean;
+        firstName?: string;
+        lastName?: string;
     }
 ) {
     const performanceTimer = context.get(performanceTimerContext);
@@ -243,6 +246,12 @@ export async function authorizePasswordless(
             usid: usid ? String(usid) : undefined,
             mode,
             ...(locale && { locale }),
+            ...(parameters.registerCustomer && {
+                registerCustomer: parameters.registerCustomer,
+                firstName: parameters.firstName,
+                lastName: parameters.lastName,
+                email: userId,
+            }),
         });
         logger.debug('Auth: authorizePasswordless succeeded');
         return result;
@@ -382,6 +391,81 @@ export async function getPasswordLessAccessToken(
         throw error;
     } finally {
         performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordLessAccessToken, 'end');
+    }
+}
+
+/**
+ * Request OTP code for email verification.
+ * Uses the dedicated OTP endpoints (not passwordless login) to verify
+ * email ownership without creating a new authentication session.
+ */
+export async function requestOtp(
+    context: ActionFunctionArgs['context'],
+    parameters: {
+        email: string;
+    }
+) {
+    const performanceTimer = context.get(performanceTimerContext);
+    performanceTimer?.mark(PERFORMANCE_MARKS.authRequestOtp, 'start');
+
+    const clients = createApiClients(context);
+    const appConfig = getConfig<AppConfig>(context);
+    const callbackUri = appConfig.features.otpRequest.callbackUri;
+
+    const mode = appConfig.features.otpRequest.mode;
+
+    const locale = getLocale(context);
+
+    const logger = getLogger(context);
+    logger.debug('Auth: requestOtp starting', { mode });
+
+    try {
+        await clients.auth.otp.request({
+            userId: parameters.email,
+            email: parameters.email,
+            mode,
+            ...(callbackUri && { callbackUri }),
+            ...(locale && { locale }),
+        });
+        logger.debug('Auth: requestOtp succeeded');
+    } catch (error) {
+        logger.error('Auth: requestOtp failed', { error });
+        throw error;
+    } finally {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authRequestOtp, 'end');
+    }
+}
+
+/**
+ * Verify an OTP code for email verification.
+ * This validates the code without creating a new authentication session.
+ */
+export async function verifyOtp(
+    context: ActionFunctionArgs['context'],
+    parameters: {
+        pwdActionToken: string;
+        email: string;
+    }
+) {
+    const performanceTimer = context.get(performanceTimerContext);
+    performanceTimer?.mark(PERFORMANCE_MARKS.authVerifyOtp, 'start');
+
+    const clients = createApiClients(context);
+
+    const logger = getLogger(context);
+    logger.debug('Auth: verifyOtp starting');
+
+    try {
+        await clients.auth.otp.verify({
+            pwdActionToken: parameters.pwdActionToken,
+            userId: parameters.email,
+        });
+        logger.debug('Auth: verifyOtp succeeded');
+    } catch (error) {
+        logger.error('Auth: verifyOtp failed', { error });
+        throw error;
+    } finally {
+        performanceTimer?.mark(PERFORMANCE_MARKS.authVerifyOtp, 'end');
     }
 }
 

@@ -44,6 +44,7 @@ interface OtpModalProps {
     onResendCode?: () => Promise<void>;
     otpLength?: number;
     initialError?: string;
+    verifyActionUrl?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,8 +71,9 @@ export default function OtpModal({
     onSuccess,
     onCheckoutAsGuest,
     onResendCode,
-    otpLength = 8,
+    otpLength = 6,
     initialError,
+    verifyActionUrl = '/action/verify-passwordless-otp',
 }: OtpModalProps): ReactElement {
     // Track if we've already called onSuccess to prevent infinite loops
     const hasCalledOnSuccessRef = useRef(false);
@@ -104,7 +106,7 @@ export default function OtpModal({
         formData.append('email', email);
         void fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/verify-otp',
+            action: verifyActionUrl,
         });
     };
 

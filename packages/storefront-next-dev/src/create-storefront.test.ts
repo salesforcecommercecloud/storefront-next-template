@@ -811,9 +811,11 @@ describe('create-storefront', () => {
     });
 
     describe('standalone project setup (pnpm-workspace.yaml)', () => {
-        it('should write pnpm-workspace.yaml directly from the template .hbs file', async () => {
+        it('should warn if the template is missing pnpm-workspace.yaml', async () => {
             vi.mocked(fs.existsSync as any).mockImplementation((p: string) => {
                 const s = String(p);
+                if (s.endsWith('pnpm-workspace.yaml')) return false;
+                if (s.endsWith('pnpm-workspace.yaml.hbs')) return false;
                 if (s.endsWith('.git')) return false;
                 if (s.includes(join('src', 'extensions', 'config.json'))) return false;
                 if (s.endsWith('.env.default')) return false;
@@ -830,27 +832,10 @@ describe('create-storefront', () => {
                 defaults: true,
             });
 
-            expect(fs.copyFileSync).toHaveBeenCalledWith(
-                join('my-storefront', 'pnpm-workspace.yaml.hbs'),
-                join('my-storefront', 'pnpm-workspace.yaml')
+            expect(console.warn).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.stringContaining('pnpm-workspace.yaml')
             );
-        });
-
-        it('should throw a clear error if the template is missing pnpm-workspace.yaml.hbs', async () => {
-            vi.mocked(fs.existsSync).mockImplementation((p: any) => {
-                if (String(p).endsWith('.hbs')) return false;
-                if (String(p).endsWith('.git')) return false;
-                return true;
-            });
-            vi.mocked(fs.readFileSync).mockReturnValue('');
-
-            await expect(
-                createStorefront({
-                    name: 'my-storefront',
-                    template: 'https://example.com/template.git',
-                    defaults: true,
-                })
-            ).rejects.toThrow('Template is missing pnpm-workspace.yaml.hbs');
         });
     });
 

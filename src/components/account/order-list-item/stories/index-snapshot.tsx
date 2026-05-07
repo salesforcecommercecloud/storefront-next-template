@@ -15,6 +15,7 @@
  */
 import * as React from 'react';
 import { expect, test, describe, afterEach, vi } from 'vitest';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('@/components/link', () => ({
     Link: (props: React.PropsWithChildren<{ to?: string; [key: string]: unknown }>) => {
@@ -49,7 +50,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
@@ -57,9 +58,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: { id: mockSiteObject.id, defaultLocale: mockSiteObject.defaultLocale, defaultCurrency: mockSiteObject.defaultCurrency, supportedLocales: [{ id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency }], supportedCurrencies: ['EUR', mockSiteObject.defaultCurrency] },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });

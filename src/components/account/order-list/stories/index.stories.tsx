@@ -21,7 +21,7 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { OrderList, OrderListHeader, OrderListBody, type Order } from '../index';
 import heroNewArrivals from '/images/hero-02.webp';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
 
 const mockSite = mockConfig.commerce.sites[0];
 
@@ -229,7 +229,7 @@ export const EmptyState: Story = {
         // Check Continue Shopping button is displayed
         const continueShoppingLink = canvas.getByRole('link', { name: 'Continue Shopping' });
         await expect(continueShoppingLink).toBeInTheDocument();
-        await expect(continueShoppingLink).toHaveAttribute('href', '/RefArchGlobal/en-GB/');
+        await expect(continueShoppingLink).toHaveAttribute('href', `${getSitePrefix()}/`);
 
         // Check no View Order Details links exist
         const viewDetailsLinks = canvas.queryAllByText('View Order Details');

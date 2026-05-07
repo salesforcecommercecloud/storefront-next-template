@@ -29,8 +29,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { AddressFormFields, AddressFormControl } from '@/components/address-form-fields';
+import { AddressFormFields } from '@/components/address-form-fields';
+import { FormInput } from '@/components/form-fields';
 import { createShippingAddressSchema } from '@/lib/checkout/schemas';
 import { usPostalCodeRegex, canadianPostalCodeRegex } from '@/components/customer-address-form/constants';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
@@ -251,18 +251,16 @@ export function AddressModal({
                                             <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                                 {tAccount('addressForm.addressTitleLabel')}*
                                             </FormLabel>
-                                            <AddressFormControl>
-                                                <Input
-                                                    type="text"
-                                                    maxLength={256}
-                                                    placeholder={
-                                                        labelsAsPlaceholders
-                                                            ? `${tAccount('addressForm.addressTitleLabel')}*`
-                                                            : tAccount('addressForm.addressTitlePlaceholder')
-                                                    }
-                                                    {...field}
-                                                />
-                                            </AddressFormControl>
+                                            <FormInput
+                                                type="text"
+                                                maxLength={256}
+                                                placeholder={
+                                                    labelsAsPlaceholders
+                                                        ? `${tAccount('addressForm.addressTitleLabel')}*`
+                                                        : tAccount('addressForm.addressTitlePlaceholder')
+                                                }
+                                                {...field}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}

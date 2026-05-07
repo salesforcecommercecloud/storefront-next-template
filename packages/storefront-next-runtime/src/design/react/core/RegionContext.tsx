@@ -17,7 +17,7 @@ import React from 'react';
 
 export interface RegionContextType {
     regionId: string;
-    componentIds: string[];
+    contentLinkUuids: string[];
 }
 
 export const RegionContext = React.createContext<RegionContextType | null>(null);

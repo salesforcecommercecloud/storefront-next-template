@@ -31,8 +31,8 @@ import {
 import type { ShopperExperience, Middleware, Clients } from '@salesforce/storefront-next-runtime/scapi';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
-import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import type { AppConfig } from '@/types/config';
 import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
 import { getLogger } from '@/lib/logger.server';
 import type { Logger } from '@/lib/logger';
@@ -504,7 +504,7 @@ async function getAndUnpackDataStoreEntry(
 
         metrics[`${manifestType}ManifestUnpackStart`] = performance.now();
 
-        if (!entry.value?.compressedData && !entry.value?.data) {
+        if (!entry.value) {
             // This will get caught so the error message doesn't
             // really matter here.
             throw new Error('Data store entry is blank');

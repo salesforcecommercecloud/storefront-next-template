@@ -60,6 +60,7 @@ The OTP Modal is typically used after a passwordless login request has been made
 - \`onSuccess\`: Callback when verification succeeds
 - \`onCheckoutAsGuest\`: Optional callback for guest checkout
 - \`onResendCode\`: Optional callback for resending OTP
+- \`verifyActionUrl\`: Server action to POST the OTP code to (default: \`/action/verify-passwordless-otp\`)
 
 ## Testing
 

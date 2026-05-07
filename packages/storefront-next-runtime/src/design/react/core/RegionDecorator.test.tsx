@@ -66,7 +66,7 @@ describe('design/react/RegionDecorator', () => {
                 const { region, host } = await testBed.render(TestComponent, {
                     regionMetadata: {
                         id: 'test-region-1',
-                        componentIds: [],
+                        contentLinkUuids: [],
                         componentTypeExclusions: [],
                         componentTypeInclusions: [],
                     },
@@ -134,7 +134,7 @@ describe('design/react/RegionDecorator', () => {
                 const { region, host } = await testBed.render(TestComponent, {
                     regionMetadata: {
                         id: 'test-region-1',
-                        componentIds: [],
+                        contentLinkUuids: [],
                         componentTypeExclusions: [],
                         componentTypeInclusions: [],
                     },
@@ -269,7 +269,7 @@ describe('design/react/RegionDecorator', () => {
                     const { region, host } = await testBed.render(TestComponent, {
                         regionMetadata: {
                             id: 'test-region-1',
-                            componentIds: [],
+                            contentLinkUuids: [],
                             componentTypeInclusions: inclusions,
                             componentTypeExclusions: exclusions,
                         },

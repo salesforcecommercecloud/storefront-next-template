@@ -19,10 +19,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useFetcher, useResolvedPath, useRevalidator } from 'react-router';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { NativeSelect } from '@/components/ui/native-select';
+import { FormInput, FormNativeSelect } from '@/components/form-fields';
 import { Typography } from '@/components/typography';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useBasket } from '@/providers/basket';
 import { createContactInfoSchema, type ContactInfoData } from '@/lib/checkout/schemas';
 import { useLoginSuggestion } from '@/hooks/use-customer-lookup';
@@ -342,7 +341,7 @@ export default function ContactInfo({
     ]);
 
     /**
-     * Checkout only: close OTP without calling verify-otp — shopper stays a guest (no SLAS session from OTP).
+     * Checkout only: close OTP without calling verify-passwordless-otp — shopper stays a guest (no SLAS session from OTP).
      * Parent unblocks contact step and hides place-order create-account checkbox for this session.
      */
     const handleCheckoutAsGuestFromOtp = useCallback(() => {
@@ -397,7 +396,7 @@ export default function ContactInfo({
                     <Form {...form}>
                         <form
                             onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
-                            className="flex flex-col gap-4 pt-2"
+                            className="flex flex-col gap-4 pt-2 pb-2"
                             noValidate>
                             <FormField
                                 control={form.control}
@@ -406,19 +405,17 @@ export default function ContactInfo({
                                     <FormItem>
                                         <FormLabel>{t('contactInfo.emailLabel')}*</FormLabel>
                                         <div className="relative">
-                                            <FormControl>
-                                                <Input
-                                                    type="email"
-                                                    placeholder={t('contactInfo.emailPlaceholder')}
-                                                    autoComplete="email"
-                                                    autoFocus={isEditing}
-                                                    disabled={isSendingOtp}
-                                                    className="pr-12"
-                                                    {...field}
-                                                    onFocus={handleEmailFocus}
-                                                    onBlur={(e) => handleEmailBlur(e, field.onBlur)}
-                                                />
-                                            </FormControl>
+                                            <FormInput
+                                                type="email"
+                                                placeholder={t('contactInfo.emailPlaceholder')}
+                                                autoComplete="email"
+                                                autoFocus={isEditing}
+                                                disabled={isSendingOtp}
+                                                className="pr-12"
+                                                {...field}
+                                                onFocus={handleEmailFocus}
+                                                onBlur={(e) => handleEmailBlur(e, field.onBlur)}
+                                            />
                                             {isSendingOtp && (
                                                 <div
                                                     className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
@@ -450,16 +447,16 @@ export default function ContactInfo({
                                     control={form.control}
                                     name="countryCode"
                                     render={({ field }) => (
-                                        <FormItem className="w-20">
+                                        <FormItem className="w-20 [&_[data-slot=native-select-wrapper]]:w-full">
                                             <FormLabel>{t('contactInfo.countryCodeLabel')}</FormLabel>
-                                            <FormControl>
-                                                <NativeSelect
-                                                    aria-label={t('contactInfo.countryCodeLabel')}
-                                                    value={field.value}
-                                                    onChange={(e) => field.onChange(e.target.value)}>
-                                                    {countryCodeOptions}
-                                                </NativeSelect>
-                                            </FormControl>
+                                            <FormNativeSelect
+                                                aria-label={t('contactInfo.countryCodeLabel')}
+                                                value={field.value}
+                                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                                                    field.onChange(e.target.value)
+                                                }>
+                                                {countryCodeOptions}
+                                            </FormNativeSelect>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -470,36 +467,36 @@ export default function ContactInfo({
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
                                             <FormLabel>{t('contactInfo.phoneLabel')}*</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="tel"
-                                                    inputMode="numeric"
-                                                    placeholder={t('contactInfo.phonePlaceholder')}
-                                                    autoComplete="tel-national"
-                                                    maxLength={14}
-                                                    {...field}
-                                                    onChange={(e) => {
-                                                        field.onChange(stripNonDigits(e.target.value).slice(0, 10));
-                                                    }}
-                                                    onBlur={(e) => {
-                                                        field.onBlur();
-                                                        field.onChange(formatPhoneInput(e.target.value));
-                                                    }}
-                                                    onFocus={(e) => {
-                                                        const digits = stripNonDigits(e.target.value);
-                                                        if (digits !== e.target.value) field.onChange(digits);
-                                                    }}
-                                                />
-                                            </FormControl>
+                                            <FormInput
+                                                type="tel"
+                                                inputMode="numeric"
+                                                placeholder={t('contactInfo.phonePlaceholder')}
+                                                autoComplete="tel-national"
+                                                maxLength={14}
+                                                {...field}
+                                                onChange={(e) => {
+                                                    field.onChange(stripNonDigits(e.target.value).slice(0, 10));
+                                                }}
+                                                onBlur={(e) => {
+                                                    field.onBlur();
+                                                    field.onChange(formatPhoneInput(e.target.value));
+                                                }}
+                                                onFocus={(e) => {
+                                                    const digits = stripNonDigits(e.target.value);
+                                                    if (digits !== e.target.value) field.onChange(digits);
+                                                }}
+                                            />
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                             </div>
 
-                            <Button type="submit" disabled={isLoading || turnstilePending} className="w-full">
-                                {nextStepButtonLabel}
-                            </Button>
+                            <div className="w-full pt-2">
+                                <Button type="submit" disabled={isLoading || turnstilePending} className="w-full">
+                                    {nextStepButtonLabel}
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 </ToggleCardEdit>

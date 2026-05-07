@@ -27,7 +27,7 @@ function useRegionDecoratorClasses({ regionId, componentTypeInclusions, componen
 //#region src/design/react/components/DesignRegion.tsx
 function DesignRegion(props) {
 	const { designMetadata, children, className } = props;
-	const { name, id = "", componentIds = [], componentTypeInclusions = [], componentTypeExclusions = [] } = designMetadata ?? {};
+	const { name, id = "", contentLinkUuids = [], componentTypeInclusions = [], componentTypeExclusions = [] } = designMetadata ?? {};
 	const nodeRef = React.useRef(null);
 	const classes = useRegionDecoratorClasses({
 		regionId: id,
@@ -37,21 +37,20 @@ function DesignRegion(props) {
 	const { dragState } = useDesignState();
 	const labels = useLabels();
 	const showFrame = Boolean(id && dragState.currentDropTarget?.regionId === id);
-	const { componentId: parentComponentId } = useComponentContext() ?? {};
+	const { contentLinkUuid: parentContentLinkUuid } = useComponentContext() ?? {};
 	useNodeToTargetStore({
 		type: "region",
 		nodeRef,
-		parentId: parentComponentId,
-		componentIds,
-		componentId: parentComponentId ?? "",
+		parentId: parentContentLinkUuid,
+		contentLinkUuids,
 		regionId: id,
 		componentTypeInclusions,
 		componentTypeExclusions
 	});
 	const context = React.useMemo(() => ({
 		regionId: id,
-		componentIds
-	}), [id, componentIds]);
+		contentLinkUuids
+	}), [id, contentLinkUuids]);
 	return /* @__PURE__ */ jsx("div", {
 		className: classes,
 		ref: nodeRef,
@@ -65,7 +64,6 @@ function DesignRegion(props) {
 		"data-region-id": id,
 		children: /* @__PURE__ */ jsx(DesignFrame, {
 			name: name ?? labels.defaultRegionName ?? "Region",
-			parentId: parentComponentId,
 			regionId: id,
 			localized: true,
 			showFrame,

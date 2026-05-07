@@ -230,6 +230,16 @@ export default function ProductPage() {
 
 For details on how loader data integrates with the broader state model, including `useLoaderData`, `useRouteLoaderData`, and middleware context as state, see [State Management](README-STATE.md). For visual feedback during data loading, see [Loading States](README-SUSPENSE.md).
 
+### SCAPI Request Shape
+
+SCAPI endpoints expose several knobs that control response size and cacheability, such as `expand`, `select`, `limit`/`offset`, and similar query parameters. Treat these as part of the loader's contract, not as defaults to copy from another route. Two side effects are easy to overlook:
+
+**Payload size.** Every requested field crosses the network and lands in the SSR response. Over-fetching adds bytes to TTFB, inflates the streamed HTML, and increases hydration cost. Audit each loader and ask which fields the route actually renders — drop the rest.
+
+**Cache TTL.** SCAPI caches responses per unique request URL, including the full query string. Adding or removing a parameter creates a separate cache entry. More importantly, fields with shorter TTLs (for example, real-time inventory or pricing) pull the entire cached response onto their shorter schedule when included inline. Prefer fetching short-TTL data separately via a non-critical deferred loader rather than mixing it into critical, long-cacheable payloads.
+
+**Example (product search):** The `expand` parameter is typically the most common offender. `expand=variations,images` on a product with 50 color variants and 5 images each produces 250 image objects, and `expand=availability` shortens the cached response's effective TTL. Trim the `expand` list to what the PLP actually renders, and defer availability to a non-critical loader. The same reasoning applies to other SCAPI endpoints. See [expand Parameter Impact on Cache Hit Rates](https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#expand-parameter-impact-on-cache-hit-rates).
+
 ## Actions
 
 Action functions handle data mutations, such as form submissions, updates, or deletions, the counterpart to loaders. While loaders handle read operations, actions handle writes. A GET/POST/PUT/DELETE distinction is a useful mental model, though React Router routes requests by navigation intent rather than HTTP method alone.

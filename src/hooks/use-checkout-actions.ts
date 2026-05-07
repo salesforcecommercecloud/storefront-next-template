@@ -98,11 +98,16 @@ export type PaymentSubmissionRef = MutableRefObject<{
 /** When true, contact step should not advance (e.g. OTP modal is open or authorize in flight). */
 export type OtpFlowActiveRef = MutableRefObject<boolean>;
 
+/** When true, shipping address step should not advance (no valid shipping methods for address). */
+export type NoShippingMethodsRef = MutableRefObject<boolean>;
+
 export function useCheckoutActions(options?: {
     paymentSubmissionRef?: PaymentSubmissionRef;
     placeOrderOptionsRef?: PlaceOrderOptionsRef;
     /** When .current is true, do not advance from contact step after submit (OTP modal flow). */
     otpFlowActiveRef?: OtpFlowActiveRef;
+    /** When .current is true, do not advance from shipping address step (no valid methods available). */
+    noShippingMethodsRef?: NoShippingMethodsRef;
 }) {
     const { exitEditMode, editingStep } = useCheckoutContext();
     const updateBasket = useBasketUpdater();
@@ -213,6 +218,11 @@ export function useCheckoutActions(options?: {
 
         // Do not advance from contact step when OTP modal is open or authorize is in flight
         if (step === CHECKOUT_STEPS.CONTACT_INFO && options?.otpFlowActiveRef?.current) {
+            return;
+        }
+
+        // Do not advance from shipping address step when no valid shipping methods are available
+        if (step === CHECKOUT_STEPS.SHIPPING_ADDRESS && options?.noShippingMethodsRef?.current) {
             return;
         }
 

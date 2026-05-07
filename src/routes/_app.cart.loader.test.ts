@@ -72,6 +72,11 @@ describe('Cart route loader', () => {
         id: 'product-1',
         name: 'Test Product',
         imageGroups: [{ viewType: 'small', images: [{ link: 'https://example.com/1.jpg' }] }],
+        variants: [{ productId: 'product-1', variationValues: { color: 'black', size: 'M' } }],
+        variationAttributes: [
+            { id: 'color', name: 'Color', values: [{ name: 'Black', value: 'black', orderable: true }] },
+            { id: 'size', name: 'Size', values: [{ name: 'M', value: 'M', orderable: true }] },
+        ],
     };
 
     const createLoaderArgs = (): Route.LoaderArgs => ({
@@ -120,6 +125,8 @@ describe('Cart route loader', () => {
         expect(data).toHaveProperty('wishlistProductIds');
         expect(data.basket).toEqual(mockBasket);
         expect(data.productsByItemId).toEqual({ 'item-1': mockProduct });
+        expect(data.productsByItemId['item-1'].variants).toBeDefined();
+        expect(data.productsByItemId['item-1'].variationAttributes).toBeDefined();
         expect(data.bonusProductsById).toEqual({});
         expect(data.promotions).toEqual({});
         expect(data.wishlistProductIds).toEqual([]);

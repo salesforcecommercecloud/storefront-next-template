@@ -64,6 +64,8 @@ describe('createAuthHelpers', () => {
         getPasswordLessAccessToken: vi.fn(),
         getPasswordResetToken: vi.fn(),
         resetPassword: vi.fn(),
+        requestOtp: vi.fn(),
+        verifyOtp: vi.fn(),
     };
 
     const baseConfig: AuthConfig = {
@@ -1181,6 +1183,207 @@ describe('createAuthHelpers', () => {
                         }),
                     })
                 );
+            });
+        });
+    });
+
+    describe('otp', () => {
+        describe('request', () => {
+            it('should request OTP with email mode', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.requestOtp.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 202 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.otp.request({
+                    userId: 'user@example.com',
+                    email: 'user@example.com',
+                    mode: 'email',
+                });
+
+                expect(mockShopperLoginClient.requestOtp).toHaveBeenCalledWith({
+                    params: {},
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        client_id: 'test-client-id',
+                        channel_id: 'RefArch',
+                        user_id: 'user@example.com',
+                        email: 'user@example.com',
+                        mode: 'email',
+                    },
+                });
+            });
+
+            it.each([
+                {
+                    mode: 'email' as const,
+                    expectedBody: {
+                        mode: 'email',
+                        email: 'user@example.com',
+                    },
+                },
+                {
+                    mode: 'callback' as const,
+                    expectedBody: {
+                        mode: 'callback',
+                        callback_uri: 'https://example.com/otp-callback',
+                    },
+                },
+                {
+                    mode: 'sms' as const,
+                    expectedBody: {
+                        mode: 'sms',
+                    },
+                },
+            ])('should request OTP with $mode mode', async ({ mode, expectedBody }) => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.requestOtp.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 202 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.otp.request({
+                    userId: 'user@example.com',
+                    mode,
+                    email: mode === 'email' ? 'user@example.com' : undefined,
+                    callbackUri: mode === 'callback' ? 'https://example.com/otp-callback' : undefined,
+                });
+
+                expect(mockShopperLoginClient.requestOtp).toHaveBeenCalledWith({
+                    params: {},
+                    headers: FORM_URLENCODED_HEADER,
+                    body: expect.objectContaining({
+                        client_id: 'test-client-id',
+                        channel_id: 'RefArch',
+                        user_id: 'user@example.com',
+                        ...expectedBody,
+                    }),
+                });
+            });
+
+            it('should throw error when clientSecret is not provided', async () => {
+                const auth = createAuthHelpers(baseConfig);
+
+                await expect(
+                    auth.otp.request({
+                        userId: 'user@example.com',
+                        mode: 'email',
+                        email: 'user@example.com',
+                    })
+                ).rejects.toThrow('Client secret is required for OTP operations');
+            });
+
+            it('should throw error when mode is callback but callbackUri is not provided', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                const auth = createAuthHelpers(config);
+
+                await expect(
+                    auth.otp.request({
+                        userId: 'user@example.com',
+                        mode: 'callback',
+                    })
+                ).rejects.toThrow('callbackUri is required when mode is "callback"');
+            });
+
+            it('should throw error when mode is email but email is not provided', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                const auth = createAuthHelpers(config);
+
+                await expect(
+                    auth.otp.request({
+                        userId: 'user@example.com',
+                        mode: 'email',
+                    })
+                ).rejects.toThrow('email is required when mode is "email"');
+            });
+
+            it('should include locale when provided', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.requestOtp.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 202 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.otp.request({
+                    userId: 'user@example.com',
+                    email: 'user@example.com',
+                    mode: 'email',
+                    locale: 'en-US',
+                });
+
+                expect(mockShopperLoginClient.requestOtp).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        body: expect.objectContaining({
+                            locale: 'en-US',
+                        }),
+                    })
+                );
+            });
+        });
+
+        describe('verify', () => {
+            it('should verify OTP with correct request body', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.verifyOtp.mockResolvedValue({
+                    data: undefined,
+                    response: new Response(null, { status: 204 }),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.otp.verify({
+                    pwdActionToken: '12345678',
+                    userId: 'user@example.com',
+                });
+
+                expect(mockShopperLoginClient.verifyOtp).toHaveBeenCalledWith({
+                    params: {},
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        client_id: 'test-client-id',
+                        channel_id: 'RefArch',
+                        pwd_action_token: '12345678',
+                        user_id: 'user@example.com',
+                    },
+                });
+            });
+
+            it('should throw error when clientSecret is not provided', async () => {
+                const auth = createAuthHelpers(baseConfig);
+
+                await expect(
+                    auth.otp.verify({
+                        pwdActionToken: '12345678',
+                        userId: 'user@example.com',
+                    })
+                ).rejects.toThrow('Client secret is required for OTP operations');
             });
         });
     });

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
+import { mockAltSiteObject } from '@/test-utils/config';
 import { SHOPPER_CONTEXT_SEARCH_PARAMS } from '@/lib/shopper-context/constants';
 import {
     isPageDesignerMode,
@@ -841,7 +842,7 @@ describe('shopper-context-utils', () => {
                         enabled: true,
                     },
                 },
-                commerce: { api: { siteId: 'RefArch' } },
+                commerce: { api: { siteId: mockAltSiteObject.id } },
             } as any);
 
             mockParse.mockResolvedValue(null);

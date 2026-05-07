@@ -37,11 +37,11 @@ interface InsertionType {
     type: 'before' | 'after';
 }
 
-export interface DropTarget extends NodeToTargetMapEntry {
-    beforeComponentId?: string;
-    afterComponentId?: string;
+export interface DropTarget extends Omit<NodeToTargetMapEntry, 'contentLinkUuids'> {
+    beforeContentLinkUuid?: string;
+    afterContentLinkUuid?: string;
     insertType: InsertionType;
-    insertComponentId?: string;
+    insertContentLinkUuid?: string;
     regionId: string;
 }
 
@@ -53,16 +53,17 @@ export interface DragInteraction {
         currentDropTarget: DropTarget | null;
         pendingTargetCommit: boolean;
         componentType?: string;
-        sourceComponentId?: string;
+        fragmentId?: string;
+        sourceContentLinkUuid?: string;
         sourceRegionId?: string;
         rectCache: WeakMap<Element, DOMRect>;
         scrollDirection: 0 | 1 | -1;
-        pendingComponentDragId: string | null;
+        pendingDragContentLinkUuid: string | null;
     };
     commitCurrentDropTarget: () => void;
-    startComponentMove: (componentId: string, regionId: string, componentType: string) => void;
+    startComponentMove: (componentId: string, regionId: string, componentType: string, contentLinkUuid: string) => void;
     updateComponentMove: (params: { x: number; y: number }) => void;
-    setPendingComponentDragId: (componentId: string) => void;
+    setPendingDragContentLinkUuid: (contentLinkUuid: string) => void;
     dropComponent: () => void;
     cancelDrag: () => void;
 }
@@ -107,24 +108,26 @@ function getInsertionType({
 }
 
 // Determines whether a source component is being dropped on itself.
+// Note: componentId parameters here are actually contentLinkUuid values (with fallback to id)
+// from the region's contentLinkUuids array, allowing proper duplicate component handling.
 function isOnSelfDropTarget({
-    sourceComponentId,
-    beforeComponentId,
-    afterComponentId,
+    sourceContentLinkUuid,
+    beforeContentLinkUuid,
+    afterContentLinkUuid,
     insertType,
-    componentId,
+    contentLinkUuid,
 }: {
-    sourceComponentId: string | undefined;
-    beforeComponentId: string | undefined;
-    afterComponentId: string | undefined;
+    sourceContentLinkUuid: string | undefined;
+    beforeContentLinkUuid: string | undefined;
+    afterContentLinkUuid: string | undefined;
     insertType: InsertionType;
-    componentId: string;
+    contentLinkUuid: string;
 }) {
-    const isOnSource = sourceComponentId && componentId === sourceComponentId;
+    const isOnSource = sourceContentLinkUuid && contentLinkUuid === sourceContentLinkUuid;
     const isOnSameRegionBefore =
-        sourceComponentId && insertType.type === 'before' && beforeComponentId === sourceComponentId;
+        sourceContentLinkUuid && insertType.type === 'before' && beforeContentLinkUuid === sourceContentLinkUuid;
     const isOnSameRegionAfter =
-        sourceComponentId && insertType.type === 'after' && afterComponentId === sourceComponentId;
+        sourceContentLinkUuid && insertType.type === 'after' && afterContentLinkUuid === sourceContentLinkUuid;
 
     return isOnSource || isOnSameRegionBefore || isOnSameRegionAfter;
 }
@@ -169,13 +172,13 @@ export function useDragInteraction({
         [discoverComponents]
     );
 
-    const getInsertionComponentIds = (
-        componentId: string,
+    const getInsertionComponentUuids = (
+        contentLinkUuid: string,
         region: NodeToTargetMapEntry & { node: Element }
     ): [string | undefined, string | undefined] => {
-        const componentIndex = region.componentIds.indexOf(componentId);
+        const componentIndex = region.contentLinkUuids.indexOf(contentLinkUuid);
 
-        return [region.componentIds[componentIndex - 1], region.componentIds[componentIndex + 1]];
+        return [region.contentLinkUuids[componentIndex - 1], region.contentLinkUuids[componentIndex + 1]];
     };
 
     const getCurrentDropTarget = useCallback(
@@ -213,8 +216,9 @@ export function useDragInteraction({
                       })
                     : { axis: 'y', type: 'after' };
 
-                const [beforeComponentId, afterComponentId] = component
-                    ? getInsertionComponentIds(component.componentId, region)
+                const componentContentLinkUuid = component?.contentLinkUuid ?? '';
+                const [beforeContentLinkUuid, afterContentLinkUuid] = component
+                    ? getInsertionComponentUuids(componentContentLinkUuid, region)
                     : [];
 
                 // If we find a component before a region, it means we are dropping over a component.
@@ -222,12 +226,12 @@ export function useDragInteraction({
                 return {
                     type: component ? 'component' : 'region',
                     regionId: region.regionId,
-                    componentIds: region.componentIds,
                     componentId: component?.componentId ?? '',
+                    contentLinkUuid: componentContentLinkUuid,
                     parentId: region.parentId,
-                    beforeComponentId,
-                    afterComponentId,
-                    insertComponentId: component?.componentId,
+                    beforeContentLinkUuid,
+                    afterContentLinkUuid,
+                    insertContentLinkUuid: componentContentLinkUuid,
                     insertType,
                     componentTypeInclusions: region.componentTypeInclusions,
                     componentTypeExclusions: region.componentTypeExclusions,
@@ -278,19 +282,20 @@ export function useDragInteraction({
         startComponentMove,
         dropComponent,
         cancelDrag,
-        setPendingComponentDragId,
+        setPendingDragContentLinkUuid,
     } = useInteraction({
         initialState: {
             isDragging: false,
             componentType: '',
-            sourceComponentId: undefined as string | undefined,
+            fragmentId: undefined as string | undefined,
+            sourceContentLinkUuid: undefined as string | undefined,
             sourceRegionId: undefined as string | undefined,
             x: 0,
             y: 0,
             currentDropTarget: null as DropTarget | null,
             pendingTargetCommit: false,
             rectCache: new WeakMap<Element, DOMRect>(),
-            pendingComponentDragId: null,
+            pendingDragContentLinkUuid: null,
         } as DragInteraction['dragState'],
         eventHandlers: {
             ComponentDragStarted: {
@@ -300,7 +305,8 @@ export function useDragInteraction({
                     setState((prevState) => ({
                         ...prevState,
                         componentType: event.componentType,
-                        sourceComponentId: undefined,
+                        fragmentId: event.fragmentId,
+                        sourceContentLinkUuid: undefined,
                         sourceRegionId: undefined,
                         x: 0,
                         y: 0,
@@ -370,7 +376,7 @@ export function useDragInteraction({
                     y: 0,
                     scrollDirection: 0,
                     isDragging: false,
-                    pendingComponentDragId: null,
+                    pendingDragContentLinkUuid: null,
                 }));
             },
             updateComponentMove: ({ x, y }: { x: number; y: number }) => {
@@ -392,10 +398,10 @@ export function useDragInteraction({
                     }),
                 }));
             },
-            setPendingComponentDragId: (componentId: string) => {
+            setPendingDragContentLinkUuid: (contentLinkUuid: string) => {
                 setState((prevState) => ({
                     ...prevState,
-                    pendingComponentDragId: componentId,
+                    pendingDragContentLinkUuid: contentLinkUuid,
                 }));
             },
             dropComponent: () => {
@@ -405,7 +411,12 @@ export function useDragInteraction({
                     pendingTargetCommit: true,
                 }));
             },
-            startComponentMove: (componentId: string, regionId: string, componentType: string) => {
+            startComponentMove: (
+                componentId: string,
+                regionId: string,
+                componentType: string,
+                contentLinkUuid: string
+            ) => {
                 scrollFactorRef.current = 0;
 
                 setState((prevState) => ({
@@ -413,7 +424,7 @@ export function useDragInteraction({
                     x: 0,
                     y: 0,
                     componentType,
-                    sourceComponentId: componentId,
+                    sourceContentLinkUuid: contentLinkUuid,
                     sourceRegionId: regionId,
                     isDragging: true,
                     scrollDirection: 0,
@@ -423,38 +434,40 @@ export function useDragInteraction({
             commitCurrentDropTarget: () => {
                 // Don't do anything if we don't have a drop target.
                 if (state.currentDropTarget) {
-                    // If we have a source component id, then we are moving a component to a different region.
-                    if (state.sourceComponentId) {
+                    // If we have a source content link uuid, then we are moving a component to a different region.
+                    if (state.sourceContentLinkUuid) {
                         if (
                             !isOnSelfDropTarget({
-                                sourceComponentId: state.sourceComponentId,
-                                beforeComponentId: state.currentDropTarget.beforeComponentId,
-                                afterComponentId: state.currentDropTarget.afterComponentId,
+                                sourceContentLinkUuid: state.sourceContentLinkUuid,
+                                beforeContentLinkUuid: state.currentDropTarget.beforeContentLinkUuid,
+                                afterContentLinkUuid: state.currentDropTarget.afterContentLinkUuid,
                                 insertType: state.currentDropTarget.insertType,
-                                componentId: state.currentDropTarget.componentId,
+                                contentLinkUuid: state.currentDropTarget.contentLinkUuid ?? '',
                             })
                         ) {
                             clientApi?.moveComponentToRegion({
-                                componentId: state.sourceComponentId,
+                                componentId: state.currentDropTarget.componentId ?? '',
+                                contentLinkUuid: state.sourceContentLinkUuid,
                                 sourceRegionId: state.sourceRegionId ?? '',
                                 insertType: state.currentDropTarget.insertType?.type,
-                                insertComponentId: state.currentDropTarget.insertComponentId,
-                                beforeComponentId: state.currentDropTarget.beforeComponentId,
-                                afterComponentId: state.currentDropTarget.afterComponentId,
+                                insertComponentId: state.currentDropTarget.insertContentLinkUuid,
+                                beforeComponentId: state.currentDropTarget.beforeContentLinkUuid,
+                                afterComponentId: state.currentDropTarget.afterContentLinkUuid,
                                 targetRegionId: state.currentDropTarget.regionId,
                                 targetComponentId: state.currentDropTarget.parentId ?? '',
                             });
                         }
-                        // If we don't have a source component id, then we are adding a new component to a region.
-                    } else if (state.componentType) {
+                        // If we don't have a source content link uuid, then we are adding a new component to a region.
+                    } else if (state.componentType || state.fragmentId) {
                         clientApi?.addComponentToRegion({
                             insertType: state.currentDropTarget.insertType?.type,
-                            insertComponentId: state.currentDropTarget.insertComponentId,
+                            insertComponentId: state.currentDropTarget.insertContentLinkUuid,
+                            beforeComponentId: state.currentDropTarget.beforeContentLinkUuid,
                             componentProperties: {},
-                            componentType: state.componentType,
+                            componentType: state.fragmentId ? '' : (state.componentType ?? ''),
+                            fragmentId: state.fragmentId,
                             targetComponentId: state.currentDropTarget.parentId ?? '',
-                            beforeComponentId: state.currentDropTarget.beforeComponentId,
-                            afterComponentId: state.currentDropTarget.afterComponentId,
+                            afterComponentId: state.currentDropTarget.afterContentLinkUuid,
                             targetRegionId: state.currentDropTarget.regionId,
                         });
                     }
@@ -468,9 +481,9 @@ export function useDragInteraction({
                     y: 0,
                     componentType: '',
                     scrollDirection: 0,
-                    sourceComponentId: undefined,
+                    sourceContentLinkUuid: undefined,
                     sourceRegionId: undefined,
-                    pendingComponentDragId: null,
+                    pendingDragContentLinkUuid: null,
                     currentDropTarget: null,
                     pendingTargetCommit: false,
                 }));
@@ -502,7 +515,7 @@ export function useDragInteraction({
 
     return {
         dragState,
-        setPendingComponentDragId,
+        setPendingDragContentLinkUuid,
         commitCurrentDropTarget,
         startComponentMove,
         updateComponentMove,

@@ -364,8 +364,11 @@ const managedRuntimeBundlePlugin = () => {
 					defaultHandler(level, log);
 				} } },
 				environments: { ssr: { resolve: { noExternal: true } } },
-				experimental: { renderBuiltUrl(filename, { type }) {
-					if (mode !== "preview" && (type === "asset" || type === "public")) return { runtime: `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ((process.env.MRT_ENV_BASE_PATH??'')+'/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}` };
+				experimental: { renderBuiltUrl(filename, { type, hostType }) {
+					if (mode !== "preview" && (type === "asset" || type === "public")) {
+						if (hostType === "css") return { relative: true };
+						return { runtime: `(typeof window !== 'undefined' ? window._BUNDLE_PATH : ((process.env.MRT_ENV_BASE_PATH??'')+'/mobify/bundle/'+(process.env.BUNDLE_ID??'local')+'/client/')) + ${JSON.stringify(filename)}` };
+					}
 				} }
 			};
 		},

@@ -113,10 +113,13 @@ export const mockBuildConfig: Config = {
                 apiKey: '',
             },
             passwordlessLogin: {
-                enabled: false,
                 mode: 'email' as const,
                 callbackUri: '/passwordless-login-callback',
                 landingUri: '/passwordless-login-landing',
+            },
+            otpRequest: {
+                mode: 'email' as const,
+                callbackUri: '',
             },
             resetPassword: {
                 mode: 'email' as const,
@@ -318,24 +321,50 @@ export const mockBuildConfig: Config = {
 export const mockConfig = createAppConfig(mockBuildConfig);
 
 /**
- * The default URL prefix applied by site context routing in tests.
- * Derived from the first configured site and its default locale.
- *
- * Use in test assertions where links are expected to include the site/locale prefix:
- * @example
- * ```ts
- * expect(link).toHaveAttribute('href', `${SITE_PREFIX}/product/123`);
- * ```
+ * Derived site objects and values for use in test assertions and mock return values.
+ * Never hardcode site IDs in test files — always derive from the mock config.
  */
-const defaultSite = mockBuildConfig.app.commerce.sites[0];
-export const SITE_PREFIX = `/${defaultSite.id}/${defaultSite.defaultLocale}`;
+
+/** The full primary mock site object */
+export const mockSiteObject = mockBuildConfig.app.commerce.sites[0];
+
+/** The full alternative mock site object */
+export const mockAltSiteObject = mockBuildConfig.app.commerce.sites[1];
 
 /**
- * The default mock locale derived from the first configured site's default locale.
- * Use when providing `locale` to `SiteProvider` in tests.
+ * Resolves the URL-visible site reference (alias if configured, otherwise site ID).
+ *
+ * @example
+ * ```ts
+ * // Primary site (default)
+ * useCurrentSiteAndLocaleRef: () => ({ siteRef: getSiteRef(), localeRef: mockSiteObject.defaultLocale })
+ *
+ * // Alt site
+ * useCurrentSiteAndLocaleRef: () => ({ siteRef: getSiteRef(mockAltSiteObject), ... })
+ * ```
+ */
+export function getSiteRef(site = mockSiteObject) {
+    return mockBuildConfig.app.siteAliasMap?.[site.id] ?? site.id;
+}
+
+/**
+ * Builds the URL prefix for a given site (e.g., `/RefArchGlobal/en-GB`).
+ *
+ * @example
+ * ```ts
+ * expect(link).toHaveAttribute('href', `${getSitePrefix()}/product/123`);
+ * ```
+ */
+export function getSitePrefix(site = mockSiteObject) {
+    return `/${site.id}/${site.defaultLocale}`;
+}
+
+/**
+ * The primary mock locale object for use with `SiteProvider` in tests.
  */
 export const mockLocale =
-    defaultSite.supportedLocales.find((l) => l.id === defaultSite.defaultLocale) ?? defaultSite.supportedLocales[0];
+    mockSiteObject.supportedLocales.find((l) => l.id === mockSiteObject.defaultLocale) ??
+    mockSiteObject.supportedLocales[0];
 
 /**
  * React Testing Library wrapper component that provides ConfigProvider context

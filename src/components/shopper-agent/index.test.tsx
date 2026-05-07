@@ -15,6 +15,7 @@
  */
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mockAltSiteObject } from '@/test-utils/config';
 import ShopperAgent, { SHOPPER_AGENT_LOAD_EVENT } from './index';
 
 vi.mock('./shopper-agent-window', () => ({
@@ -41,7 +42,7 @@ const validConfig = {
     scriptSourceUrl: 'https://test.my.site.com/ESW/bootstrap.js',
     scrt2Url: 'https://test.salesforce-scrt.com',
     salesforceOrgId: '00Dxx0000000000',
-    siteId: 'RefArch',
+    siteId: mockAltSiteObject.id,
 };
 
 describe('ShopperAgent', () => {

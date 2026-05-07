@@ -111,10 +111,20 @@ vi.mock('@/hooks/use-analytics', () => ({
 
 vi.mock('@/providers/product-context', () => ({
     ProductProvider: ({ children }: any) => <div data-testid="product-provider">{children}</div>,
+    useProduct: vi.fn(() => null),
+}));
+
+vi.mock('@/providers/product-content', () => ({
+    default: ({ children }: any) => <div data-testid="product-content-provider">{children}</div>,
+    useProductContentAdapter: vi.fn(() => undefined),
 }));
 
 vi.mock('@/components/region', () => ({
     Region: ({ fallback }: any) => <div data-testid="region">{fallback}</div>,
+}));
+
+vi.mock('@/components/category-breadcrumbs', () => ({
+    default: ({ category }: any) => <div data-testid="category-breadcrumbs">{category?.name}</div>,
 }));
 
 vi.mock('@/components/json-ld', () => ({
@@ -306,7 +316,7 @@ describe('Product Detail Route', () => {
 
             const { default: ProductPage } = await import('./_app.product.$productId');
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(productWithoutDescription),
+                product: productWithoutDescription,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
@@ -332,7 +342,7 @@ describe('Product Detail Route', () => {
 
             const { default: ProductPage } = await import('./_app.product.$productId');
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(productWithDescription),
+                product: productWithDescription,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
@@ -353,7 +363,7 @@ describe('Product Detail Route', () => {
 
             const { default: ProductPage } = await import('./_app.product.$productId');
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(mockProduct),
+                product: mockProduct,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
@@ -371,7 +381,7 @@ describe('Product Detail Route', () => {
 
             const { default: ProductPage } = await import('./_app.product.$productId');
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(mockProduct),
+                product: mockProduct,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
@@ -399,7 +409,7 @@ describe('Product Detail Route', () => {
     describe('ProductPage component', () => {
         test('should handle pageKey correctly', () => {
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(mockProduct),
+                product: mockProduct,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
@@ -413,7 +423,7 @@ describe('Product Detail Route', () => {
 
         test('should have proper loader data structure', () => {
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(mockProduct),
+                product: mockProduct,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
@@ -429,13 +439,13 @@ describe('Product Detail Route', () => {
             expect(mockLoaderData).toHaveProperty('productSchema');
         });
 
-        test('should render product skeleton while loading', async () => {
+        test('renders ProductContent directly with resolved product (no Suspense around product)', async () => {
             vi.mocked(isProductSet).mockReturnValue(false);
             vi.mocked(isProductBundle).mockReturnValue(false);
 
             const { default: ProductPage } = await import('./_app.product.$productId');
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(mockProduct),
+                product: mockProduct,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
@@ -443,43 +453,40 @@ describe('Product Detail Route', () => {
                 productSchema: Promise.resolve(null),
             };
 
-            const { getByTestId } = render(<ProductPage loaderData={mockLoaderData} />);
+            const { queryByTestId, getByTestId } = render(<ProductPage loaderData={mockLoaderData} />);
 
-            // Should show skeleton while Suspense boundary is waiting for promises to resolve
-            expect(getByTestId('product-skeleton')).toBeTruthy();
+            // ProductContent renders synchronously — the route no longer mounts a
+            // Suspense boundary around the product
+            expect(getByTestId('product-view')).toBeInTheDocument();
+            expect(queryByTestId('product-skeleton')).not.toBeInTheDocument();
         });
 
-        test('should render product JSON-LD after page content', async () => {
+        test('renders product JSON-LD after main page content', async () => {
             vi.mocked(isProductSet).mockReturnValue(false);
             vi.mocked(isProductBundle).mockReturnValue(false);
 
             const { default: ProductPage } = await import('./_app.product.$productId');
-            const fulfilledSchemaPromise = {
-                status: 'fulfilled',
-                value: {
-                    '@context': 'https://schema.org',
-                    '@type': 'Product',
-                    name: 'Test Product',
-                },
-                then: () => undefined,
-            } as unknown as ProductPageData['productSchema'];
             const mockLoaderData: ProductPageData = {
-                product: Promise.resolve(mockProduct),
+                product: mockProduct,
                 category: Promise.resolve(mockCategory),
                 page: mockPage,
                 pageKey: 'test-product-123',
                 pageUrl: '/product/test-product-123',
-                productSchema: fulfilledSchemaPromise,
+                productSchema: Promise.resolve({
+                    '@context': 'https://schema.org',
+                    '@type': 'Product',
+                    name: 'Test Product',
+                }),
             };
 
             render(<ProductPage loaderData={mockLoaderData} />);
 
             await waitFor(() => {
-                expect(screen.getByTestId('product-skeleton')).toBeInTheDocument();
+                expect(screen.getByTestId('product-view')).toBeInTheDocument();
                 expect(screen.getByTestId('product-schema')).toBeInTheDocument();
             });
 
-            const pageContent = screen.getByTestId('product-skeleton');
+            const pageContent = screen.getByTestId('product-view');
             const productSchema = screen.getByTestId('product-schema');
             expect(Boolean(pageContent.compareDocumentPosition(productSchema) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(
                 true

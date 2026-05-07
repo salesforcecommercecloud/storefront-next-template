@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
+import { mockSiteObject } from '@/test-utils/config';
 
 type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
 type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
@@ -81,9 +82,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: { id: mockSiteObject.id, defaultLocale: mockSiteObject.defaultLocale, defaultCurrency: mockSiteObject.defaultCurrency, supportedLocales: [{ id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency }], supportedCurrencies: ['EUR', mockSiteObject.defaultCurrency] },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });

@@ -21,7 +21,7 @@ import {
     parseAllCookies,
     createCookie,
 } from './cookie-utils.server';
-import { mockBuildConfig } from '@/test-utils/config';
+import { mockBuildConfig, mockAltSiteObject } from '@/test-utils/config';
 
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     getConfig: vi.fn(),
@@ -35,7 +35,7 @@ describe('cookie-utils', () => {
         ...mockBuildConfig.app,
         commerce: {
             api: {
-                siteId: 'RefArch',
+                siteId: mockAltSiteObject.id,
                 clientId: 'test-client',
                 organizationId: 'test-org',
                 shortCode: 'test123',
@@ -47,7 +47,7 @@ describe('cookie-utils', () => {
             },
             sites: [
                 {
-                    defaultSiteId: 'RefArch',
+                    defaultSiteId: mockAltSiteObject.id,
                     defaultLocale: 'en-US',
                     defaultCurrency: 'USD',
                     supportedLocales: [],
@@ -71,7 +71,7 @@ describe('cookie-utils', () => {
                 get: vi.fn(() => ({ site: { id: siteId } })),
             }) as any;
 
-        const mockContext = createMockContextWithSite('RefArch');
+        const mockContext = createMockContextWithSite(mockAltSiteObject.id);
 
         afterEach(() => {
             vi.clearAllMocks();
@@ -82,8 +82,8 @@ describe('cookie-utils', () => {
         });
 
         it('should namespace non-excluded cookies with siteId from site context', () => {
-            expect(getCookieNameWithSiteId('refresh-token', mockContext)).toBe('refresh-token_RefArch');
-            expect(getCookieNameWithSiteId('access-token', mockContext)).toBe('access-token_RefArch');
+            expect(getCookieNameWithSiteId('refresh-token', mockContext)).toBe(`refresh-token_${mockAltSiteObject.id}`);
+            expect(getCookieNameWithSiteId('access-token', mockContext)).toBe(`access-token_${mockAltSiteObject.id}`);
         });
 
         it('should use siteId from site context', () => {
@@ -92,11 +92,13 @@ describe('cookie-utils', () => {
         });
 
         it('should handle cookies with special characters', () => {
-            expect(getCookieNameWithSiteId('my-cookie_name.v2', mockContext)).toBe('my-cookie_name.v2_RefArch');
+            expect(getCookieNameWithSiteId('my-cookie_name.v2', mockContext)).toBe(
+                `my-cookie_name.v2_${mockAltSiteObject.id}`
+            );
         });
 
         it('should handle empty string cookie name', () => {
-            expect(getCookieNameWithSiteId('', mockContext)).toBe('_RefArch');
+            expect(getCookieNameWithSiteId('', mockContext)).toBe(`_${mockAltSiteObject.id}`);
         });
 
         it('should work with different siteIds', () => {
@@ -526,7 +528,7 @@ describe('cookie-utils', () => {
 
     describe('createCookie', () => {
         const mockContext = {
-            get: vi.fn(() => ({ site: { id: 'RefArch' } })),
+            get: vi.fn(() => ({ site: { id: mockAltSiteObject.id } })),
         } as any;
 
         beforeEach(() => {
@@ -539,7 +541,7 @@ describe('cookie-utils', () => {
 
         it('should parse a cookie value from a Cookie header', async () => {
             const cookie = createCookie<string>('token', { path: '/' }, mockContext);
-            const value = await cookie.parse('token_RefArch=abc123; other=value');
+            const value = await cookie.parse(`token_${mockAltSiteObject.id}=abc123; other=value`);
             expect(value).toBe('abc123');
         });
 
@@ -558,7 +560,7 @@ describe('cookie-utils', () => {
         it('should serialize a cookie value to Set-Cookie header', async () => {
             const cookie = createCookie<string>('token', { path: '/', secure: true, sameSite: 'lax' }, mockContext);
             const header = await cookie.serialize('abc123');
-            expect(header).toContain('token_RefArch=abc123');
+            expect(header).toContain(`token_${mockAltSiteObject.id}=abc123`);
             expect(header).toContain('Path=/');
             expect(header).toContain('Secure');
             expect(header).toContain('SameSite=Lax');
@@ -567,19 +569,19 @@ describe('cookie-utils', () => {
         it('should serialize empty value for cookie deletion', async () => {
             const cookie = createCookie<string>('token', { path: '/' }, mockContext);
             const header = await cookie.serialize('');
-            expect(header).toContain('token_RefArch=');
+            expect(header).toContain(`token_${mockAltSiteObject.id}=`);
         });
 
         it('should store values as-is without encoding', async () => {
             const jwt = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0In0.signature';
             const cookie = createCookie<string>('cc-at', { path: '/' }, mockContext);
             const header = await cookie.serialize(jwt);
-            expect(header).toContain(`cc-at_RefArch=${jwt}`);
+            expect(header).toContain(`cc-at_${mockAltSiteObject.id}=${jwt}`);
         });
 
         it('should handle cookie values with equals signs', async () => {
             const cookie = createCookie<string>('token', { path: '/' }, mockContext);
-            const value = await cookie.parse('token_RefArch=base64value==; other=x');
+            const value = await cookie.parse(`token_${mockAltSiteObject.id}=base64value==; other=x`);
             expect(value).toBe('base64value==');
         });
     });

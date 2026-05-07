@@ -3,7 +3,7 @@ import { n as ComponentModule, o as FrameworkAdapter } from "./types3.js";
 import { g as IsomorphicConfiguration } from "./index.js";
 import { i as RegionDecoratorProps, t as ComponentDecoratorProps } from "./component.types.js";
 import React$1 from "react";
-import * as react_jsx_runtime0 from "react/jsx-runtime";
+import * as react_jsx_runtime2 from "react/jsx-runtime";
 
 //#region src/design/react/core/PageDesignerProvider.d.ts
 type PageDesignerContextType = {
@@ -49,12 +49,12 @@ declare function PageDesignerPageMetadataProvider({
   children
 }: React.PropsWithChildren<{
   page: ShopperExperience.schemas['Page'];
-}>): react_jsx_runtime0.JSX.Element;
+}>): react_jsx_runtime2.JSX.Element;
 //#endregion
 //#region src/design/react/core/RegionContext.d.ts
 interface RegionContextType {
   regionId: string;
-  componentIds: string[];
+  contentLinkUuids: string[];
 }
 declare const RegionContext: React$1.Context<RegionContextType | null>;
 declare const useRegionContext: () => RegionContextType | null;
@@ -63,6 +63,7 @@ declare const useRegionContext: () => RegionContextType | null;
 interface ComponentContextType {
   componentId: string;
   name?: string;
+  contentLinkUuid?: string;
 }
 declare const ComponentContext: React$1.Context<ComponentContextType | null>;
 declare const useComponentContext: () => ComponentContextType | null;

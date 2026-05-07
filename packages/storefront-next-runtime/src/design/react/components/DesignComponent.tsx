@@ -29,7 +29,14 @@ import { useComponentInfo } from '../hooks/useComponentInfo';
 
 export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.JSX.Element {
     const { designMetadata, children } = props;
-    const { id = '', name, isFragment = false, isVisible = true, isLocalized = false } = designMetadata ?? {};
+    const {
+        id = '',
+        contentLinkUuid = '',
+        name,
+        isFragment = false,
+        isVisible = true,
+        isLocalized = false,
+    } = designMetadata ?? {};
     const componentId = id;
     const componentType = useComponentType(componentId);
     const componentInfo = useComponentInfo(componentId);
@@ -41,29 +48,37 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
     const { componentId: parentComponentId } = useComponentContext() ?? {};
 
     const {
-        selectedComponentId,
-        hoveredComponentId,
+        selectedContentLinkUuid,
+        hoveredContentLinkUuid,
         setSelectedComponent,
         setHoveredComponent,
         startComponentMove,
-        setPendingComponentDragId,
-        dragState: { pendingComponentDragId, isDragging, sourceComponentId: draggingSourceComponentId },
+        setPendingDragContentLinkUuid,
+        dragState: { pendingDragContentLinkUuid, isDragging, sourceContentLinkUuid: draggingSourceContentLinkUuid },
+        registerContentLink,
     } = useDesignState();
 
-    useFocusedComponentHandler(componentId, dragRef);
+    React.useEffect(() => {
+        if (contentLinkUuid && componentId) {
+            registerContentLink(contentLinkUuid, componentId);
+        }
+    }, [componentId, contentLinkUuid, registerContentLink]);
+
+    useFocusedComponentHandler(contentLinkUuid, dragRef);
     useNodeToTargetStore({
         type: 'component',
         nodeRef: dragRef,
         parentId: parentComponentId,
         regionId,
         componentId,
+        contentLinkUuid,
     });
 
     const discoverComponents = useComponentDiscovery({
         nodeToTargetMap,
     });
 
-    const isPendingDrag = pendingComponentDragId === componentId;
+    const isPendingDrag = pendingDragContentLinkUuid === contentLinkUuid;
     const findAndSetHoveredComponent = useCallback(
         (x: number, y: number) => {
             // If we hover off a component, we could still be hovering over a parent component
@@ -77,7 +92,7 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
                 filter: (entry) => entry.type === 'component',
             });
 
-            setHoveredComponent(components[0]?.componentId ?? null);
+            setHoveredComponent(components[0]?.contentLinkUuid ?? null);
         },
         [setHoveredComponent, discoverComponents]
     );
@@ -102,21 +117,24 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
             e.stopPropagation();
-            setSelectedComponent(componentId);
+            setSelectedComponent(contentLinkUuid ?? '');
         },
-        [setSelectedComponent, componentId]
+        [setSelectedComponent, contentLinkUuid]
     );
 
-    const showFrame = [selectedComponentId, hoveredComponentId].includes(componentId) && !isDragging;
+    const showFrame = [selectedContentLinkUuid, hoveredContentLinkUuid].includes(contentLinkUuid ?? '') && !isDragging;
     const isDraggable = Boolean(componentId && regionId && componentType?.id);
 
     const classes = useComponentDecoratorClasses({
-        componentId,
+        contentLinkUuid,
         isLocalized,
         isFragment: Boolean(isFragment),
     });
 
-    const context = React.useMemo<ComponentContextType>(() => ({ componentId: id, name }), [id, name]);
+    const context = React.useMemo<ComponentContextType>(
+        () => ({ componentId: id, name, contentLinkUuid }),
+        [id, name, contentLinkUuid]
+    );
 
     // Makes the component a drop target.
     const handleDragOver = React.useCallback(
@@ -124,11 +142,12 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
             // Don't prevent propagation here.
             // We depend on the global listener to handle the drag over event.
             // If we are moving a component, don't let it be droppable on itself.
-            if (draggingSourceComponentId !== componentId) {
+            // Compare by contentLinkUuid to handle duplicate components correctly.
+            if (draggingSourceContentLinkUuid !== contentLinkUuid) {
                 event.preventDefault();
             }
         },
-        [draggingSourceComponentId, componentId]
+        [draggingSourceContentLinkUuid, contentLinkUuid]
     );
 
     // When dragging, we don't consider the component as dragging until the drag start event
@@ -140,12 +159,12 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
     // This is why it is split up into two events.
     const handleMouseDown = React.useCallback(
         (event: React.MouseEvent) => {
-            if (componentId) {
+            if (contentLinkUuid) {
                 event.stopPropagation();
-                setPendingComponentDragId(componentId);
+                setPendingDragContentLinkUuid(contentLinkUuid);
             }
         },
-        [componentId, setPendingComponentDragId]
+        [contentLinkUuid, setPendingDragContentLinkUuid]
     );
 
     const handleDragStart = React.useCallback(
@@ -153,10 +172,10 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
             event.stopPropagation();
 
             if (componentId && regionId && componentType?.id) {
-                startComponentMove(componentId, regionId, componentType.id);
+                startComponentMove(componentId, regionId, componentType.id, contentLinkUuid);
             }
         },
-        [componentId, regionId, componentType?.id, startComponentMove]
+        [componentId, regionId, componentType?.id, contentLinkUuid, startComponentMove]
     );
 
     // Don't render anything if the components is hidden via visibility rules.
@@ -183,6 +202,7 @@ export function DesignComponent(props: ComponentDecoratorProps<unknown>): React.
             <DesignFrame
                 showFrame={showFrame}
                 componentId={componentId}
+                contentLinkUuid={contentLinkUuid}
                 localized={isLocalized}
                 name={componentName}
                 parentId={parentComponentId}

@@ -100,10 +100,6 @@ function formatInspectOutput({ flatConfig, sources, localVars, mrtVars }) {
 		}
 		lines.push("");
 	}
-	if (envOverrides.length > 0) {
-		lines.push(chalk.dim("  Tip: Run `pnpm config:push-env` to sync local .env overrides to MRT."));
-		lines.push("");
-	}
 	return lines.join("\n");
 }
 

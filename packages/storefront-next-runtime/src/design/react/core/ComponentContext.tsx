@@ -18,6 +18,7 @@ import React from 'react';
 export interface ComponentContextType {
     componentId: string;
     name?: string;
+    contentLinkUuid?: string;
 }
 
 export const ComponentContext = React.createContext<ComponentContextType | null>(null);

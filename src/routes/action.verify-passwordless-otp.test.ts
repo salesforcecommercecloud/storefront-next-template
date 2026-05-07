@@ -17,7 +17,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 
-import { action } from './action.verify-otp';
+import { action } from './action.verify-passwordless-otp';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
@@ -46,7 +46,7 @@ const mockUpdateBasketResource = vi.mocked(updateBasketResource);
 const mockGetTranslation = vi.mocked(getTranslation);
 const mockIsTrackingConsentEnabled = vi.mocked(isTrackingConsentEnabled);
 
-describe('action.verify-otp', () => {
+describe('action.verify-passwordless-otp', () => {
     let mockContext: ActionFunctionArgs['context'];
     let mockExchangeToken: ReturnType<typeof vi.fn>;
 
@@ -60,13 +60,13 @@ describe('action.verify-otp', () => {
         }
 
         return {
-            request: new Request('http://localhost/action/verify-otp', {
+            request: new Request('http://localhost/action/verify-passwordless-otp', {
                 method: 'POST',
                 body: formData,
             }),
             params: {},
             context: mockContext,
-            unstable_pattern: '/action/verify-otp',
+            unstable_pattern: '/action/verify-passwordless-otp',
         } as ActionFunctionArgs;
     };
 

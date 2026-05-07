@@ -27,6 +27,7 @@ export const DesignFrame = ({
     name,
     parentId,
     regionId,
+    contentLinkUuid,
     localized = false,
     showFrame = false,
     showToolbox = true,
@@ -38,6 +39,7 @@ export const DesignFrame = ({
     localized?: boolean;
     parentId?: string;
     regionId?: string;
+    contentLinkUuid?: string;
     showToolbox?: boolean;
     showFrame?: boolean;
     isMoveable?: boolean;
@@ -57,12 +59,13 @@ export const DesignFrame = ({
             if (componentId) {
                 deleteComponent({
                     componentId,
+                    contentLinkUuid: contentLinkUuid ?? '',
                     sourceComponentId: parentId ?? '',
                     sourceRegionId: regionId ?? '',
                 });
             }
         },
-        [deleteComponent, componentId, parentId, regionId]
+        [deleteComponent, componentId, contentLinkUuid, parentId, regionId]
     );
 
     const stopPropagation = (event: React.MouseEvent) => event.stopPropagation();

@@ -121,6 +121,78 @@ describe('SignupForm', () => {
         });
     });
 
+    describe('passwordless mode', () => {
+        it('should render passwordless registrationform', () => {
+            render(<SignupForm isPasswordless />);
+
+            expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
+            expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
+            expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+
+            expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
+            expect(screen.queryByLabelText(/confirm password/i)).not.toBeInTheDocument();
+            expect(screen.queryByTestId('password-requirement')).not.toBeInTheDocument();
+
+            expect(screen.getByRole('button', { name: t('signup:form.continueButton') })).toBeInTheDocument();
+            expect(
+                screen.getByRole('button', { name: t('signup:form.createAccountWithPassword') })
+            ).toBeInTheDocument();
+        });
+
+        it('should enable submit button immediately when isPasswordless is true', () => {
+            render(<SignupForm isPasswordless />);
+
+            const submitButton = screen.getByRole('button', { name: t('signup:form.continueButton') });
+            expect(submitButton).not.toBeDisabled();
+            expect(submitButton).toHaveAttribute('data-variant', 'default');
+        });
+
+        it('should show password fields when "Create account with a password" is clicked', () => {
+            render(<SignupForm isPasswordless />);
+
+            fireEvent.click(screen.getByRole('button', { name: t('signup:form.createAccountWithPassword') }));
+
+            expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
+            expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('signup:form.createAccountButton') })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('signup:form.continueWithoutPassword') })).toBeInTheDocument();
+        });
+
+        it('should hide password fields when "Continue without a password" is clicked', () => {
+            render(<SignupForm isPasswordless />);
+
+            fireEvent.click(screen.getByRole('button', { name: t('signup:form.createAccountWithPassword') }));
+            expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
+
+            fireEvent.click(screen.getByRole('button', { name: t('signup:form.continueWithoutPassword') }));
+            expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
+            expect(screen.getByRole('button', { name: t('signup:form.continueButton') })).toBeInTheDocument();
+        });
+
+        it('should set registrationMode hidden input to "passwordless" by default', () => {
+            const { container } = render(<SignupForm isPasswordless />);
+
+            const hiddenInput = container.querySelector('input[name="registrationMode"]');
+            expect(hiddenInput).toHaveValue('passwordless');
+        });
+
+        it('should set registrationMode hidden input to "password" when password form is shown', () => {
+            const { container } = render(<SignupForm isPasswordless />);
+
+            fireEvent.click(screen.getByRole('button', { name: t('signup:form.createAccountWithPassword') }));
+
+            const hiddenInput = container.querySelector('input[name="registrationMode"]');
+            expect(hiddenInput).toHaveValue('password');
+        });
+
+        it('should not render registrationMode hidden input when isPasswordless is false', () => {
+            const { container } = render(<SignupForm />);
+
+            const hiddenInput = container.querySelector('input[name="registrationMode"]');
+            expect(hiddenInput).not.toBeInTheDocument();
+        });
+    });
+
     describe('error display', () => {
         it('should display error message when error prop is provided', () => {
             const errorMessage = 'This is an error message';

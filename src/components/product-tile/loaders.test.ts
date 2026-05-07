@@ -15,6 +15,7 @@
  */
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { loader } from './loaders';
 import { fetchProductById } from '@/lib/api/products.server';
 import { convertProductToProductSearchHit } from '@/lib/product/product-conversion';
@@ -25,13 +26,6 @@ vi.mock('@/lib/api/products.server', () => ({
 
 vi.mock('@/lib/product/product-conversion', () => ({
     convertProductToProductSearchHit: vi.fn(),
-}));
-
-vi.mock('@/lib/logger.server', () => ({
-    getLogger: vi.fn(() => ({
-        info: vi.fn(),
-        error: vi.fn(),
-    })),
 }));
 
 describe('product-tile loader', () => {
@@ -106,7 +100,7 @@ describe('product-tile loader', () => {
         });
     });
 
-    test('returns null and logs info for 404 errors (missing products)', async () => {
+    test('propagates 404 errors so the surface error boundary can handle them', async () => {
         mockContext.get.mockReturnValue({ currency: 'USD' });
         const error404 = new ApiError({
             status: 404,
@@ -117,19 +111,19 @@ describe('product-tile loader', () => {
             url: 'https://api.example.com/products/missing-product',
             method: 'GET',
         });
-        vi.mocked(fetchProductById).mockRejectedValue(error404);
+        vi.mocked(fetchProductById).mockRejectedValue(new NormalizedApiError(error404));
 
-        const result = await loader.server({
-            componentData: {
-                data: { productId: 'missing-product' },
-            },
-            context: mockContext,
-        });
-
-        expect(result).toBeNull();
+        await expect(
+            loader.server({
+                componentData: {
+                    data: { productId: 'missing-product' },
+                },
+                context: mockContext,
+            })
+        ).rejects.toThrow(NormalizedApiError);
     });
 
-    test('throws non-404 errors (auth, network failures)', async () => {
+    test('propagates non-404 errors (auth, network failures)', async () => {
         mockContext.get.mockReturnValue({ currency: 'USD' });
         const error500 = new ApiError({
             status: 500,
@@ -140,7 +134,7 @@ describe('product-tile loader', () => {
             url: 'https://api.example.com/products/error-product',
             method: 'GET',
         });
-        vi.mocked(fetchProductById).mockRejectedValue(error500);
+        vi.mocked(fetchProductById).mockRejectedValue(new NormalizedApiError(error500));
 
         await expect(
             loader.server({
@@ -149,7 +143,7 @@ describe('product-tile loader', () => {
                 },
                 context: mockContext,
             })
-        ).rejects.toThrow(error500);
+        ).rejects.toThrow(NormalizedApiError);
     });
 
     test('handles productId with whitespace (fetchProductById trims internally)', async () => {

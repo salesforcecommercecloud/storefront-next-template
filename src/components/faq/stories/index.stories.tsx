@@ -22,7 +22,7 @@ import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefro
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentProvider from '@/providers/product-content';
 import ProductViewProvider from '@/providers/product-view';
-import { mockBuildConfig } from '@/test-utils/config';
+import { mockBuildConfig, mockAltSiteObject } from '@/test-utils/config';
 import Faq from '../index';
 import type { ReactElement } from 'react';
 
@@ -37,7 +37,7 @@ const faqStoryConfig = createAppConfig(
                 scriptSourceUrl: 'https://test.my.site.com/ESWtest/assets/js/bootstrap.min.js',
                 scrt2Url: 'https://test.salesforce-scrt.com',
                 salesforceOrgId: '00Dxx0000000000',
-                siteId: 'RefArch',
+                siteId: mockAltSiteObject.id,
             },
         },
     })

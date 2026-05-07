@@ -58,7 +58,7 @@ export function createComponentTestBed<TState extends Record<string, unknown>>(s
             component: React.FC<React.PropsWithChildren>,
             {
                 props = {},
-                regionMetadata = { id: 'test-region', componentIds: ['test-1', 'test-2', 'test-3'] },
+                regionMetadata = { id: 'test-region', contentLinkUuids: ['test-1-uuid', 'test-2-uuid', 'test-3-uuid'] },
                 waitForHost = true,
                 configFactory,
             }: {
@@ -90,6 +90,7 @@ export function createComponentTestBed<TState extends Record<string, unknown>>(s
 
             const designMetadata = {
                 id: 'test-1',
+                contentLinkUuid: 'test-1-uuid',
                 isVisible: true,
                 isFragment: false,
                 ...props.designMetadata,
@@ -141,6 +142,7 @@ export function createComponentTestBed<TState extends Record<string, unknown>>(s
                                 <DecoratedComponent
                                     designMetadata={{
                                         id: 'test-2',
+                                        contentLinkUuid: 'test-2-uuid',
                                         isFragment: false,
                                         isVisible: true,
                                         isLocalized: true,
@@ -149,6 +151,7 @@ export function createComponentTestBed<TState extends Record<string, unknown>>(s
                                 <DecoratedComponent
                                     designMetadata={{
                                         id: 'test-3',
+                                        contentLinkUuid: 'test-3-uuid',
                                         isFragment: false,
                                         isVisible: true,
                                         isLocalized: true,

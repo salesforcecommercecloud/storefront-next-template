@@ -78,14 +78,28 @@ export default function ShippingAddress({
 
     const shippingAddress = cart?.shipments?.[0]?.shippingAddress;
 
+    // Show the shopper the address they typed so they can modify it
+    const attemptedAddress = (actionData?.data as { address?: Partial<ShippingAddressData> } | undefined)?.address;
+    const basketAddressDiffersFromAttempted = Boolean(
+        actionData?.success &&
+            attemptedAddress &&
+            shippingAddress &&
+            (attemptedAddress.address1 !== shippingAddress.address1 ||
+                attemptedAddress.postalCode !== shippingAddress.postalCode ||
+                attemptedAddress.stateCode !== shippingAddress.stateCode ||
+                attemptedAddress.city !== shippingAddress.city)
+    );
+    const formSourceAddress = basketAddressDiffersFromAttempted ? attemptedAddress : undefined;
+
     // Get auto-populated shipping address from customer profile
     const customerShippingAddress = getShippingAddressFromCustomer(customerProfile);
 
     // Get phone from contact info (prioritize this for auto-population)
     const contactInfoPhone = cart?.customerInfo?.phone;
 
-    // Phone priority: saved shipping phone > contact info phone > customer profile phone
-    const prioritizedPhoneNumber = (shippingAddress?.phone ||
+    // Phone priority: attempted (from last no-methods submit) > saved shipping > contact > profile
+    const prioritizedPhoneNumber = (formSourceAddress?.phone ||
+        shippingAddress?.phone ||
         contactInfoPhone ||
         customerShippingAddress.phone ||
         '') as string;
@@ -93,14 +107,27 @@ export default function ShippingAddress({
     const form = useForm<ShippingAddressData>({
         resolver: zodResolver(schema),
         defaultValues: {
-            firstName: shippingAddress?.firstName || customerShippingAddress.firstName || '',
-            lastName: shippingAddress?.lastName || customerShippingAddress.lastName || '',
-            address1: shippingAddress?.address1 || customerShippingAddress.address1 || '',
-            address2: shippingAddress?.address2 || customerShippingAddress.address2 || '',
-            city: shippingAddress?.city || customerShippingAddress.city || '',
-            stateCode: shippingAddress?.stateCode || customerShippingAddress.stateCode || '',
-            postalCode: shippingAddress?.postalCode || customerShippingAddress.postalCode || '',
-            countryCode: shippingAddress?.countryCode || customerShippingAddress.countryCode || DEFAULT_COUNTRY_CODE,
+            firstName:
+                formSourceAddress?.firstName || shippingAddress?.firstName || customerShippingAddress.firstName || '',
+            lastName:
+                formSourceAddress?.lastName || shippingAddress?.lastName || customerShippingAddress.lastName || '',
+            address1:
+                formSourceAddress?.address1 || shippingAddress?.address1 || customerShippingAddress.address1 || '',
+            address2:
+                formSourceAddress?.address2 || shippingAddress?.address2 || customerShippingAddress.address2 || '',
+            city: formSourceAddress?.city || shippingAddress?.city || customerShippingAddress.city || '',
+            stateCode:
+                formSourceAddress?.stateCode || shippingAddress?.stateCode || customerShippingAddress.stateCode || '',
+            postalCode:
+                formSourceAddress?.postalCode ||
+                shippingAddress?.postalCode ||
+                customerShippingAddress.postalCode ||
+                '',
+            countryCode:
+                formSourceAddress?.countryCode ||
+                shippingAddress?.countryCode ||
+                customerShippingAddress.countryCode ||
+                DEFAULT_COUNTRY_CODE,
             phoneCountryCode: extractCountryCode(prioritizedPhoneNumber),
             phone: stripCountryCode(prioritizedPhoneNumber),
         },

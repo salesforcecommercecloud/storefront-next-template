@@ -18,6 +18,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, act, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { getSiteRef, mockSiteObject } from '@/test-utils/config';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -92,11 +93,11 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'global', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: getSiteRef(), localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
-    buildUrl: ({ to }: { to: string }) => `/global/en-GB${to}`,
+    buildUrl: ({ to }: { to: string }) => `/${getSiteRef()}/${mockSiteObject.defaultLocale}${to}`,
 }));
 
 // --- Test data ---

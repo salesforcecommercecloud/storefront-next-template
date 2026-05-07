@@ -23,6 +23,7 @@ import {
 } from './passwordless-login.server';
 import { getAppOrigin, getErrorMessage } from '@/lib/utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { mockSiteObject } from '@/test-utils/config';
 
 // Hoist dependencies for use in vi.mock (avoids async imports which fail on Windows)
 const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() => {
@@ -82,11 +83,11 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
                 organizationId: 'f_ecom_zzrf_001',
                 clientId: 'c9c45bfd-0ed3-4aa2-9971-40f88962b836',
                 shortCode: 'kv7kzm78',
-                siteId: 'RefArchGlobal',
+                siteId: mockSiteObject.id,
             },
             sites: [
                 {
-                    defaultSiteId: 'RefArchGlobal',
+                    defaultSiteId: mockSiteObject.id,
                     defaultLocale: 'en-US',
                     defaultCurrency: 'USD',
                     supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
@@ -97,7 +98,6 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
         },
         features: {
             passwordlessLogin: {
-                enabled: true,
                 callbackUri: '/passwordless-login-callback',
                 landingUri: '/passwordless-login-landing',
             },

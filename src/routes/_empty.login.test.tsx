@@ -59,6 +59,9 @@ vi.mock('@/lib/utils', () => ({
     isPasswordlessLoginEnabled: false,
     getAppOrigin: vi.fn(),
     isAbsoluteURL: vi.fn((url: string) => /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url)),
+    getSafeReturnUrl: vi.fn((url: string | null | undefined, fallback = '/') =>
+        !url || /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url) ? fallback : url
+    ),
     extractResponseError: vi.fn((err?: unknown) => ({
         responseMessage: err instanceof Error ? err.message : 'error',
     })),
@@ -81,11 +84,10 @@ vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => 
         ...actual,
         getConfig: vi.fn(() => ({
             auth: {
-                otpLength: 8,
+                otpLength: 6,
             },
             features: {
                 passwordlessLogin: {
-                    enabled: true,
                     landingUri: '/passwordless-login-landing',
                     callbackUri: '/passwordless-login-callback',
                 },
@@ -179,6 +181,25 @@ describe('Login Route', () => {
             expect(result).toHaveProperty('status', 302);
             if (result instanceof Response) {
                 expect(result.headers.get('Location')).toBe('/product/123');
+            }
+        });
+
+        it('should redirect to / instead of external returnUrl (open redirect prevention)', async () => {
+            mockGetAuth.mockReturnValue({
+                accessToken: 'valid-token',
+                accessTokenExpiry: Date.now() + 10000,
+                userType: 'registered',
+                customerId: 'customer-123',
+            });
+
+            const mockRequest = new Request('http://localhost:5173/login?returnUrl=https://evil.com');
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await loader(createLoaderArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+
+            expect(result).toHaveProperty('status', 302);
+            if (result instanceof Response) {
+                expect(result.headers.get('Location')).toBe('/');
+                expect(result.headers.get('Location')).not.toContain('evil.com');
             }
         });
 
@@ -486,6 +507,35 @@ describe('Login Route', () => {
             expect(result).toBeInstanceOf(Response);
             expect((result as Response).status).toBe(302);
             expect((result as Response).headers.get('Location')).toBe('/product/123');
+        });
+
+        it('should not redirect to external returnUrl on successful login (open redirect prevention)', async () => {
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
+            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            const mergedBasket = { basketId: 'basket-1' } as any;
+            mockMergeBasket.mockResolvedValue(mergedBasket);
+
+            const formData = new URLSearchParams();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+            formData.append('returnUrl', 'https://evil.com');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString(),
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).status).toBe(302);
+            expect((result as Response).headers.get('Location')).toBe('/');
         });
 
         it('should preserve action and actionParams in returnUrl on successful login', async () => {
@@ -802,6 +852,32 @@ describe('Login Route', () => {
 
             expect(result).toHaveProperty('error', 'An error occurred. Please try again.');
             expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
+        });
+
+        it('should not pass external returnUrl to authorizePasswordless (open redirect prevention)', async () => {
+            mockGetAuth.mockReturnValue({ userType: 'guest' });
+            mockAuthorizePasswordless.mockResolvedValue(undefined as any);
+
+            const formData = new URLSearchParams();
+            formData.append('loginMode', 'passwordless');
+            formData.append('email', 'test@example.com');
+
+            const mockRequest = new Request('http://localhost:5173/login?returnUrl=https://evil.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString(),
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await action(createActionArgs(mockRequest, mockContext, { unstable_pattern: '/login' }));
+
+            expect(result).toHaveProperty('success', true);
+            // finalRedirectPath passed to authorizePasswordless must not contain evil.com
+            expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
+                mockContext,
+                expect.objectContaining({
+                    redirectPath: expect.not.stringContaining('evil.com'),
+                })
+            );
         });
 
         it('should return error on passwordless failure', async () => {

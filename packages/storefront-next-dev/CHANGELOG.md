@@ -1,23 +1,22 @@
-## v0.4.0-dev (Apr 24, 2026)
+## v1.0.0-dev
 
+- Fix `managedRuntimeBundle` plugin build error when a CSS file references a `public/` or bundled asset (e.g. `@font-face { src: url(...) }`). `renderBuiltUrl` now returns `{ relative: true }` for `hostType === 'css'` instead of the JS runtime expression Vite rejects inside CSS `url()`. The browser resolves the relative path against the stylesheet's own URL — which already carries the per-deploy `BUNDLE_ID` — so the reference stays correct across deploys ([#1611](https://github.com/commerce-emu/storefront-next/pull/1611))
 - Add `baseConfigPlugin` that contributes framework-wide Vite defaults (React/React Router dedupe, pre-bundled React Router entries) so these don't have to live in the template's `vite.config.ts` ([#1541](https://github.com/commerce-emu/storefront-next/pull/1541))
-- Extract i18n locale chunking into SDK Vite plugin (`i18nPlugin`): splits translation files into per-language chunks automatically
-- Remove local data-store provider export/build artifacts and rely on `@salesforce/mrt-utilities` data-store behavior ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Update `sfnext dev` to forward Node `--conditions` (from `process.execArgv` and `NODE_OPTIONS`) into Vite client + SSR resolution for conditional exports ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Add `sfnext locales aggregate-extensions` CLI command: generates per-locale barrel files aggregating extension translations under `extPascalCase` namespaces
 - Add action hooks Vite plugin: generates `virtual:action-hooks` module from extension `target-config.json` registrations, enabling server-side extension points in checkout actions
 - Warn at build time when multiple UITarget components or action hook handlers share the same target ID and order value (non-deterministic execution order)
 
-## v0.4.0-dev (Apr 10, 2026)
+## v0.4.0 (May 5, 2026)
 
+- Move `pnpm-workspace.yaml.hbs → .yaml` conversion from `create-storefront` CLI into mirror sync scripts; `prepare-standalone-template.js` now pins exact versions in `minimumReleaseAgeExclude` for all exempted packages
+- Extract i18n locale chunking into SDK Vite plugin (`i18nPlugin`): splits translation files into per-language chunks automatically
+- Add `sfnext locales aggregate-extensions` CLI command: generates per-locale barrel files aggregating extension translations under `extPascalCase` namespaces
+- Remove local data-store provider export/build artifacts and rely on `@salesforce/mrt-utilities` data-store behavior ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
+- Update `sfnext dev` to forward Node `--conditions` (from `process.execArgv` and `NODE_OPTIONS`) into Vite client + SSR resolution for conditional exports ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Fix HMR cascade in static registry plugin: skip unnecessary file writes and module reloads when registry content is unchanged
 - Add `dw.json` to `.gitignore` to prevent credentials from being accidentally committed
 - Replace `dotenv` dependency with Node built-in `util.parseEnv` and `process.loadEnvFile`; consolidate `.env` loading into the oclif `init` hook
 - Add `sfnext config inspect` command: shows a `config.server.ts` override summary — which values are overridden by `.env` and MRT `PUBLIC__` vars
 - Remove unused /callback route
-
-## v0.4.0-dev (Apr 07, 2026)
-
 - Enable `future.unstable_optimizeDeps` in React Router preset to fix duplicate React module crash on dev server startup
 - Add local dev support to MRT Data Layer [#1215](https://github.com/commerce-emu/storefront-next/pull/1215)
 - Clean up RSC/React Server Components references from documentation and comments ([#1363](https://github.com/commerce-emu/storefront-next/pull/1363))

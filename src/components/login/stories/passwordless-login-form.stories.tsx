@@ -425,7 +425,7 @@ export const Default: Story = {
 The default state of the PasswordlessLoginForm shows all standard elements:
 
 - Email input field with proper validation
-- Submit button with "Send Login Link" text
+- Submit button with "Continue" text
 - Toggle link to switch to password login
 - Forgot password link
 
@@ -440,7 +440,7 @@ This is the most common state users will see when accessing the login page.
 
         // Test form renders with required elements
         const emailInput = canvas.getByLabelText(/email/i);
-        const submitButton = canvas.getByRole('button', { name: 'Send Login Link' });
+        const submitButton = canvas.getByRole('button', { name: 'Continue' });
         await expect(emailInput).toBeInTheDocument();
         await expect(submitButton).toBeInTheDocument();
 
@@ -497,7 +497,7 @@ Common error scenarios include:
 
         // Test form elements still exist and are functional after error
         const emailInput = canvas.getByLabelText(/email/i);
-        const submitButton = canvas.getByRole('button', { name: 'Send Login Link' });
+        const submitButton = canvas.getByRole('button', { name: 'Continue' });
 
         await expect(emailInput).toBeInTheDocument();
         await expect(submitButton).toBeInTheDocument();
@@ -542,7 +542,7 @@ This configuration is useful when:
 
         // Test form elements exist
         const emailInput = canvas.getByLabelText(/email/i);
-        const submitButton = canvas.getByRole('button', { name: 'Send Login Link' });
+        const submitButton = canvas.getByRole('button', { name: 'Continue' });
         await expect(emailInput).toBeInTheDocument();
         await expect(submitButton).toBeInTheDocument();
 

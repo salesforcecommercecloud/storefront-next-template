@@ -19,12 +19,12 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { DecoratedVariationAttributeValue } from '@/lib/product/product-utils';
 import { ProductTileSwatches } from './swatches';
-import { ConfigWrapper, mockBuildConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockBuildConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
 const mockSite = {
     ...mockBuildConfig.app.commerce.sites[0],
-    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+    alias: mockBuildConfig.app.siteAliasMap?.[mockSiteObject.id] ?? undefined,
 };
 
 // toImageUrl returns the raw image link in tests; mock it to avoid config dependency inside swatches

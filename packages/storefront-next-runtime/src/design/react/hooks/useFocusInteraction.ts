@@ -16,22 +16,22 @@
 import { useInteraction } from './useInteraction';
 
 export interface FocusInteraction {
-    focusedComponentId: string | null;
+    focusedContentLinkUuid: string | null;
     focusComponent: (node: Element) => void;
 }
 
 export function useFocusInteraction({
     setSelectedComponent,
 }: {
-    setSelectedComponent: (componentId: string) => void;
+    setSelectedComponent: (contentLinkUuid: string) => void;
 }): FocusInteraction {
-    const { state: focusedComponentId, focusComponent } = useInteraction({
+    const { state: focusedContentLinkUuid, focusComponent } = useInteraction({
         initialState: null as string | null,
         eventHandlers: {
             ComponentFocused: {
                 handler: (event, setState) => {
                     setSelectedComponent('');
-                    setState(event.componentId);
+                    setState(event.contentLinkUuid);
                 },
             },
         },
@@ -44,7 +44,7 @@ export function useFocusInteraction({
     });
 
     return {
-        focusedComponentId,
+        focusedContentLinkUuid,
         focusComponent,
     };
 }

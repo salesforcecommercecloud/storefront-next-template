@@ -80,7 +80,7 @@ export namespace ShopperGiftCertificates {
 }
 
 // Shopper Login
-import type * as ShopperLoginTypes from './generated/shopper-login-v1';
+import type * as ShopperLoginTypes from './generated/auth-v1';
 export namespace ShopperLogin {
     export type endpoints = ShopperLoginTypes.paths;
     export type schemas = ShopperLoginTypes.components['schemas'];

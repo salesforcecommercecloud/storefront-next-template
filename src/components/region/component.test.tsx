@@ -447,6 +447,7 @@ describe('Component', () => {
                 typeId: 'hero',
                 designMetadata: {
                     id: 'meta-comp',
+                    contentLinkUuid: 'test-content-link-uuid',
                     name: 'Main Hero',
                     isFragment: false,
                     isVisible: true,
@@ -518,6 +519,7 @@ describe('Component', () => {
                 contentLinkUuid: 'uuid-12345-abcde',
                 designMetadata: {
                     id: 'fragment-comp',
+                    contentLinkUuid: 'uuid-12345-abcde',
                     name: 'Reusable Hero',
                     isFragment: true,
                     isVisible: true,

@@ -15,11 +15,24 @@ interface WithComponentId {
    */
   componentId: string;
 }
+interface WithContentLinkUuid {
+  /**
+   * The content link UUID of the component.
+   */
+  contentLinkUuid: string;
+}
 interface WithComponentType {
   /**
    * The component type that the event is related to.
    */
   componentType: string;
+}
+interface WithFragmentId {
+  /**
+   * The id of the fragment that the event is related to.
+   * Fragments are reusable component instances that can be placed in multiple locations.
+   */
+  fragmentId?: string;
 }
 /**
  * @inline
@@ -282,7 +295,7 @@ interface ClientWindowDragExitedEvent extends WithBaseEvent, WithComponentType {
  * @target client
  * @group Events
  */
-interface ClientWindowDragDroppedEvent extends WithBaseEvent, WithComponentType {
+interface ClientWindowDragDroppedEvent extends WithBaseEvent, WithComponentType, WithFragmentId {
   eventType: 'ClientWindowDragDropped';
 }
 /**
@@ -302,7 +315,7 @@ interface ComponentPropertiesChangedEvent<TProps extends Record<string, unknown>
  * @target client
  * @group Events
  */
-interface ComponentFocusedEvent extends WithBaseEvent, WithComponentId {
+interface ComponentFocusedEvent extends WithBaseEvent, WithComponentId, WithContentLinkUuid {
   eventType: 'ComponentFocused';
 }
 /**
@@ -356,14 +369,14 @@ interface WindowScrollChangedEvent extends WithBaseEvent {
  * @target isomorphic
  * @group Events
  */
-interface ComponentMovedToRegionEvent extends WithBaseEvent, WithComponentId {
+interface ComponentMovedToRegionEvent extends WithBaseEvent, WithComponentId, WithContentLinkUuid {
   eventType: 'ComponentMovedToRegion';
   /**
    * The id of the component that comes before the insert component.
    */
   beforeComponentId?: string;
   /**
-   * The id of the component that comes afterthe insert component.
+   * The id of the component that comes after the insert component.
    */
   afterComponentId?: string;
   /**
@@ -393,7 +406,7 @@ interface ComponentMovedToRegionEvent extends WithBaseEvent, WithComponentId {
  * @target isomorphic
  * @group Events
  */
-interface ComponentHoveredInEvent extends WithBaseEvent, WithComponentId {
+interface ComponentHoveredInEvent extends WithBaseEvent, WithComponentId, WithContentLinkUuid {
   eventType: 'ComponentHoveredIn';
 }
 /**
@@ -401,7 +414,7 @@ interface ComponentHoveredInEvent extends WithBaseEvent, WithComponentId {
  * @target isomorphic
  * @group Events
  */
-interface ComponentHoveredOutEvent extends WithBaseEvent, WithComponentId {
+interface ComponentHoveredOutEvent extends WithBaseEvent, WithComponentId, WithContentLinkUuid {
   eventType: 'ComponentHoveredOut';
 }
 /**
@@ -409,7 +422,7 @@ interface ComponentHoveredOutEvent extends WithBaseEvent, WithComponentId {
  * @target isomorphic
  * @group Events
  */
-interface ComponentSelectedEvent extends WithBaseEvent, WithComponentId {
+interface ComponentSelectedEvent extends WithBaseEvent, WithComponentId, WithContentLinkUuid {
   eventType: 'ComponentSelected';
 }
 /**
@@ -417,7 +430,7 @@ interface ComponentSelectedEvent extends WithBaseEvent, WithComponentId {
  * @target isomorphic
  * @group Events
  */
-interface ComponentDeselectedEvent extends WithBaseEvent, WithComponentId {
+interface ComponentDeselectedEvent extends WithBaseEvent, WithComponentId, WithContentLinkUuid {
   eventType: 'ComponentDeselected';
 }
 /**
@@ -425,7 +438,7 @@ interface ComponentDeselectedEvent extends WithBaseEvent, WithComponentId {
  * @target isomorphic
  * @group Events
  */
-interface ComponentDeletedEvent extends WithBaseEvent, WithComponentId {
+interface ComponentDeletedEvent extends WithBaseEvent, WithComponentId, WithContentLinkUuid {
   eventType: 'ComponentDeleted';
   /**
    * The id of the component that the component was deleted from.
@@ -442,7 +455,7 @@ interface ComponentDeletedEvent extends WithBaseEvent, WithComponentId {
  * @target isomorphic
  * @group Events
  */
-interface ComponentAddedToRegionEvent<TProps extends Record<string, unknown> = Record<string, unknown>> extends WithBaseEvent {
+interface ComponentAddedToRegionEvent<TProps extends Record<string, unknown> = Record<string, unknown>> extends WithBaseEvent, WithFragmentId {
   eventType: 'ComponentAddedToRegion';
   /**
    * The specifier of the component to add.
@@ -476,7 +489,7 @@ interface ComponentAddedToRegionEvent<TProps extends Record<string, unknown> = R
    */
   beforeComponentId?: string;
   /**
-   * The id of the component that comes afterthe insert component.
+   * The id of the component that comes after the insert component.
    */
   afterComponentId?: string;
 }
@@ -485,7 +498,7 @@ interface ComponentAddedToRegionEvent<TProps extends Record<string, unknown> = R
  * @target isomorphic
  * @group Events
  */
-interface ComponentDragStartedEvent extends WithBaseEvent {
+interface ComponentDragStartedEvent extends WithBaseEvent, WithFragmentId {
   eventType: 'ComponentDragStarted';
   /**
    * The type of the component that is being dragged.

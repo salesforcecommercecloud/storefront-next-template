@@ -36,7 +36,7 @@ vi.mock('react-router', async (importOriginal) => {
 
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockAltSiteObject } from '@/test-utils/config';
 import SiteSwitcher from './index';
 
 const site = mockConfig.commerce.sites[0];
@@ -95,7 +95,7 @@ describe('SiteSwitcher', () => {
         renderSiteSwitcher();
 
         const select = screen.getByRole('combobox', { name: /select site/i });
-        await userEvent.selectOptions(select, 'RefArch');
+        await userEvent.selectOptions(select, mockAltSiteObject.id);
 
         expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
             method: 'POST',
@@ -104,6 +104,6 @@ describe('SiteSwitcher', () => {
 
         const formData = mockSubmit.mock.calls[0][0] as FormData;
         expect(formData.get('type')).toBe('site');
-        expect(JSON.parse(formData.get('payload') as string)).toEqual({ siteId: 'RefArch' });
+        expect(JSON.parse(formData.get('payload') as string)).toEqual({ siteId: mockAltSiteObject.id });
     });
 });

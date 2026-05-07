@@ -28,6 +28,8 @@ import type {
     PasswordlessExchangeTokenOptions,
     PasswordRequestResetOptions,
     PasswordResetOptions,
+    OtpRequestOptions,
+    OtpVerifyOptions,
     SocialGetAuthorizationUrlOptions,
     SocialAuthorizationUrlResult,
     SocialExchangeCodeOptions,
@@ -51,6 +53,7 @@ export type { AuthConfig, AuthNamespace, AuthResponse, TokenResponse, PasswordAc
 export type { LoginAsGuestOptions, LoginWithCredentialsOptions, RefreshTokenOptions, LogoutOptions } from './types';
 export type { PasswordlessAuthorizeOptions, PasswordlessExchangeTokenOptions } from './types';
 export type { PasswordRequestResetOptions, PasswordResetOptions } from './types';
+export type { OtpRequestOptions, OtpVerifyOptions } from './types';
 export type {
     SocialGetAuthorizationUrlOptions,
     SocialAuthorizationUrlResult,
@@ -563,6 +566,63 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     params: {},
                     headers: FORM_URLENCODED_HEADER,
                     body: requestBody,
+                });
+            },
+        },
+
+        /**
+         * OTP (One-Time Password) namespace.
+         * Only available when clientSecret is configured (private SLAS client).
+         */
+        otp: {
+            request: async (options: OtpRequestOptions) => {
+                const { userId, email, mode, locale, callbackUri } = options;
+
+                if (!clientSecret) {
+                    throw new Error('Client secret is required for OTP operations');
+                }
+
+                if (mode === 'callback' && !callbackUri) {
+                    throw new Error('callbackUri is required when mode is "callback"');
+                }
+
+                if (mode === 'email' && !email) {
+                    throw new Error('email is required when mode is "email"');
+                }
+
+                const requestBody = {
+                    client_id: clientId,
+                    channel_id: siteId,
+                    user_id: userId,
+                    ...(email && { email }),
+                    mode,
+                    ...(locale && { locale }),
+                    ...(callbackUri && { callback_uri: callbackUri }),
+                };
+
+                return await shopperLoginClient.requestOtp({
+                    params: {},
+                    headers: FORM_URLENCODED_HEADER,
+                    body: requestBody,
+                });
+            },
+
+            verify: async (options: OtpVerifyOptions) => {
+                const { pwdActionToken, userId } = options;
+
+                if (!clientSecret) {
+                    throw new Error('Client secret is required for OTP operations');
+                }
+
+                return await shopperLoginClient.verifyOtp({
+                    params: {},
+                    headers: FORM_URLENCODED_HEADER,
+                    body: {
+                        client_id: clientId,
+                        pwd_action_token: pwdActionToken,
+                        channel_id: siteId,
+                        user_id: userId,
+                    },
                 });
             },
         },

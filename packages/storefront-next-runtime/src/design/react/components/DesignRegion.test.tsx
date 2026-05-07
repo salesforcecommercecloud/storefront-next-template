@@ -18,6 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DesignRegion } from './DesignRegion';
+import { useNodeToTargetStore } from '../hooks/useNodeToTargetStore';
 import type { RegionDecoratorProps } from '../core/component.types';
 
 // Mock dependencies
@@ -45,8 +46,9 @@ vi.mock('../core/RegionContext', () => ({
     },
 }));
 
+const mockUseComponentContext = vi.fn();
 vi.mock('../core/ComponentContext', () => ({
-    useComponentContext: () => ({ componentId: 'parent-component' }),
+    useComponentContext: () => mockUseComponentContext(),
 }));
 
 vi.mock('../hooks/useDesignState', () => ({
@@ -62,9 +64,44 @@ vi.mock('../utils/regionUtils', () => ({
     isComponentTypeAllowedInRegion: vi.fn(() => true),
 }));
 
+const mockUseNodeToTargetStore = vi.mocked(useNodeToTargetStore);
+
+const regionProps: RegionDecoratorProps<unknown> = {
+    designMetadata: { id: 'column_1', contentLinkUuids: [] },
+    children: <div>Test</div>,
+};
+
+describe('DesignRegion - parentId resolution', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('uses contentLinkUuid as parentId when the parent component has one', () => {
+        mockUseComponentContext.mockReturnValue({
+            componentId: 'backend-id',
+            contentLinkUuid: 'content-link-uuid',
+        });
+
+        render(<DesignRegion {...regionProps} />);
+
+        expect(mockUseNodeToTargetStore).toHaveBeenCalledWith(
+            expect.objectContaining({ parentId: 'content-link-uuid' })
+        );
+    });
+
+    it('sets parentId to undefined when there is no parent component context', () => {
+        mockUseComponentContext.mockReturnValue(null);
+
+        render(<DesignRegion {...regionProps} />);
+
+        expect(mockUseNodeToTargetStore).toHaveBeenCalledWith(expect.objectContaining({ parentId: undefined }));
+    });
+});
+
 describe('DesignRegion - Default Value Handling', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockUseComponentContext.mockReturnValue({ componentId: 'parent-component' });
     });
 
     it('should use default values when designMetadata fields are undefined or missing', () => {
@@ -91,7 +128,7 @@ describe('DesignRegion - Default Value Handling', () => {
                 designMetadata={
                     {
                         id: 'test-region',
-                        // componentIds, componentTypeInclusions, componentTypeExclusions all default to []
+                        // contentLinkUuids, componentTypeInclusions, componentTypeExclusions all default to []
                     } as any
                 }>
                 <div>Test</div>
@@ -105,7 +142,7 @@ describe('DesignRegion - Default Value Handling', () => {
             designMetadata: {
                 id: 'main-region',
                 name: 'Main Content',
-                componentIds: ['comp1', 'comp2'],
+                contentLinkUuids: ['comp1', 'comp2'],
                 componentTypeInclusions: ['hero'],
                 componentTypeExclusions: ['footer'],
             },

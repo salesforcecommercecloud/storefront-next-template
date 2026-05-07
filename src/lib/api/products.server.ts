@@ -16,6 +16,8 @@
 import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
+import { getLogger } from '@/lib/logger.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 type GetProductsQuery = ShopperProducts.operations['getProducts']['parameters']['query'];
 type GetProductQuery = ShopperProducts.operations['getProduct']['parameters']['query'];
@@ -67,20 +69,18 @@ export async function fetchProductsByIds(
 /**
  * Fetch a single product by ID.
  *
- * IMPORTANT: This function does NOT catch errors. Callers must handle:
- * - 404 errors (product not found) - critical for SEO
- * - 401/403 errors (authentication/authorization)
- * - Network errors
+ * Wraps SCAPI's `shopperProducts.getProduct` with operation-context logging and
+ * normalizes any thrown error into `NormalizedApiError` for consistent downstream handling.
  *
  * Different contexts require different error handling:
  * - Page Designer ProductTile: Catch 404 → return null → show placeholder
- * - Product Detail Page: Let 404 propagate → error boundary → 404 page with proper HTTP status
+ * - Product Detail Page: Let 404 propagate → loader re-throws as Response(404) → 404 page with proper HTTP status
  *
  * @param context - Router context
  * @param id - Product ID (will be trimmed)
  * @param options - Additional query parameters
  * @returns Product data or null if ID is empty/whitespace
- * @throws {ApiError} When API request fails (including 404s)
+ * @throws {NormalizedApiError} When the API request fails (including 404s, auth failures, network errors)
  */
 export async function fetchProductById(
     context: LoaderFunctionArgs['context'],
@@ -91,13 +91,20 @@ export async function fetchProductById(
         return null;
     }
 
+    const logger = getLogger(context);
     const clients = createApiClients(context);
-    const { data } = await clients.shopperProducts.getProduct({
-        params: {
-            path: { id: id.trim() },
-            query: { ...options },
-        },
-    });
+    const trimmedId = id.trim();
 
-    return data ?? null;
+    try {
+        const { data } = await clients.shopperProducts.getProduct({
+            params: {
+                path: { id: trimmedId },
+                query: { ...options },
+            },
+        });
+        return data ?? null;
+    } catch (error) {
+        logger.error('shopperProducts.getProduct failed', { productId: trimmedId });
+        throw new NormalizedApiError(error);
+    }
 }

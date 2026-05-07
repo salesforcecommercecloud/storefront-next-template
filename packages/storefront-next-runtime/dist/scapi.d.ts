@@ -11140,7 +11140,7 @@ interface paths$10 {
     put?: never;
     /**
      * Register a new customer.
-     * @description Mandatory data includes the credentials, profile last name, and email. This requires a JSON Web Token (JWT) which needs to be obtained using the POST /customers/auth API with type "guest", or from the Shopper Login (SLAS) API. The return type object for this endpoint is a common customer object shared by multiple Shopper Customer endpoints. In this case, all customer object details are returned, but attributes that are not included in the response, although they might be part of the customer object, are ignored. For example, although address information is included in the customer object, it is not displayed in the response for this endpoint and is ignored.
+     * @description Mandatory data includes the credentials, profile last name, and email. This endpoint requires a guest JSON Web Token (JWT) from the [Shopper Login and API Access Service](https://developer.salesforce.com/docs/commerce/commerce-api/references/auth?meta=getAccessToken). The return type object for this endpoint is a common customer object shared by multiple Shopper Customer endpoints. In this case, all customer object details are returned, but attributes that are not included in the response, although they might be part of the customer object, are ignored. For example, although address information is included in the customer object, it is not displayed in the response for this endpoint and is ignored.
      */
     post: operations$26["registerCustomer"];
     delete?: never;
@@ -11348,6 +11348,46 @@ interface paths$10 {
     patch: operations$26["updateCustomerPaymentInstrument"];
     trace?: never;
   };
+  "/organizations/{organizationId}/customers/{customerId}/payment-method-references/{paymentMethodReferenceId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a customer's payment method reference. This endpoint only accepts a registered customer ShopperToken (JWT).
+     * @description Deletes a specific payment method reference from a customer's account using the payment method reference ID and account ID. This endpoint requires Salesforce Payments integration.
+     */
+    delete: operations$26["deleteCustomerPaymentMethodReference"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/organizations/{organizationId}/customers/{customerId}/payment-method-references/actions/setup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Set up a new payment method reference for a customer. This endpoint only accepts a registered customer ShopperToken (JWT).
+     * @description Initiates the setup of a new payment method reference for a customer. This endpoint requires Salesforce Payments integration.
+     */
+    post: operations$26["setupCustomerPaymentMethodReference"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/organizations/{organizationId}/customers/{customerId}/product-lists": {
     parameters: {
       query?: never;
@@ -11522,7 +11562,7 @@ interface paths$10 {
 interface components$10 {
   schemas: {
     /**
-     * @description An identifier for the organization the request is being made by
+     * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
      * @example f_ecom_zzxy_prd
      */
     OrganizationId: string;
@@ -11795,6 +11835,11 @@ interface components$10 {
        */
       companyName?: string;
       /**
+       * @description The customer's core contact ID.
+       * @example 003xx000004WhKe
+       */
+      crmContactId?: string;
+      /**
        * Format: date-time
        * @description Returns the value of attribute 'creationDate'.
        * @example 9999-12-31T00:00:00.0Z
@@ -11818,6 +11863,11 @@ interface components$10 {
        */
       email?: string;
       /**
+       * @description Indicates whether the customer's email address has been verified. Only included for customers who registered after the "Enable Email Verification" site preference under "Storefront Login Preferences" was enabled. This is a read-only field. If included in a PATCH or Register customer request, it's ignored. This field is available with B2C Commerce version 26.6.
+       * @example true
+       */
+      readonly emailVerified?: boolean;
+      /**
        * @description A flag indicating whether this customer is enabled and can log in.
        * @example true
        */
@@ -11838,6 +11888,11 @@ interface components$10 {
        * @example 1
        */
       gender?: number;
+      /**
+       * @description Indicates whether the customer has a password set. A value of `false` means the customer was created via another method (for example, social login or passwordless flow). This is a read-only field. If included in a PATCH or Register customer request, it's ignored. This field is available with B2C Commerce version 26.6.
+       * @example true
+       */
+      readonly hasPassword?: boolean;
       /**
        * @description Represents the read-only hashed value for the `loginId` used for Einstein events. This field is available with B2C Commerce version 24.9.
        * @example 123927deac310a3dae382897d9e458bd92ef1d4ea5cdd327a0fcffd8426dfbb5
@@ -11872,7 +11927,7 @@ interface components$10 {
        */
       lastVisitTime?: string;
       /**
-       * @description The customer's login. In a PATCH call, this field can only be updated by providing a valid `currentPassword` for the shopper. The `loginId` update feature is available with B2C Commerce version 24.7.
+       * @description The customer's login. In a PATCH call, this field can only be updated by providing a valid `currentPassword` for the shopper. The `loginId` update feature is available with B2C Commerce version 24.7, but is disabled by default. Contact Customer Support to enable this feature.
        * @example jsmith
        */
       login?: string;
@@ -12454,6 +12509,31 @@ interface components$10 {
        */
       status?: number;
     };
+    /** @description Document representing a gift card response. */
+    GiftCardResponse: {
+      /**
+       * @description The gift card brand.
+       * @example givex
+       */
+      brand?: string;
+      /**
+       * @description The masked gift card number.
+       * @example *********4422
+       */
+      maskedCardNumber?: string;
+      /**
+       * Format: int32
+       * @description The month when the gift card expires.
+       * @example 1
+       */
+      expirationMonth?: number;
+      /**
+       * Format: int32
+       * @description The year when the gift card expires.
+       * @example 2030
+       */
+      expirationYear?: number;
+    };
     /**
      * @description The payment instrument ID
      * @example ba248424e3eee797f062162f8b
@@ -12481,6 +12561,8 @@ interface components$10 {
       maskedGiftCertificateCode?: string;
       /** @description The payment card. */
       paymentCard?: components$10["schemas"]["PaymentCard"];
+      /** @description The gift card. */
+      giftCard?: components$10["schemas"]["GiftCardResponse"];
       /** @description The payment instrument ID. It is read only. */
       paymentInstrumentId?: components$10["schemas"]["PaymentInstrumentId"];
       /**
@@ -12495,12 +12577,6 @@ interface components$10 {
          * @example pi_3N4B2vF0wDjebNCp1234567
          */
         paymentReferenceId?: string;
-        /**
-         * Format: uri
-         * @description Redirect URL for payment methods that require user redirection to complete payment.
-         * @example https://checkout.stripe.com/pay/cs_test_abc123
-         */
-        redirectUrl?: string;
         /**
          * @description The payment gateway used to process the payment.
          * @example stripe
@@ -12528,7 +12604,19 @@ interface components$10 {
           paypal?: {
             [key: string]: unknown;
           };
-          /** @description # Adyen specific properties. */
+          /**
+           * @description # Adyen specific properties.
+           *
+           *     - adyenError: Error information returned by Adyen if the payment fails. Null on success.
+           *     - adyenPaymentIntent: The Adyen payment intent object containing payment details and required actions.
+           *       - resultCode: The result of the payment request (for example, "REDIRECT_SHOPPER", "AUTHORISED", "PENDING", "REFUSED").
+           *       - accountID: The Adyen merchant account ID.
+           *       - adyenPaymentIntentAction: The action object for payment methods requiring additional shopper interaction.
+           *         - url: The URL for completing the payment (redirect or 3DS authentication).
+           *         - type: The action type (for example, "redirect", "threeDS2", "voucher").
+           *         - method: The HTTP method for the action (for example, "GET", "POST").
+           *     - successful: A boolean indicating whether the Adyen operation is successful.
+           */
           adyen?: {
             [key: string]: unknown;
           };
@@ -12651,8 +12739,6 @@ interface components$10 {
        * @example 006490dcc338feeafc71c964bf
        */
       shippingItemId?: string;
-      /** @description Information retrieved from Order Management (OMS) for the product. Only available in context of an order. */
-      omsData?: components$10["schemas"]["OmsProductData"];
       /**
        * Format: double
        * @description The tax for the product item, not including price adjustments. It is read only.
@@ -12880,25 +12966,8 @@ interface components$10 {
        */
       type?: "product" | "gift_certificate";
     };
-    /**
-     * @description Additional information retrieved from Order Management (OMS)
-     *     See https://developer.salesforce.com/docs/atlas.en-us.order_management_developer_guide.meta/order_management_developer_guide/sforce_api_objects_orderitemsummary.htm for more information.
-     *     Only available in context of an order.
-     */
-    OmsProductData: {
-      /**
-       * @description Order Management (OMS) status
-       * @example ordered
-       * @enum {string}
-       */
-      status?: "ordered" | "returned" | "canceled" | "paid" | "reshipped" | "fulfilled" | "partially_fulfilled" | "allocated" | "partially_allocated" | "return_initiated";
-      /**
-       * Format: double
-       * @description The quantity that can be cancelled.
-       * @example 2
-       */
-      quantityAvailableToCancel?: number;
-    };
+    /** @description Document representing a basket product item. */
+    BasketProductItem: components$10["schemas"]["ProductItem"];
     /**
      * @description The identifier of the shipment
      * @example me
@@ -13214,7 +13283,7 @@ interface components$10 {
       /** @description The payment instruments list. */
       paymentInstruments?: components$10["schemas"]["OrderPaymentInstrument"][];
       /** @description The product items. */
-      productItems?: components$10["schemas"]["ProductItem"][];
+      productItems?: components$10["schemas"]["BasketProductItem"][];
       /**
        * Format: double
        * @description The total price of all products including item-level adjustments, but not including order-level adjustments or shipping
@@ -13326,6 +13395,30 @@ interface components$10 {
      * @example 00000410
      */
     OrderNo: string;
+    /**
+     * @description Additional information retrieved from Order Management (OMS)
+     *     See https://developer.salesforce.com/docs/atlas.en-us.order_management_developer_guide.meta/order_management_developer_guide/sforce_api_objects_orderitemsummary.htm for more information.
+     *     Only available in context of an order.
+     */
+    OmsProductData: {
+      /**
+       * @description Order Management (OMS) status
+       * @example ordered
+       * @enum {string}
+       */
+      status?: "ordered" | "returned" | "canceled" | "paid" | "reshipped" | "fulfilled" | "partially_fulfilled" | "allocated" | "partially_allocated" | "return_initiated";
+      /**
+       * Format: double
+       * @description The quantity that can be cancelled.
+       * @example 2
+       */
+      quantityAvailableToCancel?: number;
+    };
+    /** @description Document representing an order product item. */
+    OrderProductItem: {
+      /** @description Product information retrieved from Order Management (OMS). Only available in the context of an order. */
+      omsData?: components$10["schemas"]["OmsProductData"];
+    } & components$10["schemas"]["ProductItem"];
     /** @description Individual item within a shipment */
     OmsShipmentItem: {
       /**
@@ -13519,7 +13612,7 @@ interface components$10 {
        */
       paymentStatus?: "not_paid" | "part_paid" | "paid";
       /** @description The product items. It is read only. */
-      productItems?: components$10["schemas"]["ProductItem"][];
+      productItems?: components$10["schemas"]["OrderProductItem"][];
       /**
        * Format: double
        * @description The total price of all products including item-level adjustments, but not including
@@ -13747,6 +13840,44 @@ interface components$10 {
          * @example 2028
          */
         expirationYear?: number;
+      };
+    };
+    /** @description Request to set up a new payment method reference. */
+    PaymentMethodReferenceSetupRequest: {
+      /**
+       * @description Payment Method Type
+       * @example card
+       */
+      paymentMethodType?: string;
+      /** @description Properties specific to the payment gateway */
+      gatewayProperties: {
+        /** @description # Stripe-specific properties. */
+        stripe?: {
+          [key: string]: unknown;
+        };
+        /** @description # Adyen-specific properties. */
+        adyen?: {
+          [key: string]: unknown;
+        };
+      };
+    };
+    /** @description Response from setting up a new payment method reference. */
+    PaymentMethodReferenceSetupResponse: {
+      /**
+       * @description The provider-specific identifier for the payment method reference setup (e.g., Stripe Setup Intent ID, Adyen pspReference).
+       * @example seti_1Mm8s8LkdIwHu7ix0OXBfTRG
+       */
+      paymentMethodReferenceSetupId: string;
+      /** @description Properties specific to the payment gateway */
+      gatewayProperties?: {
+        /** @description # Stripe-specific properties. */
+        stripe?: {
+          [key: string]: unknown;
+        };
+        /** @description # Adyen-specific properties. */
+        adyen?: {
+          [key: string]: unknown;
+        };
       };
     };
     /** @description Document representing a customer product list registrant. */
@@ -14689,7 +14820,7 @@ interface components$10 {
   responses: never;
   parameters: {
     /**
-     * @description An identifier for the organization the request is being made by
+     * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
      * @example f_ecom_zzxy_prd
      */
     organizationId: components$10["schemas"]["OrganizationId"];
@@ -14724,6 +14855,12 @@ interface components$10 {
     expandCustomersOrders: "oms";
     /** @description The ID of the payment instrument to be retrievedCustomer. */
     paymentInstrumentId: string;
+    /** @description The ID of the payment method reference to delete. */
+    paymentMethodReferenceId: string;
+    /** @description The account ID used to scope payment method references. */
+    accountId: string;
+    /** @description The zone identifier for the payment configuration. */
+    zoneId: string;
     /** @description The ID of the list. */
     listId: string;
     /** @description The ID of the item. */
@@ -14751,7 +14888,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -14802,7 +14939,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -14842,7 +14979,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -14888,7 +15025,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -14935,7 +15072,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -14996,7 +15133,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15045,7 +15182,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15098,7 +15235,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15153,7 +15290,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15204,7 +15341,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15253,7 +15390,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15306,7 +15443,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15360,7 +15497,7 @@ interface operations$26 {
         expand?: components$10["parameters"]["expandCustomersOrders"];
         /** @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites. */
         siteId: components$10["parameters"]["siteId"];
-        /** @description Maximum records to retrieve per request, not to exceed 50. Defaults to 10. */
+        /** @description Number of records to retrieve per request. Must be between 1 (minimum) and 50 (maximum). Defaults to 10. */
         limit?: number;
         /** @description Used to retrieve the results based on a particular resource offset. */
         offset?: number;
@@ -15370,7 +15507,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15419,7 +15556,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15470,7 +15607,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15525,7 +15662,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15576,7 +15713,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15625,7 +15762,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15667,6 +15804,94 @@ interface operations$26 {
       };
     };
   };
+  deleteCustomerPaymentMethodReference: {
+    parameters: {
+      query: {
+        /** @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites. */
+        siteId: components$10["parameters"]["siteId"];
+        /** @description The account ID used to scope payment method references. */
+        accountId: components$10["parameters"]["accountId"];
+      };
+      header?: never;
+      path: {
+        /** @description The ID of the payment method reference to delete. */
+        paymentMethodReferenceId: components$10["parameters"]["paymentMethodReferenceId"];
+        /** @description The customer ID. */
+        customerId: components$10["parameters"]["customerId"];
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$10["parameters"]["organizationId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  setupCustomerPaymentMethodReference: {
+    parameters: {
+      query: {
+        /** @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites. */
+        siteId: components$10["parameters"]["siteId"];
+        /** @description The zone identifier for the payment configuration. */
+        zoneId: components$10["parameters"]["zoneId"];
+      };
+      header?: never;
+      path: {
+        /** @description The customer ID. */
+        customerId: components$10["parameters"]["customerId"];
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$10["parameters"]["organizationId"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components$10["schemas"]["PaymentMethodReferenceSetupRequest"];
+      };
+    };
+    responses: {
+      /** @description Payment method reference setup initiated successfully. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components$10["schemas"]["PaymentMethodReferenceSetupResponse"];
+        };
+      };
+      /** @description CustomerId URL parameter does not match the verified customer represented by the JWT token. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$10["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Requested resource not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$10["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
   getCustomerProductLists: {
     parameters: {
       query: {
@@ -15678,7 +15903,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15727,7 +15952,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15782,7 +16007,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15833,7 +16058,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15882,7 +16107,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15937,7 +16162,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -15994,7 +16219,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -16047,7 +16272,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -16089,7 +16314,7 @@ interface operations$26 {
         /** @description The customer ID. */
         customerId: components$10["parameters"]["customerId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -16137,7 +16362,7 @@ interface operations$26 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -16195,7 +16420,7 @@ interface operations$26 {
         /** @description The ID of the list. */
         listId: components$10["parameters"]["listId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -16255,7 +16480,7 @@ interface operations$26 {
         /** @description The ID of the list. */
         listId: components$10["parameters"]["listId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -16306,7 +16531,7 @@ interface operations$26 {
         /** @description The ID of the list. */
         listId: components$10["parameters"]["listId"];
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$10["parameters"]["organizationId"];
@@ -17902,7 +18127,7 @@ interface operations$24 {
   };
 }
 //#endregion
-//#region src/scapi-client/generated/shopper-login-v1.d.ts
+//#region src/scapi-client/generated/auth-v1.d.ts
 /**
  * This file was auto-generated by openapi-typescript.
  * Do not make direct changes to the file.
@@ -18047,7 +18272,7 @@ interface paths$7 {
     get?: never;
     put?: never;
     /**
-     * Get a shopper JWT access token for a registered customer using session bridging.
+     * Get a shopper JWT access token for a customer using session bridging.
      * @description For public client ID requests, you must set the grant_type to `session_bridge`.
      *
      *     For private client_id and secret, you must set the grant_type to `client_credentials` along with a basic authorization header.
@@ -18313,6 +18538,8 @@ interface paths$7 {
      * @description Authorizes a user to register a WebAuthn credential (passkey). This endpoint validates the user's
      *     credentials and creates a password action token that can be used to start the registration process.
      *     The token is sent to the user via the specified channel (email or SMS).
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
      */
     post: operations$23["authorizeWebauthnRegistration"];
     delete?: never;
@@ -18334,6 +18561,8 @@ interface paths$7 {
      * Start WebAuthn registration
      * @description Starts the WebAuthn registration process by generating credential creation options.
      *     Returns the challenge and other parameters needed by the authenticator to create a new credential.
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
      */
     post: operations$23["startWebauthnUserRegistration"];
     delete?: never;
@@ -18355,6 +18584,8 @@ interface paths$7 {
      * Finish WebAuthn registration
      * @description Completes the WebAuthn registration process by verifying the credential created by the authenticator.
      *     Stores the public key and credential information for future authentication.
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
      */
     post: operations$23["finishWebauthnUserRegistration"];
     delete?: never;
@@ -18376,6 +18607,8 @@ interface paths$7 {
      * Start WebAuthn authentication
      * @description Starts the WebAuthn authentication process by generating credential request options.
      *     Returns the challenge and allowed credentials for the user to authenticate with.
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
      */
     post: operations$23["startWebauthnAuthentication"];
     delete?: never;
@@ -18397,8 +18630,114 @@ interface paths$7 {
      * Finish WebAuthn authentication
      * @description Completes the WebAuthn authentication process by verifying the assertion from the authenticator.
      *     Returns OAuth tokens upon successful authentication.
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
      */
     post: operations$23["finishWebauthnAuthentication"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/organizations/{organizationId}/oauth2/webauthn/passkey/user/{loginId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve passkey user information and credentials by login ID
+     * @description This endpoint retrieves a user's WebAuthn passkey information including all associated credentials.
+     *     It returns the user's profile information along with a list of all registered passkey credentials.
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
+     *
+     *     This endpoint requires Shopper JWT authentication.
+     */
+    get: operations$23["getPasskeyUserByLoginId"];
+    put?: never;
+    post?: never;
+    /**
+     * Delete passkey user and all associated credentials
+     * @description This endpoint deletes a user's WebAuthn passkey information and all associated credentials.
+     *     The endpoint validates the Shopper JWT signature and ensures that the loginId, organizationId,
+     *     and channel_id in the token match the values in the path and query parameters.
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
+     *
+     *     This endpoint requires Shopper JWT authentication.
+     */
+    delete: operations$23["deletePasskeyUser"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/organizations/{organizationId}/oauth2/webauthn/passkey/user/{loginId}/credentials/{credentialId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a specific passkey credential
+     * @description This endpoint deletes a specific WebAuthn passkey credential for a user.
+     *     The endpoint validates the Shopper JWT signature and ensures that the loginId, organizationId,
+     *     and channel_id in the token match the values in the path and query parameters.
+     *
+     *     The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
+     *
+     *     This endpoint requires Shopper JWT authentication.
+     */
+    delete: operations$23["deletePasskeyCredential"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/organizations/{organizationId}/oauth2/otp/request": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Request a one-time password (OTP) for a shopper.
+     * @description Generates a one-time password (OTP) and delivers it to the shopper via the specified mode (email or callback). The OTP can then be used with the `/otp/verify` endpoint to verify the shopper.
+     *
+     *     When `mode` is `email`, the `email` field is required. A shopper is limited to 6 email OTP requests per 10-minute window.
+     *     When `mode` is `callback`, the `callback_uri` field is required and must match a registered callback URI for the client.
+     */
+    post: operations$23["requestOtp"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/organizations/{organizationId}/oauth2/otp/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Verify a one-time password (OTP) for a shopper.
+     * @description Verifies a one-time password (OTP) previously issued by the `/otp/request` endpoint. On success, the OTP token is consumed and cannot be reused. Each new call to `/otp/request` invalidates any previously issued OTP.
+     */
+    post: operations$23["verifyOtp"];
     delete?: never;
     options?: never;
     head?: never;
@@ -18408,11 +18747,6 @@ interface paths$7 {
 }
 interface components$7 {
   schemas: {
-    /**
-     * @description An identifier for the organization the request is being made by
-     * @example f_ecom_zzxy_prd
-     */
-    OrganizationId: string;
     /**
      * @description Response Type
      * @example code
@@ -18493,11 +18827,12 @@ interface components$7 {
       user_id: string;
       /**
        * @description Password Action delivery modes
+       * @example email
        * @enum {string}
        */
       mode: "callback" | "sms" | "email";
       /**
-       * @description The locale of the template. Not needed for the `callback` mode
+       * @description The locale of the template. Required when the mode is `email` or `sms`.
        * @example en-us
        */
       locale?: string;
@@ -18542,6 +18877,13 @@ interface components$7 {
        * @example 17776665555
        */
       phone_number?: string;
+      /**
+       * @description The customer number assigned to the shopper profile when `register_customer` is set to `true`.
+       *     If the `customer_no` already exists, the request fails.
+       *     The `customer_no` parameter is optional and only used when `register_customer` is set to `true`.
+       * @example 123456789
+       */
+      customer_no?: string;
     };
     /**
      * @description Token Type
@@ -18906,6 +19248,7 @@ interface components$7 {
       user_id: string;
       /**
        * @description Password Action delivery modes
+       * @example email
        * @enum {string}
        */
       mode: "callback" | "sms" | "email";
@@ -18915,7 +19258,7 @@ interface components$7 {
        */
       channel_id: string;
       /**
-       * @description The locale of the template.
+       * @description The locale of the template. Required when the mode is `email` or `sms`.
        * @example en-us
        */
       locale?: string;
@@ -19058,7 +19401,7 @@ interface components$7 {
        */
       client_id?: string;
       /**
-       * @description Password action token (TOTP) received by the user.
+       * @description Password action token (TOTP) received by the user. The token length is either 6 or 8 digits, configurable in SLAS Admin.
        * @example 12345678
        */
       pwd_action_token: string;
@@ -19187,7 +19530,7 @@ interface components$7 {
        */
       channel_id: string;
       /**
-       * @description Password action token.
+       * @description Password action token. The token length is either 6 or 8 digits, configurable in SLAS Admin.
        * @example 12345678
        */
       pwd_action_token: string;
@@ -19212,7 +19555,7 @@ interface components$7 {
        * @description The ID of the user.
        * @example user@example.com
        */
-      user_id: string;
+      user_id?: string;
     };
     /** @description Public key credential descriptor. */
     PublicKeyCredentialDescriptor: {
@@ -19318,14 +19661,152 @@ interface components$7 {
       success?: boolean;
       tokenResponse?: components$7["schemas"]["TokenResponse"];
     };
+    /** @description Represents a WebAuthn passkey credential */
+    PasskeyCredential: {
+      /**
+       * Format: int32
+       * @description Unique identifier for the credential
+       * @example 20
+       */
+      id?: number;
+      /**
+       * Format: int32
+       * @description The ID of the user who owns this credential
+       * @example 26
+       */
+      userId?: number;
+      /**
+       * @description The WebAuthn credential ID
+       * @example SVKfbUGBXofb2JzliJrMtZDENYByWgq_j4-p2M_3wC4
+       */
+      credentialId?: string;
+      /**
+       * @description User-friendly name for the credential
+       * @example Fingerprint
+       */
+      nickName?: string;
+      /**
+       * @description The public key associated with this credential
+       * @example pQECAyYgASFYIHM_4IKLMC8dboiRNfD0E0Gk4LmCTIgEyCTr-9SyHHeIIlggfn5_AzAl67kttLXWb-_Ts6MG7WHKoXzlKtame_wEYPE
+       */
+      publicKey?: string;
+      /**
+       * @description The user handle associated with this credential
+       * @example yRU-7pWyWUE6nw8hztqqUZG635p7UKDDb2lbC1FyF78
+       */
+      userHandle?: string;
+      /**
+       * @description The signature counter for replay attack prevention
+       * @example 42
+       */
+      signatureCount?: string;
+    };
+    /** @description Represents a passkey user with their associated credentials */
+    PasskeyUser: {
+      /**
+       * Format: int32
+       * @description Unique identifier for the passkey user
+       * @example 26
+       */
+      id?: number;
+      /**
+       * @description The username of the passkey user
+       * @example user@example.com
+       */
+      userName?: string;
+      /**
+       * @description The display name of the passkey user
+       * @example John Doe
+       */
+      displayName?: string;
+      /**
+       * @description The user handle (WebAuthn user ID)
+       * @example yRU-7pWyWUE6nw8hztqqUZG635p7UKDDb2lbC1FyF78
+       */
+      userHandle?: string;
+      /**
+       * Format: int32
+       * @description The associated SLAS user ID
+       * @example 10000
+       */
+      slasUserId?: number;
+      /** @description Set of passkey credentials associated with this user */
+      credentials?: components$7["schemas"]["PasskeyCredential"][];
+    };
+    /**
+     * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+     * @example f_ecom_zzxy_prd
+     */
+    OrganizationId: string;
+    /**
+     * @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites
+     * @example RefArch
+     */
+    SiteId: string;
+    /**
+     * @description A concatenated version of the standard Language and Country codes, combined with a hyphen '`-`'.
+     * @example en-US
+     */
+    LanguageCountry: string;
+    /** @description A request to generate and deliver a one-time password (OTP) to a shopper. */
+    OtpRequest: {
+      /**
+       * @description The ID of the OAuth client.
+       * @example 12345678-1234-1234-1234-123456789012
+       */
+      client_id: string;
+      channel_id: components$7["schemas"]["SiteId"];
+      /**
+       * @description User ID for the shopper requesting the OTP.
+       * @example shopper123
+       */
+      user_id: string;
+      /**
+       * @description Password Action delivery modes
+       * @example email
+       * @enum {string}
+       */
+      mode: "callback" | "sms" | "email";
+      /**
+       * @description Required when `mode` is `email`. Must match a registered email for the shopper.
+       * @example shopper@example.com
+       */
+      email?: string;
+      /**
+       * @description Required when `mode` is `callback`. Must match a registered callback URI for the client. The callback URI must be a `POST` endpoint. Wildcards are not allowed.
+       * @example https://example.com/otp-callback
+       */
+      callback_uri?: string;
+      /** @description The locale for the OTP delivery template. Defaults to `en-US` for email mode. */
+      locale?: components$7["schemas"]["LanguageCountry"];
+    };
+    /** @description A request to verify a one-time password (OTP) token for a shopper. */
+    OtpVerifyRequest: {
+      /**
+       * @description Password action token (TOTP) received by the user. The token length is either 6 or 8 digits, configurable in SLAS Admin.
+       * @example 12345678
+       */
+      pwd_action_token: string;
+      /**
+       * @description The ID of the OAuth client.
+       * @example 12345678-1234-1234-1234-123456789012
+       */
+      client_id: string;
+      channel_id: components$7["schemas"]["SiteId"];
+      /**
+       * @description The user ID of the shopper whose OTP is being verified.
+       * @example shopper123
+       */
+      user_id: string;
+    };
   };
   responses: never;
   parameters: {
     /**
-     * @description An identifier for the organization the request is being made by
+     * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
      * @example f_ecom_zzxy_prd
      */
-    organizationId: components$7["schemas"]["OrganizationId"];
+    organizationId: string;
     /**
      * @description When set to `true`, creates a new customer profile in B2C Commerce if one doesn't already exist. Requires `last_name` and `email` body parameters unless `user_id` is an email address. Optionally accepts `first_name` and `phone_number` body parameters.
      *     If the customer profile doesn't exist, it is created when the TOTP is validated via the `passwordless/token` endpoint.
@@ -19411,6 +19892,11 @@ interface components$7 {
     _sfdc_client_auth: string;
     /** @description Base64 string for HTTP Basic authentication. */
     Authorization: string;
+    /**
+     * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+     * @example f_ecom_zzxy_prd
+     */
+    "parameters-organizationId": components$7["schemas"]["OrganizationId"];
   };
   requestBodies: never;
   headers: never;
@@ -19426,7 +19912,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -19551,7 +20037,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -19679,7 +20165,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -19846,7 +20332,7 @@ interface operations$23 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -19947,13 +20433,13 @@ interface operations$23 {
       header?: {
         /**
          * @description Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret`.
-         *     Required unless the grant type is `authorization_code_pkce`.
+         *     Not required if the grant type is `authorization_code_pkce` or `refresh_token`.
          */
         Authorization?: string;
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20058,7 +20544,7 @@ interface operations$23 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20163,13 +20649,13 @@ interface operations$23 {
       header?: {
         /**
          * @description Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret`.
-         *     Required unless the grant type is `authorization_code_pkce`.
+         *     Not required if the grant type is `authorization_code_pkce` or `refresh_token`.
          */
         Authorization?: string;
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20323,7 +20809,7 @@ interface operations$23 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20435,7 +20921,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20540,7 +21026,7 @@ interface operations$23 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20646,7 +21132,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20752,7 +21238,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20860,7 +21346,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20920,7 +21406,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -20979,6 +21465,13 @@ interface operations$23 {
          * @example RefArch
          */
         channel_id?: string;
+        /**
+         * @description When a user authenticates via an IDP, SLAS calls the IDP's `/userinfo` endpoint to retrieve user information. Since some IDPs don't reliably return user info, set `idpValidate=false` to skip this call and use the user information already stored in SLAS instead.
+         *
+         *     Default: `true`
+         * @example false
+         */
+        idpValidate?: boolean;
       };
       header: {
         /** @description SLAS Access Token */
@@ -20986,7 +21479,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21030,7 +21523,7 @@ interface operations$23 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21074,7 +21567,7 @@ interface operations$23 {
       header?: never;
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21121,7 +21614,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21170,7 +21663,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21221,7 +21714,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21270,7 +21763,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21330,7 +21823,7 @@ interface operations$23 {
       };
       path: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components$7["parameters"]["organizationId"];
@@ -21364,6 +21857,651 @@ interface operations$23 {
       /** @description Unauthorized */
       401: {
         headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+    };
+  };
+  getPasskeyUserByLoginId: {
+    parameters: {
+      query: {
+        /**
+         * @description The channel (B2C Commerce site) that the user is associated with.
+         * @example RefArch
+         */
+        channel_id: components$7["parameters"]["channel_id"];
+      };
+      header: {
+        /** @description Shopper JWT access token */
+        Authorization: string;
+      };
+      path: {
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$7["parameters"]["organizationId"];
+        /** @description The login ID (username) of the user whose passkey information is being retrieved */
+        loginId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The passkey user information and credentials were retrieved successfully. */
+      200: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components$7["schemas"]["PasskeyUser"];
+        };
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Forbidden - token validation failed */
+      403: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+    };
+  };
+  deletePasskeyUser: {
+    parameters: {
+      query: {
+        /**
+         * @description The channel (B2C Commerce site) that the user is associated with.
+         * @example RefArch
+         */
+        channel_id: components$7["parameters"]["channel_id"];
+      };
+      header: {
+        /** @description Shopper JWT access token */
+        Authorization: string;
+      };
+      path: {
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$7["parameters"]["organizationId"];
+        /** @description The login ID (username) of the user whose passkey information is being deleted */
+        loginId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The passkey user and all credentials were deleted successfully. */
+      204: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Forbidden - token validation failed */
+      403: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+    };
+  };
+  deletePasskeyCredential: {
+    parameters: {
+      query: {
+        /**
+         * @description The channel (B2C Commerce site) that the user is associated with.
+         * @example RefArch
+         */
+        channel_id: components$7["parameters"]["channel_id"];
+      };
+      header: {
+        /** @description Shopper JWT access token */
+        Authorization: string;
+      };
+      path: {
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$7["parameters"]["organizationId"];
+        /** @description The login ID (username) of the user whose passkey credential is being deleted */
+        loginId: string;
+        /** @description The unique identifier of the credential to delete */
+        credentialId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The passkey credential was deleted successfully. */
+      204: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Forbidden - token validation failed */
+      403: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+    };
+  };
+  requestOtp: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$7["parameters"]["parameters-organizationId"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/x-www-form-urlencoded": components$7["schemas"]["OtpRequest"];
+      };
+    };
+    responses: {
+      /** @description The OTP was generated and delivery was initiated successfully. */
+      202: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Too many requests */
+      429: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+    };
+  };
+  verifyOtp: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+         * @example f_ecom_zzxy_prd
+         */
+        organizationId: components$7["parameters"]["parameters-organizationId"];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/x-www-form-urlencoded": components$7["schemas"]["OtpVerifyRequest"];
+      };
+    };
+    responses: {
+      /** @description The OTP was verified successfully. */
+      204: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request or invalid/expired OTP */
+      400: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Too many requests */
+      429: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components$7["schemas"]["Oauth2ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description The 1 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-1M-Limit"?: string;
+          /** @description The 1 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-1M-Remaining"?: string;
+          /** @description The 1 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-1M-Reset"?: string;
+          /** @description The 5 minute maximum number of requests permitted per hour. */
+          "X-RateLimit-5M-Limit"?: string;
+          /** @description The 5 minute number of requests remaining in the current rate limit window. */
+          "X-RateLimit-5M-Remaining"?: string;
+          /** @description The 5 minute time at which the current rate limit window resets in UTC epoch seconds. */
+          "X-RateLimit-5M-Reset"?: string;
           [name: string]: unknown;
         };
         content: {
@@ -27877,7 +29015,7 @@ type OperationMethodsOnly<T> = T extends ProxyClient<any, any> ? Omit<T, 'use' |
  */
 type MergeClients<TBase, TCustom extends Record<string, unknown>> = Omit<TBase, keyof TCustom> & TCustom;
 //#endregion
-//#region src/scapi-client/generated/shopper-login-v1.operations.d.ts
+//#region src/scapi-client/generated/auth-v1.operations.d.ts
 declare const operations$8: {
   readonly authenticateCustomer: {
     readonly m: "POST";
@@ -27988,6 +29126,31 @@ declare const operations$8: {
     readonly m: "POST";
     readonly b: "/organizations/{organizationId}/oauth2";
     readonly s: "/webauthn/authenticate/finish";
+  };
+  readonly getPasskeyUserByLoginId: {
+    readonly m: "GET";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/webauthn/passkey/user/{loginId}";
+  };
+  readonly deletePasskeyUser: {
+    readonly m: "DELETE";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/webauthn/passkey/user/{loginId}";
+  };
+  readonly deletePasskeyCredential: {
+    readonly m: "DELETE";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/webauthn/passkey/user/{loginId}/credentials/{credentialId}";
+  };
+  readonly requestOtp: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/otp/request";
+  };
+  readonly verifyOtp: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}/oauth2";
+    readonly s: "/otp/verify";
   };
 };
 //#endregion
@@ -28154,6 +29317,30 @@ interface PasswordResetOptions {
   hint?: string;
 }
 /**
+ * Options for requesting an OTP code.
+ */
+interface OtpRequestOptions {
+  /** User login ID (email or phone) */
+  userId: string;
+  /** Recipient email address (required when mode is 'email') */
+  email?: string;
+  /** Method to receive OTP */
+  mode: PasswordActionMode;
+  /** Locale of the template (e.g., 'en-us') */
+  locale?: string;
+  /** Callback URI (required when mode is 'callback') */
+  callbackUri?: string;
+}
+/**
+ * Options for verifying an OTP code.
+ */
+interface OtpVerifyOptions {
+  /** The OTP code received by the user (6-8 digit numeric) */
+  pwdActionToken: string;
+  /** User login ID (email or phone) */
+  userId: string;
+}
+/**
  * Options for getting a social login authorization URL.
  */
 interface SocialGetAuthorizationUrlOptions {
@@ -28278,6 +29465,26 @@ interface PasswordNamespace {
    * @returns Promise resolving to the API response (inferred from ShopperLogin client)
    */
   reset(options: PasswordResetOptions): ReturnType<ShopperLoginClient['resetPassword']>;
+}
+/**
+ * OTP (One-Time Password) namespace.
+ * Only available when clientSecret is configured (private SLAS client).
+ */
+interface OtpNamespace {
+  /**
+   * Request an OTP code to be sent to the user.
+   *
+   * @param options - User identifier, mode, and delivery settings
+   * @returns Promise resolving to void (202 Accepted, no body)
+   */
+  request(options: OtpRequestOptions): ReturnType<ShopperLoginClient['requestOtp']>;
+  /**
+   * Verify an OTP code.
+   *
+   * @param options - User identifier and OTP code
+   * @returns Promise resolving to void (204 No Content, no body)
+   */
+  verify(options: OtpVerifyOptions): ReturnType<ShopperLoginClient['verifyOtp']>;
 }
 /**
  * Core authentication namespace.
@@ -28432,6 +29639,28 @@ interface AuthNamespace {
    * ```
    */
   password: PasswordNamespace;
+  /**
+   * OTP (One-Time Password) namespace.
+   * Only available when clientSecret is configured (private SLAS client).
+   *
+   * @example
+   * ```typescript
+   * // Request OTP code
+   * await clients.auth.otp.request({
+   *   userId: 'user@example.com',
+   *   email: 'user@example.com',
+   *   usid: 'session-id',
+   *   mode: 'email'
+   * });
+   *
+   * // Verify OTP code
+   * await clients.auth.otp.verify({
+   *   userId: 'user@example.com',
+   *   pwdActionToken: '12345678'
+   * });
+   * ```
+   */
+  otp: OtpNamespace;
 }
 //#endregion
 //#region src/scapi-client/generated/shopper-baskets-v2.operations.d.ts
@@ -29008,6 +30237,16 @@ declare const operations$5: {
     readonly m: "PATCH";
     readonly b: "/organizations/{organizationId}";
     readonly s: "/customers/{customerId}/payment-instruments/{paymentInstrumentId}";
+  };
+  readonly deleteCustomerPaymentMethodReference: {
+    readonly m: "DELETE";
+    readonly b: "/organizations/{organizationId}";
+    readonly s: "/customers/{customerId}/payment-method-references/{paymentMethodReferenceId}";
+  };
+  readonly setupCustomerPaymentMethodReference: {
+    readonly m: "POST";
+    readonly b: "/organizations/{organizationId}";
+    readonly s: "/customers/{customerId}/payment-method-references/actions/setup";
   };
   readonly getCustomerProductLists: {
     readonly m: "GET";

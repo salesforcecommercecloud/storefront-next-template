@@ -28,7 +28,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 import ProductItem from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
 
 const mockSite = mockConfig.commerce.sites[0];
 
@@ -139,7 +139,7 @@ describe('ProductItem', () => {
             // product title as link
             const link = screen.getByRole('link', { name: 'Test Product' });
             expect(link).toBeInTheDocument();
-            expect(link).toHaveAttribute('href', `/RefArchGlobal/en-GB/product/${mockProduct.productId}`);
+            expect(link).toHaveAttribute('href', `${getSitePrefix()}/product/${mockProduct.productId}`);
             expect(link).toHaveTextContent('Test Product');
 
             // image
@@ -490,7 +490,7 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={productWithMaster} />);
 
             const link = screen.getByRole('link', { name: 'Test Product' });
-            expect(link).toHaveAttribute('href', '/RefArchGlobal/en-GB/product/master-product-id');
+            expect(link).toHaveAttribute('href', `${getSitePrefix()}/product/master-product-id`);
         });
     });
 

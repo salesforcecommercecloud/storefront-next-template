@@ -75,7 +75,6 @@ const config: StorybookConfig = {
             'PUBLIC__app__commerce__api__callback': '/callback',
             'PUBLIC__app__commerce__api__privateKeyEnabled': 'false',
             'PUBLIC__app__i18n__fallbackLng': 'en-GB',
-            'PUBLIC__app__features__passwordlessLogin__enabled': 'false',
             'PUBLIC__app__features__socialLogin__providers': '["Apple","Google"]',
             'PUBLIC__app__features__passwordlessLogin__callbackUri': '/passwordless-login-callback',
             'PUBLIC__app__features__passwordlessLogin__landingUri': '/passwordless-login-landing',

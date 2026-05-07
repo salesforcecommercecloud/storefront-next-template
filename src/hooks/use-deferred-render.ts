@@ -15,12 +15,30 @@
  */
 import { useEffect, useState } from 'react';
 
+const DEFAULT_IDLE_TIMEOUT = 2000;
+const DEFAULT_FALLBACK_TIMEOUT = 0;
+
+export type UseDeferredRenderOptions = {
+    /**
+     * Maximum time (ms) to wait for an idle frame before forcing the deferred content to render. Forwarded to
+     * `requestIdleCallback` as `{ timeout }`.
+     * @default 2000
+     */
+    idleTimeout?: number;
+    /**
+     * Delay (ms) for the `setTimeout` fallback used when `requestIdleCallback` is unavailable.
+     * @default 0
+     */
+    fallbackTimeout?: number;
+};
+
 /**
  * Hook that defers rendering until an idle frame is available.
  * This is useful for rendering non-critical content after the main content
  * has been painted, improving initial render performance (LCP, TBT).
  *
  * @param enabled - Whether deferred rendering is enabled (default: true)
+ * @param options - Optional timing overrides for idle and fallback scheduling
  * @returns Boolean indicating whether the deferred content should be rendered
  *
  * @example
@@ -35,8 +53,19 @@ import { useEffect, useState } from 'react';
  *   );
  * }
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Custom timeouts for a latency-sensitive consumer
+ * const shouldRender = useDeferredRender(true, {
+ *   idleTimeout: 500,
+ *   fallbackTimeout: 16,
+ * });
+ * ```
  */
-export function useDeferredRender(enabled = true): boolean {
+export function useDeferredRender(enabled = true, options?: UseDeferredRenderOptions): boolean {
+    const idleTimeout = options?.idleTimeout ?? DEFAULT_IDLE_TIMEOUT;
+    const fallbackTimeout = options?.fallbackTimeout ?? DEFAULT_FALLBACK_TIMEOUT;
     const [shouldRender, setShouldRender] = useState(!enabled);
 
     useEffect(() => {
@@ -50,19 +79,18 @@ export function useDeferredRender(enabled = true): boolean {
                 () => {
                     setShouldRender(true);
                 },
-                { timeout: 2000 } // Max 2 seconds timeout to ensure content is eventually rendered
+                { timeout: idleTimeout }
             );
 
             return () => cancelIdleCallback(idleCallbackId);
         } else {
-            // Fallback: defer to next frame
             const timeoutId = setTimeout(() => {
                 setShouldRender(true);
-            }, 0);
+            }, fallbackTimeout);
 
             return () => clearTimeout(timeoutId);
         }
-    }, [enabled, shouldRender]);
+    }, [enabled, shouldRender, idleTimeout, fallbackTimeout]);
 
     return shouldRender;
 }

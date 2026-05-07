@@ -8,13 +8,13 @@ import React, { useCallback, useRef } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
 //#region src/design/react/hooks/useComponentDecoratorClasses.ts
-function useComponentDecoratorClasses({ componentId, isFragment, isLocalized }) {
-	const { selectedComponentId, hoveredComponentId, dragState } = useDesignState();
-	const isSelected = selectedComponentId === componentId;
-	const isHovered = !dragState.isDragging && hoveredComponentId === componentId;
+function useComponentDecoratorClasses({ contentLinkUuid, isFragment, isLocalized }) {
+	const { selectedContentLinkUuid, hoveredContentLinkUuid, dragState } = useDesignState();
+	const isSelected = selectedContentLinkUuid === contentLinkUuid;
+	const isHovered = !dragState.isDragging && hoveredContentLinkUuid === contentLinkUuid;
 	const showFrame = (isSelected || isHovered) && !dragState.isDragging;
-	const isMoving = dragState.isDragging && dragState.sourceComponentId === componentId;
-	const isDropTarget = dragState.currentDropTarget?.componentId === componentId;
+	const isMoving = dragState.isDragging && dragState.sourceContentLinkUuid === contentLinkUuid;
+	const isDropTarget = dragState.currentDropTarget?.contentLinkUuid === contentLinkUuid;
 	const dropTargetInsertType = dragState.currentDropTarget?.insertType;
 	const dropTargetAxis = dropTargetInsertType?.axis;
 	return [
@@ -32,17 +32,17 @@ function useComponentDecoratorClasses({ componentId, isFragment, isLocalized }) 
 //#endregion
 //#region src/design/react/hooks/useFocusedComponentHandler.ts
 /**
-* Focuses a component when the focused component id matches the component id.
-* @param componentId - The id of the component to focus.
+* Focuses a component when the focused component id matches the content link UUID.
+* @param contentLinkUuid - The content link UUID of the component.
 * @param nodeRef - The ref object to the node to focus.
 */
-function useFocusedComponentHandler(componentId, nodeRef) {
-	const { focusedComponentId, focusComponent } = useDesignState();
+function useFocusedComponentHandler(contentLinkUuid, nodeRef) {
+	const { focusedContentLinkUuid, focusComponent } = useDesignState();
 	React.useEffect(() => {
-		if (focusedComponentId === componentId && nodeRef.current) focusComponent(nodeRef.current);
+		if (focusedContentLinkUuid === contentLinkUuid && nodeRef.current) focusComponent(nodeRef.current);
 	}, [
-		focusedComponentId,
-		componentId,
+		focusedContentLinkUuid,
+		contentLinkUuid,
 		focusComponent,
 		nodeRef
 	]);
@@ -73,7 +73,7 @@ function useComponentInfo(componentId) {
 //#region src/design/react/components/DesignComponent.tsx
 function DesignComponent(props) {
 	const { designMetadata, children } = props;
-	const { id = "", name, isFragment = false, isVisible = true, isLocalized = false } = designMetadata ?? {};
+	const { id = "", contentLinkUuid = "", name, isFragment = false, isVisible = true, isLocalized = false } = designMetadata ?? {};
 	const componentId = id;
 	const componentType = useComponentType(componentId);
 	const componentInfo = useComponentInfo(componentId);
@@ -82,23 +82,31 @@ function DesignComponent(props) {
 	const dragRef = useRef(null);
 	const { regionId } = useRegionContext() ?? {};
 	const { componentId: parentComponentId } = useComponentContext() ?? {};
-	const { selectedComponentId, hoveredComponentId, setSelectedComponent, setHoveredComponent, startComponentMove, setPendingComponentDragId, dragState: { pendingComponentDragId, isDragging, sourceComponentId: draggingSourceComponentId } } = useDesignState();
-	useFocusedComponentHandler(componentId, dragRef);
+	const { selectedContentLinkUuid, hoveredContentLinkUuid, setSelectedComponent, setHoveredComponent, startComponentMove, setPendingDragContentLinkUuid, dragState: { pendingDragContentLinkUuid, isDragging, sourceContentLinkUuid: draggingSourceContentLinkUuid }, registerContentLink } = useDesignState();
+	React.useEffect(() => {
+		if (contentLinkUuid && componentId) registerContentLink(contentLinkUuid, componentId);
+	}, [
+		componentId,
+		contentLinkUuid,
+		registerContentLink
+	]);
+	useFocusedComponentHandler(contentLinkUuid, dragRef);
 	useNodeToTargetStore({
 		type: "component",
 		nodeRef: dragRef,
 		parentId: parentComponentId,
 		regionId,
-		componentId
+		componentId,
+		contentLinkUuid
 	});
 	const discoverComponents = useComponentDiscovery({ nodeToTargetMap });
-	const isPendingDrag = pendingComponentDragId === componentId;
+	const isPendingDrag = pendingDragContentLinkUuid === contentLinkUuid;
 	const findAndSetHoveredComponent = useCallback((x, y) => {
 		setHoveredComponent(discoverComponents({
 			x,
 			y,
 			filter: (entry) => entry.type === "component"
-		})[0]?.componentId ?? null);
+		})[0]?.contentLinkUuid ?? null);
 	}, [setHoveredComponent, discoverComponents]);
 	const handleMouseMove = useThrottledCallback((event) => {
 		event.stopPropagation();
@@ -110,35 +118,41 @@ function DesignComponent(props) {
 	}, [findAndSetHoveredComponent]);
 	const handleClick = useCallback((e) => {
 		e.stopPropagation();
-		setSelectedComponent(componentId);
-	}, [setSelectedComponent, componentId]);
-	const showFrame = [selectedComponentId, hoveredComponentId].includes(componentId) && !isDragging;
+		setSelectedComponent(contentLinkUuid ?? "");
+	}, [setSelectedComponent, contentLinkUuid]);
+	const showFrame = [selectedContentLinkUuid, hoveredContentLinkUuid].includes(contentLinkUuid ?? "") && !isDragging;
 	const isDraggable = Boolean(componentId && regionId && componentType?.id);
 	const classes = useComponentDecoratorClasses({
-		componentId,
+		contentLinkUuid,
 		isLocalized,
 		isFragment: Boolean(isFragment)
 	});
 	const context = React.useMemo(() => ({
 		componentId: id,
-		name
-	}), [id, name]);
+		name,
+		contentLinkUuid
+	}), [
+		id,
+		name,
+		contentLinkUuid
+	]);
 	const handleDragOver = React.useCallback((event) => {
-		if (draggingSourceComponentId !== componentId) event.preventDefault();
-	}, [draggingSourceComponentId, componentId]);
+		if (draggingSourceContentLinkUuid !== contentLinkUuid) event.preventDefault();
+	}, [draggingSourceContentLinkUuid, contentLinkUuid]);
 	const handleMouseDown = React.useCallback((event) => {
-		if (componentId) {
+		if (contentLinkUuid) {
 			event.stopPropagation();
-			setPendingComponentDragId(componentId);
+			setPendingDragContentLinkUuid(contentLinkUuid);
 		}
-	}, [componentId, setPendingComponentDragId]);
+	}, [contentLinkUuid, setPendingDragContentLinkUuid]);
 	const handleDragStart = React.useCallback((event) => {
 		event.stopPropagation();
-		if (componentId && regionId && componentType?.id) startComponentMove(componentId, regionId, componentType.id);
+		if (componentId && regionId && componentType?.id) startComponentMove(componentId, regionId, componentType.id, contentLinkUuid);
 	}, [
 		componentId,
 		regionId,
 		componentType?.id,
+		contentLinkUuid,
 		startComponentMove
 	]);
 	if (!isVisible) return /* @__PURE__ */ jsx(Fragment, {});
@@ -157,6 +171,7 @@ function DesignComponent(props) {
 		children: [/* @__PURE__ */ jsx("div", { className: "pd-design__component__drop-target" }), /* @__PURE__ */ jsx(DesignFrame, {
 			showFrame,
 			componentId,
+			contentLinkUuid,
 			localized: isLocalized,
 			name: componentName,
 			parentId: parentComponentId,

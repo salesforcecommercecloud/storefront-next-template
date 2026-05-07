@@ -34,7 +34,7 @@ type DecoratedProps = {
     className?: string;
     designMetadata?: RegionDesignMetadata & {
         regionDirection: string;
-        componentIds: string[];
+        contentLinkUuids: string[];
     };
     children: React.ReactNode;
 };
@@ -106,7 +106,7 @@ describe('RegionWrapper', () => {
 
         const last = decoratedCalls[decoratedCalls.length - 1];
         expect(last.region.id).toEqual('r2');
-        expect(last.designMetadata?.componentIds).toEqual(['x1', 'x2']);
+        expect(last.designMetadata?.contentLinkUuids).toEqual(['x1', 'x2']);
         expect(last.designMetadata?.componentTypeInclusions).toEqual([]);
         expect(last.designMetadata?.componentTypeExclusions).toEqual([]);
     });

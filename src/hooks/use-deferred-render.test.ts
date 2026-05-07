@@ -116,4 +116,56 @@ describe('useDeferredRender', () => {
 
         expect(clearTimeoutSpy).toHaveBeenCalled();
     });
+
+    it('should forward custom idleTimeout to requestIdleCallback', () => {
+        const mockRequestIdleCallback = vi.fn(() => 1);
+        global.requestIdleCallback = mockRequestIdleCallback;
+        global.cancelIdleCallback = vi.fn();
+
+        const { unmount } = renderHook(() => useDeferredRender(true, { idleTimeout: 500 }));
+
+        expect(mockRequestIdleCallback).toHaveBeenCalledWith(expect.any(Function), { timeout: 500 });
+
+        unmount();
+        delete (global as any).requestIdleCallback;
+        delete (global as any).cancelIdleCallback;
+    });
+
+    it('should use custom fallbackTimeout when requestIdleCallback is unavailable', () => {
+        delete (global as any).requestIdleCallback;
+
+        const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
+
+        const { unmount } = renderHook(() => useDeferredRender(true, { fallbackTimeout: 32 }));
+
+        expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 32);
+
+        unmount();
+    });
+
+    it('should respect idleTimeout: 0 (not fall back to default)', () => {
+        const mockRequestIdleCallback = vi.fn(() => 1);
+        global.requestIdleCallback = mockRequestIdleCallback;
+        global.cancelIdleCallback = vi.fn();
+
+        const { unmount } = renderHook(() => useDeferredRender(true, { idleTimeout: 0 }));
+
+        expect(mockRequestIdleCallback).toHaveBeenCalledWith(expect.any(Function), { timeout: 0 });
+
+        unmount();
+        delete (global as any).requestIdleCallback;
+        delete (global as any).cancelIdleCallback;
+    });
+
+    it('should respect fallbackTimeout: 0 (not fall back to default)', () => {
+        delete (global as any).requestIdleCallback;
+
+        const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
+
+        const { unmount } = renderHook(() => useDeferredRender(true, { fallbackTimeout: 0 }));
+
+        expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 0);
+
+        unmount();
+    });
 });

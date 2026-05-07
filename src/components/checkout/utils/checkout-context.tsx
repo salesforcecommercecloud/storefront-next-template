@@ -91,6 +91,15 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
         setEditingStep(step);
     };
 
+    // Force shopper back to `step` despite what the basket would compute
+    const pinToStep = (step: CheckoutStep) => {
+        setEditingStep(step);
+        setCurrentStep(step);
+        if (!customerProfile) {
+            setIsActiveCheckoutFlow(true);
+        }
+    };
+
     const exitEditMode = () => {
         const stepOrder = getCheckoutStepOrder();
         const computedStepIndex = stepOrder.indexOf(computedStep);
@@ -127,6 +136,7 @@ export default function CheckoutProvider({ children, customerProfile, shippingDe
         goToNextStep,
         goToStep,
         exitEditMode,
+        pinToStep,
     };
 
     return <CheckoutContext.Provider value={value}>{children}</CheckoutContext.Provider>;

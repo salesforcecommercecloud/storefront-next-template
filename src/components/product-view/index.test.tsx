@@ -34,7 +34,6 @@ const defaultConfigWrapper = createConfigWrapper({
             currency: 'USD',
             features: {
                 passwordlessLogin: {
-                    enabled: false,
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/passwordless-login-landing',
                 },

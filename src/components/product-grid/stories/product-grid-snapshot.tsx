@@ -104,7 +104,6 @@ const mockConfig = {
         locale: 'en-GB',
         currency: 'USD',
         features: {
-            passwordlessLogin: false,
             socialLogin: { enabled: true, providers: ['Apple', 'Google'] },
             guestCheckout: true,
         },

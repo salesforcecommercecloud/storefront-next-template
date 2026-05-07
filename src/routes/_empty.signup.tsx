@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
-import { redirect, Form, useActionData } from 'react-router';
+import { lazy, Suspense, type ReactElement } from 'react';
+import { redirect, Form, useActionData, useFetcher } from 'react-router';
 import type { Route } from './+types/_empty.signup';
+import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 // services
@@ -27,23 +28,60 @@ import { UITarget } from '@/targets/ui-target';
 import { SeoMeta } from '@/components/seo-meta';
 
 // utils
-import { isPasswordValid } from '@/lib/utils';
-import { getAuth } from '@/middlewares/auth.server';
+import { isPasswordValid, getSafeReturnUrl } from '@/lib/utils';
+import { getAuth, authorizePasswordless, requestOtp } from '@/middlewares/auth.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { useTranslation } from 'react-i18next';
 import { getLogger } from '@/lib/logger.server';
+import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import type { AppConfig } from '@/types/config';
+import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
+import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
 
-type SignupActionResponse = {
-    error?: string;
+const OtpModal = lazy(() => import('@/components/login/otp-modal'));
+
+type SignupLoaderData = {
+    showOTPModal: boolean;
+    email: string;
+    firstName: string;
+    lastName: string;
+    returnUrl: string;
+    isPasswordlessEnabled: boolean;
+    otpLength: number;
+    registrationMode: string;
 };
 
-export function loader({ context }: Route.LoaderArgs): null | Response {
+type RegistrationMode = 'passwordless' | 'password';
+
+type SignupActionResponse = {
+    error: string;
+};
+
+export function loader({ request, context }: Route.LoaderArgs): SignupLoaderData | Response {
     const session = getAuth(context);
-    if (session.userType === 'registered') {
+    const url = new URL(request.url);
+    const isOtpPending = url.searchParams.get('otp') === 'true';
+
+    // If the user is already registered and the OTP is not pending, redirect to the home page
+    if (session.userType === 'registered' && !isOtpPending) {
         return redirect('/');
     }
 
-    return null;
+    const config = getConfig<AppConfig>(context);
+    // Enabling the email verification site preference will enable the passwordless registration flow.
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    const isPasswordlessEnabled = Boolean(emailVerificationEnabled);
+
+    return {
+        showOTPModal: isOtpPending,
+        email: url.searchParams.get('email') || '',
+        firstName: url.searchParams.get('firstName') || '',
+        lastName: url.searchParams.get('lastName') || '',
+        returnUrl: getSafeReturnUrl(url.searchParams.get('returnUrl')),
+        isPasswordlessEnabled,
+        otpLength: config.auth.otpLength,
+        registrationMode: url.searchParams.get('registrationMode') || '',
+    };
 }
 
 /**
@@ -57,10 +95,49 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Si
     const firstName = formData.get('firstName')?.toString();
     const lastName = formData.get('lastName')?.toString();
     const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
-    const confirmPassword = formData.get('confirmPassword')?.toString();
+    const registrationMode = formData.get('registrationMode')?.toString() as RegistrationMode;
+    const url = new URL(request.url);
+    const returnUrl = getSafeReturnUrl(url.searchParams.get('returnUrl'));
 
     logger.debug('Signup: starting');
+
+    // Passwordless registration flow
+    if (registrationMode === 'passwordless') {
+        if (!firstName || !lastName || !email) {
+            logger.warn('Signup (passwordless): missing required fields');
+            return { error: t('signup:allFieldsRequired') };
+        }
+
+        try {
+            await authorizePasswordless(context, {
+                userid: email,
+                registerCustomer: true,
+                firstName,
+                lastName,
+            });
+
+            logger.info('Signup (passwordless): OTP sent');
+
+            // Redirect to the same page with the otp=true query parameter to show the OTP modal and
+            // prompt the user to enter the OTP.
+            const params = new URLSearchParams({
+                otp: 'true',
+                email,
+                firstName,
+                lastName,
+                returnUrl,
+                registrationMode: 'passwordless',
+            });
+            return redirect(`${url.pathname}?${params.toString()}`);
+        } catch (error) {
+            logger.error('Signup (passwordless): failed', { error });
+            return { error: t(getPasswordlessErrorMessageKey(extractErrorMessage(error))) };
+        }
+    }
+
+    // Standard registration flow
+    const password = formData.get('password')?.toString();
+    const confirmPassword = formData.get('confirmPassword')?.toString();
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
         logger.warn('Signup: missing required fields');
@@ -94,17 +171,61 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Si
     }
 
     logger.info('Signup: registration succeeded');
-    // Registration and auto-login successful - redirect to return URL
-    const url = new URL(request.url);
-    const returnUrl = url.searchParams.get('returnUrl') || '/';
 
-    return redirect(returnUrl);
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    const isEmailVerificationEnabled = Boolean(emailVerificationEnabled);
+
+    if (!isEmailVerificationEnabled) {
+        return redirect(returnUrl);
+    }
+
+    // Request OTP for email verification if feature is enabled
+    try {
+        await requestOtp(context, { email });
+
+        logger.info('Signup: OTP requested after password registration');
+        // Redirect to the same page with the otp=true query parameter to show the OTP modal and
+        // prompt the user to enter the OTP.
+        const params = new URLSearchParams({
+            otp: 'true',
+            email,
+            returnUrl,
+            registrationMode: 'password',
+        });
+        return redirect(`${url.pathname}?${params.toString()}`);
+    } catch (error) {
+        logger.error('Signup: OTP request failed after password registration, redirecting to returnUrl', {
+            error,
+        });
+        return redirect(returnUrl);
+    }
 }
 
-export default function Signup(): ReactElement {
+export default function Signup({ loaderData }: { loaderData: SignupLoaderData }): ReactElement {
     const actionData = useActionData<typeof action>();
     const error = actionData?.error;
     const { t } = useTranslation('signup');
+    const { showOTPModal, email, firstName, lastName, returnUrl, isPasswordlessEnabled, otpLength, registrationMode } =
+        loaderData;
+    const navigate = useNavigate();
+    const resendCodeFetcher = useFetcher();
+
+    const handleResendCode = async (): Promise<void> => {
+        if (registrationMode === 'password') {
+            // For password registration, POST to the otp-request action to request a new OTP for email verification.
+            const formData = new FormData();
+            formData.append('email', email);
+            await resendCodeFetcher.submit(formData, { method: 'POST', action: '/action/otp-request' });
+        } else {
+            // For passwordless registration, POST to this URL so the route action runs and triggers the passwordless authorize API to send another OTP.
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('firstName', firstName);
+            formData.append('lastName', lastName);
+            formData.append('registrationMode', 'passwordless');
+            await resendCodeFetcher.submit(formData, { method: 'POST' });
+        }
+    };
 
     return (
         <>
@@ -124,7 +245,7 @@ export default function Signup(): ReactElement {
 
                     <Card className="p-8 rounded-none shadow-none">
                         <Form method="POST">
-                            <SignupForm error={error} />
+                            <SignupForm error={error} isPasswordless={isPasswordlessEnabled} />
 
                             <div className="text-center mt-6">
                                 <p className="text-sm text-muted-foreground">
@@ -139,6 +260,34 @@ export default function Signup(): ReactElement {
                     <UITarget targetId="sfcc.userRegistration.address.validation" />
                 </div>
             </div>
+            {showOTPModal && (
+                <Suspense fallback={null}>
+                    <OtpModal
+                        isOpen={showOTPModal}
+                        email={email}
+                        otpLength={otpLength}
+                        verifyActionUrl={
+                            // otp-verify: email verification for password registrations
+                            // verify-passwordless-otp: passwordless registration verification
+                            registrationMode === 'password' ? '/action/otp-verify' : '/action/verify-passwordless-otp'
+                        }
+                        onClose={() => {
+                            if (isPasswordlessEnabled && registrationMode === 'passwordless') {
+                                // Passwordless registration should not redirect because the account is not created until the OTP is verified.
+                                void navigate('/signup');
+                            } else {
+                                // Password registration should redirect to the return URL as the account is created and email verification is not required.
+                                // The user can complete email verification in the Account Details page.
+                                void navigate(returnUrl);
+                            }
+                        }}
+                        onSuccess={() => {
+                            void navigate(returnUrl);
+                        }}
+                        onResendCode={handleResendCode}
+                    />
+                </Suspense>
+            )}
         </>
     );
 }

@@ -3,15 +3,16 @@ import React from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 
 //#region src/design/react/hooks/useNodeToTargetStore.ts
-function useNodeToTargetStore({ parentId, componentId, regionId, nodeRef, type, componentIds, componentTypeInclusions, componentTypeExclusions }) {
+function useNodeToTargetStore({ parentId, componentId, contentLinkUuid, regionId, nodeRef, type, contentLinkUuids, componentTypeInclusions, componentTypeExclusions }) {
 	const { nodeToTargetMap } = useDesignState();
 	React.useEffect(() => {
 		if (nodeRef.current) nodeToTargetMap.set(nodeRef.current, {
 			parentId,
 			componentId,
+			contentLinkUuid,
 			regionId,
 			type,
-			componentIds,
+			contentLinkUuids,
 			componentTypeInclusions,
 			componentTypeExclusions
 		});
@@ -19,9 +20,10 @@ function useNodeToTargetStore({ parentId, componentId, regionId, nodeRef, type, 
 		nodeRef,
 		parentId,
 		componentId,
+		contentLinkUuid,
 		regionId,
 		type,
-		componentIds,
+		contentLinkUuids,
 		nodeToTargetMap,
 		componentTypeInclusions,
 		componentTypeExclusions
@@ -125,7 +127,7 @@ const DesignOverlay = () => {
 
 //#endregion
 //#region src/design/react/components/DesignFrame.tsx
-const DesignFrame = ({ componentId, children, name, parentId, regionId, localized = false, showFrame = false, showToolbox = true, isMoveable = true, className }) => {
+const DesignFrame = ({ componentId, children, name, parentId, regionId, contentLinkUuid, localized = false, showFrame = false, showToolbox = true, isMoveable = true, className }) => {
 	const componentType = useComponentType(componentId ?? "");
 	const { deleteComponent } = useDesignState();
 	const labels = useLabels();
@@ -134,12 +136,14 @@ const DesignFrame = ({ componentId, children, name, parentId, regionId, localize
 		event.stopPropagation();
 		if (componentId) deleteComponent({
 			componentId,
+			contentLinkUuid: contentLinkUuid ?? "",
 			sourceComponentId: parentId ?? "",
 			sourceRegionId: regionId ?? ""
 		});
 	}, [
 		deleteComponent,
 		componentId,
+		contentLinkUuid,
 		parentId,
 		regionId
 	]);

@@ -107,22 +107,22 @@ With separate boundaries, each promise resolves independently. Fast content stre
 
 ```jsx
 function ProductWrapper({ promise }: { promise: Promise<Product> }) {
-    const product = use(promise);
-    return <ProductContent product={product} />;
+  const product = use(promise);
+  return <ProductContent product={product} />;
 }
 
 function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
-    const reviews = use(promise);
-    return <ReviewsSection reviews={reviews} />;
+  const reviews = use(promise);
+  return <ReviewsSection reviews={reviews} />;
 }
 
 <div>
-    <Suspense fallback={<ProductSkeleton />}>
-        <ProductWrapper promise={productPromise} />
-    </Suspense>
-    <Suspense fallback={<ReviewsSkeleton />}>
-        <ReviewsWrapper promise={reviewsPromise} />
-    </Suspense>
+  <Suspense fallback={<ProductSkeleton />}>
+    <ProductWrapper promise={productPromise} />
+  </Suspense>
+  <Suspense fallback={<ReviewsSkeleton />}>
+    <ReviewsWrapper promise={reviewsPromise} />
+  </Suspense>
 </div>
 ```
 
@@ -134,14 +134,14 @@ function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
 // promise2 (still pending) suspends the boundary again — tearing
 // down Component1 and showing <ComponentsSkeleton /> a second time.
 <Suspense fallback={<ComponentsSkeleton />}>
-    <div>
-        <Await resolve={promise1}>
-            {(resolved) => <Component1 resolved={resolved} />}
-        </Await>
-        <Await resolve={promise2}>
-            {(resolved) => <Component2 resolved={resolved} />}
-        </Await>
-    </div>
+  <div>
+    <Await resolve={promise1}>
+      {(resolved) => <Component1 resolved={resolved} />}
+    </Await>
+    <Await resolve={promise2}>
+      {(resolved) => <Component2 resolved={resolved} />}
+    </Await>
+  </div>
 </Suspense>
 ```
 
@@ -153,24 +153,24 @@ function ReviewsWrapper({ promise }: { promise: Promise<Reviews> }) {
 // Resolution of one promise triggers a re-render that re-suspends
 // for the other, causing the same fallback thrashing.
 function CombinedView({
-    promise1,
-    promise2,
+  promise1,
+  promise2,
 }: {
-    promise1: Promise<Component1Data>;
-    promise2: Promise<Component2Data>;
+  promise1: Promise<Component1Data>;
+  promise2: Promise<Component2Data>;
 }) {
-    const data1 = use(promise1);
-    const data2 = use(promise2);
-    return (
-        <>
-            <Component1 resolved={data1} />
-            <Component2 resolved={data2} />
-        </>
-    );
+  const data1 = use(promise1);
+  const data2 = use(promise2);
+  return (
+    <>
+      <Component1 resolved={data1} />
+      <Component2 resolved={data2} />
+    </>
+  );
 }
 
 <Suspense fallback={<ComponentsSkeleton />}>
-    <CombinedView promise1={promise1} promise2={promise2} />
+  <CombinedView promise1={promise1} promise2={promise2} />
 </Suspense>
 ```
 
@@ -180,16 +180,16 @@ function CombinedView({
 // ❌ BAD: promise2 cannot even begin to resolve until promise1 is done,
 // creating an artificial waterfall on top of the shared-boundary problem.
 <Suspense fallback={<ComponentsSkeleton />}>
-    <Await resolve={promise1}>
-        {(resolved1) => (
-            <>
-                <Component1 resolved={resolved1} />
-                <Await resolve={promise2}>
-                    {(resolved2) => <Component2 resolved={resolved2} />}
-                </Await>
-            </>
-        )}
-    </Await>
+  <Await resolve={promise1}>
+    {(resolved1) => (
+      <>
+        <Component1 resolved={resolved1} />
+        <Await resolve={promise2}>
+          {(resolved2) => <Component2 resolved={resolved2} />}
+        </Await>
+      </>
+    )}
+  </Await>
 </Suspense>
 ```
 
@@ -400,35 +400,3 @@ Optimistic UI skips the loading state entirely by assuming that an operation wil
 Optimistic UI is appropriate when the probability of failure is low and the operation is reversible. It's not suitable for destructive or irreversible actions where a failed rollback leaves the UI in an inconsistent state.
 
 `useFetcher()` exposes submitted form data via `fetcher.formData` before the action completes, enabling optimistic updates without external state management. For implementation patterns using `fetcher.formData` and `useOptimistic`, see [State Management](README-STATE.md#optimistic-state).
-
-## Lazy Loading for Overlays (Modals, Drawers, Dialogs)
-
-Overlay components that are hidden on initial render, such as modals, drawers, and dialogs, **must** use [`React.lazy()`](https://react.dev/reference/react/lazy) with deferred mounting. Mount the `<Suspense>` subtree only after the first user interaction, not on page load. This keeps the overlay's code out of the main chunk entirely until it's actually needed, reducing page load size and [Total Blocking Time](https://web.dev/articles/tbt) (TBT).
-
-```jsx
-const MyModal = lazy(() => import('@/components/my-modal').then((m) => ({ default: m.MyModal })));
-
-function MyComponent() {
-    const [loaded, setLoaded] = useState(false);
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button onClick={() => { setLoaded(true); setOpen(true); }}>Open</Button>
-            {loaded && (
-                <Suspense fallback={null}>
-                    <MyModal open={open} onOpenChange={setOpen} />
-                </Suspense>
-            )}
-        </>
-    );
-}
-```
-
-- `loaded` flips once on first click — controls when the chunk is fetched and the component mounts.
-- `open` toggles visibility — re-opening after first load is instant.
-
-> [!IMPORTANT]
-> **Anti-pattern:** Importing overlay components synchronously (non-lazy) bundles them into the main chunk, increasing page load size and TBT.
->
-> **Discouraged:** `<Suspense><LazyComponent /></Suspense>` without a guard — the chunk is separate but still fetched and parsed on mount, adding to TBT during page startup.

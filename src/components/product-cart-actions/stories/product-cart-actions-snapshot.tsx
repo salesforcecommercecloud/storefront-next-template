@@ -17,6 +17,7 @@ import { vi, expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
 import * as ProductCartActionsStories from './product-cart-actions.stories';
 import { render, cleanup } from '@testing-library/react';
+import { mockSiteObject } from '@/test-utils/config';
 
 // Mock useItemFetcher
 vi.mock('@/hooks/use-item-fetcher', () => ({
@@ -58,9 +59,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArchGlobal', defaultLocale: 'en-GB', defaultCurrency: 'GBP', supportedLocales: [{ id: 'en-GB', preferredCurrency: 'GBP' }], supportedCurrencies: ['EUR', 'GBP'] },
-            language: 'en-GB',
-            currency: 'GBP',
+            site: { id: mockSiteObject.id, defaultLocale: mockSiteObject.defaultLocale, defaultCurrency: mockSiteObject.defaultCurrency, supportedLocales: [{ id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency }], supportedCurrencies: ['EUR', mockSiteObject.defaultCurrency] },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         })),
     };
 });

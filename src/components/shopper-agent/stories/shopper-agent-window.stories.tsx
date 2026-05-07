@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import { ShopperAgentWindow } from '../shopper-agent-window';
+import { mockSiteObject } from '@/test-utils/config';
 
 const mockConfig: ShopperAgentConfig = {
     enabled: 'true',
@@ -25,7 +26,7 @@ const mockConfig: ShopperAgentConfig = {
     scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
     scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
     salesforceOrgId: '00D000000000000EAA',
-    siteId: 'RefArchGlobal',
+    siteId: mockSiteObject.id,
 };
 
 const meta: Meta<typeof ShopperAgentWindow> = {
@@ -61,7 +62,7 @@ export const Default: Story = {
         config: mockConfig,
         locale: 'en-US',
         currency: 'USD',
-        siteId: 'RefArchGlobal',
+        siteId: mockSiteObject.id,
         domainUrl: 'https://example.com/',
     },
 };
@@ -71,7 +72,7 @@ export const WithUserId: Story = {
         config: mockConfig,
         locale: 'en-US',
         currency: 'USD',
-        siteId: 'RefArchGlobal',
+        siteId: mockSiteObject.id,
         domainUrl: 'https://example.com/',
         userId: 'user-123',
     },

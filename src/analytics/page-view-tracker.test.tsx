@@ -28,6 +28,7 @@ import { render, waitFor, act } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { PageViewTracker } from './page-view-tracker';
 import type { SessionData } from '@/lib/api/types';
+import { mockSiteObject } from '@/test-utils/config';
 
 import { createEvent, sendViewPageEvent, getEventMediator } from '@salesforce/storefront-next-runtime/events';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
@@ -138,8 +139,12 @@ describe('PageViewTracker', () => {
         // Setup default mocks - auth must be defined for tracking to occur
         mockUseAuth.mockReturnValue(defaultGuestAuth);
         mockUseConfig.mockReturnValue(defaultConfig);
-        mockUseSite.mockReturnValue({ site: { id: 'RefArchGlobal' }, language: 'en-GB', currency: 'USD' });
-        mockUseTranslation.mockReturnValue({ i18n: { language: 'en-GB' } });
+        mockUseSite.mockReturnValue({
+            site: { id: mockSiteObject.id },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
+        });
+        mockUseTranslation.mockReturnValue({ i18n: { language: mockSiteObject.defaultLocale } });
 
         // Default to tracking consent accepted for all existing tests
         mockUseTrackingConsent.mockReturnValue({
@@ -288,8 +293,8 @@ describe('PageViewTracker', () => {
                     mockEvent,
                     mockEventMediator,
                     {
-                        siteId: 'RefArchGlobal',
-                        localeId: 'en-GB',
+                        siteId: mockSiteObject.id,
+                        localeId: mockSiteObject.defaultLocale,
                     },
                     mockConsentPreferences
                 );
@@ -318,8 +323,8 @@ describe('PageViewTracker', () => {
                     mockEvent,
                     mockEventMediator,
                     {
-                        siteId: 'RefArchGlobal',
-                        localeId: 'en-GB',
+                        siteId: mockSiteObject.id,
+                        localeId: mockSiteObject.defaultLocale,
                     },
                     mockConsentPreferences
                 );
@@ -469,8 +474,8 @@ describe('PageViewTracker', () => {
                     mockEvent,
                     mockEventMediator,
                     {
-                        siteId: 'RefArchGlobal',
-                        localeId: 'en-GB',
+                        siteId: mockSiteObject.id,
+                        localeId: mockSiteObject.defaultLocale,
                     },
                     mockConsentPreferences
                 );
@@ -499,8 +504,8 @@ describe('PageViewTracker', () => {
                     mockEvent,
                     mockEventMediator,
                     {
-                        siteId: 'RefArchGlobal',
-                        localeId: 'en-GB',
+                        siteId: mockSiteObject.id,
+                        localeId: mockSiteObject.defaultLocale,
                     },
                     mockConsentPreferences
                 );
@@ -572,8 +577,8 @@ describe('PageViewTracker', () => {
                     mockEvent,
                     mockEventMediator,
                     {
-                        siteId: 'RefArchGlobal',
-                        localeId: 'en-GB',
+                        siteId: mockSiteObject.id,
+                        localeId: mockSiteObject.defaultLocale,
                     },
                     mockConsentPreferences
                 );
@@ -602,7 +607,11 @@ describe('PageViewTracker', () => {
         });
 
         it('should not track when useSite returns undefined site', async () => {
-            mockUseSite.mockReturnValue({ site: undefined, language: 'en-GB', currency: 'USD' });
+            mockUseSite.mockReturnValue({
+                site: undefined,
+                language: mockSiteObject.defaultLocale,
+                currency: mockSiteObject.defaultCurrency,
+            });
 
             renderPageViewTracker('/test-page');
 

@@ -23,6 +23,7 @@ import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import i18next from 'i18next';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
+import { mockSiteObject } from '@/test-utils/config';
 import LocaleSwitcher from './index';
 
 const { t } = getTranslation();
@@ -36,16 +37,7 @@ const mockConfig = {
 } as any;
 
 // Mock site with supported locales that match the i18n config
-const mockSite: Site = {
-    id: 'RefArchGlobal',
-    defaultLocale: 'en-GB',
-    defaultCurrency: 'GBP',
-    supportedLocales: [
-        { id: 'en-GB', preferredCurrency: 'GBP' },
-        { id: 'it-IT', preferredCurrency: 'EUR' },
-    ],
-    supportedCurrencies: ['GBP', 'EUR'],
-};
+const mockSite: Site = mockSiteObject;
 
 const mockLocale =
     mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];

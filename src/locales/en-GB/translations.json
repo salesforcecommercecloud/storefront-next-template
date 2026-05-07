@@ -126,7 +126,7 @@
         "noAccountQuestion": "Don't have an account? ",
         "signUp": "Sign up",
         "signingIn": "Signing in...",
-        "sendLoginLink": "Send Login Link",
+        "sendLoginLink": "Continue",
         "sendingLoginLink": "Sending login link...",
         "signIn": "Sign In",
         "socialOrContinueWith": "Or continue with",
@@ -190,7 +190,11 @@
             "passwordPlaceholder": "Create a secure password",
             "confirmPasswordLabel": "Confirm Password",
             "confirmPasswordPlaceholder": "Confirm your password",
-            "createAccountButton": "Create Account"
+            "createAccountButton": "Create Account",
+            "continueButton": "Continue",
+            "orSeparator": "or",
+            "createAccountWithPassword": "Create account with password",
+            "continueWithoutPassword": "Continue without password"
         },
         "passwordRequirements": {
             "title": "Password Requirements:",
@@ -254,7 +258,8 @@
             "shippingMethodRequired": "Please select a shipping method to continue.",
             "contactInfoFailed": "We couldn't save the contact information. Try again.",
             "addressValidationFailed": "We couldn't validate your address. Check your address and try again.",
-            "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart."
+            "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart.",
+            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",
@@ -406,6 +411,9 @@
             "defaultTitle": "Bonus Products Available",
             "selectionCount": " ({{selected}} of {{max}} selected)",
             "freeBadge": "Free"
+        },
+        "inventory": {
+            "blockMessage": "Some items exceed available stock. Please adjust quantities or remove items to continue."
         }
     },
     "checkout": {
@@ -1543,7 +1551,7 @@
         "checkBack": "Check back in a few minutes, or follow us for updates.",
         "tryAgain": "Try Again"
     },
-    "error": {
+    "routeError": {
         "defaultTitle": "Something went wrong",
         "defaultDescription": "An error occurred",
         "defaultDetails": "An unexpected error occurred.",

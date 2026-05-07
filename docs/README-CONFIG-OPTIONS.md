@@ -590,7 +590,7 @@ Authentication configuration shared across all auth features. These settings app
 
 ### auth.otpLength
 
-Type: `number` | Default: `8`
+Type: `number` | Default: `6`
 
 The length of the OTP (One-Time Password) code used for authentication. This value is set by SLAS (Shopper Login and API Access Service) and is shared across all authentication features including passwordless login, password reset, WebAuthn, and passkey authentication.
 
@@ -598,7 +598,7 @@ The length of the OTP (One-Time Password) code used for authentication. This val
 
 Example:
 ```bash
-PUBLIC__app__auth__otpLength=8
+PUBLIC__app__auth__otpLength=6
 ```
 
 **Usage:** When implementing new authentication features (e.g., passkey login), use `config.auth.otpLength` instead of defining a separate `otpLength` property in the feature configuration. This ensures consistency and prevents configuration drift.
@@ -608,19 +608,6 @@ PUBLIC__app__auth__otpLength=8
 ## features
 
 Site feature flags that enable or disable specific functionality.
-
-### features.passwordlessLogin.enabled
-
-Type: `boolean` | Default: `false`
-
-Enables passwordless login functionality, allowing users to log in via email link without entering a password. Requires Marketing Cloud configuration for sending login emails. See [Marketing Cloud Configuration](./README-CONFIG.md#marketing-cloud-configuration-server-only).
-
-Example:
-```bash
-PUBLIC__app__features__passwordlessLogin__enabled=true
-```
-
----
 
 ### features.passwordlessLogin.mode
 
@@ -642,7 +629,7 @@ PUBLIC__app__features__passwordlessLogin__mode="email"
 
 Type: `string` Optional | Default: `'/passwordless-login-callback'`
 
-The URI path where users are redirected after clicking the passwordless login link in their email. Required when mode is `callback.
+The callback URI sent to SLAS when requesting a passwordless login. Required when mode is `callback`.
 
 ---
 
@@ -654,6 +641,30 @@ The URI path of the magic link. A magic link is a single-use URL that contains t
 
 ---
 
+### features.otpRequest.mode
+
+Type: `'email' | 'callback'` | Default: `'email'`
+
+Determines how OTP codes are delivered for email verification (e.g., during registration).
+
+- **`'email'`** (default): The system sends the OTP code email directly to the user.
+- **`'callback'`**: Uses a callback flow where SLAS calls your server's callback endpoint with the OTP details. This mode requires the `callbackUri` to be configured and registered for your SLAS client and is useful when using an external email or SMS provider.
+
+Example:
+```bash
+PUBLIC__app__features__otpRequest__mode="email"
+```
+
+---
+
+### features.otpRequest.callbackUri
+
+Type: `string` Optional | Default: `undefined`
+
+The callback URI sent to SLAS when requesting an OTP code. Required when mode is `callback`. Must be an absolute URL pointing to an external service (e.g., `https://example.com/otp-callback`).
+
+---
+
 ### features.resetPassword.mode
 
 Type: `'email' | 'callback'` | Default: `'email'`
@@ -661,7 +672,6 @@ Type: `'email' | 'callback'` | Default: `'email'`
 Determines how password reset tokens are delivered to users.
 
 - **`'email'`** (default): SLAS sends the password reset link email directly to the user.
-
 - **`'callback'`**: Uses a callback flow where SLAS calls your server's callback endpoint with the token and user information. This mode requires the `callbackUri` to be configured and registered for your SLAS client and is useful when using an external email or sms provider.
 
 Example:
@@ -675,7 +685,7 @@ PUBLIC__app__features__resetPassword__mode="email"
 
 Type: `string` Optional | Default: `'/reset-password-callback'`
 
-The URI path for the password reset callback handler. Required when mode is `callback.
+The callback URI sent to SLAS when requesting an password reset. Required when mode is `callback`.
 
 ---
 

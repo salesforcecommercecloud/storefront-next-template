@@ -27,6 +27,7 @@ import { useAnalytics } from './use-analytics';
 import type { SessionData } from '@/lib/api/types';
 import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('@/providers/auth', () => ({
     useAuth: vi.fn(),
@@ -38,9 +39,9 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     useSite: vi.fn(() => ({
-        site: { id: 'RefArchGlobal' },
-        language: 'en-GB',
-        currency: 'USD',
+        site: { id: mockSiteObject.id },
+        language: mockSiteObject.defaultLocale,
+        currency: mockSiteObject.defaultCurrency,
     })),
 }));
 
@@ -155,11 +156,11 @@ describe('useAnalytics', () => {
         // Setup default mocks
         vi.mocked(useConfig).mockReturnValue(mockConfig as any);
         vi.mocked(useSite).mockReturnValue({
-            site: { id: 'RefArchGlobal' },
-            language: 'en-GB',
-            currency: 'USD',
+            site: { id: mockSiteObject.id },
+            language: mockSiteObject.defaultLocale,
+            currency: mockSiteObject.defaultCurrency,
         } as any);
-        vi.mocked(useTranslation).mockReturnValue({ i18n: { language: 'en-GB' } } as any);
+        vi.mocked(useTranslation).mockReturnValue({ i18n: { language: mockSiteObject.defaultLocale } } as any);
         vi.mocked(getAllAdapters).mockReturnValue([]);
         vi.mocked(initializeEngagementAdapters).mockResolvedValue(undefined);
         vi.mocked(ensureAdaptersInitialized).mockResolvedValue(undefined);
@@ -213,7 +214,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -259,7 +260,7 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -282,7 +283,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -305,7 +306,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -328,7 +329,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -357,7 +358,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -386,7 +387,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -415,7 +416,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -442,7 +443,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -465,7 +466,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -492,7 +493,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -518,7 +519,7 @@ describe('useAnalytics', () => {
                         usid: 'test-usid',
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -542,7 +543,7 @@ describe('useAnalytics', () => {
                         usid: undefined,
                     },
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -605,7 +606,7 @@ describe('useAnalytics', () => {
                     eventType: 'view_page',
                     path: '/test-page',
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 mockConsentPreferences
             );
         });
@@ -622,7 +623,7 @@ describe('useAnalytics', () => {
                 expect.objectContaining({
                     eventType: 'view_product',
                 }),
-                { siteId: 'RefArchGlobal', localeId: 'en-GB' },
+                { siteId: mockSiteObject.id, localeId: mockSiteObject.defaultLocale },
                 customPreferences
             );
         });

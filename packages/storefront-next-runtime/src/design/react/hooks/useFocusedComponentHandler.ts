@@ -17,16 +17,16 @@ import React from 'react';
 import { useDesignState } from './useDesignState';
 
 /**
- * Focuses a component when the focused component id matches the component id.
- * @param componentId - The id of the component to focus.
+ * Focuses a component when the focused component id matches the content link UUID.
+ * @param contentLinkUuid - The content link UUID of the component.
  * @param nodeRef - The ref object to the node to focus.
  */
-export function useFocusedComponentHandler(componentId: string, nodeRef: React.RefObject<Element | null>): void {
-    const { focusedComponentId, focusComponent } = useDesignState();
+export function useFocusedComponentHandler(contentLinkUuid: string, nodeRef: React.RefObject<Element | null>): void {
+    const { focusedContentLinkUuid, focusComponent } = useDesignState();
 
     React.useEffect(() => {
-        if (focusedComponentId === componentId && nodeRef.current) {
+        if (focusedContentLinkUuid === contentLinkUuid && nodeRef.current) {
             focusComponent(nodeRef.current);
         }
-    }, [focusedComponentId, componentId, focusComponent, nodeRef]);
+    }, [focusedContentLinkUuid, contentLinkUuid, focusComponent, nodeRef]);
 }

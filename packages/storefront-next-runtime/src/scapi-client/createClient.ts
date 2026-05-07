@@ -103,6 +103,15 @@ const isSlasAuthResponse = (url: string): boolean => {
     }
 };
 
+const isOtpEndpoint = (url: string): boolean => {
+    try {
+        const parsedUrl = new URL(url);
+        return parsedUrl.pathname.includes('/oauth2/otp/');
+    } catch {
+        return url.includes('/oauth2/otp/');
+    }
+};
+
 /**
  * Create a proxied client with operation methods
  *
@@ -218,7 +227,13 @@ export function createClient<TClient extends Client<any, any>, TOperations exten
                     if (result.error !== undefined) {
                         const response = result.response;
 
-                        if (response.status === 401 && !isSlasAuthResponse(response.url)) {
+                        // OTP endpoints return 401 for invalid OTP codes, not invalid tokens
+                        // Don't treat OTP 401s as auth token invalidation
+                        if (
+                            response.status === 401 &&
+                            !isSlasAuthResponse(response.url) &&
+                            !isOtpEndpoint(response.url)
+                        ) {
                             options?.onAuthTokenInvalid?.(response);
                             throw new AuthTokenInvalidError();
                         }

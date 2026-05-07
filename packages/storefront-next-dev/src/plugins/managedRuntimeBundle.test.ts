@@ -199,7 +199,7 @@ describe('managedRuntimeBundlePlugin', () => {
             const config = callHook(plugin.config, { mode: 'production' });
             const renderBuiltUrl = config.experimental.renderBuiltUrl;
 
-            const result = renderBuiltUrl('logo.png', { type: 'asset' });
+            const result = renderBuiltUrl('logo.png', { type: 'asset', hostType: 'js' });
 
             expect(result).toBeDefined();
             expect(result.runtime).toContain('window._BUNDLE_PATH');
@@ -213,11 +213,34 @@ describe('managedRuntimeBundlePlugin', () => {
             const config = callHook(plugin.config, { mode: 'production' });
             const renderBuiltUrl = config.experimental.renderBuiltUrl;
 
-            const result = renderBuiltUrl('favicon.ico', { type: 'public' });
+            const result = renderBuiltUrl('favicon.ico', { type: 'public', hostType: 'js' });
 
             expect(result).toBeDefined();
             expect(result.runtime).toContain('window._BUNDLE_PATH');
             expect(result.runtime).toContain('/mobify/bundle/');
+        });
+
+        it('should emit relative URL for asset references from CSS', () => {
+            // CSS url() cannot interpolate a runtime expression. The browser resolves
+            // relative paths against the stylesheet's own URL — which already includes
+            // the deploy's BUNDLE_ID — so the reference stays correct across deploys.
+            const plugin = managedRuntimeBundlePlugin();
+            const config = callHook(plugin.config, { mode: 'production' });
+            const renderBuiltUrl = config.experimental.renderBuiltUrl;
+
+            const result = renderBuiltUrl('fonts/sen-variable.woff2', { type: 'public', hostType: 'css' });
+
+            expect(result).toEqual({ relative: true });
+        });
+
+        it('should emit relative URL for bundled asset references from CSS', () => {
+            const plugin = managedRuntimeBundlePlugin();
+            const config = callHook(plugin.config, { mode: 'production' });
+            const renderBuiltUrl = config.experimental.renderBuiltUrl;
+
+            const result = renderBuiltUrl('logo-abc123.png', { type: 'asset', hostType: 'css' });
+
+            expect(result).toEqual({ relative: true });
         });
 
         it('should not transform asset URLs in preview mode', () => {
@@ -225,7 +248,7 @@ describe('managedRuntimeBundlePlugin', () => {
             const config = callHook(plugin.config, { mode: 'preview' });
             const renderBuiltUrl = config.experimental.renderBuiltUrl;
 
-            const result = renderBuiltUrl('logo.png', { type: 'asset' });
+            const result = renderBuiltUrl('logo.png', { type: 'asset', hostType: 'js' });
 
             expect(result).toBeUndefined();
         });
@@ -235,7 +258,7 @@ describe('managedRuntimeBundlePlugin', () => {
             const config = callHook(plugin.config, { mode: 'production' });
             const renderBuiltUrl = config.experimental.renderBuiltUrl;
 
-            const result = renderBuiltUrl('chunk.js', { type: 'chunk' });
+            const result = renderBuiltUrl('chunk.js', { type: 'chunk', hostType: 'js' });
 
             expect(result).toBeUndefined();
         });

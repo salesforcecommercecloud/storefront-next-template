@@ -40,6 +40,8 @@ import { useTranslation } from 'react-i18next';
 import PromoPopover from '@/components/promo-popover';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { UITarget } from '@/targets/ui-target';
+import type { CartInventoryValidationResult } from '@/lib/cart/inventory-validation';
+import { CartInventoryErrorBanner } from '@/components/cart/cart-inventory-error-banner';
 
 /**
  * Props for the OrderSummary component
@@ -75,6 +77,7 @@ interface OrderSummaryProps {
     showCheckoutAction?: boolean;
     onSelectBonusProducts?: () => void;
     className?: string;
+    inventoryValidation?: CartInventoryValidationResult;
 }
 
 /**
@@ -329,6 +332,7 @@ export default function OrderSummary({
     showCheckoutAction,
     onSelectBonusProducts,
     className,
+    inventoryValidation,
 }: OrderSummaryProps): ReactElement {
     const { t, i18n } = useTranslation('cart');
     const { currency } = useSite();
@@ -380,8 +384,29 @@ export default function OrderSummary({
             {showCheckoutAction && (
                 <>
                     <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />
-                    <Button asChild className="w-full text-sm mt-2">
-                        <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+
+                    {/* Inventory error banner */}
+                    {inventoryValidation && (
+                        <CartInventoryErrorBanner
+                            issues={inventoryValidation.itemsExceedingInventory}
+                            className="mt-2"
+                            id="cart-inventory-error-desktop"
+                        />
+                    )}
+
+                    <Button
+                        asChild={!(inventoryValidation?.hasInventoryIssues ?? false)}
+                        className="w-full text-sm mt-2"
+                        disabled={inventoryValidation?.hasInventoryIssues ?? false}
+                        aria-disabled={inventoryValidation?.hasInventoryIssues ?? false}
+                        aria-describedby={
+                            inventoryValidation?.hasInventoryIssues ? 'cart-inventory-error-desktop' : undefined
+                        }>
+                        {inventoryValidation?.hasInventoryIssues ? (
+                            <span>{t('checkout.continueToCheckout')}</span>
+                        ) : (
+                            <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                        )}
                     </Button>
                     <UITarget targetId="sfcc.cart.payments.expressCheckout" />
 

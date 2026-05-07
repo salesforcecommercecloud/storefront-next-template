@@ -18,6 +18,7 @@ import { RouterContextProvider } from 'react-router';
 import { loader, action } from './resource.analytics-proxy';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { getAuth } from '@/middlewares/auth.server';
+import { mockAltSiteObject } from '@/test-utils/config';
 
 vi.mock('@salesforce/storefront-next-runtime/config');
 vi.mock('@/middlewares/auth.server');
@@ -35,7 +36,7 @@ const mockGetConfig = vi.mocked(getConfig);
 const mockGetAuth = vi.mocked(getAuth);
 
 const ACTIVE_DATA_HOST = 'https://zzrf-001.dx.commercecloud.salesforce.com';
-const ANALYTICS_URL = `${ACTIVE_DATA_HOST}/on/demandware.store/Sites-RefArch-Site/en-US/__Analytics-Start?dwac=0.123`;
+const ANALYTICS_URL = `${ACTIVE_DATA_HOST}/on/demandware.store/Sites-${mockAltSiteObject.id}-Site/en-US/__Analytics-Start?dwac=0.123`;
 
 function createArgs(method: string, targetUrl?: string) {
     const params = targetUrl ? `?url=${encodeURIComponent(targetUrl)}` : '';

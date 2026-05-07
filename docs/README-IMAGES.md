@@ -51,11 +51,11 @@ DIS behavior is controlled via `config.server.ts` under the `images` key:
 
 ```typescript
 images: {
-    quality: 70,            // Default DIS quality (1-100)
-    formats: ['webp'],      // Target format(s) for <source> elements
-    fallbackFormat: 'jpg',  // Format for the <img> fallback src
-    host: DIS_DEFAULT_HOST, // DIS endpoint URL
-    enableDis: true,        // Master switch to enable/disable DIS
+  quality: 70,            // Default DIS quality (1-100)
+  formats: ['webp'],      // Target format(s) for <source> elements
+  fallbackFormat: 'jpg',  // Format for the <img> fallback src
+  host: DIS_DEFAULT_HOST, // DIS endpoint URL
+  enableDis: true,        // Master switch to enable/disable DIS
 }
 ```
 
@@ -88,9 +88,9 @@ import { DynamicImage } from '@/components/dynamic-image';
 
 ```jsx
 <DynamicImage
-    src="https://example.com/image.jpg"
-    alt="Product photo"
-    widths={[400, 800, 1200]}
+  src="https://example.com/image.jpg"
+  alt="Product photo"
+  widths={[400, 800, 1200]}
 />
 ```
 
@@ -158,9 +158,9 @@ The `heights` prop enables DIS server-side scaling via the `sh` parameter. When 
 ```jsx
 // 4:3 aspect ratio maintained across all breakpoints
 <DynamicImage
-    src="https://example.com/image.jpg[?sw={width}&sh={height}]"
-    widths={[400, 800, 1200]}
-    heights={[300, 600, 900]}
+  src="https://example.com/image.jpg[?sw={width}&sh={height}]"
+  widths={[400, 800, 1200]}
+  heights={[300, 600, 900]}
 />
 ```
 
@@ -191,11 +191,11 @@ In practice, the PDP image gallery uses conditional priority to eagerly load the
 
 ```jsx
 <DynamicImage
-    src={`${selectedImage.src}[?sw={width}]`}
-    alt={selectedImage.alt || imageAltFallback}
-    widths={['100vw', '680px']}
-    loading={eager ? 'eager' : 'lazy'}
-    priority={eager ? 'high' : undefined}
+  src={`${selectedImage.src}[?sw={width}]`}
+  alt={selectedImage.alt || imageAltFallback}
+  widths={['100vw', '680px']}
+  loading={eager ? 'eager' : 'lazy'}
+  priority={eager ? 'high' : undefined}
 />
 ```
 
@@ -217,11 +217,11 @@ The provider deliberately exposes **two different interfaces**, one for the oute
 
 ```typescript
 value: {
-    sources?: Set<string>;                                       // Shared source registry
-    widths?: DynamicImageDimensions;                             // Responsive widths for all nested images
-    heights?: DynamicImageDimensions;                            // Responsive heights for all nested images
-    addSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to register an image
-    hasSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to determine importance
+  sources?: Set<string>;                                       // Shared source registry
+  widths?: DynamicImageDimensions;                             // Responsive widths for all nested images
+  heights?: DynamicImageDimensions;                            // Responsive heights for all nested images
+  addSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to register an image
+  hasSource?: (src: string, sources: Set<string>) => boolean;  // Strategy: how to determine importance
 }
 ```
 
@@ -231,10 +231,10 @@ The container receives the raw `Set<string>` alongside each `src`, giving it ful
 
 ```typescript
 {
-    addSource: (src: string) => boolean;   // Register this image (Set is hidden)
-    hasSource: (src: string) => boolean;   // Is this image important?
-    widths: DynamicImageDimensions | undefined;
-    heights: DynamicImageDimensions | undefined;
+  addSource: (src: string) => boolean;   // Register this image (Set is hidden)
+  hasSource: (src: string) => boolean;   // Is this image important?
+  widths: DynamicImageDimensions | undefined;
+  heights: DynamicImageDimensions | undefined;
 }
 ```
 
@@ -248,24 +248,24 @@ The product grid splits tiles into critical (above-the-fold) and non-critical (b
 
 ```jsx
 const responsiveImageWidths = [
-    '40vw', // base: 2 columns
-    '25vw', // sm: 3 columns
-    '18vw', // md: 4 columns
-    '14vw', // lg: 4 columns with refinement panel
-    '16vw', // xl: 4 columns with refinement panel
-    '16vw', // 2xl: 4 columns with refinement panel
+  '40vw', // base: 2 columns
+  '25vw', // sm: 3 columns
+  '18vw', // md: 4 columns
+  '14vw', // lg: 4 columns with refinement panel
+  '16vw', // xl: 4 columns with refinement panel
+  '16vw', // 2xl: 4 columns with refinement panel
 ];
 
 // Critical tiles: all images are high priority
 const hasSource = useCallback(() => true, []);
 
 <DynamicImageProvider value={{ hasSource, widths: responsiveImageWidths }}>
-    {criticalProducts.map(product => <ProductTile ... />)}
+  {criticalProducts.map(product => <ProductTile ... />)}
 </DynamicImageProvider>
 
 // Non-critical tiles: no hasSource → all images default to lazy
 <DynamicImageProvider value={{ widths: responsiveImageWidths }}>
-    {nonCriticalProducts.map(product => <ProductTile ... />)}
+  {nonCriticalProducts.map(product => <ProductTile ... />)}
 </DynamicImageProvider>
 ```
 
@@ -275,13 +275,13 @@ Alternatively, a single provider can achieve the same result. Because `hasSource
 
 ```jsx
 const addSource = useCallback((src, sources) => {
-    if (sources.size < 4) { sources.add(src); return true; }
-    return false;
+  if (sources.size < 4) { sources.add(src); return true; }
+  return false;
 }, []);
 const hasSource = useCallback((src, sources) => sources.has(src), []);
 
 <DynamicImageProvider value={{ addSource, hasSource, widths: responsiveImageWidths }}>
-    {allProducts.map(product => <ProductTile ... />)}
+  {allProducts.map(product => <ProductTile ... />)}
 </DynamicImageProvider>
 ```
 
@@ -291,7 +291,7 @@ The first four tiles to call `addSource` get registered; subsequent tiles are ig
 
 Inside each product tile, the `ProductImageContainer` uses `addSource` to register whichever image URL is currently selected (which depends on the active color swatch). This is where the two-step contract matters: the tile doesn't decide importance, it just registers. The grid's `hasSource` decides.
 
-```tsx
+```jsx
 const imageContext = useDynamicImageContext();
 
 // Register the current image URL (resolved from the selected color variant)
@@ -346,8 +346,8 @@ Rewrites a raw SFCC static image URL into a DIS-hosted URL by inserting the `/dw
 import { toDisBaseUrl } from '@/lib/images/dynamic-image';
 
 toDisBaseUrl({
-    src: 'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/.../image.jpg',
-    config,
+  src: 'https://demo-001.my.cc.salesforce.com/on/demandware.static/-/.../image.jpg',
+  config,
 })
 // → 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/DEMO_001/on/demandware.static/-/.../image.jpg'
 ```

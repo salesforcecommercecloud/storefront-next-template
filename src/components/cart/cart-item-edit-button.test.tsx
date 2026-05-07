@@ -70,6 +70,10 @@ describe('CartItemEditButton', () => {
             alt: 'Test Product Image',
             src: 'test-image.jpg',
         },
+        variants: [{ productId: 'test-product-456', variationValues: { color: 'black' } }],
+        variationAttributes: [
+            { id: 'color', name: 'Color', values: [{ name: 'Black', value: 'black', orderable: true }] },
+        ],
     };
 
     const defaultProps = {

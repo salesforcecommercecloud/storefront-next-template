@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useCallback, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import { useProductFetcher } from '@/hooks/product/use-product-fetcher';
-import { useModalStateReset } from '@/hooks/use-modal-state-reset';
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { isProductBundle, isProductSet } from '@/lib/product/product-utils';
 import { CartItemModalView } from './view';
@@ -27,8 +25,10 @@ import type { CartItemModalProps } from './types';
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+type Product = ShopperProducts.schemas['Product'];
+
 interface CartItemModalEditContainerProps extends CartItemModalProps {
-    product: ShopperProducts.schemas['Product'];
+    product: Product;
     itemId: string;
 }
 
@@ -40,59 +40,87 @@ export function CartItemModalEditContainer({
     onBuyNow,
     open = false,
 }: CartItemModalEditContainerProps): ReactElement {
-    const [currentProduct, setCurrentProduct] = useState<ShopperProducts.schemas['Product'] | null>(product);
-    const [variationValues, setVariationValues] = useState<Record<string, string>>(product.variationValues || {});
     const { t } = useTranslation('editItem');
-
-    useModalStateReset({
-        open,
-        onReset: useCallback(() => {
-            setCurrentProduct(product);
-            setVariationValues(product.variationValues || {});
-        }, [product]),
-        resetOn: 'open',
-    });
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     const pickupContext = usePickup();
     const pickupInfo = pickupContext?.pickupBasketItems?.get(product.id ?? '');
+    const inventoryIds = pickupInfo?.inventoryId ? [pickupInfo.inventoryId] : undefined;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+    const productId = product.id ?? '';
+
+    const [variationValues, setVariationValues] = useState<Record<string, string>>(product.variationValues ?? {});
+
+    useEffect(() => {
+        if (open) {
+            setVariationValues(product.variationValues ?? {});
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
+
+    const isProductASet = isProductSet(product);
+    const isProductABundle = isProductBundle(product);
+    // Only master products require variants for the edit modal to function.
+    // Standard, bundle, and set products don't need variant selection.
+    const hasError = !!product.type?.master && !product.variants;
+
     const matchingVariant = useMemo(() => {
-        if (!currentProduct) return undefined;
-        return currentProduct.variants?.find((variant) =>
+        if (!product.variants) return undefined;
+        return product.variants.find((variant) =>
             Object.keys(variationValues).every((key) => variant.variationValues?.[key] === variationValues[key])
         );
-    }, [currentProduct, variationValues]);
+    }, [product, variationValues]);
+
+    const variantProductId = matchingVariant?.productId;
+    const needsVariantFetch = !!variantProductId && variantProductId !== productId;
 
     const variantFetcher = useScapiFetcher('shopperProducts', 'getProduct', {
         params: {
-            path: { id: matchingVariant?.productId || '' },
+            path: { id: needsVariantFetch ? variantProductId : '' },
             query: {
                 allImages: true,
+                expand: ['availability', 'images', 'prices', 'promotions'],
                 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                ...(pickupInfo?.inventoryId ? { inventoryIds: [pickupInfo.inventoryId] } : {}),
+                ...(inventoryIds ? { inventoryIds } : {}),
                 // @sfdc-extension-block-end SFDC_EXT_BOPIS
             },
         },
     });
 
-    useProductFetcher({
-        targetProductId: matchingVariant?.productId,
-        fetcher: variantFetcher,
-        currentProductId: currentProduct?.id,
-        onDataReceived: useCallback((p: ShopperProducts.schemas['Product']) => {
-            setCurrentProduct((prev) => {
-                if (!prev) return p;
-                return {
-                    ...p,
-                    variants: prev.variants || p.variants,
-                    variationAttributes: prev.variationAttributes || p.variationAttributes,
-                };
-            });
-        }, []),
-        enabled: open,
-    });
+    useEffect(() => {
+        if (
+            open &&
+            needsVariantFetch &&
+            variantFetcher.state === 'idle' &&
+            !variantFetcher.errors &&
+            variantFetcher.data?.id !== variantProductId
+        ) {
+            void variantFetcher.load();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        open,
+        needsVariantFetch,
+        variantFetcher.state,
+        variantFetcher.errors,
+        variantFetcher.data?.id,
+        variantProductId,
+    ]);
+
+    const variantData =
+        needsVariantFetch && variantFetcher.data?.id === variantProductId ? variantFetcher.data : undefined;
+
+    const currentProduct: Product = useMemo(() => {
+        if (!variantData) return product;
+        return {
+            ...product,
+            ...variantData,
+            id: product.id,
+            variants: product.variants,
+            variationAttributes: product.variationAttributes,
+        };
+    }, [product, variantData]);
 
     const handleAttributeChange = useCallback((attributeId: string, value: string) => {
         setVariationValues((prev) => {
@@ -101,11 +129,7 @@ export function CartItemModalEditContainer({
         });
     }, []);
 
-    const safeProduct = currentProduct ?? ({} as ShopperProducts.schemas['Product']);
-    const { galleryImages } = useProductImages({ product: safeProduct, selectedAttributes: variationValues });
-
-    const isProductASet = currentProduct ? isProductSet(currentProduct) : false;
-    const isProductABundle = currentProduct ? isProductBundle(currentProduct) : false;
+    const { galleryImages } = useProductImages({ product: currentProduct, selectedAttributes: variationValues });
 
     const handleCloseModal = useCallback(() => {
         onOpenChange?.(false);
@@ -116,8 +140,11 @@ export function CartItemModalEditContainer({
             open={open}
             onOpenChange={onOpenChange}
             dialogTitle={t('title')}
+            // The product prop comes fully expanded from the cart loader (getProducts returns all
+            // expand fields by default), so it's always available synchronously — no async fetch needed.
+            // Therefore, isLoading is always false.
             isLoading={false}
-            hasError={false}
+            hasError={hasError}
             retryLabel={t('retry')}
             loadingLabel={t('loadingProduct')}
             loadErrorLabel={t('loadError')}

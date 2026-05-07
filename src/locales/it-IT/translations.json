@@ -126,7 +126,7 @@
         "noAccountQuestion": "Non ha un account? ",
         "signUp": "Registrati",
         "signingIn": "Accesso in corso...",
-        "sendLoginLink": "Invia link di accesso",
+        "sendLoginLink": "Continua",
         "sendingLoginLink": "Invio link in corso...",
         "signIn": "Accedi",
         "socialOrContinueWith": "Oppure continua con",
@@ -190,7 +190,11 @@
             "passwordPlaceholder": "Crei una password sicura",
             "confirmPasswordLabel": "Conferma password",
             "confirmPasswordPlaceholder": "Confermi la Sua password",
-            "createAccountButton": "Crea account"
+            "createAccountButton": "Crea account",
+            "continueButton": "Continua",
+            "orSeparator": "o",
+            "createAccountWithPassword": "Crea account con password",
+            "continueWithoutPassword": "Continua senza password"
         },
         "passwordRequirements": {
             "title": "Requisiti della password:",
@@ -254,7 +258,8 @@
             "shippingMethodRequired": "Selezioni un metodo di spedizione per continuare.",
             "contactInfoFailed": "Non è stato possibile salvare le informazioni di contatto. Riprovi.",
             "addressValidationFailed": "Non è stato possibile verificare l'indirizzo. Controlli l'indirizzo e riprovi.",
-            "stockNotAvailable": "Non è stato possibile completare l'ordine. Stock insufficiente per uno o più articoli nel carrello."
+            "stockNotAvailable": "Non è stato possibile completare l'ordine. Stock insufficiente per uno o più articoli nel carrello.",
+            "noShippingMethodsForAddress": "Non è possibile effettuare la spedizione all'indirizzo inserito. Inserisca un indirizzo di spedizione diverso."
         },
         "customer": {
             "addressIdRequired": "Il titolo dell'indirizzo è obbligatorio per l'indirizzo del cliente",
@@ -406,6 +411,9 @@
             "defaultTitle": "Prodotti Bonus Disponibili",
             "selectionCount": " ({{selected}} di {{max}} selezionati)",
             "freeBadge": "Gratis"
+        },
+        "inventory": {
+            "blockMessage": "Alcuni articoli superano la disponibilità. Si prega di modificare le quantità o rimuovere gli articoli per continuare."
         }
     },
     "checkout": {
@@ -1494,7 +1502,7 @@
         "checkBack": "Ricontrolla tra qualche minuto o seguici per aggiornamenti.",
         "tryAgain": "Riprova"
     },
-    "error": {
+    "routeError": {
         "403": {
             "title": "Accesso limitato",
             "message": "Non hai il permesso di visualizzare questa pagina. Se ritieni che questo sia un errore, contatta il nostro team di supporto.",

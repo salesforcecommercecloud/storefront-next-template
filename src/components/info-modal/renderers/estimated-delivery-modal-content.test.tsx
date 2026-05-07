@@ -19,20 +19,11 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { EstimatedDeliveryModalContent } from './estimated-delivery-modal-content';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
 
-const mockSite: Site = {
-    id: 'RefArchGlobal',
-    defaultLocale: 'en-GB',
-    defaultCurrency: 'GBP',
-    supportedLocales: [
-        { id: 'en-GB', preferredCurrency: 'GBP' },
-        { id: 'it-IT', preferredCurrency: 'EUR' },
-    ],
-    supportedCurrencies: ['EUR', 'GBP'],
-};
+const mockSite: Site = mockSiteObject;
 
 const mockLocale =
     mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];

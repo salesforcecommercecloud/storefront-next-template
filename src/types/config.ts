@@ -84,9 +84,12 @@ export type AppConfig = {
     };
     features: {
         passwordlessLogin: {
-            enabled: boolean;
             callbackUri?: string;
             landingUri?: string;
+            mode: 'callback' | 'email' | 'sms';
+        };
+        otpRequest: {
+            callbackUri?: string;
             mode: 'callback' | 'email' | 'sms';
         };
         resetPassword: {

@@ -32,9 +32,9 @@ interface RegionDesignMetadata {
    */
   maxComponents?: number;
   /**
-   * A list of component ids that are part of this region.
+   * A list of content link UUIDs for component instances in this region.
    */
-  componentIds?: string[];
+  contentLinkUuids?: string[];
   /**
    * A list of allowed component types in this region.
    */

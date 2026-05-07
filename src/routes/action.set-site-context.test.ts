@@ -17,7 +17,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { action } from './action.set-site-context';
 import type { ActionFunctionArgs } from 'react-router';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
 
 const mockSiteCookieSerialize = vi.fn((value: string) => Promise.resolve(`site_id=${value}; Path=/`));
 const mockLocaleCookieSerialize = vi.fn((value: string) => Promise.resolve(`lng=${value}; Path=/`));
@@ -71,11 +71,11 @@ function createArgs(type: string, payload: Record<string, string> = {}): ActionF
 describe('action.set-site-context', () => {
     describe('type: site', () => {
         test('sets site, locale, and currency cookies and redirects to /', async () => {
-            const result = (await action(createArgs('site', { siteId: 'RefArch' }))) as Response;
+            const result = (await action(createArgs('site', { siteId: mockAltSiteObject.id }))) as Response;
 
             expect(result.status).toBe(302);
             expect(result.headers.get('Location')).toBe('/');
-            expect(mockSiteCookieSerialize).toHaveBeenCalledWith('RefArch');
+            expect(mockSiteCookieSerialize).toHaveBeenCalledWith(mockAltSiteObject.id);
             expect(mockLocaleCookieSerialize).toHaveBeenCalledWith('en-US');
             expect(mockCurrencyCookieSerialize).toHaveBeenCalledWith('USD');
         });

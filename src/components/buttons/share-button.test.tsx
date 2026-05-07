@@ -76,7 +76,6 @@ describe('ShareButton', () => {
         app: {
             features: {
                 passwordlessLogin: {
-                    enabled: false,
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/passwordless-login-landing',
                 },
@@ -340,7 +339,6 @@ describe('ShareButton', () => {
                 app: {
                     features: {
                         passwordlessLogin: {
-                            enabled: false,
                             callbackUri: '/passwordless-login-callback',
                             landingUri: '/passwordless-login-landing',
                         },
@@ -376,7 +374,6 @@ describe('ShareButton', () => {
                 app: {
                     features: {
                         passwordlessLogin: {
-                            enabled: false,
                             callbackUri: '/passwordless-login-callback',
                             landingUri: '/passwordless-login-landing',
                         },
@@ -488,7 +485,6 @@ describe('ShareButton', () => {
                 app: {
                     features: {
                         passwordlessLogin: {
-                            enabled: false,
                             callbackUri: '/passwordless-login-callback',
                             landingUri: '/passwordless-login-landing',
                         },

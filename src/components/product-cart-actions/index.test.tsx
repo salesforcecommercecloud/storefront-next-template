@@ -42,7 +42,6 @@ const defaultTestConfig = createAppConfig({
         features: {
             ...mockBuildConfig.app.features,
             passwordlessLogin: {
-                enabled: false,
                 callbackUri: '/passwordless-login-callback',
                 landingUri: '/passwordless-login-landing',
                 mode: 'email' as const,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { loader, action } from './_empty.$';
+import CatchAllRoute, { loader, action } from './_empty.$';
 import type { Route } from './+types/_empty.$';
 import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/auth/passwordless-login.server';
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login.server';
@@ -74,6 +74,10 @@ const mockResetPasswordCallback = vi.mocked(handleResetPasswordCallback);
 const mockResetPasswordLanding = vi.mocked(handleResetPasswordLanding);
 
 describe('_empty.$.ts - Catch-all route (no layout)', () => {
+    it('should export a default component', () => {
+        expect(typeof CatchAllRoute).toBe('function');
+    });
+
     const mockContext = {} as any;
 
     beforeEach(() => {

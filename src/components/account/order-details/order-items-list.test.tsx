@@ -19,7 +19,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { OrderItemsList } from './order-items-list';
 import { getOrderLineReviewKey } from './order-line-review-key';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 
@@ -85,7 +85,7 @@ describe('OrderItemsList', () => {
         expect(screen.getByText('$61.99')).toBeInTheDocument();
 
         const buyAgainLink = screen.getByRole('link', { name: t('account:orders.buyAgain') });
-        expect(buyAgainLink).toHaveAttribute('href', '/RefArchGlobal/en-GB/product/701643108633M');
+        expect(buyAgainLink).toHaveAttribute('href', `${getSitePrefix()}/product/701643108633M`);
 
         expect(screen.getByText(/Size: M/)).toBeInTheDocument();
         expect(screen.getByText(/Color: Navy/)).toBeInTheDocument();

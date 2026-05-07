@@ -17,13 +17,14 @@ import {
     type PropsWithChildren,
     type ReactElement,
     useEffect,
+    useLayoutEffect,
     useMemo,
     useCallback,
     useRef,
     useState,
     memo,
 } from 'react';
-import { useFetcher } from 'react-router';
+import { useFetcher, useLocation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
 import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
@@ -379,6 +380,18 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
  */
 export default function CartSheet({ children }: PropsWithChildren): ReactElement {
     const { miniCartOpen, setMiniCartOpen } = useMiniCart();
+    const { pathname } = useLocation();
+    const prevPathnameRef = useRef(pathname);
+
+    // Close the mini cart when the user navigates to a different page.
+    // useLayoutEffect fires synchronously before child useEffects, preventing
+    // CartSheetPanel's fetcher hooks from dispatching redundant requests.
+    useLayoutEffect(() => {
+        if (prevPathnameRef.current !== pathname) {
+            prevPathnameRef.current = pathname;
+            setMiniCartOpen(false);
+        }
+    }, [pathname, setMiniCartOpen]);
 
     return (
         <Sheet open={miniCartOpen} onOpenChange={setMiniCartOpen}>

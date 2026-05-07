@@ -15,7 +15,14 @@
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Buffer } from 'node:buffer';
-import { resolveAssetUrl, isAbsoluteURL, getErrorMessage, parseJsonToStringRecord, getBasePath } from './utils';
+import {
+    resolveAssetUrl,
+    isAbsoluteURL,
+    getSafeReturnUrl,
+    getErrorMessage,
+    parseJsonToStringRecord,
+    getBasePath,
+} from './utils';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 describe('isAbsoluteURL', () => {
@@ -617,5 +624,40 @@ describe('parseJsonToStringRecord', () => {
         expect(parseJsonToStringRecord('{"device":"mobile","count":2,"active":true}')).toEqual({
             device: 'mobile',
         });
+    });
+});
+
+describe('getSafeReturnUrl', () => {
+    it('returns fallback for null', () => {
+        expect(getSafeReturnUrl(null)).toBe('/');
+    });
+
+    it('returns fallback for undefined', () => {
+        expect(getSafeReturnUrl(undefined)).toBe('/');
+    });
+
+    it('returns fallback for empty string', () => {
+        expect(getSafeReturnUrl('')).toBe('/');
+    });
+
+    it('returns fallback for absolute https URL', () => {
+        expect(getSafeReturnUrl('https://evil.com')).toBe('/');
+    });
+
+    it('returns fallback for protocol-relative URL', () => {
+        expect(getSafeReturnUrl('//evil.com')).toBe('/');
+    });
+
+    it('returns relative path as-is', () => {
+        expect(getSafeReturnUrl('/checkout')).toBe('/checkout');
+    });
+
+    it('returns locale-prefixed relative path as-is', () => {
+        expect(getSafeReturnUrl('/en-US/checkout')).toBe('/en-US/checkout');
+    });
+
+    it('uses custom fallback when provided', () => {
+        expect(getSafeReturnUrl(null, '')).toBe('');
+        expect(getSafeReturnUrl('https://evil.com', '')).toBe('');
     });
 });

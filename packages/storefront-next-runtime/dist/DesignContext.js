@@ -37,28 +37,29 @@ function useInteraction(config) {
 * Custom hook that manages component selection state and handles
 * client-host communication for selection events.
 *
-* @param isDesignMode - Whether design mode is active
-* @param clientApi - Client API for host communication
 * @returns Selection state and interaction methods
 */
-function useSelectInteraction() {
-	const { state: selectedComponentId, setSelectedComponent } = useInteraction({
+function useSelectInteraction({ contentLinkMap }) {
+	const { state: selectedContentLinkUuid, setSelectedComponent } = useInteraction({
 		initialState: "",
 		eventHandlers: {
 			ComponentSelected: { handler: (event, setState) => {
-				setState(event.componentId);
+				setState(event.contentLinkUuid);
 			} },
 			ComponentDeselected: { handler: (_, setState) => {
 				setState("");
 			} }
 		},
-		actions: (_state, setState, clientApi) => ({ setSelectedComponent: (componentId) => {
-			setState(componentId);
-			clientApi?.selectComponent({ componentId });
+		actions: (_state, setState, clientApi) => ({ setSelectedComponent: (contentLinkUuid) => {
+			setState(contentLinkUuid);
+			clientApi?.selectComponent({
+				componentId: contentLinkMap[contentLinkUuid] ?? "",
+				contentLinkUuid
+			});
 		} })
 	});
 	return {
-		selectedComponentId,
+		selectedContentLinkUuid,
 		setSelectedComponent
 	};
 }
@@ -71,34 +72,40 @@ function useSelectInteraction() {
 *
 * @returns Hover state and interaction methods
 */
-function useHoverInteraction() {
-	const { state: hoveredComponentId, setHoveredComponent } = useInteraction({
+function useHoverInteraction({ contentLinkMap }) {
+	const { state: hoveredContentLinkUuid, setHoveredComponent } = useInteraction({
 		initialState: null,
 		eventHandlers: {
-			ComponentHoveredIn: { handler: (event, setState) => setState(event.componentId) },
+			ComponentHoveredIn: { handler: (event, setState) => setState(event.contentLinkUuid) },
 			ComponentHoveredOut: { handler: (_, setState) => setState(null) }
 		},
-		actions: (state, setState, clientApi) => ({ setHoveredComponent: (componentId) => {
-			if (state && componentId !== state) clientApi?.hoverOutOfComponent({ componentId: state });
-			if (componentId && componentId !== state) clientApi?.hoverInToComponent({ componentId });
-			setState(componentId);
+		actions: (state, setState, clientApi) => ({ setHoveredComponent: (componentUuid) => {
+			if (state && componentUuid !== state) clientApi?.hoverOutOfComponent({
+				componentId: contentLinkMap[state] ?? state,
+				contentLinkUuid: state
+			});
+			if (componentUuid && componentUuid !== state) clientApi?.hoverInToComponent({
+				componentId: contentLinkMap[componentUuid] ?? null,
+				contentLinkUuid: componentUuid
+			});
+			setState(componentUuid);
 		} })
 	});
 	return {
-		hoveredComponentId,
+		hoveredContentLinkUuid,
 		setHoveredComponent
 	};
 }
 
 //#endregion
 //#region src/design/react/hooks/useDeleteInteraction.ts
-function useDeleteInteraction({ selectedComponentId, setSelectedComponent }) {
+function useDeleteInteraction({ selectedContentLinkUuid, setSelectedComponent }) {
 	const { deleteComponent } = useInteraction({
 		initialState: null,
 		eventHandlers: {},
 		actions: (_state, _setState, clientApi) => ({ deleteComponent: (event) => {
 			clientApi?.deleteComponent(event);
-			if (selectedComponentId === event.componentId) setSelectedComponent("");
+			if (selectedContentLinkUuid === event.contentLinkUuid) setSelectedComponent("");
 		} })
 	});
 	return { deleteComponent };
@@ -107,11 +114,11 @@ function useDeleteInteraction({ selectedComponentId, setSelectedComponent }) {
 //#endregion
 //#region src/design/react/hooks/useFocusInteraction.ts
 function useFocusInteraction({ setSelectedComponent }) {
-	const { state: focusedComponentId, focusComponent } = useInteraction({
+	const { state: focusedContentLinkUuid, focusComponent } = useInteraction({
 		initialState: null,
 		eventHandlers: { ComponentFocused: { handler: (event, setState) => {
 			setSelectedComponent("");
-			setState(event.componentId);
+			setState(event.contentLinkUuid);
 		} } },
 		actions: (_state, setState) => ({ focusComponent: (node) => {
 			node.scrollIntoView();
@@ -119,7 +126,7 @@ function useFocusInteraction({ setSelectedComponent }) {
 		} })
 	});
 	return {
-		focusedComponentId,
+		focusedContentLinkUuid,
 		focusComponent
 	};
 }
@@ -237,10 +244,10 @@ function getInsertionType({ cache, node, x, y }) {
 		type: relativeDeltaY < 0 ? "before" : "after"
 	};
 }
-function isOnSelfDropTarget({ sourceComponentId, beforeComponentId, afterComponentId, insertType, componentId }) {
-	const isOnSource = sourceComponentId && componentId === sourceComponentId;
-	const isOnSameRegionBefore = sourceComponentId && insertType.type === "before" && beforeComponentId === sourceComponentId;
-	const isOnSameRegionAfter = sourceComponentId && insertType.type === "after" && afterComponentId === sourceComponentId;
+function isOnSelfDropTarget({ sourceContentLinkUuid, beforeContentLinkUuid, afterContentLinkUuid, insertType, contentLinkUuid }) {
+	const isOnSource = sourceContentLinkUuid && contentLinkUuid === sourceContentLinkUuid;
+	const isOnSameRegionBefore = sourceContentLinkUuid && insertType.type === "before" && beforeContentLinkUuid === sourceContentLinkUuid;
+	const isOnSameRegionAfter = sourceContentLinkUuid && insertType.type === "after" && afterContentLinkUuid === sourceContentLinkUuid;
 	return isOnSource || isOnSameRegionBefore || isOnSameRegionAfter;
 }
 function useDragInteraction({ nodeToTargetMap }) {
@@ -267,9 +274,9 @@ function useDragInteraction({ nodeToTargetMap }) {
 			region
 		};
 	}, [discoverComponents]);
-	const getInsertionComponentIds = (componentId, region) => {
-		const componentIndex = region.componentIds.indexOf(componentId);
-		return [region.componentIds[componentIndex - 1], region.componentIds[componentIndex + 1]];
+	const getInsertionComponentUuids = (contentLinkUuid, region) => {
+		const componentIndex = region.contentLinkUuids.indexOf(contentLinkUuid);
+		return [region.contentLinkUuids[componentIndex - 1], region.contentLinkUuids[componentIndex + 1]];
 	};
 	const getCurrentDropTarget = useCallback(({ x, y, rectCache, componentType }) => {
 		const { component, region } = getNearestComponentAndRegion(x, y);
@@ -284,16 +291,17 @@ function useDragInteraction({ nodeToTargetMap }) {
 				axis: "y",
 				type: "after"
 			};
-			const [beforeComponentId, afterComponentId] = component ? getInsertionComponentIds(component.componentId, region) : [];
+			const componentContentLinkUuid = component?.contentLinkUuid ?? "";
+			const [beforeContentLinkUuid, afterContentLinkUuid] = component ? getInsertionComponentUuids(componentContentLinkUuid, region) : [];
 			return {
 				type: component ? "component" : "region",
 				regionId: region.regionId,
-				componentIds: region.componentIds,
 				componentId: component?.componentId ?? "",
+				contentLinkUuid: componentContentLinkUuid,
 				parentId: region.parentId,
-				beforeComponentId,
-				afterComponentId,
-				insertComponentId: component?.componentId,
+				beforeContentLinkUuid,
+				afterContentLinkUuid,
+				insertContentLinkUuid: componentContentLinkUuid,
 				insertType,
 				componentTypeInclusions: region.componentTypeInclusions,
 				componentTypeExclusions: region.componentTypeExclusions
@@ -314,18 +322,19 @@ function useDragInteraction({ nodeToTargetMap }) {
 		return 0;
 	};
 	const scrollFactorRef = useRef(0);
-	const { state: dragState, commitCurrentDropTarget, updateComponentMove, startComponentMove, dropComponent, cancelDrag, setPendingComponentDragId } = useInteraction({
+	const { state: dragState, commitCurrentDropTarget, updateComponentMove, startComponentMove, dropComponent, cancelDrag, setPendingDragContentLinkUuid } = useInteraction({
 		initialState: {
 			isDragging: false,
 			componentType: "",
-			sourceComponentId: void 0,
+			fragmentId: void 0,
+			sourceContentLinkUuid: void 0,
 			sourceRegionId: void 0,
 			x: 0,
 			y: 0,
 			currentDropTarget: null,
 			pendingTargetCommit: false,
 			rectCache: /* @__PURE__ */ new WeakMap(),
-			pendingComponentDragId: null
+			pendingDragContentLinkUuid: null
 		},
 		eventHandlers: {
 			ComponentDragStarted: { handler: (event, setState) => {
@@ -333,7 +342,8 @@ function useDragInteraction({ nodeToTargetMap }) {
 				setState((prevState) => ({
 					...prevState,
 					componentType: event.componentType,
-					sourceComponentId: void 0,
+					fragmentId: event.fragmentId,
+					sourceContentLinkUuid: void 0,
 					sourceRegionId: void 0,
 					x: 0,
 					y: 0,
@@ -393,7 +403,7 @@ function useDragInteraction({ nodeToTargetMap }) {
 					y: 0,
 					scrollDirection: 0,
 					isDragging: false,
-					pendingComponentDragId: null
+					pendingDragContentLinkUuid: null
 				}));
 			},
 			updateComponentMove: ({ x, y }) => {
@@ -414,10 +424,10 @@ function useDragInteraction({ nodeToTargetMap }) {
 					})
 				}));
 			},
-			setPendingComponentDragId: (componentId) => {
+			setPendingDragContentLinkUuid: (contentLinkUuid) => {
 				setState((prevState) => ({
 					...prevState,
-					pendingComponentDragId: componentId
+					pendingDragContentLinkUuid: contentLinkUuid
 				}));
 			},
 			dropComponent: () => {
@@ -427,14 +437,14 @@ function useDragInteraction({ nodeToTargetMap }) {
 					pendingTargetCommit: true
 				}));
 			},
-			startComponentMove: (componentId, regionId, componentType) => {
+			startComponentMove: (componentId, regionId, componentType, contentLinkUuid) => {
 				scrollFactorRef.current = 0;
 				setState((prevState) => ({
 					...prevState,
 					x: 0,
 					y: 0,
 					componentType,
-					sourceComponentId: componentId,
+					sourceContentLinkUuid: contentLinkUuid,
 					sourceRegionId: regionId,
 					isDragging: true,
 					scrollDirection: 0,
@@ -443,31 +453,33 @@ function useDragInteraction({ nodeToTargetMap }) {
 			},
 			commitCurrentDropTarget: () => {
 				if (state.currentDropTarget) {
-					if (state.sourceComponentId) {
+					if (state.sourceContentLinkUuid) {
 						if (!isOnSelfDropTarget({
-							sourceComponentId: state.sourceComponentId,
-							beforeComponentId: state.currentDropTarget.beforeComponentId,
-							afterComponentId: state.currentDropTarget.afterComponentId,
+							sourceContentLinkUuid: state.sourceContentLinkUuid,
+							beforeContentLinkUuid: state.currentDropTarget.beforeContentLinkUuid,
+							afterContentLinkUuid: state.currentDropTarget.afterContentLinkUuid,
 							insertType: state.currentDropTarget.insertType,
-							componentId: state.currentDropTarget.componentId
+							contentLinkUuid: state.currentDropTarget.contentLinkUuid ?? ""
 						})) clientApi?.moveComponentToRegion({
-							componentId: state.sourceComponentId,
+							componentId: state.currentDropTarget.componentId ?? "",
+							contentLinkUuid: state.sourceContentLinkUuid,
 							sourceRegionId: state.sourceRegionId ?? "",
 							insertType: state.currentDropTarget.insertType?.type,
-							insertComponentId: state.currentDropTarget.insertComponentId,
-							beforeComponentId: state.currentDropTarget.beforeComponentId,
-							afterComponentId: state.currentDropTarget.afterComponentId,
+							insertComponentId: state.currentDropTarget.insertContentLinkUuid,
+							beforeComponentId: state.currentDropTarget.beforeContentLinkUuid,
+							afterComponentId: state.currentDropTarget.afterContentLinkUuid,
 							targetRegionId: state.currentDropTarget.regionId,
 							targetComponentId: state.currentDropTarget.parentId ?? ""
 						});
-					} else if (state.componentType) clientApi?.addComponentToRegion({
+					} else if (state.componentType || state.fragmentId) clientApi?.addComponentToRegion({
 						insertType: state.currentDropTarget.insertType?.type,
-						insertComponentId: state.currentDropTarget.insertComponentId,
+						insertComponentId: state.currentDropTarget.insertContentLinkUuid,
+						beforeComponentId: state.currentDropTarget.beforeContentLinkUuid,
 						componentProperties: {},
-						componentType: state.componentType,
+						componentType: state.fragmentId ? "" : state.componentType ?? "",
+						fragmentId: state.fragmentId,
 						targetComponentId: state.currentDropTarget.parentId ?? "",
-						beforeComponentId: state.currentDropTarget.beforeComponentId,
-						afterComponentId: state.currentDropTarget.afterComponentId,
+						afterComponentId: state.currentDropTarget.afterContentLinkUuid,
 						targetRegionId: state.currentDropTarget.regionId
 					});
 				}
@@ -478,9 +490,9 @@ function useDragInteraction({ nodeToTargetMap }) {
 					y: 0,
 					componentType: "",
 					scrollDirection: 0,
-					sourceComponentId: void 0,
+					sourceContentLinkUuid: void 0,
 					sourceRegionId: void 0,
-					pendingComponentDragId: null,
+					pendingDragContentLinkUuid: null,
 					currentDropTarget: null,
 					pendingTargetCommit: false
 				}));
@@ -501,7 +513,7 @@ function useDragInteraction({ nodeToTargetMap }) {
 	}, [dragState.scrollDirection, scrollFactorRef]);
 	return {
 		dragState,
-		setPendingComponentDragId,
+		setPendingDragContentLinkUuid,
 		commitCurrentDropTarget,
 		startComponentMove,
 		updateComponentMove,
@@ -556,10 +568,20 @@ function useComponentUpdateInteraction() {
 //#region src/design/react/context/DesignStateContext.tsx
 const DesignStateContext = React.createContext(null);
 const DesignStateProvider = ({ children }) => {
-	const selectInteraction = useSelectInteraction();
-	const hoverInteraction = useHoverInteraction();
+	const [contentLinkMap, setContentLinkMap] = React.useState({});
+	const registerContentLink = React.useCallback((contentLinkUuid, componentId) => {
+		setContentLinkMap((prev) => {
+			if (prev[contentLinkUuid] === componentId) return prev;
+			return {
+				...prev,
+				[contentLinkUuid]: componentId
+			};
+		});
+	}, []);
+	const selectInteraction = useSelectInteraction({ contentLinkMap });
+	const hoverInteraction = useHoverInteraction({ contentLinkMap });
 	const deleteInteraction = useDeleteInteraction({
-		selectedComponentId: selectInteraction.selectedComponentId,
+		selectedContentLinkUuid: selectInteraction.selectedContentLinkUuid,
 		setSelectedComponent: selectInteraction.setSelectedComponent
 	});
 	const focusInteraction = useFocusInteraction({ setSelectedComponent: selectInteraction.setSelectedComponent });
@@ -575,7 +597,9 @@ const DesignStateProvider = ({ children }) => {
 		...dragInteraction,
 		...scrollInteraction,
 		...componentUpdateInteraction,
-		nodeToTargetMap
+		nodeToTargetMap,
+		contentLinkMap,
+		registerContentLink
 	}), [
 		deleteInteraction,
 		selectInteraction,
@@ -584,7 +608,9 @@ const DesignStateProvider = ({ children }) => {
 		dragInteraction,
 		nodeToTargetMap,
 		scrollInteraction,
-		componentUpdateInteraction
+		componentUpdateInteraction,
+		contentLinkMap,
+		registerContentLink
 	]);
 	return /* @__PURE__ */ jsx(DesignStateContext.Provider, {
 		value: state,

@@ -110,7 +110,7 @@ const RouterWrapper = ({
                     {
                         // Action route for OTP verification
                         // Used by OTP Modal component's useFetcher hook
-                        path: '/action/verify-otp',
+                        path: '/action/verify-passwordless-otp',
                         action: async () => ({ success: false, error: 'Mock OTP verification action' }),
                     },
                     {

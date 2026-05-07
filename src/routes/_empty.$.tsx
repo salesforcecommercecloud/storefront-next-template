@@ -144,3 +144,10 @@ export async function action(args: Route.ActionArgs) {
     logger.warn('CatchAllRoute: no action handler matched, returning 405', { pathname: url.pathname });
     throw new Response('Method Not Allowed', { status: 405 });
 }
+
+// Presence of a default component export causes React Router to treat this as a document
+// route rather than a resource route. Without it, SSR throws the 404 Response directly
+// (resource route path) instead of bubbling it to root's ErrorBoundary.
+export default function CatchAllRoute() {
+    return null;
+}

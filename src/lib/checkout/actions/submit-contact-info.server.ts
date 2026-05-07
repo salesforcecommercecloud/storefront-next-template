@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { ensureBasketId, updateBasketResource } from '@/middlewares/basket.server';
 import { authorizePasswordless } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
@@ -23,8 +22,8 @@ import { ErrorCode } from '@/lib/error-codes';
 import { createContactInfoSchema, parseContactInfoFromFormData } from '@/lib/checkout/schemas';
 import { updateBillingAddressForBasket } from '@/lib/api/basket.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
+import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
 import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
 
 /**
@@ -115,8 +114,9 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
     }
 
     // Send OTP for passwordless login when shopper enters email (mode=email). Non-blocking.
-    const appConfig = getConfig<AppConfig>(context);
-    if (appConfig.features?.passwordlessLogin?.enabled && email?.trim()) {
+    // To enable passwordless login, the "Enable Email Verification" site preference under "Storefront Login Preferences" must be enabled.
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    if (emailVerificationEnabled && email?.trim()) {
         try {
             await authorizePasswordless(context, { userid: email.trim() });
         } catch (error) {

@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { use, useEffect, useRef, useMemo, Suspense, Fragment, lazy } from 'react';
+import { useEffect, useRef, useMemo, Suspense, Fragment, lazy } from 'react';
 import { Await } from 'react-router';
 import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { createApiClients } from '@/lib/api-clients.server';
+import { fetchProductById } from '@/lib/api/products.server';
+import { fetchCategory } from '@/lib/api/categories.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
-import ProductContentSkeleton from '@/components/product-skeleton';
 import ProductView from '@/components/product-view';
 import ChildProducts from '@/components/product-view/child-products';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
@@ -75,7 +76,7 @@ import PickupProvider from '@/extensions/bopis/context/pickup-context';
 export class ProductPageMetadata {}
 
 export type ProductPageData = {
-    product: Promise<ShopperProducts.schemas['Product']>;
+    product: ShopperProducts.schemas['Product'];
     category: Promise<ShopperProducts.schemas['Category'] | undefined>;
     page: ReturnType<typeof fetchPageWithComponentData>;
     pageKey: string;
@@ -86,9 +87,14 @@ export type ProductPageData = {
 /**
  * Server-side loader function that fetches product data and category information.
  * This function runs on the server during SSR and can access cookies for store information.
- * @returns Object containing product, category, page data, and component data promises
+ *
+ * The product is awaited as critical data: a 404 from SCAPI is re-thrown as
+ * `Response(message, { status: 404 })` so React Router renders the 404 page with
+ * the proper HTTP status (essential for SEO).
+ *
+ * @returns Object containing the resolved product, deferred category, page data, and schema promises
  */
-export function loader(args: Route.LoaderArgs): ProductPageData {
+export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
     const { request, params, context } = args;
     const logger = getLogger(context);
     const { productId } = params;
@@ -109,98 +115,70 @@ export function loader(args: Route.LoaderArgs): ProductPageData {
     }
     const { currency } = siteCtx;
 
-    const clients = createApiClients(context);
-    const productPromise = clients.shopperProducts
-        .getProduct({
-            params: {
-                path: {
-                    // Check for variant product ID in search params (for product variants)
-                    id: searchParams.get('pid') || productId,
-                },
-                query: {
-                    expand: [
-                        'availability', // <-- TTL = 60s (!)
-                        'bundled_products',
-                        'images',
-                        'options',
-                        'page_meta_tags',
-                        'prices', // <-- TTL = 900s
-                        'promotions', // <-- TTL = 900s
-                        'set_products',
-                        'variations',
-                    ],
-                    allImages: true,
-                    perPricebook: true,
-                    ...(currency ? { currency } : {}),
-                    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                    // Include inventoryIds parameter when store is selected
-                    ...(selectedStoreInfo?.inventoryId ? { inventoryIds: [selectedStoreInfo.inventoryId] } : {}),
-                    // @sfdc-extension-block-end SFDC_EXT_BOPIS
-                },
-            },
-        })
-        .then(({ data }) => data);
+    // Resolve the product critically. A 404 here must propagate as Response(404)
+    // so the route error boundary renders the 404 page with the correct HTTP status.
+    const productLookupId = variantPid || productId;
+    let product: ShopperProducts.schemas['Product'] | null;
+    try {
+        product = await fetchProductById(context, productLookupId, {
+            expand: [
+                'availability', // <-- TTL = 60s (!)
+                'bundled_products',
+                'images',
+                'options',
+                'page_meta_tags',
+                'prices', // <-- TTL = 900s
+                'promotions', // <-- TTL = 900s
+                'set_products',
+                'variations',
+            ],
+            allImages: true,
+            perPricebook: true,
+            ...(currency ? { currency } : {}),
+            // @sfdc-extension-block-start SFDC_EXT_BOPIS
+            // Include inventoryIds parameter when store is selected
+            ...(selectedStoreInfo?.inventoryId ? { inventoryIds: [selectedStoreInfo.inventoryId] } : {}),
+            // @sfdc-extension-block-end SFDC_EXT_BOPIS
+        });
+    } catch (e) {
+        if (e instanceof NormalizedApiError && e.status) {
+            throw new Response(e.message, { status: e.status });
+        }
+        throw new Response('Internal Server Error', { status: 500 });
+    }
 
-    // Create category promise that handles the optional fetch
-    const categoryPromise = productPromise.then((product) => {
+    if (!product) {
+        throw new Response('Product not found', { status: 404 });
+    }
+
+    // Build the deferred category promise. Category is optional context for the
+    // breadcrumbs — failures degrade silently via the route-level <Await errorElement={null}>.
+    const categoryPromise: Promise<ShopperProducts.schemas['Category'] | undefined> = (async () => {
         if (product.primaryCategoryId) {
-            return clients.shopperProducts
-                .getCategory({
-                    params: {
-                        path: {
-                            id: product.primaryCategoryId,
-                        },
-                        query: {
-                            levels: 1,
-                        },
-                    },
-                })
-                .then(({ data }) => data)
-                .catch(() => undefined);
+            return fetchCategory(context, product.primaryCategoryId, 1);
         }
-
-        // For variant products, try to get the master product's category
-        if (!product.primaryCategoryId && product.master?.masterId) {
-            return clients.shopperProducts
-                .getProduct({
-                    params: {
-                        path: {
-                            id: product.master.masterId,
-                        },
-                        query: {
-                            ...(currency ? { currency } : {}),
-                        },
-                    },
-                })
-                .then(({ data: masterProduct }) => {
-                    if (masterProduct.primaryCategoryId) {
-                        return clients.shopperProducts
-                            .getCategory({
-                                params: {
-                                    path: {
-                                        id: masterProduct.primaryCategoryId,
-                                    },
-                                    query: {
-                                        levels: 1, // Get subcategories
-                                    },
-                                },
-                            })
-                            .then(({ data }) => data);
-                    }
-                    return undefined;
-                })
-                .catch(() => undefined);
+        // For variant products, try to get the master product's category.
+        if (product.master?.masterId) {
+            const masterProduct = await fetchProductById(context, product.master.masterId, {
+                ...(currency ? { currency } : {}),
+            });
+            if (masterProduct?.primaryCategoryId) {
+                return fetchCategory(context, masterProduct.primaryCategoryId, 1);
+            }
         }
-
         return undefined;
-    });
+    })();
 
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 
-    // Generate product schema in loader (server-side) for SEO
-    // This ensures it's available immediately and can be rendered outside Suspense
-    const productSchemaPromise = productPromise
-        .then((product) => {
+    // Generate product schema in loader (server-side) for SEO.
+    // Wrapped in a Promise so it can be rendered through Suspense without blocking
+    // the loader response. The inner try/catch logs synchronous schema-generation failures
+    // (this is local computation, not a SCAPI call — `fetchProductById` already logs SCAPI
+    // errors at the API layer) so we keep visibility on rare malformed-input bugs.
+    // Render-time failures degrade silently via the route-level <Await errorElement={null}>.
+    const productSchemaPromise: Promise<ReturnType<typeof generateProductSchema> | null> = Promise.resolve().then(
+        () => {
             try {
                 // Use public origin from request headers instead of request.url
                 // to avoid exposing internal AWS Lambda URLs in schema
@@ -209,16 +187,14 @@ export function loader(args: Route.LoaderArgs): ProductPageData {
                 const productUrl = `${publicOrigin}${url.pathname}${url.search}`;
                 return generateProductSchema(product, productUrl);
             } catch (error) {
-                logger.error('Error generating product schema in loader', {
-                    error,
-                });
+                logger.error('Error generating product schema in loader', { error });
                 return null;
             }
-        })
-        .catch(() => null);
+        }
+    );
 
     return {
-        product: productPromise,
+        product,
         category: categoryPromise,
         /**
          * Fetch page data from Page Designer API with nested componentData promises.
@@ -226,7 +202,7 @@ export function loader(args: Route.LoaderArgs): ProductPageData {
          */
         page: fetchPageWithComponentData(args, {
             pageId: 'pdp',
-            productId: searchParams.get('pid') || productId,
+            productId: productLookupId,
         }),
         pageKey: productId,
         pageUrl,
@@ -371,7 +347,7 @@ function ProductContent({ product, url }: { product: ShopperProducts.schemas['Pr
 /**
  * Product detail shell that composes the page layout with granular Suspense boundaries.
  * Regions render independently (they manage their own async via Suspense/Await),
- * while the core product content suspends only where use() data is needed.
+ * while the core product content renders synchronously from the resolved loader data.
  */
 function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
     const content = (
@@ -380,19 +356,17 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                 {/* Promo Content Region - Promotional content above main product */}
                 <Region className="mb-8" page={loaderData.page} regionId="promoContent" />
 
-                {/* Category breadcrumbs - streams independently of product data */}
+                {/* Category breadcrumbs - streams independently of product data.
+                    Breadcrumbs are non-critical: errorElement renders nothing so a category
+                    fetch failure silently degrades to an empty breadcrumbs row. */}
                 <Suspense fallback={<CategoryBreadcrumbsSkeleton />}>
-                    <Await resolve={loaderData.category}>
+                    <Await resolve={loaderData.category} errorElement={null}>
                         {(category) => (category ? <CategoryBreadcrumbs category={category} /> : null)}
                     </Await>
                 </Suspense>
 
-                {/* Main Product Content - Suspends until product data resolves */}
-                <Suspense fallback={<ProductContentSkeleton />}>
-                    <Await resolve={loaderData.product}>
-                        {(product) => <ProductContent product={product} url={loaderData.pageUrl} />}
-                    </Await>
-                </Suspense>
+                {/* Main Product Content — product is resolved synchronously by the loader */}
+                <ProductContent product={loaderData.product} url={loaderData.pageUrl} />
 
                 {/* Engagement Content Region - Shows page content or recommendations */}
                 <Region
@@ -414,22 +388,8 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
 }
 
 /**
- * Component that renders JSON-LD schema when productSchema promise resolves.
- * Must be inside Suspense boundary to ensure it streams correctly in SSR.
- */
-function JsonLdWrapper({
-    productSchemaPromise,
-}: {
-    productSchemaPromise: Promise<ReturnType<typeof generateProductSchema> | null>;
-}) {
-    const productSchema = use(productSchemaPromise);
-    return productSchema ? <JsonLd data={productSchema} id="product-schema" /> : null;
-}
-
-/**
  * Product page component that displays a product with its details and category breadcrumbs.
  * The page key ensures React only remounts when navigating to a different product, not variants.
- * Uses React's use() hook internally to handle async data fetching.
  * @returns JSX element representing the product page with Suspense boundary
  */
 export default function ProductPage({ loaderData }: { loaderData: ProductPageData }) {
@@ -441,9 +401,13 @@ export default function ProductPage({ loaderData }: { loaderData: ProductPageDat
         <Fragment key={pageKey}>
             <ProductDetailView loaderData={loaderData} />
 
-            {/* Product JSON-LD Schema for SEO - render after page content so it appears at end of body flow */}
+            {/* Product JSON-LD Schema for SEO - render after page content so it appears at end of body flow.
+                JSON-LD is non-critical: errorElement renders nothing so a schema-generation failure
+                silently degrades to no <script> tag. */}
             <Suspense fallback={null}>
-                <JsonLdWrapper productSchemaPromise={loaderData.productSchema} />
+                <Await resolve={loaderData.productSchema} errorElement={null}>
+                    {(productSchema) => (productSchema ? <JsonLd data={productSchema} id="product-schema" /> : null)}
+                </Await>
             </Suspense>
         </Fragment>
     );

@@ -43,6 +43,7 @@ vi.mock('react-router', async (importOriginal) => {
     return {
         ...actual,
         useFetcher: () => currentFetcher,
+        useLocation: () => ({ pathname: '/' }),
     };
 });
 

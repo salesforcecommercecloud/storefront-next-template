@@ -34,11 +34,11 @@ import { UITarget } from '@/targets/ui-target';
 import { Spinner } from '@/components/spinner';
 import { getCheckoutDisplayError } from './utils/checkout-display-error';
 import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-types';
+import { handlePickupContinueAction, hasAnyValidShippingMethod } from './utils/checkout-utils';
+import { isAddressEmpty } from '@/lib/address/address-utils';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
-// @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { handlePickupContinueAction } from './utils/checkout-utils';
+// @sfdc-extension-line SFDC_EXT_BOPIS
 import { filterDeliveryShippingMethods } from '@/extensions/bopis/lib/basket-utils';
-// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 // Lazy load heavy components
 const ContactInfo = lazy(() => import('./components/contact-info'));
@@ -206,7 +206,7 @@ export default function CheckoutFormPage({
 
     const cart = useBasket();
     const basketHydrated = useBasketHydrated();
-    const { step, STEPS, goToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
+    const { step, STEPS, goToStep, pinToStep, editingStep, shipmentDistribution, exitEditMode } = useCheckoutContext();
     const customerProfile = useCustomerProfile();
     const isRegisteredUser = Boolean(customerProfile?.customer?.customerId);
     const registrationFetcher = useFetcher({ key: 'checkout-registration' });
@@ -219,6 +219,7 @@ export default function CheckoutFormPage({
         setFormErrors: null,
     });
     const otpFlowActiveRef = useRef(false);
+    const noShippingMethodsRef = useRef(false);
     const [hideCreateAccountAfterSkippedPasswordlessOtp, setHideCreateAccountAfterSkippedPasswordlessOtp] =
         useState(false);
 
@@ -237,7 +238,7 @@ export default function CheckoutFormPage({
         isSubmitting,
         handleCreateAccountPreferenceChange,
         shouldCreateAccount,
-    } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef });
+    } = useCheckoutActions({ paymentSubmissionRef, otpFlowActiveRef, noShippingMethodsRef });
 
     // Stale `registeredViaCheckout` / `shouldCreateAccount` session from a prior visit can leave
     // `shouldCreateAccount` true and hide the "Save payment" checkbox (see hidePaymentSaveCheckbox).
@@ -297,6 +298,9 @@ export default function CheckoutFormPage({
     showAddressAndOptions = shipmentDistribution.hasDeliveryItems;
     isDeliveryProductItem = shipmentDistribution.isDeliveryProductItem;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    // Keep ref in sync so useCheckoutActions can block advance before rendering the next step
+    noShippingMethodsRef.current = !hasAnyValidShippingMethod(shippingMethodsMap);
 
     // @sfdc-extension-block-start SFDC_EXT_MULTISHIP
     const enableMultiAddress = shipmentDistribution.enableMultiAddress;
@@ -466,12 +470,18 @@ export default function CheckoutFormPage({
         onEdit: () => goToStep(STEPS.SHIPPING_OPTIONS),
     };
 
+    // Block payment when shipping is required, an address exists, but no valid delivery methods
+    // are available. A stale shipping method on the basket can make computedStep overshoot to
+    // PAYMENT on reload; this prevents the payment section from opening in that case.
+    const hasShippingAddress = cart?.shipments?.some((s) => s.shippingAddress && !isAddressEmpty(s.shippingAddress));
+    const shippingBlocked = showAddressAndOptions && !!hasShippingAddress && noShippingMethodsRef.current;
+
     const paymentState = {
-        isCompleted: step > STEPS.PAYMENT,
-        isEditing: step === STEPS.PAYMENT || editingStep === STEPS.PAYMENT,
+        isCompleted: step > STEPS.PAYMENT && !shippingBlocked,
+        isEditing: (step === STEPS.PAYMENT || editingStep === STEPS.PAYMENT) && !shippingBlocked,
         onEdit: () => goToStep(STEPS.PAYMENT),
         // Guest: show only "Payment" title until contact, shipping address and options are done
-        disabled: !isRegisteredUser && step < STEPS.PAYMENT,
+        disabled: (!isRegisteredUser && step < STEPS.PAYMENT) || shippingBlocked,
     };
 
     // Surface blocking API errors as error toasts for immediate visibility.
@@ -533,6 +543,54 @@ export default function CheckoutFormPage({
             setIsPlaceOrderPending(false);
         }
     }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
+
+    // Reload-only: pin to Shipping Address when basket already has an address but no valid delivery methods.
+    // Skipped when there's an active submission so the post-submit effect is the single toast source.
+    const reloadPinDoneRef = useRef(false);
+    useEffect(() => {
+        if (reloadPinDoneRef.current || !cart || !basketHydrated) return;
+        if (shippingAddressFetcher.state !== 'idle' || shippingAddressFetcher.data) return;
+        const hasAddress = cart.shipments?.some((s) => s.shippingAddress && !isAddressEmpty(s.shippingAddress));
+        if (!hasAddress) return;
+        if (!hasAnyValidShippingMethod(shippingMethodsMap)) {
+            reloadPinDoneRef.current = true;
+            pinToStep?.(STEPS.SHIPPING_ADDRESS);
+            showToast?.(tErrors('checkout.noShippingMethodsForAddress'), 'error');
+        }
+    }, [
+        cart,
+        basketHydrated,
+        shippingMethodsMap,
+        shippingAddressFetcher.state,
+        shippingAddressFetcher.data,
+        pinToStep,
+        STEPS,
+        showToast,
+        tErrors,
+    ]);
+
+    // After each shipping-address submit with no delivery methods: toast + pin to Shipping Address.
+    // The noShippingMethodsRef guard in useCheckoutActions prevents the flash when the action
+    // response includes shipping methods. This pinToStep call is still needed as a fallback when
+    // the shipping methods map updates via loader revalidation after the guard has already fired.
+    const noMethodsToastShownRef = useRef<unknown>(null);
+    useEffect(() => {
+        if (shippingAddressFetcher.state !== 'idle' || !shippingAddressFetcher.data?.success) return;
+        if (noMethodsToastShownRef.current === shippingAddressFetcher.data) return;
+        if (!hasAnyValidShippingMethod(shippingMethodsMap)) {
+            noMethodsToastShownRef.current = shippingAddressFetcher.data;
+            showToast?.(tErrors('checkout.noShippingMethodsForAddress'), 'error');
+            pinToStep?.(STEPS.SHIPPING_ADDRESS);
+        }
+    }, [
+        shippingAddressFetcher.state,
+        shippingAddressFetcher.data,
+        shippingMethodsMap,
+        showToast,
+        tErrors,
+        pinToStep,
+        STEPS,
+    ]);
 
     if (!cart || !basketHydrated) {
         return <CheckoutSkeleton />;
@@ -606,7 +664,8 @@ export default function CheckoutFormPage({
     }
     // @sfdc-extension-block-end SFDC_EXT_MULTISHIP
 
-    const showPlaceOrderSection = step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT);
+    const showPlaceOrderSection =
+        step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT) && !shippingBlocked;
 
     return (
         <div className="min-h-screen bg-background pb-20 lg:pb-0">

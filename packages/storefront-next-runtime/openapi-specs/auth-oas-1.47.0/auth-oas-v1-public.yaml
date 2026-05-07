@@ -2,10 +2,10 @@ openapi: 3.0.3
 info:
   x-api-type: Shopper
   x-api-family: Shopper
-  title: Shopper Login
-  version: 1.42.2
+  title: Auth
+  version: 1.47.0
   description: |-
-    [Download API specification](https://developer.salesforce.com/static/commercecloud/commerce-api/shopper-login/shopper-login-oas-v1-public.yaml)
+    [Download API specification](https://developer.salesforce.com/static/commercecloud/commerce-api/auth/auth-oas-v1-public.yaml)
 
     # API Overview
 
@@ -742,7 +742,7 @@ paths:
         - $ref: '#/components/parameters/organizationId'
         - name: Authorization
           in: header
-          description: "Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret`. \nRequired unless the grant type is `authorization_code_pkce`."
+          description: "Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret`. \nNot required if the grant type is `authorization_code_pkce` or `refresh_token`."
           required: false
           schema:
             type: string
@@ -892,7 +892,7 @@ paths:
                 type: string
   /organizations/{organizationId}/oauth2/session-bridge/token:
     post:
-      summary: Get a shopper JWT access token for a registered customer using session bridging.
+      summary: Get a shopper JWT access token for a customer using session bridging.
       description: |-
         For public client ID requests, you must set the grant_type to `session_bridge`.
 
@@ -1065,7 +1065,7 @@ paths:
         - $ref: '#/components/parameters/organizationId'
         - name: Authorization
           in: header
-          description: "Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret`. \nRequired unless the grant type is `authorization_code_pkce`."
+          description: "Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret`. \nNot required if the grant type is `authorization_code_pkce` or `refresh_token`."
           required: false
           schema:
             type: string
@@ -2120,12 +2120,21 @@ paths:
             example: RefArch
             maxLength: 100
             type: string
+        - name: idpValidate
+          in: query
+          description: "When a user authenticates via an IDP, SLAS calls the IDP's `/userinfo` endpoint to retrieve user information. Since some IDPs don't reliably return user info, set `idpValidate=false` to skip this call and use the user information already stored in SLAS instead. \n\nDefault: `true`\n"
+          required: false
+          example: false
+          schema:
+            type: boolean
+            example: false
         - name: Authorization
           in: header
           description: SLAS Access Token
           required: true
           schema:
             type: string
+            maxLength: 4096
             example: Bearer eyJ2ZXIiOiIxLjAiLCJraWQiOiI0ZTQyNTFkOS0zM2Y2LTRjMTMtYjZmZC1mOWJkNTJmYTZhNDciLCJ0eXAiOiJqd3QiLCJjbHYiOiJKMi4xLjAiLCJhbGciOiJFUzI1NiJ9.eyJhdXQiOiJHVUlEIiwic2NwIjoic2ZjYy5wcm9kdWN0cy5ybyBzZmNjLmNhdGFsb2dzLnJvIHNmY2Muc2hvcHBlci5ydyIsInN1YiI6ImNjLXNsYXM6OnNsc2FfZGV2OjpzY2lkOjU1M2FjOGFjLTRkYjktNGVkMy04MjVjLTNhZTNiZjVkMzI3Yjo6dXNpZDoxY2E3OWZiNi0xYjIyLTRmOWItOGJiNi05YmU5NWNjMjA4NjMiLCJjdHgiOiJzbGFzLm5vdF9mb3JfZXh0ZXJuYWxfdXNlIiwiaXNzIjoic2xhcy9kZXYvc2xzYV9kZXYiLCJpc3QiOjEsImF1ZCI6ImNvbW1lcmNlY2xvdWQvZGV2L3Nsc2FfZGV2IiwibmJmIjoxNTk0NzY0MDgwLCJzdHkiOiJVc2VyIiwiaXNiIjoidWlkbzpzbGFzOjp1cG46R3Vlc3Q6OnVpZG46R3Vlc3QgVXNlciIsImV4cCI6MTU5NDc2NTkxMCwiaWF0IjoxNTk0NzY0MTEwLCJqdGkiOiJDMkMxNjM0NTE0NTEwLTE3MTQzMTg2NzY0MjcwNTcyNjQ2NTYxMzgifQ.UVYAsWXCn3hoUPy8vLlc7O96RZEHD3N3ZgdNH-ZVvJ1G-R6uJ2VPrYvwKmYXF41Ujm2bo83AYOHVqEEEPT8Kgw
       responses:
         '200':
@@ -2236,7 +2245,7 @@ paths:
   /organizations/{organizationId}/oauth2/webauthn/register/authorize:
     post:
       summary: Authorize user for WebAuthn registration
-      description: "Authorizes a user to register a WebAuthn credential (passkey). This endpoint validates the user's \ncredentials and creates a password action token that can be used to start the registration process.\nThe token is sent to the user via the specified channel (email or SMS).\n"
+      description: "Authorizes a user to register a WebAuthn credential (passkey). This endpoint validates the user's \ncredentials and creates a password action token that can be used to start the registration process.\nThe token is sent to the user via the specified channel (email or SMS).\n\nThe SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint."
       operationId: authorizeWebauthnRegistration
       parameters:
         - $ref: '#/components/parameters/organizationId'
@@ -2280,6 +2289,8 @@ paths:
       description: |
         Starts the WebAuthn registration process by generating credential creation options.
         Returns the challenge and other parameters needed by the authenticator to create a new credential.
+
+        The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
       operationId: startWebauthnUserRegistration
       parameters:
         - $ref: '#/components/parameters/organizationId'
@@ -2339,6 +2350,8 @@ paths:
       description: |
         Completes the WebAuthn registration process by verifying the credential created by the authenticator.
         Stores the public key and credential information for future authentication.
+
+        The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
       operationId: finishWebauthnUserRegistration
       parameters:
         - $ref: '#/components/parameters/organizationId'
@@ -2382,6 +2395,8 @@ paths:
       description: |
         Starts the WebAuthn authentication process by generating credential request options.
         Returns the challenge and allowed credentials for the user to authenticate with.
+
+        The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
       operationId: startWebauthnAuthentication
       parameters:
         - $ref: '#/components/parameters/organizationId'
@@ -2448,6 +2463,8 @@ paths:
       description: |
         Completes the WebAuthn authentication process by verifying the assertion from the authenticator.
         Returns OAuth tokens upon successful authentication.
+
+        The SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.
       operationId: finishWebauthnAuthentication
       parameters:
         - $ref: '#/components/parameters/organizationId'
@@ -2492,14 +2509,1210 @@ paths:
               examples:
                 Unauthorized401:
                   $ref: '#/components/examples/InvalidClient401'
+  /organizations/{organizationId}/oauth2/webauthn/passkey/user/{loginId}:
+    get:
+      summary: Retrieve passkey user information and credentials by login ID
+      description: "This endpoint retrieves a user's WebAuthn passkey information including all associated credentials. \nIt returns the user's profile information along with a list of all registered passkey credentials.\n\nThe SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.\n\nThis endpoint requires Shopper JWT authentication. "
+      operationId: getPasskeyUserByLoginId
+      parameters:
+        - $ref: '#/components/parameters/organizationId'
+        - $ref: '#/components/parameters/channel_id'
+        - name: loginId
+          in: path
+          description: The login ID (username) of the user whose passkey information is being retrieved
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
+            example: user@example.com
+        - name: Authorization
+          in: header
+          description: Shopper JWT access token
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 4096
+            example: Bearer eyJ2ZXIiOiIxLjAiLCJraWQiOiI0ZTQyNTFkOS0zM2Y2LTRjMTMtYjZmZC1mOWJkNTJmYTZhNDciLCJ0eXAiOiJqd3QiLCJjbHYiOiJKMi4xLjAiLCJhbGciOiJFUzI1NiJ9...
+      responses:
+        '200':
+          description: The passkey user information and credentials were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasskeyUser'
+              examples:
+                getPasskeyUserByLoginIdSuccess:
+                  $ref: '#/components/examples/getPasskeyUserByLoginIdSuccess'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                BadOrMissingLoginId400:
+                  value:
+                    error: invalid_request
+                    error_description: The login ID is missing or invalid.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                Unauthorized401:
+                  $ref: '#/components/examples/InvalidClient401'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '403':
+          description: Forbidden - token validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                TokenMismatch403:
+                  value:
+                    error: forbidden
+                    error_description: The loginId, organizationId, or channel_id in the token does not match the request parameters.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                PasskeyUserNotFound404:
+                  value:
+                    error: not_found
+                    error_description: No passkey user found with the provided login ID.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+      security:
+        - ShopperToken:
+            - sfcc.pwdless_login
+    delete:
+      summary: Delete passkey user and all associated credentials
+      description: "This endpoint deletes a user's WebAuthn passkey information and all associated credentials.\nThe endpoint validates the Shopper JWT signature and ensures that the loginId, organizationId, \nand channel_id in the token match the values in the path and query parameters.\n\nThe SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.\n\nThis endpoint requires Shopper JWT authentication. "
+      operationId: deletePasskeyUser
+      parameters:
+        - $ref: '#/components/parameters/organizationId'
+        - $ref: '#/components/parameters/channel_id'
+        - name: loginId
+          in: path
+          description: The login ID (username) of the user whose passkey information is being deleted
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
+            example: user@example.com
+        - name: Authorization
+          in: header
+          description: Shopper JWT access token
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 4096
+            example: Bearer eyJ2ZXIiOiIxLjAiLCJraWQiOiI0ZTQyNTFkOS0zM2Y2LTRjMTMtYjZmZC1mOWJkNTJmYTZhNDciLCJ0eXAiOiJqd3QiLCJjbHYiOiJKMi4xLjAiLCJhbGciOiJFUzI1NiJ5...
+      responses:
+        '204':
+          description: The passkey user and all credentials were deleted successfully.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                BadOrMissingLoginId400:
+                  value:
+                    error: invalid_request
+                    error_description: The login ID is missing or invalid.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                Unauthorized401:
+                  $ref: '#/components/examples/InvalidClient401'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '403':
+          description: Forbidden - token validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                TokenMismatch403:
+                  value:
+                    error: forbidden
+                    error_description: The loginId, organizationId, or channel_id in the token does not match the request parameters.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                PasskeyUserNotFound404:
+                  value:
+                    error: not_found
+                    error_description: No passkey user found with the provided login ID.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+      security:
+        - ShopperToken:
+            - sfcc.pwdless_login
+  /organizations/{organizationId}/oauth2/webauthn/passkey/user/{loginId}/credentials/{credentialId}:
+    delete:
+      summary: Delete a specific passkey credential
+      description: "This endpoint deletes a specific WebAuthn passkey credential for a user.\nThe endpoint validates the Shopper JWT signature and ensures that the loginId, organizationId, \nand channel_id in the token match the values in the path and query parameters.\n\nThe SLAS client must have the `sfcc.pwdless_login` scope to access this endpoint.\n\nThis endpoint requires Shopper JWT authentication. "
+      operationId: deletePasskeyCredential
+      parameters:
+        - $ref: '#/components/parameters/organizationId'
+        - $ref: '#/components/parameters/channel_id'
+        - name: loginId
+          in: path
+          description: The login ID (username) of the user whose passkey credential is being deleted
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
+            example: user@example.com
+        - name: credentialId
+          in: path
+          description: The unique identifier of the credential to delete
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 1024
+            example: Y3JlZGVudGlhbElkMTIz
+        - name: Authorization
+          in: header
+          description: Shopper JWT access token
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 4096
+            example: Bearer eyJ2ZXIiOiIxLjAiLCJraWQiOiI0ZTQyNTFkOS0zM2Y2LTRjMTMtYjZmZC1mOWJkNTJmYTZhNDciLCJ0eXAiOiJqd3QiLCJjbHYiOiJKMi4xLjAiLCJhbGciOiJFUzI1NiJ5...
+      responses:
+        '204':
+          description: The passkey credential was deleted successfully.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                BadOrMissingParameter400:
+                  value:
+                    error: invalid_request
+                    error_description: The login ID or credential ID is missing or invalid.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                Unauthorized401:
+                  $ref: '#/components/examples/InvalidClient401'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '403':
+          description: Forbidden - token validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                TokenMismatch403:
+                  value:
+                    error: forbidden
+                    error_description: The loginId, organizationId, or channel_id in the token does not match the request parameters.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                PasskeyCredentialNotFound404:
+                  value:
+                    error: not_found
+                    error_description: No passkey credential found with the provided credential ID.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+      security:
+        - ShopperToken:
+            - sfcc.pwdless_login
+  /organizations/{organizationId}/oauth2/otp/request:
+    post:
+      summary: Request a one-time password (OTP) for a shopper.
+      description: "Generates a one-time password (OTP) and delivers it to the shopper via the specified mode (email or callback). The OTP can then be used with the `/otp/verify` endpoint to verify the shopper.\n\nWhen `mode` is `email`, the `email` field is required. A shopper is limited to 6 email OTP requests per 10-minute window. \nWhen `mode` is `callback`, the `callback_uri` field is required and must match a registered callback URI for the client."
+      operationId: requestOtp
+      security:
+        - ShopperToken:
+            - sfcc.pwdless_login
+      parameters:
+        - $ref: '#/components/parameters/parameters-organizationId'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OtpRequest'
+            examples:
+              otpRequest:
+                $ref: '#/components/examples/otpRequest'
+        required: true
+      responses:
+        '202':
+          description: The OTP was generated and delivery was initiated successfully.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                BadOrMissingClientId400:
+                  $ref: '#/components/examples/BadOrMissingClientId400'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                Unauthorized401:
+                  $ref: '#/components/examples/InvalidClient401'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '429':
+          description: Too many requests
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                TooManyRequests429:
+                  value:
+                    error: invalid_request
+                    error_description: Too many OTP requests were made. Please try again later.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                InternalServerError500:
+                  $ref: '#/components/examples/InternalServerError500'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+  /organizations/{organizationId}/oauth2/otp/verify:
+    post:
+      summary: Verify a one-time password (OTP) for a shopper.
+      description: Verifies a one-time password (OTP) previously issued by the `/otp/request` endpoint. On success, the OTP token is consumed and cannot be reused. Each new call to `/otp/request` invalidates any previously issued OTP.
+      operationId: verifyOtp
+      security:
+        - ShopperToken:
+            - sfcc.pwdless_login
+      parameters:
+        - $ref: '#/components/parameters/parameters-organizationId'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OtpVerifyRequest'
+            examples:
+              otpVerifyRequest:
+                $ref: '#/components/examples/otpVerifyRequest'
+        required: true
+      responses:
+        '204':
+          description: The OTP was verified successfully.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '400':
+          description: Bad request or invalid/expired OTP
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                BadOrMissingAccessToken400:
+                  $ref: '#/components/examples/BadOrMissingAccessToken400'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                Unauthorized401:
+                  $ref: '#/components/examples/InvalidClient401'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '429':
+          description: Too many requests
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                TooManyRequests429:
+                  value:
+                    error: invalid_request
+                    error_description: Too many OTP verification attempts were made. Please try again later.
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Oauth2ErrorResponse'
+              examples:
+                InternalServerError500:
+                  $ref: '#/components/examples/InternalServerError500'
+          headers:
+            X-RateLimit-1M-Limit:
+              description: The 1 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-1M-Remaining:
+              description: The 1 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-1M-Reset:
+              description: The 1 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
+            X-RateLimit-5M-Limit:
+              description: The 5 minute maximum number of requests permitted per hour.
+              schema:
+                type: string
+            X-RateLimit-5M-Remaining:
+              description: The 5 minute number of requests remaining in the current rate limit window.
+              schema:
+                type: string
+            X-RateLimit-5M-Reset:
+              description: The 5 minute time at which the current rate limit window resets in UTC epoch seconds.
+              schema:
+                type: string
 components:
-  schemas:
-    OrganizationId:
-      description: An identifier for the organization the request is being made by
+  securitySchemes:
+    ShopperToken:
+      type: oauth2
+      description: "ShopperToken authentication follows the authorization code grant flow, as defined by the OAuth 2.1 standard. Depending on the type of OAuth client (public or private), this authorization flow has further requirements. \nFor a detailed description of the authorization flow, see the [SLAS overview](https://developer.salesforce.com/docs/commerce/commerce-api/references?meta=shopper-login:Summary).\nA shopper token allows you to access the Shopper API endpoints of both OCAPI and the B2C Commerce API. These endpoints can be used to build headless storefronts and other applications.\nThe `ShopperToken` security scheme is a parent of other security schemes, such as `ShopperTokenTsob`. A Shopper API endpoint can require a specific child scheme (`ShopperTokenTsob`, for example) that cannot be accessed with a regular shopper token.\n"
+      flows:
+        clientCredentials:
+          tokenUrl: https://{shortCode}.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/{organizationId}/oauth2/token
+          scopes:
+            sfcc.pwdless_login: Passwordless Login scope
+            sfcc.session_bridge: Session Bridge scope
+            sfcc.ta_ext_on_behalf_of: Trusted Agent External On Behalf Of scope
+            sfcc.ts_ext_on_behalf_of: Trusted System External On Behalf Of scope
+        authorizationCode:
+          authorizationUrl: https://{short-code}.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/{organizationId}/oauth2/authorize
+          tokenUrl: https://{short-code}.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/{organizationId}/oauth2/token
+          scopes:
+            sfcc.pwdless_login: Passwordless Login scope
+            sfcc.session_bridge: Session Bridge scope
+            sfcc.ta_ext_on_behalf_of: Trusted Agent External On Behalf Of scope
+            sfcc.ts_ext_on_behalf_of: Trusted System External On Behalf Of scope
+  parameters:
+    organizationId:
+      description: An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
+      name: organizationId
+      in: path
+      required: true
       example: f_ecom_zzxy_prd
-      type: string
-      minLength: 1
-      maxLength: 32
+      schema:
+        description: An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
+        example: f_ecom_zzxy_prd
+        type: string
+        minLength: 1
+        maxLength: 32
+    register_customer:
+      name: register_customer
+      in: query
+      description: |-
+        When set to `true`, creates a new customer profile in B2C Commerce if one doesn't already exist. Requires `last_name` and `email` body parameters unless `user_id` is an email address. Optionally accepts `first_name` and `phone_number` body parameters.
+        If the customer profile doesn't exist, it is created when the TOTP is validated via the `passwordless/token` endpoint.
+
+        When set to `false` (or omitted), no customer profile is created in B2C Commerce.
+      required: false
+      schema:
+        maxLength: 5
+        type: string
+    client_id:
+      name: client_id
+      in: query
+      description: The SLAS public client ID or SLAS private client ID for use with trusted-agent requests. When using a private client ID a PKCE code challenge is not required.
+      required: true
+      schema:
+        maxLength: 40
+        type: string
+    refresh_token:
+      name: refresh_token
+      in: query
+      description: Refresh token that was given during the access token request.
+      required: true
+      schema:
+        type: string
+    logout_hint:
+      name: hint
+      in: query
+      description: |-
+        `hint=all-sessions` logs out all sessions and invalidates all refresh tokens for a shopper with the same SLAS user ID.
+        This only works within the same session type. Sessions created through different authentication methods (/authorize vs. Trusted System On Behalf) are treated as separate sessions. To invalidate tokens with different SLAS User IDs, you must make explicit logout calls with each token.
+        A shopper authenticated via both /authorize and TSOB has two separate sessions. You will need two logout calls (one per token) to fully log them out.
+
+        If this query parameter is not provided, the default behavior is to log out only the current session that matches the refresh token in the request.
+
+        If an incorrect value is provided for the hint other than `all-sessions`, the request fails.
+      required: false
+      schema:
+        type: string
+        enum:
+          - all-sessions
+    redirect_uri:
+      name: redirect_uri
+      in: query
+      description: |
+        The redirect for Account Manager to redirect to. A variety of URI formats and wildcard for host are supported, but app links like `airbnb://` or `fb://` are not. Examples of supported URIs:
+          - `http://localhost:3000/callback`
+          - `https://example.com/callback`
+          - `com.example.app:redirect_uri_path`
+          - ` *.subdomain.topleveldomain.com`
+      required: true
+      schema:
+        maxLength: 256
+        type: string
+    response_type:
+      name: response_type
+      in: query
+      description: Must be `code`. Indicates that the caller wants an authorization code.
+      required: true
+      schema:
+        type: string
+        description: Response Type
+        enum:
+          - code
+    scope:
+      name: scope
+      in: query
+      required: false
+      schema:
+        maxLength: 256
+        type: string
+        enum:
+          - openid
+          - offline_access
+          - email
+    state:
+      name: state
+      in: query
+      description: Value to send the client to determine the state between the authorization request and the server response. Optional, but strongly recommended.
+      required: false
+      schema:
+        maxLength: 512
+        type: string
+    usid:
+      name: usid
+      in: query
+      description: A unique shopper identifier (USID). If not provided, a new USID is generated.
+      required: false
+      schema:
+        maxLength: 256
+        type: string
+    hint:
+      name: hint
+      in: query
+      description: |-
+        Name of an identity provider (IDP) to optionally redirect to, thereby skipping the IDP selection step.
+
+        To use a public client, set `hint` to `guest` and use a public client ID to get an authorization code. If no `hint` is provided, the preferred IDP of the tenant is used by default.
+
+        For session bridge authorization the `hint` should be set to `sb-user` for a registered customer and to `sb-guest` for a guest. For session bridge authorization the SLAS Client `sfcc.session_bridge` scope.
+      required: false
+      schema:
+        maxLength: 256
+        type: string
+    code_challenge:
+      name: code_challenge
+      in: query
+      description: |-
+        PKCE code challenge. Created by the caller.
+
+        The `code_challenge` is created by SHA256 hashing the `code_verifier` and Base64 encoding the resulting hash.
+
+        The `code_verifier` should be a high entropy cryptographically random string with a minimum of 43 characters and a maximum of 128 characters.
+
+        The *`code_challenge` and 'code_verifier'* are required if a using SLAS public `client_id`.
+      required: false
+      schema:
+        maxLength: 128
+        minLength: 43
+        type: string
+    ui_locales:
+      name: ui_locales
+      in: query
+      description: "End-User's preferred languages and scripts for the user interface, represented as a space-separated list of BCP47 [RFC5646] language tag values, ordered by preference. For example, the value `fr-CA fr en` represents a preference for French as spoken in Canada, then French (without a region designation), followed by English (without a region designation). \n\nIn most cases the IDP supports one language tag and has a default language set on the server. SLAS will support the space-separated list and pass them to the IDP."
+      required: false
+      schema:
+        maxLength: 256
+        type: string
+    channel_id:
+      name: channel_id
+      in: query
+      description: The channel (B2C Commerce site) that the user is associated with.
+      example: RefArch
+      required: true
+      schema:
+        maxLength: 100
+        type: string
+        example: RefArch
+    login_id:
+      name: login_id
+      in: query
+      description: |-
+        The ID of the shopper for trusted agent access.
+
+        For TAOB Guest the `login_id` must be set to `Guest`.
+      required: true
+      schema:
+        maxLength: 128
+        type: string
+    idp_origin:
+      name: idp_origin
+      in: query
+      description: |-
+        The IDP that the shopper is associated with.
+
+        For TAOB Guest the `idp_origin` must be set to `slas`. This is standard for SLAS Guest requests. If any other `idp_origin` value is used, SLAS returns a bad request.
+      required: true
+      schema:
+        maxLength: 16
+        type: string
+    _sfdc_client_auth:
+      name: _sfdc_client_auth
+      in: header
+      description: |-
+        "Base64-encoded string of client credentials. The string is composed of a client ID and client secret, separated by a colon (`:`), like this: `clientId:clientSecret`. (Do not add the string `"Basic"`.)
+
+        The `_sfdc_client_auth` header is only required when using a SLAS private client ID."
+      required: false
+      schema:
+        type: string
+    Authorization:
+      name: Authorization
+      in: header
+      description: Base64 string for HTTP Basic authentication.
+      required: true
+      schema:
+        type: string
+    parameters-organizationId:
+      description: An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
+      name: organizationId
+      in: path
+      required: true
+      example: f_ecom_zzxy_prd
+      schema:
+        $ref: '#/components/schemas/OrganizationId'
+  schemas:
     ResponseType:
       type: string
       description: Response Type
@@ -2602,9 +3815,10 @@ components:
             - callback
             - sms
             - email
+          example: email
         locale:
           type: string
-          description: The locale of the template. Not needed for the `callback` mode
+          description: The locale of the template. Required when the mode is `email` or `sms`.
           example: en-us
         usid:
           type: string
@@ -2642,6 +3856,11 @@ components:
           type: string
           description: "The user's phone number. Optional when `register_customer` is `true`. \nThe `phone_number` parameter is not used when `register_customer` parameter is not added or is `false`."
           example: 17776665555
+        customer_no:
+          maxLength: 100
+          type: string
+          description: "The customer number assigned to the shopper profile when `register_customer` is set to `true`. \nIf the `customer_no` already exists, the request fails. \nThe `customer_no` parameter is optional and only used when `register_customer` is set to `true`."
+          example: 123456789
       description: A request for a passwordless login token. This is only available for registered users using B2C Commerce.
     TokenType:
       type: string
@@ -3025,13 +4244,14 @@ components:
             - callback
             - sms
             - email
+          example: email
         channel_id:
           type: string
           description: The channel (B2C Commerce site) that the user is associated with.
           example: RefArch
         locale:
           type: string
-          description: The locale of the template.
+          description: The locale of the template. Required when the mode is `email` or `sms`.
           example: en-us
         client_id:
           maxLength: 40
@@ -3188,8 +4408,8 @@ components:
           example: 12345678-1234-1234-1234-123456789012
         pwd_action_token:
           type: string
-          description: Password action token (TOTP) received by the user.
-          pattern: ^[0-9]{8}$
+          description: Password action token (TOTP) received by the user. The token length is either 6 or 8 digits, configurable in SLAS Admin.
+          pattern: ^[0-9]{6,8}$
           example: '12345678'
         user_id:
           type: string
@@ -3353,16 +4573,15 @@ components:
           example: RefArch
         pwd_action_token:
           type: string
-          description: Password action token.
+          description: Password action token. The token length is either 6 or 8 digits, configurable in SLAS Admin.
           maxLength: 8
-          pattern: ^[0-9]{8}$
+          pattern: ^[0-9]{6,8}$
           example: '12345678'
     AuthenticateRequest:
       type: object
       required:
         - client_id
         - channel_id
-        - user_id
       properties:
         tenant_id:
           type: string
@@ -3516,194 +4735,170 @@ components:
           example: true
         tokenResponse:
           $ref: '#/components/schemas/TokenResponse'
-  parameters:
-    organizationId:
-      description: An identifier for the organization the request is being made by
-      name: organizationId
-      in: path
-      required: true
+    PasskeyCredential:
+      type: object
+      description: Represents a WebAuthn passkey credential
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Unique identifier for the credential
+          example: 20
+        userId:
+          type: integer
+          format: int32
+          description: The ID of the user who owns this credential
+          example: 26
+        credentialId:
+          type: string
+          description: The WebAuthn credential ID
+          maxLength: 1024
+          example: SVKfbUGBXofb2JzliJrMtZDENYByWgq_j4-p2M_3wC4
+        nickName:
+          type: string
+          description: User-friendly name for the credential
+          maxLength: 32
+          example: Fingerprint
+        publicKey:
+          type: string
+          description: The public key associated with this credential
+          maxLength: 1024
+          example: pQECAyYgASFYIHM_4IKLMC8dboiRNfD0E0Gk4LmCTIgEyCTr-9SyHHeIIlggfn5_AzAl67kttLXWb-_Ts6MG7WHKoXzlKtame_wEYPE
+        userHandle:
+          type: string
+          description: The user handle associated with this credential
+          maxLength: 128
+          example: yRU-7pWyWUE6nw8hztqqUZG635p7UKDDb2lbC1FyF78
+        signatureCount:
+          type: string
+          maxLength: 8
+          description: The signature counter for replay attack prevention
+          example: '42'
+    PasskeyUser:
+      type: object
+      description: Represents a passkey user with their associated credentials
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Unique identifier for the passkey user
+          example: 26
+        userName:
+          type: string
+          description: The username of the passkey user
+          maxLength: 128
+          example: user@example.com
+        displayName:
+          type: string
+          description: The display name of the passkey user
+          maxLength: 256
+          example: John Doe
+        userHandle:
+          type: string
+          description: The user handle (WebAuthn user ID)
+          maxLength: 128
+          example: yRU-7pWyWUE6nw8hztqqUZG635p7UKDDb2lbC1FyF78
+        slasUserId:
+          type: integer
+          format: int32
+          description: The associated SLAS user ID
+          example: 10000
+        credentials:
+          type: array
+          description: Set of passkey credentials associated with this user
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/PasskeyCredential'
+    OrganizationId:
+      description: An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
       example: f_ecom_zzxy_prd
-      schema:
-        $ref: '#/components/schemas/OrganizationId'
-    register_customer:
-      name: register_customer
-      in: query
-      description: |-
-        When set to `true`, creates a new customer profile in B2C Commerce if one doesn't already exist. Requires `last_name` and `email` body parameters unless `user_id` is an email address. Optionally accepts `first_name` and `phone_number` body parameters.
-        If the customer profile doesn't exist, it is created when the TOTP is validated via the `passwordless/token` endpoint.
-
-        When set to `false` (or omitted), no customer profile is created in B2C Commerce.
-      required: false
-      schema:
-        maxLength: 5
-        type: string
-    client_id:
-      name: client_id
-      in: query
-      description: The SLAS public client ID or SLAS private client ID for use with trusted-agent requests. When using a private client ID a PKCE code challenge is not required.
-      required: true
-      schema:
-        maxLength: 40
-        type: string
-    refresh_token:
-      name: refresh_token
-      in: query
-      description: Refresh token that was given during the access token request.
-      required: true
-      schema:
-        type: string
-    logout_hint:
-      name: hint
-      in: query
-      description: |-
-        `hint=all-sessions` logs out all sessions and invalidates all refresh tokens for a shopper with the same SLAS user ID.
-        This only works within the same session type. Sessions created through different authentication methods (/authorize vs. Trusted System On Behalf) are treated as separate sessions. To invalidate tokens with different SLAS User IDs, you must make explicit logout calls with each token.
-        A shopper authenticated via both /authorize and TSOB has two separate sessions. You will need two logout calls (one per token) to fully log them out.
-
-        If this query parameter is not provided, the default behavior is to log out only the current session that matches the refresh token in the request.
-
-        If an incorrect value is provided for the hint other than `all-sessions`, the request fails.
-      required: false
-      schema:
-        type: string
-        enum:
-          - all-sessions
-    redirect_uri:
-      name: redirect_uri
-      in: query
-      description: |
-        The redirect for Account Manager to redirect to. A variety of URI formats and wildcard for host are supported, but app links like `airbnb://` or `fb://` are not. Examples of supported URIs:
-          - `http://localhost:3000/callback`
-          - `https://example.com/callback`
-          - `com.example.app:redirect_uri_path`
-          - ` *.subdomain.topleveldomain.com`
-      required: true
-      schema:
-        maxLength: 256
-        type: string
-    response_type:
-      name: response_type
-      in: query
-      description: Must be `code`. Indicates that the caller wants an authorization code.
-      required: true
-      schema:
-        type: string
-        description: Response Type
-        enum:
-          - code
-    scope:
-      name: scope
-      in: query
-      required: false
-      schema:
-        maxLength: 256
-        type: string
-        enum:
-          - openid
-          - offline_access
-          - email
-    state:
-      name: state
-      in: query
-      description: Value to send the client to determine the state between the authorization request and the server response. Optional, but strongly recommended.
-      required: false
-      schema:
-        maxLength: 512
-        type: string
-    usid:
-      name: usid
-      in: query
-      description: A unique shopper identifier (USID). If not provided, a new USID is generated.
-      required: false
-      schema:
-        maxLength: 256
-        type: string
-    hint:
-      name: hint
-      in: query
-      description: |-
-        Name of an identity provider (IDP) to optionally redirect to, thereby skipping the IDP selection step.
-
-        To use a public client, set `hint` to `guest` and use a public client ID to get an authorization code. If no `hint` is provided, the preferred IDP of the tenant is used by default.
-
-        For session bridge authorization the `hint` should be set to `sb-user` for a registered customer and to `sb-guest` for a guest. For session bridge authorization the SLAS Client `sfcc.session_bridge` scope.
-      required: false
-      schema:
-        maxLength: 256
-        type: string
-    code_challenge:
-      name: code_challenge
-      in: query
-      description: |-
-        PKCE code challenge. Created by the caller.
-
-        The `code_challenge` is created by SHA256 hashing the `code_verifier` and Base64 encoding the resulting hash.
-
-        The `code_verifier` should be a high entropy cryptographically random string with a minimum of 43 characters and a maximum of 128 characters.
-
-        The *`code_challenge` and 'code_verifier'* are required if a using SLAS public `client_id`.
-      required: false
-      schema:
-        maxLength: 128
-        minLength: 43
-        type: string
-    ui_locales:
-      name: ui_locales
-      in: query
-      description: "End-User's preferred languages and scripts for the user interface, represented as a space-separated list of BCP47 [RFC5646] language tag values, ordered by preference. For example, the value `fr-CA fr en` represents a preference for French as spoken in Canada, then French (without a region designation), followed by English (without a region designation). \n\nIn most cases the IDP supports one language tag and has a default language set on the server. SLAS will support the space-separated list and pass them to the IDP."
-      required: false
-      schema:
-        maxLength: 256
-        type: string
-    channel_id:
-      name: channel_id
-      in: query
-      description: The channel (B2C Commerce site) that the user is associated with.
+      type: string
+      pattern: ^f_ecom_[a-z]{4}_(prd|stg|dev|s[0-9]{2}|[0-9]{3})$
+    SiteId:
+      minLength: 1
+      maxLength: 32
+      description: The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites
       example: RefArch
-      required: true
-      schema:
-        maxLength: 100
-        type: string
-        example: RefArch
-    login_id:
-      name: login_id
-      in: query
-      description: |-
-        The ID of the shopper for trusted agent access.
-
-        For TAOB Guest the `login_id` must be set to `Guest`.
-      required: true
-      schema:
-        maxLength: 128
-        type: string
-    idp_origin:
-      name: idp_origin
-      in: query
-      description: |-
-        The IDP that the shopper is associated with.
-
-        For TAOB Guest the `idp_origin` must be set to `slas`. This is standard for SLAS Guest requests. If any other `idp_origin` value is used, SLAS returns a bad request.
-      required: true
-      schema:
-        maxLength: 16
-        type: string
-    _sfdc_client_auth:
-      name: _sfdc_client_auth
-      in: header
-      description: |-
-        "Base64-encoded string of client credentials. The string is composed of a client ID and client secret, separated by a colon (`:`), like this: `clientId:clientSecret`. (Do not add the string `"Basic"`.)
-
-        The `_sfdc_client_auth` header is only required when using a SLAS private client ID."
-      required: false
-      schema:
-        type: string
-    Authorization:
-      name: Authorization
-      in: header
-      description: Base64 string for HTTP Basic authentication.
-      required: true
-      schema:
-        type: string
+      type: string
+    LanguageCountry:
+      pattern: ^[a-z][a-z]-[A-Z][A-Z]$
+      description: A concatenated version of the standard Language and Country codes, combined with a hyphen '`-`'.
+      example: en-US
+      type: string
+    OtpRequest:
+      type: object
+      description: A request to generate and deliver a one-time password (OTP) to a shopper.
+      required:
+        - client_id
+        - channel_id
+        - user_id
+        - mode
+      properties:
+        client_id:
+          type: string
+          description: The ID of the OAuth client.
+          pattern: ^[A-Za-z0-9_-]+$
+          minLength: 36
+          maxLength: 36
+          example: 12345678-1234-1234-1234-123456789012
+        channel_id:
+          $ref: '#/components/schemas/SiteId'
+        user_id:
+          type: string
+          description: User ID for the shopper requesting the OTP.
+          maxLength: 128
+          example: shopper123
+        mode:
+          type: string
+          description: Password Action delivery modes
+          enum:
+            - callback
+            - sms
+            - email
+          example: email
+        email:
+          type: string
+          description: Required when `mode` is `email`. Must match a registered email for the shopper.
+          maxLength: 128
+          example: shopper@example.com
+        callback_uri:
+          type: string
+          description: |
+            Required when `mode` is `callback`. Must match a registered callback URI for the client. The callback URI must be a `POST` endpoint. Wildcards are not allowed.
+          maxLength: 256
+          example: https://example.com/otp-callback
+        locale:
+          description: The locale for the OTP delivery template. Defaults to `en-US` for email mode.
+          allOf:
+            - $ref: '#/components/schemas/LanguageCountry'
+    OtpVerifyRequest:
+      type: object
+      description: A request to verify a one-time password (OTP) token for a shopper.
+      required:
+        - pwd_action_token
+        - client_id
+        - channel_id
+        - user_id
+      properties:
+        pwd_action_token:
+          type: string
+          description: Password action token (TOTP) received by the user. The token length is either 6 or 8 digits, configurable in SLAS Admin.
+          pattern: ^[0-9]{6,8}$
+          example: '12345678'
+        client_id:
+          type: string
+          description: The ID of the OAuth client.
+          pattern: ^[A-Za-z0-9_-]+$
+          minLength: 36
+          maxLength: 36
+          example: 12345678-1234-1234-1234-123456789012
+        channel_id:
+          $ref: '#/components/schemas/SiteId'
+        user_id:
+          type: string
+          description: The user ID of the shopper whose OTP is being verified.
+          maxLength: 128
+          example: shopper123
   examples:
     authenticateCustomerSuccess:
       value:
@@ -3978,3 +5173,40 @@ components:
           customer_id: '1000005'
           enc_user_id: 45D39A8499A95288F82855427EBA99B5
           idp_access_token: ''
+    getPasskeyUserByLoginIdSuccess:
+      value:
+        id: 26
+        userName: user@example.com
+        displayName: John Doe
+        userHandle: yRU-7pWyWUE6nw8hztqqUZG635p7UKDDb2lbC1FyF78
+        slasUserId: 10000
+        credentials:
+          - id: 21
+            userId: 26
+            credentialId: t5Awv5pJ_kM7K8U2-5ijw5rSKNkHFHTTg_gAbdrod8c
+            nickName: Fingerprint
+            publicKey: pQECAyYgASFYIKIpY59lUthC1dDw_9WXKCOaLNCB2WSoGrK0kAZG33s3IlggxTvdmk2QC_HPjAwf_eHdoxIBvfN3c376ws8xUaxlJ4A
+            userHandle: yRU-7pWyWUE6nw8hztqqUZG635p7UKDDb2lbC1FyF78
+            signatureCount: '2'
+          - id: 22
+            userId: 26
+            credentialId: SVKfbUGBXofb2JzliJrMtZDENYByWgq_j4-p2M_3wC4
+            nickName: YubiKey
+            publicKey: pQECAyYgASFYIHM_4IKLMC8dboiRNfD0E0Gk4LmCTIgEyCTr-9SyHHeIIlggfn5_AzAl67kttLXWb-_Ts6MG7WHKoXzlKtame_wEYPE
+            userHandle: yRU-7pWyWUE6nw8hztqqUZG635p7UKDDb2lbC1FyF78
+            signatureCount: '5'
+    otpRequest:
+      value:
+        client_id: 12345678-1234-1234-1234-123456789012
+        channel_id: RefArch
+        user_id: shopper@example.com
+        mode: email
+        email: shopper@example.com
+        locale: en-GB
+    otpVerifyRequest:
+      value:
+        pwd_action_token: '12345678'
+        client_id: 12345678-1234-1234-1234-123456789012
+        channel_id: RefArch
+        user_id: shopper@example.com
+x-sdk-classname: ShopperLogin

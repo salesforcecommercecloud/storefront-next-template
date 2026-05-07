@@ -20,7 +20,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, SITE_PREFIX } from '@/test-utils/config';
+import { mockConfig, getSitePrefix, mockSiteObject } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import Footer from './index';
@@ -47,16 +47,7 @@ const mockCategories: ShopperProducts.schemas['Category'] = {
     ],
 };
 
-const mockSite: Site = {
-    id: 'RefArchGlobal',
-    defaultLocale: 'en-GB',
-    defaultCurrency: 'GBP',
-    supportedLocales: [
-        { id: 'en-GB', preferredCurrency: 'GBP' },
-        { id: 'it-IT', preferredCurrency: 'EUR' },
-    ],
-    supportedCurrencies: ['EUR', 'GBP'],
-};
+const mockSite: Site = mockSiteObject;
 
 const mockLocale =
     mockSite.supportedLocales.find((l) => l.id === mockSite.defaultLocale) ?? mockSite.supportedLocales[0];
@@ -111,15 +102,15 @@ describe('Footer', () => {
         // Wait for categories to load
         const mensLink = await screen.findByRole('link', { name: "Men's" });
         expect(mensLink).toBeInTheDocument();
-        expect(mensLink).toHaveAttribute('href', `${SITE_PREFIX}/category/mens`);
+        expect(mensLink).toHaveAttribute('href', `${getSitePrefix()}/category/mens`);
 
         const womensLink = screen.getByRole('link', { name: "Women's" });
         expect(womensLink).toBeInTheDocument();
-        expect(womensLink).toHaveAttribute('href', `${SITE_PREFIX}/category/womens`);
+        expect(womensLink).toHaveAttribute('href', `${getSitePrefix()}/category/womens`);
 
         const electronicsLink = screen.getByRole('link', { name: 'Electronics' });
         expect(electronicsLink).toBeInTheDocument();
-        expect(electronicsLink).toHaveAttribute('href', `${SITE_PREFIX}/category/electronics`);
+        expect(electronicsLink).toHaveAttribute('href', `${getSitePrefix()}/category/electronics`);
     });
 
     test('renders Help section links', () => {
@@ -128,20 +119,20 @@ describe('Footer', () => {
         // Help section now includes Contact Us, Shipping, Order Status, and Sign in
         const contactLink = screen.getByRole('link', { name: t('footer:links.contactUs') });
         expect(contactLink).toBeInTheDocument();
-        expect(contactLink).toHaveAttribute('href', `${SITE_PREFIX}/contact`);
+        expect(contactLink).toHaveAttribute('href', `${getSitePrefix()}/contact`);
 
         const shippingLink = screen.getByRole('link', { name: t('footer:links.shipping') });
         expect(shippingLink).toBeInTheDocument();
-        expect(shippingLink).toHaveAttribute('href', `${SITE_PREFIX}/shipping`);
-        expect(shippingLink).toHaveAttribute('href', `${SITE_PREFIX}/shipping`);
+        expect(shippingLink).toHaveAttribute('href', `${getSitePrefix()}/shipping`);
+        expect(shippingLink).toHaveAttribute('href', `${getSitePrefix()}/shipping`);
 
         const orderStatusLink = screen.getByRole('link', { name: t('footer:links.orderStatus') });
         expect(orderStatusLink).toBeInTheDocument();
-        expect(orderStatusLink).toHaveAttribute('href', `${SITE_PREFIX}/orders`);
+        expect(orderStatusLink).toHaveAttribute('href', `${getSitePrefix()}/orders`);
 
         const signInLink = screen.getByRole('link', { name: t('footer:links.signInOrCreateAccount') });
         expect(signInLink).toBeInTheDocument();
-        expect(signInLink).toHaveAttribute('href', `${SITE_PREFIX}/login`);
+        expect(signInLink).toHaveAttribute('href', `${getSitePrefix()}/login`);
     });
 
     test('renders Our Company section links', () => {
@@ -149,7 +140,7 @@ describe('Footer', () => {
 
         const aboutUsLink = screen.getByRole('link', { name: t('footer:links.aboutUs') });
         expect(aboutUsLink).toBeInTheDocument();
-        expect(aboutUsLink).toHaveAttribute('href', `${SITE_PREFIX}/about-us`);
+        expect(aboutUsLink).toHaveAttribute('href', `${getSitePrefix()}/about-us`);
     });
 
     test('renders social media links with correct aria-labels and hrefs', () => {
@@ -276,9 +267,9 @@ describe('Footer', () => {
     });
 
     test('renders newsletter section on site-prefixed homepage', () => {
-        // Mock site-prefixed homepage route (e.g., /RefArchGlobal/en-GB)
+        // Mock site-prefixed homepage route
         vi.mocked(useLocation).mockReturnValue({
-            pathname: '/RefArchGlobal/en-GB',
+            pathname: `${getSitePrefix()}`,
             search: '',
             hash: '',
             state: null,
@@ -296,7 +287,7 @@ describe('Footer', () => {
     test('does not render newsletter section on non-homepage routes', () => {
         // Mock non-homepage route (e.g., product page)
         vi.mocked(useLocation).mockReturnValue({
-            pathname: '/RefArchGlobal/en-GB/product/test-product',
+            pathname: `${getSitePrefix()}/product/test-product`,
             search: '',
             hash: '',
             state: null,
@@ -319,7 +310,7 @@ describe('Footer', () => {
     test('does not render newsletter on cart page', () => {
         // Mock cart route (with site prefix)
         vi.mocked(useLocation).mockReturnValue({
-            pathname: '/RefArchGlobal/en-GB/cart',
+            pathname: `${getSitePrefix()}/cart`,
             search: '',
             hash: '',
             state: null,
@@ -335,7 +326,7 @@ describe('Footer', () => {
     test('does not render newsletter on category page', () => {
         // Mock category route (with site prefix)
         vi.mocked(useLocation).mockReturnValue({
-            pathname: '/RefArchGlobal/en-GB/category/mens',
+            pathname: `${getSitePrefix()}/category/mens`,
             search: '',
             hash: '',
             state: null,

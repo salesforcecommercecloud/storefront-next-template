@@ -47,7 +47,7 @@ vi.mock('@/hooks/use-navigate', () => ({
 }));
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
-    useCurrentSiteAndLocaleRef: () => ({ siteRef: 'RefArchGlobal', localeRef: 'en-GB' }),
+    useCurrentSiteAndLocaleRef: () => ({ siteRef: mockSiteObject.id, localeRef: mockSiteObject.defaultLocale }),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
@@ -61,6 +61,7 @@ import { composeStories } from '@storybook/react-vite';
 import * as SwatchStories from './swatch.stories';
 import { expect, test, describe, afterEach, vi } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('react-router', async (importOriginal) => {
     const original = (await importOriginal()) as Record<string, unknown>;

@@ -17,7 +17,7 @@
 import type { Client } from 'openapi-fetch';
 import type { ShopperLogin } from '../types';
 import type { ProxyClient } from '../proxy-types';
-import type { operations as shopperLoginOps } from '../generated/shopper-login-v1.operations';
+import type { operations as shopperLoginOps } from '../generated/auth-v1.operations';
 
 /**
  * Re-export TokenResponse from the generated SLAS types for convenience.
@@ -205,6 +205,32 @@ export interface PasswordResetOptions {
 }
 
 /**
+ * Options for requesting an OTP code.
+ */
+export interface OtpRequestOptions {
+    /** User login ID (email or phone) */
+    userId: string;
+    /** Recipient email address (required when mode is 'email') */
+    email?: string;
+    /** Method to receive OTP */
+    mode: PasswordActionMode;
+    /** Locale of the template (e.g., 'en-us') */
+    locale?: string;
+    /** Callback URI (required when mode is 'callback') */
+    callbackUri?: string;
+}
+
+/**
+ * Options for verifying an OTP code.
+ */
+export interface OtpVerifyOptions {
+    /** The OTP code received by the user (6-8 digit numeric) */
+    pwdActionToken: string;
+    /** User login ID (email or phone) */
+    userId: string;
+}
+
+/**
  * Options for getting a social login authorization URL.
  */
 export interface SocialGetAuthorizationUrlOptions {
@@ -337,6 +363,28 @@ export interface PasswordNamespace {
      * @returns Promise resolving to the API response (inferred from ShopperLogin client)
      */
     reset(options: PasswordResetOptions): ReturnType<ShopperLoginClient['resetPassword']>;
+}
+
+/**
+ * OTP (One-Time Password) namespace.
+ * Only available when clientSecret is configured (private SLAS client).
+ */
+export interface OtpNamespace {
+    /**
+     * Request an OTP code to be sent to the user.
+     *
+     * @param options - User identifier, mode, and delivery settings
+     * @returns Promise resolving to void (202 Accepted, no body)
+     */
+    request(options: OtpRequestOptions): ReturnType<ShopperLoginClient['requestOtp']>;
+
+    /**
+     * Verify an OTP code.
+     *
+     * @param options - User identifier and OTP code
+     * @returns Promise resolving to void (204 No Content, no body)
+     */
+    verify(options: OtpVerifyOptions): ReturnType<ShopperLoginClient['verifyOtp']>;
 }
 
 /**
@@ -498,4 +546,27 @@ export interface AuthNamespace {
      * ```
      */
     password: PasswordNamespace;
+
+    /**
+     * OTP (One-Time Password) namespace.
+     * Only available when clientSecret is configured (private SLAS client).
+     *
+     * @example
+     * ```typescript
+     * // Request OTP code
+     * await clients.auth.otp.request({
+     *   userId: 'user@example.com',
+     *   email: 'user@example.com',
+     *   usid: 'session-id',
+     *   mode: 'email'
+     * });
+     *
+     * // Verify OTP code
+     * await clients.auth.otp.verify({
+     *   userId: 'user@example.com',
+     *   pwdActionToken: '12345678'
+     * });
+     * ```
+     */
+    otp: OtpNamespace;
 }

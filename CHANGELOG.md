@@ -1,29 +1,34 @@
-## v0.4.0-dev (May 4, 2026)
+## v1.0.0-dev
+
+- Split `vite.config.ts` into per-plugin files under `vite-plugins/`, and extract checkout chunking into a dedicated `codeSplitting` plugin. Plugin order now puts `codeSplitting` before `storefrontNext` so the SDK's i18n plugin can wrap the user-supplied `manualChunks`.
+- Clean up template test files to use mock config rather than hard coded site, locale, and currency.
+- Block checkout when cart items exceed available inventory: added cart-wide validation that disables the "Continue to Checkout" button and displays an error banner when any items exceed available stock (ATS or store inventory for BOPIS). Supports bonus product exclusion and proper ARIA attributes for accessibility ([#1615](https://github.com/commerce-emu/storefront-next/pull/1615))
+- Remove `passwordlessLogin.enabled` config flag in favor of the "Enable Email Verification" site preference in Business Manager. When enabled, passwordless login, registration, and email verification for password registration will be supported ([#1409](https://github.com/commerce-emu/storefront-next/pull/1409))
+- Add `action.otp-request` and `action.otp-verify` routes for OTP verification flow (@W-21451728) ([#1475](https://github.com/commerce-emu/storefront-next/pull/1475))
+- Fix Sen font re-downloading on every soft navigation. Move the `@font-face` declaration from an inline `<style>` block in `src/root.tsx` to `src/theme/base.css` so it lives on a persistent `<link rel=stylesheet>` and is registered once per full page load instead of being churned on every route change ([#1611](https://github.com/commerce-emu/storefront-next/pull/1611))
 - Refactor routes to use React Router v7 generated route type imports
-
-## v0.4.0-dev (Apr 30, 2026)
-
-- Pre-select all quick-add swatches on product tiles from `representedProduct`'s variant (`variationValues`), so every axis (color, size, …) in the quick-add modal matches the variant the tile advertises ([#1598](https://github.com/commerce-emu/storefront-next/pull/1598))
 - Reorganize `src/lib/` into domain-first folders: each commerce concept (`address/`, `auth/`, `cart/`, `checkout/`, `customer/`, `images/`, `marketing/`, `order/`, `payment/`, `product/`, `shopper-context/`, `turnstile/`) is now a self-contained folder, and adapters are consolidated under `lib/adapters/<type>/`. Cross-cutting utilities remain at the `lib/` root.
 - Refactor basket actions to reduce code duplication
-
-## v0.4.0-dev (Apr 29, 2026)
-
+- Standardize SCAPI requests error handling - Product Detail Page ([#1633](https://github.com/commerce-emu/storefront-next/pull/1633))
 - Hoist `Suspense`/`Await` from `ProductGrid` to route level via new `DeferredProductGrid` wrapper for consistent deferred data pattern ([#1594](https://github.com/commerce-emu/storefront-next/pull/1594))
 - Standardize SCAPI requests error handling - Product List Page ([#1584](https://github.com/commerce-emu/storefront-next/pull/1584))
 - Add `list:extension-points` script to enumerate all UITarget IDs and server action hook IDs in the template
-- **Cart line right column:** Reworked the `ProductItem` price column so list and sale prices stay on one horizontal row with right alignment, hid the `ProductPrice` promotion callout on cart lines (no long promo copy under prices), and tightened the Saved badge with smaller typography plus an `alignEnd` wrapper so it sits flush right. The quantity block uses `CartQuantityPicker` with a `w-fit` wrapper and right-aligned desktop stacking (`items-end`). Line-item trailing adds the gift row at the end of the right column: checkbox, “This is a gift.” label, and a “Learn more” text control (no URL) styled like the label with a narrow gap between label and learn-more; locale strings drop the colon from the quantity label and carry gift copy only.
+- **Cart line right column:** Reworked the `ProductItem` price column so list and sale prices stay on one horizontal row with right alignment, hid the `ProductPrice` promotion callout on cart lines (no long promo copy under prices), and tightened the Saved badge with smaller typography plus an `alignEnd` wrapper so it sits flush right. The quantity block uses `CartQuantityPicker` with a `w-fit` wrapper and right-aligned desktop stacking (`items-end`). Line-item trailing adds the gift row at the end of the right column: checkbox, "This is a gift." label, and a "Learn more" text control (no URL) styled like the label with a narrow gap between label and learn-more; locale strings drop the colon from the quantity label and carry gift copy only.
 - Product tile links to variant PDP for add-to-cart readiness [#1573](https://github.com/commerce-emu/storefront-next/pull/1573)
 - Add a11y e2e tests for Order and Account page [#1589](https://github.com/commerce-emu/storefront-next/pull/1589)
-
-## v0.4.0-dev (Apr 28, 2026)
-
-- **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.
 - Fix tax line in Order summary [#1571]https://github.com/commerce-emu/storefront-next/pull/1571
-
-## v0.4.0-dev (Apr 24, 2026)
-
 - Remove `resolve.dedupe` and `optimizeDeps.include` React/React Router defaults from `vite.config.ts`; these are now provided by the SDK's `baseConfigPlugin` ([#1541](https://github.com/commerce-emu/storefront-next/pull/1541))
+- Add server action hooks extension system: extensions can register handlers that run at specific points in checkout server actions (fraud checks, address verification, payment tokenization, shipping method filtering) via `target-config.json`
+- Pre-select all quick-add swatches on product tiles from `representedProduct`'s variant (`variationValues`), so every axis (color, size, …) in the quick-add modal matches the variant the tile advertises ([#1598](https://github.com/commerce-emu/storefront-next/pull/1598))
+- Show error toast when shipping address yields no available shipping methods ([#1550](https://github.com/commerce-emu/storefront-next/pull/1550))
+- Fix `pnpm install` failing after dependency changes (e.g. `pnpm add`, `pnpm update`, or any edit that invalidates the lockfile): add a `pnpm.overrides` entry that pins `happy-dom`'s transitive `@types/node` to `^24.0.0`, which drops `undici-types@6.21.0` from the dependency graph. That `undici-types` version was published without npm provenance and triggers `ERR_PNPM_TRUST_DOWNGRADE` when pnpm re-resolves dependencies from the registry
+
+## v0.4.0 (May 5, 2026)
+
+- Design layer: Wire `contentLinkUuid` through regions and story fixtures to support content blocks (@W-21609036)
+- **Cart line item:** Restore the edit button for non-standard, non-bonus products alongside the newly added wishlist toggle and remove action.
+- Broke down app.css into a more organized system for readability and discoverability [#1474](https://github.com/commerce-emu/storefront-next/pull/1474)
+- **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.
 - Fix promotions always showing as 0 in order summary and order confirmation when only item-level discounts are applied — now includes `productItems[].priceAdjustments` alongside `orderPriceAdjustments` ([#1557](https://github.com/commerce-emu/storefront-next/pull/1557))
 - Remove dead `ssr.noExternal` / `ssr.target` block from `vite.config.ts` — production SSR inlining is handled by the SDK's `managedRuntimeBundlePlugin`, and dev works with Vite's default ESM externalization ([#1540](https://github.com/commerce-emu/storefront-next/pull/1540))
 - Standardize SCAPI requests error handling - Homepage ([#1537](https://github.com/commerce-emu/storefront-next/pull/1537))
@@ -36,10 +41,7 @@
 - Update Page Designer middleware and `vite.config.ts` to align with upstream `@salesforce/mrt-utilities` conditional export flow (no local Vite alias requirement) ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Standardize behaviors of API errors in Checkout (@W-22199926) ([#1521](https://github.com/commerce-emu/storefront-next/pull/1521))
 - Migrate i18n infrastructure to SDK: replace `src/lib/i18next.ts`, `src/lib/i18next.client.ts`, and `scripts/aggregate-extension-locales.js` with imports from `@salesforce/storefront-next-runtime/i18n` and `sfnext locales aggregate-extensions`
-- Add server action hooks extension system: extensions can register handlers that run at specific points in checkout server actions (fraud checks, address verification, payment tokenization, shipping method filtering) via `target-config.json`
-
-## v0.4.0-dev (Apr 15, 2026)
-
+- Fix locale bundle bloat, SSR 404 plain-text response, and homepage links ignoring active locale on error pages
 - [UX Fix] Promo code component to match design ([#1525](https://github.com/commerce-emu/storefront-next/pull/1525))
 - Mini cart item UX refresh: update product/price hierarchy, stack quantity controls, and improve long promotion wrapping behavior ([#1510](https://github.com/commerce-emu/storefront-next/pull/1510))
 - Standardize action error handling with semantic error codes: actions return structured `{ code, message }` errors instead of plain strings (@W-21952674) ([#1508](https://github.com/commerce-emu/storefront-next/pull/1508))
@@ -55,7 +57,7 @@
 - Update performance-related documentation ([#1485](https://github.com/commerce-emu/storefront-next/pull/1485), [#1486](https://github.com/commerce-emu/storefront-next/pull/1486), [#1499](https://github.com/commerce-emu/storefront-next/pull/1499))
 - Ensure `<Link/>`, `<NavLink/>`, and `<useNavigate/>` also rewrite index routes ([#1470](https://github.com/commerce-emu/storefront-next/pull/1470))
 - Prevent unnecessary navigation menu re-renders ([#1446](https://github.com/commerce-emu/storefront-next/pull/1446))
-- My Account: overview “rate recent purchases” card (below recent orders) linking to order details; order details per-line Rate & Review using the PDP write-review modal, with “Review submitted” state after submit (@W-20873965)
+- My Account: overview "rate recent purchases" card (below recent orders) linking to order details; order details per-line Rate & Review using the PDP write-review modal, with "Review submitted" state after submit (@W-20873965)
 - Update style for Deliver to Multiple Addresses button ([#1463](https://github.com/commerce-emu/storefront-next/pull/1463))
 - Fix re-render cycles on PDP due to shared Suspense boundary ([#1434](https://github.com/commerce-emu/storefront-next/pull/1434))
 - User registration verified badge and spinner (@W-22015539)
@@ -68,17 +70,11 @@
 - Remove unused /callback route
 - Remove unused Page Designer dev proxy from vite.config.ts (@W-22154589@)
 - Rename server-only source files to `.server.ts` so the React Router build plugin enforces the server/client boundary at compile time
-
-## v0.4.0-dev (Apr 10, 2026)
-
 - Checkout: Shipping method styling as per UX (@W-21512931)
 - Added SDD (Spec-Driven Development) support with multi-agent code generation
 - ProductCarousel: fix category-driven product fetching in Page Designer — loader now correctly invoked when `categoryId` attribute is set
 - ProductCarousel: hide empty-state placeholder on live storefront; "Select a product" now only shown in Page Designer design mode
 - ProductCarousel: add `categoryId` and `limit` Page Designer attribute definitions; update cartridge metadata
-
-## v0.4.0-dev (Apr 07, 2026)
-
 - Fix social login redirect flow and callback handler ([#1386](https://github.com/commerce-emu/storefront-next/pull/1386))
 - Extend `useSite()` to return `{ site, language, locale, currency }` and remove `CurrencyProvider`/`useCurrency()` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))
 - Add Cloudflare Turnstile bot protection integration for passwordless login with graceful degradation

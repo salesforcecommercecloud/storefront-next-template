@@ -20,7 +20,7 @@ import { type AuthStorageData, AUTH_TOKEN_INVALID_ERROR, authStorageContext } fr
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 import authMiddleware, {
     refreshAccessToken,
@@ -28,6 +28,8 @@ import authMiddleware, {
     loginRegisteredUser,
     authorizePasswordless,
     getPasswordResetToken,
+    requestOtp,
+    verifyOtp,
     resetPasswordWithToken,
     getPasswordLessAccessToken,
     getAuth,
@@ -62,6 +64,10 @@ const mockAuth = {
     password: {
         requestReset: vi.fn(),
         reset: vi.fn(),
+    },
+    otp: {
+        request: vi.fn(),
+        verify: vi.fn(),
     },
 };
 
@@ -99,6 +105,8 @@ vi.mock('@/middlewares/performance-metrics', () => ({
         authLoginRegisteredUser: 'authLoginRegisteredUser',
         authAuthorizePasswordless: 'authAuthorizePasswordless',
         authGetPasswordResetToken: 'authGetPasswordResetToken',
+        authRequestOtp: 'authRequestOtp',
+        authVerifyOtp: 'authVerifyOtp',
         authResetPasswordWithToken: 'authResetPasswordWithToken',
         authGetPasswordLessAccessToken: 'authGetPasswordLessAccessToken',
         authRefreshToken: 'authRefreshToken',
@@ -242,6 +250,8 @@ describe('auth middleware (server)', () => {
         mockAuth.passwordless.exchangeToken.mockReset();
         mockAuth.password.requestReset.mockReset();
         mockAuth.password.reset.mockReset();
+        mockAuth.otp.request.mockReset();
+        mockAuth.otp.verify.mockReset();
     });
 
     afterEach(() => {
@@ -799,6 +809,58 @@ describe('auth middleware (server)', () => {
 
             expect(result.response.status).toBe(400);
         });
+
+        it('should pass registration fields when registerCustomer is true', async () => {
+            const { provider } = mockContext(getMockAuthData());
+            const mockResponse = {
+                data: 'success',
+                response: new Response(null, { status: 200 }),
+            };
+
+            mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
+
+            await authorizePasswordless(provider, {
+                userid: 'test@example.com',
+                registerCustomer: true,
+                firstName: 'John',
+                lastName: 'Doe',
+            });
+
+            expect(mockAuth.passwordless.authorize).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    userId: 'test@example.com',
+                    registerCustomer: true,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    email: 'test@example.com',
+                })
+            );
+        });
+
+        it('should not include registration fields when registerCustomer is not set', async () => {
+            const { provider } = mockContext(getMockAuthData());
+            const mockResponse = {
+                data: 'success',
+                response: new Response(null, { status: 200 }),
+            };
+
+            mockAuth.passwordless.authorize.mockResolvedValue(mockResponse);
+
+            await authorizePasswordless(provider, {
+                userid: 'test@example.com',
+                firstName: 'John',
+                lastName: 'Doe',
+            });
+
+            expect(mockAuth.passwordless.authorize).toHaveBeenCalledWith(
+                expect.not.objectContaining({
+                    registerCustomer: expect.anything(),
+                    firstName: expect.anything(),
+                    lastName: expect.anything(),
+                    email: expect.anything(),
+                })
+            );
+        });
     });
 
     describe('getPasswordLessAccessToken', () => {
@@ -1094,6 +1156,137 @@ describe('auth middleware (server)', () => {
 
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authGetPasswordResetToken', 'start');
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authGetPasswordResetToken', 'end');
+        });
+    });
+
+    describe('requestOtp', () => {
+        it('should request OTP successfully with default config', async () => {
+            const { provider } = mockContext({}, false);
+            const email = 'test@example.com';
+
+            mockAuth.otp.request.mockResolvedValue(undefined);
+
+            await requestOtp(provider, { email });
+
+            expect(mockAuth.otp.request).toHaveBeenCalledWith({
+                userId: email,
+                email,
+                mode: 'email',
+                locale: 'en-US',
+            });
+
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authRequestOtp', 'start');
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authRequestOtp', 'end');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: requestOtp starting', { mode: 'email' });
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: requestOtp succeeded');
+        });
+
+        it('should use mode from config', async () => {
+            const { provider, appConfig } = mockContext({}, false);
+            appConfig.features.otpRequest.mode = 'callback';
+
+            mockAuth.otp.request.mockResolvedValue(undefined);
+
+            await requestOtp(provider, { email: 'test@example.com' });
+
+            expect(mockAuth.otp.request).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    mode: 'callback',
+                })
+            );
+        });
+
+        it('should pass callbackUri to SLAS', async () => {
+            const { provider, appConfig } = mockContext({}, false);
+            appConfig.features.otpRequest.callbackUri = 'https://custom-domain.com/otp-callback';
+
+            mockAuth.otp.request.mockResolvedValue(undefined);
+
+            await requestOtp(provider, { email: 'test@example.com' });
+
+            expect(mockAuth.otp.request).toHaveBeenCalledWith(
+                expect.objectContaining({ callbackUri: 'https://custom-domain.com/otp-callback' })
+            );
+        });
+
+        it('should omit callbackUri when not configured', async () => {
+            const { provider, appConfig } = mockContext({}, false);
+            delete appConfig.features.otpRequest.callbackUri;
+
+            mockAuth.otp.request.mockResolvedValue(undefined);
+
+            await requestOtp(provider, { email: 'test@example.com' });
+
+            expect(mockAuth.otp.request).toHaveBeenCalledWith(
+                expect.not.objectContaining({ callbackUri: expect.anything() })
+            );
+        });
+
+        it('should omit locale when not configured', async () => {
+            const { getLocale } = await import('@salesforce/storefront-next-runtime/i18n');
+            vi.mocked(getLocale).mockReturnValueOnce('');
+
+            const { provider } = mockContext({}, false);
+
+            mockAuth.otp.request.mockResolvedValue(undefined);
+
+            await requestOtp(provider, { email: 'test@example.com' });
+
+            expect(mockAuth.otp.request).toHaveBeenCalledWith(
+                expect.not.objectContaining({ locale: expect.anything() })
+            );
+        });
+
+        it('should handle OTP request failure and still call performance timer', async () => {
+            const { provider } = mockContext({}, false);
+            const mockError = new Error('OTP service unavailable');
+
+            mockAuth.otp.request.mockRejectedValue(mockError);
+
+            await expect(requestOtp(provider, { email: 'test@example.com' })).rejects.toThrow(
+                'OTP service unavailable'
+            );
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: requestOtp failed', {
+                error: mockError,
+            });
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authRequestOtp', 'start');
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authRequestOtp', 'end');
+        });
+    });
+
+    describe('verifyOtp', () => {
+        it('should verify OTP successfully', async () => {
+            const { provider } = mockContext({}, false);
+
+            mockAuth.otp.verify.mockResolvedValue(undefined);
+
+            await verifyOtp(provider, { pwdActionToken: '12345678', email: 'test@example.com' });
+
+            expect(mockAuth.otp.verify).toHaveBeenCalledWith({
+                pwdActionToken: '12345678',
+                userId: 'test@example.com',
+            });
+
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authVerifyOtp', 'start');
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authVerifyOtp', 'end');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: verifyOtp starting');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Auth: verifyOtp succeeded');
+        });
+
+        it('should handle OTP verification failure and still call performance timer', async () => {
+            const { provider } = mockContext({}, false);
+            const mockError = new Error('Invalid OTP');
+
+            mockAuth.otp.verify.mockRejectedValue(mockError);
+
+            await expect(
+                verifyOtp(provider, { pwdActionToken: '00000000', email: 'test@example.com' })
+            ).rejects.toThrow('Invalid OTP');
+            expect(mockLogger.error).toHaveBeenCalledWith('Auth: verifyOtp failed', {
+                error: mockError,
+            });
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authVerifyOtp', 'start');
+            expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authVerifyOtp', 'end');
         });
     });
 
@@ -2074,13 +2267,13 @@ describe('auth middleware (server)', () => {
             {
                 userType: 'guest' as const,
                 refreshTokenCookie: 'cc-nx-g',
-                isb: 'uido:slas::upn:Guest::uidn:Guest User::gcid:token-guest-id::chid:RefArchGlobal',
+                isb: `uido:slas::upn:Guest::uidn:Guest User::gcid:token-guest-id::chid:${mockSiteObject.id}`,
                 expectedCustomerId: 'token-guest-id',
             },
             {
                 userType: 'registered' as const,
                 refreshTokenCookie: 'cc-nx',
-                isb: 'uido:ecom::upn:user@example.com::uidn:Test User::gcid:guest-id::rcid:registered-id::chid:RefArchGlobal',
+                isb: `uido:ecom::upn:user@example.com::uidn:Test User::gcid:guest-id::rcid:registered-id::chid:${mockSiteObject.id}`,
                 expectedCustomerId: 'registered-id',
             },
         ])(
@@ -2128,7 +2321,7 @@ describe('auth middleware (server)', () => {
         it('should not trigger cookie update when token customerId matches cookie', async () => {
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const isb = 'uido:slas::upn:Guest::uidn:Guest User::gcid:same-customer-id::chid:RefArchGlobal';
+            const isb = `uido:slas::upn:Guest::uidn:Guest User::gcid:same-customer-id::chid:${mockSiteObject.id}`;
             const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
 
             mockParseAllCookies.mockReturnValue({

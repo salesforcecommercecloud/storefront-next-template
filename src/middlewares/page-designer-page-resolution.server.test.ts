@@ -25,6 +25,7 @@ import {
     DataStoreUnavailableError,
     DataStoreServiceError,
 } from '@salesforce/storefront-next-runtime/data-store';
+import { mockSiteObject } from '@/test-utils/config';
 
 const mockGetEntry = vi.fn();
 const mockResolveQualifiers = vi.fn();
@@ -448,7 +449,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const manifestStorage = await captureManifestStorage();
                 const result = await manifestStorage.getPageManifest('page-1');
 
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_page-1');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_page-1`);
                 expect(result).toEqual(mockManifest);
             });
 
@@ -458,7 +459,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('my-page');
 
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_my-page');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_my-page`);
             });
 
             it('should return null and log warning when DataStoreNotFoundError is thrown', async () => {
@@ -578,7 +579,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const manifestStorage = await captureManifestStorage();
                 const result = await manifestStorage.getSiteManifest();
 
-                expect(mockGetEntry).toHaveBeenCalledWith('site-manifest_RefArchGlobal');
+                expect(mockGetEntry).toHaveBeenCalledWith(`site-manifest_${mockSiteObject.id}`);
                 expect(result).toEqual(mockSiteManifest);
             });
 
@@ -667,14 +668,14 @@ describe('pageDesignerResolutionMiddleware', () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('homepage');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_homepage');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_homepage`);
             });
 
             it('should pass through alphanumeric and hyphens', async () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('my-page-v2');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_my-page-v2');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_my-page-v2`);
             });
 
             it('should encode underscore as .5F to prevent delimiter collision', async () => {
@@ -684,35 +685,35 @@ describe('pageDesignerResolutionMiddleware', () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('a_b');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_a.5Fb');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_a.5Fb`);
             });
 
             it('should encode tilde as .7E', async () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('home~page');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_home.7Epage');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_home.7Epage`);
             });
 
             it('should encode colon as .3A', async () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('category:shoes');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_category.3Ashoes');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_category.3Ashoes`);
             });
 
             it('should encode dot as .2E to prevent collisions', async () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('page.3Amore');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_page.2E3Amore');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_page.2E3Amore`);
             });
 
             it('should encode square brackets as .5B and .5D', async () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('page[1]');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_page.5B1.5D');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_page.5B1.5D`);
             });
 
             it('should encode all special pageId characters', async () => {
@@ -721,7 +722,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 // pageId special chars: ~ : [ ] @ ! ' * , ; =  (only - is safe; _ is encoded as .5F)
                 await manifestStorage.getPageManifest("~:[]@!'*,;=");
                 expect(mockGetEntry).toHaveBeenCalledWith(
-                    'page-manifest_RefArchGlobal_.7E.3A.5B.5D.40.21.27.2A.2C.3B.3D'
+                    `page-manifest_${mockSiteObject.id}_.7E.3A.5B.5D.40.21.27.2A.2C.3B.3D`
                 );
             });
 
@@ -729,11 +730,11 @@ describe('pageDesignerResolutionMiddleware', () => {
                 mockGetEntry.mockResolvedValue(null);
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getPageManifest('café');
-                expect(mockGetEntry).toHaveBeenCalledWith('page-manifest_RefArchGlobal_caf.C3.A9');
+                expect(mockGetEntry).toHaveBeenCalledWith(`page-manifest_${mockSiteObject.id}_caf.C3.A9`);
             });
 
             it('should form correct key for a safe siteId', async () => {
-                // The test harness sets siteId to 'RefArchGlobal' (all safe characters).
+                // The test harness sets siteId to the configured default site ID (all safe characters).
                 // This verifies the siteId segment is included verbatim when no encoding
                 // is needed. Special-character siteId encoding is covered structurally by
                 // sanitizeKeySegment, which is exercised identically for both segments.
@@ -741,7 +742,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const manifestStorage = await captureManifestStorage();
                 await manifestStorage.getSiteManifest();
                 const key = mockGetEntry.mock.calls[0][0] as string;
-                expect(key).toBe('site-manifest_RefArchGlobal');
+                expect(key).toBe(`site-manifest_${mockSiteObject.id}`);
             });
         });
     });

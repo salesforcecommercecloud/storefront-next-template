@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useCallback, useMemo, useRef } from 'react';
+import { useNavigate } from '@/hooks/use-navigate';
 import { redirect, useActionData } from 'react-router';
 import type { Route } from './+types/_empty.login';
 import { Link } from '@/components/link';
@@ -25,8 +26,9 @@ import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
+import { getAppOrigin, isAbsoluteURL, getSafeReturnUrl } from '@/lib/utils';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
+import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
 import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketResource } from '@/middlewares/basket.server';
@@ -75,7 +77,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     const session = getAuth(context);
     const url = new URL(request.url);
     const pageUrl = buildCanonicalUrl(url.origin, url.pathname, url.search);
-    const returnUrl = url.searchParams.get('returnUrl');
+    const returnUrl = getSafeReturnUrl(url.searchParams.get('returnUrl'));
 
     // If user is already logged in as registered user, redirect to returnUrl or home
     const { accessToken, accessTokenExpiry, userType, customerId } = session;
@@ -101,10 +103,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     const actionParams = url.searchParams.get('actionParams');
     const error = url.searchParams.get('error');
 
-    // Get runtime config to determine if passwordless login is enabled
     const config = getConfig<AppConfig>(context);
-    const isSlasPrivate = config.commerce.api.privateKeyEnabled;
-    const isPasswordlessLoginEnabled = config.features.passwordlessLogin.enabled && isSlasPrivate;
+    // To enable passwordless login, the "Enable Email Verification" site preference under "Storefront Login Preferences" must be enabled.
+    const { emailVerificationEnabled } = getLoginPreferences(context);
+    const isPasswordlessLoginEnabled = Boolean(emailVerificationEnabled);
     const isSocialLoginEnabled = Boolean(config.features.socialLogin?.enabled);
     const mode = url.searchParams.get('mode') || (isPasswordlessLoginEnabled ? 'passwordless' : 'password');
 
@@ -237,7 +239,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
 
             // Build redirectPath from returnUrl, action, and actionParams for passwordless flow
             const url = new URL(request.url);
-            const returnUrl = url.searchParams.get('returnUrl');
+            const returnUrl = getSafeReturnUrl(url.searchParams.get('returnUrl'));
             const pendingAction = url.searchParams.get('action');
             const actionParams = url.searchParams.get('actionParams');
 
@@ -305,7 +307,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
             // Otherwise fall back to URL query params
             const returnUrlFromForm = formData.get('returnUrl')?.toString()?.trim();
             const returnUrlFromUrl = new URL(request.url).searchParams.get('returnUrl');
-            const returnUrl = returnUrlFromForm || returnUrlFromUrl;
+            const returnUrl = getSafeReturnUrl(returnUrlFromForm || returnUrlFromUrl);
 
             // Get action and actionParams to preserve in redirect URL
             const actionFromForm = formData.get('action')?.toString();
@@ -340,6 +342,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
 export default function Login({ loaderData }: { loaderData: LoginLoaderData }): ReactElement {
     const { t } = useTranslation('login');
     const actionData = useActionData<typeof action>();
+    const navigate = useNavigate();
     const config = useConfig<AppConfig>();
 
     const {
@@ -485,7 +488,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                 email={otpEmail || ''}
                 onSuccess={() => {
                     // Redirect to return URL or home after successful login
-                    window.location.href = returnUrl || '/';
+                    void navigate(returnUrl || '/');
                 }}
                 onResendCode={async () => {
                     // Resend the OTP code

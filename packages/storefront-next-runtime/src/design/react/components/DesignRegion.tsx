@@ -29,7 +29,7 @@ export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.El
     const {
         name,
         id = '',
-        componentIds = [],
+        contentLinkUuids = [],
         componentTypeInclusions = [],
         componentTypeExclusions = [],
     } = designMetadata ?? {};
@@ -42,20 +42,22 @@ export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.El
     const { dragState } = useDesignState();
     const labels = useLabels();
     const showFrame = Boolean(id && dragState.currentDropTarget?.regionId === id);
-    const { componentId: parentComponentId } = useComponentContext() ?? {};
+    const { contentLinkUuid: parentContentLinkUuid } = useComponentContext() ?? {};
 
     useNodeToTargetStore({
         type: 'region',
         nodeRef,
-        parentId: parentComponentId,
-        componentIds,
-        componentId: parentComponentId ?? '',
+        parentId: parentContentLinkUuid,
+        contentLinkUuids,
         regionId: id,
         componentTypeInclusions,
         componentTypeExclusions,
     });
 
-    const context = React.useMemo<RegionContextType>(() => ({ regionId: id, componentIds }), [id, componentIds]);
+    const context = React.useMemo<RegionContextType>(
+        () => ({ regionId: id, contentLinkUuids }),
+        [id, contentLinkUuids]
+    );
 
     const handleDragOver = useCallback(
         (event: React.DragEvent<HTMLDivElement>) => {
@@ -76,7 +78,6 @@ export function DesignRegion(props: RegionDecoratorProps<unknown>): React.JSX.El
         <div className={classes} ref={nodeRef} onDragOver={handleDragOver} data-region-id={id}>
             <DesignFrame
                 name={name ?? labels.defaultRegionName ?? 'Region'}
-                parentId={parentComponentId}
                 regionId={id}
                 localized
                 showFrame={showFrame}

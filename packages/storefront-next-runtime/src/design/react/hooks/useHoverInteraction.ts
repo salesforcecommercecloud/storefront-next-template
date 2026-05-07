@@ -16,8 +16,8 @@
 import { useInteraction } from './useInteraction';
 
 export interface HoverInteraction {
-    hoveredComponentId: string | null;
-    setHoveredComponent: (componentId: string | null) => void;
+    hoveredContentLinkUuid: string | null;
+    setHoveredComponent: (componentUuid: string | null) => void;
 }
 
 /**
@@ -26,37 +26,40 @@ export interface HoverInteraction {
  *
  * @returns Hover state and interaction methods
  */
-export function useHoverInteraction(): HoverInteraction {
-    const { state: hoveredComponentId, setHoveredComponent } = useInteraction({
+export function useHoverInteraction({ contentLinkMap }: { contentLinkMap: Record<string, string> }): HoverInteraction {
+    const { state: hoveredContentLinkUuid, setHoveredComponent } = useInteraction({
         initialState: null as string | null,
         eventHandlers: {
             ComponentHoveredIn: {
-                handler: (event, setState) => setState(event.componentId),
+                handler: (event, setState) => setState(event.contentLinkUuid),
             },
             ComponentHoveredOut: {
                 handler: (_, setState) => setState(null),
             },
         },
         actions: (state, setState, clientApi) => ({
-            setHoveredComponent: (componentId: string | null) => {
-                if (state && componentId !== state) {
-                    // Use the current hovered component for hover out
+            setHoveredComponent: (componentUuid: string | null) => {
+                if (state && componentUuid !== state) {
                     clientApi?.hoverOutOfComponent({
-                        componentId: state,
+                        componentId: contentLinkMap[state] ?? state,
+                        contentLinkUuid: state,
                     });
                 }
 
-                if (componentId && componentId !== state) {
-                    clientApi?.hoverInToComponent({ componentId });
+                if (componentUuid && componentUuid !== state) {
+                    clientApi?.hoverInToComponent({
+                        componentId: contentLinkMap[componentUuid] ?? null,
+                        contentLinkUuid: componentUuid,
+                    });
                 }
 
-                setState(componentId);
+                setState(componentUuid);
             },
         }),
     });
 
     return {
-        hoveredComponentId,
+        hoveredContentLinkUuid,
         setHoveredComponent,
     };
 }

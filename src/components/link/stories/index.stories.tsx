@@ -22,11 +22,11 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 import { Link, NavLink } from '../index';
 
 const mockSite = {
-    id: 'RefArchGlobal',
+    id: mockSiteObject.id,
     defaultCurrency: 'GBP',
     defaultLocale: 'en-GB',
     supportedCurrencies: ['EUR', 'GBP'],

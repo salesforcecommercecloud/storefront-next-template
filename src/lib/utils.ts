@@ -237,6 +237,16 @@ export const getScapiBaseUrl = (shortCode: string): string =>
 export const isAbsoluteURL = (url: string): boolean => /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
 
 /**
+ * Returns the URL if it is a safe relative path, otherwise returns the fallback.
+ * Prevents open redirect attacks by rejecting absolute URLs (e.g. https://evil.com, //evil.com).
+ */
+export const getSafeReturnUrl = (url: string | null | undefined, fallback = '/'): string => {
+    if (!url) return fallback;
+    if (isAbsoluteURL(url)) return fallback;
+    return url;
+};
+
+/**
  * Check if code is running on the server side
  */
 export const isServer = () => typeof window === 'undefined';

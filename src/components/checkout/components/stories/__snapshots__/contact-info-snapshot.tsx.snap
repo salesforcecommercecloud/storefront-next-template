@@ -95,7 +95,7 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
         data-testid="sf-toggle-card-contact-info-content"
       >
         <form
-          class="flex flex-col gap-4 pt-2"
+          class="flex flex-col gap-4 pt-2 pb-2"
           novalidate=""
         >
           <div
@@ -115,11 +115,10 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
               class="relative"
             >
               <input
-                aria-describedby="_r_0_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_0_-form-item"
                 name="email"
                 placeholder="Email Address"
@@ -132,7 +131,7 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
             class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-20"
+              class="grid gap-2 w-20 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
@@ -148,12 +147,11 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_1_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
-                  data-slot="form-control"
+                  data-slot="native-select"
                   id="_r_1_-form-item"
                 >
                   <option
@@ -196,11 +194,10 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
                 *
               </label>
               <input
-                aria-describedby="_r_2_-form-item-description"
                 aria-invalid="false"
                 autocomplete="tel-national"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_2_-form-item"
                 inputmode="numeric"
                 maxlength="14"
@@ -211,15 +208,19 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
               />
             </div>
           </div>
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
+          <div
+            class="w-full pt-2"
           >
-            Continue to Shipping Address
-          </button>
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              type="submit"
+            >
+              Continue to Shipping Address
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -322,7 +323,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
         data-testid="sf-toggle-card-contact-info-content"
       >
         <form
-          class="flex flex-col gap-4 pt-2"
+          class="flex flex-col gap-4 pt-2 pb-2"
           novalidate=""
         >
           <div
@@ -342,11 +343,10 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
               class="relative"
             >
               <input
-                aria-describedby="_r_6_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_6_-form-item"
                 name="email"
                 placeholder="Email Address"
@@ -359,7 +359,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
             class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-20"
+              class="grid gap-2 w-20 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
@@ -375,12 +375,11 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_7_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
-                  data-slot="form-control"
+                  data-slot="native-select"
                   id="_r_7_-form-item"
                 >
                   <option
@@ -423,11 +422,10 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
                 *
               </label>
               <input
-                aria-describedby="_r_8_-form-item-description"
                 aria-invalid="false"
                 autocomplete="tel-national"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_8_-form-item"
                 inputmode="numeric"
                 maxlength="14"
@@ -438,16 +436,20 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
               />
             </div>
           </div>
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-            disabled=""
-            type="submit"
+          <div
+            class="w-full pt-2"
           >
-            Saving...
-          </button>
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              disabled=""
+              type="submit"
+            >
+              Saving...
+            </button>
+          </div>
         </form>
       </div>
       <div
@@ -502,7 +504,7 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
         data-testid="sf-toggle-card-contact-info-content"
       >
         <form
-          class="flex flex-col gap-4 pt-2"
+          class="flex flex-col gap-4 pt-2 pb-2"
           novalidate=""
         >
           <div
@@ -522,11 +524,10 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
               class="relative"
             >
               <input
-                aria-describedby="_r_3_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_3_-form-item"
                 name="email"
                 placeholder="Email Address"
@@ -539,7 +540,7 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
             class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-20"
+              class="grid gap-2 w-20 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
@@ -555,12 +556,11 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_4_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
-                  data-slot="form-control"
+                  data-slot="native-select"
                   id="_r_4_-form-item"
                 >
                   <option
@@ -603,11 +603,10 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
                 *
               </label>
               <input
-                aria-describedby="_r_5_-form-item-description"
                 aria-invalid="false"
                 autocomplete="tel-national"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_5_-form-item"
                 inputmode="numeric"
                 maxlength="14"
@@ -618,15 +617,19 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
               />
             </div>
           </div>
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
+          <div
+            class="w-full pt-2"
           >
-            Continue to Shipping Address
-          </button>
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              type="submit"
+            >
+              Continue to Shipping Address
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -670,7 +673,7 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
         data-testid="sf-toggle-card-contact-info-content"
       >
         <form
-          class="flex flex-col gap-4 pt-2"
+          class="flex flex-col gap-4 pt-2 pb-2"
           novalidate=""
         >
           <div
@@ -690,11 +693,10 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
               class="relative"
             >
               <input
-                aria-describedby="_r_9_-form-item-description"
                 aria-invalid="false"
                 autocomplete="email"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_9_-form-item"
                 name="email"
                 placeholder="Email Address"
@@ -707,7 +709,7 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
             class="flex items-start gap-2"
           >
             <div
-              class="grid gap-2 w-20"
+              class="grid gap-2 w-20 [&_[data-slot=native-select-wrapper]]:w-full"
               data-slot="form-item"
             >
               <label
@@ -723,12 +725,11 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
                 data-slot="native-select-wrapper"
               >
                 <select
-                  aria-describedby="_r_a_-form-item-description"
                   aria-invalid="false"
                   aria-label="Code"
                   class="border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   data-size="default"
-                  data-slot="form-control"
+                  data-slot="native-select"
                   id="_r_a_-form-item"
                 >
                   <option
@@ -771,11 +772,10 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
                 *
               </label>
               <input
-                aria-describedby="_r_b_-form-item-description"
                 aria-invalid="false"
                 autocomplete="tel-national"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                data-slot="form-control"
+                data-slot="input"
                 id="_r_b_-form-item"
                 inputmode="numeric"
                 maxlength="14"
@@ -786,15 +786,19 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
               />
             </div>
           </div>
-          <button
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
-            data-size="default"
-            data-slot="button"
-            data-variant="default"
-            type="submit"
+          <div
+            class="w-full pt-2"
           >
-            Continue to Shipping Address
-          </button>
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-full"
+              data-size="default"
+              data-slot="button"
+              data-variant="default"
+              type="submit"
+            >
+              Continue to Shipping Address
+            </button>
+          </div>
         </form>
       </div>
     </div>

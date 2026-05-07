@@ -82,7 +82,8 @@ import { operations as shopperContextOps } from './generated/shopper-context-v1.
 import { operations as shopperCustomersOps } from './generated/shopper-customers-v1.operations';
 import { operations as shopperExperienceOps } from './generated/shopper-experience-v1.operations';
 import { operations as shopperGiftCertificatesOps } from './generated/shopper-gift-certificates-v1.operations';
-import { operations as shopperLoginOps } from './generated/shopper-login-v1.operations';
+// May 2026 - The shopper login has been renamed to auth but we continue to ship the client namespace as `shopperLogin` for backwards compatibility
+import { operations as shopperLoginOps } from './generated/auth-v1.operations';
 import { operations as shopperOrdersOps } from './generated/shopper-orders-v1.operations';
 import { operations as shopperPaymentsOps } from './generated/shopper-payments-v1.operations';
 import { operations as shopperProductsOps } from './generated/shopper-products-v1.operations';

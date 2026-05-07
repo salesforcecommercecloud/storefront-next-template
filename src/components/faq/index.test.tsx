@@ -17,6 +17,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { mockAltSiteObject } from '@/test-utils/config';
 import Faq from './index';
 
 const { mockOpenShopperAgentAndSendMessage, mockUseConfig, mockIsShopperAgentContextUiEnabled } = vi.hoisted(() => ({
@@ -54,7 +55,7 @@ const validCommerceAgent = {
     scriptSourceUrl: 'https://test.my.site.com/ESWtest/assets/js/bootstrap.min.js',
     scrt2Url: 'https://test.salesforce-scrt.com',
     salesforceOrgId: '00Dxx0000000000',
-    siteId: 'RefArch',
+    siteId: mockAltSiteObject.id,
 };
 
 const mockQuestions = {

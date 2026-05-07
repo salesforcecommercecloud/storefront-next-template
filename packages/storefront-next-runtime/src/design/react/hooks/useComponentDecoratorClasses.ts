@@ -16,21 +16,21 @@
 import { useDesignState } from './useDesignState';
 
 export function useComponentDecoratorClasses({
-    componentId,
+    contentLinkUuid,
     isFragment,
     isLocalized,
 }: {
-    componentId: string;
+    contentLinkUuid: string;
     isFragment: boolean;
     isLocalized: boolean;
 }): string {
-    const { selectedComponentId, hoveredComponentId, dragState } = useDesignState();
+    const { selectedContentLinkUuid, hoveredContentLinkUuid, dragState } = useDesignState();
 
-    const isSelected = selectedComponentId === componentId;
-    const isHovered = !dragState.isDragging && hoveredComponentId === componentId;
+    const isSelected = selectedContentLinkUuid === contentLinkUuid;
+    const isHovered = !dragState.isDragging && hoveredContentLinkUuid === contentLinkUuid;
     const showFrame = (isSelected || isHovered) && !dragState.isDragging;
-    const isMoving = dragState.isDragging && dragState.sourceComponentId === componentId;
-    const isDropTarget = dragState.currentDropTarget?.componentId === componentId;
+    const isMoving = dragState.isDragging && dragState.sourceContentLinkUuid === contentLinkUuid;
+    const isDropTarget = dragState.currentDropTarget?.contentLinkUuid === contentLinkUuid;
     const dropTargetInsertType = dragState.currentDropTarget?.insertType;
     const dropTargetAxis = dropTargetInsertType?.axis;
 

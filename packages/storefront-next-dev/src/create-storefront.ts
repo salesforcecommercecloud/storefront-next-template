@@ -152,14 +152,13 @@ export const createStorefront = async (
         fs.rmSync(gitDir, { recursive: true, force: true });
     }
 
-    const workspaceHbsPath = path.join(outputPath, 'pnpm-workspace.yaml.hbs');
-    if (!fs.existsSync(workspaceHbsPath)) {
-        throw new Error(
-            `Template is missing pnpm-workspace.yaml.hbs.\nExpected at: ${workspaceHbsPath}\nEach template must include this file to generate a pnpm-workspace.yaml for the new project.`
+    const workspaceYamlPath = path.join(outputPath, 'pnpm-workspace.yaml');
+    if (!fs.existsSync(workspaceYamlPath)) {
+        logger.warn(
+            `Template is missing pnpm-workspace.yaml at ${workspaceYamlPath}. ` +
+                `The generated project may not work correctly without a workspace configuration.`
         );
     }
-    fs.copyFileSync(workspaceHbsPath, path.join(outputPath, 'pnpm-workspace.yaml'));
-    fs.rmSync(workspaceHbsPath);
 
     // Hook: Prepare for local development if template is a local path
     // or if --local-packages-dir was provided

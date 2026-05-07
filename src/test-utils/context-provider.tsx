@@ -23,9 +23,11 @@ import { UITargetProviders } from '@/targets/ui-target-providers';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 
+const defaultSiteId = mockBuildConfig.app.defaultSiteId;
+
 const defaultMockSite = {
     ...mockBuildConfig.app.commerce.sites[0],
-    alias: mockBuildConfig.app.siteAliasMap?.RefArchGlobal ?? undefined,
+    alias: mockBuildConfig.app.siteAliasMap?.[defaultSiteId] ?? undefined,
 };
 
 const defaultMockLocale =

@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import ShopperAgentUI from '../shopper-agent-ui';
+import { mockSiteObject } from '@/test-utils/config';
 
 const validConfig: ShopperAgentConfig = {
     enabled: 'true',
@@ -25,7 +26,7 @@ const validConfig: ShopperAgentConfig = {
     scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
     scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
     salesforceOrgId: '00D000000000000EAA',
-    siteId: 'RefArchGlobal',
+    siteId: mockSiteObject.id,
 };
 
 const meta: Meta<typeof ShopperAgentUI> = {

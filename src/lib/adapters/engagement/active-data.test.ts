@@ -25,6 +25,7 @@ import { createActiveDataAdapter, type ActiveDataConfig } from './active-data';
 import type { AnalyticsEvent, EventSiteInfo, ConsentPreferences } from '@salesforce/storefront-next-runtime/events';
 import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import Cookies from 'js-cookie';
+import { mockSiteObject } from '@/test-utils/config';
 
 vi.mock('js-cookie', () => ({
     default: {
@@ -665,10 +666,14 @@ describe('Active Data Adapter', () => {
 
         it('should convert locale from BCP-47 to underscore format', async () => {
             const adapter = createActiveDataAdapter(mockConfig) as ActiveDataAdapter;
-            await adapter.sendEvent(mockPageViewEvent, { siteId: 'RefArchGlobal', localeId: 'ja-JP' }, defaultConsent);
+            await adapter.sendEvent(
+                mockPageViewEvent,
+                { siteId: mockSiteObject.id, localeId: 'ja-JP' },
+                defaultConsent
+            );
 
             const url = getActiveDataUrl(mockSendBeacon.mock.calls[0]);
-            expect(url).toContain('Sites-RefArchGlobal-Site/ja_JP/__Analytics-Start');
+            expect(url).toContain(`Sites-${mockSiteObject.id}-Site/ja_JP/__Analytics-Start`);
         });
     });
 });

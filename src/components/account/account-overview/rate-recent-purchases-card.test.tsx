@@ -19,7 +19,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { RateRecentPurchasesCard } from './rate-recent-purchases-card';
 import type { Order } from '@/components/account/order-list';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
 const mockSite = mockConfig.commerce.sites[0];
@@ -91,7 +91,7 @@ describe('RateRecentPurchasesCard', () => {
     test('CTA links to order details for this order', () => {
         renderRateCard(baseOrder);
         const cta = screen.getByRole('link', { name: t('account:overview.rateRecentPurchases.cta') });
-        expect(cta).toHaveAttribute('href', '/RefArchGlobal/en-GB/account/orders/INV005');
+        expect(cta).toHaveAttribute('href', `${getSitePrefix()}/account/orders/INV005`);
     });
 
     test('renders product thumbnails with expected image sources', () => {

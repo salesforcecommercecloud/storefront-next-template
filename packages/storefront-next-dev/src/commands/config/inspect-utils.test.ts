@@ -297,27 +297,5 @@ describe('commands/config/inspect-utils', () => {
                 expect(stripped.indexOf('app.m.middle')).toBeLessThan(stripped.indexOf('app.z.last'));
             });
         });
-
-        describe('Tip section', () => {
-            it('shows config:push-env tip when there are .env overrides', () => {
-                const output = formatInspectOutput({
-                    flatConfig: [{ key: 'app.site.locale', value: 'en-US' }],
-                    sources: new Map([['app.site.locale', '.env']]),
-                    localVars: new Map(),
-                    mrtVars: null,
-                });
-                expect(strip(output)).toContain('config:push-env');
-            });
-
-            it('omits tip when there are no .env overrides', () => {
-                const output = formatInspectOutput({
-                    flatConfig: [{ key: 'app.site.locale', value: 'en-US' }],
-                    sources: new Map([['app.site.locale', 'config']]),
-                    localVars: new Map(),
-                    mrtVars: null,
-                });
-                expect(strip(output)).not.toContain('config:push-env');
-            });
-        });
     });
 });

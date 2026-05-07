@@ -17,6 +17,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { act, type ReactNode, type ComponentProps } from 'react';
 import i18next from 'i18next';
+import { mockAltSiteObject } from '@/test-utils/config';
 import CheckoutFormPage from './checkout-form-page';
 
 // Type definitions for mock components
@@ -233,6 +234,7 @@ let mockShippingAddressFetcherData: {
     success?: boolean;
     error?: string | { code: string; message: string };
     step?: string;
+    data?: Record<string, unknown>;
 } | null = null;
 let mockShippingOptionsFetcherState: 'idle' | 'submitting' = 'idle';
 let mockShippingOptionsFetcherData: {
@@ -375,9 +377,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArch', defaultLocale: 'en-US' },
-            language: 'en-US',
-            currency: 'USD',
+            site: { id: mockAltSiteObject.id, defaultLocale: mockAltSiteObject.defaultLocale },
+            language: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
         })),
     };
 });
@@ -438,6 +440,8 @@ describe('CheckoutFormPage', () => {
         mockPlaceOrderFetcherData = null;
         mockPaymentFetcherState = 'idle';
         mockPaymentFetcherData = null;
+        mockShippingAddressFetcherState = 'idle';
+        mockShippingAddressFetcherData = null;
 
         mockPaymentFormDataGetter = null;
         capturedSetFormErrors = null;
@@ -1482,6 +1486,61 @@ describe('CheckoutFormPage', () => {
 
             expect(mockSubmitPayment).toHaveBeenCalled();
             expect(mockSubmitPlaceOrder).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('No shipping methods toast', () => {
+        test('fires error toast when shipping address succeeds but yields no shipping methods', async () => {
+            const mockShowToast = vi.fn();
+
+            mockShippingAddressFetcherData = {
+                success: true,
+                step: 'shippingAddress',
+            };
+
+            await renderCheckoutPage({
+                showToast: mockShowToast,
+                shippingMethodsMap: {
+                    me: { applicableShippingMethods: [], defaultShippingMethodId: undefined },
+                },
+            });
+
+            await waitFor(() => {
+                expect(mockShowToast).toHaveBeenCalledWith(
+                    i18next.t('errors:checkout.noShippingMethodsForAddress'),
+                    'error'
+                );
+            });
+        });
+
+        test('does not fire toast when shipping address succeeds with available methods', async () => {
+            const mockShowToast = vi.fn();
+
+            mockShippingAddressFetcherData = {
+                success: true,
+                step: 'shippingAddress',
+            };
+
+            await renderCheckoutPage({
+                showToast: mockShowToast,
+                shippingMethodsMap: {
+                    me: {
+                        applicableShippingMethods: [{ id: 'standard', name: 'Standard Shipping', price: 5.99 }],
+                        defaultShippingMethodId: 'standard',
+                    },
+                },
+            });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
+        });
+
+        test('does not fire toast when shipping address fetcher has no data', async () => {
+            const mockShowToast = vi.fn();
+            mockShippingAddressFetcherData = null;
+
+            await renderCheckoutPage({ showToast: mockShowToast });
+
+            expect(mockShowToast).not.toHaveBeenCalled();
         });
     });
 

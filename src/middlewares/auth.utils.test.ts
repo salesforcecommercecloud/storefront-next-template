@@ -27,7 +27,7 @@ import {
 import type { SessionData } from '@/lib/api/types';
 import type { AppConfig } from '@/types/config';
 import { createTestContext } from '@/lib/test-utils';
-import { mockBuildConfig } from '@/test-utils/config';
+import { mockBuildConfig, mockSiteObject } from '@/test-utils/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 
 describe('auth.utils', () => {
@@ -387,13 +387,13 @@ describe('auth.utils', () => {
             it.each([
                 {
                     desc: 'guest (gcid only)',
-                    isb: 'uido:slas::upn:Guest::uidn:Guest User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::chid:RefArchGlobal',
+                    isb: `uido:slas::upn:Guest::uidn:Guest User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::chid:${mockSiteObject.id}`,
                     expectedGcid: 'abxHg0w0xGkXoRxKdIwqYYkrk1',
                     expectedRcid: null,
                 },
                 {
                     desc: 'registered (gcid + rcid)',
-                    isb: 'uido:ecom::upn:user@example.com::uidn:Test User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::rcid:abwuhGmbgXkHkRlehKlaYYlrxG::chid:RefArchGlobal',
+                    isb: `uido:ecom::upn:user@example.com::uidn:Test User::gcid:abxHg0w0xGkXoRxKdIwqYYkrk1::rcid:abwuhGmbgXkHkRlehKlaYYlrxG::chid:${mockSiteObject.id}`,
                     expectedGcid: 'abxHg0w0xGkXoRxKdIwqYYkrk1',
                     expectedRcid: 'abwuhGmbgXkHkRlehKlaYYlrxG',
                 },

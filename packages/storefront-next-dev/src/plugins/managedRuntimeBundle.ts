@@ -127,8 +127,35 @@ export const managedRuntimeBundlePlugin = (): Plugin => {
                     },
                 },
                 experimental: {
-                    renderBuiltUrl(filename, { type }) {
+                    // MRT serves each deploy's bundle under a per-deploy prefix:
+                    //     {MRT_ENV_BASE_PATH}/mobify/bundle/{BUNDLE_ID}/client/...
+                    // Asset references must resolve under that prefix, and BUNDLE_ID
+                    // changes on every deploy, so we can't bake a static URL at build
+                    // time. The strategy differs between CSS and JS:
+                    //
+                    //  - CSS url() resolves against the stylesheet's own URL per the CSS
+                    //    spec. The emitted stylesheet already lives under the bundle
+                    //    prefix, so a relative URL like `url(../fonts/x.woff2)` inherits
+                    //    the correct BUNDLE_ID at request time — no runtime code needed.
+                    //    (Vite also rejects runtime expressions inside CSS url(), so
+                    //    relative is the only option for CSS regardless.)
+                    //
+                    //  - JS strings have no equivalent "relative to my module" semantic
+                    //    when handed to the DOM. A bare string in `href=` / `src=` would
+                    //    resolve against document.baseURI — the current page URL — which
+                    //    does NOT contain the bundle prefix, 404-ing the asset. And we
+                    //    can't use `new URL(x, import.meta.url)` either: the SSR bundle
+                    //    runs as CJS on MRT (see packageJson.type deletion below), where
+                    //    import.meta.url is undefined. So JS has to produce a fully
+                    //    qualified bundle-prefixed URL itself, by reading the prefix at
+                    //    runtime from window._BUNDLE_PATH (client) or MRT_ENV_BASE_PATH +
+                    //    BUNDLE_ID env vars (server SSR).
+                    renderBuiltUrl(filename, { type, hostType }) {
                         if (mode !== 'preview' && (type === 'asset' || type === 'public')) {
+                            if (hostType === 'css') {
+                                return { relative: true };
+                            }
+
                             // WARNING: This runtime code is embedded in the bundle for EVERY asset/public file.
                             // At large scale (hundreds of assets), this code snippet is duplicated hundreds of times.
                             // Keep this code as minimal as possible to avoid significant bundle size bloat.

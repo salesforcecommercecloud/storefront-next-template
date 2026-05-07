@@ -21,6 +21,7 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 // Components
 import ProductItemsList from '@/components/product-items-list';
 import { RemoveItemButtonWithConfirmation } from '@/components/buttons/remove-item-button-with-confirmation';
+import { CartItemEditButton } from '@/components/cart/cart-item-edit-button';
 import CartEmpty from './cart-empty';
 import CartTitle from './cart-title';
 import OrderSummary from '@/components/order-summary';
@@ -41,7 +42,14 @@ import CartDeliveryOption from '@/extensions/bopis/components/delivery-options/c
 import { UITarget } from '@/targets/ui-target';
 
 // utils
-import { isBonusProduct, isRuleBasedPromotion, type EnrichedProductItem } from '@/lib/product/product-utils';
+import {
+    isStandardProduct,
+    isBonusProduct,
+    isRuleBasedPromotion,
+    type EnrichedProductItem,
+} from '@/lib/product/product-utils';
+import { useCartInventoryValidation } from '@/lib/cart/inventory-validation';
+import { CartInventoryErrorBanner } from './cart-inventory-error-banner';
 
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>
@@ -113,6 +121,9 @@ export default function CartContent({
     const pickupItems = filterPickupProductItems(basket);
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
+    // Validate cart-wide inventory for checkout button state
+    const inventoryValidation = useCartInventoryValidation(basket, productsByItemId);
+
     // Sync cart page loader basket into basket context
     const updateBasket = useBasketUpdater();
     useEffect(() => {
@@ -160,11 +171,14 @@ export default function CartContent({
         }
 
         const isBonusProd = isBonusProduct(product);
+        const isStandardProd = isStandardProduct(product);
+        const shouldShowEditButton = !isStandardProd && !isBonusProd;
         const shouldShowWishlist = !isBonusProd;
 
         return (
             <div className="flex gap-2">
                 <RemoveItemButtonWithConfirmation itemId={product.itemId} className="pl-0" />
+                {shouldShowEditButton && <CartItemEditButton product={product} className="pl-0" />}
                 {shouldShowWishlist && (
                     <Suspense fallback={null}>
                         <LazyCartItemAddToWishlistButton
@@ -237,8 +251,25 @@ export default function CartContent({
                             />
                         </OrderSummaryMobileAccordion>
                         <div className="px-[var(--cart-summary-px)] py-4">
-                            <Button asChild className="w-full text-sm">
-                                <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                            {/* Inventory error banner */}
+                            <CartInventoryErrorBanner
+                                issues={inventoryValidation.itemsExceedingInventory}
+                                className="mb-3"
+                                id="cart-inventory-error-mobile"
+                            />
+                            <Button
+                                asChild={!inventoryValidation.hasInventoryIssues}
+                                className="w-full text-sm"
+                                disabled={inventoryValidation.hasInventoryIssues}
+                                aria-disabled={inventoryValidation.hasInventoryIssues}
+                                aria-describedby={
+                                    inventoryValidation.hasInventoryIssues ? 'cart-inventory-error-mobile' : undefined
+                                }>
+                                {inventoryValidation.hasInventoryIssues ? (
+                                    <span>{t('checkout.continueToCheckout')}</span>
+                                ) : (
+                                    <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                                )}
                             </Button>
                             <UITarget targetId="sfcc.cart.payments.expressCheckout" />
                         </div>
@@ -296,6 +327,7 @@ export default function CartContent({
                             productsByItemId={productsByItemId}
                             showPromoCodeForm={true}
                             showCheckoutAction={true}
+                            inventoryValidation={inventoryValidation}
                         />
                         <UITarget targetId="sfcc.cart.bnpl.message" />
                     </div>

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useState, type ChangeEvent, type ComponentProps } from 'react';
-import { Slot } from '@radix-ui/react-slot';
+import { useMemo, useState, type ChangeEvent } from 'react';
 import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { FormField, FormItem, FormLabel, FormMessage, useFormField } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
+import { FormInput, FormNativeSelect } from '@/components/form-fields';
+import { NativeSelectOption } from '@/components/ui/native-select';
 import { COUNTRY_CODES } from '@/components/customer-address-form/constants';
 import AddressSuggestionDropdown, { type AddressSuggestion } from '@/components/address-suggestion-dropdown';
 import { MIN_INPUT_LENGTH, useAutocompleteSuggestions } from '@/hooks/use-autocomplete-suggestions';
@@ -27,25 +27,6 @@ import { processAddressSuggestion } from '@/lib/address/address-suggestions';
 import { UITarget } from '@/targets/ui-target';
 import { getCommonPhoneCountryCodes } from '@/lib/address/country-codes';
 import { formatPhoneInput, stripNonDigits, stripCountryCode } from '@/lib/address/phone-utils';
-
-/**
- * Control slot for address inputs: sets `aria-describedby` only when a validation message exists.
- * Stock `FormControl` always references `formDescriptionId` even when no `FormDescription` is rendered,
- * which breaks strict a11y checks. Use this (or {@link AddressFormFields}) for checkout address UIs.
- */
-export function AddressFormControl({ ...props }: ComponentProps<typeof Slot>) {
-    const { error, formItemId, formMessageId } = useFormField();
-
-    return (
-        <Slot
-            data-slot="form-control"
-            id={formItemId}
-            aria-describedby={error ? formMessageId : undefined}
-            aria-invalid={!!error}
-            {...props}
-        />
-    );
-}
 
 /**
  * Base address field names that the form must support
@@ -272,18 +253,16 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                             <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                 {t('addressForm.firstNameLabel')}*
                             </FormLabel>
-                            <AddressFormControl>
-                                <Input
-                                    placeholder={
-                                        labelsAsPlaceholders
-                                            ? `${t('addressForm.firstNameLabel')}*`
-                                            : t('addressForm.firstNamePlaceholder')
-                                    }
-                                    autoComplete={getAutoComplete('given-name')}
-                                    autoFocus={autoFocus && autoFocusField === 'firstName'}
-                                    {...field}
-                                />
-                            </AddressFormControl>
+                            <FormInput
+                                placeholder={
+                                    labelsAsPlaceholders
+                                        ? `${t('addressForm.firstNameLabel')}*`
+                                        : t('addressForm.firstNamePlaceholder')
+                                }
+                                autoComplete={getAutoComplete('given-name')}
+                                autoFocus={autoFocus && autoFocusField === 'firstName'}
+                                {...field}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}
@@ -297,17 +276,15 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                             <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                 {t('addressForm.lastNameLabel')}*
                             </FormLabel>
-                            <AddressFormControl>
-                                <Input
-                                    placeholder={
-                                        labelsAsPlaceholders
-                                            ? `${t('addressForm.lastNameLabel')}*`
-                                            : t('addressForm.lastNamePlaceholder')
-                                    }
-                                    autoComplete={getAutoComplete('family-name')}
-                                    {...field}
-                                />
-                            </AddressFormControl>
+                            <FormInput
+                                placeholder={
+                                    labelsAsPlaceholders
+                                        ? `${t('addressForm.lastNameLabel')}*`
+                                        : t('addressForm.lastNamePlaceholder')
+                                }
+                                autoComplete={getAutoComplete('family-name')}
+                                {...field}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}
@@ -324,19 +301,17 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                             <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                 {t('addressForm.addressLabel')}*
                             </FormLabel>
-                            <AddressFormControl>
-                                <Input
-                                    placeholder={
-                                        labelsAsPlaceholders
-                                            ? `${t('addressForm.addressLabel')}*`
-                                            : t('addressForm.addressPlaceholder')
-                                    }
-                                    autoComplete="off"
-                                    autoFocus={autoFocus && autoFocusField === 'address1'}
-                                    {...field}
-                                    onChange={(e) => handleAddressInputChange(e, field.onChange)}
-                                />
-                            </AddressFormControl>
+                            <FormInput
+                                placeholder={
+                                    labelsAsPlaceholders
+                                        ? `${t('addressForm.addressLabel')}*`
+                                        : t('addressForm.addressPlaceholder')
+                                }
+                                autoComplete="off"
+                                autoFocus={autoFocus && autoFocusField === 'address1'}
+                                {...field}
+                                onChange={(e) => handleAddressInputChange(e, field.onChange)}
+                            />
                             {renderAddressAutocomplete()}
                             <FormMessage />
                         </FormItem>
@@ -354,13 +329,11 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                             <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                 {t('addressForm.address2Label')}
                             </FormLabel>
-                            <AddressFormControl>
-                                <Input
-                                    placeholder={t('addressForm.address2Placeholder')}
-                                    autoComplete={getAutoComplete('address-line2')}
-                                    {...field}
-                                />
-                            </AddressFormControl>
+                            <FormInput
+                                placeholder={t('addressForm.address2Placeholder')}
+                                autoComplete={getAutoComplete('address-line2')}
+                                {...field}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}
@@ -377,17 +350,15 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                             <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                 {t('addressForm.cityLabel')}*
                             </FormLabel>
-                            <AddressFormControl>
-                                <Input
-                                    placeholder={
-                                        labelsAsPlaceholders
-                                            ? `${t('addressForm.cityLabel')}*`
-                                            : t('addressForm.cityPlaceholder')
-                                    }
-                                    autoComplete={getAutoComplete('address-level2')}
-                                    {...field}
-                                />
-                            </AddressFormControl>
+                            <FormInput
+                                placeholder={
+                                    labelsAsPlaceholders
+                                        ? `${t('addressForm.cityLabel')}*`
+                                        : t('addressForm.cityPlaceholder')
+                                }
+                                autoComplete={getAutoComplete('address-level2')}
+                                {...field}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}
@@ -410,31 +381,31 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                     {stateLabel}*
                                 </FormLabel>
-                                <AddressFormControl>
-                                    {stateOptions.length > 0 ? (
-                                        <NativeSelect
-                                            autoComplete={getAutoComplete('address-level1')}
-                                            className={!field.value ? 'text-muted-foreground' : ''}
-                                            {...field}
-                                            value={field.value || ''}
-                                            onChange={(e) => field.onChange(e.target.value)}>
-                                            <NativeSelectOption value="" className="text-muted-foreground">
-                                                {labelsAsPlaceholders ? `${stateLabel}*` : statePlaceholder}
+                                {stateOptions.length > 0 ? (
+                                    <FormNativeSelect
+                                        autoComplete={getAutoComplete('address-level1')}
+                                        className={!field.value ? 'text-muted-foreground' : ''}
+                                        {...field}
+                                        value={field.value || ''}
+                                        onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                                            field.onChange(e.target.value)
+                                        }>
+                                        <NativeSelectOption value="" className="text-muted-foreground">
+                                            {labelsAsPlaceholders ? `${stateLabel}*` : statePlaceholder}
+                                        </NativeSelectOption>
+                                        {stateOptions.map(([code, name]) => (
+                                            <NativeSelectOption key={code} value={code}>
+                                                {name}
                                             </NativeSelectOption>
-                                            {stateOptions.map(([code, name]) => (
-                                                <NativeSelectOption key={code} value={code}>
-                                                    {name}
-                                                </NativeSelectOption>
-                                            ))}
-                                        </NativeSelect>
-                                    ) : (
-                                        <Input
-                                            placeholder={labelsAsPlaceholders ? `${stateLabel}*` : statePlaceholder}
-                                            autoComplete={getAutoComplete('address-level1')}
-                                            {...field}
-                                        />
-                                    )}
-                                </AddressFormControl>
+                                        ))}
+                                    </FormNativeSelect>
+                                ) : (
+                                    <FormInput
+                                        placeholder={labelsAsPlaceholders ? `${stateLabel}*` : statePlaceholder}
+                                        autoComplete={getAutoComplete('address-level1')}
+                                        {...field}
+                                    />
+                                )}
                                 <FormMessage />
                             </FormItem>
                         );
@@ -457,13 +428,11 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                     {postalLabel}*
                                 </FormLabel>
-                                <AddressFormControl>
-                                    <Input
-                                        placeholder={labelsAsPlaceholders ? `${postalLabel}*` : postalPlaceholder}
-                                        autoComplete={getAutoComplete('postal-code')}
-                                        {...field}
-                                    />
-                                </AddressFormControl>
+                                <FormInput
+                                    placeholder={labelsAsPlaceholders ? `${postalLabel}*` : postalPlaceholder}
+                                    autoComplete={getAutoComplete('postal-code')}
+                                    {...field}
+                                />
                                 <FormMessage />
                             </FormItem>
                         );
@@ -474,26 +443,25 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                     <FormField
                         control={form.control}
                         name={getFieldName('countryCode')}
-                        render={({ field, fieldState }) => (
+                        render={({ field }) => (
                             <FormItem className="[&_[data-slot=native-select-wrapper]]:w-full">
                                 <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                     {t('addressForm.countryLabel')}*
                                 </FormLabel>
-                                <AddressFormControl>
-                                    <NativeSelect
-                                        autoComplete={getAutoComplete('country')}
-                                        aria-label={t('addressForm.countryLabel')}
-                                        aria-invalid={!!fieldState?.error}
-                                        {...field}
-                                        value={field.value || 'US'}
-                                        onChange={(e) => field.onChange(e.target.value || 'US')}>
-                                        {COUNTRY_CODES.map((code) => (
-                                            <NativeSelectOption key={code} value={code}>
-                                                {tCountries(`${code}.name`)}
-                                            </NativeSelectOption>
-                                        ))}
-                                    </NativeSelect>
-                                </AddressFormControl>
+                                <FormNativeSelect
+                                    autoComplete={getAutoComplete('country')}
+                                    aria-label={t('addressForm.countryLabel')}
+                                    {...field}
+                                    value={field.value || 'US'}
+                                    onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                                        field.onChange(e.target.value || 'US')
+                                    }>
+                                    {COUNTRY_CODES.map((code) => (
+                                        <NativeSelectOption key={code} value={code}>
+                                            {tCountries(`${code}.name`)}
+                                        </NativeSelectOption>
+                                    ))}
+                                </FormNativeSelect>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -522,14 +490,12 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                 <FormLabel className={labelsAsPlaceholders ? 'sr-only' : undefined}>
                                     {t('addressForm.codeLabel')}
                                 </FormLabel>
-                                <AddressFormControl>
-                                    <NativeSelect
-                                        aria-label={t('addressForm.codeLabel')}
-                                        value={field.value || '+1'}
-                                        onChange={(e) => field.onChange(e.target.value)}>
-                                        {countryCodeOptions}
-                                    </NativeSelect>
-                                </AddressFormControl>
+                                <FormNativeSelect
+                                    aria-label={t('addressForm.codeLabel')}
+                                    value={field.value || '+1'}
+                                    onChange={(e: ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value)}>
+                                    {countryCodeOptions}
+                                </FormNativeSelect>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -543,32 +509,30 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                                     {t('addressForm.phoneLabel')}
                                     {phoneRequired ? '*' : ''}
                                 </FormLabel>
-                                <AddressFormControl>
-                                    <Input
-                                        type="tel"
-                                        inputMode="numeric"
-                                        placeholder={
-                                            labelsAsPlaceholders && phoneRequired
-                                                ? `${t('addressForm.phoneLabel')}*`
-                                                : t('addressForm.phonePlaceholder')
-                                        }
-                                        autoComplete="tel-national"
-                                        maxLength={14}
-                                        {...field}
-                                        value={stripCountryCode(field.value || '')}
-                                        onChange={(e) => {
-                                            field.onChange(stripNonDigits(e.target.value).slice(0, 10));
-                                        }}
-                                        onBlur={(e) => {
-                                            field.onBlur();
-                                            field.onChange(formatPhoneInput(e.target.value));
-                                        }}
-                                        onFocus={(e) => {
-                                            const digits = stripNonDigits(e.target.value);
-                                            if (digits !== e.target.value) field.onChange(digits);
-                                        }}
-                                    />
-                                </AddressFormControl>
+                                <FormInput
+                                    type="tel"
+                                    inputMode="numeric"
+                                    placeholder={
+                                        labelsAsPlaceholders && phoneRequired
+                                            ? `${t('addressForm.phoneLabel')}*`
+                                            : t('addressForm.phonePlaceholder')
+                                    }
+                                    autoComplete="tel-national"
+                                    maxLength={14}
+                                    {...field}
+                                    value={stripCountryCode(field.value || '')}
+                                    onChange={(e) => {
+                                        field.onChange(stripNonDigits(e.target.value).slice(0, 10));
+                                    }}
+                                    onBlur={(e) => {
+                                        field.onBlur();
+                                        field.onChange(formatPhoneInput(e.target.value));
+                                    }}
+                                    onFocus={(e) => {
+                                        const digits = stripNonDigits(e.target.value);
+                                        if (digits !== e.target.value) field.onChange(digits);
+                                    }}
+                                />
                                 <FormMessage />
                             </FormItem>
                         )}

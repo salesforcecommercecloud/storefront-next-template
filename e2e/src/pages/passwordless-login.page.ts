@@ -36,7 +36,7 @@ class PasswordlessLoginPage {
     locators = {
         loginHeading: locate('h2.text-3xl, h2.text-2xl').as('Login Heading'),
         emailInput: locate('input[type="email"], input[name="email"]').as('Email Input'),
-        sendLoginLinkButton: locate('button[type="submit"]').as('Send Login Link Button'),
+        continueButton: locate('button[type="submit"]').as('Continue Button'),
         cookieAcceptButton: locate('button:has-text("Accept"), button:has-text("Accept All"), button[id*="accept"]').as(
             'Cookie Accept Button'
         ),
@@ -63,9 +63,9 @@ class PasswordlessLoginPage {
         I.fillField(this.locators.emailInput, email);
     }
 
-    clickSendLoginLink(): void {
-        I.waitForElement(this.locators.sendLoginLinkButton, 10);
-        I.click(this.locators.sendLoginLinkButton);
+    clickContinue(): void {
+        I.waitForElement(this.locators.continueButton, 10);
+        I.click(this.locators.continueButton);
     }
 
     async isEmailInputVisible(): Promise<boolean> {
@@ -73,8 +73,8 @@ class PasswordlessLoginPage {
         return count > 0;
     }
 
-    async isSendLoginLinkButtonVisible(): Promise<boolean> {
-        const count = await I.grabNumberOfVisibleElements(this.locators.sendLoginLinkButton);
+    async isContinueButtonVisible(): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.locators.continueButton);
         return count > 0;
     }
 
@@ -115,7 +115,7 @@ class PasswordlessLoginPage {
     }
 
     async isSendButtonDisabled(): Promise<boolean> {
-        const disabled = await I.grabAttributeFrom(this.locators.sendLoginLinkButton, 'disabled');
+        const disabled = await I.grabAttributeFrom(this.locators.continueButton, 'disabled');
         return disabled !== null;
     }
 

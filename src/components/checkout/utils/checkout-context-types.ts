@@ -66,6 +66,8 @@ export interface CheckoutContextValue {
     goToNextStep: () => void;
     goToStep: (step: CheckoutStep) => void;
     exitEditMode: () => void;
+    /** Pin shopper to `step`, overriding basket-driven auto-advance. Optional for test mocks. */
+    pinToStep?: (step: CheckoutStep) => void;
 }
 
 export const CheckoutContext = createContext<CheckoutContextValue | null>(null);

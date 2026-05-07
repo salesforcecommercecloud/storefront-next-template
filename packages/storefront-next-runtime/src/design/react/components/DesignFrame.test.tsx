@@ -37,6 +37,7 @@ describe('DesignFrame', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: false,
@@ -79,6 +80,7 @@ describe('DesignFrame', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: true,
@@ -122,6 +124,7 @@ describe('DesignFrame', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: false,
@@ -164,6 +167,7 @@ describe('DesignFrame', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: false,
@@ -206,6 +210,7 @@ describe('DesignFrame', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: true,
@@ -225,6 +230,7 @@ describe('DesignFrame', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: true,

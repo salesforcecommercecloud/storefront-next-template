@@ -20,10 +20,11 @@ import type { NodeToTargetMapEntry } from '../context/DesignStateContext';
 export function useNodeToTargetStore({
     parentId,
     componentId,
+    contentLinkUuid,
     regionId,
     nodeRef,
     type,
-    componentIds,
+    contentLinkUuids,
     componentTypeInclusions,
     componentTypeExclusions,
 }: Partial<NodeToTargetMapEntry> & {
@@ -36,9 +37,10 @@ export function useNodeToTargetStore({
             nodeToTargetMap.set(nodeRef.current, {
                 parentId,
                 componentId,
+                contentLinkUuid,
                 regionId,
                 type,
-                componentIds,
+                contentLinkUuids,
                 componentTypeInclusions,
                 componentTypeExclusions,
             } as NodeToTargetMapEntry);
@@ -47,9 +49,10 @@ export function useNodeToTargetStore({
         nodeRef,
         parentId,
         componentId,
+        contentLinkUuid,
         regionId,
         type,
-        componentIds,
+        contentLinkUuids,
         nodeToTargetMap,
         componentTypeInclusions,
         componentTypeExclusions,

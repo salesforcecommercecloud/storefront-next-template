@@ -73,6 +73,7 @@ describe('design/react/ComponentDecorator', () => {
                     props: {
                         designMetadata: {
                             id: 'test-1',
+                            contentLinkUuid: 'test-content-link-uuid',
                             isFragment: true,
                             isVisible: true,
                             isLocalized: true,
@@ -94,6 +95,7 @@ describe('design/react/ComponentDecorator', () => {
                     props: {
                         designMetadata: {
                             id: 'test-1',
+                            contentLinkUuid: 'test-content-link-uuid',
                             isFragment: false,
                             isVisible: true,
                             isLocalized: true,
@@ -232,6 +234,58 @@ describe('design/react/ComponentDecorator', () => {
                     element?.click();
                 });
             }, 500);
+
+            describe('when there are multiple instances of the same component', () => {
+                it('should select only the clicked instance', async () => {
+                    // Render test-1 normally, but configure test-2 to have the same componentId as test-1
+                    // This simulates duplicate components (same type, different instances)
+                    const { element, root } = await testBed.render(TestComponent, {
+                        configFactory: () =>
+                            Promise.resolve({
+                                locale: 'en-US',
+                                components: {
+                                    'test-1': {
+                                        id: 'test-1',
+                                        name: 'Test Component',
+                                        type: 'commerce.test',
+                                    },
+                                    'test-2': {
+                                        id: 'test-1', // Same componentId as test-1
+                                        name: 'Test Component',
+                                        type: 'commerce.test',
+                                    },
+                                },
+                                componentTypes: {
+                                    'commerce.test': {
+                                        id: 'commerce.test',
+                                        name: 'Commerce Test',
+                                        label: 'Commerce Test',
+                                        image: 'https://via.placeholder.com/150',
+                                    },
+                                },
+                                labels: {},
+                                regions: {},
+                            }),
+                    });
+
+                    const instance1 = element;
+                    const instance2 = await testBed.findBySelector(root, '[data-testid="design-component-test-2"]');
+
+                    fireEvent.click(instance1);
+
+                    await waitFor(() => {
+                        expect(instance1.classList.contains('pd-design__decorator--selected')).toBe(true);
+                        expect(instance2.classList.contains('pd-design__decorator--selected')).toBe(false);
+                    });
+
+                    fireEvent.click(instance2);
+
+                    await waitFor(() => {
+                        expect(instance1.classList.contains('pd-design__decorator--selected')).toBe(false);
+                        expect(instance2.classList.contains('pd-design__decorator--selected')).toBe(true);
+                    });
+                });
+            });
         });
 
         describe('when the component is deleted', () => {
@@ -258,6 +312,7 @@ describe('design/react/ComponentDecorator', () => {
                     props: {
                         designMetadata: {
                             id: 'test-1',
+                            contentLinkUuid: 'test-1-uuid',
                             isFragment: false,
                             isVisible: true,
                             isLocalized: true,
@@ -287,7 +342,7 @@ describe('design/react/ComponentDecorator', () => {
                 scrollSpy = vi.fn();
                 testBed.afterRender(({ element, host }) => {
                     element.scrollIntoView = scrollSpy;
-                    host.focusComponent({ componentId: 'test-1' });
+                    host.focusComponent({ componentId: 'test-1', contentLinkUuid: 'test-1-uuid' });
                 });
             });
 
@@ -306,6 +361,7 @@ describe('design/react/ComponentDecorator', () => {
                     props: {
                         designMetadata: {
                             id: 'test-1',
+                            contentLinkUuid: 'test-content-link-uuid',
                             name: 'FallbackName',
                             isFragment: false,
                             isVisible: true,
@@ -345,6 +401,7 @@ describe('design/react/ComponentDecorator', () => {
                     props: {
                         designMetadata: {
                             id: 'test-1',
+                            contentLinkUuid: 'test-content-link-uuid',
                             name: 'FallbackName',
                             isFragment: false,
                             isVisible: true,
@@ -378,6 +435,7 @@ describe('design/react/ComponentDecorator', () => {
                     props: {
                         designMetadata: {
                             id: 'test-1',
+                            contentLinkUuid: 'test-content-link-uuid',
                             isFragment: false,
                             isVisible: true,
                             isLocalized: true,
@@ -413,6 +471,7 @@ describe('design/react/ComponentDecorator', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: false,
@@ -428,6 +487,7 @@ describe('design/react/ComponentDecorator', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: true,
@@ -443,6 +503,7 @@ describe('design/react/ComponentDecorator', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: false,
@@ -485,6 +546,7 @@ describe('design/react/ComponentDecorator', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: true,
@@ -528,6 +590,7 @@ describe('design/react/ComponentDecorator', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: false,
@@ -570,6 +633,7 @@ describe('design/react/ComponentDecorator', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: true,
                         isVisible: true,
                         isLocalized: false,
@@ -632,6 +696,7 @@ describe('design/react/ComponentDecorator', () => {
                 props: {
                     designMetadata: {
                         id: 'test-1',
+                        contentLinkUuid: 'test-content-link-uuid',
                         isFragment: false,
                         isVisible: true,
                         isLocalized: true,

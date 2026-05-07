@@ -227,7 +227,7 @@ async function fetchProductsInBasket(
                 allImages: true,
                 perPricebook: true,
                 currency,
-                // NOTE: if we do use `expand` parameter here, we can't pass in `bundled_products` for this API endpoint
+                // getProducts returns all expand fields by default (except page_meta_tags). No explicit expand needed.
                 // @sfdc-extension-block-start SFDC_EXT_BOPIS
                 // Include store inventory IDs for pickup items
                 ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
@@ -259,8 +259,9 @@ async function fetchProductsInBasket(
 
         // Check if this is a bundle product
         if (productItem.bundledProductItems && productItem.bundledProductItems.length > 0) {
-            // Reconstruct the product with bundledProducts structure
-            // Why? Because the products API endpoint does not allow us to pass in expand=['bundled_products']
+            // Reconstruct bundledProducts using basket line-item quantities (from bundledProductItems[].quantity)
+            // rather than catalog defaults. The basket tracks per-order quantities that may differ from the
+            // catalog bundle composition.
             const bundledProducts: ShopperProducts.schemas['BundledProduct'][] = productItem.bundledProductItems
                 .map((bundledItem) => {
                     const childProduct = bundledItem.productId ? products[bundledItem.productId] : null;

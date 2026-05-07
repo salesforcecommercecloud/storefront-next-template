@@ -191,25 +191,25 @@ return (
 
 When state is serialized into URL search parameters and updates trigger a `navigate()` call, `useNavigation()` provides a navigation-aware optimistic path. While a navigation is pending, `navigation.location` holds the target `Location` object. Reading the intended query parameters from that target reflects the user's action immediately, without any local state to manage.
 
-```tsx
+```jsx
 import { useNavigation } from 'react-router';
 
 function Filters({ items }: { items: string[] }) {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
-    // While a navigation is pending, read from the target URL.
-    // Once it settles, fall back to the server-provided props.
-    const effectiveItems = navigation.location
-        ? new URLSearchParams(navigation.location.search).getAll('item')
-        : items;
+  // While a navigation is pending, read from the target URL.
+  // Once it settles, fall back to the server-provided props.
+  const effectiveItems = navigation.location
+    ? new URLSearchParams(navigation.location.search).getAll('item')
+    : items;
 
-    return (
-        <ul>
-            {effectiveItems.map((item) => (
-                <li key={item}>{item}</li>
-            ))}
-        </ul>
-    );
+  return (
+    <ul>
+      {effectiveItems.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
 }
 ```
 
@@ -361,8 +361,8 @@ const fullName = `${firstName} ${lastName}`;
 
 // useMemo: justified for expensive ops or stable references
 const filteredItems = useMemo(
-    () => largeList.filter(item => item.active),
-    [largeList]
+  () => largeList.filter(item => item.active),
+  [largeList]
 );
 ```
 
@@ -428,6 +428,43 @@ export function useTheme() {
 <ThemeContext.Provider value={theme} />
 <LocaleContext.Provider value={locale} />
 ```
+
+### Context Selector Pattern
+
+When a context holds multiple values but a consumer only needs one slice, splitting contexts isn't always practical. Domain stores often have many fields and many consumers each needing different slices. The selector pattern addresses this demand by accepting a selector function and returning only the selected slice. Combined with [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore), subscriptions are per-slice: a consumer re-renders only when its slice changes.
+
+The context holds a reference to an external store, not the state itself. The hook drives the subscription via `useSyncExternalStore`:
+
+```jsx
+const StoreLocatorContext = createContext<StoreApi<StoreLocatorState> | null>(null);
+
+export function useStoreLocator<T>(selector: (state: StoreLocatorState) => T): T {
+  const store = useContext(StoreLocatorContext);
+  if (!store) {
+    throw new Error('useStoreLocator must be used within StoreLocatorProvider');
+  }
+  const getSnapshot = useCallback(() => selector(store.getState()), [store, selector]);
+  return useSyncExternalStore(store.subscribe, getSnapshot, getSnapshot);
+}
+```
+
+Consumers call the hook once per slice. The badge re-renders only when `isOpen` flips; the form re-renders only when `config` changes:
+
+```jsx
+function StoreLocatorBadge() {
+  const isOpen = useStoreLocator((s) => s.isOpen);
+  const close = useStoreLocator((s) => s.close);
+  // ...
+}
+
+function StoreLocatorForm() {
+  const config = useStoreLocator((s) => s.config);
+  // ...
+}
+```
+
+> [!NOTE]
+> React's `useContext` doesn't support selectors natively — every consumer re-renders on any context value change. A selector hook that only wraps `useContext` is a convention and doesn't, by itself, skip renders. Actual render memoization requires either `useSyncExternalStore` (as shown earlier, which is tearing-safe and concurrent-mode correct), or `React.memo` on the consuming component, combined with a referentially stable selector result. For high-frequency updates on large domain stores, prefer the `useSyncExternalStore` approach.
 
 ### Global Client State via useSyncExternalStore()
 

@@ -158,7 +158,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                             {t('promoCode.accordionTitle')}
                         </span>
                     </AccordionTrigger>
-                    <AccordionContent className="px-0 pt-2 pb-0">
+                    <AccordionContent className="px-0 pt-2 pb-2">
                         <Form {...form}>
                             <form onSubmit={(e) => void handleSubmit(e)} data-testid="promo-code-form">
                                 <PromoCodeFields form={form} applyFetcher={applyFetcher} />

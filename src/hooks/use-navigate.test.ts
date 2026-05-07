@@ -15,6 +15,7 @@
  */
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { getSiteRef, mockSiteObject } from '@/test-utils/config';
 import { useNavigate } from './use-navigate';
 
 const mockRouterNavigate = vi.fn();
@@ -40,8 +41,8 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 
 vi.mock('@/hooks/use-current-site-and-locale-ref', () => ({
     useCurrentSiteAndLocaleRef: () => ({
-        siteRef: 'global',
-        localeRef: 'en-GB',
+        siteRef: getSiteRef(),
+        localeRef: mockSiteObject.defaultLocale,
     }),
 }));
 

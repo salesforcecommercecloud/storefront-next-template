@@ -15,10 +15,12 @@
  */
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { NormalizedApiError } from './normalized-api-error';
 import { fetchProductById, fetchProductsByIds } from './products.server';
 
 const mockGetProduct = vi.fn();
 const mockGetProducts = vi.fn();
+const mockLoggerError = vi.fn();
 
 vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
@@ -29,11 +31,21 @@ vi.mock('@/lib/api-clients.server', () => ({
     })),
 }));
 
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: mockLoggerError,
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
+}));
+
 describe('fetchProductById', () => {
     const mockContext = {} as any;
 
     beforeEach(() => {
         vi.clearAllMocks();
+        mockLoggerError.mockClear();
     });
 
     test('returns null for empty string', async () => {
@@ -78,34 +90,63 @@ describe('fetchProductById', () => {
         expect(result).toBeNull();
     });
 
-    test('throws ApiError for 404 (caller must handle)', async () => {
+    test('throws NormalizedApiError for 404 (caller must handle)', async () => {
         const error404 = new ApiError({
             status: 404,
             statusText: 'Not Found',
             headers: new Headers(),
             body: { type: 'Not Found', title: 'Product Not Found', detail: 'Product not found' },
-            rawBody: '{}',
+            rawBody: JSON.stringify({ detail: 'Product not found' }),
             url: 'https://api.example.com/products/missing',
             method: 'GET',
         });
         mockGetProduct.mockRejectedValue(error404);
 
-        await expect(fetchProductById(mockContext, 'missing')).rejects.toThrow(error404);
+        await expect(fetchProductById(mockContext, 'missing')).rejects.toThrow(NormalizedApiError);
+        await expect(fetchProductById(mockContext, 'missing')).rejects.toThrow('Product not found');
     });
 
-    test('throws ApiError for auth failures (caller must handle)', async () => {
+    test('throws NormalizedApiError for auth failures (caller must handle)', async () => {
         const error401 = new ApiError({
             status: 401,
             statusText: 'Unauthorized',
             headers: new Headers(),
             body: { type: 'Unauthorized', title: 'Unauthorized', detail: 'Invalid credentials' },
-            rawBody: '{}',
+            rawBody: JSON.stringify({ detail: 'Invalid credentials' }),
             url: 'https://api.example.com/products/sku-123',
             method: 'GET',
         });
         mockGetProduct.mockRejectedValue(error401);
 
-        await expect(fetchProductById(mockContext, 'sku-123')).rejects.toThrow(error401);
+        await expect(fetchProductById(mockContext, 'sku-123')).rejects.toThrow(NormalizedApiError);
+        await expect(fetchProductById(mockContext, 'sku-123')).rejects.toMatchObject({ status: 401 });
+    });
+
+    test('throws NormalizedApiError when API call fails with non-API error', async () => {
+        mockGetProduct.mockRejectedValue(new TypeError('Network failure'));
+
+        await expect(fetchProductById(mockContext, 'sku-123')).rejects.toThrow(NormalizedApiError);
+        await expect(fetchProductById(mockContext, 'sku-123')).rejects.toThrow('Network failure');
+    });
+
+    test('logs operation context when API call fails', async () => {
+        const error500 = new ApiError({
+            status: 500,
+            statusText: 'Internal Server Error',
+            headers: new Headers(),
+            body: { type: 'Server Error', title: 'Server Error', detail: 'Server error' },
+            rawBody: JSON.stringify({ detail: 'Server error' }),
+            url: 'https://api.example.com/products/sku-failed',
+            method: 'GET',
+        });
+        mockGetProduct.mockRejectedValue(error500);
+
+        await fetchProductById(mockContext, 'sku-failed', { allImages: true }).catch(() => {});
+
+        expect(mockLoggerError).toHaveBeenCalledWith(
+            'shopperProducts.getProduct failed',
+            expect.objectContaining({ productId: 'sku-failed' })
+        );
     });
 });
 

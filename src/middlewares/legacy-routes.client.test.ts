@@ -18,6 +18,7 @@ import { type DataStrategyResult, RouterContextProvider } from 'react-router';
 import legacyRoutesMiddleware, { matchesRoutePattern } from '@/middlewares/legacy-routes.client';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
+import { mockAltSiteObject } from '@/test-utils/config';
 
 describe('legacyRoutesMiddleware', () => {
     let mockContext: RouterContextProvider;
@@ -191,8 +192,8 @@ describe('legacyRoutesMiddleware', () => {
         });
 
         test('should only match exact paths configured in legacyRoutes', async () => {
-            // /s/ is in legacyRoutes, but /s/RefArch/en_US/Cart-Show is not
-            const request = new Request('https://example.com/s/RefArch/en_US/Cart-Show');
+            // /s/ is in legacyRoutes, but a full legacy path like /s/<siteId>/en_US/Cart-Show is not
+            const request = new Request(`https://example.com/s/${mockAltSiteObject.id}/en_US/Cart-Show`);
 
             await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 

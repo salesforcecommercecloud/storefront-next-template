@@ -19,6 +19,7 @@ import userEvent from '@testing-library/user-event';
 import ShippingOptions from './shipping-options';
 import { useShippingOptions } from './use-shipping-options';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import { mockAltSiteObject } from '@/test-utils/config';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const render = (ui: React.ReactElement, options?: RenderOptions) =>
@@ -33,9 +34,9 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: 'RefArch', defaultLocale: 'en-US' },
-            language: 'en-US',
-            currency: 'USD',
+            site: { id: mockAltSiteObject.id, defaultLocale: mockAltSiteObject.defaultLocale },
+            language: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
         })),
     };
 });

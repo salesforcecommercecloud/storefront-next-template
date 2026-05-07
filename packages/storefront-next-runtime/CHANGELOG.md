@@ -1,5 +1,16 @@
-## v0.4.0-dev (Apr 24, 2026)
+## v1.0.0-dev
 
+- Exclude OTP endpoints from auth token invalidation — 401 responses from `/oauth2/otp/` now surface as normal API errors instead of triggering `AuthTokenInvalidError` ([#1409](https://github.com/commerce-emu/storefront-next/pull/1409))
+- Update shopper-customers OAS from v1.3.2 to v1.8.0 and replace shopper-login OAS v1.42.2 with auth OAS v1.47.0 (@W-21451728) ([#1475](https://github.com/commerce-emu/storefront-next/pull/1475))
+
+## v0.4.0 (May 5, 2026)
+
+- Design layer: Add `contentLinkUuid` support for duplicate component handling (@W-21609036)
+  - Make `contentLinkUuid` required on component interaction events (select, delete, move, hover, focus)
+  - Add `fragmentId` support to drag-and-drop events for content block instances
+  - Design state fields (`selected`, `hovered`, `focused`) now expose `contentLinkUuid` as the primary identifier instead of `componentId`
+  - Regions track `contentLinkUuids` instead of `componentIds`, enabling correct self-drop detection and drag validation for duplicate components
+- Bump `@salesforce/mrt-utilities` to 0.1.6 to fix strict `express@5.1.0` peer dependency (now accepts `^4.0.0 || ^5.0.0`)
 - Update Shopper Experience API spec to v1.3.0 with `contentLinkUuid` field support (@W-21280780)
   - Add `contentLinkUuid` to Component schema for content link UUID tracking
   - Add `name`, `fragment`, `localized`, `visible` fields to Component schema
@@ -8,9 +19,8 @@
 - Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Add `/i18n` and `/i18n/client` subpath exports: `createI18nMiddleware`, `getTranslation`, `getLocale`, `mockI18nContext`, `initI18next`, and shared `defaultInterpolation`
-
-## v0.4.0-dev (Apr 07, 2026)
-
+- Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
+- Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Add `CommerceAgentEngagementEvent` (`commerce_agent_engagement`) to the `AnalyticsEvent` union for agentic commerce usage tracking (`surface`: `header` | `search`)
 - Add login preferences middleware and context to data store (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
 - Extend `SiteProvider` to accept `site`, `language`, `locale`, `currency` props and `useSite()` to return `SiteContextValue` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))

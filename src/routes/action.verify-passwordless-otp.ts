@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Route } from './+types/action.verify-otp';
+import type { Route } from './+types/action.verify-passwordless-otp';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
@@ -89,7 +89,7 @@ export async function action({ request, context }: Route.ActionArgs) {
             mergedBasket = await mergeBasket(context);
         } catch (error) {
             mergedBasket = undefined;
-            logger.error('VerifyOtp: basket merge failed', { error });
+            logger.error('VerifyPasswordlessOtp: basket merge failed', { error });
         }
 
         if (mergedBasket) {
@@ -104,17 +104,17 @@ export async function action({ request, context }: Route.ActionArgs) {
                 updateBasketResource(context, recalculatedBasket);
             }
         } catch (error) {
-            logger.error('VerifyOtp: basket recalculation after authentication failed', { error });
+            logger.error('VerifyPasswordlessOtp: basket recalculation after authentication failed', { error });
         }
 
-        logger.info('VerifyOtp: succeeded');
+        logger.info('VerifyPasswordlessOtp: succeeded');
         return Response.json({
             success: true,
             message: 'Login successful',
             tokenResponse,
         });
     } catch (error: unknown) {
-        logger.error('VerifyOtp: failed', { error });
+        logger.error('VerifyPasswordlessOtp: failed', { error });
         const errorMessage = extractErrorMessage(error);
         return Response.json(
             {
