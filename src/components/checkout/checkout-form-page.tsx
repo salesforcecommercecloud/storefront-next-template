@@ -668,7 +668,7 @@ export default function CheckoutFormPage({
         step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT) && !shippingBlocked;
 
     return (
-        <div className="min-h-screen bg-background pb-20 lg:pb-0">
+        <div className="bg-background">
             <UITarget targetId="sfcc.checkout.page.before" />
             <div className="section-container py-8">
                 <Typography variant="h2" as="h1" className="mb-8">
@@ -876,6 +876,7 @@ export default function CheckoutFormPage({
                                 <UITarget targetId="sfcc.checkout.placeOrder.before" />
                                 <UITarget targetId="sfcc.checkout.placeOrder">
                                     <form
+                                        data-place-order-bar
                                         onSubmit={handlePlaceOrderSubmit}
                                         className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
                                         <Button

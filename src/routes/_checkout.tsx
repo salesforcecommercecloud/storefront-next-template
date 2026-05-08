@@ -28,12 +28,22 @@ import Footer from '@/components/footer';
  */
 export default function CheckoutLayout() {
     return (
-        <>
+        <div className="group/checkout flex flex-col grow">
             <Header variant="checkout" />
-            <main className="grow">
+            <main className="lg:grow">
                 <Outlet />
             </main>
             <Footer variant="checkout" />
-        </>
+            <PlaceOrderBarSpacer />
+        </div>
     );
+}
+
+/**
+ * Spacer matching the fixed Place Order bar height so the footer is fully
+ * visible above the bar when scrolled to the bottom. Only rendered on mobile
+ * when the fixed Place Order bar is present.
+ */
+function PlaceOrderBarSpacer() {
+    return <div className="hidden h-20 group-has-[[data-place-order-bar]]/checkout:max-lg:block" aria-hidden="true" />;
 }
