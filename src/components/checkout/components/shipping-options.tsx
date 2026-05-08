@@ -60,7 +60,7 @@ export default function ShippingOptions({
     } = useShippingOptions({ onSubmit, isLoading, actionData, shippingMethods, isEditing });
 
     const stepTitle = (
-        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('shippingOptions.title')}</span>
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('shippingOptions.title')}</span>
     );
 
     return (

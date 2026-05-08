@@ -503,7 +503,7 @@ export const InProductCard: Story = {
         <div className="w-64 p-4 border rounded-none">
             <div className="mb-4">
                 <div className="w-full h-48 bg-muted rounded mb-2" />
-                <h3 className="font-semibold text-lg">Premium Cotton T-Shirt</h3>
+                <h3 className="font-semibold text-sm">Premium Cotton T-Shirt</h3>
                 <p className="text-sm text-muted-foreground mb-2">$29.99</p>
             </div>
             <div className="flex justify-between items-center">

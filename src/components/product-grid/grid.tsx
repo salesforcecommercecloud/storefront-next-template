@@ -55,7 +55,7 @@ function NoProductsMessage({ criticalSize, nonCriticalSize }: { criticalSize: nu
     }
     return (
         <div className="col-span-full text-center py-12">
-            <p className="text-lg text-muted-foreground">{t('noProductsFound')}</p>
+            <p className="text-sm text-muted-foreground">{t('noProductsFound')}</p>
         </div>
     );
 }

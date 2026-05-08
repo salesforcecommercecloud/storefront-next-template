@@ -226,7 +226,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                 <SheetTitle
                     id={titleId}
                     tabIndex={-1}
-                    className="text-3xl font-bold leading-none tracking-[-0.75px] font-sans text-foreground focus:outline-none">
+                    className="text-3xl font-bold leading-10 tracking-[-0.75px] font-sans text-card-foreground focus:outline-none">
                     {t('cartTitle')}
                     {totalItems > 0 && ` (${totalItems})`}
                 </SheetTitle>
@@ -291,7 +291,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     </>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center px-6">
-                        <p className="text-lg text-muted-foreground">{tMiniCart('emptyCart')}</p>
+                        <p className="text-sm text-muted-foreground">{tMiniCart('emptyCart')}</p>
                     </div>
                 )}
             </div>
@@ -302,7 +302,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     {isCartUpdating && <p className="text-xs text-muted-foreground">{tMiniCart('loading')}</p>}
                     <Button
                         asChild
-                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 font-sans rounded-none shadow-2xs"
+                        className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 text-primary-foreground font-sans rounded-none shadow-2xs"
                         size="lg">
                         <Link
                             to="/checkout"
@@ -336,7 +336,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                         <Button
                             asChild
                             variant="ghost"
-                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-normal rounded-none"
+                            className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-semibold leading-5 text-foreground rounded-none"
                             size="lg">
                             <Link to="/cart" onClick={onClose}>
                                 {tMiniCart('viewCart')}

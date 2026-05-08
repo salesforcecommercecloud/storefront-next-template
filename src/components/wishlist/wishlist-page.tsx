@@ -82,9 +82,7 @@ export function WishlistSkeleton(): ReactElement {
         <div className="space-y-6">
             {/* Header card skeleton */}
             <Card className="px-6 py-3 gap-0 bg-card border-border rounded-none shadow-none">
-                <h1
-                    className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
-                    tabIndex={0}>
+                <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                     {t('navigation.wishlist')}
                 </h1>
                 <Skeleton className="h-4 w-48" />
@@ -199,9 +197,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
             {/* Page Header Card */}
             <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
-                    <h1
-                        className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
-                        tabIndex={0}>
+                    <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('wishlist.pageTitle')}
                     </h1>
                     <p className="text-sm text-muted-foreground">{t('wishlist.pageSubtitle')}</p>
@@ -213,9 +209,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
                 {/* Header: title + item count + sort/filter — separator (border-b) sits below */}
                 <div className="p-4 space-y-3 border-b border-border">
                     <div className="space-y-1">
-                        <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground">
-                            {t('wishlist.savedItems')}
-                        </h2>
+                        <h2 className="text-lg font-semibold text-foreground">{t('wishlist.savedItems')}</h2>
                         {visibleItems.length > 0 && (
                             <p className="text-sm text-muted-foreground">
                                 {t('wishlist.itemCount', { count: visibleItems.length })}
@@ -235,7 +229,7 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
                 {visibleItems.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
                         <Heart className="w-16 h-16 text-muted-foreground/40 mb-4" />
-                        <h3 className="text-lg font-medium text-foreground mb-2">{t('wishlist.emptyTitle')}</h3>
+                        <h3 className="text-sm font-medium text-foreground mb-2">{t('wishlist.emptyTitle')}</h3>
                         <p className="text-muted-foreground">{t('wishlist.emptySubtitle')}</p>
                     </div>
                 ) : displayItems.length === 0 ? (

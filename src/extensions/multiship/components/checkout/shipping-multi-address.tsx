@@ -367,7 +367,7 @@ export default function ShippingMultiAddress({
     };
 
     const stepTitle = (
-        <span className="text-lg font-semibold text-foreground">
+        <span className="text-sm font-semibold text-foreground">
             {tMultiship('checkout.shippingMultiAddressTitle')}
         </span>
     );
@@ -407,7 +407,7 @@ export default function ShippingMultiAddress({
                                         />
 
                                         <div className="flex-1">
-                                            <Typography variant="h3" className="font-bold text-lg mb-1">
+                                            <Typography variant="h3" className="font-bold text-sm mb-1">
                                                 {productItem?.productName}
                                             </Typography>
                                             <div className="text-sm text-muted-foreground space-y-1">
@@ -422,11 +422,11 @@ export default function ShippingMultiAddress({
                                             </div>
                                         </div>
 
-                                        <Typography variant="h3" className="font-bold text-lg">
+                                        <Typography variant="h3" className="font-bold text-sm">
                                             <CurrentPrice
                                                 price={currentPrice}
                                                 currency={currency}
-                                                className="text-foreground text-lg font-bold"
+                                                className="text-foreground text-sm font-bold"
                                             />
                                         </Typography>
                                     </div>

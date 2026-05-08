@@ -137,7 +137,7 @@ function MockedTrackingConsentBanner({
                 </button>
                 <div className="p-6 pt-6 pr-10">
                     <div className="space-y-2">
-                        <h2 id="tracking-consent-banner-title" className="text-lg font-semibold">
+                        <h2 id="tracking-consent-banner-title" className="text-sm font-semibold">
                             {mockT('title')}
                         </h2>
                         <p id="tracking-consent-banner-description" className="text-sm text-muted-foreground">

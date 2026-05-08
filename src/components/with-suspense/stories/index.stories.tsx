@@ -38,7 +38,7 @@ function WithSuspenseStoryHarness({ children }: { children: ReactNode }): ReactE
 function ExampleComponent({ data, message }: { data?: { name: string }; message?: string }) {
     return (
         <div className="p-6">
-            <h2 className="text-xl font-bold mb-2">{data?.name || message || 'Loaded'}</h2>
+            <h2 className="text-2xl font-bold mb-2">{data?.name || message || 'Loaded'}</h2>
             <p className="text-muted-foreground">This component was loaded with Suspense.</p>
         </div>
     );

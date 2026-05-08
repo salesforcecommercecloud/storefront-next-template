@@ -51,7 +51,7 @@ exports[`SocialLoginButtons stories snapshot > CustomProvider story renders and 
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔑
           </span>
@@ -79,7 +79,7 @@ exports[`SocialLoginButtons stories snapshot > CustomProvider story renders and 
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔑
           </span>
@@ -107,7 +107,7 @@ exports[`SocialLoginButtons stories snapshot > CustomProvider story renders and 
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔑
           </span>
@@ -170,7 +170,7 @@ exports[`SocialLoginButtons stories snapshot > Default story renders and matches
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🍎
           </span>
@@ -198,7 +198,7 @@ exports[`SocialLoginButtons stories snapshot > Default story renders and matches
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔍
           </span>
@@ -278,7 +278,7 @@ exports[`SocialLoginButtons stories snapshot > InLoginForm story renders and mat
             type="submit"
           >
             <span
-              class="mr-2 text-lg"
+              class="mr-2 text-sm"
             >
               🍎
             </span>
@@ -306,7 +306,7 @@ exports[`SocialLoginButtons stories snapshot > InLoginForm story renders and mat
             type="submit"
           >
             <span
-              class="mr-2 text-lg"
+              class="mr-2 text-sm"
             >
               🔍
             </span>
@@ -432,7 +432,7 @@ exports[`SocialLoginButtons stories snapshot > MultipleProviders story renders a
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🍎
           </span>
@@ -460,7 +460,7 @@ exports[`SocialLoginButtons stories snapshot > MultipleProviders story renders a
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔍
           </span>
@@ -488,7 +488,7 @@ exports[`SocialLoginButtons stories snapshot > MultipleProviders story renders a
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔑
           </span>
@@ -516,7 +516,7 @@ exports[`SocialLoginButtons stories snapshot > MultipleProviders story renders a
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔑
           </span>
@@ -585,7 +585,7 @@ exports[`SocialLoginButtons stories snapshot > SingleProvider story renders and 
           type="submit"
         >
           <span
-            class="mr-2 text-lg"
+            class="mr-2 text-sm"
           >
             🔍
           </span>

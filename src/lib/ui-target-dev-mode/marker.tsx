@@ -119,7 +119,7 @@ export function UITargetDevMarker({ targetId, children, __file__, __hasChildren_
                                 e.stopPropagation();
                                 setExpanded(false);
                             }}
-                            className="text-lg leading-none"
+                            className="text-sm leading-none"
                             style={{ color: C.gray400 }}>
                             ×
                         </button>

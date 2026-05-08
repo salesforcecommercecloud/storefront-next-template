@@ -1,11 +1,11 @@
 :root {
     /* header & navigation */
-    --header-background: #000000;
+    --header-background: #18181B;
     --header-foreground: #ffffff;
     --header-border: rgba(255, 255, 255, 0.1);
     --header-divider: rgba(255, 255, 255, 0.1);
     /* header menu dropdowns */
-    --header-menu-background: #000000;
+    --header-menu-background: #18181B;
     --header-menu-foreground: #ffffff;
     --header-menu-border: rgba(255, 255, 255, 0.1);
     --header-menu-hover-background: #ffffff;

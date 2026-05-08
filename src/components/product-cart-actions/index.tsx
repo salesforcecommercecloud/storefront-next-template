@@ -176,7 +176,7 @@ export default function ProductCartActions({
                         data-testid="add-to-cart"
                         onClick={() => void onAddOrUpdateToCart()}
                         disabled={!canAddToCart || isAddingToOrUpdatingCart}
-                        className="w-full"
+                        className="w-full text-base font-semibold leading-6"
                         size="lg">
                         {isEditMode ? t('updateCart') : isAddingToOrUpdatingCart ? t('addingToCart') : t('addToCart')}
                     </Button>

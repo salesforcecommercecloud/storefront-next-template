@@ -361,7 +361,7 @@ export default function ContactInfo({
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     const stepTitle = (
-        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('contactInfo.title')}</span>
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('contactInfo.title')}</span>
     );
 
     const isSendingOtp =

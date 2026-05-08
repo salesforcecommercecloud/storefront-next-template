@@ -86,7 +86,7 @@ exports[`ShareButton stories snapshot > InProductCard story renders and matches 
         class="w-full h-48 bg-muted rounded mb-2"
       />
       <h3
-        class="font-semibold text-lg"
+        class="font-semibold text-sm"
       >
         Premium Cotton T-Shirt
       </h3>

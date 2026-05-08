@@ -18,7 +18,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
           data-testid="sf-order-summary"
         >
           <h2
-            class="tracking-tight text-left text-base font-semibold text-foreground"
+            class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
             id="order-summary-heading-desktop"
           >
             Order Summary
@@ -32,7 +32,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
             role="region"
           >
             <div
-              class="space-y-2 text-sm"
+              class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
             >
               <div
                 class="flex justify-between items-center"
@@ -61,16 +61,12 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
                 </span>
               </div>
               <div
-                class="flex justify-between items-center"
+                class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
               >
-                <span
-                  class="font-bold"
-                >
+                <span>
                   Estimated Total
                 </span>
-                <span
-                  class="font-bold"
-                >
+                <span>
                   £81.00
                 </span>
               </div>
@@ -109,7 +105,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
                       type="button"
                     >
                       <span
-                        class="text-left text-sm font-medium text-primary"
+                        class="text-left text-sm font-medium leading-5 text-card-foreground"
                       >
                         Enter a Promotion Code
                       </span>

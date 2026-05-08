@@ -14,7 +14,7 @@ exports[`OrderList stories snapshot > BodyEmpty story renders and matches snapsh
         class="py-4 space-y-4 flex flex-col items-center justify-center"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-muted-foreground w-fit"
+          class="text-2xl font-semibold tracking-tight text-left text-muted-foreground w-fit"
         >
           You haven't placed an order yet. Once you place an order the details will show up here.
         </h4>
@@ -57,7 +57,7 @@ exports[`OrderList stories snapshot > BodyWithCustomEmptyMessage story renders a
         class="py-4 space-y-4 flex flex-col items-center justify-center"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-muted-foreground w-fit"
+          class="text-2xl font-semibold tracking-tight text-left text-muted-foreground w-fit"
         >
           No recent purchases found.
         </h4>
@@ -1200,7 +1200,7 @@ exports[`OrderList stories snapshot > Default story renders and matches snapshot
         data-slot="card-content"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+          class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
           tabindex="0"
         >
           Order History
@@ -2323,7 +2323,7 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
         data-slot="card-content"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+          class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
           tabindex="0"
         >
           Order History
@@ -2347,7 +2347,7 @@ exports[`OrderList stories snapshot > EmptyState story renders and matches snaps
           class="py-4 space-y-4 flex flex-col items-center justify-center"
         >
           <h4
-            class="text-xl font-semibold tracking-tight text-left text-muted-foreground w-fit"
+            class="text-2xl font-semibold tracking-tight text-left text-muted-foreground w-fit"
           >
             You haven't placed an order yet. Once you place an order the details will show up here.
           </h4>
@@ -2388,7 +2388,7 @@ exports[`OrderList stories snapshot > HeaderWithSubtitle story renders and match
       data-slot="card-content"
     >
       <h4
-        class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+        class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
         tabindex="0"
       >
         Order History
@@ -2414,7 +2414,7 @@ exports[`OrderList stories snapshot > HeaderWithoutSubtitle story renders and ma
       data-slot="card-content"
     >
       <h4
-        class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+        class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
         tabindex="0"
       >
         My Orders
@@ -2438,7 +2438,7 @@ exports[`OrderList stories snapshot > WithManyProducts story renders and matches
         data-slot="card-content"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+          class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
           tabindex="0"
         >
           Large Order
@@ -2818,7 +2818,7 @@ exports[`OrderList stories snapshot > WithPickupLocation story renders and match
         data-slot="card-content"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+          class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
           tabindex="0"
         >
           Orders with Pickup
@@ -3081,7 +3081,7 @@ exports[`OrderList stories snapshot > WithProductImages story renders and matche
         data-slot="card-content"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+          class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
           tabindex="0"
         >
           Orders with Product Images
@@ -3287,7 +3287,7 @@ exports[`OrderList stories snapshot > WithoutProductImages story renders and mat
         data-slot="card-content"
       >
         <h4
-          class="text-xl font-semibold tracking-tight text-left text-foreground mb-1.5"
+          class="text-2xl font-semibold tracking-tight text-left text-foreground mb-1.5"
           tabindex="0"
         >
           Orders Without Images

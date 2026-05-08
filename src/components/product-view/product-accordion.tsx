@@ -31,7 +31,7 @@ export default function ProductAccordion({ product }: ProductAccordionProps): Re
             <Accordion type="multiple" className="w-full">
                 {/* Product Details */}
                 <AccordionItem value="details">
-                    <AccordionTrigger className="text-left font-semibold text-lg">
+                    <AccordionTrigger className="text-left font-semibold text-sm">
                         {t('productDetails')}
                     </AccordionTrigger>
                     <AccordionContent>
@@ -66,7 +66,7 @@ export default function ProductAccordion({ product }: ProductAccordionProps): Re
 
                 {/* Size & Fit */}
                 <AccordionItem value="size-fit">
-                    <AccordionTrigger className="text-left font-semibold text-lg">{t('sizeAndFit')}</AccordionTrigger>
+                    <AccordionTrigger className="text-left font-semibold text-sm">{t('sizeAndFit')}</AccordionTrigger>
                     <AccordionContent>
                         <div className="text-muted-foreground">
                             <p>{t('sizeAndFitComingSoon')}</p>
@@ -77,7 +77,7 @@ export default function ProductAccordion({ product }: ProductAccordionProps): Re
 
                 {/* Shipping & Returns */}
                 <AccordionItem value="shipping">
-                    <AccordionTrigger className="text-left font-semibold text-lg">
+                    <AccordionTrigger className="text-left font-semibold text-sm">
                         {t('shippingAndReturns')}
                     </AccordionTrigger>
                     <AccordionContent>
@@ -101,7 +101,7 @@ export default function ProductAccordion({ product }: ProductAccordionProps): Re
                 {/* Care Instructions */}
                 {product.type?.item && (
                     <AccordionItem value="care">
-                        <AccordionTrigger className="text-left font-semibold text-lg">
+                        <AccordionTrigger className="text-left font-semibold text-sm">
                             {t('careInstructions')}
                         </AccordionTrigger>
                         <AccordionContent>

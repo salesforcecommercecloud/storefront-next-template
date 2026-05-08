@@ -163,7 +163,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                         <div className="lg:hidden">
                             <Card className="bg-muted/30 rounded-none shadow-none">
                                 <CardContent className="p-4">
-                                    <h2 className="text-lg font-semibold text-foreground mb-4">{t('myAccount')}</h2>
+                                    <h2 className="text-sm font-semibold text-foreground mb-4">{t('myAccount')}</h2>
                                     <nav className="space-y-1">
                                         <AccountNavList items={navigationItems} isMobile={true} />
                                         <AccountNavList items={[logoutItem]} isMobile={true} />
@@ -174,7 +174,7 @@ export default function AccountPage({ loaderData }: { loaderData: AccountPageDat
                         {/* Desktop Sidebar Navigation */}
                         <div className="hidden lg:block">
                             <div className="space-y-4">
-                                <h2 className="text-xl font-semibold text-foreground">{t('myAccount')}</h2>
+                                <h2 className="text-2xl font-semibold text-foreground">{t('myAccount')}</h2>
                                 <nav className="space-y-1">
                                     <AccountNavList items={navigationItems} />
                                     <AccountNavList items={[logoutItem]} />

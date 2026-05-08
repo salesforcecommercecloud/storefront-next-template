@@ -216,12 +216,12 @@ export const WithDisplayName: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Find the display name span specifically (not the swatch content)
-        const displayNameContainer = await canvas.findByText(/material/i, {}, { timeout: 5000 });
-        await expect(displayNameContainer).toBeInTheDocument();
+        // Find the label span specifically (not the swatch content)
+        const labelSpan = await canvas.findByText(/material:/i, {}, { timeout: 5000 });
+        await expect(labelSpan).toBeInTheDocument();
 
         // Check that display name appears next to the label
-        const displayName = canvasElement.querySelector('span.font-semibold')?.nextElementSibling;
+        const displayName = labelSpan.nextElementSibling;
         await expect(displayName?.textContent).toContain('Cotton');
     },
 };

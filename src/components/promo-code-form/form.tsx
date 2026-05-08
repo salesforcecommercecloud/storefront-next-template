@@ -154,7 +154,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                     <AccordionTrigger
                         onClick={() => form.reset()}
                         className="justify-start gap-2 pt-1 pb-0 [&>svg]:text-primary">
-                        <span className="text-left text-sm font-medium text-primary">
+                        <span className="text-left text-sm font-medium leading-5 text-card-foreground">
                             {t('promoCode.accordionTitle')}
                         </span>
                     </AccordionTrigger>
@@ -172,7 +172,9 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                 <div className="space-y-1">
                     {basket.couponItems?.map((item) => (
                         <div key={item.couponItemId} className="flex items-center justify-between py-1">
-                            <Badge variant="secondary" className="gap-1 rounded-none text-xs font-semibold">
+                            <Badge
+                                variant="secondary"
+                                className="gap-1 rounded-none text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
                                 <Check className="size-3" />
                                 {item.code}
                                 <CloseIcon
@@ -191,7 +193,7 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
                                         .filter((adj) => adj.couponCode === item.code)
                                         .reduce((sum, adj) => sum + (adj.price ?? 0), 0);
                                     return couponTotal !== 0 ? (
-                                        <span className="text-sm text-muted-foreground">
+                                        <span className="text-sm font-normal leading-5 text-muted-foreground text-right">
                                             {formatCurrency(couponTotal, i18n.language, basket.currency ?? 'USD')}
                                         </span>
                                     ) : null;

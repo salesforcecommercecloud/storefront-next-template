@@ -28,13 +28,13 @@ exports[`Typography stories snapshot > AllVariants story renders and matches sna
         Heading 3
       </h3>
       <h4
-        class="text-xl font-semibold tracking-tight text-left"
+        class="text-2xl font-semibold tracking-tight text-left"
         data-typography="h4"
       >
         Heading 4
       </h4>
       <h5
-        class="text-lg font-semibold tracking-tight text-left"
+        class="text-sm font-semibold tracking-tight text-left"
         data-typography="h5"
       >
         Heading 5
@@ -52,13 +52,13 @@ exports[`Typography stories snapshot > AllVariants story renders and matches sna
         Paragraph text with regular styling.
       </p>
       <p
-        class="text-xl text-muted-foreground text-left"
+        class="text-2xl text-muted-foreground text-left"
         data-typography="lead"
       >
         Lead paragraph with larger text.
       </p>
       <p
-        class="text-lg font-semibold text-left"
+        class="text-sm font-semibold text-left"
         data-typography="large"
       >
         Large text
@@ -88,7 +88,7 @@ exports[`Typography stories snapshot > AllVariants story renders and matches sna
         inline code
       </code>
       <h3
-        class="text-lg font-medium text-foreground leading-tight text-left"
+        class="text-sm font-medium text-foreground leading-tight text-left"
         data-typography="product-title"
       >
         Product Title
@@ -116,7 +116,7 @@ exports[`Typography stories snapshot > AsChildButton story renders and matches s
     data-typography="root"
   >
     <button
-      class="text-xl font-semibold tracking-tight text-left px-4 py-2 bg-primary text-primary-foreground rounded"
+      class="text-2xl font-semibold tracking-tight text-left px-4 py-2 bg-primary text-primary-foreground rounded"
       data-testid="typography-button"
       type="button"
     >
@@ -132,7 +132,7 @@ exports[`Typography stories snapshot > AsChildLink story renders and matches sna
     data-typography="root"
   >
     <a
-      class="text-xl text-muted-foreground text-left underline text-primary"
+      class="text-2xl text-muted-foreground text-left underline text-primary"
       data-testid="typography-link"
       href="#"
     >

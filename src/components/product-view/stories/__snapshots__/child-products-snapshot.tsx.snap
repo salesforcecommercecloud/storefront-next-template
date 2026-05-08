@@ -18,7 +18,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
           data-slot="card-header"
         >
           <div
-            class="font-semibold text-lg"
+            class="text-xl font-bold text-card-foreground tracking-tight"
             data-slot="card-title"
           >
             Turquoise and Gold Bracelet
@@ -29,7 +29,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             <span
               aria-label="Current price: £38.00"
               aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
             >
               £38.00
             </span>
@@ -94,11 +94,9 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Color
                   :
                 </span>
@@ -119,7 +117,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <div
                       aria-label="Turquoise and Gold Bracelet, Gold, swatch"
@@ -152,7 +150,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
           data-slot="card-header"
         >
           <div
-            class="font-semibold text-lg"
+            class="text-xl font-bold text-card-foreground tracking-tight"
             data-slot="card-title"
           >
             Turquoise and Gold Necklace
@@ -163,7 +161,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             <span
               aria-label="Current price: £45.00"
               aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
             >
               £45.00
             </span>
@@ -228,11 +226,9 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Color
                   :
                 </span>
@@ -253,7 +249,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <div
                       aria-label="Turquoise and Gold Necklace, Gold, swatch"
@@ -286,7 +282,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
           data-slot="card-header"
         >
           <div
-            class="font-semibold text-lg"
+            class="text-xl font-bold text-card-foreground tracking-tight"
             data-slot="card-title"
           >
             Turquoise and Gold Hoop Earring
@@ -297,7 +293,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             <span
               aria-label="Current price: £30.00"
               aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
             >
               £30.00
             </span>
@@ -362,11 +358,9 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Color
                   :
                 </span>
@@ -387,7 +381,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <div
                       aria-label="Turquoise and Gold Hoop Earring, Gold, swatch"
@@ -421,7 +415,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
           class="space-y-2"
         >
           <label
-            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
+            class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
             data-slot="label"
             for="quantity"
           >
@@ -432,7 +426,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
           >
             <button
               aria-label="Decrement Quantity for Turquoise Jewelry Bundle"
-              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-decrement"
               disabled=""
             >
@@ -440,7 +434,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             </button>
             <input
               aria-label="Quantity"
-              class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               min="1"
               step="1"
               type="number"
@@ -448,7 +442,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
             />
             <button
               aria-label="Increment Quantity for Turquoise Jewelry Bundle"
-              class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="quantity-increment"
             >
               +
@@ -508,12 +502,12 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                     class="flex flex-col"
                   >
                     <span
-                      class="text-xs font-medium text-foreground"
+                      class="text-sm font-medium leading-none text-foreground"
                     >
                       Deliver to
                     </span>
                     <p
-                      class="text-xs text-muted-foreground mt-0.5"
+                      class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                     >
                       Enter ZIP code to see delivery estimate
                     </p>
@@ -551,7 +545,7 @@ exports[`ChildProducts stories snapshot > ProductBundle story renders and matche
                     class="flex flex-col"
                   >
                     <span
-                      class="text-xs font-medium text-foreground"
+                      class="text-sm font-medium leading-none text-foreground"
                     >
                       Free pickup in
                     </span>
@@ -626,7 +620,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
           data-slot="card-header"
         >
           <div
-            class="font-semibold text-lg"
+            class="text-xl font-bold text-card-foreground tracking-tight"
             data-slot="card-title"
           >
             Quilted Jacket
@@ -637,7 +631,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             <span
               aria-label="Current price: £110.99"
               aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
             >
               £110.99
             </span>
@@ -760,11 +754,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Color
                   :
                 </span>
@@ -782,7 +774,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <div
                       aria-label="Quilted Jacket, royal, swatch"
@@ -803,11 +795,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Size
                   :
                 </span>
@@ -818,14 +808,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="S"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518447M=size%3D9SM"
                   position="relative"
                   role="radio"
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -837,14 +827,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518447M=size%3D9MD"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -856,14 +846,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518447M=size%3D9LG"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -875,14 +865,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518447M=size%3D9XL"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -898,7 +888,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="space-y-2"
           >
             <label
-              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
               data-slot="label"
               for="quantity"
             >
@@ -909,7 +899,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             >
               <button
                 aria-label="Decrement Quantity for Quilted Jacket"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -917,7 +907,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               </button>
               <input
                 aria-label="Quantity"
-                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -925,7 +915,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Quilted Jacket"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -991,12 +981,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                         class="flex flex-col"
                       >
                         <span
-                          class="text-xs font-medium text-foreground"
+                          class="text-sm font-medium leading-none text-foreground"
                         >
                           Deliver to
                         </span>
                         <p
-                          class="text-xs text-muted-foreground mt-0.5"
+                          class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                         >
                           Enter ZIP code to see delivery estimate
                         </p>
@@ -1034,7 +1024,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                         class="flex flex-col"
                       >
                         <span
-                          class="text-xs font-medium text-foreground"
+                          class="text-sm font-medium leading-none text-foreground"
                         >
                           Free pickup in
                         </span>
@@ -1080,7 +1070,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
           data-slot="card-header"
         >
           <div
-            class="font-semibold text-lg"
+            class="text-xl font-bold text-card-foreground tracking-tight"
             data-slot="card-title"
           >
             Pull On Pant
@@ -1091,7 +1081,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             <span
               aria-label="Current price: £69.00"
               aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
             >
               £69.00
             </span>
@@ -1199,11 +1189,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Color
                   :
                 </span>
@@ -1221,7 +1209,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <div
                       aria-label="Pull On Pant, Grey Heather, swatch"
@@ -1242,11 +1230,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Size
                   :
                 </span>
@@ -1257,14 +1243,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="XS"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518704M=size%3D9XS"
                   position="relative"
                   role="radio"
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1276,14 +1262,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="S"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518704M=size%3D9SM"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1295,14 +1281,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518704M=size%3D9MD"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1314,14 +1300,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518704M=size%3D9LG"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1333,14 +1319,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="XL"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25518704M=size%3D9XL"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1356,7 +1342,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="space-y-2"
           >
             <label
-              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
               data-slot="label"
               for="quantity"
             >
@@ -1367,7 +1353,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             >
               <button
                 aria-label="Decrement Quantity for Pull On Pant"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -1375,7 +1361,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               </button>
               <input
                 aria-label="Quantity"
-                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -1383,7 +1369,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Pull On Pant"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -1449,12 +1435,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                         class="flex flex-col"
                       >
                         <span
-                          class="text-xs font-medium text-foreground"
+                          class="text-sm font-medium leading-none text-foreground"
                         >
                           Deliver to
                         </span>
                         <p
-                          class="text-xs text-muted-foreground mt-0.5"
+                          class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                         >
                           Enter ZIP code to see delivery estimate
                         </p>
@@ -1492,7 +1478,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                         class="flex flex-col"
                       >
                         <span
-                          class="text-xs font-medium text-foreground"
+                          class="text-sm font-medium leading-none text-foreground"
                         >
                           Free pickup in
                         </span>
@@ -1538,7 +1524,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
           data-slot="card-header"
         >
           <div
-            class="font-semibold text-lg"
+            class="text-xl font-bold text-card-foreground tracking-tight"
             data-slot="card-title"
           >
             Zerrick
@@ -1549,7 +1535,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             <span
               aria-label="Current price: £99.00"
               aria-live="polite"
-              class="[&:not(:first-child)]:mt-6 text-left text-xl font-bold text-foreground"
+              class="[&:not(:first-child)]:mt-6 text-left text-lg font-bold text-card-foreground tracking-tight"
             >
               £99.00
             </span>
@@ -1657,11 +1643,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Color
                   :
                 </span>
@@ -1679,7 +1663,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <div
                       aria-label="Zerrick, Black, swatch"
@@ -1698,7 +1682,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <div
                       aria-label="Zerrick, Taupe, swatch"
@@ -1719,11 +1703,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Size
                   :
                 </span>
@@ -1734,14 +1716,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="6"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D060"
                   position="relative"
                   role="radio"
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1753,14 +1735,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="6.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D065"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1772,14 +1754,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="7"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D070"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1791,14 +1773,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="7.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D075"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1810,14 +1792,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="8"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D080"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1829,14 +1811,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="8.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D085"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1848,14 +1830,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="9"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D090"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1867,14 +1849,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="9.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D095"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1886,14 +1868,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="10"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D100"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1905,14 +1887,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="11"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D110"
                   position="relative"
                   role="radio"
                   tabindex="-1"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1933,11 +1915,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               role="radiogroup"
             >
               <div
-                class="flex items-center gap-2 text-sm text-foreground"
+                class="flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground"
               >
-                <span
-                  class="font-semibold"
-                >
+                <span>
                   Width
                   :
                 </span>
@@ -1948,14 +1928,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
                   href="/RefArchGlobal/en-GB/?25772717M=width%3DM"
                   position="relative"
                   role="radio"
                   tabindex="0"
                 >
                   <div
-                    class="flex items-center justify-center w-full h-full text-sm font-medium"
+                    class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
                   >
                     <span
                       class="text-xs font-medium"
@@ -1971,7 +1951,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="space-y-2"
           >
             <label
-              class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-foreground"
+              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
               data-slot="label"
               for="quantity"
             >
@@ -1982,7 +1962,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             >
               <button
                 aria-label="Decrement Quantity for Zerrick"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-decrement"
                 disabled=""
               >
@@ -1990,7 +1970,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               </button>
               <input
                 aria-label="Quantity"
-                class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 step="1"
                 type="number"
@@ -1998,7 +1978,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               />
               <button
                 aria-label="Increment Quantity for Zerrick"
-                class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="quantity-increment"
               >
                 +
@@ -2064,12 +2044,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                         class="flex flex-col"
                       >
                         <span
-                          class="text-xs font-medium text-foreground"
+                          class="text-sm font-medium leading-none text-foreground"
                         >
                           Deliver to
                         </span>
                         <p
-                          class="text-xs text-muted-foreground mt-0.5"
+                          class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                         >
                           Enter ZIP code to see delivery estimate
                         </p>
@@ -2107,7 +2087,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                         class="flex flex-col"
                       >
                         <span
-                          class="text-xs font-medium text-foreground"
+                          class="text-sm font-medium leading-none text-foreground"
                         >
                           Free pickup in
                         </span>
@@ -2195,12 +2175,12 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     class="flex flex-col"
                   >
                     <span
-                      class="text-xs font-medium text-foreground"
+                      class="text-sm font-medium leading-none text-foreground"
                     >
                       Deliver to
                     </span>
                     <p
-                      class="text-xs text-muted-foreground mt-0.5"
+                      class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                     >
                       Enter ZIP code to see delivery estimate
                     </p>
@@ -2238,7 +2218,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                     class="flex flex-col"
                   >
                     <span
-                      class="text-xs font-medium text-foreground"
+                      class="text-sm font-medium leading-none text-foreground"
                     >
                       Free pickup in
                     </span>

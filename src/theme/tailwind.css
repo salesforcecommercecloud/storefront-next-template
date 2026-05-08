@@ -4,17 +4,6 @@
     --font-serif: 'Sen', Georgia, serif;
     --font-mono: 'Sen', 'Courier New', monospace;
 
-    /* DEPRECATED: Custom font size overrides (non-standard Tailwind values)
-     * TODO: Migrate components to use standard Tailwind sizes (text-sm, text-2xl) in a future PR
-     * See: https://tailwindcss.com/docs/font-size
-     * - text-lg should be 1.125rem (18px), not 0.875rem (14px) → migrate to text-sm
-     * - text-xl should be 1.25rem (20px), not 1.5rem (24px) → migrate to text-2xl
-     */
-    --text-lg: 0.875rem;     /* 14px - DEPRECATED: should use text-sm instead */
-    --text-lg--line-height: 1.422rem;
-    --text-xl: 1.5rem;       /* 24px - DEPRECATED: should use text-2xl instead */
-    --text-xl--line-height: 2rem;
-
     /* Error page tokens */
     --text-error-status: 12rem;  /* Large status code display for error pages */
 

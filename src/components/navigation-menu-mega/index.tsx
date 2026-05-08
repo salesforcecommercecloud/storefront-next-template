@@ -246,7 +246,7 @@ export default function ResponsiveNavigationMenu({
 
             return {
                 className: cn(
-                    'text-sm font-medium',
+                    'text-sm font-medium leading-5',
                     isSubcategory &&
                         'hover:!bg-transparent focus:!bg-transparent hover:!text-header-menu-foreground/60 focus:!text-header-menu-foreground/60 transition-colors'
                 ),
@@ -304,12 +304,6 @@ export default function ResponsiveNavigationMenu({
                                         left: 0,
                                         width: '100vw',
                                         maxWidth: '100vw',
-                                        // Subtle elevation tint: overlay the foreground color at low alpha on top of
-                                        // the menu background. This creates a one-step-lighter surface on dark themes
-                                        // and one-step-darker surface on light themes — automatically adapting to any
-                                        // theme (e.g. green header → tinted-green dropdown) without new tokens.
-                                        backgroundImage:
-                                            'linear-gradient(color-mix(in oklab, var(--header-menu-foreground) 5%, transparent), color-mix(in oklab, var(--header-menu-foreground) 5%, transparent))',
                                     },
                                 })}
                                 propsContentContainer={() => ({

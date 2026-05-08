@@ -194,7 +194,7 @@ export const Default: Story = {
                     editBtnLabel={editBtnLabel}
                     removeBtnLabel={removeBtnLabel}>
                     <div className="space-y-2">
-                        <h3 className="font-semibold text-lg">John Doe</h3>
+                        <h3 className="font-semibold text-sm">John Doe</h3>
                         <p className="text-sm text-muted-foreground">john.doe@example.com</p>
                         <p className="text-sm">123 Main Street, Apt 4B</p>
                         <p className="text-sm">New York, NY 10001</p>
@@ -255,7 +255,7 @@ export const EditOnly: Story = {
             <ActionCardHoverLogger>
                 <ActionCard {...rest} onEdit={createEditHandler(editLabel, userOnEdit)} editBtnLabel={editBtnLabel}>
                     <div className="space-y-2">
-                        <h3 className="font-semibold text-lg">Payment Method</h3>
+                        <h3 className="font-semibold text-sm">Payment Method</h3>
                         <p className="text-sm text-muted-foreground">•••• •••• •••• 4242</p>
                         <p className="text-sm">Expires 12/25</p>
                     </div>
@@ -337,7 +337,7 @@ export const RemoveOnly: Story = {
                     onRemove={createRemoveHandler(removeLabel, userOnRemove)}
                     removeBtnLabel={removeBtnLabel}>
                     <div className="space-y-2">
-                        <h3 className="font-semibold text-lg">Saved Item</h3>
+                        <h3 className="font-semibold text-sm">Saved Item</h3>
                         <p className="text-sm text-muted-foreground">Product Name</p>
                         <p className="text-sm">$29.99</p>
                     </div>
@@ -414,7 +414,7 @@ export const NoActions: Story = {
         <ActionCardHoverLogger>
             <ActionCard {...args}>
                 <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">Information Card</h3>
+                    <h3 className="font-semibold text-sm">Information Card</h3>
                     <p className="text-sm text-muted-foreground">This is a read-only information card</p>
                     <p className="text-sm">No actions are available for this content</p>
                 </div>
@@ -475,7 +475,7 @@ export const WithCustomLabels: Story = {
                     editBtnLabel={editBtnLabel}
                     removeBtnLabel={removeBtnLabel}>
                     <div className="space-y-2">
-                        <h3 className="font-semibold text-lg">Shipping Address</h3>
+                        <h3 className="font-semibold text-sm">Shipping Address</h3>
                         <p className="text-sm text-muted-foreground">Default Address</p>
                         <p className="text-sm">456 Oak Avenue</p>
                         <p className="text-sm">Los Angeles, CA 90210</p>
@@ -553,7 +553,7 @@ export const WithAsyncRemove: Story = {
                     editBtnLabel={editBtnLabel}
                     removeBtnLabel={removeBtnLabel}>
                     <div className="space-y-2">
-                        <h3 className="font-semibold text-lg">Complex Item</h3>
+                        <h3 className="font-semibold text-sm">Complex Item</h3>
                         <p className="text-sm text-muted-foreground">This item requires server processing</p>
                         <p className="text-sm">Removal may take a few seconds</p>
                     </div>

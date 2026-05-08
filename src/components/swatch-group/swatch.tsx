@@ -110,7 +110,7 @@ export const Swatch: FC<SwatchProps> = ({
         })
     );
 
-    const innerClasses = 'flex items-center justify-center w-full h-full text-sm font-medium';
+    const innerClasses = 'flex items-center justify-center w-full h-full text-sm font-medium leading-5';
 
     const commonProps = {
         'aria-label': name || label,

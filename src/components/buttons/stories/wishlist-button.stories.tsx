@@ -508,7 +508,7 @@ export const DifferentProducts: Story = {
             <div className="p-4 border rounded-none relative">
                 <h4 className="font-medium mb-2">Standard Product</h4>
                 <p className="text-sm text-muted-foreground mb-2">Basic product item</p>
-                <p className="text-lg font-bold">$29.99</p>
+                <p className="text-sm font-bold">$29.99</p>
                 <div className="absolute top-2 right-2">
                     <WishlistButton product={mockProductSearchItem} size="sm" />
                 </div>
@@ -517,7 +517,7 @@ export const DifferentProducts: Story = {
             <div className="p-4 border rounded-none relative">
                 <h4 className="font-medium mb-2">Featured Product</h4>
                 <p className="text-sm text-muted-foreground mb-2">Premium product item</p>
-                <p className="text-lg font-bold">$99.99</p>
+                <p className="text-sm font-bold">$99.99</p>
                 <div className="absolute top-2 right-2">
                     <WishlistButton
                         product={{

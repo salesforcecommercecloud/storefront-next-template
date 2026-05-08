@@ -33,18 +33,18 @@ exports[`ContentCard stories snapshot > CustomClassNames story renders and match
               class="flex flex-col justify-end flex-none"
             >
               <p
-                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+                class="text-sm font-normal leading-5 text-muted mb-2 whitespace-pre-line"
               >
                 This example applies custom classes to the footer, description, and button.
               </p>
               <h3
-                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+                class="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-card mb-4"
               >
                 Custom Class Names
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 text-sm font-medium leading-5 text-primary-foreground w-fit"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -93,18 +93,18 @@ exports[`ContentCard stories snapshot > Default story renders and matches snapsh
               class="flex-1 flex flex-col justify-end"
             >
               <p
-                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+                class="text-sm font-normal leading-5 text-muted mb-2 whitespace-pre-line"
               >
                 Discover our latest collection of premium products designed for modern living.
               </p>
               <h3
-                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+                class="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-card mb-4"
               >
                 Featured Product
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -153,12 +153,12 @@ exports[`ContentCard stories snapshot > Minimal story renders and matches snapsh
               class="flex-1 flex flex-col justify-end"
             >
               <p
-                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+                class="text-sm font-normal leading-5 text-muted mb-2 whitespace-pre-line"
               >
                 A simple card with image and text overlay.
               </p>
               <h3
-                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+                class="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-card mb-4"
               >
                 Minimal Card
               </h3>
@@ -204,18 +204,18 @@ exports[`ContentCard stories snapshot > NoBackground story renders and matches s
               class="flex-1 flex flex-col justify-end"
             >
               <p
-                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+                class="text-sm font-normal leading-5 text-muted mb-2 whitespace-pre-line"
               >
                 This card has no background or border for a cleaner look.
               </p>
               <h3
-                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+                class="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-card mb-4"
               >
                 Transparent Card
               </h3>
             </div>
             <a
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 w-fit text-sm font-medium leading-5 text-primary-foreground"
               data-size="default"
               data-slot="button"
               data-variant="default"
@@ -264,12 +264,12 @@ exports[`ContentCard stories snapshot > WithoutButton story renders and matches 
               class="flex-1 flex flex-col justify-end"
             >
               <p
-                class="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line"
+                class="text-sm font-normal leading-5 text-muted mb-2 whitespace-pre-line"
               >
                 This card has an image with text overlay but no button.
               </p>
               <h3
-                class="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4"
+                class="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-card mb-4"
               >
                 Text Only Card
               </h3>

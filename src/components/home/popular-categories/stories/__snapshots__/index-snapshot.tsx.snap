@@ -15,12 +15,12 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
           class="text-center"
         >
           <h2
-            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+            class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
           >
             Shop by Category
           </h2>
           <p
-            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+            class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
           >
             Discover our curated collections designed for your lifestyle
           </p>
@@ -101,7 +101,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Jewelry
                             </h3>
@@ -183,7 +183,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Clothing
                             </h3>
@@ -265,7 +265,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Electronics
                             </h3>
@@ -347,7 +347,7 @@ exports[`PopularCategories stories snapshot > CustomTitle story renders and matc
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Home & Living
                             </h3>
@@ -457,12 +457,12 @@ exports[`PopularCategories stories snapshot > Default story renders and matches 
           class="text-center"
         >
           <h2
-            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+            class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
           >
             Style for Real Life
           </h2>
           <p
-            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+            class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
           >
             At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
@@ -582,12 +582,12 @@ exports[`PopularCategories stories snapshot > Loading story renders and matches 
           class="text-center"
         >
           <h2
-            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+            class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
           >
             Style for Real Life
           </h2>
           <p
-            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+            class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
           >
             At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
@@ -695,12 +695,12 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
           class="text-center"
         >
           <h2
-            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+            class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
           >
             Style for Real Life
           </h2>
           <p
-            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+            class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
           >
             At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
@@ -781,7 +781,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Jewelry
                             </h3>
@@ -863,7 +863,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Clothing
                             </h3>
@@ -945,7 +945,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Electronics
                             </h3>
@@ -1027,7 +1027,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Home & Living
                             </h3>
@@ -1109,7 +1109,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Sports & Outdoors
                             </h3>
@@ -1191,7 +1191,7 @@ exports[`PopularCategories stories snapshot > MoreThanFourCategories story rende
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Beauty & Health
                             </h3>
@@ -1313,12 +1313,12 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
           class="text-center"
         >
           <h2
-            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+            class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
           >
             Style for Real Life
           </h2>
           <p
-            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+            class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
           >
             Discover pieces that match your style
           </p>
@@ -1399,7 +1399,7 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Jewelry
                             </h3>
@@ -1481,7 +1481,7 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Clothing
                             </h3>
@@ -1563,7 +1563,7 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Electronics
                             </h3>
@@ -1645,7 +1645,7 @@ exports[`PopularCategories stories snapshot > WithCustomSubtitle story renders a
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Home & Living
                             </h3>
@@ -1755,12 +1755,12 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
           class="text-center"
         >
           <h2
-            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+            class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
           >
             Style for Real Life
           </h2>
           <p
-            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+            class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
           >
             At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
@@ -1841,7 +1841,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Jewelry
                             </h3>
@@ -1923,7 +1923,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Clothing
                             </h3>
@@ -2005,7 +2005,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Electronics
                             </h3>
@@ -2087,7 +2087,7 @@ exports[`PopularCategories stories snapshot > WithDirectData story renders and m
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Home & Living
                             </h3>
@@ -2197,12 +2197,12 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
           class="text-center"
         >
           <h2
-            class="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-4 tracking-tight"
+            class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground mb-4"
           >
             Style for Real Life
           </h2>
           <p
-            class="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+            class="text-base font-normal leading-6 text-muted-foreground max-w-2xl mx-auto"
           >
             At Market Street, we believe fashion should be effortless, authentic, and accessible. Our collections are designed for the modern individual who values quality, versatility, and timeless style.
           </p>
@@ -2283,7 +2283,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Category One
                             </h3>
@@ -2365,7 +2365,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Category Two
                             </h3>
@@ -2447,7 +2447,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Category Three
                             </h3>
@@ -2529,7 +2529,7 @@ exports[`PopularCategories stories snapshot > WithoutImages story renders and ma
                         >
                           <div>
                             <h3
-                              class="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight"
+                              class="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1"
                             >
                               Category Four
                             </h3>

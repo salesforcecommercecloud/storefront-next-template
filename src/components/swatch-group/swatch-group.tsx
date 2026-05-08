@@ -149,7 +149,7 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
 
     const containerClasses = cn('space-y-3', className);
 
-    const labelClasses = 'flex items-center gap-2 text-sm text-foreground';
+    const labelClasses = 'flex items-center gap-2 text-base font-semibold leading-6 text-card-foreground';
 
     // Check if this is a square swatch group (size, material, etc.)
     const isSquareSwatchGroup =
@@ -167,7 +167,7 @@ export const SwatchGroup: React.FC<SwatchGroupProps> = ({
                 aria-label={ariaLabel || label}>
                 {label && (
                     <div className={labelClasses}>
-                        <span className="font-semibold">{label}:</span>
+                        <span>{label}:</span>
                         {displayName && <span>{displayName}</span>}
                     </div>
                 )}

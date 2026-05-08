@@ -81,7 +81,7 @@ export function EstimatedDeliveryModalContent({
                                             {option.deliveryTime}
                                         </Typography>
                                     </div>
-                                    <Typography as="span" className="text-lg font-semibold text-foreground">
+                                    <Typography as="span" className="text-sm font-semibold text-foreground">
                                         {option.cost != null && option.cost > 0
                                             ? formatCurrency(option.cost, locale, currency)
                                             : t('free')}

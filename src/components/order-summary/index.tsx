@@ -193,7 +193,7 @@ function SummaryBodyContent({
             )}
 
             {/* Order Summary Details */}
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm font-normal leading-5 text-muted-foreground">
                 {/* Subtotal */}
                 <UITarget targetId="sfcc.orderSummary.subtotal.before" />
                 <UITarget targetId="sfcc.orderSummary.subtotal">
@@ -212,9 +212,11 @@ function SummaryBodyContent({
                         ...(basket.orderPriceAdjustments ?? []),
                         ...(basket.productItems ?? []).flatMap((item) => item.priceAdjustments ?? []),
                     ].map((adjustment) => (
-                        <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center">
-                            <span>{adjustment.itemText}</span>
-                            <span className="text-success text-xs font-semibold">
+                        <div key={adjustment.priceAdjustmentId} className="flex justify-between items-center gap-2">
+                            <span className="inline-flex w-fit max-w-full rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
+                                {adjustment.itemText}
+                            </span>
+                            <span className="text-sm font-normal leading-5 text-muted-foreground text-right">
                                 {formatCurrency(adjustment.price ?? 0, i18nLanguage, currency)}
                             </span>
                         </div>
@@ -273,11 +275,9 @@ function SummaryBodyContent({
                 {/* Total */}
                 <UITarget targetId="sfcc.orderSummary.total.before" />
                 <UITarget targetId="sfcc.orderSummary.total">
-                    <div className="flex justify-between items-center">
-                        <span className="font-bold">
-                            {isEstimate ? t('summary.estimatedTotal') : t('summary.total')}
-                        </span>
-                        <span className="font-bold">
+                    <div className="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground">
+                        <span>{isEstimate ? t('summary.estimatedTotal') : t('summary.total')}</span>
+                        <span>
                             {formatCurrency(basket?.orderTotal || basket?.productTotal || 0, i18nLanguage, currency)}
                         </span>
                     </div>
@@ -432,7 +432,7 @@ export default function OrderSummary({
                                 variant="h2"
                                 as="h2"
                                 id={desktopHeadingId}
-                                className="text-base font-semibold text-foreground">
+                                className="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground">
                                 {t('summary.orderSummary')}
                             </Typography>
                             <hr className="mx-[calc(var(--cart-summary-px)*-1)] border-border" />

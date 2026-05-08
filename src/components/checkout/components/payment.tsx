@@ -101,7 +101,7 @@ export default function Payment({
     });
 
     const stepTitle = (
-        <span className="text-xl font-bold tracking-tight text-card-foreground">{t('payment.title')}</span>
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('payment.title')}</span>
     );
 
     return (

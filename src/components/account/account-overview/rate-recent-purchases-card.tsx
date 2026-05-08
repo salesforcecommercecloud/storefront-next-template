@@ -50,7 +50,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
             <CardContent className="p-6">
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground">
+                        <h2 className="text-lg font-semibold text-foreground">
                             {t('overview.rateRecentPurchases.title')}
                         </h2>
                         <p className="text-sm text-muted-foreground mt-1">

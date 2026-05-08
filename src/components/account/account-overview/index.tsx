@@ -64,7 +64,7 @@ export function WelcomeSection({ customer }: { customer?: Customer | null }): Re
     return (
         <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
-                <h1 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1">
+                <h1 className="text-2xl font-semibold text-foreground mb-1">
                     {t('overview.welcomeBack', { name: firstName })}
                 </h1>
                 <p className="text-sm text-muted-foreground">{t('overview.welcomeSubtitle')}</p>
@@ -119,9 +119,7 @@ export function QuickLinksSection(): ReactElement {
     return (
         <Card className="py-0 rounded-none shadow-none">
             <CardContent className="p-6">
-                <h2 className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-4">
-                    {t('overview.quickLinks.title')}
-                </h2>
+                <h2 className="text-lg font-semibold text-foreground mb-4">{t('overview.quickLinks.title')}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {quickLinks.map((link) => {
                         const Icon = link.icon;
@@ -192,7 +190,7 @@ export function CuratedForYouSection(): ReactElement {
                     }>
                     <ProductRecommendations
                         recommender={curatedRecommender}
-                        titleClassName="text-[length:var(--account-section-header)] font-semibold text-foreground tracking-tight"
+                        titleClassName="text-lg font-semibold text-foreground tracking-tight"
                         subtitle={t('overview.curatedForYou.subtitle')}
                         className="max-w-none -mx-6 md:py-0"
                     />

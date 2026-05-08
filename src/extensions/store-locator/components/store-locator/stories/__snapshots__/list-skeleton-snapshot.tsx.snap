@@ -713,7 +713,7 @@ exports[`ListSkeleton stories snapshot > DesktopLayout story renders and matches
     class="mb-4"
   >
     <div
-      class="text-lg font-semibold flex justify-center items-center text-center"
+      class="text-sm font-semibold flex justify-center items-center text-center"
     >
       Searching for stores...
     </div>
@@ -1433,7 +1433,7 @@ exports[`ListSkeleton stories snapshot > MobileLayout story renders and matches 
     class="mb-4"
   >
     <div
-      class="text-lg font-semibold flex justify-center items-center text-center"
+      class="text-sm font-semibold flex justify-center items-center text-center"
     >
       Searching for stores...
     </div>
@@ -2153,7 +2153,7 @@ exports[`ListSkeleton stories snapshot > WithStatusMessage story renders and mat
     class="mb-4"
   >
     <div
-      class="text-lg font-semibold flex justify-center items-center text-center"
+      class="text-sm font-semibold flex justify-center items-center text-center"
     >
       Searching for stores within 100 km of 94102...
     </div>

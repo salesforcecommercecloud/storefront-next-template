@@ -161,12 +161,12 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -177,7 +177,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -276,7 +276,7 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
           <span
             aria-label="Price range from £143.99 to £191.99"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £143.99 – £191.99
           </span>
@@ -509,17 +509,17 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Men
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -530,7 +530,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -629,7 +629,7 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
           <span
             aria-label="Current price: £18.55"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £18.55
           </span>
@@ -849,12 +849,12 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -865,7 +865,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -964,7 +964,7 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
           <span
             aria-label="Price range from £143.99 to £191.99"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £143.99 – £191.99
           </span>
@@ -1189,12 +1189,12 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -1205,7 +1205,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -1304,7 +1304,7 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
           <span
             aria-label="Price range from £143.99 to £191.99"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £143.99 – £191.99
           </span>
@@ -1495,12 +1495,12 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -1511,7 +1511,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -1610,7 +1610,7 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
           <span
             aria-label="Price range from £143.99 to £191.99"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £143.99 – £191.99
           </span>
@@ -1801,12 +1801,12 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -1817,7 +1817,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -1916,7 +1916,7 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
           <span
             aria-label="Price range from £143.99 to £191.99"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £143.99 – £191.99
           </span>
@@ -2112,12 +2112,12 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -2128,7 +2128,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -2227,7 +2227,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
           <span
             aria-label="Current price: £18.55"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £18.55
           </span>
@@ -2432,12 +2432,12 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -2448,7 +2448,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -2547,7 +2547,7 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
           <span
             aria-label="Current price: £18.55"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £18.55
           </span>
@@ -2753,17 +2753,17 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <p
-        class="text-xs text-muted-foreground mb-1 uppercase"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Men
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -2774,7 +2774,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -2873,7 +2873,7 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
           <span
             aria-label="Price range from £143.99 to £191.99"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £143.99 – £191.99
           </span>
@@ -3064,12 +3064,12 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         </div>
       </div>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
       >
         Test Store
       </p>
       <h3
-        class="text-sm font-medium text-card-foreground mb-2"
+        class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
       >
         <a
           class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -3080,7 +3080,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
         </a>
       </h3>
       <p
-        class="text-xs text-muted-foreground mb-1"
+        class="text-sm font-normal leading-none text-muted-foreground mb-1"
         data-testid="product-tile-sku"
       >
         SKU:
@@ -3179,7 +3179,7 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
           <span
             aria-label="Price range from £143.99 to £191.99"
             aria-live="polite"
-            class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+            class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           >
             £143.99 – £191.99
           </span>

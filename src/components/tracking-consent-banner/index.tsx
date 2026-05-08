@@ -159,7 +159,7 @@ export function TrackingConsentBanner({ onConsentChange }: TrackingConsentBanner
                     </Button>
                     <CardContent className="pt-6 pr-10">
                         <div className="space-y-2">
-                            <h2 id="tracking-consent-banner-title" className="text-lg font-semibold">
+                            <h2 id="tracking-consent-banner-title" className="text-sm font-semibold">
                                 {t('title')}
                             </h2>
                             <p id="tracking-consent-banner-description" className="text-sm text-muted-foreground">

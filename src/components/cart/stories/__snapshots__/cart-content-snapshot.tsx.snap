@@ -223,10 +223,10 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -236,7 +236,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -266,7 +266,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-item-1"
@@ -374,7 +374,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                       <span
                                         aria-label="Current price: $42.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $42.00
                                       </span>
@@ -390,7 +390,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -410,7 +410,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $57.99
@@ -424,7 +424,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -435,7 +435,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -443,7 +443,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -452,7 +452,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -522,7 +522,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                 data-testid="sf-order-summary"
               >
                 <h2
-                  class="tracking-tight text-left text-base font-semibold text-foreground"
+                  class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                   id="order-summary-heading-desktop"
                 >
                   Order Summary
@@ -536,7 +536,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -563,16 +563,12 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         $51.35
                       </span>
                     </div>
@@ -611,7 +607,7 @@ exports[`CartContent stories snapshot > CartWithItems story renders and matches 
                             type="button"
                           >
                             <span
-                              class="text-left text-sm font-medium text-primary"
+                              class="text-left text-sm font-medium leading-5 text-card-foreground"
                             >
                               Enter a Promotion Code
                             </span>
@@ -1131,10 +1127,10 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -1144,7 +1140,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -1174,7 +1170,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-pd-item-1"
@@ -1271,7 +1267,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                       <span
                                         aria-label="Current price: $35.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $35.00
                                       </span>
@@ -1287,7 +1283,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -1307,7 +1303,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $64.99
@@ -1321,7 +1317,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -1332,7 +1328,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -1340,7 +1336,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -1349,7 +1345,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -1549,10 +1545,10 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -1562,7 +1558,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -1592,7 +1588,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-pd-item-2"
@@ -1700,7 +1696,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                       <span
                                         aria-label="Current price: $45.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $45.00
                                       </span>
@@ -1716,7 +1712,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -1736,7 +1732,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $54.99
@@ -1750,7 +1746,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -1761,7 +1757,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -1769,7 +1765,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -1778,7 +1774,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -1924,10 +1920,10 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -1937,7 +1933,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -1967,7 +1963,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-pd-item-3"
@@ -2075,7 +2071,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                       <span
                                         aria-label="Current price: $60.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $60.00
                                       </span>
@@ -2091,7 +2087,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                        
                                       <span
                                         aria-label="List price: $199.98"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $199.98
                                       </span>
@@ -2118,7 +2114,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $139.98
@@ -2132,7 +2128,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -2143,14 +2139,14 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                     >
                                       −
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -2159,7 +2155,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -2229,7 +2225,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                 data-testid="sf-order-summary"
               >
                 <h2
-                  class="tracking-tight text-left text-base font-semibold text-foreground"
+                  class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                   id="order-summary-heading-desktop"
                 >
                   Order Summary
@@ -2243,7 +2239,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -2272,16 +2268,12 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         $151.20
                       </span>
                     </div>
@@ -2320,7 +2312,7 @@ exports[`CartContent stories snapshot > CartWithPickupDelivery story renders and
                             type="button"
                           >
                             <span
-                              class="text-left text-sm font-medium text-primary"
+                              class="text-left text-sm font-medium leading-5 text-card-foreground"
                             >
                               Enter a Promotion Code
                             </span>
@@ -2834,10 +2826,10 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -2847,7 +2839,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -2877,7 +2869,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-promo-item-1"
@@ -2985,7 +2977,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                       <span
                                         aria-label="Current price: $45.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $45.00
                                       </span>
@@ -3001,7 +2993,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -3021,7 +3013,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $54.99
@@ -3035,7 +3027,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -3046,7 +3038,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -3054,7 +3046,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -3063,7 +3055,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -3209,10 +3201,10 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -3222,7 +3214,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -3252,7 +3244,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-promo-item-2"
@@ -3360,7 +3352,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                       <span
                                         aria-label="Current price: $30.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $30.00
                                       </span>
@@ -3376,7 +3368,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -3396,7 +3388,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $69.99
@@ -3410,7 +3402,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -3421,7 +3413,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -3429,7 +3421,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -3438,7 +3430,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -3508,7 +3500,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                 data-testid="sf-order-summary"
               >
                 <h2
-                  class="tracking-tight text-left text-base font-semibold text-foreground"
+                  class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                   id="order-summary-heading-desktop"
                 >
                   Order Summary
@@ -3522,7 +3514,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -3551,16 +3543,12 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         $81.00
                       </span>
                     </div>
@@ -3599,7 +3587,7 @@ exports[`CartContent stories snapshot > CartWithPromotions story renders and mat
                             type="button"
                           >
                             <span
-                              class="text-left text-sm font-medium text-primary"
+                              class="text-left text-sm font-medium leading-5 text-card-foreground"
                             >
                               Enter a Promotion Code
                             </span>
@@ -3917,7 +3905,7 @@ exports[`CartContent stories snapshot > EmptyCart story renders and matches snap
           />
         </svg>
         <h2
-          class="tracking-tight text-xl text-center font-semibold text-foreground mb-2"
+          class="tracking-tight text-2xl text-center font-semibold text-foreground mb-2"
         >
           Your cart is empty
         </h2>
@@ -4163,10 +4151,10 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -4176,7 +4164,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -4206,7 +4194,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-hq-item-1"
@@ -4314,7 +4302,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                       <span
                                         aria-label="Current price: $420.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $420.00
                                       </span>
@@ -4330,7 +4318,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                        
                                       <span
                                         aria-label="List price: $999.90"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $999.90
                                       </span>
@@ -4357,7 +4345,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $579.90
@@ -4371,7 +4359,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -4382,14 +4370,14 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                     >
                                       −
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -4398,7 +4386,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -4468,7 +4456,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                 data-testid="sf-order-summary"
               >
                 <h2
-                  class="tracking-tight text-left text-base font-semibold text-foreground"
+                  class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                   id="order-summary-heading-desktop"
                 >
                   Order Summary
@@ -4482,7 +4470,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -4511,16 +4499,12 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         $453.60
                       </span>
                     </div>
@@ -4559,7 +4543,7 @@ exports[`CartContent stories snapshot > HighQuantityItem story renders and match
                             type="button"
                           >
                             <span
-                              class="text-left text-sm font-medium text-primary"
+                              class="text-left text-sm font-medium leading-5 text-card-foreground"
                             >
                               Enter a Promotion Code
                             </span>
@@ -5073,10 +5057,10 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -5086,7 +5070,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -5116,7 +5100,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-large-item-1"
@@ -5224,7 +5208,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                       <span
                                         aria-label="Current price: $90.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $90.00
                                       </span>
@@ -5240,7 +5224,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                        
                                       <span
                                         aria-label="List price: $199.98"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $199.98
                                       </span>
@@ -5267,7 +5251,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $109.98
@@ -5281,7 +5265,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -5292,14 +5276,14 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                     >
                                       −
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -5308,7 +5292,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -5454,10 +5438,10 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -5467,7 +5451,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -5497,7 +5481,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-large-item-2"
@@ -5605,7 +5589,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                       <span
                                         aria-label="Current price: $30.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $30.00
                                       </span>
@@ -5621,7 +5605,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -5641,7 +5625,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $69.99
@@ -5655,7 +5639,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -5666,7 +5650,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -5674,7 +5658,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -5683,7 +5667,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -5829,10 +5813,10 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -5842,7 +5826,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -5872,7 +5856,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-large-item-3"
@@ -5980,7 +5964,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                       <span
                                         aria-label="Current price: $75.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $75.00
                                       </span>
@@ -5996,7 +5980,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                        
                                       <span
                                         aria-label="List price: $299.97"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $299.97
                                       </span>
@@ -6023,7 +6007,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $224.97
@@ -6037,7 +6021,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -6048,14 +6032,14 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                     >
                                       −
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -6064,7 +6048,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -6210,10 +6194,10 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -6223,7 +6207,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -6253,7 +6237,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-large-item-4"
@@ -6361,7 +6345,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                       <span
                                         aria-label="Current price: $60.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $60.00
                                       </span>
@@ -6377,7 +6361,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -6397,7 +6381,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $39.99
@@ -6411,7 +6395,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -6422,7 +6406,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -6430,7 +6414,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -6439,7 +6423,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -6509,7 +6493,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                 data-testid="sf-order-summary"
               >
                 <h2
-                  class="tracking-tight text-left text-base font-semibold text-foreground"
+                  class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                   id="order-summary-heading-desktop"
                 >
                   Order Summary
@@ -6523,7 +6507,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -6552,16 +6536,12 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         $275.40
                       </span>
                     </div>
@@ -6600,7 +6580,7 @@ exports[`CartContent stories snapshot > LargeOrder story renders and matches sna
                             type="button"
                           >
                             <span
-                              class="text-left text-sm font-medium text-primary"
+                              class="text-left text-sm font-medium leading-5 text-card-foreground"
                             >
                               Enter a Promotion Code
                             </span>
@@ -7114,10 +7094,10 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="/global/en-GB/product/TG508M"
                                     title="Very Long Product Name That Should Wrap Properly In The Cart Display Area"
                                   >
@@ -7127,7 +7107,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                               </div>
                               <div>
                                 <div
-                                  class="text-xs text-muted-foreground space-y-1 mb-1"
+                                  class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                                 >
                                   <div>
                                     Size
@@ -7157,7 +7137,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-long-item-1"
@@ -7265,7 +7245,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                       <span
                                         aria-label="Current price: $42.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $42.00
                                       </span>
@@ -7281,7 +7261,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                        
                                       <span
                                         aria-label="List price: $99.99"
-                                        class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                        class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                       >
                                         $99.99
                                       </span>
@@ -7301,7 +7281,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   class="flex w-full justify-end"
                                 >
                                   <span
-                                    class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                    class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                     data-slot="badge"
                                   >
                                     Saved $57.99
@@ -7315,7 +7295,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -7326,7 +7306,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -7334,7 +7314,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       max="98"
                                       min="0"
                                       step="1"
@@ -7343,7 +7323,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -7413,7 +7393,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                 data-testid="sf-order-summary"
               >
                 <h2
-                  class="tracking-tight text-left text-base font-semibold text-foreground"
+                  class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                   id="order-summary-heading-desktop"
                 >
                   Order Summary
@@ -7427,7 +7407,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -7454,16 +7434,12 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         $51.35
                       </span>
                     </div>
@@ -7502,7 +7478,7 @@ exports[`CartContent stories snapshot > LongProductNames story renders and match
                             type="button"
                           >
                             <span
-                              class="text-left text-sm font-medium text-primary"
+                              class="text-left text-sm font-medium leading-5 text-card-foreground"
                             >
                               Enter a Promotion Code
                             </span>
@@ -8014,10 +7990,10 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                 class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                               >
                                 <h2
-                                  class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                  class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                                 >
                                   <a
-                                    class="text-foreground hover:text-primary block break-words"
+                                    class="hover:text-primary block break-words"
                                     href="#"
                                     title="Men's Classic Deer Gloves"
                                   >
@@ -8047,7 +8023,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                     </button>
                                     <button
                                       aria-busy="false"
-                                      class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                      class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                       data-size="sm"
                                       data-slot="button"
                                       data-testid="remove-item-item-1"
@@ -8155,7 +8131,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                       <span
                                         aria-label="Current price: $42.00"
                                         aria-live="polite"
-                                        class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                        class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                       >
                                         $42.00
                                       </span>
@@ -8180,7 +8156,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   class="relative flex w-fit max-w-full flex-col items-start gap-2"
                                 >
                                   <label
-                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                    class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                     data-slot="label"
                                     for="quantity"
                                   >
@@ -8191,7 +8167,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                   >
                                     <button
                                       aria-label="Decrement Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-decrement"
                                       disabled=""
                                     >
@@ -8199,7 +8175,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                     </button>
                                     <input
                                       aria-label="Quantity"
-                                      class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       min="0"
                                       step="1"
                                       type="number"
@@ -8207,7 +8183,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                                     />
                                     <button
                                       aria-label="Increment Quantity for the product"
-                                      class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                      class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                       data-testid="quantity-increment"
                                     >
                                       +
@@ -8277,7 +8253,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                 data-testid="sf-order-summary"
               >
                 <h2
-                  class="tracking-tight text-left text-base font-semibold text-foreground"
+                  class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                   id="order-summary-heading-desktop"
                 >
                   Order Summary
@@ -8291,7 +8267,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -8318,16 +8294,12 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         $51.35
                       </span>
                     </div>
@@ -8366,7 +8338,7 @@ exports[`CartContent stories snapshot > MissingProductImage story renders and ma
                             type="button"
                           >
                             <span
-                              class="text-left text-sm font-medium text-primary"
+                              class="text-left text-sm font-medium leading-5 text-card-foreground"
                             >
                               Enter a Promotion Code
                             </span>
@@ -8743,7 +8715,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
               data-testid="sf-order-summary"
             >
               <h2
-                class="tracking-tight text-left text-base font-semibold text-foreground"
+                class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                 id="order-summary-heading-desktop"
               >
                 Order Summary
@@ -8757,7 +8729,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                 role="region"
               >
                 <div
-                  class="space-y-2 text-sm"
+                  class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                 >
                   <div
                     class="flex justify-between items-center"
@@ -8784,16 +8756,12 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                     </span>
                   </div>
                   <div
-                    class="flex justify-between items-center"
+                    class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                   >
-                    <span
-                      class="font-bold"
-                    >
+                    <span>
                       Estimated Total
                     </span>
-                    <span
-                      class="font-bold"
-                    >
+                    <span>
                       $51.35
                     </span>
                   </div>
@@ -8832,7 +8800,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                           type="button"
                         >
                           <span
-                            class="text-left text-sm font-medium text-primary"
+                            class="text-left text-sm font-medium leading-5 text-card-foreground"
                           >
                             Enter a Promotion Code
                           </span>
@@ -9263,10 +9231,10 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                               class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block break-words"
+                                  class="hover:text-primary block break-words"
                                   href="/global/en-GB/product/TG508M"
                                   title="Men's Classic Deer Gloves"
                                 >
@@ -9276,7 +9244,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                             </div>
                             <div>
                               <div
-                                class="text-xs text-muted-foreground space-y-1 mb-1"
+                                class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                               >
                                 <div>
                                   Size
@@ -9306,7 +9274,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                   </button>
                                   <button
                                     aria-busy="false"
-                                    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-xs cursor-pointer hover:no-underline px-0"
+                                    class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline px-0"
                                     data-size="sm"
                                     data-slot="button"
                                     data-testid="remove-item-item-1"
@@ -9414,7 +9382,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                     <span
                                       aria-label="Current price: $42.00"
                                       aria-live="polite"
-                                      class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                                      class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                                     >
                                       $42.00
                                     </span>
@@ -9430,7 +9398,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                      
                                     <span
                                       aria-label="List price: $99.99"
-                                      class="font-medium line-through text-muted-foreground text-right text-sm leading-none relative"
+                                      class="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative"
                                     >
                                       $99.99
                                     </span>
@@ -9450,7 +9418,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 class="flex w-full justify-end"
                               >
                                 <span
-                                  class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                  class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                   data-slot="badge"
                                 >
                                   Saved $57.99
@@ -9464,7 +9432,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 class="relative flex w-fit max-w-full flex-col items-start gap-2"
                               >
                                 <label
-                                  class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                                  class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                                   data-slot="label"
                                   for="quantity"
                                 >
@@ -9475,7 +9443,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                 >
                                   <button
                                     aria-label="Decrement Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-decrement"
                                     disabled=""
                                   >
@@ -9483,7 +9451,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                   </button>
                                   <input
                                     aria-label="Quantity"
-                                    class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     max="98"
                                     min="0"
                                     step="1"
@@ -9492,7 +9460,7 @@ exports[`CartContent stories snapshot > MobileLayout story renders and matches s
                                   />
                                   <button
                                     aria-label="Increment Quantity for the product"
-                                    class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     data-testid="quantity-increment"
                                   >
                                     +

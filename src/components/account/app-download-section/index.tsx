@@ -40,10 +40,7 @@ export function AppDownloadSection(): ReactElement {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     {/* Left side: Text and buttons */}
                     <div className="flex-1">
-                        <Typography
-                            variant="h2"
-                            as="h2"
-                            className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-2">
+                        <Typography variant="h2" as="h2" className="text-lg font-semibold text-foreground mb-2">
                             {t('overview.appDownload.title')}
                         </Typography>
                         <p className="text-sm text-muted-foreground mb-6">{t('overview.appDownload.description')}</p>

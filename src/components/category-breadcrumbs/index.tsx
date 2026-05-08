@@ -30,16 +30,16 @@ export default function CategoryBreadcrumbs({
     const items: PathRecord[] = category.parentCategoryTree ?? [{ id: category.id, name: category.name }];
     return (
         <nav aria-label={t('breadcrumbs.label')} className="mb-6">
-            <ol className="flex flex-wrap items-center text-sm">
+            <ol className="flex flex-wrap items-center text-sm font-normal leading-5 text-foreground">
                 <li key="home" className="flex items-center">
-                    <Link to="/" className="text-primary-600 hover:underline">
+                    <Link to="/" className="hover:underline">
                         {t('breadcrumbs.home')}
                     </Link>
                 </li>
                 {items.map((item) => (
                     <li key={item.id} className="flex items-center">
                         <ChevronRight className="mx-1 size-3" />
-                        <Link to={`/category/${item.id}`} className="text-primary-600 hover:underline">
+                        <Link to={`/category/${item.id}`} className="hover:underline">
                             {item.name}
                         </Link>
                     </li>

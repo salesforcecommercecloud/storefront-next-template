@@ -65,7 +65,7 @@ export function SocialLoginButtons({ redirectPath }: SocialLoginButtonsProps = {
                             <input type="hidden" name="provider" value={provider} />
                             {redirectPath && <input type="hidden" name="redirectPath" value={redirectPath} />}
                             <Button type="submit" variant="outline" className="w-full">
-                                <span className="mr-2 text-lg">{getProviderIcon(provider)}</span>
+                                <span className="mr-2 text-sm">{getProviderIcon(provider)}</span>
                                 {t('continueWithProvider', { provider })}
                             </Button>
                         </Form>

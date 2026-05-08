@@ -12,7 +12,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
         class="flex items-center justify-between"
       >
         <h2
-          class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
+          class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground"
         >
           Featured Products
         </h2>
@@ -163,12 +163,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -179,7 +179,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -278,7 +278,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -445,12 +445,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -461,7 +461,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -560,7 +560,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -727,12 +727,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -743,7 +743,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -842,7 +842,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -1009,12 +1009,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -1025,7 +1025,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -1124,7 +1124,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -1291,12 +1291,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -1307,7 +1307,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -1406,7 +1406,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -1573,12 +1573,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -1589,7 +1589,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -1688,7 +1688,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -1855,12 +1855,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -1871,7 +1871,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -1970,7 +1970,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -2137,12 +2137,12 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -2153,7 +2153,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -2252,7 +2252,7 @@ exports[`ProductCarousel stories snapshot > Default story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -2526,12 +2526,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -2542,7 +2542,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -2641,7 +2641,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -2808,12 +2808,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -2824,7 +2824,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -2923,7 +2923,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -3090,12 +3090,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -3106,7 +3106,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -3205,7 +3205,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -3372,12 +3372,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -3388,7 +3388,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -3487,7 +3487,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -3654,12 +3654,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -3670,7 +3670,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -3769,7 +3769,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -3936,12 +3936,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -3952,7 +3952,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -4051,7 +4051,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -4218,12 +4218,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -4234,7 +4234,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -4333,7 +4333,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -4500,12 +4500,12 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -4516,7 +4516,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -4615,7 +4615,7 @@ exports[`ProductCarousel stories snapshot > NoTitle story renders and matches sn
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -4736,7 +4736,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
         class="flex items-center justify-between"
       >
         <h2
-          class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
+          class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground"
         >
           Page Designer Carousel
         </h2>
@@ -4887,12 +4887,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -4903,7 +4903,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -5002,7 +5002,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -5169,12 +5169,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -5185,7 +5185,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -5284,7 +5284,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -5451,12 +5451,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -5467,7 +5467,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -5566,7 +5566,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -5733,12 +5733,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -5749,7 +5749,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -5848,7 +5848,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -6015,12 +6015,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -6031,7 +6031,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -6130,7 +6130,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -6297,12 +6297,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -6313,7 +6313,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -6412,7 +6412,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -6579,12 +6579,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -6595,7 +6595,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -6694,7 +6694,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -6861,12 +6861,12 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -6877,7 +6877,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -6976,7 +6976,7 @@ exports[`ProductCarousel stories snapshot > PageDesignerMode story renders and m
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -7097,7 +7097,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
         class="flex items-center justify-between"
       >
         <h2
-          class="text-2xl md:text-3xl font-normal text-foreground tracking-tight"
+          class="text-4xl font-medium leading-none tracking-[-0.9px] text-foreground"
         >
           Suspense Wrapper
         </h2>
@@ -7248,12 +7248,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -7264,7 +7264,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -7363,7 +7363,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -7530,12 +7530,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -7546,7 +7546,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -7645,7 +7645,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -7812,12 +7812,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -7828,7 +7828,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -7927,7 +7927,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -8094,12 +8094,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -8110,7 +8110,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -8209,7 +8209,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -8376,12 +8376,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -8392,7 +8392,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -8491,7 +8491,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -8658,12 +8658,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -8674,7 +8674,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -8773,7 +8773,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -8940,12 +8940,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -8956,7 +8956,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -9055,7 +9055,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>
@@ -9222,12 +9222,12 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                     class="relative p-4"
                   >
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                     >
                       Test Store
                     </p>
                     <h3
-                      class="text-sm font-medium text-card-foreground mb-2"
+                      class="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2"
                     >
                       <a
                         class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -9238,7 +9238,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                       </a>
                     </h3>
                     <p
-                      class="text-xs text-muted-foreground mb-1"
+                      class="text-sm font-normal leading-none text-muted-foreground mb-1"
                       data-testid="product-tile-sku"
                     >
                       SKU:
@@ -9337,7 +9337,7 @@ exports[`ProductCarousel stories snapshot > WithSuspenseWrapper story renders an
                         <span
                           aria-label="Current price: £63.99"
                           aria-live="polite"
-                          class="[&:not(:first-child)]:mt-6 text-left text-base font-semibold text-card-foreground"
+                          class="[&:not(:first-child)]:mt-6 text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
                         >
                           £63.99
                         </span>

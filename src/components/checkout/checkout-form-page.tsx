@@ -714,7 +714,7 @@ export default function CheckoutFormPage({
                             <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem]">
                                 <CardHeader className="border-b border-border pb-4">
                                     <CardTitle>
-                                        <span className="text-xl font-bold tracking-tight text-card-foreground">
+                                        <span className="text-2xl font-bold tracking-tight text-card-foreground">
                                             {t('orderSummary.title')}
                                         </span>
                                     </CardTitle>

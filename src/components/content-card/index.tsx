@@ -158,19 +158,25 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
                                                     cardDescriptionClassName
                                                 )}>
                                                 {description && (
-                                                    <p className="text-xs md:text-sm font-medium uppercase tracking-wide text-primary-foreground mb-2 whitespace-pre-line">
+                                                    <p className="text-sm font-normal leading-5 text-muted mb-2 whitespace-pre-line">
                                                         {description}
                                                     </p>
                                                 )}
                                                 {title && (
-                                                    <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-primary-foreground mb-4">
+                                                    <h3 className="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-card mb-4">
                                                         {title}
                                                     </h3>
                                                 )}
                                             </div>
                                         )}
                                         {buttonText && buttonLink && (
-                                            <Button asChild variant="default" className={cn('w-fit', buttonClassName)}>
+                                            <Button
+                                                asChild
+                                                variant="default"
+                                                className={cn(
+                                                    'w-fit text-sm font-medium leading-5 text-primary-foreground',
+                                                    buttonClassName
+                                                )}>
                                                 <Link to={buttonLink}>{buttonText}</Link>
                                             </Button>
                                         )}

@@ -12,7 +12,7 @@ exports[`Swatch stories snapshot > Default story renders and matches snapshot 1`
     type="button"
   >
     <div
-      class="flex items-center justify-center w-full h-full text-sm font-medium"
+      class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
     >
       <div
         class="w-full h-full bg-red-500 rounded-full"
@@ -40,7 +40,7 @@ exports[`Swatch stories snapshot > Disabled story renders and matches snapshot 1
     type="button"
   >
     <div
-      class="flex items-center justify-center w-full h-full text-sm font-medium"
+      class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
     >
       <div
         class="w-full h-full bg-green-500 rounded-full"
@@ -67,7 +67,7 @@ exports[`Swatch stories snapshot > HoverMode story renders and matches snapshot 
     type="button"
   >
     <div
-      class="flex items-center justify-center w-full h-full text-sm font-medium"
+      class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
     >
       <div
         class="w-full h-full bg-yellow-500 rounded-full"
@@ -94,7 +94,7 @@ exports[`Swatch stories snapshot > Selected story renders and matches snapshot 1
     type="button"
   >
     <div
-      class="flex items-center justify-center w-full h-full text-sm font-medium"
+      class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
     >
       <div
         class="w-full h-full bg-blue-500 rounded-full"
@@ -114,14 +114,14 @@ exports[`Swatch stories snapshot > Square story renders and matches snapshot 1`]
   <button
     aria-checked="false"
     aria-label="Large"
-    class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]"
+    class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
     position="relative"
     role="radio"
     tabindex="-1"
     type="button"
   >
     <div
-      class="flex items-center justify-center w-full h-full text-sm font-medium"
+      class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
     >
       L
       <span
@@ -146,7 +146,7 @@ exports[`Swatch stories snapshot > WithHref story renders and matches snapshot 1
     tabindex="-1"
   >
     <div
-      class="flex items-center justify-center w-full h-full text-sm font-medium"
+      class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
     >
       <div
         class="w-full h-full bg-purple-500 rounded-full"

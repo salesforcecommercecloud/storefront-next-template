@@ -56,7 +56,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
@@ -112,7 +112,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                       New Collection
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
@@ -168,7 +168,7 @@ exports[`HeroCarousel stories snapshot > Default story renders and matches snaps
                       Special Offers
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>
@@ -348,7 +348,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
@@ -404,7 +404,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                       New Collection
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
@@ -460,7 +460,7 @@ exports[`HeroCarousel stories snapshot > WithoutAutoPlay story renders and match
                       Special Offers
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>
@@ -640,7 +640,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
@@ -696,7 +696,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                       New Collection
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
@@ -752,7 +752,7 @@ exports[`HeroCarousel stories snapshot > WithoutDots story renders and matches s
                       Special Offers
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>
@@ -905,7 +905,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                       Welcome to Our Store
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Discover amazing products
                     </p>
@@ -961,7 +961,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                       New Collection
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Latest fashion trends
                     </p>
@@ -1017,7 +1017,7 @@ exports[`HeroCarousel stories snapshot > WithoutNavigation story renders and mat
                       Special Offers
                     </h1>
                     <p
-                      class="text-lg font-normal leading-[1.2] text-primary-foreground mb-8"
+                      class="text-lg font-normal leading-[120%] text-primary-foreground mb-8"
                     >
                       Limited time deals
                     </p>

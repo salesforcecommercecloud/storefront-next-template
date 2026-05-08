@@ -214,7 +214,7 @@ export default function ChildProductCard({
     return (
         <Card className="h-full rounded-none shadow-none" data-testid="child-product">
             <CardHeader className="pb-4">
-                <CardTitle className="text-lg">{product?.name}</CardTitle>
+                <CardTitle className="text-xl font-bold text-card-foreground tracking-tight">{product?.name}</CardTitle>
                 <ProductPrice
                     type="unit"
                     product={currentVariant || product}
@@ -222,7 +222,7 @@ export default function ChildProductCard({
                     labelForA11y={product?.name}
                     quantity={quantity}
                     currentPriceProps={{
-                        className: 'text-xl font-bold text-foreground',
+                        className: 'text-lg font-bold text-card-foreground tracking-tight',
                     }}
                 />
             </CardHeader>

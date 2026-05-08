@@ -14,7 +14,7 @@ exports[`ActionCard stories snapshot > Default story renders and matches snapsho
         class="space-y-2"
       >
         <h3
-          class="font-semibold text-lg"
+          class="font-semibold text-sm"
         >
           John Doe
         </h3>
@@ -76,7 +76,7 @@ exports[`ActionCard stories snapshot > EditOnly story renders and matches snapsh
         class="space-y-2"
       >
         <h3
-          class="font-semibold text-lg"
+          class="font-semibold text-sm"
         >
           Payment Method
         </h3>
@@ -124,7 +124,7 @@ exports[`ActionCard stories snapshot > NoActions story renders and matches snaps
         class="space-y-2"
       >
         <h3
-          class="font-semibold text-lg"
+          class="font-semibold text-sm"
         >
           Information Card
         </h3>
@@ -158,7 +158,7 @@ exports[`ActionCard stories snapshot > RemoveOnly story renders and matches snap
         class="space-y-2"
       >
         <h3
-          class="font-semibold text-lg"
+          class="font-semibold text-sm"
         >
           Saved Item
         </h3>
@@ -206,7 +206,7 @@ exports[`ActionCard stories snapshot > WithAsyncRemove story renders and matches
         class="space-y-2"
       >
         <h3
-          class="font-semibold text-lg"
+          class="font-semibold text-sm"
         >
           Complex Item
         </h3>
@@ -263,7 +263,7 @@ exports[`ActionCard stories snapshot > WithCustomLabels story renders and matche
         class="space-y-2"
       >
         <h3
-          class="font-semibold text-lg"
+          class="font-semibold text-sm"
         >
           Shipping Address
         </h3>

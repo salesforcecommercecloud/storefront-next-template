@@ -20,7 +20,7 @@ exports[`ContactInfo stories snapshot > CompletedState story renders and matches
           tabindex="0"
         >
           <span
-            class="text-xl font-bold tracking-tight text-card-foreground"
+            class="text-2xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -79,7 +79,7 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
           tabindex="0"
         >
           <span
-            class="text-xl font-bold tracking-tight text-card-foreground"
+            class="text-2xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -248,7 +248,7 @@ exports[`ContactInfo stories snapshot > DisabledState story renders and matches 
           tabindex="0"
         >
           <span
-            class="text-xl font-bold tracking-tight text-card-foreground"
+            class="text-2xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -307,7 +307,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
           tabindex="0"
         >
           <span
-            class="text-xl font-bold tracking-tight text-card-foreground"
+            class="text-2xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -488,7 +488,7 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
           tabindex="0"
         >
           <span
-            class="text-xl font-bold tracking-tight text-card-foreground"
+            class="text-2xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>
@@ -657,7 +657,7 @@ exports[`ContactInfo stories snapshot > WithValidationError story renders and ma
           tabindex="0"
         >
           <span
-            class="text-xl font-bold tracking-tight text-card-foreground"
+            class="text-2xl font-bold tracking-tight text-card-foreground"
           >
             Contact Information
           </span>

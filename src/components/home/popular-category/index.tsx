@@ -141,7 +141,7 @@ export default function PopularCategory({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-12 flex flex-col justify-end">
                         <div>
-                            <h3 className="text-xl md:text-2xl font-semibold text-primary-foreground mb-1 tracking-tight">
+                            <h3 className="text-2xl font-bold leading-[120%] tracking-[-0.6px] text-card mb-1">
                                 {finalName}
                             </h3>
                             {finalDescription && <p className="text-sm text-white/90">{finalDescription}</p>}

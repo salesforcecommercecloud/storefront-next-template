@@ -103,7 +103,7 @@ export default function CartQuantityPicker({
         <div className={cn('relative flex w-fit max-w-full flex-col items-start gap-2', className)}>
             <Label
                 htmlFor="quantity"
-                className="block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground">
+                className="block text-left font-sans text-base font-semibold leading-6 text-card-foreground">
                 {tQuantity('quantity')}
             </Label>
             <QuantityPicker

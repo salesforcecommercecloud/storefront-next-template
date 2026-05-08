@@ -29,7 +29,7 @@ exports[`Hero stories snapshot > Default story renders and matches snapshot 1`] 
             Welcome to Our Store
           </h1>
           <p
-            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
+            class="text-lg font-normal leading-[120%] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Discover amazing products for your everyday needs
           </p>
@@ -135,7 +135,7 @@ exports[`Hero stories snapshot > RightBlockCenteredText story renders and matche
             Right-aligned column
           </h1>
           <p
-            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
+            class="text-lg font-normal leading-[120%] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Text stays centered inside the content block
           </p>
@@ -192,7 +192,7 @@ exports[`Hero stories snapshot > StyleOverrideRoundedCornersAndCTAZoom story ren
             Brand Experience Override
           </h1>
           <p
-            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
+            class="text-lg font-normal leading-[120%] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Rounded corners on the root element, zoom on CTA hover — both driven by a CSS fragment in styleOverride
           </p>
@@ -250,7 +250,7 @@ exports[`Hero stories snapshot > StyleOverrideWithDesignTokens story renders and
             Design Token Override
           </h1>
           <p
-            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8"
+            class="text-lg font-normal leading-[120%] mb-4 sm:mb-6 md:mb-8"
             style="color: rgb(226, 232, 240);"
           >
             Ghost button using var(--primary-foreground) — inverts to solid on hover using var(--primary). White inset frame via var(--ring).
@@ -304,7 +304,7 @@ exports[`Hero stories snapshot > WithImageTitle story renders and matches snapsh
             Featured Collection
           </h1>
           <p
-            class="text-lg font-normal leading-[1.2] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
+            class="text-lg font-normal leading-[120%] mb-4 sm:mb-6 md:mb-8 text-primary-foreground"
           >
             Hover over the image to see the tooltip
           </p>

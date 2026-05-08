@@ -17,7 +17,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
       >
         <div>
           <h1
-            class="text-xl font-bold"
+            class="text-2xl font-semibold"
           >
             Order Details
           </h1>
@@ -164,10 +164,10 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                             class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                              class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                             >
                               <a
-                                class="text-foreground hover:text-primary block break-words"
+                                class="hover:text-primary block break-words"
                                 data-discover="true"
                                 href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
@@ -338,7 +338,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -379,16 +379,12 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         £71.38
                       </span>
                     </div>
@@ -421,7 +417,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
       >
         <div>
           <h1
-            class="text-xl font-bold"
+            class="text-2xl font-semibold"
           >
             Order Details
           </h1>
@@ -550,10 +546,10 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                             class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                              class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                             >
                               <a
-                                class="text-foreground hover:text-primary block break-words"
+                                class="hover:text-primary block break-words"
                                 data-discover="true"
                                 href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
@@ -724,7 +720,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -765,16 +761,12 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         £71.38
                       </span>
                     </div>
@@ -807,7 +799,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
       >
         <div>
           <h1
-            class="text-xl font-bold"
+            class="text-2xl font-semibold"
           >
             Order Details
           </h1>
@@ -934,10 +926,10 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                              class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                             >
                               <a
-                                class="text-foreground hover:text-primary block break-words"
+                                class="hover:text-primary block break-words"
                                 data-discover="true"
                                 href="/RefArchGlobal/en-GB/product/prod-a"
                                 title="Product for Alice"
@@ -1092,10 +1084,10 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                             class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                              class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                             >
                               <a
-                                class="text-foreground hover:text-primary block break-words"
+                                class="hover:text-primary block break-words"
                                 data-discover="true"
                                 href="/RefArchGlobal/en-GB/product/prod-b"
                                 title="Product for Bob"
@@ -1234,7 +1226,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -1275,16 +1267,12 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         £30.00
                       </span>
                     </div>
@@ -1317,7 +1305,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
       >
         <div>
           <h1
-            class="text-xl font-bold"
+            class="text-2xl font-semibold"
           >
             Order Details
           </h1>
@@ -1464,10 +1452,10 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                             class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                              class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                             >
                               <a
-                                class="text-foreground hover:text-primary block break-words"
+                                class="hover:text-primary block break-words"
                                 data-discover="true"
                                 href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
@@ -1638,7 +1626,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -1679,16 +1667,12 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         £71.38
                       </span>
                     </div>
@@ -1721,7 +1705,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
       >
         <div>
           <h1
-            class="text-xl font-bold"
+            class="text-2xl font-semibold"
           >
             Order Details
           </h1>
@@ -1850,10 +1834,10 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                             class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                              class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                             >
                               <a
-                                class="text-foreground hover:text-primary block break-words"
+                                class="hover:text-primary block break-words"
                                 data-discover="true"
                                 href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
@@ -2024,7 +2008,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -2065,16 +2049,12 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         £71.38
                       </span>
                     </div>
@@ -2134,7 +2114,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
       >
         <div>
           <h1
-            class="text-xl font-bold"
+            class="text-2xl font-semibold"
           >
             Order Details
           </h1>
@@ -2270,10 +2250,10 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                             class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                           >
                             <h2
-                              class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                              class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                             >
                               <a
-                                class="text-foreground hover:text-primary block break-words"
+                                class="hover:text-primary block break-words"
                                 data-discover="true"
                                 href="/RefArchGlobal/en-GB/product/701643108633M"
                                 title="First Product"
@@ -2444,7 +2424,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -2485,16 +2465,12 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         £71.38
                       </span>
                     </div>

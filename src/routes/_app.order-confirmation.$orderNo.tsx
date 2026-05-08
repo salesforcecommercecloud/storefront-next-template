@@ -278,7 +278,7 @@ function OrderConfirmationContent({
                                 </Typography>
                             </div>
                             <div className="text-left md:text-right space-y-1">
-                                <p className="text-lg font-semibold text-foreground">
+                                <p className="text-sm font-semibold text-foreground">
                                     {t('confirmation.orderNumber')}
                                     <span data-testid="order-number" className="text-primary">
                                         {' '}
@@ -353,7 +353,7 @@ function OrderConfirmationContent({
                         <Card key={shipment.shipmentId} className="border border-border/70 rounded-none shadow-none">
                             <CardContent className="grid gap-6 p-6 md:grid-cols-3">
                                 <div>
-                                    <p className="text-md font-semibold tracking-wide text-foreground">
+                                    <p className="text-base font-semibold tracking-wide text-foreground">
                                         {t('confirmation.summaryLabels.arriving')}
                                     </p>
                                     <p className="mt-3 text-sm font-medium text-muted-foreground">
@@ -361,7 +361,7 @@ function OrderConfirmationContent({
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-md font-semibold tracking-wide text-foreground">
+                                    <p className="text-base font-semibold tracking-wide text-foreground">
                                         {t('confirmation.summaryLabels.shippingAddress')}
                                     </p>
                                     <div className="mt-3 space-y-2">
@@ -375,7 +375,7 @@ function OrderConfirmationContent({
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-md font-semibold tracking-wide text-foreground">
+                                    <p className="text-base font-semibold tracking-wide text-foreground">
                                         {t('confirmation.summaryLabels.shippingMethod')}
                                     </p>
                                     <p className="mt-3 text-sm font-medium text-muted-foreground">
@@ -391,7 +391,7 @@ function OrderConfirmationContent({
                 {/* Product Items Summary section */}
                 <Card className="border border-border/70 rounded-none shadow-none">
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
+                        <CardTitle className="text-2xl font-medium">{t('confirmation.summaryTitle')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-4">
@@ -429,7 +429,7 @@ function OrderConfirmationContent({
                                             key={productKey}
                                             className="rounded-none border border-border/70 bg-card p-4 sm:p-7 flex flex-col gap-4 sm:flex-row sm:items-center">
                                             <div className="flex items-center justify-center">
-                                                <div className="h-24 w-24 rounded-none bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-lg font-semibold">
+                                                <div className="h-24 w-24 rounded-none bg-muted overflow-hidden flex items-center justify-center text-muted-foreground text-sm font-semibold">
                                                     {imageSrc ? (
                                                         <ProductImage
                                                             src={toImageUrl({ src: imageSrc, config }) ?? imageSrc}
@@ -467,7 +467,7 @@ function OrderConfirmationContent({
                                                         {formatCurrency(originalPrice, i18n.language, currency)}
                                                     </p>
                                                 )}
-                                                <p className="text-lg font-semibold text-foreground">
+                                                <p className="text-sm font-semibold text-foreground">
                                                     {formatCurrency(finalPrice, i18n.language, currency)}
                                                 </p>
                                             </div>
@@ -526,7 +526,7 @@ function OrderConfirmationContent({
                                 <p className="font-medium text-foreground">{paymentSummary}</p>
                             </div>
                         </div>
-                        <p className="text-lg font-semibold text-foreground">
+                        <p className="text-sm font-semibold text-foreground">
                             {formatCurrency(totals.total, i18n.language, currency)}
                         </p>
                     </CardContent>

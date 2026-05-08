@@ -45,7 +45,7 @@ function CheckoutContextConsumer() {
     return (
         <div className="space-y-4 p-6 border rounded">
             <div>
-                <h3 className="text-lg font-semibold mb-2">Checkout Context State</h3>
+                <h3 className="text-sm font-semibold mb-2">Checkout Context State</h3>
                 <div className="space-y-2 text-sm">
                     <div>
                         <strong>Current Step:</strong> {stepNames[step]} ({step})

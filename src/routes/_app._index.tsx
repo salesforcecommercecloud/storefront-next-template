@@ -282,7 +282,7 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
                                         showBorder={false}
                                         cardFooterClassName="items-center text-center p-0"
                                         cardDescriptionClassName="text-center"
-                                        className="[&_h3]:text-3xl [&_h3]:md:text-4xl [&_h3]:font-normal [&_h3]:text-brand-black [&_h3]:mb-6 [&_h3]:tracking-tight [&_p]:text-lg [&_p]:text-brand-gray-700 [&_p]:leading-relaxed [&_p]:font-normal [&_p:last-of-type]:text-base [&_p:last-of-type]:text-brand-gray-600"
+                                        className="[&_h3]:text-3xl [&_h3]:md:text-4xl [&_h3]:font-normal [&_h3]:text-brand-black [&_h3]:mb-6 [&_h3]:tracking-tight [&_p]:text-sm [&_p]:text-brand-gray-700 [&_p]:leading-relaxed [&_p]:font-normal [&_p:last-of-type]:text-base [&_p:last-of-type]:text-brand-gray-600"
                                     />
                                 </div>
                             </div>

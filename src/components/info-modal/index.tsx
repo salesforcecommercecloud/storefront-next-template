@@ -113,7 +113,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                     <>
                         <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
                             {data.title != null && (
-                                <DialogTitle className="text-[1.5rem] font-semibold text-foreground">
+                                <DialogTitle className="text-2xl font-semibold text-foreground">
                                     {data.title}
                                 </DialogTitle>
                             )}
@@ -161,7 +161,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                     <>
                         {data.formConfig != null && (
                             <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
-                                <DialogTitle className="text-[1.5rem] font-semibold text-foreground">
+                                <DialogTitle className="text-2xl font-semibold text-foreground">
                                     {data.formConfig.title}
                                 </DialogTitle>
                             </DialogHeader>
@@ -204,9 +204,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                 {data.type === 'estimated-delivery' && (
                     <>
                         <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
-                            <DialogTitle className="text-[1.5rem] font-semibold text-foreground">
-                                {data.title}
-                            </DialogTitle>
+                            <DialogTitle className="text-2xl font-semibold text-foreground">{data.title}</DialogTitle>
                         </DialogHeader>
                         <div className="mt-4 border-b border-muted-foreground/25" aria-hidden />
                         <div className="overflow-y-auto max-h-[calc(90vh-180px)]">
@@ -224,9 +222,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                 {data.type === 'returns-and-warranty' && (
                     <>
                         <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
-                            <DialogTitle className="text-[1.5rem] font-semibold text-foreground">
-                                {data.title}
-                            </DialogTitle>
+                            <DialogTitle className="text-2xl font-semibold text-foreground">{data.title}</DialogTitle>
                         </DialogHeader>
                         <div className="mt-4 border-b border-muted-foreground/25" aria-hidden />
                         <div className="overflow-y-auto max-h-[calc(90vh-180px)]">

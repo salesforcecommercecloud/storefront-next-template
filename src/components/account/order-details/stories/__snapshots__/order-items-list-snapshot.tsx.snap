@@ -32,10 +32,10 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
           class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+            class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
           >
             <a
-              class="text-foreground hover:text-primary block break-words"
+              class="hover:text-primary block break-words"
               data-discover="true"
               href="/RefArchGlobal/en-GB/product/701643108633M"
               title="Sweater"
@@ -46,7 +46,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
         </div>
         <div>
           <div
-            class="text-xs text-muted-foreground space-y-1 mb-1"
+            class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
           >
             <div>
               Size
@@ -159,10 +159,10 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
           class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+            class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
           >
             <a
-              class="text-foreground hover:text-primary block break-words"
+              class="hover:text-primary block break-words"
               data-discover="true"
               href="/"
               title="Product One"
@@ -241,10 +241,10 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
           class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+            class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
           >
             <a
-              class="text-foreground hover:text-primary block break-words"
+              class="hover:text-primary block break-words"
               data-discover="true"
               href="/"
               title="Product Two"

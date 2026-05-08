@@ -118,7 +118,7 @@ describe('StarRating', () => {
         test('does not show rating label by default', () => {
             const { container } = render(<StarRating rating={4.5} reviewCount={100} />);
             // Should not have a visible rating label (only screen reader text)
-            const visibleLabels = container.querySelectorAll('.text-lg');
+            const visibleLabels = container.querySelectorAll('.text-sm');
             expect(visibleLabels.length).toBe(0);
         });
 
@@ -173,7 +173,7 @@ describe('StarRating', () => {
         test('applies default className to rating label', () => {
             render(<StarRating rating={4.5} reviewCount={100} showRatingLabel />);
             const label = screen.getByText('4.5 out of 5');
-            expect(label).toHaveClass('text-lg', 'font-semibold', 'text-black');
+            expect(label).toHaveClass('text-xs', 'font-normal', 'leading-none', 'text-card-foreground');
         });
     });
 

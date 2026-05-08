@@ -45,7 +45,8 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
     const config = useConfig<AppConfig>();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const Icon = item.icon;
-    const baseClasses = 'w-full px-3 py-2 text-left text-sm font-medium rounded-none flex items-center gap-2';
+    const baseClasses =
+        'w-full px-3 py-2 text-left text-sm font-normal leading-none rounded-none flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-sidebar-foreground';
     const mobileClasses = `${baseClasses} border`;
     const disabledClasses = 'opacity-50 cursor-not-allowed pointer-events-none';
 
@@ -65,8 +66,8 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
     // If item has an action, render as a form (e.g., for logout)
     if (item.action) {
         const activeClasses = isMobile
-            ? 'bg-transparent text-foreground hover:text-foreground'
-            : 'text-foreground hover:text-foreground hover:bg-muted/30';
+            ? 'bg-transparent hover:text-sidebar-foreground hover:bg-sidebar-accent'
+            : 'hover:text-sidebar-foreground hover:bg-sidebar-accent';
         const action = buildUrl({
             to: item.action,
             urlConfig: config.url,
@@ -93,12 +94,10 @@ export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps):
                 cn(
                     isMobile ? mobileClasses : baseClasses,
                     isActive
-                        ? isMobile
-                            ? 'bg-background text-foreground'
-                            : 'bg-muted/50 text-foreground'
+                        ? 'bg-sidebar-accent'
                         : isMobile
-                          ? 'bg-transparent text-foreground hover:text-foreground'
-                          : 'text-foreground hover:text-foreground hover:bg-muted/30'
+                          ? 'bg-transparent hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                          : 'hover:text-sidebar-foreground hover:bg-sidebar-accent'
                 )
             }>
             <Icon data-testid={`${item.label}-icon`} className="h-5 w-5" />

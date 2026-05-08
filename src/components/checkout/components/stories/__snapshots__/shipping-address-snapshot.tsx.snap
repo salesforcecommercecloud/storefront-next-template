@@ -17,7 +17,7 @@ exports[`ShippingAddress stories snapshot > CompletedState story renders and mat
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -70,7 +70,7 @@ exports[`ShippingAddress stories snapshot > Default story renders and matches sn
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -705,7 +705,7 @@ exports[`ShippingAddress stories snapshot > DisabledState story renders and matc
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -747,7 +747,7 @@ exports[`ShippingAddress stories snapshot > InternationalAddress story renders a
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -1382,7 +1382,7 @@ exports[`ShippingAddress stories snapshot > LoadingState story renders and match
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -2029,7 +2029,7 @@ exports[`ShippingAddress stories snapshot > WithExistingAddress story renders an
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>
@@ -2664,7 +2664,7 @@ exports[`ShippingAddress stories snapshot > WithValidationErrors story renders a
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Address
         </span>

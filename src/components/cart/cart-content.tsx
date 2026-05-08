@@ -206,12 +206,14 @@ export default function CartContent({
             <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 md:justify-end">
                 <Checkbox id={fieldId} />
                 <div className="flex flex-wrap items-center gap-1">
-                    <Label htmlFor={fieldId} className="text-sm text-muted-foreground cursor-pointer font-normal">
+                    <Label
+                        htmlFor={fieldId}
+                        className="text-sm font-normal leading-none text-foreground cursor-pointer">
                         {t('lineItem.giftLabel')}
                     </Label>
                     <button
                         type="button"
-                        className="text-sm text-muted-foreground cursor-pointer font-normal shrink-0 border-0 bg-transparent p-0 shadow-none h-auto min-h-0 font-inherit text-left">
+                        className="text-sm font-normal leading-none text-foreground cursor-pointer shrink-0 border-0 bg-transparent p-0 shadow-none h-auto min-h-0 font-inherit text-left">
                         {t('lineItem.giftLearnMore')}
                     </button>
                 </div>

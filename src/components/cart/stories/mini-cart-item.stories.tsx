@@ -164,7 +164,7 @@ const completeTheLookProducts = [
 function CompleteTheLook(): ReactElement {
     return (
         <div className="py-4">
-            <h3 className="text-lg font-semibold text-foreground mb-1">Complete the look</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-1">Complete the look</h3>
             <p className="text-sm text-muted-foreground mb-4">Description</p>
             <Carousel opts={{ align: 'start' }} className="w-full">
                 <CarouselContent className="-ml-4">
@@ -736,7 +736,7 @@ export const EmptyCart: Story = {
                 </svg>
 
                 {/* Empty cart message */}
-                <h2 className="text-xl font-semibold text-foreground mb-2">Your cart is empty</h2>
+                <h2 className="text-2xl font-semibold text-foreground mb-2">Your cart is empty</h2>
                 <p className="text-sm text-muted-foreground mb-8 max-w-xs">
                     Looks like you haven&apos;t added anything to your cart yet. Start shopping to fill it up with
                     amazing products!

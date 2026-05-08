@@ -70,9 +70,7 @@ export function RemovePaymentMethodDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader className="mb-2">
-                    <DialogTitle
-                        className="font-semibold text-foreground"
-                        style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
+                    <DialogTitle className="text-lg font-semibold text-foreground">
                         {t('paymentMethods.removePaymentMethod')}
                     </DialogTitle>
                 </DialogHeader>

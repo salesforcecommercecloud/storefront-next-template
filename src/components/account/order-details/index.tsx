@@ -156,7 +156,7 @@ export function OrderDetails({ order, productsById }: OrderDetailsProps): ReactE
                     {/* Order Details header */}
                     <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
                         <div>
-                            <h1 className="text-xl font-bold">{t('orders.orderDetailsPageTitle')}</h1>
+                            <h1 className="text-2xl font-semibold">{t('orders.orderDetailsPageTitle')}</h1>
                             <p
                                 className="mt-1 flex items-center gap-0 text-base font-medium text-muted-foreground"
                                 data-testid="order-number">

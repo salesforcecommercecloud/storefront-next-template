@@ -134,10 +134,12 @@ export function ProductItemVariantName({ productItem }: { productItem: EnrichedP
                     {tProduct('bonusProduct')}
                 </Badge>
             )}
-            <Typography variant="h2" className="text-sm md:text-base font-medium min-w-0 flex-1 leading-tight">
+            <Typography
+                variant="h2"
+                className="text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1">
                 <Link
                     to={createProductUrl(productId)}
-                    className="text-foreground hover:text-primary block break-words"
+                    className="hover:text-primary block break-words"
                     title={productName}>
                     {productName}
                 </Link>
@@ -182,7 +184,7 @@ export function ProductItemVariantAttributes({
 
             {/* Variation Attributes */}
             {Object.keys(displayVariationValues).length > 0 && (
-                <div className="text-xs text-muted-foreground space-y-1 mb-1">
+                <div className="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1">
                     {Object.entries(displayVariationValues).map(([name, value]) => (
                         <div key={name}>
                             {name}: {value}
@@ -224,7 +226,7 @@ export function ProductItemPromotions({
     const badge = (
         <Badge
             className={cn(
-                'h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground',
+                'h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words',
                 className
             )}>
             {tMiniCart('saved', {
@@ -446,11 +448,11 @@ function ProductItem({
                                                         className="flex flex-row flex-row-reverse flex-wrap items-baseline justify-end gap-2"
                                                         currentPriceProps={{
                                                             className:
-                                                                'text-card-foreground text-lg text-right font-semibold leading-none relative',
+                                                                'text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative',
                                                         }}
                                                         listPriceProps={{
                                                             className:
-                                                                'text-muted-foreground text-right text-sm leading-none relative',
+                                                                'text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground text-right line-through relative',
                                                         }}
                                                         afterPriceContent={
                                                             <UITarget targetId="sfcc.cart.shipping.deliveryEstimate" />

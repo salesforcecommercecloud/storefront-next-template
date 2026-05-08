@@ -6,7 +6,7 @@ exports[`WithSuspense stories snapshot > Default story renders and matches snaps
     class="p-6"
   >
     <h2
-      class="text-xl font-bold mb-2"
+      class="text-2xl font-bold mb-2"
     >
       Default Component
     </h2>
@@ -25,7 +25,7 @@ exports[`WithSuspense stories snapshot > WithCustomFallback story renders and ma
     class="p-6"
   >
     <h2
-      class="text-xl font-bold mb-2"
+      class="text-2xl font-bold mb-2"
     >
       Custom Fallback
     </h2>
@@ -44,7 +44,7 @@ exports[`WithSuspense stories snapshot > WithPromise story renders and matches s
     class="p-6"
   >
     <h2
-      class="text-xl font-bold mb-2"
+      class="text-2xl font-bold mb-2"
     >
       Resolved Data
     </h2>

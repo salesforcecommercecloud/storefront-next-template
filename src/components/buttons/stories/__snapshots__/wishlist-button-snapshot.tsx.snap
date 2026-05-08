@@ -95,7 +95,7 @@ exports[`WishlistButton stories snapshot > DifferentProducts story renders and m
             Basic product item
           </p>
           <p
-            class="text-lg font-bold"
+            class="text-sm font-bold"
           >
             $29.99
           </p>
@@ -137,7 +137,7 @@ exports[`WishlistButton stories snapshot > DifferentProducts story renders and m
             Premium product item
           </p>
           <p
-            class="text-lg font-bold"
+            class="text-sm font-bold"
           >
             $99.99
           </p>

@@ -112,7 +112,7 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
             <div className="flex gap-3">
                 {/* Avatar - circle with grey background (brand-gray-200) */}
                 <div
-                    className="flex size-12 shrink-0 items-center justify-center rounded-full text-lg leading-7 font-medium text-brand-gray-600"
+                    className="flex size-12 shrink-0 items-center justify-center rounded-full text-sm leading-7 font-medium text-brand-gray-600"
                     style={{ backgroundColor: '#ededed' }}
                     aria-hidden>
                     {initial}

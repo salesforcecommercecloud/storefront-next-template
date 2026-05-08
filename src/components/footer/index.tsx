@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Suspense, type ReactElement } from 'react';
-import { Await, useLocation } from 'react-router';
+import { type ReactElement } from 'react';
+import { useLocation } from 'react-router';
 import { Link } from '@/components/link';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from '@icons-pack/react-simple-icons';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import Signup from './signup';
-import { UITarget } from '@/targets/ui-target';
 import { useTranslation } from 'react-i18next';
 import LocaleSwitcher from '@/components/locale-switcher';
 import CurrencySwitcher from '@/components/currency-switcher';
@@ -29,11 +27,10 @@ import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-contex
 import type { AppConfig } from '@/types/config';
 
 interface FooterProps {
-    categories?: Promise<ShopperProducts.schemas['Category']>;
     variant?: 'full' | 'checkout';
 }
 
-export default function Footer({ categories, variant = 'full' }: FooterProps): ReactElement {
+export default function Footer({ variant = 'full' }: FooterProps): ReactElement {
     const { t } = useTranslation('footer');
     const location = useLocation();
     const config = useConfig<AppConfig>();
@@ -74,8 +71,12 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                 <div className="section-container">
                     <div className="bg-primary text-primary-foreground py-12 md:py-16">
                         <div className="max-w-2xl mx-auto text-center">
-                            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('newsletter.title')}</h2>
-                            <p className="text-base md:text-lg mb-6 opacity-90">{t('newsletter.description')}</p>
+                            <h2 className="text-2xl font-semibold leading-[120%] tracking-[-0.6px] text-primary-foreground mb-3">
+                                {t('newsletter.title')}
+                            </h2>
+                            <p className="text-sm font-normal leading-5 text-primary-foreground mb-6">
+                                {t('newsletter.description')}
+                            </p>
                             <div className="flex justify-center">
                                 <Signup />
                             </div>
@@ -87,91 +88,8 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
             {/* Footer Links Section (Light Background) */}
             <div className="bg-footer-background py-12 section-container">
                 <div className="text-footer-foreground">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
-                        {/* Column 1: Shop - Dynamic Categories */}
-                        <div>
-                            <h3 className="text-sm font-semibold mb-4">{t('sections.shop')}</h3>
-                            <ul className="space-y-2">
-                                <UITarget targetId="sfcc.footer.customersupport.start" />
-                                {categories ? (
-                                    <Suspense fallback={null}>
-                                        <Await resolve={categories} errorElement={null}>
-                                            {(rootCategory) => (
-                                                <>
-                                                    {rootCategory.categories?.map((category) => (
-                                                        <li key={category.id}>
-                                                            <Link
-                                                                to={`/category/${category.id}`}
-                                                                className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                                                {category.name}
-                                                            </Link>
-                                                        </li>
-                                                    ))}
-                                                </>
-                                            )}
-                                        </Await>
-                                    </Suspense>
-                                ) : null}
-                                <UITarget targetId="sfcc.footer.customersupport.end" />
-                            </ul>
-                        </div>
-
-                        {/* Column 2: Help */}
-                        <div>
-                            <h3 className="text-sm font-semibold mb-4">{t('sections.help')}</h3>
-                            <ul className="space-y-2">
-                                <UITarget targetId="sfcc.footer.account.start" />
-                                <li>
-                                    <Link
-                                        to="/contact"
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {t('links.contactUs')}
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        to="/shipping"
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {t('links.shipping')}
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        to="/orders"
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {t('links.orderStatus')}
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        to="/login"
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {t('links.signInOrCreateAccount')}
-                                    </Link>
-                                </li>
-                                <UITarget targetId="sfcc.footer.account.end" />
-                            </ul>
-                        </div>
-
-                        {/* Column 3: About */}
-                        <div>
-                            <h3 className="text-sm font-semibold mb-4">{t('sections.about')}</h3>
-                            <ul className="space-y-2">
-                                <UITarget targetId="sfcc.footer.ourcompany.start" />
-                                <li>
-                                    <Link
-                                        to="/about-us"
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        {t('links.aboutUs')}
-                                    </Link>
-                                </li>
-                                <UITarget targetId="sfcc.footer.ourcompany.end" />
-                            </ul>
-                        </div>
-                    </div>
-
                     {/* Footer Bottom */}
-                    <div className="mt-12 pt-8 border-t border-border/60">
+                    <div>
                         <div className="flex flex-col gap-6">
                             {/* Top Row: Logo + Policy Links on Left, Social Media on Right */}
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -182,7 +100,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                                             <img src={logo} alt={t('logoAlt')} className="h-4 w-auto" />
                                         </Link>
                                     </div>
-                                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-4 text-sm font-normal leading-5 text-muted-foreground">
                                         <Link to="/accessibility" className="hover:text-foreground transition-colors">
                                             {t('links.accessibility')}
                                         </Link>
@@ -225,7 +143,7 @@ export default function Footer({ categories, variant = 'full' }: FooterProps): R
                             </div>
 
                             {/* Bottom Row: Copyright/Address on Left, Legal Links + Switchers on Right */}
-                            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+                            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-normal leading-5 text-muted-foreground">
                                 <div>
                                     © {new Date().getFullYear()} {t('copyright')}
                                 </div>

@@ -40,7 +40,7 @@ export function PaymentScheduleModalContent({
         <>
             {paymentSchedule && paymentSchedule.payments.length > 0 && (
                 <div>
-                    <h3 className="mb-4 text-lg font-medium text-foreground">Payment Schedule</h3>
+                    <h3 className="mb-4 text-sm font-medium text-foreground">Payment Schedule</h3>
                     <div className="space-y-4">
                         {/* 7-column layout: dot, line, dot, line, dot, line, dot — each dot directly above its amount */}
                         <div className="flex items-center">
@@ -117,7 +117,7 @@ export function PaymentScheduleModalContent({
 
             {steps && steps.length > 0 && (
                 <div>
-                    <h3 className="mb-3 text-lg font-medium text-foreground">How it works</h3>
+                    <h3 className="mb-3 text-sm font-medium text-foreground">How it works</h3>
                     <div className="space-y-3">
                         {steps.map((step) => (
                             <div key={step.number} className="flex gap-3">

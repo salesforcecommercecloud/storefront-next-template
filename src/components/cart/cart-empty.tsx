@@ -67,7 +67,10 @@ export default function EmptyCart({ isRegistered = false }: EmptyCartProps): Rea
                     </svg>
 
                     {/* Empty Cart Message */}
-                    <Typography variant="h2" as="h2" className="text-xl text-center font-semibold text-foreground mb-2">
+                    <Typography
+                        variant="h2"
+                        as="h2"
+                        className="text-2xl text-center font-semibold text-foreground mb-2">
                         {t('empty.title')}
                     </Typography>
                     <p className="text-sm text-muted-foreground mb-8">

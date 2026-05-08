@@ -55,10 +55,10 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       Bonus Product
                     </span>
                     <h2
-                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                      class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                     >
                       <a
-                        class="text-foreground hover:text-primary block break-words"
+                        class="hover:text-primary block break-words"
                         href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Men's Classic Deer Gloves"
                         to="/RefArchGlobal/en-GB/product/TG508M"
@@ -69,7 +69,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                   </div>
                   <div>
                     <div
-                      class="text-xs text-muted-foreground space-y-1 mb-1"
+                      class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                     >
                       <div>
                         Size
@@ -110,7 +110,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
                       <label
-                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                         data-slot="label"
                         for="quantity"
                       >
@@ -121,7 +121,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                       >
                         <button
                           aria-label="Decrement Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-decrement"
                           disabled=""
                         >
@@ -129,7 +129,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                         </button>
                         <input
                           aria-label="Quantity"
-                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           disabled=""
                           max="98"
                           min="0"
@@ -139,7 +139,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                         />
                         <button
                           aria-label="Increment Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-increment"
                           disabled=""
                         >
@@ -214,10 +214,10 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       Bonus Product
                     </span>
                     <h2
-                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                      class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                     >
                       <a
-                        class="text-foreground hover:text-primary block break-words"
+                        class="hover:text-primary block break-words"
                         href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Choice Bonus Gift"
                         to="/RefArchGlobal/en-GB/product/TG508M"
@@ -228,7 +228,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                   </div>
                   <div>
                     <div
-                      class="text-xs text-muted-foreground space-y-1 mb-1"
+                      class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                     >
                       <div>
                         Size
@@ -278,7 +278,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
                       <label
-                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                         data-slot="label"
                         for="quantity"
                       >
@@ -289,7 +289,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                       >
                         <button
                           aria-label="Decrement Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-decrement"
                           disabled=""
                         >
@@ -297,7 +297,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                         </button>
                         <input
                           aria-label="Quantity"
-                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           max="3"
                           min="0"
                           step="1"
@@ -306,7 +306,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                         />
                         <button
                           aria-label="Increment Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-increment"
                         >
                           +
@@ -385,10 +385,10 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                     class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                   >
                     <h2
-                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                      class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                     >
                       <a
-                        class="text-foreground hover:text-primary block break-words"
+                        class="hover:text-primary block break-words"
                         href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Men's Classic Deer Gloves"
                         to="/RefArchGlobal/en-GB/product/TG508M"
@@ -399,7 +399,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                   </div>
                   <div>
                     <div
-                      class="text-xs text-muted-foreground space-y-1 mb-1"
+                      class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                     >
                       <div>
                         Size
@@ -431,7 +431,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                           <span
                             aria-label="Current price: £99.99"
                             aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                            class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                           >
                             £99.99
                           </span>
@@ -456,7 +456,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
                       <label
-                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                         data-slot="label"
                         for="quantity"
                       >
@@ -467,7 +467,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                       >
                         <button
                           aria-label="Decrement Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-decrement"
                           disabled=""
                         >
@@ -475,7 +475,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                         </button>
                         <input
                           aria-label="Quantity"
-                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           max="98"
                           min="0"
                           step="1"
@@ -484,7 +484,7 @@ exports[`ProductItem stories snapshot > Default story renders and matches snapsh
                         />
                         <button
                           aria-label="Increment Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-increment"
                         >
                           +
@@ -532,10 +532,10 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
           class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
         >
           <h2
-            class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+            class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
           >
             <a
-              class="text-foreground hover:text-primary block break-words"
+              class="hover:text-primary block break-words"
               href="/RefArchGlobal/en-GB/product/TG508M"
               title="Men's Classic Deer Gloves"
               to="/RefArchGlobal/en-GB/product/TG508M"
@@ -553,7 +553,7 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
             1
           </div>
           <div
-            class="text-xs text-muted-foreground space-y-1 mb-1"
+            class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
           >
             <div>
               Size
@@ -636,10 +636,10 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                     class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                   >
                     <h2
-                      class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                      class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                     >
                       <a
-                        class="text-foreground hover:text-primary block break-words"
+                        class="hover:text-primary block break-words"
                         href="/RefArchGlobal/en-GB/product/TG508M"
                         title="Men's Classic Deer Gloves"
                         to="/RefArchGlobal/en-GB/product/TG508M"
@@ -650,7 +650,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                   </div>
                   <div>
                     <div
-                      class="text-xs text-muted-foreground space-y-1 mb-1"
+                      class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                     >
                       <div>
                         Size
@@ -691,7 +691,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                           <span
                             aria-label="Current price: £99.99"
                             aria-live="polite"
-                            class="[&:not(:first-child)]:mt-6 text-card-foreground text-lg text-right font-semibold leading-none relative"
+                            class="[&:not(:first-child)]:mt-6 text-xl font-bold leading-[120%] tracking-[-0.6px] text-card-foreground text-right relative"
                           >
                             £99.99
                           </span>
@@ -716,7 +716,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       class="relative flex w-fit max-w-full flex-col items-start gap-2"
                     >
                       <label
-                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-sm font-semibold leading-5 text-muted-foreground"
+                        class="items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 block text-left font-sans text-base font-semibold leading-6 text-card-foreground"
                         data-slot="label"
                         for="quantity"
                       >
@@ -727,7 +727,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                       >
                         <button
                           aria-label="Decrement Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-decrement"
                           disabled=""
                         >
@@ -735,7 +735,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                         </button>
                         <input
                           aria-label="Quantity"
-                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           max="98"
                           min="0"
                           step="1"
@@ -744,7 +744,7 @@ exports[`ProductItem stories snapshot > WithActions story renders and matches sn
                         />
                         <button
                           aria-label="Increment Quantity for the product"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-increment"
                         >
                           +

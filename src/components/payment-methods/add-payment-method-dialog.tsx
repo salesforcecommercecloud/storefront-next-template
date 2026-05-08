@@ -170,9 +170,7 @@ export function AddPaymentMethodDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader className="mb-4">
-                    <DialogTitle
-                        className="font-semibold text-foreground"
-                        style={{ fontSize: 'var(--text-lg-xl)', lineHeight: 'var(--text-lg-xl--line-height)' }}>
+                    <DialogTitle className="text-lg font-semibold text-foreground">
                         {t('paymentMethods.addPaymentMethodTitle')}
                     </DialogTitle>
                 </DialogHeader>

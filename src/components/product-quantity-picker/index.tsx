@@ -110,7 +110,7 @@ export default function ProductQuantityPicker({
 
     return (
         <div className={cn('space-y-2', className)}>
-            <Label htmlFor="quantity" className="text-foreground">
+            <Label htmlFor="quantity" className="text-base font-semibold leading-6 text-card-foreground">
                 {tQuantity('quantity')}
             </Label>
             <QuantityPicker

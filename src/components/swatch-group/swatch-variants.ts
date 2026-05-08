@@ -88,28 +88,28 @@ const swatchVariants = cva(
                 shape: 'label',
                 selected: false,
                 disabled: false,
-                class: 'bg-swatch border border-swatch-border text-swatch-text hover:border-[var(--swatch-color-border-hover,transparent)]',
+                class: 'bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]',
             },
             // Square selected (not disabled)
             {
                 shape: 'label',
                 selected: true,
                 disabled: false,
-                class: 'bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm',
+                class: 'bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-2xs',
             },
             // Square disabled (not selected)
             {
                 shape: 'label',
                 selected: false,
                 disabled: true,
-                class: 'bg-swatch border border-swatch-border text-swatch-text opacity-50',
+                class: 'bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs opacity-50',
             },
             // Square selected and disabled
             {
                 shape: 'label',
                 selected: true,
                 disabled: true,
-                class: 'bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-sm opacity-50',
+                class: 'bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-2xs opacity-50',
             },
         ],
         defaultVariants: {

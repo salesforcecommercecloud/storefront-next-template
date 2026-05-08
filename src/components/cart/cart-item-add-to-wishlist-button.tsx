@@ -67,7 +67,7 @@ export function CartItemAddToWishlistButton({
                 variant="link"
                 size="sm"
                 disabled={isLoading}
-                className={`text-xs cursor-pointer hover:no-underline ${className}`}
+                className={`text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline ${className}`}
                 data-testid={`cart-remove-wishlist-${product.itemId}`}
                 aria-label={t('removeFromWishlist')}
                 aria-busy={isLoading}

@@ -155,7 +155,7 @@ The EmptyCart component displays when the shopping cart has no items. It provide
 - **Outer Container**: Full-width muted background with max-w-7xl centered content
 - **Card**: \`bg-background rounded-none shadow-md\` with generous responsive padding
 - **Icon**: 96×96px inline SVG shopping bag with \`text-muted-foreground/30\`
-- **Typography**: h2 heading (text-xl font-semibold) with mb-2, subtitle (text-sm) with mb-8
+- **Typography**: h2 heading (text-2xl font-semibold) with mb-2, subtitle (text-sm) with mb-8
 - **Button**: Centered "Start Shopping" button (not full-width)
                 `,
             },

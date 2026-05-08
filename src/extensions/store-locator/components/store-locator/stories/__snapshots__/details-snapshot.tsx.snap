@@ -131,7 +131,7 @@ exports[`StoreDetails stories snapshot > Default story renders and matches snaps
       class="col-span-1"
     >
       <div
-        class="text-lg font-semibold text-left"
+        class="text-sm font-semibold text-left"
       >
         Downtown Store
       </div>
@@ -258,7 +258,7 @@ exports[`StoreDetails stories snapshot > DesktopLayout story renders and matches
       class="col-span-1"
     >
       <div
-        class="text-lg font-semibold text-left"
+        class="text-sm font-semibold text-left"
       >
         Downtown Store
       </div>
@@ -385,7 +385,7 @@ exports[`StoreDetails stories snapshot > MobileLayout story renders and matches 
       class="col-span-1"
     >
       <div
-        class="text-lg font-semibold text-left"
+        class="text-sm font-semibold text-left"
       >
         Downtown Store
       </div>
@@ -512,7 +512,7 @@ exports[`StoreDetails stories snapshot > WithPrimaryAction story renders and mat
       class="col-span-1"
     >
       <div
-        class="text-lg font-semibold text-left"
+        class="text-sm font-semibold text-left"
       >
         Downtown Store
       </div>
@@ -651,7 +651,7 @@ exports[`StoreDetails stories snapshot > WithoutDistance story renders and match
       class="col-span-1"
     >
       <div
-        class="text-lg font-semibold text-left"
+        class="text-sm font-semibold text-left"
       >
         Uptown Store
       </div>

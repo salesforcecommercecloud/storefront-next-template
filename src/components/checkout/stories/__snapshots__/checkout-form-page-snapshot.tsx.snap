@@ -92,7 +92,7 @@ exports[`CheckoutFormPage stories snapshot > ContactInfoStep story renders and m
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -170,7 +170,7 @@ exports[`CheckoutFormPage stories snapshot > ContactInfoStep story renders and m
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -418,7 +418,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                   class="space-y-4"
                 >
                   <h3
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Payment Method
                   </h3>
@@ -578,7 +578,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                 data-slot="card-title"
               >
                 <h2
-                  class="text-xl font-semibold tracking-tight text-left"
+                  class="text-2xl font-semibold tracking-tight text-left"
                 >
                   Place Order
                 </h2>
@@ -622,7 +622,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -700,7 +700,7 @@ exports[`CheckoutFormPage stories snapshot > DesktopView story renders and match
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -1021,7 +1021,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -1099,7 +1099,7 @@ exports[`CheckoutFormPage stories snapshot > LoadingState story renders and matc
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -1365,7 +1365,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -1443,7 +1443,7 @@ exports[`CheckoutFormPage stories snapshot > MobileView story renders and matche
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -1691,7 +1691,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                   class="space-y-4"
                 >
                   <h3
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Payment Method
                   </h3>
@@ -1851,7 +1851,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                 data-slot="card-title"
               >
                 <h2
-                  class="text-xl font-semibold tracking-tight text-left"
+                  class="text-2xl font-semibold tracking-tight text-left"
                 >
                   Place Order
                 </h2>
@@ -1895,7 +1895,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -2001,7 +2001,7 @@ exports[`CheckoutFormPage stories snapshot > MultipleItemsCheckout story renders
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -2249,7 +2249,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                   class="space-y-4"
                 >
                   <h3
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Payment Method
                   </h3>
@@ -2409,7 +2409,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                 data-slot="card-title"
               >
                 <h2
-                  class="text-xl font-semibold tracking-tight text-left"
+                  class="text-2xl font-semibold tracking-tight text-left"
                 >
                   Place Order
                 </h2>
@@ -2453,7 +2453,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -2531,7 +2531,7 @@ exports[`CheckoutFormPage stories snapshot > NoSavedPaymentMethod story renders 
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -2797,7 +2797,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -2875,7 +2875,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingAddress story renders and
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -3112,7 +3112,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -3190,7 +3190,7 @@ exports[`CheckoutFormPage stories snapshot > NoShippingMethods story renders and
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -3438,7 +3438,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                   class="space-y-4"
                 >
                   <h3
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Payment Method
                   </h3>
@@ -3598,7 +3598,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                 data-slot="card-title"
               >
                 <h2
-                  class="text-xl font-semibold tracking-tight text-left"
+                  class="text-2xl font-semibold tracking-tight text-left"
                 >
                   Place Order
                 </h2>
@@ -3642,7 +3642,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -3720,7 +3720,7 @@ exports[`CheckoutFormPage stories snapshot > PaymentStep story renders and match
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -4022,7 +4022,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                 data-slot="card-title"
               >
                 <h2
-                  class="text-xl font-semibold tracking-tight text-left"
+                  class="text-2xl font-semibold tracking-tight text-left"
                 >
                   Place Order
                 </h2>
@@ -4066,7 +4066,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -4144,7 +4144,7 @@ exports[`CheckoutFormPage stories snapshot > PlaceOrderStep story renders and ma
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -4410,7 +4410,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -4488,7 +4488,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingAddressStep story renders a
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -4997,7 +4997,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -5075,7 +5075,7 @@ exports[`CheckoutFormPage stories snapshot > ShippingOptionsStep story renders a
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -5584,7 +5584,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -5662,7 +5662,7 @@ exports[`CheckoutFormPage stories snapshot > StorePickupSelected story renders a
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:
@@ -5964,7 +5964,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                 data-slot="card-title"
               >
                 <h2
-                  class="text-xl font-semibold tracking-tight text-left"
+                  class="text-2xl font-semibold tracking-tight text-left"
                 >
                   Place Order
                 </h2>
@@ -6009,7 +6009,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                   data-slot="card-title"
                 >
                   <h2
-                    class="text-xl font-semibold tracking-tight text-left"
+                    class="text-2xl font-semibold tracking-tight text-left"
                   >
                     Order Summary
                   </h2>
@@ -6087,7 +6087,7 @@ exports[`CheckoutFormPage stories snapshot > SubmittingOrder story renders and m
                       </span>
                     </div>
                     <div
-                      class="flex justify-between font-semibold text-lg border-t pt-2"
+                      class="flex justify-between font-semibold text-sm border-t pt-2"
                     >
                       <span>
                         Total:

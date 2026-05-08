@@ -39,7 +39,10 @@ export default function CartTitle({ basket, deliveryCount }: CartTitleProps): Re
         <div className="flex items-center gap-2 mb-6">
             <Truck className="size-[1.125rem] text-foreground shrink-0" aria-hidden />
             <div>
-                <Typography variant="h5" as="h2" className="leading-none font-normal">
+                <Typography
+                    variant="h5"
+                    as="h2"
+                    className="text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground">
                     {t('delivery.heading', { deliveryCount, count: totalCount })}
                 </Typography>
                 {formattedAddress && (

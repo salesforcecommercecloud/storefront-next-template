@@ -260,7 +260,7 @@ export default function ShippingAddress({
     const stepTitle =
         hasSavedAddresses && isEditing ? (
             <div className="flex items-center justify-between w-full">
-                <span className="text-xl font-bold tracking-tight text-card-foreground">
+                <span className="text-2xl font-bold tracking-tight text-card-foreground">
                     {t('shippingAddress.title')}
                 </span>
                 <div className="flex items-center gap-2">
@@ -288,7 +288,7 @@ export default function ShippingAddress({
                 </div>
             </div>
         ) : (
-            <span className="text-xl font-bold tracking-tight text-card-foreground">{t('shippingAddress.title')}</span>
+            <span className="text-2xl font-bold tracking-tight text-card-foreground">{t('shippingAddress.title')}</span>
         );
 
     return (

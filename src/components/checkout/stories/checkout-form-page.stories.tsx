@@ -741,7 +741,7 @@ function MockCheckoutFormPage({
                                                 <span>Tax:</span>
                                                 <span>${cart.taxTotal?.toFixed(2) || '0.00'}</span>
                                             </div>
-                                            <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                                            <div className="flex justify-between font-semibold text-sm border-t pt-2">
                                                 <span>Total:</span>
                                                 <span>${cart.orderTotal?.toFixed(2) || '0.00'}</span>
                                             </div>

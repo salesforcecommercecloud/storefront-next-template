@@ -252,7 +252,7 @@ export function HeroCarouselPlain({
     const emptyState = useMemo(
         () => (
             <div className="relative w-full flex items-center justify-center bg-muted h-[400px] md:h-[500px] lg:h-[600px]">
-                <p className="text-muted-foreground text-lg">No slides available</p>
+                <p className="text-muted-foreground text-sm">No slides available</p>
             </div>
         ),
         []
@@ -437,7 +437,7 @@ const HeroSlideContent = React.memo(({ slide }: { slide: HeroSlide }): ReactElem
                         </h1>
 
                         {slide.subtitle && (
-                            <p className="text-lg font-normal leading-[1.2] text-primary-foreground mb-8">
+                            <p className="text-lg font-normal leading-[120%] text-primary-foreground mb-8">
                                 {slide.subtitle}
                             </p>
                         )}

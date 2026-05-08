@@ -525,7 +525,7 @@ export const InCartItem: Story = {
                 <div className="flex items-start gap-2 mb-6">
                     <Info className="w-5 h-5 text-foreground mt-1 shrink-0" />
                     <div>
-                        <h2 className="text-lg md:text-xl font-medium text-foreground">Delivery - 1 out of 1 items</h2>
+                        <h2 className="text-sm md:text-2xl font-medium text-foreground">Delivery - 1 out of 1 items</h2>
                         <p className="text-xs md:text-sm text-muted-foreground mt-1">
                             478 Artisan Way, Somerville, MA 02145
                         </p>
@@ -616,7 +616,7 @@ export const InCartItem: Story = {
                             </Badge>
                         </div>
                         <div className="text-right mb-4">
-                            <span className="text-lg font-semibold text-foreground">$59.00</span>
+                            <span className="text-sm font-semibold text-foreground">$59.00</span>
                         </div>
                         <div className="flex justify-end">
                             <CartQuantityPicker value="2" itemId="item-123" stockLevel={10} />

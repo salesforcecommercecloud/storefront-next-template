@@ -39,7 +39,7 @@ exports[`CartPickup stories snapshot > Default story renders and matches snapsho
             />
           </svg>
           <h2
-            class="text-lg tracking-tight text-left leading-none font-normal"
+            class="text-sm tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span
@@ -117,7 +117,7 @@ exports[`CartPickup stories snapshot > DesktopLayout story renders and matches s
             />
           </svg>
           <h2
-            class="text-lg tracking-tight text-left leading-none font-normal"
+            class="text-sm tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span
@@ -195,7 +195,7 @@ exports[`CartPickup stories snapshot > LongStoreName story renders and matches s
             />
           </svg>
           <h2
-            class="text-lg tracking-tight text-left leading-none font-normal"
+            class="text-sm tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span
@@ -273,7 +273,7 @@ exports[`CartPickup stories snapshot > MobileLayout story renders and matches sn
             />
           </svg>
           <h2
-            class="text-lg tracking-tight text-left leading-none font-normal"
+            class="text-sm tracking-tight text-left leading-none font-normal"
           >
             Pick up in 
             <span

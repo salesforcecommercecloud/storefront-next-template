@@ -280,11 +280,11 @@ export default function ProductInfo({
             {isCompactStyle && (
                 <>
                     {product.brand && (
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        <p className="text-xs font-normal leading-none uppercase tracking-wide text-secondary-foreground">
                             {product.brand}
                         </p>
                     )}
-                    <h2 className="text-xl font-bold text-foreground">{product.name}</h2>
+                    <h2 className="text-3xl font-bold text-card-foreground tracking-tight">{product.name}</h2>
                 </>
             )}
 
@@ -293,22 +293,24 @@ export default function ProductInfo({
                 <div className="flex items-start justify-between gap-4">
                     <div className={`${hideActionIcons ? '' : 'pr-20'} min-w-0`}>
                         {product.brand && (
-                            <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">
+                            <p className="mb-1 text-xs font-normal leading-none uppercase tracking-wide text-secondary-foreground">
                                 {product.brand}
                             </p>
                         )}
                         <h1
                             data-testid="product-title"
-                            className="text-2xl lg:text-3xl font-medium text-foreground tracking-tight">
+                            className="text-3xl font-bold text-card-foreground tracking-tight">
                             {product.name}
                         </h1>
                         {product.id && (
-                            <p className="mt-2 text-xs text-muted-foreground">
+                            <p className="mt-2 text-xs leading-none text-secondary-foreground">
                                 {t('sku')} {product.id}
                             </p>
                         )}
                         {product.shortDescription && (
-                            <p className="mt-2 text-lg text-muted-foreground">{product.shortDescription}</p>
+                            <p className="mt-2 text-base font-normal leading-6 text-accent-foreground">
+                                {product.shortDescription}
+                            </p>
                         )}
                     </div>
                     {headerAction ? <div className="pt-1 shrink-0">{headerAction}</div> : null}
@@ -330,7 +332,7 @@ export default function ProductInfo({
                     currency={currency}
                     labelForA11y={product?.name}
                     currentPriceProps={{
-                        className: 'text-xl font-bold text-foreground',
+                        className: 'text-2xl font-bold text-card-foreground leading-[120%] tracking-[-0.6px]',
                     }}
                     promoCalloutProps={{
                         className: 'text-sm [&_span]:mx-0 [&_span]:text-status-positive',

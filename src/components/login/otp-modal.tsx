@@ -233,7 +233,7 @@ export default function OtpModal({
                                 onPaste={otpInputs.handlePaste}
                                 disabled={isVerifying || isLoading}
                                 autoFocus={index === 0}
-                                className="w-12 h-14 text-center text-lg font-bold border-2"
+                                className="w-12 h-14 text-center text-sm font-bold border-2"
                                 aria-label={`${t('otpCodeLabel')} ${index + 1} of ${otpLength}`}
                             />
                         ))}

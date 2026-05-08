@@ -190,7 +190,7 @@ export default function MiniCartItem({
                                 <Typography
                                     as="h3"
                                     variant="h5"
-                                    className="text-base leading-normal tracking-normal text-card-foreground line-clamp-2">
+                                    className="text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2">
                                     {product.productName}
                                 </Typography>
                             </Link>
@@ -198,7 +198,7 @@ export default function MiniCartItem({
                             <Typography
                                 as="h3"
                                 variant="h5"
-                                className="text-base leading-normal tracking-normal text-card-foreground line-clamp-2">
+                                className="text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2">
                                 {product.productName}
                             </Typography>
                         )}
@@ -209,7 +209,7 @@ export default function MiniCartItem({
                                         key={name}
                                         as="span"
                                         variant="muted"
-                                        className="inline-block w-full text-sm leading-normal font-normal text-muted-foreground">
+                                        className="inline-block w-full text-sm font-normal leading-5 text-muted-foreground">
                                         <span>{name}: </span>
                                         <span>{value}</span>
                                     </Typography>
@@ -229,16 +229,16 @@ export default function MiniCartItem({
                             currentPriceProps={{
                                 as: 'h5',
                                 className:
-                                    'text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0',
+                                    'text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0',
                             }}
                             listPriceProps={{
                                 as: 'h5',
                                 className:
-                                    'text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0',
+                                    'text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0',
                             }}
                             promoCalloutProps={{
                                 className:
-                                    'mt-1 inline-flex w-fit rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-medium text-foreground',
+                                    'mt-1 inline-flex w-fit rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground',
                             }}
                         />
                         <UITarget targetId="sfcc.miniCart.shipping.deliveryEstimate" />
@@ -252,7 +252,9 @@ export default function MiniCartItem({
 
                 {/* Quantity Picker — w-fit keeps stepper compact; avoid w-full so layout stays independent of main cart */}
                 <div className="mb-2 flex w-fit max-w-full flex-col items-start gap-1">
-                    <Label htmlFor={`quantity-${product.itemId}`} className="text-xs font-bold text-foreground">
+                    <Label
+                        htmlFor={`quantity-${product.itemId}`}
+                        className="text-base font-semibold leading-6 text-card-foreground">
                         {tMiniCart('quantityLabel')}
                     </Label>
                     <QuantityPicker
@@ -275,7 +277,7 @@ export default function MiniCartItem({
 
                 <button
                     onClick={onRemove}
-                    className="text-xs text-primary hover:underline text-left"
+                    className="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                     aria-label={tMiniCart('removeItemAriaLabel')}>
                     {tRemoveItem('button')}

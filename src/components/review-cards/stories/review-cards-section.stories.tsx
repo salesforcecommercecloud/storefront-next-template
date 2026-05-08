@@ -45,7 +45,7 @@ function ReviewCardsSectionWrapper(): ReactElement {
                     <ProductReviewsProvider>
                         <LoadReviewsOnMount>
                             <div className="max-w-3xl">
-                                <h2 className="mb-4 text-xl font-semibold">Customer Reviews</h2>
+                                <h2 className="mb-4 text-2xl font-semibold">Customer Reviews</h2>
                                 <ReviewCardsSection />
                             </div>
                         </LoadReviewsOnMount>

@@ -9,7 +9,7 @@ exports[`StoreLocatorList stories snapshot > Default story renders and matches s
       class="mb-4"
     >
       <div
-        class="text-lg font-semibold flex justify-center items-center text-center"
+        class="text-sm font-semibold flex justify-center items-center text-center"
       >
         Viewing stores within 100 km of 94102 in United States
       </div>
@@ -61,7 +61,7 @@ exports[`StoreLocatorList stories snapshot > Default story renders and matches s
                   class="col-span-1"
                 >
                   <div
-                    class="text-lg font-semibold text-left"
+                    class="text-sm font-semibold text-left"
                   >
                     Downtown Store
                   </div>
@@ -216,7 +216,7 @@ exports[`StoreLocatorList stories snapshot > Default story renders and matches s
                   class="col-span-1"
                 >
                   <div
-                    class="text-lg font-semibold text-left"
+                    class="text-sm font-semibold text-left"
                   >
                     Uptown Store
                   </div>
@@ -349,7 +349,7 @@ exports[`StoreLocatorList stories snapshot > DesktopLayout story renders and mat
       class="mb-4"
     >
       <div
-        class="text-lg font-semibold flex justify-center items-center text-center"
+        class="text-sm font-semibold flex justify-center items-center text-center"
       >
         Viewing stores within 100 km of 94102 in United States
       </div>
@@ -401,7 +401,7 @@ exports[`StoreLocatorList stories snapshot > DesktopLayout story renders and mat
                   class="col-span-1"
                 >
                   <div
-                    class="text-lg font-semibold text-left"
+                    class="text-sm font-semibold text-left"
                   >
                     Downtown Store
                   </div>
@@ -556,7 +556,7 @@ exports[`StoreLocatorList stories snapshot > DesktopLayout story renders and mat
                   class="col-span-1"
                 >
                   <div
-                    class="text-lg font-semibold text-left"
+                    class="text-sm font-semibold text-left"
                   >
                     Uptown Store
                   </div>
@@ -689,7 +689,7 @@ exports[`StoreLocatorList stories snapshot > MobileLayout story renders and matc
       class="mb-4"
     >
       <div
-        class="text-lg font-semibold flex justify-center items-center text-center"
+        class="text-sm font-semibold flex justify-center items-center text-center"
       >
         Viewing stores within 100 km of 94102 in United States
       </div>
@@ -741,7 +741,7 @@ exports[`StoreLocatorList stories snapshot > MobileLayout story renders and matc
                   class="col-span-1"
                 >
                   <div
-                    class="text-lg font-semibold text-left"
+                    class="text-sm font-semibold text-left"
                   >
                     Downtown Store
                   </div>
@@ -896,7 +896,7 @@ exports[`StoreLocatorList stories snapshot > MobileLayout story renders and matc
                   class="col-span-1"
                 >
                   <div
-                    class="text-lg font-semibold text-left"
+                    class="text-sm font-semibold text-left"
                   >
                     Uptown Store
                   </div>

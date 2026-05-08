@@ -84,7 +84,7 @@ export interface StarRatingProps extends HTMLAttributes<HTMLDivElement> {
     starSize?: 'sm' | 'default' | 'lg';
     /**
      * Additional class name for the rating label
-     * @default 'text-lg font-semibold text-black'
+     * @default 'text-xs font-normal leading-none text-card-foreground'
      */
     ratingLabelClassName?: string;
     /**
@@ -167,7 +167,7 @@ export function StarRating({
     showReviewCountLabel = false,
     reviewCountLabelTemplate,
     starSize = 'sm',
-    ratingLabelClassName = 'text-lg font-semibold text-black',
+    ratingLabelClassName = 'text-xs font-normal leading-none text-card-foreground',
     reviewCountLabelClassName = 'text-xs text-gray-500 mt-2 mb-4',
     starClassName,
     ratingLinkClassName = 'text-sm text-muted-foreground underline decoration-dotted underline-offset-2 hover:text-foreground',

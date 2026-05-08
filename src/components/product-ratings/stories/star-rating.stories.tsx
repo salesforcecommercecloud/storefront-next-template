@@ -56,7 +56,7 @@ The component uses the theme's muted foreground color at 30% opacity for unfille
 | ratingLabelPosition | 'top' or 'right' | 'top' | Position of the rating label |
 | ratingLabelFormat | 'full' or 'short' | 'full' | Format of the rating label |
 | ratingLabelTemplate | string | undefined | Custom template for rating label |
-| ratingLabelClassName | string | 'text-lg font-semibold text-black' | Custom class name for rating label |
+| ratingLabelClassName | string | 'text-xs font-normal leading-none text-card-foreground' | Custom class name for rating label |
 | showRatingLink | boolean | false | Whether to show the rating link |
 | ratingLinkTemplate | string | '{rating} ({count})' | Custom template for rating link |
 | onRatingLinkClick | function | undefined | Callback when rating link is clicked |
@@ -626,8 +626,8 @@ Product Detail Page (PDP) rating configuration with clean, clickable presentatio
         const firstStar = stars[0];
         await expect(firstStar).toHaveClass('w-4', 'h-4');
 
-        // Test that rating label is not shown
-        const ratingLabel = canvasElement.querySelector('.text-lg');
+        // Test that rating label is not shown (showRatingLabel: false)
+        const ratingLabel = canvas.queryByText('4.8 out of 5');
         await expect(ratingLabel).not.toBeInTheDocument();
     },
 };
@@ -710,7 +710,7 @@ Rating display optimized for rating modals with default styling configuration.
 
 ### Default Styles:
 - **Star size**: sm (12px / w-3 h-3) - default size
-- **Rating label**: text-lg font-semibold text-black - prominent and bold
+- **Rating label**: text-sm font-semibold text-black - prominent and bold
 - **Review count label**: text-xs text-gray-500 mt-2 mb-4 - subtle with top and bottom margin
 
 ### Features:

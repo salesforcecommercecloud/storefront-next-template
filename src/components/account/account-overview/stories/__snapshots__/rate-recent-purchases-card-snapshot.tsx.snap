@@ -17,7 +17,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
       >
         <div>
           <h2
-            class="text-[length:var(--account-section-header)] font-semibold text-foreground"
+            class="text-lg font-semibold text-foreground"
           >
             Rate Your Recent Purchases
           </h2>
@@ -125,7 +125,7 @@ exports[`RateRecentPurchasesCard stories snapshot > SingleLineNoImage story rend
       >
         <div>
           <h2
-            class="text-[length:var(--account-section-header)] font-semibold text-foreground"
+            class="text-lg font-semibold text-foreground"
           >
             Rate Your Recent Purchases
           </h2>

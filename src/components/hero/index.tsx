@@ -60,23 +60,23 @@ const BUTTON_STYLE_TO_VARIANT: Record<ButtonStyle, NonNullable<VariantProps<type
 
 const TITLE_TYPOGRAPHY_CLASS: Record<HeroTypography, string> = {
     Default: 'text-6xl font-bold leading-none [letter-spacing:-1.5px]',
-    Paragraph: 'text-base sm:text-lg md:text-xl font-normal leading-7',
-    'Heading 1': 'text-4xl font-bold tracking-tight',
-    'Heading 2': 'text-3xl font-semibold tracking-tight',
-    'Heading 3': 'text-2xl font-semibold tracking-tight',
-    'Heading 4': 'text-xl font-semibold tracking-tight',
-    'Heading 5': 'text-lg font-semibold tracking-tight',
-    'Heading 6': 'text-base font-semibold tracking-tight',
-};
-
-const SUBTITLE_TYPOGRAPHY_CLASS: Record<HeroTypography, string> = {
-    Default: 'text-lg font-normal leading-[1.2]',
     Paragraph: 'text-base font-normal leading-7',
     'Heading 1': 'text-4xl font-bold tracking-tight',
     'Heading 2': 'text-3xl font-semibold tracking-tight',
     'Heading 3': 'text-2xl font-semibold tracking-tight',
-    'Heading 4': 'text-xl font-semibold tracking-tight',
-    'Heading 5': 'text-lg font-semibold tracking-tight',
+    'Heading 4': 'text-2xl font-semibold tracking-tight',
+    'Heading 5': 'text-sm font-semibold tracking-tight',
+    'Heading 6': 'text-base font-semibold tracking-tight',
+};
+
+const SUBTITLE_TYPOGRAPHY_CLASS: Record<HeroTypography, string> = {
+    Default: 'text-lg font-normal leading-[120%]',
+    Paragraph: 'text-base font-normal leading-7',
+    'Heading 1': 'text-4xl font-bold tracking-tight',
+    'Heading 2': 'text-3xl font-semibold tracking-tight',
+    'Heading 3': 'text-2xl font-semibold tracking-tight',
+    'Heading 4': 'text-2xl font-semibold tracking-tight',
+    'Heading 5': 'text-sm font-semibold tracking-tight',
     'Heading 6': 'text-base font-semibold tracking-tight',
 };
 

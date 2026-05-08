@@ -400,7 +400,7 @@ export default function CategoryPage({
                     </div>
 
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <h1 className="text-3xl font-bold text-foreground">
+                        <h1 className="text-3xl font-bold leading-none tracking-[-0.75px] text-card-foreground">
                             {category?.name || category.id} ({searchResultCritical.total})
                         </h1>
                         <UITarget targetId="sfcc.plp.search.summary" />

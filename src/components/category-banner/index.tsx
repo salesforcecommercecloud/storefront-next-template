@@ -103,7 +103,7 @@ export default function CategoryBanner() {
                                 {categoryName}
                             </p>
                         )}
-                        <div className="text-xl text-white/90 font-light max-w-xl" aria-live="polite">
+                        <div className="text-2xl text-white/90 font-light max-w-xl" aria-live="polite">
                             {isCountPending
                                 ? t('banner.counting')
                                 : total !== undefined && t('banner.productsAvailable', { count: total })}

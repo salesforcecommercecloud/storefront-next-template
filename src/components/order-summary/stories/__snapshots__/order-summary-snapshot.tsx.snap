@@ -15,7 +15,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -120,7 +120,7 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
             </div>
           </div>
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -149,16 +149,12 @@ exports[`OrderSummary stories snapshot > Default story renders and matches snaps
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>
@@ -185,7 +181,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -290,7 +286,7 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
             </div>
           </div>
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -319,16 +315,12 @@ exports[`OrderSummary stories snapshot > EmptyBasket story renders and matches s
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £0.00
               </span>
             </div>
@@ -355,7 +347,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -460,7 +452,7 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
             </div>
           </div>
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -489,16 +481,12 @@ exports[`OrderSummary stories snapshot > EstimateMode story renders and matches 
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Estimated Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>
@@ -525,7 +513,7 @@ exports[`OrderSummary stories snapshot > GrossTaxation story renders and matches
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -539,7 +527,7 @@ exports[`OrderSummary stories snapshot > GrossTaxation story renders and matches
           role="region"
         >
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -568,16 +556,12 @@ exports[`OrderSummary stories snapshot > GrossTaxation story renders and matches
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £118.50
               </span>
             </div>
@@ -604,7 +588,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -741,10 +725,10 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block break-words"
+                                  class="hover:text-primary block break-words"
                                   href="/RefArchGlobal/en-GB/product/25752218M"
                                   title="Solid Silk Tie"
                                 >
@@ -761,7 +745,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 2
                               </div>
                               <div
-                                class="text-xs text-muted-foreground space-y-1 mb-1"
+                                class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                               >
                                 <div>
                                   Color
@@ -770,7 +754,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                 data-slot="badge"
                               >
                                 Saved £40.62
@@ -842,10 +826,10 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                               class="mb-2 md:mb-4 flex items-start gap-2 min-w-0"
                             >
                               <h2
-                                class="tracking-tight text-left text-sm md:text-base font-medium min-w-0 flex-1 leading-tight"
+                                class="text-left text-xl font-semibold leading-7 tracking-[-0.5px] text-card-foreground min-w-0 flex-1"
                               >
                                 <a
-                                  class="text-foreground hover:text-primary block break-words"
+                                  class="hover:text-primary block break-words"
                                   href="/RefArchGlobal/en-GB/product/25591227M"
                                   title="Floral Ruffle Top"
                                 >
@@ -862,7 +846,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 1
                               </div>
                               <div
-                                class="text-xs text-muted-foreground space-y-1 mb-1"
+                                class="text-sm font-normal leading-5 text-muted-foreground space-y-1 mb-1"
                               >
                                 <div>
                                   Color
@@ -876,7 +860,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
                                 </div>
                               </div>
                               <span
-                                class="inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-tight text-foreground"
+                                class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                                 data-slot="badge"
                               >
                                 Saved £43.81
@@ -943,7 +927,7 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
             </div>
           </div>
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -972,16 +956,12 @@ exports[`OrderSummary stories snapshot > ItemsExpanded story renders and matches
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>
@@ -1013,7 +993,7 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
           role="region"
         >
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -1042,16 +1022,12 @@ exports[`OrderSummary stories snapshot > Minimal story renders and matches snaps
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>
@@ -1220,7 +1196,7 @@ exports[`OrderSummary stories snapshot > MobileExpanded story renders and matche
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -1249,16 +1225,12 @@ exports[`OrderSummary stories snapshot > MobileExpanded story renders and matche
                       </span>
                     </div>
                     <div
-                      class="flex justify-between items-center"
+                      class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
                     >
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         Estimated Total
                       </span>
-                      <span
-                        class="font-bold"
-                      >
+                      <span>
                         £73.57
                       </span>
                     </div>
@@ -1289,7 +1261,7 @@ exports[`OrderSummary stories snapshot > NetTaxation story renders and matches s
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -1303,7 +1275,7 @@ exports[`OrderSummary stories snapshot > NetTaxation story renders and matches s
           role="region"
         >
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -1342,16 +1314,12 @@ exports[`OrderSummary stories snapshot > NetTaxation story renders and matches s
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £118.50
               </span>
             </div>
@@ -1378,7 +1346,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -1483,7 +1451,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
             </div>
           </div>
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -1496,13 +1464,15 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center gap-2"
             >
-              <span>
+              <span
+                class="inline-flex w-fit max-w-full rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              >
                 20% Off Discount
               </span>
               <span
-                class="text-success text-xs font-semibold"
+                class="text-sm font-normal leading-5 text-muted-foreground text-right"
               >
                 -£59.99
               </span>
@@ -1524,16 +1494,12 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>
@@ -1572,7 +1538,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                     type="button"
                   >
                     <span
-                      class="text-left text-sm font-medium text-primary"
+                      class="text-left text-sm font-medium leading-5 text-card-foreground"
                     >
                       Enter a Promotion Code
                     </span>
@@ -1662,7 +1628,7 @@ exports[`OrderSummary stories snapshot > WithAppliedPromotions story renders and
                 class="flex items-center justify-between py-1"
               >
                 <span
-                  class="inline-flex items-center justify-center border px-2 py-0.5 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 gap-1 rounded-none text-xs font-semibold"
+                  class="inline-flex items-center justify-center border px-2 py-0.5 w-fit shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-secondary [a&]:hover:bg-secondary/90 gap-1 rounded-none text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
                   data-slot="badge"
                 >
                   <svg
@@ -1729,7 +1695,7 @@ exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders a
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -1743,7 +1709,7 @@ exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders a
           role="region"
         >
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -1756,25 +1722,29 @@ exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders a
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center gap-2"
             >
-              <span>
+              <span
+                class="inline-flex w-fit max-w-full rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              >
                 $10 Off Ties
               </span>
               <span
-                class="text-success text-xs font-semibold"
+                class="text-sm font-normal leading-5 text-muted-foreground text-right"
               >
                 -£10.00
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center gap-2"
             >
-              <span>
+              <span
+                class="inline-flex w-fit max-w-full rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words"
+              >
                 15% Off Tops
               </span>
               <span
-                class="text-success text-xs font-semibold"
+                class="text-sm font-normal leading-5 text-muted-foreground text-right"
               >
                 -£5.28
               </span>
@@ -1796,16 +1766,12 @@ exports[`OrderSummary stories snapshot > WithItemLevelPromotions story renders a
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £58.29
               </span>
             </div>
@@ -1832,7 +1798,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -1937,7 +1903,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
             </div>
           </div>
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -1966,16 +1932,12 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>
@@ -2014,7 +1976,7 @@ exports[`OrderSummary stories snapshot > WithPromoCodeForm story renders and mat
                     type="button"
                   >
                     <span
-                      class="text-left text-sm font-medium text-primary"
+                      class="text-left text-sm font-medium leading-5 text-card-foreground"
                     >
                       Enter a Promotion Code
                     </span>
@@ -2120,7 +2082,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
         data-testid="sf-order-summary"
       >
         <h2
-          class="tracking-tight text-left text-base font-semibold text-foreground"
+          class="text-left text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground"
           id="order-summary-heading-desktop"
         >
           Order Summary
@@ -2134,7 +2096,7 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
           role="region"
         >
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -2163,16 +2125,12 @@ exports[`OrderSummary stories snapshot > WithoutCartItems story renders and matc
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>
@@ -2295,7 +2253,7 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
             </div>
           </div>
           <div
-            class="space-y-2 text-sm"
+            class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
           >
             <div
               class="flex justify-between items-center"
@@ -2324,16 +2282,12 @@ exports[`OrderSummary stories snapshot > WithoutHeading story renders and matche
               </span>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground"
             >
-              <span
-                class="font-bold"
-              >
+              <span>
                 Total
               </span>
-              <span
-                class="font-bold"
-              >
+              <span>
                 £73.57
               </span>
             </div>

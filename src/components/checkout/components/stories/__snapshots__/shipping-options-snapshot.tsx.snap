@@ -17,7 +17,7 @@ exports[`ShippingOptions stories snapshot > CompletedState story renders and mat
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -59,7 +59,7 @@ exports[`ShippingOptions stories snapshot > Default story renders and matches sn
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -124,7 +124,7 @@ exports[`ShippingOptions stories snapshot > DesktopView story renders and matche
       tabindex="0"
     >
       <span
-        class="text-xl font-bold tracking-tight text-card-foreground"
+        class="text-2xl font-bold tracking-tight text-card-foreground"
       >
         Shipping Method
       </span>
@@ -165,7 +165,7 @@ exports[`ShippingOptions stories snapshot > DisabledState story renders and matc
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -207,7 +207,7 @@ exports[`ShippingOptions stories snapshot > LoadingState story renders and match
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -284,7 +284,7 @@ exports[`ShippingOptions stories snapshot > MobileView story renders and matches
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -475,7 +475,7 @@ exports[`ShippingOptions stories snapshot > NoShippingMethods story renders and 
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -541,7 +541,7 @@ exports[`ShippingOptions stories snapshot > TabletView story renders and matches
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -732,7 +732,7 @@ exports[`ShippingOptions stories snapshot > WithFreeShipping story renders and m
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>
@@ -923,7 +923,7 @@ exports[`ShippingOptions stories snapshot > WithMultipleOptions story renders an
         tabindex="0"
       >
         <span
-          class="text-xl font-bold tracking-tight text-card-foreground"
+          class="text-2xl font-bold tracking-tight text-card-foreground"
         >
           Shipping Method
         </span>

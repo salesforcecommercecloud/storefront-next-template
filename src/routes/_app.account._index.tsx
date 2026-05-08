@@ -285,9 +285,7 @@ function AccountDetailsContent({
             {/* Page Header Card */}
             <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
-                    <h1
-                        className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
-                        tabIndex={0}>
+                    <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('title')}
                     </h1>
                     <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
@@ -355,32 +353,46 @@ function AccountDetailsContent({
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-foreground">{t('profile.firstName')}</p>
-                                <p className="text-sm text-foreground" data-testid="profile-value-firstName">
+                                <p className="text-sm font-medium leading-5 text-foreground">
+                                    {t('profile.firstName')}
+                                </p>
+                                <p
+                                    className="text-sm font-normal leading-5 text-muted-foreground"
+                                    data-testid="profile-value-firstName">
                                     {displayCustomer?.firstName || t('profile.notProvided')}
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-foreground">{t('profile.lastName')}</p>
-                                <p className="text-sm text-foreground" data-testid="profile-value-lastName">
+                                <p className="text-sm font-medium leading-5 text-foreground">{t('profile.lastName')}</p>
+                                <p
+                                    className="text-sm font-normal leading-5 text-muted-foreground"
+                                    data-testid="profile-value-lastName">
                                     {displayCustomer?.lastName || t('profile.notProvided')}
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-foreground">{t('profile.email')}</p>
-                                <p className="text-sm text-foreground" data-testid="profile-value-email">
+                                <p className="text-sm font-medium leading-5 text-foreground">{t('profile.email')}</p>
+                                <p
+                                    className="text-sm font-normal leading-5 text-muted-foreground"
+                                    data-testid="profile-value-email">
                                     {userInfo.email || t('profile.notProvided')}
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-foreground">{t('profile.phoneNumber')}</p>
-                                <p className="text-sm text-foreground" data-testid="profile-value-phone">
+                                <p className="text-sm font-medium leading-5 text-foreground">
+                                    {t('profile.phoneNumber')}
+                                </p>
+                                <p
+                                    className="text-sm font-normal leading-5 text-muted-foreground"
+                                    data-testid="profile-value-phone">
                                     {userInfo.phoneNumber || t('profile.notProvided')}
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-foreground">{t('profile.gender')}</p>
-                                <p className="text-sm text-foreground" data-testid="profile-value-gender">
+                                <p className="text-sm font-medium leading-5 text-foreground">{t('profile.gender')}</p>
+                                <p
+                                    className="text-sm font-normal leading-5 text-muted-foreground"
+                                    data-testid="profile-value-gender">
                                     {displayCustomer?.gender === 1
                                         ? t('profile.genderOptions.male')
                                         : displayCustomer?.gender === 2
@@ -389,8 +401,12 @@ function AccountDetailsContent({
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-foreground">{t('profile.dateOfBirth')}</p>
-                                <p className="text-sm text-foreground" data-testid="profile-value-birthday">
+                                <p className="text-sm font-medium leading-5 text-foreground">
+                                    {t('profile.dateOfBirth')}
+                                </p>
+                                <p
+                                    className="text-sm font-normal leading-5 text-muted-foreground"
+                                    data-testid="profile-value-birthday">
                                     {formatDateForLocale(displayCustomer?.birthday, i18n.language) ||
                                         t('profile.notProvided')}
                                 </p>
@@ -423,8 +439,10 @@ function AccountDetailsContent({
                 <ToggleCardSummary>
                     <div className="flex items-center justify-between">
                         <div className="space-y-2">
-                            <p className="text-sm font-medium text-foreground">{t('password.password')}</p>
-                            <p className="text-sm text-foreground">{t('password.hiddenPassword')}</p>
+                            <p className="text-sm font-medium leading-5 text-foreground">{t('password.password')}</p>
+                            <p className="text-sm font-normal leading-5 text-muted-foreground">
+                                {t('password.hiddenPassword')}
+                            </p>
                         </div>
                         <Button
                             variant="outline"

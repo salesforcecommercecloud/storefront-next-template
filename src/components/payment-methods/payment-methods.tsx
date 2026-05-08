@@ -156,9 +156,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
             {/* Page Header */}
             <Card className="bg-card border-border rounded-none shadow-none">
                 <CardContent className="px-6 py-3">
-                    <h1
-                        className="text-[length:var(--account-section-header)] font-semibold text-foreground mb-1"
-                        tabIndex={0}>
+                    <h1 className="text-2xl font-semibold text-foreground mb-1" tabIndex={0}>
                         {t('navigation.paymentMethods')}
                     </h1>
                     <p className="text-sm text-muted-foreground">{t('paymentMethods.pageSubtitle')}</p>
@@ -186,7 +184,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
                             <div className="py-8 text-center">
                                 <div className="flex flex-col items-center gap-4">
                                     <div className="text-muted-foreground">
-                                        <p className="text-lg font-medium">
+                                        <p className="text-sm font-medium">
                                             {t('paymentMethods.noSavedPaymentMethods')}
                                         </p>
                                         <p className="text-sm mt-1">{t('paymentMethods.empty')}</p>

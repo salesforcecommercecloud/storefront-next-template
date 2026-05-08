@@ -304,7 +304,7 @@ export default function SearchPage({
                     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <p>{t('results')}</p>
-                            <h1 className="text-3xl font-bold text-foreground">
+                            <h1 className="text-3xl font-bold leading-none tracking-[-0.75px] text-card-foreground">
                                 {searchTerm} ({searchResultCritical.total})
                             </h1>
                         </div>

@@ -36,7 +36,7 @@ exports[`PromoCodeForm stories snapshot > Default story renders and matches snap
               type="button"
             >
               <span
-                class="text-left text-sm font-medium text-primary"
+                class="text-left text-sm font-medium leading-5 text-card-foreground"
               >
                 Enter a Promotion Code
               </span>
@@ -160,7 +160,7 @@ exports[`PromoCodeForm stories snapshot > Expanded story renders and matches sna
               type="button"
             >
               <span
-                class="text-left text-sm font-medium text-primary"
+                class="text-left text-sm font-medium leading-5 text-card-foreground"
               >
                 Enter a Promotion Code
               </span>
@@ -284,7 +284,7 @@ exports[`PromoCodeForm stories snapshot > WithCustomBasketId story renders and m
               type="button"
             >
               <span
-                class="text-left text-sm font-medium text-primary"
+                class="text-left text-sm font-medium leading-5 text-card-foreground"
               >
                 Enter a Promotion Code
               </span>
@@ -408,7 +408,7 @@ exports[`PromoCodeForm stories snapshot > WithoutBasketId story renders and matc
               type="button"
             >
               <span
-                class="text-left text-sm font-medium text-primary"
+                class="text-left text-sm font-medium leading-5 text-card-foreground"
               >
                 Enter a Promotion Code
               </span>

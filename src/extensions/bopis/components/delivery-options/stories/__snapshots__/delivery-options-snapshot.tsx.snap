@@ -52,12 +52,12 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Deliver to
                 </span>
                 <p
-                  class="text-xs text-muted-foreground mt-0.5"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                 >
                   Enter ZIP code to see delivery estimate
                 </p>
@@ -95,12 +95,12 @@ exports[`DeliveryOptions stories snapshot > Default story renders and matches sn
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store
@@ -167,12 +167,12 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Deliver to
                 </span>
                 <p
-                  class="text-xs text-muted-foreground mt-0.5"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                 >
                   Enter ZIP code to see delivery estimate
                 </p>
@@ -210,12 +210,12 @@ exports[`DeliveryOptions stories snapshot > DesktopLayout story renders and matc
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store
@@ -292,12 +292,12 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Deliver to
                 </span>
                 <p
-                  class="text-xs text-muted-foreground mt-0.5"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                 >
                   Enter ZIP code to see delivery estimate
                 </p>
@@ -335,12 +335,12 @@ exports[`DeliveryOptions stories snapshot > MobileLayout story renders and match
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store
@@ -407,12 +407,12 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Deliver to
                 </span>
                 <p
-                  class="text-xs text-muted-foreground mt-0.5"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5"
                 >
                   Enter ZIP code to see delivery estimate
                 </p>
@@ -450,12 +450,12 @@ exports[`DeliveryOptions stories snapshot > WithStoreSelected story renders and 
                 class="flex flex-col"
               >
                 <span
-                  class="text-xs font-medium text-foreground"
+                  class="text-sm font-medium leading-none text-foreground"
                 >
                   Free pickup in
                 </span>
                 <button
-                  class="text-xs text-primary mt-0.5 text-left hover:underline cursor-pointer"
+                  class="text-xs font-normal leading-4 tracking-[0.12px] text-muted-foreground mt-0.5 text-left hover:underline cursor-pointer"
                   type="button"
                 >
                   Select Store

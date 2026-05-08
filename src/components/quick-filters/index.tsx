@@ -116,8 +116,8 @@ export default function QuickFilters({ category }: QuickFiltersProps): ReactElem
                         size="sm"
                         onClick={() => handleCategoryClick(cat.value)}
                         className={cn(
-                            'whitespace-nowrap rounded-none cursor-pointer',
-                            !isActive && 'bg-muted hover:bg-muted-hover'
+                            'whitespace-nowrap rounded-none cursor-pointer text-sm font-normal leading-5 tracking-[-0.15px]',
+                            isActive ? 'text-primary-foreground' : 'text-foreground'
                         )}
                         aria-pressed={isActive}>
                         {cat.label || cat.value}

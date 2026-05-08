@@ -55,7 +55,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -233,7 +233,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -242,7 +242,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -253,7 +253,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -274,7 +274,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         <h5
                           aria-label="Current price: £3.75"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £3.75
                         </h5>
@@ -290,7 +290,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -305,7 +305,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £65.00
@@ -316,7 +316,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -327,14 +327,14 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                       >
                         −
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         max="4"
                         min="1"
                         step="1"
@@ -343,7 +343,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                         disabled=""
                       >
@@ -360,7 +360,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -377,7 +377,7 @@ exports[`MiniCartItem stories snapshot > AtStockLimit story renders and matches 
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -675,7 +675,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -853,7 +853,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -862,7 +862,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -873,7 +873,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -894,7 +894,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         <h5
                           aria-label="Current price: £1.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £1.00
                         </h5>
@@ -910,7 +910,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -925,7 +925,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £285.00
@@ -936,7 +936,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -947,14 +947,14 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                       >
                         −
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -962,7 +962,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -971,7 +971,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -988,7 +988,7 @@ exports[`MiniCartItem stories snapshot > CustomQuantity story renders and matche
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -1286,7 +1286,7 @@ exports[`MiniCartItem stories snapshot > EmptyCart story renders and matches sna
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 0 out of 0 items
                 </h2>
@@ -1450,7 +1450,7 @@ exports[`MiniCartItem stories snapshot > EmptyCart story renders and matches sna
                   />
                 </svg>
                 <h2
-                  class="text-xl font-semibold text-foreground mb-2"
+                  class="text-2xl font-semibold text-foreground mb-2"
                 >
                   Your cart is empty
                 </h2>
@@ -1532,7 +1532,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -1710,7 +1710,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -1719,7 +1719,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -1730,7 +1730,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -1751,7 +1751,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         <h5
                           aria-label="Current price: £3.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £3.00
                         </h5>
@@ -1767,7 +1767,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -1782,7 +1782,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £85.00
@@ -1793,7 +1793,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -1804,14 +1804,14 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                       >
                         −
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -1819,7 +1819,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -1828,7 +1828,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -1845,7 +1845,7 @@ exports[`MiniCartItem stories snapshot > HigherQuantity story renders and matche
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -2143,7 +2143,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -2321,7 +2321,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -2330,7 +2330,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -2341,7 +2341,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -2362,7 +2362,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         <h5
                           aria-label="Current price: £15.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £15.00
                         </h5>
@@ -2378,7 +2378,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -2393,7 +2393,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -2404,7 +2404,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -2415,7 +2415,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -2423,7 +2423,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -2431,7 +2431,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -2440,7 +2440,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -2457,7 +2457,7 @@ exports[`MiniCartItem stories snapshot > Interactive story renders and matches s
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -2755,7 +2755,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -2933,7 +2933,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           This is a very long product name that should be truncated to prevent layout issues
                         </h3>
@@ -2942,7 +2942,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -2953,7 +2953,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -2974,7 +2974,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         <h5
                           aria-label="Current price: £15.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £15.00
                         </h5>
@@ -2990,7 +2990,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -3005,7 +3005,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -3016,7 +3016,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -3027,7 +3027,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                     >
                       <button
                         aria-label="Decrement Quantity for This is a very long product name that should be truncated to prevent layout issues"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -3035,7 +3035,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -3043,7 +3043,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                       />
                       <button
                         aria-label="Increment Quantity for This is a very long product name that should be truncated to prevent layout issues"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -3052,7 +3052,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -3069,7 +3069,7 @@ exports[`MiniCartItem stories snapshot > LongProductName story renders and match
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -3367,7 +3367,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -3545,7 +3545,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -3554,7 +3554,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -3575,7 +3575,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         <h5
                           aria-label="Current price: £15.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £15.00
                         </h5>
@@ -3591,7 +3591,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -3606,7 +3606,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -3617,7 +3617,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -3628,7 +3628,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -3636,7 +3636,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -3644,7 +3644,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -3653,7 +3653,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -3670,7 +3670,7 @@ exports[`MiniCartItem stories snapshot > OnlyColor story renders and matches sna
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -3968,7 +3968,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -4146,7 +4146,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -4155,7 +4155,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -4176,7 +4176,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         <h5
                           aria-label="Current price: £15.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £15.00
                         </h5>
@@ -4192,7 +4192,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -4207,7 +4207,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -4218,7 +4218,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -4229,7 +4229,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -4237,7 +4237,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -4245,7 +4245,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -4254,7 +4254,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -4271,7 +4271,7 @@ exports[`MiniCartItem stories snapshot > OnlySize story renders and matches snap
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -4569,7 +4569,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -4787,7 +4787,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           href="/RefArchGlobal/en-GB/product/prod-1"
                         >
                           <h3
-                            class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                            class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                           >
                             Product Name
                           </h3>
@@ -4796,7 +4796,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           class="mt-1 space-y-0.5"
                         >
                           <span
-                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                            class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                           >
                             <span>
                               Color
@@ -4807,7 +4807,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                             </span>
                           </span>
                           <span
-                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                            class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                           >
                             <span>
                               Size
@@ -4828,7 +4828,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           <h5
                             aria-label="Current price: £15.00"
                             aria-live="polite"
-                            class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                            class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                           >
                             £15.00
                           </h5>
@@ -4844,7 +4844,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                            
                           <h5
                             aria-label="List price: £20.00"
-                            class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                            class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                           >
                             £20.00
                           </h5>
@@ -4859,7 +4859,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                           </span>
                         </div>
                         <span
-                          class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                          class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                           data-slot="badge"
                         >
                           Saved £5.00
@@ -4870,7 +4870,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                       class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                     >
                       <label
-                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                         data-slot="label"
                         for="quantity-1"
                       >
@@ -4881,7 +4881,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                       >
                         <button
                           aria-label="Decrement Quantity for Product Name"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-decrement"
                           disabled=""
                         >
@@ -4889,7 +4889,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                         </button>
                         <input
                           aria-label="Quantity"
-                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           min="1"
                           step="1"
                           type="number"
@@ -4897,7 +4897,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                         />
                         <button
                           aria-label="Increment Quantity for Product Name"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-increment"
                         >
                           +
@@ -4906,7 +4906,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
                     </div>
                     <button
                       aria-label="Remove item from cart"
-                      class="text-xs text-primary hover:underline text-left"
+                      class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                       type="button"
                     >
                       Remove
@@ -4924,7 +4924,7 @@ exports[`MiniCartItem stories snapshot > WithDeliveryBadge story renders and mat
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -5222,7 +5222,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -5436,7 +5436,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           href="/RefArchGlobal/en-GB/product/prod-1"
                         >
                           <h3
-                            class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                            class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                           >
                             Product Name
                           </h3>
@@ -5445,7 +5445,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           class="mt-1 space-y-0.5"
                         >
                           <span
-                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                            class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                           >
                             <span>
                               Color
@@ -5456,7 +5456,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                             </span>
                           </span>
                           <span
-                            class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                            class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                           >
                             <span>
                               Size
@@ -5477,7 +5477,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           <h5
                             aria-label="Current price: £15.00"
                             aria-live="polite"
-                            class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                            class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                           >
                             £15.00
                           </h5>
@@ -5493,7 +5493,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                            
                           <h5
                             aria-label="List price: £20.00"
-                            class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                            class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                           >
                             £20.00
                           </h5>
@@ -5508,7 +5508,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                           </span>
                         </div>
                         <span
-                          class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                          class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                           data-slot="badge"
                         >
                           Saved £5.00
@@ -5519,7 +5519,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                       class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                     >
                       <label
-                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                        class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                         data-slot="label"
                         for="quantity-1"
                       >
@@ -5530,7 +5530,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                       >
                         <button
                           aria-label="Decrement Quantity for Product Name"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-decrement"
                           disabled=""
                         >
@@ -5538,7 +5538,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                         </button>
                         <input
                           aria-label="Quantity"
-                          class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           min="1"
                           step="1"
                           type="number"
@@ -5546,7 +5546,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                         />
                         <button
                           aria-label="Increment Quantity for Product Name"
-                          class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                           data-testid="quantity-increment"
                         >
                           +
@@ -5555,7 +5555,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
                     </div>
                     <button
                       aria-label="Remove item from cart"
-                      class="text-xs text-primary hover:underline text-left"
+                      class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                       type="button"
                     >
                       Remove
@@ -5573,7 +5573,7 @@ exports[`MiniCartItem stories snapshot > WithPickupBadge story renders and match
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -5871,7 +5871,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -6049,7 +6049,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -6058,7 +6058,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -6069,7 +6069,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -6090,7 +6090,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         <h5
                           aria-label="Current price: £15.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £15.00
                         </h5>
@@ -6106,7 +6106,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -6121,7 +6121,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -6132,7 +6132,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -6143,7 +6143,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -6151,7 +6151,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -6159,7 +6159,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -6168,7 +6168,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -6185,7 +6185,7 @@ exports[`MiniCartItem stories snapshot > WithSavings story renders and matches s
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -6483,7 +6483,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -6656,7 +6656,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -6665,7 +6665,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -6676,7 +6676,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -6697,7 +6697,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         <h5
                           aria-label="Current price: £15.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £15.00
                         </h5>
@@ -6713,7 +6713,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                          
                         <h5
                           aria-label="List price: £20.00"
-                          class="text-left line-through text-base leading-normal font-normal text-muted-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0"
                         >
                           £20.00
                         </h5>
@@ -6728,7 +6728,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                         </span>
                       </div>
                       <span
-                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
+                        class="inline-flex items-center justify-center w-fit shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent [a&]:hover:bg-primary/90 h-auto min-h-0 rounded-none border-0 bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary-foreground mt-1 max-w-full whitespace-normal break-words text-right leading-normal"
                         data-slot="badge"
                       >
                         Saved £5.00
@@ -6739,7 +6739,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -6750,7 +6750,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -6758,7 +6758,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -6766,7 +6766,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -6775,7 +6775,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -6792,7 +6792,7 @@ exports[`MiniCartItem stories snapshot > WithoutImage story renders and matches 
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>
@@ -7090,7 +7090,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
               </svg>
               <div>
                 <h2
-                  class="text-lg tracking-tight text-left leading-none font-normal"
+                  class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
                 >
                   Delivery - 1 out of 1 item
                 </h2>
@@ -7214,7 +7214,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         href="/RefArchGlobal/en-GB/product/prod-1"
                       >
                         <h3
-                          class="font-semibold text-left text-base leading-normal tracking-normal text-card-foreground line-clamp-2"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground line-clamp-2"
                         >
                           Product Name
                         </h3>
@@ -7223,7 +7223,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         class="mt-1 space-y-0.5"
                       >
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Color
@@ -7234,7 +7234,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                           </span>
                         </span>
                         <span
-                          class="text-left inline-block w-full text-sm leading-normal font-normal text-muted-foreground"
+                          class="text-left inline-block w-full text-sm font-normal leading-5 text-muted-foreground"
                         >
                           <span>
                             Size
@@ -7255,7 +7255,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                         <h5
                           aria-label="Current price: £15.00"
                           aria-live="polite"
-                          class="text-left text-base leading-normal font-semibold text-foreground [&:not(:first-child)]:mt-0"
+                          class="text-left text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0"
                         >
                           £15.00
                         </h5>
@@ -7276,7 +7276,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                     class="mb-2 flex w-fit max-w-full flex-col items-start gap-1"
                   >
                     <label
-                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-bold text-foreground"
+                      class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-base font-semibold leading-6 text-card-foreground"
                       data-slot="label"
                       for="quantity-1"
                     >
@@ -7287,7 +7287,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                     >
                       <button
                         aria-label="Decrement Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-decrement"
                         disabled=""
                       >
@@ -7295,7 +7295,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                       </button>
                       <input
                         aria-label="Quantity"
-                        class="w-9 text-center text-xs text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        class="w-9 text-center text-sm font-semibold leading-normal text-foreground border-0 bg-transparent focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min="1"
                         step="1"
                         type="number"
@@ -7303,7 +7303,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                       />
                       <button
                         aria-label="Increment Quantity for Product Name"
-                        class="px-2.5 py-1.5 text-xs text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-2.5 py-1.5 text-base font-semibold leading-normal text-foreground hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid="quantity-increment"
                       >
                         +
@@ -7312,7 +7312,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
                   </div>
                   <button
                     aria-label="Remove item from cart"
-                    class="text-xs text-primary hover:underline text-left"
+                    class="text-sm font-medium leading-5 text-primary hover:underline text-left"
                     type="button"
                   >
                     Remove
@@ -7329,7 +7329,7 @@ exports[`MiniCartItem stories snapshot > WithoutSavings story renders and matche
             class="py-4"
           >
             <h3
-              class="text-lg font-semibold text-foreground mb-1"
+              class="text-sm font-semibold text-foreground mb-1"
             >
               Complete the look
             </h3>

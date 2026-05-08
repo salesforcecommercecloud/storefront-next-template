@@ -514,15 +514,17 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                     )}
 
                     {/* Store name */}
-                    <p className="text-xs text-muted-foreground mb-1">{config.global.branding.name}</p>
+                    <p className="text-sm font-normal leading-none text-muted-foreground mb-1">
+                        {config.global.branding.name}
+                    </p>
 
                     {/* Top category */}
                     {topCategoryName && (
-                        <p className="text-xs text-muted-foreground mb-1 uppercase">{topCategoryName}</p>
+                        <p className="text-sm font-normal leading-none text-muted-foreground mb-1">{topCategoryName}</p>
                     )}
 
                     {/* Product name — the single keyboard/SR tab stop for this tile */}
-                    <h3 className="text-sm font-medium text-card-foreground mb-2">
+                    <h3 className="text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground mb-2">
                         <Link
                             to={productUrl}
                             className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
@@ -533,7 +535,9 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
 
                     {/* SKU */}
                     {product.productId && (
-                        <p className="text-xs text-muted-foreground mb-1" data-testid="product-tile-sku">
+                        <p
+                            className="text-sm font-normal leading-none text-muted-foreground mb-1"
+                            data-testid="product-tile-sku">
                             {t('sku')} {product.productId}
                         </p>
                     )}
@@ -560,7 +564,8 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             currency={currency ?? config.commerce.sites?.[0]?.defaultCurrency ?? ''}
                             labelForA11y={(product?.productName ?? product?.productId) || ''}
                             currentPriceProps={{
-                                className: 'text-base font-semibold text-card-foreground',
+                                className:
+                                    'text-lg font-semibold leading-[120%] tracking-[-0.45px] text-card-foreground',
                             }}
                             listPriceProps={{
                                 className: 'text-muted-foreground text-sm leading-none line-through',

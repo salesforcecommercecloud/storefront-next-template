@@ -236,7 +236,7 @@ export default function ShippingMultiOptions({
     const showShipmentLabel = shipments.length > 1;
 
     const stepTitle = (
-        <span className="text-lg font-semibold text-foreground">
+        <span className="text-sm font-semibold text-foreground">
             {tMultiship('checkout.shippingMultiOptionsTitle')}
         </span>
     );

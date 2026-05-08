@@ -21,7 +21,6 @@ import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, getSitePrefix, mockSiteObject } from '@/test-utils/config';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import Footer from './index';
 
@@ -35,17 +34,6 @@ vi.mock('react-router', async () => {
 });
 
 const { useLocation } = await import('react-router');
-
-// Mock categories data
-const mockCategories: ShopperProducts.schemas['Category'] = {
-    id: 'root',
-    name: 'Root',
-    categories: [
-        { id: 'mens', name: "Men's" },
-        { id: 'womens', name: "Women's" },
-        { id: 'electronics', name: 'Electronics' },
-    ],
-};
 
 const mockSite: Site = mockSiteObject;
 
@@ -86,65 +74,15 @@ describe('Footer', () => {
         });
     });
 
-    test('renders all section headings', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+    test('renders newsletter heading on homepage', () => {
+        renderWithRouter(<Footer />);
 
-        expect(screen.getByText(t('footer:sections.shop'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.help'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
-        // Newsletter title now appears as h2 in prominent section
+        // Newsletter title appears as h2 in prominent section
         expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
     });
 
-    test('renders Shop section with category links', async () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
-
-        // Wait for categories to load
-        const mensLink = await screen.findByRole('link', { name: "Men's" });
-        expect(mensLink).toBeInTheDocument();
-        expect(mensLink).toHaveAttribute('href', `${getSitePrefix()}/category/mens`);
-
-        const womensLink = screen.getByRole('link', { name: "Women's" });
-        expect(womensLink).toBeInTheDocument();
-        expect(womensLink).toHaveAttribute('href', `${getSitePrefix()}/category/womens`);
-
-        const electronicsLink = screen.getByRole('link', { name: 'Electronics' });
-        expect(electronicsLink).toBeInTheDocument();
-        expect(electronicsLink).toHaveAttribute('href', `${getSitePrefix()}/category/electronics`);
-    });
-
-    test('renders Help section links', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
-
-        // Help section now includes Contact Us, Shipping, Order Status, and Sign in
-        const contactLink = screen.getByRole('link', { name: t('footer:links.contactUs') });
-        expect(contactLink).toBeInTheDocument();
-        expect(contactLink).toHaveAttribute('href', `${getSitePrefix()}/contact`);
-
-        const shippingLink = screen.getByRole('link', { name: t('footer:links.shipping') });
-        expect(shippingLink).toBeInTheDocument();
-        expect(shippingLink).toHaveAttribute('href', `${getSitePrefix()}/shipping`);
-        expect(shippingLink).toHaveAttribute('href', `${getSitePrefix()}/shipping`);
-
-        const orderStatusLink = screen.getByRole('link', { name: t('footer:links.orderStatus') });
-        expect(orderStatusLink).toBeInTheDocument();
-        expect(orderStatusLink).toHaveAttribute('href', `${getSitePrefix()}/orders`);
-
-        const signInLink = screen.getByRole('link', { name: t('footer:links.signInOrCreateAccount') });
-        expect(signInLink).toBeInTheDocument();
-        expect(signInLink).toHaveAttribute('href', `${getSitePrefix()}/login`);
-    });
-
-    test('renders Our Company section links', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
-
-        const aboutUsLink = screen.getByRole('link', { name: t('footer:links.aboutUs') });
-        expect(aboutUsLink).toBeInTheDocument();
-        expect(aboutUsLink).toHaveAttribute('href', `${getSitePrefix()}/about-us`);
-    });
-
     test('renders social media links with correct aria-labels and hrefs', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         const youtubeLink = screen.getByLabelText(t('footer:socialMedia.youtubeLabel'));
         expect(youtubeLink).toBeInTheDocument();
@@ -164,7 +102,7 @@ describe('Footer', () => {
     });
 
     test('renders newsletter section with signup form', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         // Check for newsletter title and description
         expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
@@ -176,7 +114,7 @@ describe('Footer', () => {
     });
 
     test('renders all selectors, Locale and Currency Switcher', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         // Check for Locale and Currency switchers
         const selectors = screen.getAllByRole('combobox');
@@ -184,13 +122,13 @@ describe('Footer', () => {
     });
 
     test('renders LocaleSwitcher component with locale options', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
         expect(screen.getByRole('option', { name: 'English (UK)' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'Italian (Italy)' })).toBeInTheDocument();
     });
 
     test('renders copyright text with current year', () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         const currentYear = new Date().getFullYear();
         const copyrightText = `© ${currentYear} ${t('footer:copyright')}`;
@@ -199,7 +137,7 @@ describe('Footer', () => {
     });
 
     test('renders footer element with theme-aware classes', () => {
-        const { container } = renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        const { container } = renderWithRouter(<Footer />);
 
         const footer = container.querySelector('footer');
         expect(footer).toBeInTheDocument();
@@ -216,38 +154,6 @@ describe('Footer', () => {
         expect(linksSection).toBeInTheDocument();
     });
 
-    test('all navigation links have proper styling classes', async () => {
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
-
-        const contactLink = screen.getByRole('link', { name: t('footer:links.contactUs') });
-        expect(contactLink).toHaveClass('text-sm');
-        expect(contactLink).toHaveClass('text-muted-foreground');
-        expect(contactLink).toHaveClass('hover:text-foreground');
-        expect(contactLink).toHaveClass('transition-colors');
-
-        const shippingLink = screen.getByRole('link', { name: t('footer:links.shipping') });
-        expect(shippingLink).toHaveClass('text-sm');
-        expect(shippingLink).toHaveClass('transition-colors');
-
-        const orderStatusLink = screen.getByRole('link', { name: t('footer:links.orderStatus') });
-        expect(orderStatusLink).toHaveClass('text-sm');
-        expect(orderStatusLink).toHaveClass('transition-colors');
-
-        // Check category links as well
-        const mensLink = await screen.findByRole('link', { name: "Men's" });
-        expect(mensLink).toHaveClass('text-sm');
-        expect(mensLink).toHaveClass('transition-colors');
-    });
-
-    test('renders without categories prop', () => {
-        renderWithRouter(<Footer />);
-
-        // Footer should still render with Shop section header but no category links
-        expect(screen.getByText(t('footer:sections.shop'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.help'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
-    });
-
     test('renders newsletter section on homepage', () => {
         // Explicitly mock homepage route
         vi.mocked(useLocation).mockReturnValue({
@@ -258,7 +164,7 @@ describe('Footer', () => {
             key: 'default',
         });
 
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         // Newsletter should be visible
         expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
@@ -276,7 +182,7 @@ describe('Footer', () => {
             key: 'default',
         });
 
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         // Newsletter should be visible
         expect(screen.getByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).toBeInTheDocument();
@@ -294,17 +200,12 @@ describe('Footer', () => {
             key: 'default',
         });
 
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         // Newsletter should NOT be visible
         expect(screen.queryByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).not.toBeInTheDocument();
         expect(screen.queryByText(t('footer:newsletter.description'))).not.toBeInTheDocument();
         expect(screen.queryByPlaceholderText(t('footer:newsletter.emailPlaceholder'))).not.toBeInTheDocument();
-
-        // But other footer content should still be present
-        expect(screen.getByText(t('footer:sections.shop'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.help'))).toBeInTheDocument();
-        expect(screen.getByText(t('footer:sections.about'))).toBeInTheDocument();
     });
 
     test('does not render newsletter on cart page', () => {
@@ -317,7 +218,7 @@ describe('Footer', () => {
             key: 'default',
         });
 
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         // Newsletter should NOT be visible
         expect(screen.queryByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).not.toBeInTheDocument();
@@ -333,7 +234,7 @@ describe('Footer', () => {
             key: 'default',
         });
 
-        renderWithRouter(<Footer categories={Promise.resolve(mockCategories)} />);
+        renderWithRouter(<Footer />);
 
         // Newsletter should NOT be visible
         expect(screen.queryByRole('heading', { name: t('footer:newsletter.title'), level: 2 })).not.toBeInTheDocument();

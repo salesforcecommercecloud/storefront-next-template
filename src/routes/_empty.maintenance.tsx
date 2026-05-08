@@ -109,7 +109,7 @@ export default function MaintenancePage() {
                 </h1>
 
                 {/* Body text */}
-                <p className="mb-6 text-lg text-muted-foreground sm:text-xl">{t('description')}</p>
+                <p className="mb-6 text-lg text-muted-foreground sm:text-2xl">{t('description')}</p>
 
                 {/* Apology text */}
                 <p className="mb-12 text-base text-muted-foreground sm:text-lg">{t('apology')}</p>

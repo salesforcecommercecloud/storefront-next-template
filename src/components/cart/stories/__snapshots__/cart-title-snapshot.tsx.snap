@@ -40,7 +40,7 @@ exports[`CartTitle stories snapshot > EmptyCart story renders and matches snapsh
     </svg>
     <div>
       <h2
-        class="text-lg tracking-tight text-left leading-none font-normal"
+        class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
       >
         Delivery - 0 out of 0 items
       </h2>
@@ -89,7 +89,7 @@ exports[`CartTitle stories snapshot > LargeItemCount story renders and matches s
     </svg>
     <div>
       <h2
-        class="text-lg tracking-tight text-left leading-none font-normal"
+        class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
       >
         Delivery - 1 out of 1 item
       </h2>
@@ -147,7 +147,7 @@ exports[`CartTitle stories snapshot > SingleAndMultipleItems story renders and m
         </svg>
         <div>
           <h2
-            class="text-lg tracking-tight text-left leading-none font-normal"
+            class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
           >
             Delivery - 1 out of 1 item
           </h2>
@@ -198,7 +198,7 @@ exports[`CartTitle stories snapshot > SingleAndMultipleItems story renders and m
         </svg>
         <div>
           <h2
-            class="text-lg tracking-tight text-left leading-none font-normal"
+            class="text-left text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground"
           >
             Delivery - 3 out of 2 items
           </h2>
