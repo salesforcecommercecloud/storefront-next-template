@@ -35,6 +35,12 @@ interface RegisterCustomerSelectionProps {
     savePaymentToProfile?: boolean;
     /** Optional toast callback to avoid bundling sonner in this lazy chunk */
     showToast?: (message: string, type: 'success' | 'error', options?: { duration?: number }) => void;
+    /** Initial checked state — used in Storybook to show the expanded description without triggering fetcher logic */
+    defaultChecked?: boolean;
+    /** Initial account created state — used in Storybook to show the confirmation banner without triggering OTP logic */
+    defaultAccountCreated?: boolean;
+    /** Initial submitting state — used in Storybook to show the sending verification code state */
+    defaultSubmitting?: boolean;
 }
 
 type InitiateRegistrationResponse = {
@@ -49,9 +55,12 @@ export default function RegisterCustomerSelection({
     onRegistrationSuccess,
     savePaymentToProfile: _savePaymentToProfile = false,
     showToast,
+    defaultChecked = false,
+    defaultAccountCreated = false,
+    defaultSubmitting = false,
 }: RegisterCustomerSelectionProps) {
-    const [shouldCreateAccount, setShouldCreateAccount] = useState(false);
-    const [accountCreated, setAccountCreated] = useState(false);
+    const [shouldCreateAccount, setShouldCreateAccount] = useState(defaultChecked || defaultSubmitting);
+    const [accountCreated, setAccountCreated] = useState(defaultAccountCreated);
     const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
     const [registrationEmail, setRegistrationEmail] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
@@ -244,19 +253,22 @@ export default function RegisterCustomerSelection({
                     onCheckedChange={(checked) => handleCheckboxChange(checked === true)}
                     className="mt-0.5 shrink-0"
                     aria-label={t('payment.saveForFutureUse')}
-                    disabled={registrationFetcher.state === 'submitting'}
+                    disabled={registrationFetcher.state === 'submitting' || defaultSubmitting}
                 />
                 <div className="flex flex-1 flex-col gap-1 text-sm">
                     <span className="font-medium leading-5 text-foreground">{t('payment.saveForFutureUse')}</span>
                     <span className="leading-5 text-foreground">{t('payment.createAccountForFasterCheckout')}</span>
-                    {registrationFetcher.state === 'submitting' && (
+                    {(registrationFetcher.state === 'submitting' || defaultSubmitting) && (
                         <p className="text-muted-foreground">{t('registration.sendingVerificationCode')}</p>
                     )}
-                    {shouldCreateAccount && !error && registrationFetcher.state !== 'submitting' && (
-                        <p className="mt-3 leading-5 text-foreground">
-                            {t('registration.checkboxExpandedDescription')}
-                        </p>
-                    )}
+                    {shouldCreateAccount &&
+                        !error &&
+                        registrationFetcher.state !== 'submitting' &&
+                        !defaultSubmitting && (
+                            <p className="mt-3 leading-5 text-foreground">
+                                {t('registration.checkboxExpandedDescription')}
+                            </p>
+                        )}
                 </div>
             </label>
             {turnstileEnabled && turnstileSiteKey && (

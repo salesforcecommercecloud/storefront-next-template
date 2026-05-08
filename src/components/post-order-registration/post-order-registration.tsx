@@ -32,6 +32,16 @@ type PostOrderRegistrationProps = {
     firstName?: string;
     lastName?: string;
     orderNo?: string;
+    /** Initial success state — used in Storybook to show the confirmation view without triggering fetcher logic */
+    defaultSuccess?: boolean;
+    /** Initial error message — used in Storybook to show the error state without triggering fetcher logic */
+    defaultError?: string;
+    /** Initial submitting state — used in Storybook to show the creating account state without triggering fetcher logic */
+    defaultSubmitting?: boolean;
+    /** Initial password value — used in Storybook to pre-fill the password field */
+    defaultPassword?: string;
+    /** Initial confirm password value — used in Storybook to pre-fill the confirm password field */
+    defaultConfirmPassword?: string;
 };
 
 /**
@@ -39,7 +49,17 @@ type PostOrderRegistrationProps = {
  * when email verification is disabled. Allows the shopper to create an account
  * using their order email and a password.
  */
-export function PostOrderRegistration({ email, firstName, lastName, orderNo }: PostOrderRegistrationProps) {
+export function PostOrderRegistration({
+    email,
+    firstName,
+    lastName,
+    orderNo,
+    defaultSuccess = false,
+    defaultError,
+    defaultSubmitting = false,
+    defaultPassword = '',
+    defaultConfirmPassword = '',
+}: PostOrderRegistrationProps) {
     const { t } = useTranslation('checkout');
     const {
         password,
@@ -48,12 +68,12 @@ export function PostOrderRegistration({ email, firstName, lastName, orderNo }: P
         handlePasswordChange,
         handleConfirmPasswordChange,
         isFormValid,
-    } = usePasswordValidation();
+    } = usePasswordValidation({ defaultPassword, defaultConfirmPassword });
 
     const fetcher = useFetcher<PostOrderRegisterResponse>({ key: 'post-order-register' });
-    const isSubmitting = fetcher.state !== 'idle';
-    const registrationSuccess = fetcher.data?.success === true;
-    const error = fetcher.data?.error;
+    const isSubmitting = fetcher.state !== 'idle' || defaultSubmitting;
+    const registrationSuccess = fetcher.data?.success === true || defaultSuccess;
+    const error = fetcher.data?.error ?? defaultError;
 
     if (registrationSuccess) {
         return (

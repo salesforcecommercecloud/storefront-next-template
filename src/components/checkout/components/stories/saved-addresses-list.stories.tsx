@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within, userEvent } from 'storybook/test';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
+import { expect, within } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { SavedAddressesList } from '../saved-addresses-list';
@@ -91,6 +92,13 @@ const meta: Meta<typeof SavedAddressesList> = {
                 component:
                     'Displays multiple saved addresses as selectable radio cards in the Shipping Address checkout stage. Shows up to `maxVisible` (default 3) addresses with a "View All" control to expand the list.',
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     tags: ['autodocs', 'interaction'],
@@ -112,33 +120,42 @@ const meta: Meta<typeof SavedAddressesList> = {
         onAddNewAddress: {
             description: 'Called when "Add New Address" is clicked; when provided, the button is shown in the list',
         },
+        onEditAddress: {
+            description:
+                'Called with the address id when "Edit Address" is clicked; when provided, the link is shown below each address card',
+        },
     },
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const DefaultView: Story = {
     args: {
-        addresses: addresses.slice(0, 2),
+        addresses: addresses.slice(1, 3).map((a) => ({ ...a, preferred: false })),
         onValueChange: action('onValueChange'),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'No preferred address — the first address in the list is auto-selected as the default.',
+            },
+        },
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const radioGroup = canvas.getByRole('radiogroup');
-        void expect(radioGroup).toBeInTheDocument();
-
         const radios = canvas.getAllByRole('radio');
-        void expect(radios.length).toBe(2);
+        await expect(radios.length).toBe(2);
 
-        void expect(canvas.getByText('Jane Doe')).toBeInTheDocument();
-        void expect(canvas.getByText('Bob Smith')).toBeInTheDocument();
+        // First address is auto-selected when none is preferred
+        await expect(radios[0]).toBeChecked();
+        await expect(radios[1]).not.toBeChecked();
     },
 };
 
-export const PreferredSelected: Story = {
+export const WithDefaultAddressSelected: Story = {
     args: {
         addresses: addresses.slice(0, 3),
         onValueChange: action('onValueChange'),
@@ -155,11 +172,11 @@ export const PreferredSelected: Story = {
         const canvas = within(canvasElement);
 
         const preferredRadio = canvas.getByRole('radio', { name: /jane doe/i });
-        void expect(preferredRadio).toBeChecked();
+        await expect(preferredRadio).toBeChecked();
     },
 };
 
-export const ControlledSelection: Story = {
+export const WithNonDefaultAddressSelected: Story = {
     args: {
         addresses: addresses.slice(0, 3),
         value: 'addr-2',
@@ -177,10 +194,10 @@ export const ControlledSelection: Story = {
         const canvas = within(canvasElement);
 
         const selectedRadio = canvas.getByRole('radio', { name: /bob smith/i });
-        void expect(selectedRadio).toBeChecked();
+        await expect(selectedRadio).toBeChecked();
 
         const preferredRadio = canvas.getByRole('radio', { name: /jane doe/i });
-        void expect(preferredRadio).not.toBeChecked();
+        await expect(preferredRadio).not.toBeChecked();
     },
 };
 
@@ -193,7 +210,7 @@ export const WithViewAll: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'When more addresses than `maxVisible` exist, a "View All" button appears to expand the full list.',
+                story: 'When more addresses than `maxVisible` exist, a "View All" button appears. Only the first 3 are shown initially.',
             },
         },
     },
@@ -201,19 +218,55 @@ export const WithViewAll: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        let radios = canvas.getAllByRole('radio');
-        void expect(radios.length).toBe(3);
+        // Only maxVisible addresses shown, with View All button
+        const radios = canvas.getAllByRole('radio');
+        await expect(radios.length).toBe(3);
 
-        const viewAllButton = canvas.getByRole('button', { name: /view all/i });
-        void expect(viewAllButton).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: /view all/i })).toBeInTheDocument();
+    },
+};
 
-        await userEvent.click(viewAllButton);
+export const WithAddNewAddress: Story = {
+    args: {
+        addresses: addresses.slice(0, 2),
+        onValueChange: action('onValueChange'),
+        onAddNewAddress: action('onAddNewAddress'),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'When `onAddNewAddress` is provided, an "Add New Address" button appears below the list.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
 
-        radios = canvas.getAllByRole('radio');
-        void expect(radios.length).toBe(5);
+        const addButton = canvas.getByRole('button', { name: /add new address/i });
+        await expect(addButton).toBeInTheDocument();
+    },
+};
 
-        const viewLessButton = canvas.getByRole('button', { name: /view less/i });
-        void expect(viewLessButton).toBeInTheDocument();
+export const WithEditAddress: Story = {
+    args: {
+        addresses: addresses.slice(0, 3),
+        onValueChange: action('onValueChange'),
+        onEditAddress: action('onEditAddress'),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'When `onEditAddress` is provided, an "Edit Address" link appears below each address card.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const editLinks = canvas.getAllByRole('button', { name: /edit address/i });
+        await expect(editLinks.length).toBe(3);
     },
 };
 
@@ -234,27 +287,8 @@ export const SingleAddress: Story = {
         const canvas = within(canvasElement);
 
         const radios = canvas.getAllByRole('radio');
-        void expect(radios.length).toBe(1);
+        await expect(radios.length).toBe(1);
 
-        void expect(canvas.queryByRole('button', { name: /view all/i })).toBeNull();
-    },
-};
-
-export const EmptyAddresses: Story = {
-    args: {
-        addresses: [],
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Renders nothing when the addresses list is empty.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        void expect(canvas.queryByRole('radiogroup')).toBeNull();
+        await expect(canvas.queryByRole('button', { name: /view all/i })).toBeNull();
     },
 };

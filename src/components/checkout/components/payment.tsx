@@ -370,6 +370,7 @@ export default function Payment({
                                                         <PopoverContent
                                                             align="start"
                                                             sideOffset={4}
+                                                            aria-label={t('payment.selectAnAddress')}
                                                             className="w-[var(--radix-popover-trigger-width)] rounded-none border border-input bg-card p-0 shadow-md">
                                                             <div className="max-h-[108px] overflow-y-auto">
                                                                 {[...billingAddressOptions]

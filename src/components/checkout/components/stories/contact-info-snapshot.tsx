@@ -78,6 +78,7 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 vi.mock('@/providers/basket', () => ({
+    default: ({ children }: React.PropsWithChildren) => <>{children}</>,
     useBasket: () => undefined,
 }));
 /** Guest checkout: hook returns context.customerProfile directly (see use-customer-profile.ts). */

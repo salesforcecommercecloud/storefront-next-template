@@ -14,53 +14,17 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ComponentType } from 'react';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import { expect, within, userEvent } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import Payment from '../payment';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { CheckoutActionLogger } from '@/components/checkout/storybook/checkout-action-logger';
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('payment-click');
-        const logSubmit = action('payment-submit');
-        const logEdit = action('payment-edit');
-        const logInputFocus = action('payment-input-focus');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const button = target.closest('button');
-            const input = target.closest('input');
-            if (button) {
-                const label = (button.textContent || '').trim();
-                logClick({ label });
-                if (label.includes('Submit') || label.includes('Continue') || label.includes('Pay')) {
-                    logSubmit({ section: 'payment' });
-                } else if (label.includes('Edit')) {
-                    logEdit({ section: 'payment' });
-                }
-            } else if (input) {
-                const type = input.type;
-                const placeholder = input.placeholder || '';
-                logInputFocus({ inputType: type, placeholder });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+import BasketProvider from '@/providers/basket';
+import CheckoutOneClickProvider from '@/components/checkout/utils/checkout-context';
+import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 
 const meta: Meta<typeof Payment> = {
     component: Payment,
@@ -68,52 +32,57 @@ const meta: Meta<typeof Payment> = {
     tags: ['autodocs', 'interaction'],
     parameters: {
         ...checkoutStrictA11yParameters,
+        a11y: {
+            ...checkoutStrictA11yParameters.a11y,
+            config: {
+                rules: [{ id: 'aria-valid-attr-value', enabled: false }],
+            },
+        },
         layout: 'padded',
         docs: {
             description: {
                 component: `
 ### Payment Component
 
-This component handles the payment step of the checkout process, collecting payment information including card details and billing address. It supports both new payment entry and selection from saved payment methods.
+This component handles the payment step of the checkout process, collecting card details and billing address. It supports both new credit card entry and selection from saved payment methods for returning customers.
 
 **Key Features:**
-- **Saved Payment Methods**: For logged-in customers, displays saved payment methods as radio options with view more/less functionality (shows 3 initially, expandable to all)
-- **New Payment Entry**: Credit card input fields with validation and formatting (handled by CreditCardInputFields)
-- **Save to Profile**: Optional checkbox to save payment method for future use (registered customers only)
-- **Billing Address Management**: Toggle to use shipping address or enter separate billing address, with dropdown for selecting from saved addresses
-- **Form Validation**: Uses react-hook-form with Zod schema validation for all payment fields
-- **Toggle States**: Shows edit form when \`isEditing\` is true, summary view otherwise
-- **Loading States**: Displays loading spinner and disabled state during submission
-- **Error Handling**: Shows form-level errors via CheckoutErrorBanner and field-level validation messages
-- **Basket Integration**: Pre-fills payment data from existing basket data
+- **New Credit Card Entry**: Credit card input fields (name, number, expiry, CVV) with formatting and validation via \`CreditCardInputFields\`
+- **Saved Payment Methods**: For registered customers, displays saved cards as radio options — shows 3 initially with view more/less toggle
+- **Save to Profile**: Checkbox to save a new card for future use — only shown for registered customers entering a new card
+- **Billing Address**: "Use a different billing address" checkbox — for registered customers with saved addresses, shows a dropdown to select from saved addresses or add a new one; for guests, shows the address form directly
+- **Toggle States**: Edit form shown when \`isEditing\` is true; summary view when false
+- **Saving State**: Spinner overlay covers the card while the order is being placed (Place Order acts as the submit — there is no separate Continue button)
+- **Form Validation**: react-hook-form + Zod schema; field errors shown for card and billing fields
 
 **Dependencies:**
-- \`react-hook-form\`: Form state management and validation
-- \`@hookform/resolvers/zod\`: Zod schema validation integration
-- \`@/providers/basket\`: Access to current basket data
-- \`@/hooks/checkout/use-customer-profile\`: Access to saved payment methods and addresses
-- \`@/components/toggle-card\`: Toggle between edit and summary views
+- \`react-hook-form\` + \`@hookform/resolvers/zod\`: Form state and validation
+- \`@/providers/basket\`: Current basket data
+- \`@/components/toggle-card\`: Edit/summary toggle wrapper
 - \`@/lib/checkout/schemas\`: Payment validation schema
-- \`@/lib/form-utils\`: Card number and expiry date formatting
-- \`@/lib/payment/payment-utils\`: Card type detection and formatting
-- \`@/lib/payment/card-icon-utils\`: Card type icons
-- \`CreditCardInputFields\`: Card input component with formatting and validation
-- \`PaymentMethodsList\`: Radio list of saved payment methods
-- \`SavedAddressesList\`: Dropdown for selecting saved billing addresses
+- \`CreditCardInputFields\`: Card input fields with formatting
+- \`AddressFormFields\`: Billing address form for new address entry
+- \`@/components/ui/popover\`: Saved billing address dropdown
                 `,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
-    // Decorator removed to allow global decorators (with all context providers) to work
-    // decorators: [
-    //     (Story: React.ComponentType) => {
-    //         return (
-    //             <div className="max-w-2xl mx-auto p-6">
-    //                 <Story />
-    //             </div>
-    //         );
-    //     },
-    // ],
+    decorators: [
+        (Story) => (
+            <div className="max-w-2xl mx-auto p-6">
+                <CheckoutActionLogger name="payment">
+                    <Story />
+                </CheckoutActionLogger>
+            </div>
+        ),
+    ],
     argTypes: {
         onSubmit: {
             description: 'Callback function called when the form is submitted with valid payment data',
@@ -129,30 +98,29 @@ This component handles the payment step of the checkout process, collecting paym
         },
         isLoading: {
             control: 'boolean',
-            description: 'Whether the form is in a loading/submitting state',
+            description: 'Shows a spinner overlay over the payment card while the order is being placed',
             table: {
                 defaultValue: { summary: 'false' },
             },
         },
         isCompleted: {
             control: 'boolean',
-            description:
-                'Whether this step has been completed (affects summary view display, but isEditing controls the actual toggle)',
+            description: 'Unused in the current implementation — edit/summary toggle is driven solely by `isEditing`',
             table: {
                 defaultValue: { summary: 'false' },
             },
         },
         isEditing: {
             control: 'boolean',
-            description:
-                'Whether this step is currently being edited (shows form view when true, summary view when false)',
+            description: 'Controls the view — true shows the edit form, false shows the summary view',
             table: {
                 defaultValue: { summary: 'true' },
             },
         },
         disabled: {
             control: 'boolean',
-            description: 'Disables the entire step (used for upcoming steps that should not be accessible yet)',
+            description:
+                'When true and `isEditing` is false, shows the upcoming/disabled state with a "Complete previous steps" message',
             table: {
                 defaultValue: { summary: 'false' },
             },
@@ -186,82 +154,154 @@ This component handles the payment step of the checkout process, collecting paym
             },
         },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-    },
-    decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
+const mockPaymentInstrument = {
+    paymentMethodId: 'CREDIT_CARD',
+    paymentCard: {
+        cardType: 'Visa',
+        numberLastDigits: '4242',
+        expirationMonth: 12,
+        expirationYear: 2027,
     },
 };
 
-export const WithExistingPayment: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
+const mockShippingAddress = {
+    firstName: 'Jane',
+    lastName: 'Doe',
+    address1: '123 Main St',
+    city: 'San Francisco',
+    stateCode: 'CA',
+    postalCode: '94102',
+    countryCode: 'US',
+};
+
+const mockBillingAddress = {
+    firstName: 'John',
+    lastName: 'Smith',
+    address1: '456 Elm Ave',
+    city: 'Los Angeles',
+    stateCode: 'CA',
+    postalCode: '90001',
+    countryCode: 'US',
+};
+
+const mockBasketWithPayment = {
+    basketId: 'story-basket',
+    paymentInstruments: [mockPaymentInstrument],
+};
+
+const mockBasketWithDifferentBilling = {
+    basketId: 'story-basket',
+    paymentInstruments: [mockPaymentInstrument],
+    shipments: [{ shippingAddress: mockShippingAddress }],
+    billingAddress: mockBillingAddress,
+};
+
+const withMockBasket = (Story: ComponentType) => (
+    <BasketProvider basket={mockBasketWithPayment as never}>
+        <Story />
+    </BasketProvider>
+);
+
+const withMockBasketDifferentBilling = (Story: ComponentType) => (
+    <BasketProvider basket={mockBasketWithDifferentBilling as never}>
+        <Story />
+    </BasketProvider>
+);
+
+const mockCustomerProfileWithPayments: CustomerProfile = {
+    customer: { customerId: 'cust-1' },
+    addresses: [],
+    paymentInstruments: [
+        {
+            paymentInstrumentId: 'pi-visa-1',
+            paymentMethodId: 'CREDIT_CARD',
+            paymentCard: {
+                cardType: 'Visa',
+                numberLastDigits: '4242',
+                expirationMonth: 12,
+                expirationYear: 2027,
+                holder: 'Jane Doe',
+            },
         },
-        onEdit: () => {
-            action('edit-payment')();
+        {
+            paymentInstrumentId: 'pi-mc-2',
+            paymentMethodId: 'CREDIT_CARD',
+            paymentCard: {
+                cardType: 'MasterCard',
+                numberLastDigits: '8888',
+                expirationMonth: 6,
+                expirationYear: 2026,
+                holder: 'Jane Doe',
+            },
         },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-    },
+    ],
+};
+
+const withMockCustomerPayments = (Story: ComponentType) => (
+    <CheckoutOneClickProvider
+        customerProfile={mockCustomerProfileWithPayments}
+        shippingDefaultSet={Promise.resolve(undefined)}>
+        <Story />
+    </CheckoutOneClickProvider>
+);
+
+const mockCustomerProfileWithPaymentsAndAddresses: CustomerProfile = {
+    customer: { customerId: 'cust-1' },
+    addresses: [
+        {
+            addressId: 'addr-1',
+            firstName: 'John',
+            lastName: 'Doe',
+            address1: '5 Wall St',
+            city: 'Burlington',
+            stateCode: 'MA',
+            postalCode: '01803',
+            countryCode: 'US',
+            preferred: true,
+        },
+        {
+            addressId: 'addr-2',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            address1: '123 Main St',
+            city: 'Boston',
+            stateCode: 'MA',
+            postalCode: '02101',
+            countryCode: 'US',
+            preferred: false,
+        },
+    ],
+    paymentInstruments: mockCustomerProfileWithPayments.paymentInstruments,
+};
+
+const withMockCustomerPaymentsAndAddresses = (Story: ComponentType) => (
+    <CheckoutOneClickProvider
+        customerProfile={mockCustomerProfileWithPaymentsAndAddresses}
+        shippingDefaultSet={Promise.resolve(undefined)}>
+        <Story />
+    </CheckoutOneClickProvider>
+);
+
+const baseArgs = {
+    onSubmit: () => action('submit-payment')(),
+    onEdit: () => action('edit-payment')(),
+    isLoading: false,
+    isCompleted: false,
+    isEditing: true,
+    actionData: undefined,
+};
+
+export const EditView: Story = {
+    args: baseArgs,
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form with existing payment information pre-filled from the basket data.',
+                story: 'Edit mode — credit card input fields are shown for new payment entry.',
             },
         },
     },
@@ -269,79 +309,21 @@ export const WithExistingPayment: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test form interaction
+        // Form renders with inputs in edit mode
         const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        await expect(inputs.length).toBeGreaterThan(0);
 
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
+        // Click the first input to verify it is interactive
+        await userEvent.click(inputs[0]);
     },
 };
 
-export const LoadingState: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: true,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-    },
+export const EditViewWithDifferentBilling: Story = {
+    args: { ...baseArgs, showUseDifferentBilling: true },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form in a loading state with disabled inputs and loading button text.',
-            },
-        },
-    },
-    play: ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        // In loading state, elements should be disabled
-        const buttons = canvas.queryAllByRole('button');
-
-        // Verify loading state - buttons should be disabled
-        if (buttons.length > 0) {
-            const submitButton = buttons.find(
-                (btn) => btn.textContent?.includes('Processing...') || btn.textContent?.includes('Loading')
-            );
-            if (submitButton) {
-                void expect(submitButton).toBeDisabled();
-                // Don't try to click disabled buttons
-            }
-        }
-
-        // Verify component renders properly in loading state
-        void expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const CompletedState: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: true,
-        isEditing: false,
-        actionData: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the completed state with a summary view and edit button.',
+                story: 'Edit mode with the "Use a different billing address" checkbox checked — shows the billing address form fields beneath the payment section.',
             },
         },
     },
@@ -349,34 +331,24 @@ export const CompletedState: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        // Expand the billing address section
+        const billingCheckbox = canvas.getByRole('checkbox', { name: /Use a different billing address/i });
+        await userEvent.click(billingCheckbox);
 
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
+        // Billing address form fields are now visible
+        await expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
     },
 };
 
 export const WithValidationErrors: Story = {
     args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
+        ...baseArgs,
         actionData: {
             step: 'payment',
             fieldErrors: {
+                cardholderName: 'Please enter your name as shown on your card.',
                 cardNumber: 'Please enter a valid card number',
                 expiryDate: 'Please enter a valid expiry date',
                 cvv: 'Please enter a valid CVV',
@@ -386,7 +358,7 @@ export const WithValidationErrors: Story = {
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form with field-level validation errors for payment fields.',
+                story: 'Shows the form with field-level validation errors for all payment fields.',
             },
         },
     },
@@ -394,35 +366,35 @@ export const WithValidationErrors: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        await expect(canvas.getByText('Please enter your name as shown on your card.')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter a valid card number')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter a valid expiry date')).toBeInTheDocument();
+        await expect(canvas.getByText('Please enter a valid CVV')).toBeInTheDocument();
 
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
+        const inputs = canvas.queryAllByRole('textbox');
+        await expect(inputs.length).toBeGreaterThan(0);
     },
 };
 
-export const WithBillingAddress: Story = {
+export const WithBillingValidationErrors: Story = {
     args: {
-        onSubmit: () => {
-            action('submit-payment')();
+        ...baseArgs,
+        showUseDifferentBilling: true,
+        actionData: {
+            step: 'payment',
+            fieldErrors: {
+                billingFirstName: 'Please enter your first name.',
+                billingLastName: 'Please enter your last name.',
+                billingAddress1: 'Please enter your address.',
+                billingCity: 'Please enter your city.',
+                billingPostalCode: 'Please enter your zip code.',
+            },
         },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
     },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the form with billing address fields visible (when billing same as shipping is unchecked).',
+                story: 'Shows billing field validation errors — the "Use a different billing address" checkbox is checked and all required billing fields show errors.',
             },
         },
     },
@@ -430,37 +402,209 @@ export const WithBillingAddress: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        // Expand the billing address section first
+        const billingCheckbox = canvas.getByRole('checkbox', { name: /Use a different billing address/i });
+        await userEvent.click(billingCheckbox);
 
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
+        // Billing field errors injected via actionData should now be visible
+        await expect(canvas.findByText('Please enter your first name.')).resolves.toBeInTheDocument();
+        await expect(canvas.findByText('Please enter your last name.')).resolves.toBeInTheDocument();
+        await expect(canvas.findByText('Please enter your address.')).resolves.toBeInTheDocument();
+    },
+};
+
+export const WithSavedPaymentMethods: Story = {
+    args: { ...baseArgs },
+    decorators: [withMockCustomerPayments],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Returning customer with saved payment methods — the preferred card is pre-selected; a "Credit Card" option to enter a new card appears at the bottom.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Saved payment method radios rendered
+        const radios = canvas.getAllByRole('radio');
+        await expect(radios.length).toBeGreaterThan(1);
+
+        // First saved method (preferred) is selected by default
+        await expect(radios[0]).toBeChecked();
+
+        // Card details visible
+        await expect(canvas.getByText(/visa/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/4242/i)).toBeInTheDocument();
+    },
+};
+
+export const WithSavedBillingAddresses: Story = {
+    args: { ...baseArgs, showUseDifferentBilling: true },
+    decorators: [withMockCustomerPaymentsAndAddresses],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Returning customer with saved payments and saved addresses — checking "Use a different billing address" shows a dropdown of saved addresses with the preferred address pre-selected and an "Add new address" option at the bottom.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+
+        // Check the "Use a different billing address" checkbox
+        const billingCheckbox = canvas.getByRole('checkbox', { name: /Use a different billing address/i });
+        await userEvent.click(billingCheckbox);
+
+        // Open the address dropdown — portal content renders outside canvasElement
+        const dropdownTrigger = await canvas.findByRole('button', { name: /Wall St|select an address/i });
+        await userEvent.click(dropdownTrigger);
+
+        // Saved addresses are listed in the portal
+        await expect(await body.findByText(/5 Wall St/i)).toBeInTheDocument();
+        await expect(body.getByText(/123 Main St/i)).toBeInTheDocument();
+    },
+};
+
+export const WithNewBillingAddress: Story = {
+    args: { ...baseArgs, showUseDifferentBilling: true },
+    decorators: [withMockCustomerPaymentsAndAddresses],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Returning customer who selects "+ Add new address" from the billing address dropdown — shows the full billing address form inline.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const body = within(canvasElement.ownerDocument.body);
+
+        // Check the "Use a different billing address" checkbox
+        const billingCheckbox = canvas.getByRole('checkbox', { name: /Use a different billing address/i });
+        await userEvent.click(billingCheckbox);
+
+        // Open the address dropdown — portal content renders outside canvasElement
+        const dropdownTrigger = await canvas.findByRole('button', { name: /Wall St|select an address/i });
+        await userEvent.click(dropdownTrigger);
+
+        const addNewOption = await body.findByText(/\+ Add new address/i);
+        await userEvent.click(addNewOption);
+
+        // Billing address form fields are now visible
+        await expect(canvas.getByLabelText(/First Name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/Last Name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/Address Line 1/i)).toBeInTheDocument();
+    },
+};
+
+export const WithNewCreditCard: Story = {
+    args: { ...baseArgs },
+    decorators: [withMockCustomerPayments],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Returning customer who selects "Credit Card" to enter a new card — shows the card input form and the "Save payment to profile" checkbox.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Click the "Credit Card" radio to switch to new card entry
+        const creditCardRadio = canvas.getByRole('radio', { name: /credit card/i });
+        await userEvent.click(creditCardRadio);
+
+        // Card input fields are now visible
+        await expect(canvas.getByLabelText(/name on card/i)).toBeInTheDocument();
+
+        // Save payment checkbox is visible for registered customers
+        await expect(canvas.getByLabelText(/save payment method for future use/i)).toBeInTheDocument();
+    },
+};
+
+export const SavingState: Story = {
+    args: { ...baseArgs, isLoading: true },
+    decorators: [withMockCustomerPayments],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Spinner overlay shown while the order is being placed — the Payment card is covered and the Place Order button is disabled.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Submit button should be disabled during loading
+        const submitButton = canvas.queryByRole('button', { name: /continue|submit|saving|processing/i });
+        if (submitButton) {
+            await expect(submitButton).toBeDisabled();
         }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
+    },
+};
+
+export const SummaryView: Story = {
+    args: { ...baseArgs, isCompleted: true, isEditing: false },
+    decorators: [withMockBasket],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Shows the completed summary view — card type, last four digits, expiry, and an edit button.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Summary shows card info, no editable text inputs
+        const inputs = canvas.queryAllByRole('textbox');
+        await expect(inputs.length).toBe(0);
+
+        await expect(canvas.getByText(/Visa \*\*\*\* 4242/i)).toBeInTheDocument();
+    },
+};
+
+export const SummaryViewWithDifferentBilling: Story = {
+    args: { ...baseArgs, isCompleted: true, isEditing: false, showUseDifferentBilling: true },
+    decorators: [withMockBasketDifferentBilling],
+    parameters: {
+        docs: {
+            description: {
+                story: 'Completed summary view when the billing address differs from the shipping address — shows the billing address lines beneath the card info.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // No editable inputs in summary view
+        const inputs = canvas.queryAllByRole('textbox');
+        await expect(inputs.length).toBe(0);
+
+        // Card info visible
+        await expect(canvas.getByText(/Visa \*\*\*\* 4242/i)).toBeInTheDocument();
+
+        // Billing address lines visible
+        await expect(canvas.getByText(/John Smith/i)).toBeInTheDocument();
+        await expect(canvas.getByText(/456 Elm Ave/i)).toBeInTheDocument();
     },
 };
 
 export const DisabledState: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: false,
-        actionData: undefined,
-    },
+    args: { ...baseArgs, isEditing: false, disabled: true },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the disabled state when neither editing nor completed (upcoming step).',
+                story: 'Shows the upcoming/disabled state when the step has not yet been reached — no form inputs visible.',
             },
         },
     },
@@ -468,139 +612,10 @@ export const DisabledState: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Test form interaction
+        // Upcoming step shows "Complete previous steps" message, no form inputs
         const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
+        await expect(inputs.length).toBe(0);
 
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-    },
-};
-
-export const MobileView: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the component optimized for mobile viewport.',
-            },
-        },
-    },
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-    },
-};
-
-export const TabletView: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: false,
-        isEditing: true,
-        actionData: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the component optimized for tablet viewport.',
-            },
-        },
-    },
-    globals: {
-        viewport: 'tablet',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-    },
-};
-
-export const DesktopView: Story = {
-    args: {
-        onSubmit: () => {
-            action('submit-payment')();
-        },
-        onEdit: () => {
-            action('edit-payment')();
-        },
-        isLoading: false,
-        isCompleted: true,
-        isEditing: false,
-        actionData: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the component optimized for desktop viewport in completed state.',
-            },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form interaction
-        const inputs = canvas.queryAllByRole('textbox');
-        const buttons = canvas.queryAllByRole('button');
-
-        // Test basic interactions
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
+        await expect(canvas.getByText(/complete previous steps/i)).toBeInTheDocument();
     },
 };

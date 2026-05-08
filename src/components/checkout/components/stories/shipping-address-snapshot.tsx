@@ -76,6 +76,7 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 vi.mock('@/providers/basket', () => ({
+    default: ({ children }: React.PropsWithChildren) => <>{children}</>,
     useBasket: () => ({
         basket: null,
         isLoading: false,

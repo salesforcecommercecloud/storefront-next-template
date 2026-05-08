@@ -1,65 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ContactInfo stories snapshot > CompletedState story renders and matches snapshot 1`] = `
-<div
-  class="max-w-2xl mx-auto p-6"
->
-  <div>
-    <div
-      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
-      data-slot="card"
-      data-testid="sf-toggle-card-contact-info"
-    >
-      <div
-        class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
-        data-slot="card-header"
-      >
-        <div
-          class="text-base font-semibold text-foreground"
-          data-slot="card-title"
-          tabindex="0"
-        >
-          <span
-            class="text-2xl font-bold tracking-tight text-card-foreground"
-          >
-            Contact Information
-          </span>
-        </div>
-        <div
-          class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
-          data-slot="card-action"
-        >
-          <button
-            aria-label="Edit"
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-            data-size="sm"
-            data-slot="button"
-            data-variant="link"
-            type="button"
-          >
-            Edit
-          </button>
-        </div>
-      </div>
-      <div
-        class="px-6"
-        data-slot="card-content"
-        data-testid="sf-toggle-card-contact-info-content"
-      >
-        <div
-          class="text-sm font-normal leading-5 text-foreground"
-        >
-          <p>
-            Not provided yet
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ContactInfo stories snapshot > Default story renders and matches snapshot 1`] = `
+exports[`ContactInfo stories snapshot > EditView story renders and matches snapshot 1`] = `
 <div
   class="max-w-2xl mx-auto p-6"
 >
@@ -228,66 +169,7 @@ exports[`ContactInfo stories snapshot > Default story renders and matches snapsh
 </div>
 `;
 
-exports[`ContactInfo stories snapshot > DisabledState story renders and matches snapshot 1`] = `
-<div
-  class="max-w-2xl mx-auto p-6"
->
-  <div>
-    <div
-      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
-      data-slot="card"
-      data-testid="sf-toggle-card-contact-info"
-    >
-      <div
-        class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
-        data-slot="card-header"
-      >
-        <div
-          class="text-base font-semibold text-foreground"
-          data-slot="card-title"
-          tabindex="0"
-        >
-          <span
-            class="text-2xl font-bold tracking-tight text-card-foreground"
-          >
-            Contact Information
-          </span>
-        </div>
-        <div
-          class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
-          data-slot="card-action"
-        >
-          <button
-            aria-label="Edit"
-            class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
-            data-size="sm"
-            data-slot="button"
-            data-variant="link"
-            type="button"
-          >
-            Edit
-          </button>
-        </div>
-      </div>
-      <div
-        class="px-6"
-        data-slot="card-content"
-        data-testid="sf-toggle-card-contact-info-content"
-      >
-        <div
-          class="text-sm font-normal leading-5 text-foreground"
-        >
-          <p>
-            Not provided yet
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ContactInfo stories snapshot > LoadingState story renders and matches snapshot 1`] = `
+exports[`ContactInfo stories snapshot > SavingState story renders and matches snapshot 1`] = `
 <div
   class="max-w-2xl mx-auto p-6"
 >
@@ -468,7 +350,7 @@ exports[`ContactInfo stories snapshot > LoadingState story renders and matches s
 </div>
 `;
 
-exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matches snapshot 1`] = `
+exports[`ContactInfo stories snapshot > SendingOtp story renders and matches snapshot 1`] = `
 <div
   class="max-w-2xl mx-auto p-6"
 >
@@ -528,12 +410,21 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
                 autocomplete="email"
                 class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive pr-12"
                 data-slot="input"
+                disabled=""
                 id="_r_3_-form-item"
                 name="email"
                 placeholder="Email Address"
                 type="email"
                 value=""
               />
+              <div
+                aria-hidden="true"
+                class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <div
+                  class="animate-spin rounded-full border-2 border-border border-t-primary size-4 text-muted-foreground"
+                />
+              </div>
             </div>
           </div>
           <div
@@ -637,7 +528,66 @@ exports[`ContactInfo stories snapshot > WithExistingEmail story renders and matc
 </div>
 `;
 
-exports[`ContactInfo stories snapshot > WithValidationError story renders and matches snapshot 1`] = `
+exports[`ContactInfo stories snapshot > SummaryView story renders and matches snapshot 1`] = `
+<div
+  class="max-w-2xl mx-auto p-6"
+>
+  <div>
+    <div
+      class="bg-card text-card-foreground flex flex-col border relative rounded-none py-4 shadow-none gap-4"
+      data-slot="card"
+      data-testid="sf-toggle-card-contact-info"
+    >
+      <div
+        class="@container/card-header grid auto-rows-min gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid-rows-1 items-center border-b border-border pb-4"
+        data-slot="card-header"
+      >
+        <div
+          class="text-base font-semibold text-foreground"
+          data-slot="card-title"
+          tabindex="0"
+        >
+          <span
+            class="text-2xl font-bold tracking-tight text-card-foreground"
+          >
+            Contact Information
+          </span>
+        </div>
+        <div
+          class="col-start-2 row-start-1 justify-self-end row-span-1 self-center"
+          data-slot="card-action"
+        >
+          <button
+            aria-label="Edit"
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary underline-offset-4 hover:underline h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 font-bold"
+            data-size="sm"
+            data-slot="button"
+            data-variant="link"
+            type="button"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+      <div
+        class="px-6"
+        data-slot="card-content"
+        data-testid="sf-toggle-card-contact-info-content"
+      >
+        <div
+          class="text-sm font-normal leading-5 text-foreground"
+        >
+          <p>
+            Not provided yet
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ContactInfo stories snapshot > WithValidationErrors story renders and matches snapshot 1`] = `
 <div
   class="max-w-2xl mx-auto p-6"
 >

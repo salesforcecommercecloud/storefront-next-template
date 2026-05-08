@@ -267,14 +267,8 @@ export const InteractionTest: Story = {
         const card = canvas.getByRole('link', { name: /mens/i });
         await expect(card).toBeInTheDocument();
 
-        // Test clicking the category card
-        await userEvent.click(card);
-
-        // Test hovering over the card
-        const cardElement = canvas.getByText('Mens').closest('div');
-        if (cardElement) {
-            await userEvent.hover(cardElement);
-        }
+        // Hover over the card without following the link (navigation would break Storybook)
+        await userEvent.hover(card);
 
         await expect(canvas.getByText('Mens')).toBeInTheDocument();
         await expect(canvas.getByRole('img')).toBeInTheDocument();

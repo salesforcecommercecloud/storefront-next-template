@@ -138,6 +138,12 @@ const RouterWrapper = ({
                         action: () => ({ success: true, email: 'test@example.com' }),
                     },
                     {
+                        // Mock action route for passwordless email OTP trigger
+                        // Used by ContactInfo component via fetcher.submit() on email blur
+                        path: '/action/authorize-passwordless-email',
+                        action: () => ({ success: false }),
+                    },
+                    {
                         // Mock action route for adding items to cart
                         // Used by useProductActions hook via fetcher.submit()
                         path: '/action/cart-item-add',

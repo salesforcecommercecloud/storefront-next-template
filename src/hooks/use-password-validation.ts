@@ -34,9 +34,9 @@ import { isPasswordValid } from '@/lib/utils';
  * } = usePasswordValidation();
  * ```
  */
-export function usePasswordValidation() {
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+export function usePasswordValidation({ defaultPassword = '', defaultConfirmPassword = '' } = {}) {
+    const [password, setPassword] = useState(defaultPassword);
+    const [confirmPassword, setConfirmPassword] = useState(defaultConfirmPassword);
     const [showPasswordMismatch, setShowPasswordMismatch] = useState(false);
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {

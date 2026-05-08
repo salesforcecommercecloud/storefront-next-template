@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import {
     ExpressPaymentsSkeleton,
     ContactInfoSkeleton,
@@ -25,6 +26,7 @@ import {
     MyCartSkeleton,
     CheckoutSkeleton,
 } from '../checkout-skeletons';
+import type { ComponentProps } from 'react';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
@@ -59,6 +61,13 @@ These skeletons are typically rendered inside \`<Suspense>\` boundaries while as
 All skeletons use the \`Skeleton\` component from \`@/components/ui/skeleton\` which provides consistent shimmer animation and styling across the application.
                 `,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     tags: ['autodocs', 'interaction'],
@@ -73,7 +82,7 @@ type ShippingOptionsSkeletonStory = StoryObj<typeof ShippingOptionsSkeleton>;
 type PaymentSkeletonStory = StoryObj<typeof PaymentSkeleton>;
 type PickupSkeletonStory = StoryObj<typeof PickupSkeleton>;
 type OrderSummarySkeletonStory = StoryObj<typeof OrderSummarySkeleton>;
-type MyCartSkeletonStory = StoryObj<typeof MyCartSkeleton>;
+type MyCartSkeletonStory = StoryObj<{ itemCount?: ComponentProps<typeof MyCartSkeleton>['itemCount'] }>;
 type CheckoutSkeletonStory = StoryObj<typeof CheckoutSkeleton>;
 
 export const ExpressPayments: ExpressPaymentsSkeletonStory = {
@@ -148,7 +157,7 @@ export const Payment: PaymentSkeletonStory = {
     parameters: {
         docs: {
             description: {
-                story: 'Loading state for payment form. Shows card number, expiry date, CVV fields, and billing address toggle.',
+                story: 'Loading state for payment form. Shows credit card radio option, name on card, expiry date, CVV fields, and billing address checkbox.',
             },
         },
     },
@@ -210,7 +219,8 @@ export const MyCart: MyCartSkeletonStory = {
 };
 
 export const MyCartWithManyItems: MyCartSkeletonStory = {
-    render: () => <MyCartSkeleton itemCount={5} />,
+    args: { itemCount: 5 },
+    render: ({ itemCount }) => <MyCartSkeleton itemCount={itemCount} />,
     parameters: {
         docs: {
             description: {

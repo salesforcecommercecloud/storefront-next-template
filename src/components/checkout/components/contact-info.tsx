@@ -60,6 +60,8 @@ interface ContactInfoProps {
     suppressRegisteredEmailLoginHints?: boolean;
     /** When set, kept in sync so checkout does not advance from contact while OTP modal is open or authorize in flight. */
     otpFlowActiveRef?: OtpFlowActiveRef;
+    /** Initial OTP sending state — used in Storybook to show the spinner in the email field without triggering fetcher logic */
+    defaultOtpSending?: boolean;
     // Step state managed by container
     isCompleted: boolean;
     isEditing: boolean;
@@ -74,6 +76,7 @@ export default function ContactInfo({
     onPasswordlessOtpVerified,
     suppressRegisteredEmailLoginHints = false,
     otpFlowActiveRef,
+    defaultOtpSending = false,
     isCompleted: _isCompleted,
     isEditing,
     onEdit,
@@ -365,7 +368,9 @@ export default function ContactInfo({
     );
 
     const isSendingOtp =
-        passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading';
+        defaultOtpSending ||
+        passwordlessEmailFetcher.state === 'submitting' ||
+        passwordlessEmailFetcher.state === 'loading';
 
     // Keep parent ref in sync so checkout does not advance to shipping while OTP/login modal is open or authorize in flight
     useEffect(
