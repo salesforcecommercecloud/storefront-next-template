@@ -4,6 +4,7 @@
 - Add `baseConfigPlugin` that contributes framework-wide Vite defaults (React/React Router dedupe, pre-bundled React Router entries) so these don't have to live in the template's `vite.config.ts` ([#1541](https://github.com/commerce-emu/storefront-next/pull/1541))
 - Add action hooks Vite plugin: generates `virtual:action-hooks` module from extension `target-config.json` registrations, enabling server-side extension points in checkout actions
 - Warn at build time when multiple UITarget components or action hook handlers share the same target ID and order value (non-deterministic execution order)
+- Add `enabled` boolean field to `target-config.json` component entries: components with `enabled: false` are skipped at build time and tree-shaken from the production bundle; entries without the field default to `true` (backward compatible)
 
 ## v0.4.0 (May 5, 2026)
 

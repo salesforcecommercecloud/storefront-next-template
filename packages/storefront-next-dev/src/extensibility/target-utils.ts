@@ -376,6 +376,7 @@ export function buildTargetRegistry(
                 }
                 if (extensionConfig && extensionConfig.components) {
                     for (const component of extensionConfig.components) {
+                        if (component.enabled === false) continue;
                         const { targetId, path: componentPath, order = 0 } = component;
                         if (targetId && componentPath) {
                             if (!componentRegistry[targetId]) {

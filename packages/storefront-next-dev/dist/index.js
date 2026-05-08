@@ -600,6 +600,7 @@ function buildTargetRegistry(rootDir, options = {}) {
 			const extensionConfig = fs.readJsonSync(configPath);
 			if (options.isProduction && extensionConfig.devOnly === true) continue;
 			if (extensionConfig && extensionConfig.components) for (const component of extensionConfig.components) {
+				if (component.enabled === false) continue;
 				const { targetId, path: componentPath, order = 0 } = component;
 				if (targetId && componentPath) {
 					if (!componentRegistry[targetId]) componentRegistry[targetId] = [];

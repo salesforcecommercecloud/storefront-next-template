@@ -546,6 +546,30 @@ describe('target-utils', () => {
             expect(warnSpy).not.toHaveBeenCalled();
             warnSpy.mockRestore();
         });
+
+        it('should skip components with enabled === false', () => {
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.components[0].enabled = false;
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            const { componentRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'));
+            expect(componentRegistry['footer.ourcompany.start']).toHaveLength(1);
+            expect(componentRegistry['footer.ourcompany.start'][0].path).toContain('theme-switcher');
+        });
+
+        it('should include components with enabled === true', () => {
+            const extensionConfig = fs.readJsonSync(extensionConfigPath);
+            extensionConfig.components[0].enabled = true;
+            fs.writeJsonSync(extensionConfigPath, extensionConfig);
+
+            const { componentRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'));
+            expect(componentRegistry['footer.ourcompany.start']).toHaveLength(2);
+        });
+
+        it('should include components without an enabled field (backward compatible)', () => {
+            const { componentRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'));
+            expect(componentRegistry['footer.ourcompany.start']).toHaveLength(2);
+        });
     });
 
     describe('UITarget and UITargetProviders coexistence', () => {
