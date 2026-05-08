@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useRef, useMemo, Suspense, Fragment, lazy } from 'react';
+import { useEffect, useRef, Suspense, Fragment, lazy } from 'react';
 import { Await } from 'react-router';
 import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
@@ -250,43 +250,6 @@ export function shouldRevalidate({
     return false;
 }
 
-function ProductRecommendationsSection() {
-    const { t } = useTranslation('product');
-
-    // Memoize recommender configs to prevent unnecessary re-renders
-    const completeSetRecommender = useMemo(
-        () => ({
-            name: EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET,
-            title: t('recommendations.completeTheLook'),
-        }),
-        [t]
-    );
-
-    const mightAlsoLikeRecommender = useMemo(
-        () => ({
-            name: EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE,
-            title: t('recommendations.youMightAlsoLike'),
-        }),
-        [t]
-    );
-
-    const recentlyViewedRecommender = useMemo(
-        () => ({
-            name: EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED,
-            title: t('recommendations.recentlyViewed'),
-        }),
-        [t]
-    );
-
-    return (
-        <div className="mt-16 space-y-16">
-            <ProductRecommendations recommender={completeSetRecommender} className="max-w-none px-0" />
-            <ProductRecommendations recommender={mightAlsoLikeRecommender} className="max-w-none px-0" />
-            <ProductRecommendations recommender={recentlyViewedRecommender} className="max-w-none px-0" />
-        </div>
-    );
-}
-
 function ProductContent({ product, url }: { product: ShopperProducts.schemas['Product']; url: string }) {
     const analytics = useAnalytics();
     const lastTrackedProductIdRef = useRef<string | null>(null);
@@ -350,6 +313,7 @@ function ProductContent({ product, url }: { product: ShopperProducts.schemas['Pr
  * while the core product content renders synchronously from the resolved loader data.
  */
 function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
+    const { t } = useTranslation('product');
     const content = (
         <div className="min-h-screen bg-background">
             <div className="section-container pb-4 lg:pb-8">
@@ -373,7 +337,25 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                     className="mt-16"
                     page={loaderData.page}
                     regionId="engagementContent"
-                    errorElement={<ProductRecommendationsSection />}
+                    errorElement={
+                        <div className="mt-16 space-y-16">
+                            <ProductRecommendations
+                                recommenderName={EINSTEIN_RECOMMENDERS.PDP_COMPLETE_SET}
+                                recommenderTitle={t('recommendations.completeTheLook')}
+                                className="max-w-none px-0"
+                            />
+                            <ProductRecommendations
+                                recommenderName={EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE}
+                                recommenderTitle={t('recommendations.youMightAlsoLike')}
+                                className="max-w-none px-0"
+                            />
+                            <ProductRecommendations
+                                recommenderName={EINSTEIN_RECOMMENDERS.PDP_RECENTLY_VIEWED}
+                                recommenderTitle={t('recommendations.recentlyViewed')}
+                                className="max-w-none px-0"
+                            />
+                        </div>
+                    }
                 />
             </div>
         </div>

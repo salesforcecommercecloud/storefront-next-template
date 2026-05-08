@@ -33,6 +33,24 @@ vi.mock('@/hooks/use-scapi-fetcher', () => ({
     })),
 }));
 
+// Mock the recommender data boundary only — let ProductRecommendations and
+// ProductCarousel render for real so we exercise the actual cart wiring.
+const mockGetRecommendations = vi.fn();
+const mockGetZoneRecommendations = vi.fn();
+const mockUseRecommenders = vi.fn();
+
+vi.mock('@/hooks/recommenders/use-recommenders', () => ({
+    useRecommenders: () => mockUseRecommenders(),
+}));
+
+vi.mock('@/providers/recommenders', () => ({
+    useRecommendersAdapter: () => ({
+        getRecommenders: vi.fn(),
+        getRecommendations: mockGetRecommendations,
+        getZoneRecommendations: mockGetZoneRecommendations,
+    }),
+}));
+
 // Components
 import CartContent from './cart-content';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
@@ -59,9 +77,46 @@ const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
     return render(<RouterProvider router={router} />);
 };
 
+// Default useRecommenders state: enabled, no recommendations returned. With
+// `recs` empty, ProductRecommendations renders nothing — which is the expected
+// path when Einstein returns no results. Individual tests override this state
+// when they need the recommendation carousels rendered.
+const defaultRecommendersState = {
+    isLoading: false,
+    isEnabled: true,
+    recommendations: { recs: [], recommenderName: undefined as string | undefined },
+    error: null,
+    getRecommenders: vi.fn(),
+    getRecommendations: mockGetRecommendations,
+    getZoneRecommendations: mockGetZoneRecommendations,
+};
+
+// Minimum-viable enriched recommendations that ProductCarousel + ProductTile can render.
+const buildRecs = (productNames: string[]) =>
+    productNames.map((productName, idx) => ({
+        id: `rec-${idx + 1}`,
+        productId: `rec-${idx + 1}`,
+        productName,
+        price: 19.99 + idx,
+        currency: 'USD',
+        imageGroups: [
+            {
+                viewType: 'medium',
+                images: [
+                    {
+                        alt: productName,
+                        link: `https://example.com/${idx + 1}.jpg`,
+                        disBaseLink: `https://example.com/${idx + 1}.jpg`,
+                    },
+                ],
+            },
+        ],
+    }));
+
 describe('CartContent', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockUseRecommenders.mockReturnValue(defaultRecommendersState);
     });
 
     const mockBasket = {
@@ -508,6 +563,116 @@ describe('CartContent', () => {
 
             expect(screen.queryByTestId('edit-item-item-1')).not.toBeInTheDocument();
             expect(screen.getByTestId('edit-item-item-2')).toBeInTheDocument();
+        });
+    });
+
+    describe('Cart recommendations section', () => {
+        // ProductRecommendations is lazy-loaded on the cart route to keep it out
+        // of the initial bundle, so the carousel mounts asynchronously after the
+        // cart shell renders. Tests use findBy*/waitFor to await that hydration.
+        test('requests both cart Einstein recommenders, passing basket products to "may also like" only', async () => {
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            // Wait for the lazy ProductRecommendations chunks to mount and fire effects
+            await waitFor(() => {
+                const requestedRecommenderNames = mockGetRecommendations.mock.calls.map(([name]) => name);
+                expect(requestedRecommenderNames).toEqual(
+                    expect.arrayContaining(['product-to-product-einstein', 'viewed-recently-einstein'])
+                );
+            });
+
+            // "May also like" should receive the basket products as context
+            const mayAlsoLikeCall = mockGetRecommendations.mock.calls.find(
+                ([name]) => name === 'product-to-product-einstein'
+            );
+            const mayAlsoLikeProducts = mayAlsoLikeCall?.[1] as { id: string }[] | undefined;
+            expect(mayAlsoLikeProducts?.map((p) => p.id)).toEqual(['product-1', 'product-2']);
+
+            // "Recently viewed" should not receive any product context
+            const recentlyViewedCall = mockGetRecommendations.mock.calls.find(
+                ([name]) => name === 'viewed-recently-einstein'
+            );
+            expect(recentlyViewedCall?.[1]).toBeUndefined();
+        });
+
+        test('renders the "you might also like" carousel with translated title and recommended products', async () => {
+            mockUseRecommenders.mockReturnValue({
+                ...defaultRecommendersState,
+                recommendations: {
+                    recommenderName: 'product-to-product-einstein',
+                    recs: buildRecs(['Recommended Shirt', 'Recommended Pants']),
+                },
+            });
+
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            // Translated section title is shown to the shopper after lazy mount
+            expect(await screen.findByText(t('product:recommendations.youMightAlsoLike'))).toBeInTheDocument();
+            // Both recommended product names render via the real ProductCarousel/ProductTile
+            expect(screen.getByText('Recommended Shirt')).toBeInTheDocument();
+            expect(screen.getByText('Recommended Pants')).toBeInTheDocument();
+        });
+
+        test('renders the "recently viewed" carousel with its translated title and product', async () => {
+            mockUseRecommenders.mockReturnValue({
+                ...defaultRecommendersState,
+                recommendations: {
+                    recommenderName: 'viewed-recently-einstein',
+                    recs: buildRecs(['Previously Viewed Hat']),
+                },
+            });
+
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            expect(await screen.findByText(t('product:recommendations.recentlyViewed'))).toBeInTheDocument();
+            expect(screen.getByText('Previously Viewed Hat')).toBeInTheDocument();
+        });
+
+        test('renders nothing for either recommender when Einstein returns no results', async () => {
+            // defaultRecommendersState already returns recs: []
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            // Wait until the lazy chunks have had a chance to mount and request data,
+            // so the absence of titles reflects the empty-recs branch rather than
+            // pre-mount state.
+            await waitFor(() => {
+                expect(mockGetRecommendations).toHaveBeenCalled();
+            });
+            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
+            expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
+        });
+
+        test('does not request recommendations when the cart is empty', async () => {
+            renderCartContent({
+                basket: { ...mockBasket, productItems: [] },
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            // Empty cart short-circuits to <CartEmpty/>; lazy recommendations never mount.
+            // Wait a microtask flush to give any pending lazy import a chance to resolve.
+            await waitFor(() => {
+                expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
+            });
+            expect(mockGetRecommendations).not.toHaveBeenCalled();
+            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
+            expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
         });
     });
 

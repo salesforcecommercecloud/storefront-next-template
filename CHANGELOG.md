@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Add Einstein product recommendations to the cart page: render "You might also like" (driven by basket items) and "Recently viewed" carousels below the cart line items, reusing the existing `<ProductRecommendations>` component and the `EINSTEIN_RECOMMENDERS.CART_*` constants ([#1626](https://github.com/commerce-emu/storefront-next/pull/1626))
 - Split `vite.config.ts` into per-plugin files under `vite-plugins/`, and extract checkout chunking into a dedicated `codeSplitting` plugin. Plugin order now puts `codeSplitting` before `storefrontNext` so the SDK's i18n plugin can wrap the user-supplied `manualChunks`.
 - Clean up template test files to use mock config rather than hard coded site, locale, and currency.
 - Block checkout when cart items exceed available inventory: added cart-wide validation that disables the "Continue to Checkout" button and displays an error banner when any items exceed available stock (ATS or store inventory for BOPIS). Supports bonus product exclusion and proper ARIA attributes for accessibility ([#1615](https://github.com/commerce-emu/storefront-next/pull/1615))

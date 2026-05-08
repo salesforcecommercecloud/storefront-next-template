@@ -33,6 +33,7 @@ import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { useBasketUpdater } from '@/providers/basket';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import CartPickup from '@/extensions/bopis/components/cart-pickup';
 import { getFirstPickupStore, filterPickupProductItems } from '@/extensions/bopis/lib/basket-utils';
@@ -60,6 +61,9 @@ const LazyCartItemAddToWishlistButton = lazy(() =>
         default: m.CartItemAddToWishlistButton,
     }))
 );
+// Recommendations are below the fold; lazy-load so ProductCarousel/ProductTile
+// don't ship in the cart route's initial bundle.
+const LazyProductRecommendations = lazy(() => import('@/components/product-recommendations'));
 
 /**
  * Props for the CartContent component
@@ -100,6 +104,7 @@ export default function CartContent({
     wishlistProductIds = [],
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
+    const { t: tProduct } = useTranslation('product');
 
     // Calculate total item count for page heading
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
@@ -371,6 +376,22 @@ export default function CartContent({
                         })}
                     </Suspense>
                 )}
+
+                <Suspense fallback={null}>
+                    <div className="mt-16 space-y-16">
+                        <LazyProductRecommendations
+                            recommenderName={EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE}
+                            recommenderTitle={tProduct('recommendations.youMightAlsoLike')}
+                            products={Object.values(productsByItemId)}
+                            className="max-w-none px-0"
+                        />
+                        <LazyProductRecommendations
+                            recommenderName={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}
+                            recommenderTitle={tProduct('recommendations.recentlyViewed')}
+                            className="max-w-none px-0"
+                        />
+                    </div>
+                </Suspense>
 
                 {selectedBonusProduct &&
                     (() => {
