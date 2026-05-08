@@ -221,7 +221,8 @@ describe('ProductTile — color swatches', () => {
 
     test('renders a swatch link for each color value', async () => {
         renderTile();
-        const swatchRegion = await screen.findByLabelText('Available colors');
+        // Locale-agnostic: query by ARIA role with a regex that matches both en-US ("colors") and en-GB ("colours").
+        const swatchRegion = await screen.findByRole('group', { name: /available colou?rs/i });
         expect(within(swatchRegion).getByRole('link', { name: /Navy/ })).toBeInTheDocument();
         expect(within(swatchRegion).getByRole('link', { name: /Red/ })).toBeInTheDocument();
     });
@@ -236,7 +237,7 @@ describe('ProductTile — color swatches', () => {
         renderTile({ product: productWithoutVariations });
         // Wait a tick for any lazy suspense to settle before asserting absence.
         await Promise.resolve();
-        expect(screen.queryByLabelText('Available colors')).not.toBeInTheDocument();
+        expect(screen.queryByRole('group', { name: /available colou?rs/i })).not.toBeInTheDocument();
     });
 });
 

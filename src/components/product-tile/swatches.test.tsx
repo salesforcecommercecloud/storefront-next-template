@@ -118,8 +118,9 @@ const renderSwatches = ({
 
 describe('ProductTileSwatches', () => {
     test('renders a container with an accessible label for available colors', () => {
-        const { container } = renderSwatches();
-        expect(container.querySelector('[aria-label="Available colors"]')).toBeInTheDocument();
+        renderSwatches();
+        // Locale-agnostic: en-GB uses "colours", en-US uses "colors"; both match /colou?rs/i.
+        expect(screen.getByRole('group', { name: /available colou?rs/i })).toBeInTheDocument();
     });
 
     test('renders one swatch link per colorValue', () => {
@@ -236,7 +237,8 @@ describe('ProductTileSwatches', () => {
             totalColorCount: 5,
             productName: 'Blue Shirt',
         });
-        expect(screen.getByRole('link', { name: /view all 5 colors for blue shirt/i })).toBeInTheDocument();
+        // Locale-agnostic across en-US ("colors") and en-GB ("colours")
+        expect(screen.getByRole('link', { name: /view all 5 colou?rs for blue shirt/i })).toBeInTheDocument();
     });
 
     test('overflow indicator fires onSwatchClick on click', async () => {

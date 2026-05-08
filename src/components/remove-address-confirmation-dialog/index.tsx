@@ -136,7 +136,9 @@ export function RemoveAddressConfirmationDialog({
                 <Card className="border-border rounded-none shadow-none">
                     <CardContent className="px-4">
                         <div className="flex items-center gap-2 mb-2">
-                            <Typography variant="h6">{address.addressId}</Typography>
+                            <Typography variant="h6" as="p">
+                                {address.addressId}
+                            </Typography>
                             {isDefault && (
                                 <Badge
                                     variant="secondary"

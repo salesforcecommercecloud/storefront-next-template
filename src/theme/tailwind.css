@@ -86,6 +86,10 @@
     --color-paypal-gold: var(--paypal-gold);
     --color-venmo-blue: var(--venmo-blue);
 
+    /* -- product badge -- */
+    --color-product-badge-promo-bg: var(--product-badge-promo-bg);
+    --color-product-badge-promo-foreground: var(--product-badge-promo-foreground);
+
     /* -- header & navigation -- */
     --color-header-background: var(--header-background);
     --color-header-foreground: var(--header-foreground);

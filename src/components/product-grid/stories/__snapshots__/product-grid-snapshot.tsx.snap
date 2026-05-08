@@ -406,8 +406,9 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-current="true"
@@ -686,8 +687,9 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
@@ -994,8 +996,9 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Product 2 in Navy"
@@ -1816,8 +1819,9 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
@@ -2124,8 +2128,9 @@ exports[`ProductGrid stories snapshot > DefaultGrid story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Product 3 in Navy"
@@ -2710,8 +2715,9 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-current="true"
@@ -2990,8 +2996,9 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
@@ -3298,8 +3305,9 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Product 2 in Navy"
@@ -4120,8 +4128,9 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
@@ -4428,8 +4437,9 @@ exports[`ProductGrid stories snapshot > DesktopView story renders and matches sn
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Product 3 in Navy"
@@ -11535,8 +11545,9 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-current="true"
@@ -11815,8 +11826,9 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Multi 1 in Begonia Pink"
@@ -12123,8 +12135,9 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Product 2 in Navy"
@@ -12945,8 +12958,9 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Multi 2 in Begonia Pink"
@@ -13253,8 +13267,9 @@ exports[`ProductGrid stories snapshot > MobileView story renders and matches sna
         >
           <div>
             <div
-              aria-label="Available colors"
+              aria-label="Available colours"
               class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+              role="group"
             >
               <a
                 aria-label="View Master Product 3 in Navy"

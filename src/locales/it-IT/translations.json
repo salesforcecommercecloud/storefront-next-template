@@ -928,6 +928,7 @@
             "reviewSubmitted": "Recensione inviata",
             "emptyItemsFallback": "Nessun articolo.",
             "productPlaceholderInitial": "Articolo",
+            "productImageLinkFallback": "Visualizza dettagli prodotto",
             "quantityLabel": "Qtà: {{count}}",
             "trackingNumber": "Numero di tracking",
             "shippingAddress": "Indirizzo di spedizione",

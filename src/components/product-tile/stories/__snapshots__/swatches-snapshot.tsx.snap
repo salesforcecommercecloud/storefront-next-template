@@ -5,8 +5,9 @@ exports[`Swatches stories snapshot > ColorSwatches story renders and matches sna
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   >
     <a
       aria-current="true"
@@ -93,8 +94,9 @@ exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   >
     <a
       aria-label="View Test Product in Navy"
@@ -143,7 +145,7 @@ exports[`Swatches stories snapshot > ColorSwatchesWithOverflow story renders and
       />
     </a>
     <a
-      aria-label="View all 5 colors for Test Product"
+      aria-label="View all 5 colours for Test Product"
       class="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
       tabindex="-1"
       title="+2 more"
@@ -170,8 +172,9 @@ exports[`Swatches stories snapshot > NoSelection story renders and matches snaps
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   >
     <a
       aria-label="View Test Product in Navy"
@@ -257,8 +260,9 @@ exports[`Swatches stories snapshot > NoSwatches story renders and matches snapsh
   class="w-64"
 >
   <div
-    aria-label="Available colors"
+    aria-label="Available colours"
     class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+    role="group"
   />
 </div>
 `;

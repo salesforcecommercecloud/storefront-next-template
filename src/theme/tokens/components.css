@@ -7,10 +7,20 @@
     --cart-summary-px: 1rem;
     --cart-free-price: #2E844A;
     --cart-free-price-size: 1.125rem;
+
+    /* product badge — promo variant (Sale, Best Seller); values per Figma design system */
+    --product-badge-promo-bg: #131315;
+    --product-badge-promo-foreground: #dbeafe;
 }
 
 .dark {
     /* payment provider colors */
     --paypal-gold: #FFC439;
     --venmo-blue: #3D95CE;
+
+    /* product badge — promo variant. Dark mode flips light values to keep WCAG AA contrast;
+       Figma's defined dark mode values for these tokens produce 1.19:1 (fails AA) — tracked in
+       a separate UX/design-system bug. */
+    --product-badge-promo-bg: #dbeafe;
+    --product-badge-promo-foreground: #131315;
 }

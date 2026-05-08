@@ -143,6 +143,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
+                          aria-label="View First Product"
                           class="flex-shrink-0 block"
                           data-discover="true"
                           href="/RefArchGlobal/en-GB/product/701643108633M"
@@ -525,6 +526,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
+                          aria-label="View First Product"
                           class="flex-shrink-0 block"
                           data-discover="true"
                           href="/RefArchGlobal/en-GB/product/701643108633M"
@@ -907,6 +909,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
+                          aria-label="View Product for Alice"
                           class="flex-shrink-0 block"
                           data-discover="true"
                           href="/RefArchGlobal/en-GB/product/prod-a"
@@ -1065,6 +1068,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
+                          aria-label="View Product for Bob"
                           class="flex-shrink-0 block"
                           data-discover="true"
                           href="/RefArchGlobal/en-GB/product/prod-b"
@@ -1431,6 +1435,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
+                          aria-label="View First Product"
                           class="flex-shrink-0 block"
                           data-discover="true"
                           href="/RefArchGlobal/en-GB/product/701643108633M"
@@ -1813,6 +1818,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
+                          aria-label="View First Product"
                           class="flex-shrink-0 block"
                           data-discover="true"
                           href="/RefArchGlobal/en-GB/product/701643108633M"
@@ -2229,6 +2235,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                         class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
                       >
                         <a
+                          aria-label="View First Product"
                           class="flex-shrink-0 block"
                           data-discover="true"
                           href="/RefArchGlobal/en-GB/product/701643108633M"

@@ -570,9 +570,11 @@ export function InterestsPreferencesSection({ customerId, onSuccess, onError }: 
 
                                                 return isEditing ? (
                                                     <>
-                                                        <p className="text-sm font-medium text-foreground">
+                                                        <label
+                                                            htmlFor={`pref-${pref.id}`}
+                                                            className="text-sm font-medium text-foreground">
                                                             {pref.name}
-                                                        </p>
+                                                        </label>
                                                         <div className="w-full [&>div]:w-full">
                                                             <NativeSelect
                                                                 id={`pref-${pref.id}`}

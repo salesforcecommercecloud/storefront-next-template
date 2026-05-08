@@ -82,6 +82,12 @@
     "readLess": "Mostra meno",
     "reviewImageAlt": "Immagine recensione",
     "viewProductAriaLabel": "Visualizza {{productName}}",
+    "swatches": {
+        "availableColors": "Colori disponibili",
+        "viewProductInColor": "Visualizza {{productName}} in {{colorName}}",
+        "viewAllColors": "Visualizza tutti i {{count}} colori di {{productName}}",
+        "moreColorsTitle": "+{{count}} altri"
+    },
     "showingReviews": "Recensioni da {{from}} a {{to}} di {{total}}",
     "filterBy": "Filtra per:",
     "withPhotos": "Con foto",

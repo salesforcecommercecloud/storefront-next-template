@@ -107,7 +107,7 @@ export const WithSwatches: Story = {
         // Swatches are decorative/visual-only (aria-hidden) — verify via DOM queries
         let swatchContainer: Element | null = null;
         await waitFor(() => {
-            swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+            swatchContainer = canvasElement.querySelector('[role="group"]');
             expect(swatchContainer).not.toBeNull();
         });
         await expect(swatchContainer).not.toBeNull();
@@ -121,7 +121,7 @@ export const WithSwatches: Story = {
         await expect(swatchImages.length).toBe(2);
 
         // No overflow indicator — 2 swatches ≤ default maxSwatches (5)
-        await expect(canvasElement.querySelector('[title*=" more"]')).toBeNull();
+        await expect(canvasElement.querySelector('[title^="+"]')).toBeNull();
     },
 };
 
@@ -135,7 +135,7 @@ export const WithSwatchOverflow: Story = {
 
         let swatchContainer: Element | null = null;
         await waitFor(() => {
-            swatchContainer = canvasElement.querySelector('[aria-label="Available colors"]');
+            swatchContainer = canvasElement.querySelector('[role="group"]');
             expect(swatchContainer).not.toBeNull();
         });
         await expect(swatchContainer).not.toBeNull();
@@ -144,8 +144,8 @@ export const WithSwatchOverflow: Story = {
         const swatchLinks = swatchContainer!.querySelectorAll('a[aria-label*=" in "]');
         await expect(swatchLinks.length).toBe(1);
 
-        // Overflow indicator shows "+1" for the remaining colour
-        const overflow = canvasElement.querySelector('[title="+1 more"]');
+        // Overflow indicator shows "+1" for the remaining colour (locale-agnostic prefix match)
+        const overflow = canvasElement.querySelector('[title^="+1"]');
         await expect(overflow).not.toBeNull();
     },
 };

@@ -56,6 +56,7 @@ export function OrderItemsList({
     onOrderLineReviewSubmitted,
 }: OrderItemsListProps): ReactElement {
     const { t } = useTranslation('account');
+    const { t: tProduct } = useTranslation('product');
     const { currency } = useSite();
     const showLineReviews = submittedReviewLineKeys != null && onOrderLineReviewSubmitted != null;
 
@@ -79,7 +80,14 @@ export function OrderItemsList({
                 return (
                     <li key={productKey} data-testid="order-item">
                         <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
-                            <Link to={`/product/${item.productId}`} className="flex-shrink-0 block">
+                            <Link
+                                to={`/product/${item.productId}`}
+                                className="flex-shrink-0 block"
+                                aria-label={
+                                    productName
+                                        ? tProduct('viewProductAriaLabel', { productName })
+                                        : t('orders.productImageLinkFallback')
+                                }>
                                 <ProductItemVariantImage
                                     productItem={enrichedItem}
                                     className="h-24 w-24 rounded-none"

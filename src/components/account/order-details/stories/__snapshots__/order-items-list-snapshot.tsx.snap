@@ -11,6 +11,7 @@ exports[`OrderItemsList stories snapshot > Default story renders and matches sna
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
+        aria-label="View Sweater"
         class="flex-shrink-0 block"
         data-discover="true"
         href="/RefArchGlobal/en-GB/product/701643108633M"
@@ -140,6 +141,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
+        aria-label="View Product One"
         class="flex-shrink-0 block"
         data-discover="true"
         href="/RefArchGlobal/en-GB/product/prod-1"
@@ -222,6 +224,7 @@ exports[`OrderItemsList stories snapshot > MultipleItems story renders and match
       class="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center"
     >
       <a
+        aria-label="View Product Two"
         class="flex-shrink-0 block"
         data-discover="true"
         href="/RefArchGlobal/en-GB/product/prod-2"

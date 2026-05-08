@@ -80,6 +80,12 @@
     "readLess": "Read Less",
     "reviewImageAlt": "Review Image",
     "viewProductAriaLabel": "View {{productName}}",
+    "swatches": {
+        "availableColors": "Available colors",
+        "viewProductInColor": "View {{productName}} in {{colorName}}",
+        "viewAllColors": "View all {{count}} colors for {{productName}}",
+        "moreColorsTitle": "+{{count}} more"
+    },
     "showingReviews": "Showing {{from}}-{{to}} of {{total}} reviews",
     "filterBy": "Filter by:",
     "withPhotos": "With Photos",

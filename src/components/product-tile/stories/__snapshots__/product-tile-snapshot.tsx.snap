@@ -125,8 +125,9 @@ exports[`ProductTile stories snapshot > Default story renders and matches snapsh
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
@@ -474,8 +475,9 @@ exports[`ProductTile stories snapshot > FullFeatured story renders and matches s
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
@@ -813,8 +815,9 @@ exports[`ProductTile stories snapshot > WithBadges story renders and matches sna
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
@@ -1153,8 +1156,9 @@ exports[`ProductTile stories snapshot > WithPickupAvailable story renders and ma
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
@@ -1459,8 +1463,9 @@ exports[`ProductTile stories snapshot > WithQuickAdd story renders and matches s
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
@@ -1765,8 +1770,9 @@ exports[`ProductTile stories snapshot > WithStoreName story renders and matches 
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
@@ -2071,8 +2077,9 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
@@ -2089,7 +2096,7 @@ exports[`ProductTile stories snapshot > WithSwatchOverflow story renders and mat
             />
           </a>
           <a
-            aria-label="View all 2 colors for Long Sleeve Embellished Boat Neck Top"
+            aria-label="View all 2 colours for Long Sleeve Embellished Boat Neck Top"
             class="w-4 h-4 rounded-full bg-primary-foreground border border-border-subtle flex items-center justify-center shrink-0 cursor-pointer hover:ring-[3px] hover:ring-muted-hover transition-all"
             href="/RefArchGlobal/en-GB/product/25518101M?pid=701642823919M"
             tabindex="-1"
@@ -2397,8 +2404,9 @@ exports[`ProductTile stories snapshot > WithSwatches story renders and matches s
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Long Sleeve Embellished Boat Neck Top in Begonia Pink"
@@ -2717,8 +2725,9 @@ exports[`ProductTile stories snapshot > WithTopCategory story renders and matche
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
@@ -3028,8 +3037,9 @@ exports[`ProductTile stories snapshot > WithWishlist story renders and matches s
     >
       <div>
         <div
-          aria-label="Available colors"
+          aria-label="Available colours"
           class="flex items-center gap-1 mb-2 relative z-20 flex-wrap"
+          role="group"
         >
           <a
             aria-label="View Charcoal Single Pleat Wool Suit in Navy"
