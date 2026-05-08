@@ -193,11 +193,12 @@ export default function CartContent({
     };
 
     /**
-     * Line-item gift checkbox (layout only). Not persisted: no SCAPI / basket update is wired yet.
+     * Gift checkbox rendered at the end of each cart line-item's right column (layout only).
+     * Not persisted: no SCAPI / basket update is wired yet.
      * Wire to updateItemInBasket (or equivalent) when line-level gift is supported — see e2e/specs/checkout/gift-message.spec.md.
      * "Learn more" is a non-navigating control until a destination (e.g. modal or policy page) is defined.
      */
-    const cartLineItemTrailing = (product: EnrichedProductItem) => {
+    function CartLineItemGift(product: EnrichedProductItem): ReactElement | undefined {
         if (!product.itemId || isBonusProduct(product)) {
             return undefined;
         }
@@ -211,15 +212,16 @@ export default function CartContent({
                         className="text-sm font-normal leading-none text-foreground cursor-pointer">
                         {t('lineItem.giftLabel')}
                     </Label>
-                    <button
+                    <Button
                         type="button"
-                        className="text-sm font-normal leading-none text-foreground cursor-pointer shrink-0 border-0 bg-transparent p-0 shadow-none h-auto min-h-0 font-inherit text-left">
+                        variant="ghost"
+                        className="text-sm font-normal leading-none text-foreground cursor-pointer shrink-0 p-0 h-auto shadow-none">
                         {t('lineItem.giftLearnMore')}
-                    </button>
+                    </Button>
                 </div>
             </div>
         );
-    };
+    }
 
     // Per-line pickup vs delivery (BOPIS). Defined only inside the extension block so a
     // storefront that strips SFDC_EXT_BOPIS does not reference CartDeliveryOption after its import is removed.
@@ -298,7 +300,7 @@ export default function CartContent({
                                         bonusDiscountLineItems={bonusDiscountItems}
                                         secondaryActions={cartSecondaryActions}
                                         deliveryActions={cartDeliveryActions}
-                                        lineItemTrailing={cartLineItemTrailing}
+                                        lineItemExtra={CartLineItemGift}
                                         isPickup={true}
                                     />
                                 </div>
@@ -316,7 +318,7 @@ export default function CartContent({
                                     bonusDiscountLineItems={bonusDiscountItems}
                                     secondaryActions={cartSecondaryActions}
                                     deliveryActions={cartDeliveryActions}
-                                    lineItemTrailing={cartLineItemTrailing}
+                                    lineItemExtra={CartLineItemGift}
                                 />
                             </div>
                         )}

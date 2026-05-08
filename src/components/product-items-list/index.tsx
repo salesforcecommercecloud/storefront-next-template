@@ -54,7 +54,7 @@ const SUMMARY_SPACING = 'space-y-5';
  * @property {function} [primaryAction] - Optional render prop function to generate primary action buttons for each product
  * @property {function} [secondaryActions] - Optional render prop function to generate secondary action buttons for each product
  * @property {function} [deliveryActions] - Optional render prop (e.g. cart pickup/delivery selector per line)
- * @property {function} [lineItemTrailing] - Optional render prop for the end of each line’s right column (e.g. gift)
+ * @property {function} [lineItemExtra] - Optional render prop for extra content at the end of each line’s right column (e.g. gift)
  */
 interface ProductItemsListProps {
     /** Array of product items from the basket */
@@ -81,8 +81,8 @@ interface ProductItemsListProps {
     secondaryActions?: (product: EnrichedProductItem) => ReactElement | undefined;
     /** Optional per-line fulfillment UI (e.g. BOPIS pickup vs delivery dropdown on cart) */
     deliveryActions?: (product: EnrichedProductItem) => ReactElement | undefined;
-    /** Optional UI after quantity in the cart line right column (e.g. gift checkbox) */
-    lineItemTrailing?: (product: EnrichedProductItem) => ReactElement | undefined;
+    /** Optional extra UI at the end of the cart line right column (e.g. gift checkbox) */
+    lineItemExtra?: (product: EnrichedProductItem) => ReactElement | undefined;
     /** Optional basket for bonus product selection */
     basket?: ShopperBasketsV2.schemas['Basket'];
     /** Callback when user clicks select bonus products button */
@@ -160,7 +160,7 @@ export default function ProductItemsList({
     primaryAction,
     secondaryActions,
     deliveryActions,
-    lineItemTrailing,
+    lineItemExtra,
     basket,
     onSelectBonusProducts,
     separateCards = false,
@@ -246,7 +246,7 @@ export default function ProductItemsList({
                         primaryAction={primaryAction}
                         secondaryActions={secondaryActions}
                         deliveryActions={deliveryActions}
-                        lineItemTrailing={lineItemTrailing}
+                        lineItemExtra={lineItemExtra?.(enrichedProductItem)}
                         displayVariant={variant}
                         promotions={promotions}
                         bonusDiscountLineItems={bonusDiscountLineItems}

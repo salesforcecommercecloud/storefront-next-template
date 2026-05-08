@@ -546,7 +546,7 @@ exports[`ProductItem stories snapshot > SummaryVariant story renders and matches
         </div>
         <div>
           <div
-            class="text-xs text-muted-foreground"
+            class="text-sm text-muted-foreground"
           >
             Qty:
              

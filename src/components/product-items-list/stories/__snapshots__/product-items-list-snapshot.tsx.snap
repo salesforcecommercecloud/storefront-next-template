@@ -777,7 +777,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             </div>
             <div>
               <div
-                class="text-xs text-muted-foreground"
+                class="text-sm text-muted-foreground"
               >
                 Qty:
                  
@@ -858,7 +858,7 @@ exports[`ProductItemsList stories snapshot > SummaryVariant story renders and ma
             </div>
             <div>
               <div
-                class="text-xs text-muted-foreground"
+                class="text-sm text-muted-foreground"
               >
                 Qty:
                  

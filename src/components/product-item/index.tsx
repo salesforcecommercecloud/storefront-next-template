@@ -15,7 +15,7 @@
  */
 
 // React
-import { useMemo, type ReactElement } from 'react';
+import { useMemo, type ReactElement, type ReactNode } from 'react';
 
 // React Router
 import { Link } from '@/components/link';
@@ -177,7 +177,7 @@ export function ProductItemVariantAttributes({
         <div>
             {/* Quantity - only show in summary variant */}
             {displayVariant === 'summary' && (
-                <div className="text-xs text-muted-foreground">
+                <div className="text-sm text-muted-foreground">
                     {t('attributes.quantity')} {productItem.quantity || 1}
                 </div>
             )}
@@ -252,7 +252,7 @@ export function ProductItemPromotions({
  * @property {function} [primaryAction] - Render prop function to create primary actions
  * @property {function} [secondaryActions] - Render prop function to create secondary actions
  * @property {function} [deliveryActions] - Render prop for per-line fulfillment (e.g. BOPIS pickup/delivery dropdown)
- * @property {function} [lineItemTrailing] - Optional render prop for the end of the cart line right column (e.g. gift checkbox)
+ * @property {ReactNode} [lineItemExtra] - Optional pre-rendered content for the end of the cart line right column (e.g. gift checkbox)
  */
 interface ProductItemProps {
     productItem: EnrichedProductItem | undefined;
@@ -261,8 +261,8 @@ interface ProductItemProps {
     primaryAction?: (productItem: EnrichedProductItem) => ReactElement | undefined;
     secondaryActions?: (productItem: EnrichedProductItem) => ReactElement | undefined;
     deliveryActions?: (productItem: EnrichedProductItem) => ReactElement | undefined;
-    /** Rendered last in the cart line right column (e.g. gift checkbox) */
-    lineItemTrailing?: (productItem: EnrichedProductItem) => ReactElement | undefined;
+    /** Pre-rendered extra content at the end of the cart line right column (e.g. gift checkbox) */
+    lineItemExtra?: ReactNode;
     bonusDiscountLineItems?: ShopperBasketsV2.schemas['BonusDiscountLineItem'][];
     maxBonusQuantity?: number;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -296,7 +296,7 @@ function ProductItem({
     deliveryActions,
     bonusDiscountLineItems,
     maxBonusQuantity,
-    lineItemTrailing,
+    lineItemExtra,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup = false,
 }: ProductItemProps): ReactElement {
@@ -376,7 +376,7 @@ function ProductItem({
             </div>
         );
     }
-    const trailing = !isAutoBonusProduct ? lineItemTrailing?.(productItem) : undefined;
+    const lineItemExtraContent = !isAutoBonusProduct ? lineItemExtra : undefined;
 
     // Default variant - full product item with card styling
     return (
@@ -485,8 +485,10 @@ function ProductItem({
                                         />
                                     </div>
 
-                                    {trailing && (
-                                        <div className="flex w-full min-w-0 shrink-0 justify-end">{trailing}</div>
+                                    {lineItemExtraContent && (
+                                        <div className="flex w-full min-w-0 shrink-0 justify-end">
+                                            {lineItemExtraContent}
+                                        </div>
                                     )}
                                 </div>
                                 {!isAutoBonusProduct && primaryAction && (
