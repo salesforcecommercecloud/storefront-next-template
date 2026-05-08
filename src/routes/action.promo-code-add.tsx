@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { createPromoCodeFormSchema } from '@/components/promo-code-form';
@@ -36,14 +37,14 @@ export const action = createBasketAction(
         action: BasketAction.PromoCodeAdd,
         parse: (fd) => ({ promoCode: fd.get('promoCode') as string }),
     },
-    async ({ data, basketId, clients, logger }) => {
+    async ({ input, basketId, clients, logger }) => {
         const { t } = getTranslation();
         const promoCodeFormSchema = createPromoCodeFormSchema(t);
-        const validationResult = promoCodeFormSchema.safeParse({ code: data.promoCode });
+        const validationResult = promoCodeFormSchema.safeParse({ code: input.promoCode });
 
         if (!validationResult.success) {
             logger.warn('PromoCodeAdd: validation failed');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({

@@ -43,7 +43,6 @@ vi.mock('react-router', () => {
     return {
         ...actualReactRouter,
         createContext: reactCreateContext,
-        data: (body: any, init?: ResponseInit) => Response.json(body, init),
     };
 });
 vi.mock('@/lib/logger.server', () => ({
@@ -56,7 +55,7 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
-import { createActionArgs } from '@/lib/test-utils';
+import { createActionArgs, expectStatus } from '@/lib/test-utils';
 
 describe('action.cart-bundle-add', () => {
     const mockBasket = {
@@ -126,12 +125,11 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action(
+            const result = await action(
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(true);
+            expect(result.data.success).toBe(true);
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalled();
         });
 
@@ -159,12 +157,11 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action(
+            const result = await action(
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(true);
+            expect(result.data.success).toBe(true);
         });
 
         test('adds bundle with mix of standard and variant products', async () => {
@@ -190,12 +187,11 @@ describe('action.cart-bundle-add', () => {
                 childSelections: JSON.stringify(childSelections),
             });
 
-            const response = await action(
+            const result = await action(
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(true);
+            expect(result.data.success).toBe(true);
             // The server action extracts productId and quantity from ProductSelectionValues
             expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledWith({
                 params: {
@@ -218,13 +214,12 @@ describe('action.cart-bundle-add', () => {
         test('returns error when bundle data is missing', async () => {
             const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {});
 
-            const response = await action(
+            const result = await action(
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            const result = await response.json();
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
+            expect(result.data.success).toBe(false);
+            expect(result.data.error).toBeDefined();
         });
 
         test('returns error for non-POST requests', async () => {
@@ -232,16 +227,14 @@ describe('action.cart-bundle-add', () => {
                 method: 'GET',
             });
 
-            const response = await action(
+            const result = await action(
                 createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
             );
 
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(405);
-            const result = await response.json();
-            expect(result.success).toBe(false);
-            expect(result.error).toBeDefined();
-            expect(result.error.code).toBe('METHOD_NOT_ALLOWED');
+            expectStatus(result, 405);
+            expect(result.data.success).toBe(false);
+            expect(result.data.error).toBeDefined();
+            expect(result.data.error?.code).toBe('METHOD_NOT_ALLOWED');
         });
     });
 });

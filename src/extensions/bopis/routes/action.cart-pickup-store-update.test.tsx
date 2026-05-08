@@ -39,6 +39,7 @@ vi.mock('@/lib/utils', () => ({
 }));
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { expectStatus } from '@/lib/test-utils';
 
 describe('action.cart-pickup-store-update', () => {
     const mockBasketId = 'test-basket-123';
@@ -183,10 +184,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(405);
-            const json = await response.json();
+            expectStatus(response, 405);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.code).toBe('METHOD_NOT_ALLOWED');
         });
@@ -204,10 +203,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(404);
-            const json = await response.json();
+            expectStatus(response, 404);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
         });
@@ -222,10 +219,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(400);
-            const json = await response.json();
+            expectStatus(response, 400);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('Store ID');
         });
@@ -240,10 +235,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(400);
-            const json = await response.json();
+            expectStatus(response, 400);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('Inventory ID');
         });
@@ -261,10 +254,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(404);
-            const json = await response.json();
+            expectStatus(response, 404);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('No pickup shipment found. Cannot change pickup store.');
             expect(updateShipmentForPickup).not.toHaveBeenCalled();
@@ -313,10 +304,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             expect(updateShipmentForPickup).toHaveBeenCalledWith(mockContext, mockBasketId, 'me', mockStoreId);
             expect(updateBasketResource).toHaveBeenCalled();
@@ -334,10 +323,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             expect(json.basket).toBeDefined();
 
@@ -407,10 +394,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain(mockStoreName);
             expect(json.error?.message).toContain('out of stock');
@@ -434,10 +419,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain(mockStoreId);
         });
@@ -458,10 +441,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('out of stock');
         });
@@ -589,9 +570,8 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should still proceed with update if no products data
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             expect(updateShipmentForPickup).toHaveBeenCalled();
         });
@@ -610,10 +590,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('API Error');
         });
@@ -632,10 +610,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Shipment update failed');
         });
@@ -661,10 +637,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Item update failed');
 
@@ -700,9 +674,8 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Should still return the original error, not the rollback error
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Item update failed');
 
@@ -723,10 +696,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(422);
-            const json = await response.json();
+            expectStatus(response, 422);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toContain('out of stock');
 
@@ -769,10 +740,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(404);
-            const json = await response.json();
+            expectStatus(response, 404);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('No pickup shipment found. Cannot change pickup store.');
 
@@ -802,10 +771,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error?.message).toBe('Basket retrieval failed');
 
@@ -848,10 +815,8 @@ describe('action.cart-pickup-store-update', () => {
                 context: mockContext,
                 params: {},
             });
-
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(200);
-            const json = await response.json();
+            expectStatus(response, 200);
+            const json = response.data;
             expect(json.success).toBe(true);
             // Should not update items if none match the new store
             expect(mockShopperBasketsV2.updateItemsInBasket).not.toHaveBeenCalled();
@@ -908,9 +873,8 @@ describe('action.cart-pickup-store-update', () => {
             });
 
             // Error should be returned to user
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(500);
-            const json = await response.json();
+            expectStatus(response, 500);
+            const json = response.data;
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
         });

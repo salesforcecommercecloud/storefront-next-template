@@ -100,7 +100,7 @@ export function ErrorBoundary() {
 export default function OrderDetailsPage(): ReactElement {
     const { t } = useTranslation('account');
     const { orderNo } = useParams();
-    const loaderData = useLoaderData<OrderDetailsPageLoaderData>();
+    const loaderData = useLoaderData<typeof loader>();
 
     return (
         <div className="w-full section-container pt-0 pb-8">

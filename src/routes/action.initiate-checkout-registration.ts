@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.initiate-checkout-registration';
+import { data } from 'react-router';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { getLocale } from '@salesforce/storefront-next-runtime/i18n';
@@ -21,7 +22,7 @@ import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getBasket } from '@/middlewares/basket.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
-import { ErrorCode } from '@/lib/error-codes';
+import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { getLogger } from '@/lib/logger.server';
@@ -31,18 +32,29 @@ import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile/constants';
 
+/** Response shape returned by the initiate-checkout-registration action. */
+export type InitiateRegistrationResponse = {
+    success: boolean;
+    error?: ActionError;
+    email?: string;
+    unavailable?: boolean;
+};
+
 /**
  * Server action to initiate passwordless registration during checkout
  * This triggers the OTP email to be sent for account creation with email verification
  */
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<InitiateRegistrationResponse>>> {
     const logger = getLogger(context);
     const locale = getLocale(context);
 
     logger.debug('InitiateCheckoutRegistration: starting');
 
     if (request.method !== 'POST') {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({
@@ -84,7 +96,7 @@ export async function action({ request, context }: Route.ActionArgs) {
                     email,
                 });
                 if (!allowed) {
-                    return Response.json(
+                    return data(
                         {
                             success: false,
                             error: createActionError({
@@ -98,7 +110,7 @@ export async function action({ request, context }: Route.ActionArgs) {
                 shouldSetCookie = !turnstileVerifiedViaCookie;
             } else if (!turnstileVerifiedViaCookie) {
                 logger.warn('InitiateCheckoutRegistration: no turnstile token or verification cookie');
-                return Response.json(
+                return data(
                     {
                         success: false,
                         error: createActionError({
@@ -119,7 +131,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
             if (!basketEmail) {
                 logger.warn('InitiateCheckoutRegistration: email not found in form or basket');
-                return Response.json(
+                return data(
                     {
                         success: false,
                         error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
@@ -140,7 +152,7 @@ export async function action({ request, context }: Route.ActionArgs) {
                     hasFirstName: !!firstName,
                     hasLastName: !!lastName,
                 });
-                return Response.json(
+                return data(
                     {
                         success: false,
                         error: createActionError({
@@ -193,9 +205,9 @@ export async function action({ request, context }: Route.ActionArgs) {
             const responseBody = { success: true, email: basketEmail };
             if (shouldSetCookie) {
                 const setCookieHeader = await tvCookie.serialize('1');
-                return Response.json(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
+                return data(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
             }
-            return Response.json(responseBody);
+            return data(responseBody);
         }
 
         logger.debug('InitiateCheckoutRegistration: email provided in form');
@@ -214,7 +226,7 @@ export async function action({ request, context }: Route.ActionArgs) {
                 hasFirstName: !!firstName,
                 hasLastName: !!lastName,
             });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -257,19 +269,19 @@ export async function action({ request, context }: Route.ActionArgs) {
         const responseBody = { success: true, email };
         if (shouldSetCookie) {
             const setCookieHeader = await tvCookie.serialize('1');
-            return Response.json(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
+            return data(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
         }
-        return Response.json(responseBody);
+        return data(responseBody);
     } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
             const errorMessage = extractErrorMessage(error);
             if (/email not verified/i.test(errorMessage)) {
                 logger.info('InitiateCheckoutRegistration: email not verified, feature unavailable');
-                return Response.json({ success: false, unavailable: true });
+                return data({ success: false, unavailable: true });
             }
 
             logger.error('InitiateCheckoutRegistration: bad request', { error: errorMessage });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
@@ -280,7 +292,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         logger.error('InitiateCheckoutRegistration: failed', { error });
         const errorMessage = extractErrorMessage(error);
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),

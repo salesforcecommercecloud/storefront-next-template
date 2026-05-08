@@ -25,6 +25,10 @@ import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import type { AppConfig } from '@/types/config';
 import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
+import type {
+    action as initiateRegistrationAction,
+    InitiateRegistrationResponse,
+} from '@/routes/action.initiate-checkout-registration';
 
 interface RegisterCustomerSelectionProps {
     /** Callback when checkbox state changes - receives boolean value */
@@ -42,13 +46,6 @@ interface RegisterCustomerSelectionProps {
     /** Initial submitting state — used in Storybook to show the sending verification code state */
     defaultSubmitting?: boolean;
 }
-
-type InitiateRegistrationResponse = {
-    success: boolean;
-    error?: { code: string; message: string };
-    email?: string;
-    unavailable?: boolean;
-};
 
 export default function RegisterCustomerSelection({
     onSaved,
@@ -68,7 +65,7 @@ export default function RegisterCustomerSelection({
     const t = _t as (key: string, options?: object) => string;
     const basket = useBasket();
     const config = useConfig();
-    const registrationFetcher = useFetcher<InitiateRegistrationResponse>({ key: 'checkout-registration' });
+    const registrationFetcher = useFetcher<typeof initiateRegistrationAction>({ key: 'checkout-registration' });
     const lastProcessedDataRef = useRef<InitiateRegistrationResponse | null>(null);
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);

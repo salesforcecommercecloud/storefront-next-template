@@ -22,6 +22,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useFetcher } from 'react-router';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { loader as basketProductsLoader } from '@/routes/resource.basket-products';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 
 /**
@@ -81,7 +82,7 @@ const getFallbackImageGroup = (
 export function useBasketWithProducts(
     basket: ShopperBasketsV2.schemas['Basket'] | undefined
 ): UseBasketWithProductsResult {
-    const fetcher = useFetcher<Record<string, ShopperProducts.schemas['Product']>>();
+    const fetcher = useFetcher<typeof basketProductsLoader>();
     const { state: fetcherState, data: fetcherData, load: loadProducts } = fetcher;
     const [productItems, setProductItems] = useState<BasketItemWithProduct[]>([]);
     const [error, setError] = useState<Error | null>(null);

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -35,10 +36,10 @@ export const action = createBasketAction(
                 : null;
         },
     },
-    async ({ data, basketId, basket, context, clients, logger }) => {
-        if (!data) {
+    async ({ input, basketId, basket, context, clients, logger }) => {
+        if (!input) {
             logger.warn('CartSetAdd: missing productItems in form data');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -50,14 +51,14 @@ export const action = createBasketAction(
             );
         }
 
-        logger.debug('CartSetAdd: starting addMultipleItemsToCart', { itemCount: data.length });
+        logger.debug('CartSetAdd: starting addMultipleItemsToCart', { itemCount: input.length });
 
         let shipmentId = 'me';
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
-        const firstItem = data[0];
+        const firstItem = input[0];
         if (firstItem.storeId && firstItem.inventoryId) {
-            assertAllProductItemsPickup(data);
+            assertAllProductItemsPickup(input);
             const pickupShipment = await findOrCreatePickupShipment(basket, context, firstItem.storeId);
             shipmentId = pickupShipment.shipmentId;
         }
@@ -67,7 +68,7 @@ export const action = createBasketAction(
             params: {
                 path: { basketId },
             },
-            body: data.map((item) => ({
+            body: input.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
                 ...(item.inventoryId ? { inventoryId: item.inventoryId } : {}),

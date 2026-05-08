@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export * from './context-provider';
+export * from './expect-status';
 export * from './loader-action-args';

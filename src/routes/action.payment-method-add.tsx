@@ -15,22 +15,24 @@
  */
 import type { Route } from './+types/action.payment-method-add';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { data } from 'react-router';
 import { savePaymentMethodToCustomer } from '@/lib/api/customer.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
+import type { ActionResponse } from '@/routes/types/action-responses';
 
 /**
  * Server action for adding a payment method to customer profile.
  * Dialog does validation and parsing (expiry, card type); this action only reads FormData and calls the API.
  */
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs): Promise<ReturnType<typeof data<ActionResponse>>> {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {
         logger.warn('PaymentMethodAdd: method not allowed', { method: request.method });
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
@@ -44,7 +46,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
     if (!customerId) {
         logger.warn('PaymentMethodAdd: not authenticated');
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.NOT_AUTHENTICATED, message: 'Not authenticated' }),
@@ -80,7 +82,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         if (!success) {
             logger.error('PaymentMethodAdd: failed to save payment method', { customerId });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -93,9 +95,9 @@ export async function action({ request, context }: Route.ActionArgs) {
         }
 
         logger.info('PaymentMethodAdd: succeeded', { customerId, cardType });
-        return Response.json({ success: true });
+        return data({ success: true });
     } catch (error) {
         logger.error('PaymentMethodAdd: failed', { error });
-        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
+        return data({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

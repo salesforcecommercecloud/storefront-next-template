@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { bonusProductAddSchema } from '@/lib/cart/basket-schemas';
@@ -35,12 +36,12 @@ export const action = createBasketAction(
         action: BasketAction.BonusProductAdd,
         parse: (fd) => ({ bonusItems: fd.get('bonusItems')?.toString() || '' }),
     },
-    async ({ data, basketId, basket, clients, logger }) => {
-        const validationResult = bonusProductAddSchema.safeParse(data);
+    async ({ input, basketId, basket, clients, logger }) => {
+        const validationResult = bonusProductAddSchema.safeParse(input);
 
         if (!validationResult.success) {
             logger.warn('BonusProductAdd: validation failed', { issues: validationResult.error.issues });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -64,7 +65,7 @@ export const action = createBasketAction(
                 logger.warn('BonusProductAdd: invalid bonus discount line item ID', {
                     bonusDiscountLineItemId: item.bonusDiscountLineItemId,
                 });
-                return Response.json(
+                return data(
                     {
                         success: false,
                         error: createActionError({
@@ -82,7 +83,7 @@ export const action = createBasketAction(
                     expected: bonusDiscountItem.promotionId,
                     received: item.promotionId,
                 });
-                return Response.json(
+                return data(
                     {
                         success: false,
                         error: createActionError({

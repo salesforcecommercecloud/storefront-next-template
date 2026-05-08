@@ -145,39 +145,6 @@ describe('LoginModal', () => {
     });
 
     describe('authentication flow', () => {
-        test('handles successful login with onSuccess callback', async () => {
-            const onSuccess = vi.fn();
-            mockFetcher.data = {
-                success: true,
-                redirectUrl: '/account',
-            };
-
-            renderWithRouter(<LoginModal {...defaultProps} onSuccess={onSuccess} />);
-
-            await waitFor(() => {
-                expect(onSuccess).toHaveBeenCalled();
-            });
-        });
-
-        test('handles successful login with redirect', async () => {
-            const mockLocationAssign = vi.fn();
-            Object.defineProperty(window, 'location', {
-                value: { href: '', assign: mockLocationAssign },
-                writable: true,
-            });
-
-            mockFetcher.data = {
-                success: true,
-                redirectUrl: '/account',
-            };
-
-            renderWithRouter(<LoginModal {...defaultProps} />);
-
-            await waitFor(() => {
-                expect(window.location.href).toBe('/account');
-            });
-        });
-
         test('displays error message when login fails', async () => {
             const errorMessage = 'Invalid credentials';
             mockFetcher.data = {

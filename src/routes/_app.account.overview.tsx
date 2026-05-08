@@ -67,7 +67,7 @@ export function loader({ context }: Route.LoaderArgs): OverviewLoaderData {
 export default function AccountOverviewRoute(): ReactElement {
     const { t } = useTranslation('account');
     const { customer: customerPromise } = useOutletContext<AccountLayoutContext>();
-    const { ordersPromise } = useLoaderData<OverviewLoaderData>();
+    const { ordersPromise } = useLoaderData<typeof loader>();
 
     return (
         <>

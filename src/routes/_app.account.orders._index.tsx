@@ -88,7 +88,7 @@ function OrderListError(): ReactElement {
 export default function OrderListPage(): ReactElement {
     const { t } = useTranslation('account');
     const navigate = useNavigate();
-    const loaderData = useLoaderData<OrderListLoaderData>();
+    const loaderData = useLoaderData<typeof loader>();
 
     const handleViewDetails = (orderNo: string) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited

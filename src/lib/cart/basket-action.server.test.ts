@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createBasketAction, BasketAction } from './basket-action.server';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
-import { createActionArgs } from '@/lib/test-utils';
+import { createActionArgs, expectStatus } from '@/lib/test-utils';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 
@@ -63,51 +63,53 @@ describe('createBasketAction', () => {
     it('returns 405 when request method does not match', async () => {
         const action = buildAction(() => Promise.resolve(mockBasket as any));
         const request = createFormDataRequest('http://localhost/test', 'PATCH', { itemId: '123' });
-        const response = await action(createActionArgs(request, {} as any, { unstable_pattern: '/test' }));
+        const result = await action(createActionArgs(request, {} as any, { unstable_pattern: '/test' }));
 
-        expect(response.status).toBe(405);
-        expect((await response.json()).success).toBe(false);
+        expectStatus(result, 405);
+        expect(result.data.success).toBe(false);
         expect(getBasket).not.toHaveBeenCalled();
     });
 
     it('returns 404 when no basket is found', async () => {
         vi.mocked(getBasket).mockResolvedValue({ current: null, snapshot: null } as any);
-        const response = await postFormData(buildAction(() => Promise.resolve(mockBasket as any)));
+        const result = await postFormData(buildAction(() => Promise.resolve(mockBasket as any)));
 
-        expect(response.status).toBe(404);
-        expect((await response.json()).success).toBe(false);
+        expectStatus(result, 404);
+        expect(result.data.success).toBe(false);
         expect(createApiClients).not.toHaveBeenCalled();
     });
 
     it('calls updateBasketResource and wraps Basket result as success', async () => {
         const updatedBasket = { basketId: 'basket-123', productItems: [{ itemId: 'item-1' }] };
         const handler = vi.fn(() => Promise.resolve(updatedBasket as any));
-        const response = await postFormData(buildAction(handler));
+        const result = await postFormData(buildAction(handler));
 
-        expect(response.status).toBe(200);
-        const result = await response.json();
-        expect(result).toEqual({ success: true, basket: updatedBasket });
+        expect(result.init).toBeNull();
+        expect(result.data).toEqual({ success: true, basket: updatedBasket });
         expect(updateBasketResource).toHaveBeenCalledWith(expect.anything(), updatedBasket);
         expect(handler).toHaveBeenCalledWith(
-            expect.objectContaining({ data: { itemId: '123' }, basketId: 'basket-123' })
+            expect.objectContaining({ input: { itemId: '123' }, basketId: 'basket-123' })
         );
     });
 
-    it('passes through Response returned by handler', async () => {
-        const response = await postFormData(
-            buildAction(() => Promise.resolve(Response.json({ custom: true }, { status: 422 })))
+    it('passes through data() returned by handler', async () => {
+        const { data } = await import('react-router');
+        const result = await postFormData(
+            buildAction(() =>
+                Promise.resolve(data({ success: false, error: { message: 'custom' } } as any, { status: 422 }))
+            )
         );
 
-        expect(response.status).toBe(422);
-        expect(await response.json()).toEqual({ custom: true });
+        expectStatus(result, 422);
+        expect(result.data).toEqual({ success: false, error: { message: 'custom' } });
         expect(updateBasketResource).not.toHaveBeenCalled();
     });
 
     it('returns 500 when handler throws', async () => {
-        const response = await postFormData(buildAction(() => Promise.reject(new Error('API failure'))));
+        const result = await postFormData(buildAction(() => Promise.reject(new Error('API failure'))));
 
-        expect(response.status).toBe(500);
-        expect((await response.json()).success).toBe(false);
+        expectStatus(result, 500);
+        expect(result.data.success).toBe(false);
     });
 
     it('returns 400 when parse throws on malformed input', async () => {
@@ -119,9 +121,9 @@ describe('createBasketAction', () => {
             },
             () => Promise.resolve(mockBasket as any)
         );
-        const response = await postFormData(action);
+        const result = await postFormData(action);
 
-        expect(response.status).toBe(400);
-        expect((await response.json()).success).toBe(false);
+        expectStatus(result, 400);
+        expect(result.data.success).toBe(false);
     });
 });

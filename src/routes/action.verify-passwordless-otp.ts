@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.verify-passwordless-otp';
+import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { data } from 'react-router';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
@@ -21,15 +23,26 @@ import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { createActionError } from '@/lib/action-error-helpers.server';
-import { ErrorCode } from '@/lib/error-codes';
+import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { getLogger } from '@/lib/logger.server';
+
+/** Response shape returned by the verify-passwordless-otp action. */
+export type VerifyPasswordlessOtpResponse = {
+    success: boolean;
+    error?: ActionError;
+    message?: string;
+    tokenResponse?: ShopperLogin.schemas['TokenResponse'];
+};
 
 /**
  * Server action to verify OTP code and authenticate the user
  * This is called when the user submits the OTP code from the modal
  */
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<VerifyPasswordlessOtpResponse>>> {
     const logger = getLogger(context);
 
     try {
@@ -38,7 +51,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         const email = formData.get('email')?.toString();
 
         if (!otpCode) {
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'OTP code is required' }),
@@ -48,7 +61,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         }
 
         if (!email) {
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
@@ -108,7 +121,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         }
 
         logger.info('VerifyPasswordlessOtp: succeeded');
-        return Response.json({
+        return data({
             success: true,
             message: 'Login successful',
             tokenResponse,
@@ -116,7 +129,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     } catch (error: unknown) {
         logger.error('VerifyPasswordlessOtp: failed', { error });
         const errorMessage = extractErrorMessage(error);
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),

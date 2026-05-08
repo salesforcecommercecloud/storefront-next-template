@@ -21,11 +21,7 @@ import { PasswordRequirement } from '@/components/password-requirements';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
-
-type PostOrderRegisterResponse = {
-    success: boolean;
-    error?: string;
-};
+import type { action as postOrderRegisterAction } from '@/routes/action.post-order-register';
 
 type PostOrderRegistrationProps = {
     email: string;
@@ -70,7 +66,7 @@ export function PostOrderRegistration({
         isFormValid,
     } = usePasswordValidation({ defaultPassword, defaultConfirmPassword });
 
-    const fetcher = useFetcher<PostOrderRegisterResponse>({ key: 'post-order-register' });
+    const fetcher = useFetcher<typeof postOrderRegisterAction>({ key: 'post-order-register' });
     const isSubmitting = fetcher.state !== 'idle' || defaultSubmitting;
     const registrationSuccess = fetcher.data?.success === true || defaultSuccess;
     const error = fetcher.data?.error ?? defaultError;

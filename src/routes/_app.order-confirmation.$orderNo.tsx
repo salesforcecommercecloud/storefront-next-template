@@ -17,6 +17,7 @@ import { type ReactElement, Suspense, useEffect } from 'react';
 import { UITarget } from '@/targets/ui-target';
 import AddressDisplay from '@/components/address-display';
 import { Await, useFetcher } from 'react-router';
+import type { action as postOrderRegisterAction } from '@/routes/action.post-order-register';
 import type { Route } from './+types/_app.order-confirmation.$orderNo';
 import { Link } from '@/components/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -197,7 +198,7 @@ function OrderConfirmationContent({
 
     // Track registration fetcher to keep showing the card after revalidation
     // (loader flips showPostOrderRegistration to false once the user is logged in)
-    const registerFetcher = useFetcher<{ success: boolean }>({ key: 'post-order-register' });
+    const registerFetcher = useFetcher<typeof postOrderRegisterAction>({ key: 'post-order-register' });
     const registrationSuccess = registerFetcher.data?.success === true;
 
     let deliveryShipments = order.shipments;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -56,10 +57,10 @@ export const action = createBasketAction(
             };
         },
     },
-    async ({ data, basketId, basket, context, clients, logger }) => {
-        if (!data) {
+    async ({ input, basketId, basket, context, clients, logger }) => {
+        if (!input) {
             logger.warn('CartBundleAdd: missing bundle data in form data');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -71,7 +72,7 @@ export const action = createBasketAction(
             );
         }
 
-        const { bundleItem, childSelections } = data;
+        const { bundleItem, childSelections } = input;
 
         logger.debug('CartBundleAdd: starting addBundleToCart', {
             productId: bundleItem.productId,

@@ -16,6 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.authorize-passwordless-email';
 import type { ActionFunctionArgs } from 'react-router';
+import { expectStatus } from '@/lib/test-utils';
 
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/auth/error-handler');
@@ -28,7 +29,8 @@ vi.mock('@/lib/logger.server', () => ({
         debug: vi.fn(),
     })),
 }));
-vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>()),
     getConfig: vi.fn(() => ({})),
 }));
 vi.mock('@/lib/turnstile/enforce.server', () => ({
@@ -73,11 +75,11 @@ describe('action.authorize-passwordless-email', () => {
     it('rejects non-POST requests', async () => {
         const request = new Request('http://localhost/action/authorize-passwordless-email', { method: 'GET' });
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
         expect(result.success).toBe(false);
         expect(result.error).toBeTruthy();
-        expect(result.error.code).toBe('METHOD_NOT_ALLOWED');
+        expect(result.error?.code).toBe('METHOD_NOT_ALLOWED');
     });
 
     it('rejects request when email is missing', async () => {
@@ -88,11 +90,11 @@ describe('action.authorize-passwordless-email', () => {
         });
 
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
         expect(result.success).toBe(false);
         expect(result.error).toBeTruthy();
-        expect(result.error.code).toBe('REQUIRED_FIELD');
+        expect(result.error?.code).toBe('REQUIRED_FIELD');
         expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
     });
 
@@ -107,11 +109,11 @@ describe('action.authorize-passwordless-email', () => {
         });
 
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
         expect(result.success).toBe(false);
         expect(result.error).toBeTruthy();
-        expect(result.error.code).toBe('NOT_AUTHORIZED');
+        expect(result.error?.code).toBe('NOT_AUTHORIZED');
         expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
     });
 
@@ -127,7 +129,7 @@ describe('action.authorize-passwordless-email', () => {
         });
 
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
         expect(result).toEqual({ success: true, email: 'user@example.com' });
         expect(mockAuthorizePasswordless).toHaveBeenCalledWith(mockContext, { userid: 'user@example.com' });
@@ -164,7 +166,7 @@ describe('action.authorize-passwordless-email', () => {
         });
 
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
         expect(result.success).toBe(false);
         expect(result.error).toBeTruthy();
@@ -193,9 +195,9 @@ describe('action.authorize-passwordless-email', () => {
         });
 
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
-        expect(response.status).toBe(200);
+        expectStatus(response, 200);
         expect(result.success).toBe(false);
         expect(result.requiresLogin).toBe(true);
         expect(result.email).toBe('user@example.com');
@@ -223,9 +225,9 @@ describe('action.authorize-passwordless-email', () => {
         });
 
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
-        expect(response.status).toBe(400);
+        expectStatus(response, 400);
         expect(result.success).toBe(false);
         expect(result.requiresLogin).toBeUndefined();
         expect(result.error).toBeTruthy();
@@ -252,9 +254,9 @@ describe('action.authorize-passwordless-email', () => {
         });
 
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
-        expect(response.status).toBe(500);
+        expectStatus(response, 500);
         expect(result.success).toBe(false);
         expect(result.requiresLogin).toBeUndefined();
         expect(result.error).toBeTruthy();

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.authorize-passwordless-email';
+import { data } from 'react-router';
 import { authorizePasswordless } from '@/middlewares/auth.server';
 import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { createActionError } from '@/lib/action-error-helpers.server';
-import { ErrorCode } from '@/lib/error-codes';
+import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -28,7 +29,7 @@ import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;
-    error?: { code: string; message: string };
+    error?: ActionError;
     email?: string;
     requiresLogin?: boolean;
 };
@@ -38,11 +39,14 @@ export type AuthorizePasswordlessEmailResponse = {
  * Called when the shopper tabs or clicks out of the email field at checkout contact step.
  * Uses passwordless authorize with mode from config (email); does not register a customer.
  */
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<AuthorizePasswordlessEmailResponse>>> {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
@@ -56,7 +60,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     const turnstileToken = formData.get('turnstileToken')?.toString();
 
     if (!email) {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
@@ -76,7 +80,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         email,
     });
     if (!allowed) {
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({
@@ -100,17 +104,17 @@ export async function action({ request, context }: Route.ActionArgs) {
         );
         const setCookieHeader = await tvCookie.serialize('1');
 
-        return Response.json({ success: true, email }, { headers: { 'Set-Cookie': setCookieHeader } });
+        return data({ success: true, email }, { headers: { 'Set-Cookie': setCookieHeader } });
     } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
             const errorMessage = extractErrorMessage(error);
             if (/email not verified/i.test(errorMessage)) {
                 logger.info('AuthorizePasswordlessEmail: email not verified, requires standard login', { email });
-                return Response.json({ success: false, requiresLogin: true, email });
+                return data({ success: false, requiresLogin: true, email });
             }
 
             logger.error('AuthorizePasswordlessEmail: bad request', { email, error: errorMessage });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
@@ -121,7 +125,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         logger.error('AuthorizePasswordlessEmail: failed', { error });
         const errorMessage = extractErrorMessage(error);
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),

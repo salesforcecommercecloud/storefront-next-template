@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -36,10 +37,10 @@ export const action = createBasketAction(
         action: BasketAction.CartItemRemove,
         parse: (fd) => ({ itemId: fd.get('itemId') as string }),
     },
-    async ({ data, basketId, clients, logger }) => {
-        if (!data.itemId) {
+    async ({ input, basketId, clients, logger }) => {
+        if (!input.itemId) {
             logger.warn('CartItemRemove: missing itemId in form data');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'itemId is required' }),
@@ -48,12 +49,12 @@ export const action = createBasketAction(
             );
         }
 
-        logger.debug('CartItemRemove: removing item', { itemId: data.itemId, basketId });
+        logger.debug('CartItemRemove: removing item', { itemId: input.itemId, basketId });
         const { data: updatedBasket } = await clients.shopperBasketsV2.removeItemFromBasket({
             params: {
                 path: {
                     basketId,
-                    itemId: data.itemId,
+                    itemId: input.itemId,
                 },
             },
         });

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -35,10 +36,10 @@ export const action = createBasketAction(
             return raw ? (JSON.parse(raw) as { itemId: string; quantity: number; productId?: string }[]) : null;
         },
     },
-    async ({ data, basketId, clients, logger }) => {
-        if (!data) {
+    async ({ input, basketId, clients, logger }) => {
+        if (!input) {
             logger.warn('CartBundleUpdate: missing items data in form data');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Items data is required' }),
@@ -47,9 +48,9 @@ export const action = createBasketAction(
             );
         }
 
-        if (data.length === 0) {
+        if (input.length === 0) {
             logger.warn('CartBundleUpdate: items must be a non-empty array');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -61,10 +62,10 @@ export const action = createBasketAction(
             );
         }
 
-        for (const item of data) {
+        for (const item of input) {
             if (!item.itemId || !item.quantity || item.quantity <= 0) {
                 logger.warn('CartBundleUpdate: invalid item data', { itemId: item.itemId, quantity: item.quantity });
-                return Response.json(
+                return data(
                     {
                         success: false,
                         error: createActionError({
@@ -77,13 +78,13 @@ export const action = createBasketAction(
             }
         }
 
-        logger.debug('CartBundleUpdate: updating items', { itemCount: data.length, basketId });
+        logger.debug('CartBundleUpdate: updating items', { itemCount: input.length, basketId });
 
         const { data: updatedBasket } = await clients.shopperBasketsV2.updateItemsInBasket({
             params: {
                 path: { basketId },
             },
-            body: data,
+            body: input,
         });
         return updatedBasket;
     }

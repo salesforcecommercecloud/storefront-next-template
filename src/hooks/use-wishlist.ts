@@ -19,7 +19,8 @@ import { useTranslation } from 'react-i18next';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
 import { useRequireAuth } from '@/hooks/use-require-auth';
-import type { WishlistActionResponse } from '@/lib/api/wishlist.server';
+import type { action as wishlistAddAction } from '@/routes/action.wishlist-add';
+import type { action as wishlistRemoveAction } from '@/routes/action.wishlist-remove';
 
 /**
  * Hook for wishlist functionality using action routes for server-side state management.
@@ -37,8 +38,8 @@ export type UseWishlistOptions = {
 
 export const useWishlist = (options?: UseWishlistOptions) => {
     const { t } = useTranslation();
-    const addFetcher = useFetcher<WishlistActionResponse>();
-    const removeFetcher = useFetcher<WishlistActionResponse>();
+    const addFetcher = useFetcher<typeof wishlistAddAction>();
+    const removeFetcher = useFetcher<typeof wishlistRemoveAction>();
     const { addToast } = useToast();
 
     const initialProductIds = options?.initialProductIds;

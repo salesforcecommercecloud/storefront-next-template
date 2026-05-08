@@ -375,7 +375,7 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
  */
 export default function Cart(): ReactElement {
     const { t } = useTranslation('cart');
-    const pageData = useLoaderData<CartPageData>();
+    const pageData = useLoaderData<typeof loader>();
     const content = (
         <Await resolve={pageData.basketDataPromise}>
             {(basketData) => {

@@ -29,7 +29,7 @@ import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getContactInfoFromCustomer } from '@/lib/customer/profile-utils';
 import { getCommonPhoneCountryCodes } from '@/lib/address/country-codes';
 import type { CheckoutActionData } from '../types';
-import type { AuthorizePasswordlessEmailResponse } from '@/routes/action.authorize-passwordless-email';
+import type { action as authorizePasswordlessEmailAction } from '@/routes/action.authorize-passwordless-email';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import {
@@ -93,7 +93,7 @@ export default function ContactInfo({
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
     const authorizePasswordlessEmailPath = useResolvedPath('/action/authorize-passwordless-email').pathname;
     const revalidator = useRevalidator();
-    const passwordlessEmailFetcher = useFetcher<AuthorizePasswordlessEmailResponse>({
+    const passwordlessEmailFetcher = useFetcher<typeof authorizePasswordlessEmailAction>({
         key: 'contact-authorize-passwordless-email',
     });
     const lastEmailSentRef = useRef<string | null>(null);

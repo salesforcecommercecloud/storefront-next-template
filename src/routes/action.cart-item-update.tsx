@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { cartItemUpdateSchema } from '@/lib/cart/basket-schemas';
@@ -46,12 +47,12 @@ export const action = createBasketAction(
             // @sfdc-extension-block-end SFDC_EXT_BOPIS
         }),
     },
-    async ({ data, basketId, context, clients, logger }) => {
-        const validationResult = cartItemUpdateSchema.safeParse(data);
+    async ({ input, basketId, context, clients, logger }) => {
+        const validationResult = cartItemUpdateSchema.safeParse(input);
 
         if (!validationResult.success) {
             logger.warn('CartItemUpdate: validation failed', { issues: validationResult.error.issues });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({

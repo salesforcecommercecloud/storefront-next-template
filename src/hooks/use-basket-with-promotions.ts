@@ -16,6 +16,7 @@
 import { useEffect } from 'react';
 import { useFetcher } from 'react-router';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { loader as basketProductsPromotionsLoader } from '@/routes/resource.basket-products-promotions';
 
 /**
  * Product promotion data from SCAPI Products API
@@ -54,7 +55,7 @@ export function useBasketWithPromotions(basket: ShopperBasketsV2.schemas['Basket
     productsWithPromotions: ProductsWithPromotionsMap;
     isLoading: boolean;
 } {
-    const fetcher = useFetcher<ProductsWithPromotionsMap>();
+    const fetcher = useFetcher<typeof basketProductsPromotionsLoader>();
 
     useEffect(() => {
         if (!basket?.productItems?.length) {

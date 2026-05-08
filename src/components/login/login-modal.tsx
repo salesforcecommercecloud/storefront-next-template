@@ -23,14 +23,7 @@ import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-
-type LoginActionResponse = {
-    success: boolean;
-    error?: string;
-    redirectUrl?: string;
-    showOTPForm?: boolean;
-    email?: string;
-};
+import type { action as loginAction } from '@/routes/_empty.login';
 
 interface LoginModalProps {
     /** Controls modal visibility */
@@ -73,7 +66,7 @@ export default function LoginModal({
     initialEmail,
 }: LoginModalProps): ReactElement {
     const { t } = useTranslation('login');
-    const fetcher = useFetcher<LoginActionResponse>();
+    const fetcher = useFetcher<typeof loginAction>();
     const [currentMode, setCurrentMode] = useState<'password' | 'passwordless'>(mode);
     const [showOTPModal, setShowOTPModal] = useState(false);
     const [otpEmail, setOtpEmail] = useState<string>('');
@@ -89,29 +82,22 @@ export default function LoginModal({
         }
     }, [isOpen, mode]);
 
-    // Handle action responses
+    // Handle action responses. The action only returns data for intermediate states
+    // (errors, OTP prompt) — successful login redirects via Response, so `fetcher.data`
+    // is never populated on success.
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data) {
             const data = fetcher.data;
 
-            if (data.success && data.redirectUrl) {
-                // Login successful - redirect or call onSuccess
-                if (onSuccess) {
-                    onSuccess();
-                } else {
-                    window.location.href = data.redirectUrl;
-                }
-            } else if (data.showOTPForm && data.email) {
-                // Show OTP modal for passwordless verification
+            if (data.showOTPForm && data.email) {
                 setOtpEmail(data.email);
                 setShowOTPModal(true);
                 setError(undefined);
             } else if (data.error) {
-                // Show error
                 setError(data.error);
             }
         }
-    }, [fetcher.state, fetcher.data, onSuccess]);
+    }, [fetcher.state, fetcher.data]);
 
     const handleOtpSuccess = () => {
         setShowOTPModal(false);

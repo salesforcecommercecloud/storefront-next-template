@@ -20,13 +20,7 @@ import { z } from 'zod';
 import { useFetcher } from 'react-router';
 import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import { getPasswordlessErrorMessageKey } from '@/lib/auth/error-handler';
-
-type VerifyOtpResponse = {
-    success: boolean;
-    error?: { code: string; message: string };
-    message?: string;
-    tokenResponse?: ShopperLogin.schemas['TokenResponse'];
-};
+import type { action as verifyPasswordlessOtpAction } from '@/routes/action.verify-passwordless-otp';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,7 +33,7 @@ interface OtpModalProps {
     isOpen: boolean;
     onClose: () => void;
     email: string;
-    onSuccess: (tokenResponse?: VerifyOtpResponse['tokenResponse']) => void;
+    onSuccess: (tokenResponse?: ShopperLogin.schemas['TokenResponse']) => void;
     onCheckoutAsGuest?: () => void;
     onResendCode?: () => Promise<void>;
     otpLength?: number;
@@ -78,7 +72,7 @@ export default function OtpModal({
     // Track if we've already called onSuccess to prevent infinite loops
     const hasCalledOnSuccessRef = useRef(false);
     const { t } = useTranslation('login');
-    const fetcher = useFetcher<VerifyOtpResponse>({ key: 'otp-verification' });
+    const fetcher = useFetcher<typeof verifyPasswordlessOtpAction>({ key: 'otp-verification' });
     const [error, setError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);
 

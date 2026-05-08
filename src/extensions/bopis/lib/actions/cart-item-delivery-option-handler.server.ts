@@ -17,11 +17,13 @@ import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { findOrCreateDeliveryShipment } from '@/extensions/multiship/lib/api/basket.server';
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment.server';
-import { createBasketSuccessResponse } from '@/routes/types/action-responses';
-import type { RouterContextProvider } from 'react-router';
+import { createBasketSuccessResponse, type BasketActionResponse } from '@/routes/types/action-responses';
+import { data, type RouterContextProvider } from 'react-router';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import type { CartItemUpdateData } from '@/lib/cart/basket-schemas';
+
+type DeliveryOptionResponse = ReturnType<typeof data<BasketActionResponse>>;
 
 /**
  * Handles delivery option changes for cart items.
@@ -29,10 +31,10 @@ import type { CartItemUpdateData } from '@/lib/cart/basket-schemas';
  * Returns a response if the delivery option is handled, or null to fall back to default handler.
  */
 export async function handleCartItemDeliveryOptionChange(
-    data: CartItemUpdateData,
+    input: CartItemUpdateData,
     context: Readonly<RouterContextProvider>
-): Promise<Response | null> {
-    const { itemId, productId, quantity, deliveryOption, storeId, inventoryId } = data;
+): Promise<DeliveryOptionResponse | null> {
+    const { itemId, productId, quantity, deliveryOption, storeId, inventoryId } = input;
 
     if (!deliveryOption) return null;
 
@@ -40,7 +42,7 @@ export async function handleCartItemDeliveryOptionChange(
         const basketResource = await getBasket(context);
         const freshBasket = basketResource.current;
         if (!freshBasket?.basketId) {
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Basket ID is required.' }),
@@ -52,7 +54,7 @@ export async function handleCartItemDeliveryOptionChange(
         let targetShipment;
         if (deliveryOption === 'pickup') {
             if (!storeId || !inventoryId) {
-                return Response.json(
+                return data(
                     {
                         success: false,
                         error: createActionError({
@@ -68,7 +70,7 @@ export async function handleCartItemDeliveryOptionChange(
             targetShipment = await findOrCreateDeliveryShipment(freshBasket, context);
         }
         if (!targetShipment) {
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -93,8 +95,8 @@ export async function handleCartItemDeliveryOptionChange(
             params: { path: { basketId: freshBasket.basketId } },
         });
         updateBasketResource(context, basket.data);
-        return Response.json(createBasketSuccessResponse(basket.data));
+        return data(createBasketSuccessResponse(basket.data));
     } catch (error) {
-        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
+        return data({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

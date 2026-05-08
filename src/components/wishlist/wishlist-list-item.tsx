@@ -15,6 +15,7 @@
  */
 import { lazy, Suspense, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useFetcher } from 'react-router';
+import type { action as wishlistRemoveAction } from '@/routes/action.wishlist-remove';
 import { Link } from '@/components/link';
 import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { useTranslation } from 'react-i18next';
@@ -56,7 +57,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
     const config = useConfig<AppConfig>();
     const { currency } = useSite();
     const { addToast } = useToast();
-    const removeFetcher = useFetcher<{ success: boolean; error?: { code: string; message: string } }>();
+    const removeFetcher = useFetcher<typeof wishlistRemoveAction>();
     const hasHandledRemoveResponse = useRef(false);
 
     // When SCAPI returns the product by its variant ID, the product itself has type.variant = true

@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.wishlist-remove';
-import { createTestContext } from '@/lib/test-utils';
+import { createTestContext, expectStatus } from '@/lib/test-utils';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 
 // Mock dependencies
@@ -71,57 +71,12 @@ vi.mock('@/lib/utils', async () => {
     };
 });
 
-// Helper to extract JSON from Response or DataWithResponseInit
+/** Extract the payload from a `data()`-wrapped response (or a plain Response). */
 async function extractResponseData(response: any): Promise<any> {
-    if (!response) {
-        return response;
-    }
-
-    // Handle Response objects (from Response.json())
-    if (response instanceof Response) {
-        return await response.json();
-    }
-
-    // Handle DataWithResponseInit (from data())
-    // In react-router, data() returns an object with the data as the first element
-    // or the data might be in a body property
-    if (response && typeof response === 'object') {
-        // Check if response has the data directly accessible
-        if (
-            'success' in response ||
-            ('body' in response && response.body && typeof response.body === 'object' && 'success' in response.body)
-        ) {
-            // Already has success property - might be the data
-            if ('success' in response) {
-                return response;
-            }
-            // Or check body
-            if ('body' in response && response.body && typeof response.body === 'object') {
-                if ('success' in response.body) {
-                    return response.body;
-                }
-                // Try to parse body as JSON string
-                if (typeof response.body === 'string') {
-                    try {
-                        return JSON.parse(response.body);
-                    } catch {
-                        return response.body;
-                    }
-                }
-            }
-        }
-
-        // Try to find json method
-        if ('json' in response && typeof response.json === 'function') {
-            try {
-                return await response.json();
-            } catch {
-                // Continue to other checks
-            }
-        }
-    }
-
-    // Fallback: return as-is
+    if (!response) return response;
+    if (response instanceof Response) return await response.json();
+    // `data()` returns DataWithResponseInit: { type: 'DataWithResponseInit', data: T, init?: ResponseInit }
+    if (typeof response === 'object' && 'data' in response) return response.data;
     return response;
 }
 
@@ -184,13 +139,11 @@ describe('action.wishlist-remove', () => {
                 unstable_pattern: 'action/wishlist-remove',
             };
 
-            const response = await action(args);
-            expect(response).toBeInstanceOf(Response);
-            expect(response.status).toBe(405);
-            const json = await response.json();
-            expect(json.success).toBe(false);
-            expect(json.error).toBeDefined();
-            expect(json.error.code).toBe('METHOD_NOT_ALLOWED');
+            const result = await action(args);
+            expect(result.data.success).toBe(false);
+            expect(result.data.error).toBeDefined();
+            expect(result.data.error?.code).toBe('METHOD_NOT_ALLOWED');
+            expectStatus(result, 405);
         });
 
         test('should return error when both itemId and productId are missing', async () => {
@@ -455,8 +408,7 @@ describe('action.wishlist-remove', () => {
             };
 
             const response = await action(args);
-            // Handle both Response.json() and data() return types
-            const result = response instanceof Response ? await response.json() : response;
+            const result = await extractResponseData(response);
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });
@@ -486,8 +438,7 @@ describe('action.wishlist-remove', () => {
             };
 
             const response = await action(args);
-            // Handle both Response.json() and data() return types
-            const result = response instanceof Response ? await response.json() : response;
+            const result = await extractResponseData(response);
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
         });

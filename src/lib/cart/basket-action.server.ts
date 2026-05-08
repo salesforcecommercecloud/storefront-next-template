@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ActionFunctionArgs } from 'react-router';
+import { data, type ActionFunctionArgs } from 'react-router';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import type { AppClients } from '@/scapi/custom-clients';
 import type { Logger } from '@/lib/logger';
@@ -22,6 +22,7 @@ import { createApiClients } from '@/lib/api-clients.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
+import type { BasketActionResponse } from '@/routes/types/action-responses';
 
 type Basket = ShopperBasketsV2.schemas['Basket'];
 
@@ -54,24 +55,27 @@ interface BaseHandlerParams {
 
 /**
  * Handler params for a registered {@link BasketAction}.
- * The factory parses FormData automatically and passes the typed result as `data`.
+ * The factory parses FormData automatically and passes the typed result as `input`.
  */
 export interface TypedBasketActionHandlerParams<TInput> extends BaseHandlerParams {
     /** Typed input data extracted from FormData by the action's registered parser. */
-    data: TInput;
+    input: TInput;
 }
+
+/** Return value from `data()` carrying a {@link BasketActionResponse} payload. */
+type BasketActionData = ReturnType<typeof data<BasketActionResponse>>;
 
 /**
  * A handler function return type.
  *
  * - `Basket` — The factory calls `updateBasketResource` and wraps it as
  *   `{ success: true, basket }` with status 200.
- * - `Response` — The factory passes it through unchanged. Use this for
+ * - `BasketActionData` — A `data()`-wrapped {@link BasketActionResponse} for
  *   validation errors or other custom responses mid-handler.
  * - Throwing — The factory catches the error and returns
  *   `{ success: false, error }` with status 500.
  */
-type HandlerResult = Basket | Response;
+type HandlerResult = Basket | BasketActionData;
 
 /**
  * Create a React Router action function with standard basket boilerplate.
@@ -80,8 +84,18 @@ type HandlerResult = Basket | Response;
  * basket resource update on success, and error wrapping on failure.
  *
  * The `parse` callback extracts typed input from FormData. TypeScript infers
- * the handler's `data` type from the return type of `parse` — no manual type
+ * the handler's `input` type from the return type of `parse` — no manual type
  * annotations needed.
+ *
+ * **Response-shape enforcement.** The factory's return type is the canonical
+ * contract for every basket action: each call site (e.g. `cart-item-add`,
+ * `cart-item-remove`) inherits `Promise<BasketActionData>` from this factory,
+ * and the handler signature here forces every code path to either return a
+ * `Basket` (success-wrapped by the factory) or a `data()`-wrapped
+ * {@link BasketActionResponse}. This is intentionally chosen over per-action
+ * `Promise<BasketActionData>` annotations on every call site: the factory is
+ * a single source of truth, strictly stronger than annotations because it
+ * also constrains the handler body.
  *
  * @example
  * ```ts
@@ -91,10 +105,10 @@ type HandlerResult = Basket | Response;
  *         action: BasketAction.CartItemRemove,
  *         parse: (fd) => ({ itemId: fd.get('itemId') as string }),
  *     },
- *     async ({ data, basketId, clients }) => {
- *         // data.itemId is string — inferred from parse
+ *     async ({ input, basketId, clients }) => {
+ *         // input.itemId is string — inferred from parse
  *         const { data: updatedBasket } = await clients.shopperBasketsV2.removeItemFromBasket({
- *             params: { path: { basketId, itemId: data.itemId } },
+ *             params: { path: { basketId, itemId: input.itemId } },
  *         });
  *         return updatedBasket;
  *     }
@@ -104,15 +118,15 @@ type HandlerResult = Basket | Response;
 export function createBasketAction<TInput>(
     options: { method: 'POST' | 'PATCH'; action: BasketAction; parse: (formData: FormData) => TInput },
     handler: (params: TypedBasketActionHandlerParams<TInput>) => Promise<HandlerResult>
-): (args: ActionFunctionArgs) => Promise<Response> {
+): (args: ActionFunctionArgs) => Promise<BasketActionData> {
     const { method, action, parse } = options;
 
-    return async ({ request, context }: ActionFunctionArgs): Promise<Response> => {
+    return async ({ request, context }: ActionFunctionArgs): Promise<BasketActionData> => {
         const logger = getLogger(context);
         logger.debug(`${action}: action starting`);
 
         if (request.method !== method) {
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -129,7 +143,7 @@ export function createBasketAction<TInput>(
 
         if (!basket?.basketId) {
             logger.warn(`${action}: no basket found`);
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'No basket found' }),
@@ -141,12 +155,12 @@ export function createBasketAction<TInput>(
         const clients = createApiClients(context);
         const formData = await request.formData();
 
-        let data: TInput;
+        let parsedData: TInput;
         try {
-            data = parse(formData);
+            parsedData = parse(formData);
         } catch (error) {
             logger.warn(`${action}: failed to parse form data`, { error });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.INVALID_INPUT, message: 'Invalid form data' }),
@@ -162,19 +176,26 @@ export function createBasketAction<TInput>(
                 context,
                 clients,
                 logger,
-                data,
+                input: parsedData,
             });
 
-            if (result instanceof Response) {
-                return result;
+            // Pass through `data()`-wrapped payloads from the handler unchanged.
+            if (
+                result &&
+                typeof result === 'object' &&
+                'type' in result &&
+                (result as { type: unknown }).type === 'DataWithResponseInit'
+            ) {
+                return result as BasketActionData;
             }
 
-            updateBasketResource(context, result);
+            const basketResult = result as Basket;
+            updateBasketResource(context, basketResult);
             logger.info(`${action}: succeeded`);
-            return Response.json({ success: true, basket: result });
+            return data({ success: true, basket: basketResult });
         } catch (error) {
             logger.error(`${action}: failed`, { error });
-            return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
+            return data({ success: false, error: createActionError({ error }) }, { status: 500 });
         }
     };
 }

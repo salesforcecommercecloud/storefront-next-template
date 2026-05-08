@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.update-shopper-context';
+import { data } from 'react-router';
 import { extractQualifiersFromInput, updateShopperContext } from '@/lib/shopper-context/server-utils.server';
 import { parseJsonToStringRecord } from '@/lib/utils';
 import { getAuth } from '@/middlewares/auth.server';
@@ -21,7 +22,8 @@ import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 
-type UpdateShopperContextResponse = {
+/** Response shape returned by the update-shopper-context action. */
+export type UpdateShopperContextResponse = {
     success: boolean;
     message?: string;
     error?: ActionError;
@@ -31,7 +33,10 @@ type UpdateShopperContextResponse = {
  * Server action to update all qualifiers in shopper context.
  * Supports customQualifiers, assignmentQualifiers, couponCodes, sourceCode, and other root-level qualifiers.
  */
-export async function action({ request, context }: Route.ActionArgs): Promise<Response> {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<UpdateShopperContextResponse>>> {
     const logger = getLogger(context);
 
     logger.debug('UpdateShopperContext: starting', { method: request.method });
@@ -39,28 +44,28 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
     const session = getAuth(context);
     if (!session.usid) {
         logger.warn('UpdateShopperContext: usid not available');
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({
                     code: ErrorCode.NOT_AUTHENTICATED,
                     message: "Usid isn't available for updating shopper context.",
                 }),
-            } satisfies UpdateShopperContextResponse,
+            },
             { status: 401 }
         );
     }
 
     if (request.method !== 'PUT') {
         logger.warn('UpdateShopperContext: method not allowed', { method: request.method });
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({
                     code: ErrorCode.METHOD_NOT_ALLOWED,
                     message: 'This method is not allowed to update shopper context.',
                 }),
-            } satisfies UpdateShopperContextResponse,
+            },
             { status: 405 }
         );
     }
@@ -84,14 +89,14 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
         // Validate that at least one qualifier is provided
         if (Object.keys(newShopperContext).length === 0 && Object.keys(newSourceCodeContext).length === 0) {
             logger.warn('UpdateShopperContext: no qualifiers provided');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
                         code: ErrorCode.REQUIRED_FIELD,
                         message: 'At least one qualifier must be provided to update shopper context.',
                     }),
-                } satisfies UpdateShopperContextResponse,
+                },
                 { status: 400 }
             );
         }
@@ -105,28 +110,29 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
             cookieHeader: request.headers.get('Cookie'),
         });
 
-        const response = Response.json({
-            success: true,
-            message: 'Shopper context has been updated.',
-        } satisfies UpdateShopperContextResponse);
-
-        // Apply Set-Cookie headers from updateShopperContext
-        for (const header of setCookieHeaders) {
-            response.headers.append('Set-Cookie', header);
-        }
-
         logger.info('UpdateShopperContext: succeeded', {
             qualifierCount: Object.keys(newShopperContext).length + Object.keys(newSourceCodeContext).length,
         });
 
-        return response;
+        const headers = new Headers();
+        for (const header of setCookieHeaders) {
+            headers.append('Set-Cookie', header);
+        }
+
+        return data(
+            {
+                success: true,
+                message: 'Shopper context has been updated.',
+            },
+            { headers }
+        );
     } catch (error) {
         logger.error('UpdateShopperContext: failed', { error });
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ error }),
-            } satisfies UpdateShopperContextResponse,
+            },
             { status: 500 }
         );
     }

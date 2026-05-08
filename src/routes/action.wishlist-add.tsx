@@ -15,6 +15,7 @@
  */
 import type { Route } from './+types/action.wishlist-add';
 import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { data } from 'react-router';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { isRegisteredCustomer } from '@/lib/api/customer.server';
@@ -192,12 +193,15 @@ async function addToWishlist(
 /**
  * Server action to add a product to the wishlist
  */
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<WishlistActionResponse>>> {
     const logger = getLogger(context);
 
     if (request.method !== 'POST') {
         logger.warn('WishlistAdd: method not allowed', { method: request.method });
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({
@@ -216,7 +220,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         if (!productId) {
             logger.warn('WishlistAdd: missing productId');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'productId is required' }),
@@ -228,7 +232,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         // Basic validation: productId should be a non-empty string
         if (productId.length === 0 || productId.length > 100) {
             logger.warn('WishlistAdd: invalid productId', { productId });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'productId is required' }),
@@ -243,13 +247,13 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         if (result.success) {
             logger.info('WishlistAdd: succeeded', { productId, alreadyInWishlist: result.alreadyInWishlist });
-        } else {
-            logger.warn('WishlistAdd: operation returned failure', { productId, error: result.error });
+            return data(result);
         }
 
-        return result.success ? Response.json(result) : Response.json(result, { status: 500 });
+        logger.warn('WishlistAdd: operation returned failure', { productId, error: result.error });
+        return data(result, { status: 500 });
     } catch (error) {
         logger.error('WishlistAdd: failed', { error });
-        return Response.json({ success: false, error: createActionError({ error }) }, { status: 500 });
+        return data({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

@@ -18,14 +18,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useShopperContext } from './use-shopper-context';
 import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context/constants';
+import type { UpdateShopperContextResponse } from '@/routes/action.update-shopper-context';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
-
-type UpdateShopperContextResponse = {
-    success: boolean;
-    message?: string;
-    error?: { code: string; message: string };
-};
 
 // Mock React Router's useFetcher
 const mockSubmit = vi.fn();

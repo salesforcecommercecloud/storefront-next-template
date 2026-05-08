@@ -16,13 +16,7 @@
 import { useFetcher } from 'react-router';
 import { useCallback } from 'react';
 import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context/constants';
-import type { ActionError } from '@/lib/error-codes';
-
-type UpdateShopperContextResponse = {
-    success: boolean;
-    message?: string;
-    error?: ActionError;
-};
+import type { action as updateShopperContextAction } from '@/routes/action.update-shopper-context';
 
 /**
  * Hook for updating shopper context from client components
@@ -31,7 +25,7 @@ type UpdateShopperContextResponse = {
  * @returns Object with update functions and fetcher state
  */
 export function useShopperContext() {
-    const fetcher = useFetcher<UpdateShopperContextResponse>({ key: SHOPPER_CONTEXT_ACTION_NAME });
+    const fetcher = useFetcher<typeof updateShopperContextAction>({ key: SHOPPER_CONTEXT_ACTION_NAME });
 
     /**
      * Update all qualifiers in shopper context from UI interaction

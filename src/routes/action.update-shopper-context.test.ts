@@ -19,6 +19,7 @@ import { action } from './action.update-shopper-context';
 import { getAuth } from '@/middlewares/auth.server';
 import { updateShopperContext } from '@/lib/shopper-context/server-utils.server';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { expectStatus } from '@/lib/test-utils';
 
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/shopper-context/server-utils.server', async (importOriginal) => {
@@ -64,72 +65,72 @@ describe('action.update-shopper-context', () => {
     describe('when qualifiers payload is invalid or empty', () => {
         test('returns 400 when qualifiers are omitted from the request', async () => {
             const res = await action(createArgs(undefined));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
-            expect(data.error.message).toContain('At least one qualifier');
+            expect(data.error?.message).toContain('At least one qualifier');
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers are an empty string', async () => {
             const res = await action(createArgs(''));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers are not valid JSON', async () => {
             const res = await action(createArgs('not valid json{'));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers are a JSON array instead of an object', async () => {
             const res = await action(createArgs('["value1", "value2"]'));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers are JSON null', async () => {
             const res = await action(createArgs('null'));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers are a JSON string instead of an object', async () => {
             const res = await action(createArgs('"just a string"'));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers are an empty JSON object', async () => {
             const res = await action(createArgs('{}'));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers JSON is malformed (unclosed brace)', async () => {
             const res = await action(createArgs('{"key": "value"'));
-            const data = await res.json();
-            expect(res.status).toBe(400);
+            const data = res.data;
+            expectStatus(res, 400);
             expect(data.success).toBe(false);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
         test('returns 400 when qualifiers JSON is malformed (trailing comma)', async () => {
             const res = await action(createArgs('{"key": "value",}'));
-            expect(res.status).toBe(400);
+            expectStatus(res, 400);
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
     });
@@ -140,9 +141,9 @@ describe('action.update-shopper-context', () => {
             mockUpdateShopperContext.mockResolvedValueOnce({ setCookieHeaders: mockSetCookieHeaders });
 
             const res = await action(createArgs('{"src":"email"}'));
-            const data = await res.json();
+            const data = res.data;
 
-            expect(res.status).toBe(200);
+            expectStatus(res, 200);
             expect(data.success).toBe(true);
             expect(data.message).toBeDefined();
 
@@ -155,7 +156,7 @@ describe('action.update-shopper-context', () => {
                 cookieHeader: null,
             });
 
-            const setCookieHeaders = res.headers.getSetCookie();
+            const setCookieHeaders = res.init?.headers ? new Headers(res.init.headers).getSetCookie() : [];
             expect(setCookieHeaders).toHaveLength(mockSetCookieHeaders.length);
             expect(setCookieHeaders).toEqual(expect.arrayContaining(mockSetCookieHeaders));
         });
@@ -168,9 +169,9 @@ describe('action.update-shopper-context', () => {
             mockUpdateShopperContext.mockResolvedValueOnce({ setCookieHeaders: mockSetCookieHeaders });
 
             const res = await action(createArgs('{"src":"email","deviceType":"mobile"}'));
-            const data = await res.json();
+            const data = res.data;
 
-            expect(res.status).toBe(200);
+            expectStatus(res, 200);
             expect(data.success).toBe(true);
             expect(data.message).toBeDefined();
 
@@ -183,21 +184,21 @@ describe('action.update-shopper-context', () => {
                 cookieHeader: null,
             });
 
-            const setCookieHeaders = res.headers.getSetCookie();
+            const setCookieHeaders = res.init?.headers ? new Headers(res.init.headers).getSetCookie() : [];
             expect(setCookieHeaders).toHaveLength(mockSetCookieHeaders.length);
             expect(setCookieHeaders).toEqual(expect.arrayContaining(mockSetCookieHeaders));
         });
 
         test('returns 200 when source code is the only qualifier', async () => {
             const res = await action(createArgs('{"src":"email"}'));
-            expect(res.status).toBe(200);
+            expectStatus(res, 200);
             expect(mockUpdateShopperContext).toHaveBeenCalled();
         });
 
         test('returns 200 when qualifier values contain spaces or special characters', async () => {
             const res = await action(createArgs('{"src":"value with spaces"}'));
-            const data = await res.json();
-            expect(res.status).toBe(200);
+            const data = res.data;
+            expectStatus(res, 200);
             expect(data.success).toBe(true);
             expect(mockUpdateShopperContext).toHaveBeenCalled();
         });
@@ -207,9 +208,9 @@ describe('action.update-shopper-context', () => {
         test('returns 401 when user session has no USID', async () => {
             mockGetAuth.mockReturnValue({ usid: undefined } as never);
             const res = await action(createArgs('{"src":"email"}'));
-            const data = await res.json();
-            expect(res.status).toBe(401);
-            expect(data.error.message).toContain("Usid isn't available");
+            const data = res.data;
+            expectStatus(res, 401);
+            expect(data.error?.message).toContain("Usid isn't available");
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
 
@@ -221,10 +222,10 @@ describe('action.update-shopper-context', () => {
                 unstable_pattern: 'action/update-shopper-context',
             };
             const res = await action(args);
-            const data = await res.json();
-            expect(res.status).toBe(405);
+            const data = res.data;
+            expectStatus(res, 405);
             expect(data.success).toBe(false);
-            expect(data.error.message).toContain('not allowed');
+            expect(data.error?.message).toContain('not allowed');
             expect(mockUpdateShopperContext).not.toHaveBeenCalled();
         });
     });

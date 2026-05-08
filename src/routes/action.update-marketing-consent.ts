@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.update-marketing-consent';
+import { data } from 'react-router';
 import { type UpdateSubscriptionBody, updateSubscriptionsBulk } from '@/lib/api/consent.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
-import { ErrorCode } from '@/lib/error-codes';
+import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
+
+/** Response shape returned by the update-marketing-consent action. */
+export type UpdateMarketingConsentResponse = {
+    success: boolean;
+    error?: ActionError;
+    partialSuccess?: boolean;
+};
 
 const VALID_CHANNELS = ['email', 'sms', 'whatsapp'] as const;
 const VALID_STATUSES = ['opt_in', 'opt_out'] as const;
@@ -45,14 +53,17 @@ function validateUpdatesInput(updates: unknown[]): string | null {
  * Server action: POST JSON { updates: [{ subscriptionId, channel, contactPointValue, status }, ...] }.
  * Validates input via validateUpdatesInput; calls SCAPI bulk endpoint (1–50 per request).
  */
-export async function action({ request, context }: Route.ActionArgs): Promise<Response> {
+export async function action({
+    request,
+    context,
+}: Route.ActionArgs): Promise<ReturnType<typeof data<UpdateMarketingConsentResponse>>> {
     const logger = getLogger(context);
 
     logger.debug('UpdateMarketingConsent: starting', { method: request.method });
 
     if (request.method !== 'POST') {
         logger.warn('UpdateMarketingConsent: method not allowed', { method: request.method });
-        return Response.json(
+        return data(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.METHOD_NOT_ALLOWED, message: 'Method not allowed' }),
@@ -70,7 +81,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
         const validationError = validateUpdatesInput(updates);
         if (validationError) {
             logger.warn('UpdateMarketingConsent: validation failed', { error: validationError });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.INVALID_INPUT, message: validationError }),
@@ -102,7 +113,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
                 failedUpdates: failures.length,
                 allFailed,
             });
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({
@@ -118,14 +129,9 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
         }
 
         logger.info('UpdateMarketingConsent: succeeded', { updateCount: results.length });
-        return Response.json({ success: true });
+        return data({ success: true });
     } catch (error) {
         logger.error('UpdateMarketingConsent: failed', { error });
-        return Response.json(
-            { success: false, error: createActionError({ error }) },
-            {
-                status: 500,
-            }
-        );
+        return data({ success: false, error: createActionError({ error }) }, { status: 500 });
     }
 }

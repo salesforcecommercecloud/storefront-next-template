@@ -72,7 +72,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Fo
 }
 
 export default function ForgotPassword(): ReactElement {
-    const actionData = useActionData<ForgotPasswordActionData>();
+    const actionData = useActionData<typeof action>();
     const { t } = useTranslation('resetPassword');
 
     if (actionData?.success && actionData?.email) {

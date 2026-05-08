@@ -16,6 +16,9 @@
 import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { useRevalidator, useFetcher } from 'react-router';
+import type { action as paymentMethodAddAction } from '@/routes/action.payment-method-add';
+import type { action as paymentMethodRemoveAction } from '@/routes/action.payment-method-remove';
+import type { action as paymentMethodSetDefaultAction } from '@/routes/action.payment-method-set-default';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PaymentMethodCard, type PaymentMethod } from './payment-method-card';
@@ -66,7 +69,9 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
 
-    const paymentFetcher = useFetcher<{ success: boolean; error?: string }>();
+    const paymentFetcher = useFetcher<
+        typeof paymentMethodAddAction | typeof paymentMethodRemoveAction | typeof paymentMethodSetDefaultAction
+    >();
     const previousFetcherStateRef = useRef(paymentFetcher.state);
     const currentIntentRef = useRef<string | null>(null);
 
@@ -122,7 +127,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
 
         if (stateChanged && paymentFetcher.state === 'idle' && paymentFetcher.data) {
             const intent = currentIntentRef.current;
-            const { success } = paymentFetcher.data as { success?: boolean };
+            const { success } = paymentFetcher.data;
 
             const intentHandlers: Record<string, () => void> = {
                 delete: () => {

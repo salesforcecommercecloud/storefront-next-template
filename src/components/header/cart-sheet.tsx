@@ -42,6 +42,7 @@ import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/cart/b
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
 import { useToast } from '@/components/toast';
+import type { action as cartItemRemoveAction } from '@/routes/action.cart-item-remove';
 import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
@@ -67,7 +68,7 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup?: boolean;
 }) {
-    const fetcher = useFetcher<BasketActionResponse>();
+    const fetcher = useFetcher<typeof cartItemRemoveAction>();
     const { addToast } = useToast();
     const { t } = useTranslation('removeItem');
     const updateBasket = useBasketUpdater();

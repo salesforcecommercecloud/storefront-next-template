@@ -18,13 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useToast } from '@/components/toast';
-import type { ActionError } from '@/lib/error-codes';
-
-interface ChangePickupStoreResponse {
-    success: boolean;
-    basket?: unknown;
-    error?: ActionError;
-}
+import type { action as cartPickupStoreUpdateAction } from '@/extensions/bopis/routes/action.cart-pickup-store-update';
 
 /**
  * Hook for changing the pickup store for all pickup items in the basket.
@@ -46,7 +40,7 @@ interface ChangePickupStoreResponse {
  */
 export function useChangePickupStore() {
     const { t } = useTranslation('extBopis');
-    const fetcher = useFetcher<ChangePickupStoreResponse>();
+    const fetcher = useFetcher<typeof cartPickupStoreUpdateAction>();
     const { addToast } = useToast();
 
     // Process response and show toast when data is available in 'loading' state

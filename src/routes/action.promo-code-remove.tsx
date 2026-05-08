@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -34,10 +35,10 @@ export const action = createBasketAction(
         action: BasketAction.PromoCodeRemove,
         parse: (fd) => ({ couponItemId: fd.get('couponItemId') as string }),
     },
-    async ({ data, basketId, clients, logger }) => {
-        if (!data.couponItemId) {
+    async ({ input, basketId, clients, logger }) => {
+        if (!input.couponItemId) {
             logger.warn('PromoCodeRemove: missing couponItemId');
-            return Response.json(
+            return data(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'couponItemId is required' }),
@@ -46,12 +47,12 @@ export const action = createBasketAction(
             );
         }
 
-        logger.debug('PromoCodeRemove: starting', { basketId, couponItemId: data.couponItemId });
+        logger.debug('PromoCodeRemove: starting', { basketId, couponItemId: input.couponItemId });
         const { data: updatedBasket } = await clients.shopperBasketsV2.removeCouponFromBasket({
             params: {
                 path: {
                     basketId,
-                    couponItemId: data.couponItemId,
+                    couponItemId: input.couponItemId,
                 },
             },
         });

@@ -16,6 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { action } from './action.initiate-checkout-registration';
 import type { ActionFunctionArgs } from 'react-router';
+import { expectStatus } from '@/lib/test-utils';
 
 // Mock dependencies
 vi.mock('@/lib/api-clients.server');
@@ -33,7 +34,8 @@ vi.mock('@/lib/logger.server', () => ({
         debug: vi.fn(),
     })),
 }));
-vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>()),
     getConfig: vi.fn(() => ({})),
 }));
 vi.mock('@/lib/turnstile/enforce.server', () => ({
@@ -146,7 +148,7 @@ describe('action.initiate-checkout-registration', () => {
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
 
-        const result = await response.json();
+        const result = response.data;
         expect(result).toEqual({
             success: true,
             email: 'user@example.com',
@@ -174,7 +176,7 @@ describe('action.initiate-checkout-registration', () => {
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
 
-        const result = await response.json();
+        const result = response.data;
         expect(result).toEqual({
             success: true,
             email: 'test@example.com',
@@ -208,8 +210,8 @@ describe('action.initiate-checkout-registration', () => {
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
 
-        expect(response.status).toBe(400);
-        const result = await response.json();
+        expectStatus(response, 400);
+        const result = response.data;
         expect(result.success).toBe(false);
         expect(result.error).toEqual({ code: 'REQUIRED_FIELD', message: 'Email is required' });
 
@@ -237,7 +239,7 @@ describe('action.initiate-checkout-registration', () => {
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
 
-        const result = await response.json();
+        const result = response.data;
         expect(result.success).toBe(true);
 
         expect(mockPasswordlessAuthorize).toHaveBeenCalledWith({
@@ -266,8 +268,8 @@ describe('action.initiate-checkout-registration', () => {
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
 
-        expect(response.status).toBe(500);
-        const result = await response.json();
+        expectStatus(response, 500);
+        const result = response.data;
         expect(result.success).toBe(false);
         expect(result.error).toBeTruthy();
     });
@@ -290,8 +292,8 @@ describe('action.initiate-checkout-registration', () => {
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
 
-        expect(response.status).toBe(500);
-        const result = await response.json();
+        expectStatus(response, 500);
+        const result = response.data;
         expect(result).toEqual({
             success: false,
             error: { code: 'OPERATION_FAILED', message: 'Email already registered' },
@@ -324,7 +326,7 @@ describe('action.initiate-checkout-registration', () => {
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
 
-        const result = await response.json();
+        const result = response.data;
         expect(result.success).toBe(true);
 
         expect(mockPasswordlessAuthorize).toHaveBeenCalledWith(
@@ -352,7 +354,7 @@ describe('action.initiate-checkout-registration', () => {
         });
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
         expect(result.success).toBe(true);
         expect(mockEnforceTurnstile).not.toHaveBeenCalled();
@@ -385,10 +387,10 @@ describe('action.initiate-checkout-registration', () => {
             });
 
             const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
-            const result = await response.json();
+            const result = response.data;
 
             expect(result.success).toBe(false);
-            expect(result.error.code).toBe('NOT_AUTHORIZED');
+            expect(result.error?.code).toBe('NOT_AUTHORIZED');
             expect(mockPasswordlessAuthorize).not.toHaveBeenCalled();
         });
 
@@ -429,7 +431,7 @@ describe('action.initiate-checkout-registration', () => {
             });
 
             const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
-            const result = await response.json();
+            const result = response.data;
 
             expect(result.success).toBe(true);
             expect(mockEnforceTurnstile).not.toHaveBeenCalled();
@@ -452,10 +454,10 @@ describe('action.initiate-checkout-registration', () => {
             });
 
             const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
-            const result = await response.json();
+            const result = response.data;
 
             expect(result.success).toBe(false);
-            expect(result.error.code).toBe('NOT_AUTHORIZED');
+            expect(result.error?.code).toBe('NOT_AUTHORIZED');
             expect(mockPasswordlessAuthorize).not.toHaveBeenCalled();
         });
 
@@ -501,9 +503,9 @@ describe('action.initiate-checkout-registration', () => {
         });
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
-        expect(response.status).toBe(200);
+        expectStatus(response, 200);
         expect(result.success).toBe(false);
         expect(result.unavailable).toBe(true);
         expect(result.error).toBeUndefined();
@@ -530,9 +532,9 @@ describe('action.initiate-checkout-registration', () => {
         });
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
-        expect(response.status).toBe(400);
+        expectStatus(response, 400);
         expect(result.success).toBe(false);
         expect(result.unavailable).toBeUndefined();
         expect(result.error).toBeTruthy();
@@ -559,9 +561,9 @@ describe('action.initiate-checkout-registration', () => {
         });
 
         const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
-        const result = await response.json();
+        const result = response.data;
 
-        expect(response.status).toBe(500);
+        expectStatus(response, 500);
         expect(result.success).toBe(false);
         expect(result.unavailable).toBeUndefined();
         expect(result.error).toBeTruthy();

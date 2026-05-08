@@ -99,7 +99,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
 
 export default function ResetPassword({ loaderData }: { loaderData: ResetPasswordLoaderData }): ReactElement {
     const { token, email } = loaderData;
-    const actionData = useActionData<ResetPasswordActionData>();
+    const actionData = useActionData<typeof action>();
     const { t } = useTranslation('resetPassword');
 
     return (
