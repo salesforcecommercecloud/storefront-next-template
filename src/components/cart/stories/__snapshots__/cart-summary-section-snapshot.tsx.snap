@@ -32,7 +32,7 @@ exports[`CartSummarySection stories snapshot > DesktopWithItems story renders an
             role="region"
           >
             <div
-              class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
+              class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
             >
               <div
                 class="flex justify-between items-center"

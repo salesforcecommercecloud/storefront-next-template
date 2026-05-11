@@ -339,7 +339,7 @@ exports[`OrderDetails stories snapshot > CompletedStatus story renders and match
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -722,7 +722,7 @@ exports[`OrderDetails stories snapshot > Default story renders and matches snaps
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -1230,7 +1230,7 @@ exports[`OrderDetails stories snapshot > MultipleShipments story renders and mat
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -1631,7 +1631,7 @@ exports[`OrderDetails stories snapshot > ReplacedStatus story renders and matche
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -2014,7 +2014,7 @@ exports[`OrderDetails stories snapshot > WithPaymentMethod story renders and mat
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
                   >
                     <div
                       class="flex justify-between items-center"
@@ -2431,7 +2431,7 @@ exports[`OrderDetails stories snapshot > WithShippingStatus story renders and ma
                   role="region"
                 >
                   <div
-                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground"
+                    class="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2"
                   >
                     <div
                       class="flex justify-between items-center"

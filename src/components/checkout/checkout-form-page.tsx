@@ -37,6 +37,7 @@ import { CHECKOUT_STEPS, type CheckoutStep } from './utils/checkout-context-type
 import { handlePickupContinueAction, hasAnyValidShippingMethod } from './utils/checkout-utils';
 import { isAddressEmpty } from '@/lib/address/address-utils';
 import { OrderSummaryMobileAccordion } from '@/components/order-summary/mobile-heading';
+import { isOrderTotalEstimated } from '@/components/order-summary/mobile-heading-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { filterDeliveryShippingMethods } from '@/extensions/bopis/lib/basket-utils';
 
@@ -666,6 +667,7 @@ export default function CheckoutFormPage({
 
     const showPlaceOrderSection =
         step >= STEPS.PAYMENT && (editingStep === null || editingStep === STEPS.PAYMENT) && !shippingBlocked;
+    const isEstimate = cart ? isOrderTotalEstimated(cart) : true;
 
     return (
         <div className="bg-background">
@@ -678,14 +680,19 @@ export default function CheckoutFormPage({
                 <div className="md:hidden mb-6 border border-border">
                     <Suspense fallback={<OrderSummarySkeleton />}>
                         {/* Pass lazy <OrderSummary /> as children to preserve checkout route code-splitting. */}
-                        <OrderSummaryMobileAccordion basket={cart} defaultExpanded={false}>
+                        <OrderSummaryMobileAccordion
+                            basket={cart}
+                            defaultExpanded={false}
+                            showPrice
+                            isEstimate={isEstimate}>
                             <OrderSummary
                                 basket={cart}
                                 showCartItems={false}
                                 showHeading={false}
                                 showPromoCodeForm={true}
                                 productsByItemId={{}}
-                                isEstimate={true}
+                                isEstimate={isEstimate}
+                                showTotal={false}
                                 showCheckoutAction={false}
                                 className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
                             />
@@ -729,6 +736,7 @@ export default function CheckoutFormPage({
                                                 showHeading={false}
                                                 showPromoCodeForm={true}
                                                 productsByItemId={{}}
+                                                isEstimate={isEstimate}
                                                 className="border-none shadow-none rounded-none !py-0 [&_[data-slot=card-content]]:px-0 [--cart-summary-px:1.5rem]"
                                             />
                                         </Suspense>

@@ -72,6 +72,7 @@ interface OrderSummaryProps {
     showHeading?: boolean;
     itemsExpanded?: boolean;
     isEstimate?: boolean;
+    showTotal?: boolean;
     productsByItemId?: Record<string, ShopperProducts.schemas['Product']>;
     onEditCart?: () => void;
     showCheckoutAction?: boolean;
@@ -160,6 +161,7 @@ interface SummaryBodyContentProps {
     shippingPromotionAdjustments: Array<{ priceAdjustmentId?: string; itemText?: string }>;
     renderShippingInfo: () => ReactElement;
     isEstimate: boolean;
+    showTotal: boolean;
     showPromoCodeForm: boolean;
 }
 
@@ -177,6 +179,7 @@ function SummaryBodyContent({
     shippingPromotionAdjustments,
     renderShippingInfo,
     isEstimate,
+    showTotal,
     showPromoCodeForm,
 }: SummaryBodyContentProps): ReactElement {
     return (
@@ -193,7 +196,7 @@ function SummaryBodyContent({
             )}
 
             {/* Order Summary Details */}
-            <div className="space-y-2 text-sm font-normal leading-5 text-muted-foreground">
+            <div className="space-y-2 text-sm font-normal leading-5 text-muted-foreground pb-2">
                 {/* Subtotal */}
                 <UITarget targetId="sfcc.orderSummary.subtotal.before" />
                 <UITarget targetId="sfcc.orderSummary.subtotal">
@@ -273,16 +276,24 @@ function SummaryBodyContent({
                 )}
 
                 {/* Total */}
-                <UITarget targetId="sfcc.orderSummary.total.before" />
-                <UITarget targetId="sfcc.orderSummary.total">
-                    <div className="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground">
-                        <span>{isEstimate ? t('summary.estimatedTotal') : t('summary.total')}</span>
-                        <span>
-                            {formatCurrency(basket?.orderTotal || basket?.productTotal || 0, i18nLanguage, currency)}
-                        </span>
-                    </div>
-                </UITarget>
-                <UITarget targetId="sfcc.orderSummary.total.after" />
+                {showTotal && (
+                    <>
+                        <UITarget targetId="sfcc.orderSummary.total.before" />
+                        <UITarget targetId="sfcc.orderSummary.total">
+                            <div className="flex justify-between items-center text-sm font-bold leading-5 text-muted-foreground">
+                                <span>{isEstimate ? t('summary.estimatedTotal') : t('summary.total')}</span>
+                                <span>
+                                    {formatCurrency(
+                                        basket?.orderTotal ?? basket?.productTotal ?? 0,
+                                        i18nLanguage,
+                                        currency
+                                    )}
+                                </span>
+                            </div>
+                        </UITarget>
+                        <UITarget targetId="sfcc.orderSummary.total.after" />
+                    </>
+                )}
             </div>
 
             <UITarget targetId="sfcc.cart.loyalty.pointsEarned" />
@@ -327,6 +338,7 @@ export default function OrderSummary({
     showHeading = true,
     itemsExpanded = false,
     isEstimate = false,
+    showTotal = true,
     productsByItemId = {},
     onEditCart,
     showCheckoutAction,
@@ -379,6 +391,7 @@ export default function OrderSummary({
                 shippingPromotionAdjustments={shippingPromotionAdjustments}
                 renderShippingInfo={renderShippingInfo}
                 isEstimate={isEstimate}
+                showTotal={showTotal}
                 showPromoCodeForm={showPromoCodeForm}
             />
             {showCheckoutAction && (

@@ -63,6 +63,7 @@ export const Collapsed: Story = {
     args: {
         basket: mockBasket,
         defaultExpanded: false,
+        isEstimate: true,
     },
     render: (args) => (
         <OrderSummaryMobileAccordion {...args}>
@@ -92,6 +93,7 @@ export const Expanded: Story = {
     args: {
         basket: mockBasket,
         defaultExpanded: true,
+        isEstimate: true,
     },
     render: (args) => (
         <OrderSummaryMobileAccordion {...args}>

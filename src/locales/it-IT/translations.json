@@ -331,6 +331,8 @@
             "showOrderSummary": "Mostra riepilogo ordine",
             "mobileHeading_one": "Totale stimato (1 articolo)",
             "mobileHeading_other": "Totale stimato ({{count}} articoli)",
+            "mobileHeadingTotal_one": "Totale (1 articolo)",
+            "mobileHeadingTotal_other": "Totale ({{count}} articoli)",
             "subtotal": "Subtotale",
             "shipping": "Spedizione",
             "shippingPromotionApplied": "(Promozione applicata)",

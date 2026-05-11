@@ -21,10 +21,21 @@ export type OrderSummaryBasket = ShopperBasketsV2.schemas['Basket'] | ShopperOrd
 
 type CartTranslate = ReturnType<typeof useTranslation<'cart'>>['t'];
 
+/**
+ * Returns `true` when shipping or tax totals are still unknown,
+ * meaning the order total is an estimate rather than a final figure.
+ */
+export function isOrderTotalEstimated(basket: OrderSummaryBasket): boolean {
+    const shippingKnown = typeof basket.shippingTotal === 'number' && basket.shippingTotal >= 0;
+    const taxKnown = basket.taxation === 'gross' || (typeof basket.taxTotal === 'number' && basket.taxTotal >= 0);
+    return !shippingKnown || !taxKnown;
+}
+
 export function getOrderSummaryItemCount(basket: OrderSummaryBasket): number {
     return basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
 }
 
-export function getOrderSummaryMobileHeading(t: CartTranslate, basket: OrderSummaryBasket): string {
-    return t('summary.mobileHeading', { count: getOrderSummaryItemCount(basket) });
+export function getOrderSummaryMobileHeading(t: CartTranslate, basket: OrderSummaryBasket, isEstimate = true): string {
+    const key = isEstimate ? 'summary.mobileHeading' : 'summary.mobileHeadingTotal';
+    return t(key, { count: getOrderSummaryItemCount(basket) });
 }

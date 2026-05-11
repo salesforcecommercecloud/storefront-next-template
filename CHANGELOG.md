@@ -29,6 +29,7 @@
 - Add server action hooks extension system: extensions can register handlers that run at specific points in checkout server actions (fraud checks, address verification, payment tokenization, shipping method filtering) via `target-config.json`
 - Pre-select all quick-add swatches on product tiles from `representedProduct`'s variant (`variationValues`), so every axis (color, size, …) in the quick-add modal matches the variant the tile advertises ([#1598](https://github.com/commerce-emu/storefront-next/pull/1598))
 - Show error toast when shipping address yields no available shipping methods ([#1550](https://github.com/commerce-emu/storefront-next/pull/1550))
+- Show estimated total in mobile order summary accordion heading, and switch heading text from "Estimated Total" to "Total" once shipping and tax are known ([#1635](https://github.com/commerce-emu/storefront-next/pull/1635))
 - Fix `pnpm install` failing after dependency changes (e.g. `pnpm add`, `pnpm update`, or any edit that invalidates the lockfile): add a `pnpm.overrides` entry that pins `happy-dom`'s transitive `@types/node` to `^24.0.0`, which drops `undici-types@6.21.0` from the dependency graph. That `undici-types` version was published without npm provenance and triggers `ERR_PNPM_TRUST_DOWNGRADE` when pnpm re-resolves dependencies from the registry
 
 ## v0.4.0 (May 5, 2026)

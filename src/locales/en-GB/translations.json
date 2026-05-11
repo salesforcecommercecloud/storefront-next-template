@@ -331,6 +331,8 @@
             "showOrderSummary": "Show order summary",
             "mobileHeading_one": "Estimated Total (1 item)",
             "mobileHeading_other": "Estimated Total ({{count}} items)",
+            "mobileHeadingTotal_one": "Total (1 item)",
+            "mobileHeadingTotal_other": "Total ({{count}} items)",
             "subtotal": "Subtotal",
             "shipping": "Shipping",
             "shippingPromotionApplied": "(Promotion applied)",
