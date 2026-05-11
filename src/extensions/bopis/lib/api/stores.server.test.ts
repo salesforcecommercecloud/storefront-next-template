@@ -16,18 +16,36 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
-import type { ShopperBasketsV2, ShopperOrders, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import {
+    ApiError,
+    type ShopperBasketsV2,
+    type ShopperOrders,
+    type ShopperStores,
+} from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
-import { fetchStoresForBasket, fetchStoresForOrder } from './stores.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
+import { fetchStores, fetchStoresForBasket, fetchStoresForOrder } from './stores.server';
 
 vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(),
+}));
+
+const mockLoggerError = vi.fn();
+
+vi.mock('@/lib/logger.server', () => ({
+    getLogger: vi.fn(() => ({
+        error: mockLoggerError,
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+    })),
 }));
 
 const mockedCreateApiClients = vi.mocked(createApiClients);
 
 beforeEach(() => {
     vi.resetAllMocks();
+    mockLoggerError.mockClear();
 });
 
 describe('fetchStoresForBasket', () => {
@@ -175,5 +193,58 @@ describe('fetchStoresForOrder', () => {
         const result = await fetchStoresForOrder(context, order);
 
         expect(result.size).toBe(0);
+    });
+});
+
+describe('fetchStores', () => {
+    const context = {} as RouterContextProvider;
+
+    test('returns empty map for empty storeIds without calling the API', async () => {
+        const result = await fetchStores(context, []);
+        expect(result.size).toBe(0);
+        expect(mockedCreateApiClients).not.toHaveBeenCalled();
+    });
+
+    test('throws NormalizedApiError when API call fails with ApiError', async () => {
+        const apiError = new ApiError({
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers(),
+            body: { type: 'Service Unavailable', title: 'Unavailable', detail: 'Stores service is down' },
+            rawBody: JSON.stringify({ detail: 'Stores service is down' }),
+            url: 'https://api.example.com/stores',
+            method: 'GET',
+        });
+        const getStores = vi.fn().mockRejectedValue(apiError);
+        mockedCreateApiClients.mockReturnValue({
+            shopperStores: { getStores },
+        } as never);
+
+        await expect(fetchStores(context, ['store-1'])).rejects.toThrow(NormalizedApiError);
+        await expect(fetchStores(context, ['store-1'])).rejects.toMatchObject({ status: 503 });
+    });
+
+    test('throws NormalizedApiError when API call fails with non-API error', async () => {
+        const getStores = vi.fn().mockRejectedValue(new TypeError('Network failure'));
+        mockedCreateApiClients.mockReturnValue({
+            shopperStores: { getStores },
+        } as never);
+
+        await expect(fetchStores(context, ['store-1'])).rejects.toThrow(NormalizedApiError);
+        await expect(fetchStores(context, ['store-1'])).rejects.toThrow('Network failure');
+    });
+
+    test('logs operation context when API call fails', async () => {
+        const getStores = vi.fn().mockRejectedValue(new Error('boom'));
+        mockedCreateApiClients.mockReturnValue({
+            shopperStores: { getStores },
+        } as never);
+
+        await fetchStores(context, ['store-a', 'store-b']).catch(() => {});
+
+        expect(mockLoggerError).toHaveBeenCalledWith(
+            'shopperStores.getStores failed',
+            expect.objectContaining({ storeIds: ['store-a', 'store-b'] })
+        );
     });
 });

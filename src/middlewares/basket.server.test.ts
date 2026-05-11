@@ -17,6 +17,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createCookie, RouterContextProvider, type MiddlewareFunction } from 'react-router';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { createApiClients } from '@/lib/api-clients.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { getCookieConfig } from '@/lib/cookie-utils.server';
 import { validateBasketSnapshot } from '@/lib/basket/cookie';
 import createBasketMiddleware, {
@@ -304,7 +305,7 @@ describe('basket.server middleware', () => {
         expect(basketResource.current?.currency).toBe('GBP');
     });
 
-    test('load rethrows and stores error when hydration fails', async () => {
+    test('load rethrows NormalizedApiError and stores wrapped error when hydration fails', async () => {
         const loadError = new Error('boom');
         vi.mocked(createApiClients).mockReturnValue({
             basket: {
@@ -315,10 +316,15 @@ describe('basket.server middleware', () => {
         const middleware = createBasketMiddleware({ mode: 'lazy' });
         await middleware(createArgs(mockRequest, mockContext), mockNext);
 
-        await expect(getBasket(mockContext)).rejects.toThrow('boom');
+        const rejection = await getBasket(mockContext).catch((e: unknown) => e);
+        expect(rejection).toBeInstanceOf(NormalizedApiError);
+        expect((rejection as NormalizedApiError).message).toBe('boom');
+        expect((rejection as NormalizedApiError).cause).toBe(loadError);
+
         const basketResource = mockContext.get(basketResourceContext);
         expect(basketResource?.hydrated).toBe(true);
-        expect(basketResource?.error).toBe(loadError);
+        expect(basketResource?.error).toBeInstanceOf(NormalizedApiError);
+        expect((basketResource?.error as NormalizedApiError | undefined)?.cause).toBe(loadError);
     });
 
     test('marks basket for deletion and expires cookie', async () => {

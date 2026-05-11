@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, Suspense } from 'react';
+import { type ReactElement, Suspense, useState } from 'react';
 
 // React Router
 import { Await, useLoaderData } from 'react-router';
@@ -28,32 +28,34 @@ import {
 } from '@salesforce/storefront-next-runtime/scapi';
 
 // Middlewares
-import { getAuth } from '@/middlewares/auth.server';
 import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares/basket.server';
 
-// API
-import { createApiClients } from '@/lib/api-clients.server';
-import { getWishlist } from '@/lib/api/wishlist.server';
-import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
-
-// Logging
-import { getLogger } from '@/lib/logger.server';
+// Cart orchestrators
+import { fetchProductsInBasket } from '@/lib/cart/basket-products.server';
+import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
+import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
 
 // Components
 import CartSkeleton from '@/components/cart/cart-skeleton';
 import CartContent from '@/components/cart/cart-content';
+import { CartLoadError } from '@/components/cart/cart-load-error';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
-import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
- * Data structure returned by cart loader functions.
- * When BOPIS is stripped, storesByStoreId is always {} (no store data).
+ * Data structure returned by the cart loader.
+ *
+ * `basketDataPromise` is a single deferred promise: when any of basket, products, promotions,
+ * or stores fails, the route's `<Await errorElement={<CartLoadError/>}>` renders an in-page
+ * error UI. `wishlistProductIdsPromise` is split out so a wishlist failure can silently
+ * degrade without blocking the rest of the cart.
+ *
+ * When BOPIS is stripped, `storesByStoreId` is always `{}`.
  */
 type CartPageData = {
     basketDataPromise: Promise<{
@@ -62,354 +64,93 @@ type CartPageData = {
         bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
         promotions: Record<string, ShopperPromotions.schemas['Promotion']>;
         storesByStoreId: Record<string, ShopperStores.schemas['Store']>;
-        /** Product IDs in the shopper wishlist (registered sessions only); hydrates cart wishlist controls after refresh */
-        wishlistProductIds: string[];
     }>;
+    wishlistProductIdsPromise: Promise<string[]>;
     basketSnapshot: BasketSnapshot | null;
     pageUrl: string;
 };
 
 /**
- * Loads wishlist product IDs for the signed-in customer so cart line wishlist UI matches server state after refresh.
- */
-async function fetchWishlistProductIds(context: Route.LoaderArgs['context']): Promise<string[]> {
-    try {
-        const session = getAuth(context);
-        const isRegistered =
-            session.userType === 'registered' &&
-            Boolean(session.customerId) &&
-            Boolean(session.accessToken) &&
-            typeof session.accessTokenExpiry === 'number' &&
-            session.accessTokenExpiry > Date.now();
-
-        if (!isRegistered || !session.customerId) {
-            return [];
-        }
-
-        const { items } = await getWishlist(context, session.customerId);
-        const wishlistItems = Array.isArray(items) ? items : [];
-        return wishlistItems
-            .map((item: { productId?: string }) => item.productId)
-            .filter((id): id is string => typeof id === 'string' && id.trim().length > 0);
-    } catch {
-        return [];
-    }
-}
-
-/**
- * Fetches promotion details for promotion IDs found in basket items.
+ * Server-side loader for the cart route.
  *
- * This function extracts promotion IDs from basket items' price adjustments
- * and fetches the corresponding promotion data from the Commerce API.
- * @returns Promise that resolves to a mapping of promotion IDs to promotion data
- */
-async function fetchPromotionsForBasket(
-    context: Route.LoaderArgs['context'],
-    productItems: ShopperBasketsV2.schemas['ProductItem'][]
-): Promise<Record<string, ShopperPromotions.schemas['Promotion']>> {
-    const productIds = productItems?.map((item) => item.productId).filter(Boolean);
-    if (!productIds) {
-        return {};
-    }
-
-    // Extract all unique promotion IDs from basket items' price adjustments
-    const promotionIds = new Set<string>();
-    productItems.forEach((productItem) => {
-        if (productItem.priceAdjustments?.length) {
-            productItem.priceAdjustments.forEach((adjustment) => {
-                if (adjustment.promotionId) {
-                    promotionIds.add(adjustment.promotionId);
-                }
-            });
-        }
-    });
-
-    // Early return if no promotions found
-    if (promotionIds.size === 0) {
-        return {};
-    }
-
-    // Fetch promotion details for all unique promotion IDs
-    const clients = createApiClients(context);
-    const { data: promotionsData } = await clients.shopperPromotions.getPromotions({
-        params: {
-            query: {
-                ids: Array.from(promotionIds),
-            },
-        },
-    });
-
-    if (!promotionsData?.data) {
-        return {};
-    }
-
-    // Transform API response into a lookup map: promotionId → promotion details
-    const promotions: Record<string, ShopperPromotions.schemas['Promotion']> = {};
-    promotionsData.data.forEach((promotion) => {
-        if (promotion.id) {
-            promotions[promotion.id] = promotion;
-        }
-    });
-
-    return promotions;
-}
-
-/**
- * Fetches detailed product information for all items in a shopping basket.
+ * Returns deferred promises only — no `try/catch`, no logging. The API layer (`lib/api/**`,
+ * `extensions/bopis/lib/api/`) wraps every `clients.*` call with logging + `NormalizedApiError`,
+ * and `<Await errorElement>` boundaries on the render handle rejections.
  *
- * This function retrieves product details including images, pricing, and attributes
- * for each product in the basket. It creates a mapping from basket item IDs to
- * their corresponding product data for efficient lookup in the UI.
- * For bundle products, it also fetches child product data and reconstructs the
- * bundledProducts structure with product and quantity properties.
- *
- * For BOPIS (Buy Online, Pick-up In Store) functionality, this function also
- * includes store inventory IDs when fetching products to ensure accurate
- * store-level inventory data is available for pickup items.
- * @returns Promise that resolves to a mapping of item IDs to product data.
- */
-async function fetchProductsInBasket(
-    context: Route.LoaderArgs['context'],
-    basket: ShopperBasketsV2.schemas['Basket'] | null
-): Promise<{
-    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
-    bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
-}> {
-    const productItems = basket?.productItems ?? [];
-
-    // Collect all product IDs (both parent products and bundled child products)
-    const ids: string[] = [];
-
-    productItems.forEach((item) => {
-        if (item.productId) {
-            ids.push(item.productId);
-        }
-
-        // If this is a bundle product, collect child product IDs
-        if (item.bundledProductItems && item.bundledProductItems.length > 0) {
-            const childProductIds = item.bundledProductItems
-                .map((child) => child.productId)
-                .filter(Boolean) as string[];
-
-            ids.push(...childProductIds);
-        }
-    });
-
-    // Collect bonus product IDs from bonusDiscountLineItems
-    const bonusProductIds: string[] = [];
-    basket?.bonusDiscountLineItems?.forEach((bonusItem) => {
-        bonusItem.bonusProducts?.forEach((bp) => {
-            if (bp.productId) {
-                bonusProductIds.push(bp.productId);
-            }
-        });
-    });
-
-    // Add bonus product IDs to the main ids array for bulk fetch
-    ids.push(...bonusProductIds);
-
-    if (!ids.length) {
-        return { productsByItemId: {}, bonusProductsById: {} };
-    }
-
-    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    // Collect unique inventory IDs from pickup shipments to fetch store-level inventory
-    const inventoryIds = getInventoryIdsFromPickupShipments(basket);
-    // @sfdc-extension-block-end SFDC_EXT_BOPIS
-
-    const clients = createApiClients(context);
-    const currency = (context.get(siteContext) as SiteContext).currency;
-
-    const { data: productsData } = await clients.shopperProducts.getProducts({
-        params: {
-            query: {
-                ids,
-                allImages: true,
-                perPricebook: true,
-                currency,
-                // getProducts returns all expand fields by default (except page_meta_tags). No explicit expand needed.
-                // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                // Include store inventory IDs for pickup items
-                ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
-                // @sfdc-extension-block-end SFDC_EXT_BOPIS
-            },
-        },
-    });
-
-    if (!productsData?.data) {
-        return { productsByItemId: {}, bonusProductsById: {} };
-    }
-
-    const products = productsData.data.reduce(
-        (acc, product) => {
-            acc[product.id] = product;
-            return acc;
-        },
-        {} as Record<string, ShopperProducts.schemas['Product']>
-    );
-
-    const productsByItemId: Record<string, ShopperProducts.schemas['Product']> = {};
-
-    productItems.forEach((productItem) => {
-        if (!productItem.itemId || !productItem.productId || !products[productItem.productId]) {
-            return;
-        }
-
-        const product = products[productItem.productId];
-
-        // Check if this is a bundle product
-        if (productItem.bundledProductItems && productItem.bundledProductItems.length > 0) {
-            // Reconstruct bundledProducts using basket line-item quantities (from bundledProductItems[].quantity)
-            // rather than catalog defaults. The basket tracks per-order quantities that may differ from the
-            // catalog bundle composition.
-            const bundledProducts: ShopperProducts.schemas['BundledProduct'][] = productItem.bundledProductItems
-                .map((bundledItem) => {
-                    const childProduct = bundledItem.productId ? products[bundledItem.productId] : null;
-                    if (!childProduct) return null;
-                    return {
-                        product: childProduct,
-                        quantity: bundledItem.quantity ?? 1,
-                    };
-                })
-                .filter((item): item is ShopperProducts.schemas['BundledProduct'] => item !== null);
-
-            productsByItemId[productItem.itemId] = {
-                ...product,
-                bundledProducts,
-            };
-        } else {
-            productsByItemId[productItem.itemId] = product;
-        }
-    });
-
-    // Create separate mapping for bonus products
-    const bonusProductsById: Record<string, ShopperProducts.schemas['Product']> = {};
-    basket?.bonusDiscountLineItems?.forEach((bonusItem) => {
-        bonusItem.bonusProducts?.forEach((bp) => {
-            if (bp.productId && products[bp.productId]) {
-                bonusProductsById[bp.productId] = products[bp.productId];
-            }
-        });
-    });
-
-    return { productsByItemId, bonusProductsById };
-}
-
-/**
- * Client-side loader function for cart route
- *
- * This loader function handles cart data loading on the client side:
- * - Retrieves basket data from the basket middleware
- * - Fetches product details for all items (main + bundled children) in a single optimized API call
- * - Fetches promotion details for items with promotions
- * - Handles errors gracefully with fallback to empty state
- * - Returns promises for async data loading
- * @returns Promise resolving to cart page data with basket and product details
+ * The basket+products+promotions+stores share `basketDataPromise` (one error UI for any
+ * cart-blocking failure). Wishlist is split out so a wishlist failure degrades silently.
  */
 export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => {
-    const logger = getLogger(context);
-    logger.debug('Cart: loader starting');
-
     const requestUrl = new URL(request.url);
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
 
-    const basketPromise = getBasket(context, { ensureBasket: true }).then(
-        (basketResult) => basketResult.current ?? ({} as ShopperBasketsV2.schemas['Basket'])
-    );
-    const basketSnapshot = getBasketSnapshot(context);
-    const productsDataPromise = basketPromise.then((basket) => fetchProductsInBasket(context, basket));
-    const productsByItemIdPromise = productsDataPromise.then((data) => data.productsByItemId);
-    const bonusProductsByIdPromise = productsDataPromise.then((data) => data.bonusProductsById);
-    const promotionsPromise = basketPromise.then((basket) =>
-        fetchPromotionsForBasket(context, basket?.productItems ?? [])
-    );
-    const wishlistProductIdsPromise = fetchWishlistProductIds(context);
+    const basketDataPromise = (async () => {
+        const basketResource = await getBasket(context, { ensureBasket: true });
+        const basket = basketResource.current ?? ({} as ShopperBasketsV2.schemas['Basket']);
 
-    // Default when BOPIS is stripped; reassigned inside BOPIS block when extension is present
-    let storesByStoreIdPromise: Promise<
-        Record<string, ShopperStores.schemas['Store']> | Map<string, ShopperStores.schemas['Store']>
-    > = Promise.resolve({});
-    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    storesByStoreIdPromise = basketPromise.then((basket) => fetchStoresForBasket(context, basket));
-    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+        // Default for stripped BOPIS — reassigned inside the extension block when present.
+        let storesByStoreIdRawPromise: Promise<
+            Record<string, ShopperStores.schemas['Store']> | Map<string, ShopperStores.schemas['Store']>
+        > = Promise.resolve({});
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        storesByStoreIdRawPromise = fetchStoresForBasket(context, basket);
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
-    const basketDataPromise = Promise.all([
-        basketPromise,
-        productsByItemIdPromise,
-        bonusProductsByIdPromise,
-        promotionsPromise,
-        storesByStoreIdPromise,
-        wishlistProductIdsPromise,
-    ]).then((results) => {
-        const [basket, productsByItemId, bonusProductsById, promotions, storesByStoreId, wishlistProductIds] = results;
+        const [{ productsByItemId, bonusProductsById }, promotions, storesByStoreIdRaw] = await Promise.all([
+            fetchProductsInBasket(context, basket),
+            fetchPromotionsForBasket(context, basket?.productItems ?? []),
+            storesByStoreIdRawPromise,
+        ]);
+
         return {
             basket,
             productsByItemId,
             bonusProductsById,
             promotions,
             storesByStoreId:
-                storesByStoreId instanceof Map ? Object.fromEntries(storesByStoreId) : (storesByStoreId ?? {}),
-            wishlistProductIds,
+                storesByStoreIdRaw instanceof Map ? Object.fromEntries(storesByStoreIdRaw) : (storesByStoreIdRaw ?? {}),
         };
-    });
+    })();
+
+    const wishlistProductIdsPromise = fetchWishlistProductIdsForCart(context);
 
     return {
         basketDataPromise,
-        basketSnapshot,
+        wishlistProductIdsPromise,
+        basketSnapshot: getBasketSnapshot(context),
         pageUrl,
     };
 };
 
 /**
- * Cart route component that displays the shopping cart page
+ * Cart route component.
  *
- * This component serves as the main cart page route that:
- * - Receives cart data from the loader functions
- * - Uses CartContent component for consistent cart rendering
- * - Handles async product data loading
+ * Two `<Await>` boundaries, both at the route level (no Suspense/Await embedded inside cart
+ * components — that pattern bit us in PR #1654 / W-22434224, where deep Awaits re-suspended on
+ * loader revalidation and orphaned in-flight `useFetcher` submissions).
  *
- * The component integrates with:
- * - React Router for route handling and data loading
- * - CartContent for complete cart functionality
- * @returns JSX element representing the cart page
+ *   - Outer: `basketDataPromise`. On rejection, `<CartLoadError/>` renders an in-page error
+ *     with retry. HTTP status stays 200.
+ *   - Inner (over wishlist seed): `<CartBody>` is rendered identically in both the Suspense
+ *     fallback (with `wishlistProductIds={[]}`) and the resolved branch (with the real ids),
+ *     so the cart appears immediately and React reconciles the same `<CartBody>` tree without
+ *     unmounting/remounting when wishlist resolves. The wishlist promise is pinned via lazy
+ *     `useState` so cart-mutating revalidations cannot re-suspend this Await.
+ *
+ * Wishlist failure silently degrades — `errorElement` renders `<CartBody>` with `[]`.
  */
 export default function Cart(): ReactElement {
     const { t } = useTranslation('cart');
     const pageData = useLoaderData<typeof loader>();
-    const content = (
-        <Await resolve={pageData.basketDataPromise}>
-            {(basketData) => {
-                return (
-                    <CartContent
-                        basket={basketData.basket}
-                        productsByItemId={basketData.productsByItemId}
-                        bonusProductsById={basketData.bonusProductsById}
-                        promotions={basketData.promotions}
-                        wishlistProductIds={basketData.wishlistProductIds}
-                    />
-                );
-            }}
-        </Await>
-    );
 
-    let finalContent = content;
-    // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    finalContent = (
-        <Await resolve={pageData.basketDataPromise}>
-            {({ basket, storesByStoreId }) => (
-                <PickupProvider
-                    basket={basket}
-                    initialPickupStores={
-                        storesByStoreId != null && Object.keys(storesByStoreId).length > 0
-                            ? new Map(Object.entries(storesByStoreId))
-                            : undefined
-                    }>
-                    {content}
-                </PickupProvider>
-            )}
-        </Await>
-    );
-    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    // Pin the wishlist promise to its first reference for the lifetime of this component
+    // instance. The wishlist seed is a one-shot init value (cart-line wishlist hooks track
+    // their own state after mount), so we never want it refreshed by a revalidation. Without
+    // pinning, any cart-mutating action (cart-item-update, bonus-product-add, wishlist-add
+    // from a cart line, etc.) triggers route revalidation → fresh promise reference →
+    // <Await> re-suspends → cart-line Suspense subtrees unmount → in-flight useFetcher
+    // instances (wishlist toggle, quantity update) get orphaned.
+    const [pinnedWishlistPromise] = useState(() => pageData.wishlistProductIdsPromise);
 
     return (
         <>
@@ -427,8 +168,61 @@ export default function Cart(): ReactElement {
                         productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
                     />
                 }>
-                {finalContent}
+                <Await resolve={pageData.basketDataPromise} errorElement={<CartLoadError />}>
+                    {(basketData) => (
+                        <Suspense fallback={<CartBody basketData={basketData} wishlistProductIds={[]} />}>
+                            <Await
+                                resolve={pinnedWishlistPromise}
+                                errorElement={<CartBody basketData={basketData} wishlistProductIds={[]} />}>
+                                {(wishlistProductIds: string[]) => (
+                                    <CartBody basketData={basketData} wishlistProductIds={wishlistProductIds} />
+                                )}
+                            </Await>
+                        </Suspense>
+                    )}
+                </Await>
             </Suspense>
         </>
     );
+}
+
+/**
+ * Renders `CartContent` and, under BOPIS, wraps it in `PickupProvider`. Extracted from
+ * the route component so that `CartContent` mounts exactly once across both the BOPIS
+ * and stripped-BOPIS code paths.
+ */
+function CartBody({
+    basketData,
+    wishlistProductIds,
+}: {
+    basketData: Awaited<CartPageData['basketDataPromise']>;
+    wishlistProductIds: string[];
+}): ReactElement {
+    const content = (
+        <CartContent
+            basket={basketData.basket}
+            productsByItemId={basketData.productsByItemId}
+            bonusProductsById={basketData.bonusProductsById}
+            promotions={basketData.promotions}
+            wishlistProductIds={wishlistProductIds}
+        />
+    );
+
+    // Default for stripped BOPIS — reassigned inside the extension block when present.
+    let wrappedContent: ReactElement = content;
+    // @sfdc-extension-block-start SFDC_EXT_BOPIS
+    wrappedContent = (
+        <PickupProvider
+            basket={basketData.basket}
+            initialPickupStores={
+                basketData.storesByStoreId && Object.keys(basketData.storesByStoreId).length > 0
+                    ? new Map(Object.entries(basketData.storesByStoreId))
+                    : undefined
+            }>
+            {content}
+        </PickupProvider>
+    );
+    // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+    return wrappedContent;
 }

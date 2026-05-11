@@ -414,6 +414,10 @@
         },
         "inventory": {
             "blockMessage": "Alcuni articoli superano la disponibilità. Si prega di modificare le quantità o rimuovere gli articoli per continuare."
+        },
+        "loadError": {
+            "message": "Non siamo riusciti a caricare il carrello. Riprova.",
+            "retry": "Riprova"
         }
     },
     "checkout": {

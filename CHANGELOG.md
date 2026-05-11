@@ -14,6 +14,7 @@
 - Refactor routes to use React Router v7 generated route type imports
 - Reorganize `src/lib/` into domain-first folders: each commerce concept (`address/`, `auth/`, `cart/`, `checkout/`, `customer/`, `images/`, `marketing/`, `order/`, `payment/`, `product/`, `shopper-context/`, `turnstile/`) is now a self-contained folder, and adapters are consolidated under `lib/adapters/<type>/`. Cross-cutting utilities remain at the `lib/` root.
 - Refactor basket actions to reduce code duplication
+- Standardize SCAPI requests error handling - Cart Page ([#1649](https://github.com/commerce-emu/storefront-next/pull/1649))
 - Standardize SCAPI requests error handling - Product Detail Page ([#1633](https://github.com/commerce-emu/storefront-next/pull/1633))
 - Hoist `Suspense`/`Await` from `ProductGrid` to route level via new `DeferredProductGrid` wrapper for consistent deferred data pattern ([#1594](https://github.com/commerce-emu/storefront-next/pull/1594))
 - Standardize SCAPI requests error handling - Product List Page ([#1584](https://github.com/commerce-emu/storefront-next/pull/1584))

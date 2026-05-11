@@ -21,6 +21,7 @@ import type { AppConfig } from '@/types/config';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 import type { ActionError } from '@/lib/error-codes';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -109,11 +110,15 @@ export async function fetchProductsForWishlist(
 
 /**
  * Get the customer's wishlist with items. It's the first list with `wish_list` type.
- * Returns the wishlist metadata, items, and extracted ID
+ * Returns the wishlist metadata, items, and extracted ID.
+ *
+ * Wraps SCAPI's `shopperCustomers.getCustomerProductList(s)` with operation-context logging and
+ * normalizes any thrown error into `NormalizedApiError` for consistent downstream handling.
  *
  * @param context - Loader function context
  * @param customerId - The customer ID
  * @param listId - Optional list ID for direct fetch. If provided, fetches the specific list directly.
+ * @throws {NormalizedApiError} When the API request fails
  */
 export async function getWishlist(
     context: LoaderFunctionArgs['context'],
@@ -127,9 +132,8 @@ export async function getWishlist(
     const logger = getLogger(context);
     const clients = createApiClients(context);
 
-    try {
-        // If listId is provided, fetch the wishlist directly
-        if (listId) {
+    if (listId) {
+        try {
             const { data: wishlist } = await clients.shopperCustomers.getCustomerProductList({
                 params: {
                     path: { customerId, listId },
@@ -144,14 +148,14 @@ export async function getWishlist(
             // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
             const items = wishlist.items || wishlist.customerProductListItems || [];
 
-            return {
-                wishlist,
-                items,
-                id,
-            };
+            return { wishlist, items, id };
+        } catch (error) {
+            logger.error('shopperCustomers.getCustomerProductList failed', { customerId, listId });
+            throw new NormalizedApiError(error);
         }
+    }
 
-        // Otherwise, get all product lists and find the wishlist
+    try {
         const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
             params: {
                 path: { customerId },
@@ -162,33 +166,20 @@ export async function getWishlist(
         const wishlist = productLists?.data?.find((list) => list.type === 'wish_list');
 
         if (!wishlist) {
-            return {
-                wishlist: null,
-                items: [],
-                id: null,
-            };
+            return { wishlist: null, items: [], id: null };
         }
 
         // Extract the ID using the defensive pattern (listId may exist at runtime but not in types)
         // @ts-expect-error - listId may exist at runtime but is not in type definitions
         const id = wishlist.listId || wishlist.id || null;
-        // It's possible that id does not exist yet, if Commerce Cloud is still indexing the newly created wishlist
 
         // Commerce SDK may return items in 'items' or 'customerProductListItems' field
         // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
         const items = wishlist.items || wishlist.customerProductListItems || [];
 
-        return {
-            wishlist,
-            items,
-            id,
-        };
+        return { wishlist, items, id };
     } catch (error) {
-        logger.error('Error fetching wishlist', { error });
-        return {
-            wishlist: null,
-            items: [],
-            id: null,
-        };
+        logger.error('shopperCustomers.getCustomerProductLists failed', { customerId });
+        throw new NormalizedApiError(error);
     }
 }

@@ -20,6 +20,7 @@ import { BASKET_COOKIE_NAME, validateBasketSnapshot } from '@/lib/basket/cookie'
 import { getCookieConfig } from '@/lib/cookie-utils.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 // Types
 type Basket = ShopperBasketsV2.schemas['Basket'];
@@ -414,10 +415,13 @@ export const getBasket = async (
         logger.debug('Basket: hydration succeeded');
         return context.get(basketResourceContext) as BasketResource;
     } catch (err) {
-        const loadError = err instanceof Error ? err : new Error('Failed to load basket');
+        const normalizedError = new NormalizedApiError(err);
         logger.error('Basket: hydration failed', { error: err });
-        context.set(basketResourceContext, createBasketResource(basketResource.snapshot, undefined, true, loadError));
-        throw loadError;
+        context.set(
+            basketResourceContext,
+            createBasketResource(basketResource.snapshot, undefined, true, normalizedError)
+        );
+        throw normalizedError;
     }
 };
 

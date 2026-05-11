@@ -67,6 +67,10 @@ const EXCLUDED_COMPONENTS = new Set([
     'region/component-data-context',
     'region/index',
     'region/region-wrapper',
+    // Tiny error-boundary fallback components consumed via React Router's `errorElement` —
+    // depend on `useAsyncError()` which only resolves inside an `<Await>` boundary, so a
+    // standalone story is awkward and offers little value beyond the unit test
+    'cart/cart-load-error',
     // These are basically wrappers around other components, so no value in having storybook stories for them
     'checkout/components/checkout-skeletons',
     'customer-address-form/customer-address-fields',

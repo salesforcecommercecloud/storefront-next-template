@@ -28,17 +28,13 @@ export type FetchProductByIdOptions = Partial<Omit<GetProductQuery, 'siteId'>>;
 /**
  * Fetch multiple products by IDs.
  *
- * IMPORTANT: This function does NOT catch errors. Callers must handle:
- * - 404 errors (products not found)
- * - 401/403 errors (authentication/authorization)
- * - Network errors
- *
- * This ensures proper HTTP semantics for SEO and error boundaries.
+ * Wraps SCAPI's `shopperProducts.getProducts` with operation-context logging and
+ * normalizes any thrown error into `NormalizedApiError` for consistent downstream handling.
  *
  * @param context - Router context
  * @param ids - Array of product IDs (will be deduplicated and trimmed)
  * @param options - Additional query parameters
- * @throws {ApiError} When API request fails
+ * @throws {NormalizedApiError} When the API request fails (including 404s, auth failures, network errors)
  */
 export async function fetchProductsByIds(
     context: LoaderFunctionArgs['context'],
@@ -53,17 +49,24 @@ export async function fetchProductsByIds(
         return [];
     }
 
+    const logger = getLogger(context);
     const clients = createApiClients(context);
-    const { data } = await clients.shopperProducts.getProducts({
-        params: {
-            query: {
-                ids: normalizedIds,
-                ...options,
-            },
-        },
-    });
 
-    return data?.data ?? [];
+    try {
+        const { data } = await clients.shopperProducts.getProducts({
+            params: {
+                query: {
+                    ids: normalizedIds,
+                    ...options,
+                },
+            },
+        });
+
+        return data?.data ?? [];
+    } catch (error) {
+        logger.error('shopperProducts.getProducts failed', { ids: normalizedIds });
+        throw new NormalizedApiError(error);
+    }
 }
 
 /**

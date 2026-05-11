@@ -15,6 +15,8 @@
  */
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { loader } from './_app.cart';
 import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
 import type { Route } from './+types/_app.cart';
@@ -24,59 +26,37 @@ vi.mock('@/middlewares/basket.server', () => ({
     getBasketSnapshot: vi.fn(),
 }));
 
-const mockGetProducts = vi.fn();
-const mockGetPromotions = vi.fn();
-const mockGetStores = vi.fn();
-
-vi.mock('@/lib/api-clients.server', () => ({
-    createApiClients: vi.fn(() => ({
-        shopperProducts: { getProducts: mockGetProducts },
-        shopperPromotions: { getPromotions: mockGetPromotions },
-        shopperStores: { getStores: mockGetStores },
-    })),
+vi.mock('@/lib/cart/basket-products.server', () => ({
+    fetchProductsInBasket: vi.fn(),
 }));
 
-vi.mock('@/lib/logger.server', () => ({
-    getLogger: vi.fn(() => ({
-        error: vi.fn(),
-        warn: vi.fn(),
-        info: vi.fn(),
-        debug: vi.fn(),
-    })),
+vi.mock('@/lib/cart/basket-promotions.server', () => ({
+    fetchPromotionsForBasket: vi.fn(),
 }));
 
-vi.mock('@/lib/api/wishlist.server', () => ({
-    getWishlist: vi.fn().mockResolvedValue({ wishlist: null, items: [], id: null }),
+vi.mock('@/lib/cart/cart-wishlist.server', () => ({
+    fetchWishlistProductIdsForCart: vi.fn(),
 }));
 
-vi.mock('@/middlewares/auth.server', () => ({
-    getAuth: vi.fn(() => ({
-        userType: 'registered' as const,
-        customerId: 'test-customer-id',
-        accessToken: 'test-access-token',
-        accessTokenExpiry: Date.now() + 1_800_000,
-    })),
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+vi.mock('@/extensions/bopis/lib/api/stores.server', () => ({
+    fetchStoresForBasket: vi.fn(),
 }));
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 import { getBasket, getBasketSnapshot } from '@/middlewares/basket.server';
-import { getWishlist } from '@/lib/api/wishlist.server';
+import { fetchProductsInBasket } from '@/lib/cart/basket-products.server';
+import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
+import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 describe('Cart route loader', () => {
     const mockBasket = {
         basketId: 'basket-123',
         productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
         currency: 'USD',
-    };
-
-    const mockProduct = {
-        id: 'product-1',
-        name: 'Test Product',
-        imageGroups: [{ viewType: 'small', images: [{ link: 'https://example.com/1.jpg' }] }],
-        variants: [{ productId: 'product-1', variationValues: { color: 'black', size: 'M' } }],
-        variationAttributes: [
-            { id: 'color', name: 'Color', values: [{ name: 'Black', value: 'black', orderable: true }] },
-            { id: 'size', name: 'Size', values: [{ name: 'M', value: 'M', orderable: true }] },
-        ],
     };
 
     const createLoaderArgs = (): Route.LoaderArgs => ({
@@ -95,26 +75,32 @@ describe('Cart route loader', () => {
             uniqueProductCount: 1,
             currency: 'USD',
         });
-        mockGetProducts.mockResolvedValue({ data: { data: [mockProduct] } });
-        mockGetPromotions.mockResolvedValue({ data: { data: [] } });
-        mockGetStores.mockResolvedValue({ data: { data: [] } });
-        vi.mocked(getWishlist).mockResolvedValue({ wishlist: null, items: [], id: null });
+        vi.mocked(fetchProductsInBasket).mockResolvedValue({
+            productsByItemId: { 'item-1': { id: 'product-1' } as any },
+            bonusProductsById: {},
+        });
+        vi.mocked(fetchPromotionsForBasket).mockResolvedValue({});
+        vi.mocked(fetchWishlistProductIdsForCart).mockResolvedValue([]);
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        vi.mocked(fetchStoresForBasket).mockResolvedValue(new Map());
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
 
-    test('returns basketDataPromise and basketSnapshot', () => {
+    test('returns basketDataPromise, wishlistProductIdsPromise, basketSnapshot, and pageUrl', () => {
         const result = loader(createLoaderArgs()) as any;
 
         expect(result).toHaveProperty('basketDataPromise');
-        expect(result).toHaveProperty('basketSnapshot');
+        expect(result).toHaveProperty('wishlistProductIdsPromise');
         expect(result.basketSnapshot).toEqual({
             basketId: 'basket-123',
             totalItemCount: 1,
             uniqueProductCount: 1,
             currency: 'USD',
         });
+        expect(result.pageUrl).toContain('/cart');
     });
 
-    test('basketDataPromise resolves to basket, products, promotions', async () => {
+    test('basketDataPromise resolves to basket, products, promotions, and stores (no wishlist)', async () => {
         const result = loader(createLoaderArgs()) as any;
         const data = await result.basketDataPromise;
 
@@ -122,27 +108,66 @@ describe('Cart route loader', () => {
         expect(data).toHaveProperty('productsByItemId');
         expect(data).toHaveProperty('bonusProductsById');
         expect(data).toHaveProperty('promotions');
-        expect(data).toHaveProperty('wishlistProductIds');
+        expect(data).toHaveProperty('storesByStoreId');
+        expect(data).not.toHaveProperty('wishlistProductIds');
         expect(data.basket).toEqual(mockBasket);
-        expect(data.productsByItemId).toEqual({ 'item-1': mockProduct });
-        expect(data.productsByItemId['item-1'].variants).toBeDefined();
-        expect(data.productsByItemId['item-1'].variationAttributes).toBeDefined();
+        expect(data.productsByItemId).toEqual({ 'item-1': { id: 'product-1' } });
         expect(data.bonusProductsById).toEqual({});
         expect(data.promotions).toEqual({});
-        expect(data.wishlistProductIds).toEqual([]);
+        expect(data.storesByStoreId).toEqual({});
+    });
+
+    test('wishlistProductIdsPromise resolves independently of basketDataPromise', async () => {
+        vi.mocked(fetchWishlistProductIdsForCart).mockResolvedValue(['wish-1', 'wish-2']);
+
+        const result = loader(createLoaderArgs()) as any;
+
+        await expect(result.wishlistProductIdsPromise).resolves.toEqual(['wish-1', 'wish-2']);
+    });
+
+    test('wishlist failure does NOT reject basketDataPromise (silent degradation)', async () => {
+        vi.mocked(fetchWishlistProductIdsForCart).mockRejectedValue(new NormalizedApiError(new Error('wishlist down')));
+
+        const result = loader(createLoaderArgs()) as any;
+
+        // Wishlist promise rejects ...
+        await expect(result.wishlistProductIdsPromise).rejects.toThrow(NormalizedApiError);
+        // ... but basket promise still resolves cleanly.
+        await expect(result.basketDataPromise).resolves.toMatchObject({ basket: mockBasket });
+    });
+
+    test('basketDataPromise rejects with NormalizedApiError when getBasket fails', async () => {
+        const apiError = new ApiError({
+            status: 500,
+            statusText: 'Server Error',
+            headers: new Headers(),
+            body: { type: 'Server Error', title: 'Server Error', detail: 'Basket down' },
+            rawBody: JSON.stringify({ detail: 'Basket down' }),
+            url: 'https://api.example.com/baskets',
+            method: 'GET',
+        });
+        vi.mocked(getBasket).mockRejectedValue(new NormalizedApiError(apiError));
+
+        const result = loader(createLoaderArgs()) as any;
+
+        await expect(result.basketDataPromise).rejects.toThrow(NormalizedApiError);
+        await expect(result.basketDataPromise).rejects.toMatchObject({ status: 500 });
+    });
+
+    test('basketDataPromise rejects with NormalizedApiError when fetchProductsInBasket fails', async () => {
+        vi.mocked(fetchProductsInBasket).mockRejectedValue(new NormalizedApiError(new TypeError('Network failure')));
+
+        const result = loader(createLoaderArgs()) as any;
+
+        await expect(result.basketDataPromise).rejects.toThrow(NormalizedApiError);
+        await expect(result.basketDataPromise).rejects.toThrow('Network failure');
     });
 
     test('loader works with empty basket', async () => {
         vi.mocked(getBasket).mockResolvedValue({
             current: { basketId: 'basket-123', productItems: [], currency: 'USD' },
         } as any);
-        vi.mocked(getBasketSnapshot).mockReturnValue({
-            basketId: 'basket-123',
-            totalItemCount: 0,
-            uniqueProductCount: 0,
-            currency: 'USD',
-        });
-        mockGetProducts.mockResolvedValue({ data: { data: [] } });
+        vi.mocked(fetchProductsInBasket).mockResolvedValue({ productsByItemId: {}, bonusProductsById: {} });
 
         const result = loader(createLoaderArgs()) as any;
         const data = await result.basketDataPromise;
@@ -151,17 +176,5 @@ describe('Cart route loader', () => {
         expect(data.productsByItemId).toEqual({});
         expect(data.bonusProductsById).toEqual({});
         expect(data.promotions).toEqual({});
-        expect(data.wishlistProductIds).toEqual([]);
-    });
-
-    test('basketDataPromise maps wishlist item product IDs when getWishlist returns items', async () => {
-        vi.mocked(getWishlist).mockResolvedValueOnce({
-            wishlist: { id: 'w1', listId: 'w1' } as any,
-            items: [{ productId: 'product-1', id: 'li-1' } as any, { productId: 'product-2', id: 'li-2' } as any],
-            id: 'w1',
-        });
-        const result = loader(createLoaderArgs()) as any;
-        const data = await result.basketDataPromise;
-        expect(data.wishlistProductIds).toEqual(['product-1', 'product-2']);
     });
 });

@@ -155,6 +155,7 @@ describe('fetchProductsByIds', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        mockLoggerError.mockClear();
     });
 
     test('returns empty array for empty input', async () => {
@@ -226,18 +227,46 @@ describe('fetchProductsByIds', () => {
         expect(result).toEqual([]);
     });
 
-    test('throws errors for caller to handle (no error catching)', async () => {
+    test('throws NormalizedApiError when API call fails with ApiError', async () => {
         const error500 = new ApiError({
             status: 500,
             statusText: 'Server Error',
             headers: new Headers(),
             body: { type: 'Server Error', title: 'Server Error', detail: 'Internal error' },
-            rawBody: '{}',
+            rawBody: JSON.stringify({ detail: 'Internal error' }),
             url: 'https://api.example.com/products',
             method: 'GET',
         });
         mockGetProducts.mockRejectedValue(error500);
 
-        await expect(fetchProductsByIds(mockContext, ['sku-1'])).rejects.toThrow(error500);
+        await expect(fetchProductsByIds(mockContext, ['sku-1'])).rejects.toThrow(NormalizedApiError);
+        await expect(fetchProductsByIds(mockContext, ['sku-1'])).rejects.toMatchObject({ status: 500 });
+    });
+
+    test('throws NormalizedApiError when API call fails with non-API error', async () => {
+        mockGetProducts.mockRejectedValue(new TypeError('Network failure'));
+
+        await expect(fetchProductsByIds(mockContext, ['sku-1'])).rejects.toThrow(NormalizedApiError);
+        await expect(fetchProductsByIds(mockContext, ['sku-1'])).rejects.toThrow('Network failure');
+    });
+
+    test('logs operation context when API call fails', async () => {
+        const error500 = new ApiError({
+            status: 500,
+            statusText: 'Internal Server Error',
+            headers: new Headers(),
+            body: { type: 'Server Error', title: 'Server Error', detail: 'Server error' },
+            rawBody: JSON.stringify({ detail: 'Server error' }),
+            url: 'https://api.example.com/products',
+            method: 'GET',
+        });
+        mockGetProducts.mockRejectedValue(error500);
+
+        await fetchProductsByIds(mockContext, ['sku-a', '  sku-b  ', 'sku-a']).catch(() => {});
+
+        expect(mockLoggerError).toHaveBeenCalledWith(
+            'shopperProducts.getProducts failed',
+            expect.objectContaining({ ids: ['sku-a', 'sku-b'] })
+        );
     });
 });

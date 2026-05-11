@@ -414,6 +414,10 @@
         },
         "inventory": {
             "blockMessage": "Some items exceed available stock. Please adjust quantities or remove items to continue."
+        },
+        "loadError": {
+            "message": "We couldn't load your cart. Please try again.",
+            "retry": "Retry"
         }
     },
     "checkout": {
