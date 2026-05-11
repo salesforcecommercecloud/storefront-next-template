@@ -90,8 +90,9 @@ export type EinsteinActivity = {
     clientIp?: string;
     clientUserAgent?: string;
     realm?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
+    // Activity payloads accept event-specific extension fields (e.g. searchTerm, refinements,
+    // products) whose shape varies per Einstein endpoint and is not statically declared here.
+    [key: string]: unknown;
 };
 
 type EinsteinItem = {

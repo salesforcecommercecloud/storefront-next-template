@@ -635,9 +635,8 @@ describe('account.wishlist loaders', () => {
         test('should return wishlist with items when items are in initial response', async () => {
             const mockWishlist = {
                 id: 'wishlist-1',
-                listId: 'wishlist-1',
                 type: 'wish_list',
-                items: [
+                customerProductListItems: [
                     { id: 'item-1', productId: 'product-1' },
                     { id: 'item-2', productId: 'product-2' },
                 ] as ShopperCustomers.schemas['CustomerProductListItem'][],
@@ -675,9 +674,8 @@ describe('account.wishlist loaders', () => {
         test('should fetch all products for the wishlist (no initial batch limit)', async () => {
             const mockWishlist = {
                 id: 'wishlist-1',
-                listId: 'wishlist-1',
                 type: 'wish_list' as const,
-                items: Array.from({ length: 20 }, (_, i) => ({
+                customerProductListItems: Array.from({ length: 20 }, (_, i) => ({
                     id: `item-${i}`,
                     productId: `product-${i}`,
                     priority: 0,
@@ -743,9 +741,8 @@ describe('account.wishlist loaders', () => {
         test('should return empty wishlist when listId is missing', async () => {
             const mockWishlist: ShopperCustomers.schemas['CustomerProductList'] = {
                 id: undefined,
-                listId: undefined,
                 type: 'wish_list',
-            } as any;
+            };
 
             mockGetCustomerProductLists.mockResolvedValue({
                 data: { data: [mockWishlist] },
@@ -780,9 +777,8 @@ describe('account.wishlist loaders', () => {
         test('should use id field when listId is not available', async () => {
             const mockWishlist = {
                 id: 'wishlist-1',
-                listId: undefined,
                 type: 'wish_list' as const,
-                items: [
+                customerProductListItems: [
                     { id: 'item-1', productId: 'product-1' },
                 ] as ShopperCustomers.schemas['CustomerProductListItem'][],
             };

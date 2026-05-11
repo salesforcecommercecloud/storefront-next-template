@@ -39,10 +39,8 @@ type ProviderComponent = ComponentType<ProviderProps>;
  * ```
  */
 export function applyProviders(...providers: ProviderComponent[]) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (Component: ComponentType<any>) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (props: any): ReactElement => {
+    return <P extends Record<string, unknown>>(Component: ComponentType<P>) => {
+        return (props: P): ReactElement => {
             return providers.reduceRight((acc, Provider) => <Provider>{acc}</Provider>, <Component {...props} />);
         };
     };

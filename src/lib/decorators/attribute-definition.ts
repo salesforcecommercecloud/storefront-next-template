@@ -96,20 +96,25 @@ export interface AttributeDefinitionConfig {
  * ```
  */
 export function AttributeDefinition(config?: AttributeDefinitionConfig) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function (target: any, propertyKey: string | symbol | undefined, parameterIndex?: number) {
+    // The legacy property/parameter decorator signature receives either the prototype
+    // (instance members) or the constructor (static members) as `target` — both are objects.
+    return function (target: object, propertyKey: string | symbol | undefined, parameterIndex?: number) {
         // Handle method parameter decorators
         if (typeof parameterIndex === 'number') {
-            const existingParams = Reflect.getMetadata('attribute:parameters', target) || [];
-            existingParams[parameterIndex] = config;
+            const existingParams =
+                (Reflect.getMetadata('attribute:parameters', target) as AttributeDefinitionConfig[] | undefined) ?? [];
+            existingParams[parameterIndex] = config as AttributeDefinitionConfig;
             Reflect.defineMetadata('attribute:parameters', existingParams, target);
             return;
         }
 
         // Handle class field decorators
         if (propertyKey) {
-            const existingFields = Reflect.getMetadata('attribute:fields', target) || {};
-            existingFields[propertyKey] = config;
+            const existingFields =
+                (Reflect.getMetadata('attribute:fields', target) as
+                    | Record<string | symbol, AttributeDefinitionConfig>
+                    | undefined) ?? {};
+            existingFields[propertyKey] = config as AttributeDefinitionConfig;
             Reflect.defineMetadata('attribute:fields', existingFields, target);
         }
     };
@@ -121,13 +126,17 @@ export function AttributeDefinition(config?: AttributeDefinitionConfig) {
  * @param target - The class constructor or instance
  * @returns Object containing field and parameter attribute definitions
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getAttributeDefinitions(target: any): {
+export function getAttributeDefinitions(target: unknown): {
     fields: Record<string, AttributeDefinitionConfig>;
     parameters: AttributeDefinitionConfig[];
 } {
-    const fields = Reflect.getMetadata('attribute:fields', target) || {};
-    const parameters = Reflect.getMetadata('attribute:parameters', target) || [];
+    const fields =
+        (Reflect.getMetadata('attribute:fields', target as object) as
+            | Record<string, AttributeDefinitionConfig>
+            | undefined) ?? {};
+    const parameters =
+        (Reflect.getMetadata('attribute:parameters', target as object) as AttributeDefinitionConfig[] | undefined) ??
+        [];
 
     return { fields, parameters };
 }
@@ -138,8 +147,7 @@ export function getAttributeDefinitions(target: any): {
  * @param target - The class constructor or instance
  * @returns Array of all attribute definitions
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getAllAttributeDefinitions(target: any): AttributeDefinitionConfig[] {
+export function getAllAttributeDefinitions(target: unknown): AttributeDefinitionConfig[] {
     const { fields, parameters } = getAttributeDefinitions(target);
 
     return [

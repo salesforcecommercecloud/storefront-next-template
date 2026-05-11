@@ -207,16 +207,13 @@ describe('action.wishlist-remove', () => {
         test('should successfully remove product from wishlist using productId', async () => {
             const wishlist = {
                 id: 'wishlist-123',
-                listId: 'wishlist-123',
                 type: 'wish_list',
                 name: 'Wishlist',
-                items: [{ id: 'item-123', productId: 'product-123' }],
                 customerProductListItems: [{ id: 'item-123', productId: 'product-123' }],
             };
 
             const wishlistAfterRemoval = {
                 ...wishlist,
-                items: [],
                 customerProductListItems: [],
             };
 
@@ -225,9 +222,8 @@ describe('action.wishlist-remove', () => {
                     data: [
                         {
                             id: 'wishlist-123',
-                            listId: 'wishlist-123',
                             type: 'wish_list',
-                            items: [{ id: 'item-123', productId: 'product-123' }],
+                            customerProductListItems: [{ id: 'item-123', productId: 'product-123' }],
                         },
                     ],
                 },
@@ -271,10 +267,8 @@ describe('action.wishlist-remove', () => {
         test('should successfully remove product from wishlist using itemId (optimized path)', async () => {
             const wishlistAfterRemoval = {
                 id: 'wishlist-123',
-                listId: 'wishlist-123',
                 type: 'wish_list',
                 name: 'Wishlist',
-                items: [],
                 customerProductListItems: [],
             };
 
@@ -283,9 +277,8 @@ describe('action.wishlist-remove', () => {
                     data: [
                         {
                             id: 'wishlist-123',
-                            listId: 'wishlist-123',
                             type: 'wish_list',
-                            items: [{ id: 'item-123', productId: 'product-123' }],
+                            customerProductListItems: [{ id: 'item-123', productId: 'product-123' }],
                         },
                     ],
                 },
@@ -335,10 +328,8 @@ describe('action.wishlist-remove', () => {
         test('should use itemId when both itemId and productId are provided', async () => {
             const wishlistAfterRemoval = {
                 id: 'wishlist-123',
-                listId: 'wishlist-123',
                 type: 'wish_list',
                 name: 'Wishlist',
-                items: [],
                 customerProductListItems: [],
             };
 
@@ -347,9 +338,8 @@ describe('action.wishlist-remove', () => {
                     data: [
                         {
                             id: 'wishlist-123',
-                            listId: 'wishlist-123',
                             type: 'wish_list',
-                            items: [{ id: 'item-123', productId: 'product-456' }],
+                            customerProductListItems: [{ id: 'item-123', productId: 'product-456' }],
                         },
                     ],
                 },
@@ -416,14 +406,13 @@ describe('action.wishlist-remove', () => {
         test('should return error when item is not found in wishlist', async () => {
             const wishlist = {
                 id: 'wishlist-123',
-                listId: 'wishlist-123',
                 type: 'wish_list',
                 name: 'Wishlist',
-                items: [{ id: 'item-456', productId: 'product-456' }],
+                customerProductListItems: [{ id: 'item-456', productId: 'product-456' }],
             };
 
             mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: { data: [{ id: 'wishlist-123', listId: 'wishlist-123', type: 'wish_list' }] },
+                data: { data: [{ id: 'wishlist-123', type: 'wish_list' }] },
             });
 
             // Note: Commerce SDK getCustomerProductList returns the data directly (unwrapped)
@@ -504,68 +493,6 @@ describe('action.wishlist-remove', () => {
             expect(json.error).toBeDefined();
             expect(json.error.code).toBeDefined();
             expect(json.error.message).toBeDefined();
-        });
-
-        test('should find items in customerProductListItems field when items is empty', async () => {
-            const wishlistAfterRemoval = {
-                id: 'wishlist-123',
-                listId: 'wishlist-123',
-                type: 'wish_list',
-                name: 'Wishlist',
-                items: [],
-                customerProductListItems: [],
-            };
-
-            mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
-                data: {
-                    data: [
-                        {
-                            id: 'wishlist-123',
-                            listId: 'wishlist-123',
-                            type: 'wish_list',
-                            // Use customerProductListItems field (alt field)
-                            customerProductListItems: [{ id: 'item-123', productId: 'product-123' }],
-                        },
-                    ],
-                },
-            });
-
-            // Mock getCustomerProductList to return updated list after removal
-            mockShopperCustomers.getCustomerProductList.mockResolvedValue({ data: wishlistAfterRemoval } as any);
-
-            mockShopperCustomers.deleteCustomerProductListItem.mockResolvedValue({
-                data: {},
-            });
-
-            const request = createRequest('product-123');
-            const args: ActionFunctionArgs = {
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: 'action/wishlist-remove',
-            };
-
-            const response = await action(args);
-            // Success path returns Response.json(), so we need to parse it
-            let json: any;
-            if (response instanceof Response) {
-                json = await response.json();
-            } else if (response && typeof response === 'object' && 'data' in response) {
-                json = (response as any).data;
-            } else {
-                json = await extractResponseData(response);
-            }
-            expect(json).toBeDefined();
-            expect(json.success).toBe(true);
-            expect(mockShopperCustomers.deleteCustomerProductListItem).toHaveBeenCalledWith({
-                params: {
-                    path: expect.objectContaining({
-                        customerId: 'customer-123',
-                        listId: 'wishlist-123',
-                        itemId: 'item-123',
-                    }),
-                },
-            });
         });
     });
 });

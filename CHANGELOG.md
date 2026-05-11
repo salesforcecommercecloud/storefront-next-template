@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Eliminate untyped `any` and remove stale `@ts-expect-error` suppressions in non-test source. Wishlist actions now read SCAPI fields (`id`, `customerProductListItems`) directly; the customer-address form uses `z.input`/`z.output` to handle zod's `.default(false)` transform; engagement adapter config gains specific `einstein`/`dataCloud`/`activeData` shapes; decorator helpers accept `unknown` instead of `any`; i18next dynamic translation keys are typed via `ParseKeys<'countries'>`.
 - Fix split-ship address selection UI to match design: large heading with header separator, single "Add new address" outline button in the card header (alongside "Ship items to one address" link) instead of per-item links, full-width delivery address dropdowns, and full-width continue button (@W-22403488)
 - Fix multi-ship shipping method UI: correct step title size, wrap each shipment in a bordered card with a gray header band showing `Shipment N → Recipient`, separated address line, divider between address and shipping options, unbold method name second line, and full-width continue button (@W-22403507) ([#1645](https://github.com/commerce-emu/storefront-next/pull/1645))
 - Cart badge supports client-only rendering [#1592](https://github.com/commerce-emu/storefront-next/pull/1592)

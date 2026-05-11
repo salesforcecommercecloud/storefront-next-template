@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useMemo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
@@ -154,8 +154,14 @@ export function AddressModal({
     );
 
     const form = useForm<Partial<ShopperCustomers.schemas['CustomerAddress'] & { phoneCountryCode?: string }>>({
-        // @ts-expect-error - zodResolver type mismatch with zod version
-        resolver: zodResolver(schema),
+        // Schema validates a stricter set of fields than `Partial<CustomerAddress>` exposes
+        // (e.g., `address1` is required by the schema but optional in `Partial<>`).
+        // The Resolver generic mismatch is intentional — at runtime the schema enforces
+        // the required fields. Cast to satisfy TS without polluting consumers with the
+        // schema's exact input type.
+        resolver: zodResolver(schema) as Resolver<
+            Partial<ShopperCustomers.schemas['CustomerAddress'] & { phoneCountryCode?: string }>
+        >,
         defaultValues: {
             addressId: defaultValues?.addressId || '',
             firstName: defaultValues?.firstName || '',

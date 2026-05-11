@@ -51,16 +51,15 @@ describe('getWishlist — list-search branch (no listId)', () => {
     test('returns the wish_list product list when present', async () => {
         const wishlist = {
             id: 'list-1',
-            listId: 'list-1',
             type: 'wish_list',
-            items: [{ productId: 'sku-1', id: 'item-1' }],
+            customerProductListItems: [{ productId: 'sku-1', id: 'item-1' }],
         };
         mockGetCustomerProductLists.mockResolvedValue({ data: { data: [wishlist] } });
 
         const result = await getWishlist(mockContext, 'cust-1');
 
         expect(result.wishlist).toEqual(wishlist);
-        expect(result.items).toEqual(wishlist.items);
+        expect(result.items).toEqual(wishlist.customerProductListItems);
         expect(result.id).toBe('list-1');
     });
 
@@ -118,16 +117,15 @@ describe('getWishlist — listId-direct branch', () => {
     test('returns the wishlist when fetched directly by listId', async () => {
         const wishlist = {
             id: 'list-1',
-            listId: 'list-1',
             type: 'wish_list',
-            items: [{ productId: 'sku-1', id: 'item-1' }],
+            customerProductListItems: [{ productId: 'sku-1', id: 'item-1' }],
         };
         mockGetCustomerProductList.mockResolvedValue({ data: wishlist });
 
         const result = await getWishlist(mockContext, 'cust-1', 'list-1');
 
         expect(result.wishlist).toEqual(wishlist);
-        expect(result.items).toEqual(wishlist.items);
+        expect(result.items).toEqual(wishlist.customerProductListItems);
         expect(result.id).toBe('list-1');
         expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
     });

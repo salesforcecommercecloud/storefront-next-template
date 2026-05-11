@@ -139,17 +139,19 @@ async function addToWishlist(
         const clients = createApiClients(context);
 
         // Get or create the wishlist
-        // getOrCreateWishlist guarantees a valid listId or throws an error
+        // getOrCreateWishlist guarantees a wishlist with a valid id, or throws.
         const wishlist = await getOrCreateWishlist(context, customerId);
 
-        // Commerce SDK might return 'id' instead of 'listId' - use 'id' if 'listId' is not available
-        // @ts-expect-error - listId may exist at runtime but is not in type definitions
-        const listId = wishlist.listId || wishlist.id;
+        const listId = wishlist.id;
+        if (!listId) {
+            return {
+                success: false,
+                error: createActionError({ error: new Error('Wishlist is missing an id') }),
+            };
+        }
 
-        // Check if product is already in the wishlist using items from getOrCreateWishlist
-        // The wishlist object already contains all items - no additional API call needed
-        // @ts-expect-error - customerProductListItems may exist at runtime but is not in type definitions
-        const wishlistItems = wishlist.customerProductListItems || wishlist.items || [];
+        // The wishlist object already contains all items — no additional API call needed.
+        const wishlistItems = wishlist.customerProductListItems ?? [];
         const existingItem = wishlistItems.find((item: CustomerProductListItem) => item.productId === productId);
         if (existingItem) {
             return {

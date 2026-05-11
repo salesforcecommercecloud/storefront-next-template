@@ -22,14 +22,17 @@ import type {
 } from '@salesforce/storefront-next-runtime/events';
 
 /**
- * Configuration for adapters
+ * Configuration for adapters.
+ *
+ * Adapter-specific configuration fields (e.g. Einstein's `siteId`, Active Data endpoints) are
+ * passed through this open-ended index signature; each adapter validates and reads only the
+ * fields it understands.
  */
 export type EngagementAdapterConfig = {
     siteId?: string;
     consentCategory?: ConsentCategory;
     eventToggles: Record<AnalyticsEvent['eventType'], boolean>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
+    [key: string]: unknown;
 };
 
 /**

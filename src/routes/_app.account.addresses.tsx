@@ -145,8 +145,7 @@ function AccountAddressesContent({
             void setDefaultAddressFetcher.submit({
                 ...settingDefaultAddress,
                 preferred: true,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any);
+            });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [settingDefaultAddress]);

@@ -70,7 +70,28 @@ export type AppConfig = {
         strictMode: boolean;
     };
     engagement: {
-        adapters: Record<string, EngagementAdapterConfig>;
+        adapters: {
+            einstein: EngagementAdapterConfig & {
+                enabled: boolean;
+                host: string;
+                einsteinId: string;
+                realm: string;
+                siteId: string;
+                isProduction: boolean;
+            };
+            dataCloud: EngagementAdapterConfig & {
+                enabled: boolean;
+                appSourceId: string;
+                tenantId: string;
+                siteId: string;
+            };
+            activeData: EngagementAdapterConfig & {
+                enabled: boolean;
+                host: string;
+                siteUUID: string;
+            };
+            [key: string]: EngagementAdapterConfig;
+        };
         analytics: {
             trackingConsent?: {
                 enabled: boolean;

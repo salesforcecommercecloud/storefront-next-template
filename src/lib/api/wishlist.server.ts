@@ -140,15 +140,11 @@ export async function getWishlist(
                 },
             });
 
-            // Extract the ID using the defensive pattern (listId may exist at runtime but not in types)
-            // @ts-expect-error - listId may exist at runtime but is not in type definitions
-            const id = wishlist.listId || wishlist.id || null;
-
-            // Commerce SDK may return items in 'items' or 'customerProductListItems' field
-            // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
-            const items = wishlist.items || wishlist.customerProductListItems || [];
-
-            return { wishlist, items, id };
+            return {
+                wishlist,
+                items: wishlist.customerProductListItems ?? [],
+                id: wishlist.id || null,
+            };
         } catch (error) {
             logger.error('shopperCustomers.getCustomerProductList failed', { customerId, listId });
             throw new NormalizedApiError(error);
@@ -169,15 +165,12 @@ export async function getWishlist(
             return { wishlist: null, items: [], id: null };
         }
 
-        // Extract the ID using the defensive pattern (listId may exist at runtime but not in types)
-        // @ts-expect-error - listId may exist at runtime but is not in type definitions
-        const id = wishlist.listId || wishlist.id || null;
-
-        // Commerce SDK may return items in 'items' or 'customerProductListItems' field
-        // @ts-expect-error - items and customerProductListItems may exist at runtime but are not in type definitions
-        const items = wishlist.items || wishlist.customerProductListItems || [];
-
-        return { wishlist, items, id };
+        // It's possible that id does not exist yet, if Commerce Cloud is still indexing the newly created wishlist
+        return {
+            wishlist,
+            items: wishlist.customerProductListItems ?? [],
+            id: wishlist.id || null,
+        };
     } catch (error) {
         logger.error('shopperCustomers.getCustomerProductLists failed', { customerId });
         throw new NormalizedApiError(error);

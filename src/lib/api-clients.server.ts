@@ -257,10 +257,11 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
     const globalParamsWithoutLocale = { organizationId, siteId };
     const clientOptions = { querySerializer: defaultQuerySerializer };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const customClientEntries: Record<string, any> = {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const customClientList: any[] = [];
+    // Custom clients have heterogeneous OperationMap shapes. We don't need their specific
+    // method types here — we only call `use(middleware)`, which all proxy clients expose.
+    type MiddlewareCapable = { use(mw: Middleware): void };
+    const customClientEntries: Record<string, MiddlewareCapable> = {};
+    const customClientList: MiddlewareCapable[] = [];
     for (const {
         key,
         basePath,

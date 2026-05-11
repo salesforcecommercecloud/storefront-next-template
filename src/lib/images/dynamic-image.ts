@@ -441,8 +441,8 @@ const obtainImageLinkMedia = (breakpointIndex: number): { min?: string; max?: st
     return { ...toMediaValue(currentBp, 'min'), ...toMediaValue(nextBp, 'max') };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isObject = (o: any): o is Record<string, any> => o?.constructor === Object;
+const isObject = (o: unknown): o is Record<string, unknown> =>
+    typeof o === 'object' && o !== null && o.constructor === Object;
 
 /**
  * @example
@@ -829,16 +829,8 @@ export const getResponsivePictureAttributes = ({
         breakpointLabels = getBreakpointLabels(themeBreakpoints);
     }
 
-    const _widths = widths
-        ? isObject(widths)
-            ? widthsAsArray(widths as Record<string, number | string>)
-            : (widths as Array<number | string>).slice(0)
-        : undefined;
-    const _heights = heights
-        ? isObject(heights)
-            ? widthsAsArray(heights as Record<string, number | string>)
-            : (heights as Array<number | string>).slice(0)
-        : undefined;
+    const _widths = widths ? (isObject(widths) ? widthsAsArray(widths) : widths.slice(0)) : undefined;
+    const _heights = heights ? (isObject(heights) ? widthsAsArray(heights) : heights.slice(0)) : undefined;
     const { sources, links } = getResponsiveSourcesAndLinks(src, {
         widths: _widths,
         heights: _heights,

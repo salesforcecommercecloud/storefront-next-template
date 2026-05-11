@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { createLogger } from '@/lib/logger';
 import {
@@ -53,7 +52,7 @@ export function PageDesignerHostProvider({
             createHostApi({
                 id: 'test-host',
                 emitter: {
-                    postMessage: (message: any) => window.postMessage(message, '*'),
+                    postMessage: (message: unknown) => window.postMessage(message, '*'),
                     addEventListener: (handler) => {
                         const listener = (event: MessageEvent) => handler(event.data);
 
@@ -98,7 +97,7 @@ export function PageDesignerHostProvider({
     // Window won't exist during SSR.
     if (expose && typeof window !== 'undefined') {
         // Expose the host object to the window to allow API methods to be called from the console.
-        (window as any).PageDesignerHost = host;
+        (window as unknown as { PageDesignerHost: typeof host }).PageDesignerHost = host;
     }
 
     return <></>;

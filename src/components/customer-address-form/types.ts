@@ -18,6 +18,7 @@ import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 
 // Type for the form data (inferred from schema in index.tsx)
+// This is the parsed/output shape (after .default(false) is applied to `preferred`).
 export type CustomerAddressFormData = {
     addressId?: string;
     firstName: string;
@@ -30,6 +31,12 @@ export type CustomerAddressFormData = {
     stateCode: string;
     postalCode: string;
     preferred: boolean;
+};
+
+// Form input shape — mirrors CustomerAddressFormData but `preferred` is optional
+// because the schema applies `.default(false)` only on parse.
+export type CustomerAddressFormInput = Omit<CustomerAddressFormData, 'preferred'> & {
+    preferred?: boolean;
 };
 
 // Props interface for CustomerAddressForm component
@@ -49,6 +56,5 @@ export interface CustomerAddressFormProps {
 
 // Props interface for CustomerAddressFields component
 export interface CustomerAddressFieldsProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    form: UseFormReturn<CustomerAddressFormData, any, any>;
+    form: UseFormReturn<CustomerAddressFormInput, unknown, CustomerAddressFormData>;
 }

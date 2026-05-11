@@ -98,7 +98,12 @@ export const createCustomerAddressFormSchema = (t: TFunction<any, any>) => {
 };
 
 // Type export
-export type CustomerAddressFormData = z.infer<ReturnType<typeof createCustomerAddressFormSchema>>;
+// CustomerAddressFormData is the parsed/output shape (after .default() runs).
+// CustomerAddressFormInput is the input shape (preferred is optional).
+// Both are also exported from ./types — kept here for backward compatibility with
+// existing imports from './index'.
+export type CustomerAddressFormData = z.output<ReturnType<typeof createCustomerAddressFormSchema>>;
+export type CustomerAddressFormInput = z.input<ReturnType<typeof createCustomerAddressFormSchema>>;
 
 // Export main component
 export { CustomerAddressForm } from './form';
