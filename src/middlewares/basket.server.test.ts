@@ -18,9 +18,11 @@ import { createCookie, RouterContextProvider, type MiddlewareFunction } from 're
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getCookieConfig } from '@/lib/cookie-utils.server';
+import { validateBasketSnapshot } from '@/lib/basket/cookie';
 import createBasketMiddleware, {
     basketMetadataContext,
     basketResourceContext,
+    defaultCreateSnapshot,
     destroyBasket,
     getBasket,
     getBasketSnapshot,
@@ -135,6 +137,74 @@ describe('basket.server middleware', () => {
         const basketResource = mockContext.get(basketResourceContext);
         expect(basketResource?.snapshot).toEqual(snapshot);
         expect(basketResource?.hydrated).toBe(false);
+        // Happy path must be silent. A regression that drops the warn down to a different message channel
+        // (or moves the discard log to warn level) would otherwise go unnoticed.
+        expect(mockLogger.warn).not.toHaveBeenCalled();
+    });
+
+    test('discards a malformed cookie snapshot rather than exposing it to loaders', async () => {
+        // A tampered or otherwise malformed cookie can deserialize to a shape-wrong object — non-string
+        // basketId, non-finite counts, etc. The middleware must run the parsed value through the shared
+        // shape validator so a value like `{ basketId: 'b', totalItemCount: 'oops', uniqueProductCount: 0 }`
+        // doesn't reach the badge UI as `"oops items"`. The expectation here is `null`, not the malformed
+        // object.
+        const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+        const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+        const malformed = {
+            basketId: 'basket-malformed',
+            totalItemCount: 'not-a-number',
+            uniqueProductCount: null,
+        } as unknown as BasketSnapshot;
+        const cookieHeader = await basketCookie.serialize(malformed);
+        mockRequest = new Request('https://example.com', {
+            headers: { Cookie: cookieHeader },
+        });
+
+        const middleware = createBasketMiddleware({ mode: 'lazy' });
+        await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+        const basketResource = mockContext.get(basketResourceContext);
+        expect(basketResource?.snapshot).toBeNull();
+        // Logged at debug: a malformed cookie is request-controlled input. Logging at warn would let an attacker
+        // rate-limit the warn channel by replaying junk cookies.
+        expect(mockLogger.warn).not.toHaveBeenCalled();
+        expect(mockLogger.debug).toHaveBeenCalledWith(
+            'Basket: discarding malformed snapshot cookie',
+            expect.objectContaining({ cookieName: '__sfdc_basket' })
+        );
+    });
+
+    describe('writer ↔ validator contract', () => {
+        // These tests pin the invariant that whatever `defaultCreateSnapshot` writes survives the
+        // `validateBasketSnapshot` shape check unchanged. A future writer change (e.g. `bigint` counts,
+        // optional `basketId`, etc.) that silently breaks the read path is the regression these guard against.
+        test('defaultCreateSnapshot output is accepted by validateBasketSnapshot', () => {
+            const snapshot = defaultCreateSnapshot({
+                basketId: 'basket-rt',
+                productItems: [
+                    { productId: 'p1', quantity: 2 },
+                    { productId: 'p2', quantity: 3 },
+                ],
+            } as Parameters<typeof defaultCreateSnapshot>[0]);
+            expect(validateBasketSnapshot(JSON.parse(JSON.stringify(snapshot)))).toEqual(snapshot);
+        });
+
+        test('defaultCreateSnapshot output for an empty basket is accepted', () => {
+            const snapshot = defaultCreateSnapshot({
+                basketId: 'basket-empty',
+                productItems: [],
+            } as Parameters<typeof defaultCreateSnapshot>[0]);
+            expect(validateBasketSnapshot(JSON.parse(JSON.stringify(snapshot)))).toEqual(snapshot);
+        });
+
+        test('defaultCreateSnapshot output for a basket missing basketId is rejected', () => {
+            // `defaultCreateSnapshot` falls back to '' when the basket lacks an id; the validator must reject
+            // that, mirroring the client cookie reader's rejection of empty-string ids.
+            const snapshot = defaultCreateSnapshot({
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            } as Parameters<typeof defaultCreateSnapshot>[0]);
+            expect(validateBasketSnapshot(JSON.parse(JSON.stringify(snapshot)))).toBeNull();
+        });
     });
 
     test('getBasketSnapshot returns null when no context is set', () => {

@@ -16,6 +16,7 @@
 import { createContext, createCookie, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
 import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
+import { BASKET_COOKIE_NAME, validateBasketSnapshot } from '@/lib/basket/cookie';
 import { getCookieConfig } from '@/lib/cookie-utils.server';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
@@ -80,8 +81,6 @@ export type BasketMetadata = {
 };
 
 // Constants
-// Shared basket identifiers across server and client
-export const BASKET_COOKIE_NAME = '__sfdc_basket';
 const GUEST_BASKET_COOKIE_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 const REGISTERED_BASKET_COOKIE_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_BASKET_MIDDLEWARE_CONFIG: Required<
@@ -280,9 +279,15 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
         const basketCookie = createCookie(cookieName, cookieConfig);
         const cookieHeader = request.headers.get('Cookie') || '';
 
-        // Get the snapshot from the cookie.
-        snapshot = cookieHeader ? await basketCookie.parse(cookieHeader) : undefined;
+        // Get the snapshot from the cookie. Run the parsed value through the shape validator so that a tampered or
+        // malformed cookie can never reach loaders/SSR.
+        const cookiePresent = cookieHeader.includes(`${cookieName}=`);
+        const parsedFromCookie = cookieHeader ? await basketCookie.parse(cookieHeader) : null;
+        snapshot = validateBasketSnapshot(parsedFromCookie);
         logger.debug('Basket: middleware starting', { mode, hasSnapshot: !!snapshot });
+        if (cookiePresent && !snapshot) {
+            logger.debug('Basket: discarding malformed snapshot cookie', { cookieName });
+        }
 
         // Build and set the basket in the context.
         context.set(basketResourceContext, createBasketResource(snapshot, basket));
