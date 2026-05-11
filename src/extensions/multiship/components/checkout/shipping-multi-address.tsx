@@ -32,7 +32,7 @@
  * @module ShippingMultiAddress
  */
 
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import {
@@ -230,22 +230,23 @@ export default function ShippingMultiAddress({
         return productItems || [];
     }, [isEditing, productMap, productItems]);
 
-    // Remember all addresses that have ever been in itemAddresses
-    const rememberedAddresses = useRef<Map<string, ShopperCustomers.schemas['CustomerAddress']>>(new Map());
+    // Remember all addresses that have ever been added via the modal
+    const [rememberedAddresses, setRememberedAddresses] = useState<
+        Map<string, ShopperCustomers.schemas['CustomerAddress']>
+    >(new Map());
 
     // Get consolidated addresses for selection
     const availableAddresses = useMemo(() => {
         if (!isEditing) return [];
 
-        // Include remembered addresses with consolidated addresses
-        const rememberedAddressesArray = Array.from(rememberedAddresses.current.values());
+        const rememberedAddressesArray = Array.from(rememberedAddresses.values());
         const allAddresses = [...consolidatedAddresses, ...rememberedAddressesArray];
 
         return updateItemAddresses({
             itemAddresses,
             consolidatedAddresses: allAddresses,
         });
-    }, [isEditing, itemAddresses, consolidatedAddresses]);
+    }, [isEditing, itemAddresses, consolidatedAddresses, rememberedAddresses]);
 
     const handleAddressSelect = (itemId: string, addressId: string) => {
         const selectedAddress = availableAddresses.find((addr) => addr.addressId === addressId);
@@ -322,39 +323,15 @@ export default function ShippingMultiAddress({
     const handleAddAddress = (newAddress: ShopperCustomers.schemas['CustomerAddress']) => {
         const address = newAddress.addressId?.trim() ? newAddress : { ...newAddress, addressId: generateAddressId() };
 
-        // Remember the new address
+        // Remember the new address so it appears in all dropdowns
         const addressKey = getAddressKey(address);
-        rememberedAddresses.current.set(addressKey, address);
+        setRememberedAddresses((prev) => new Map(prev).set(addressKey, address));
 
-        // If currentItemId is set, assign the address to that item
+        // If triggered from a specific item, also auto-assign to that item
         if (currentItemId) {
-            setItemAddresses((prev) => {
-                const newMap = new Map(prev);
-                newMap.set(currentItemId, address);
-                return newMap;
-            });
-
-            // Update all items to have the new address if item is not assigned to any addresses yet
-            itemsToDisplay.forEach((item) => {
-                const itemId = item.itemId;
-                if (itemId && !itemAddresses.has(itemId)) {
-                    setItemAddresses((prev) => {
-                        const newMap = new Map(prev);
-                        newMap.set(itemId, address);
-                        return newMap;
-                    });
-                }
-            });
-
+            setItemAddresses((prev) => new Map(prev).set(currentItemId, address));
             setCurrentItemId(undefined);
         }
-    };
-
-    // Handle opening AddAddressDialog for a specific item
-    const handleOpenAddAddressDialog = (itemId: string) => () => {
-        if (!itemId) return;
-        setCurrentItemId(itemId);
-        setAddAddressDialogOpen(true);
     };
 
     // Handle saving addresses to context before toggling to single-address mode
@@ -366,8 +343,35 @@ export default function ShippingMultiAddress({
         handleToggleShippingAddressMode();
     };
 
-    const stepTitle = (
-        <span className="text-sm font-semibold text-foreground">
+    const stepTitle = isEditing ? (
+        <div className="flex items-center justify-between w-full">
+            <span className="text-2xl font-bold tracking-tight text-card-foreground">
+                {tMultiship('checkout.shippingMultiAddressTitle')}
+            </span>
+            <div className="flex items-center gap-2">
+                <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="cursor-pointer text-xs font-normal leading-normal h-auto"
+                    onClick={handleToggleShippingAddressModeToSingleAddress}>
+                    {tMultiship('checkout.shipItemsToOneAddress')}
+                </Button>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="text-xs font-normal"
+                    onClick={() => {
+                        setCurrentItemId(undefined);
+                        setAddAddressDialogOpen(true);
+                    }}>
+                    {tMultiship('checkout.addNewAddress')}
+                </Button>
+            </div>
+        </div>
+    ) : (
+        <span className="text-2xl font-bold tracking-tight text-card-foreground">
             {tMultiship('checkout.shippingMultiAddressTitle')}
         </span>
     );
@@ -380,8 +384,7 @@ export default function ShippingMultiAddress({
                 editing={isEditing}
                 onEdit={onEdit}
                 editLabel={tMultiship('checkout.edit')}
-                editAction={tMultiship('checkout.shipItemsToOneAddress')}
-                onEditActionClick={handleToggleShippingAddressModeToSingleAddress}>
+                showHeaderSeparator>
                 <ToggleCardEdit>
                     <form onSubmit={handleSubmitShippingMultiAddress} className="space-y-4">
                         {itemsToDisplay.map((productItem, index) => {
@@ -438,49 +441,40 @@ export default function ShippingMultiAddress({
                                             {tMultiship('checkout.deliveryAddressLabel')}*
                                         </label>
 
-                                        <NativeSelect
-                                            className="w-full h-9 text-sm"
-                                            value={
-                                                productItem?.itemId
-                                                    ? itemAddresses.get(productItem.itemId)?.addressId || ''
-                                                    : ''
-                                            }
-                                            onChange={(e) => {
-                                                if (productItem?.itemId) {
-                                                    handleAddressSelect(productItem.itemId, e.target.value);
+                                        <div className="[&_[data-slot=native-select-wrapper]]:w-full">
+                                            <NativeSelect
+                                                className="w-full h-9 text-sm"
+                                                value={
+                                                    productItem?.itemId
+                                                        ? itemAddresses.get(productItem.itemId)?.addressId || ''
+                                                        : ''
                                                 }
-                                            }}
-                                            id={`delivery-address-select-${productItem?.itemId || index}`}
-                                            data-testid={`delivery-address-select-${productItem?.itemId || index}`}>
-                                            <option value="" disabled>
-                                                {availableAddresses.length > 0
-                                                    ? tMultiship('checkout.selectAddress')
-                                                    : tMultiship('checkout.noAddressAvailable')}
-                                            </option>
-                                            {availableAddresses.map((address) => (
-                                                <option key={address.addressId} value={address.addressId}>
-                                                    {formatAddress(address).fullAddress}
+                                                onChange={(e) => {
+                                                    if (productItem?.itemId) {
+                                                        handleAddressSelect(productItem.itemId, e.target.value);
+                                                    }
+                                                }}
+                                                id={`delivery-address-select-${productItem?.itemId || index}`}
+                                                data-testid={`delivery-address-select-${productItem?.itemId || index}`}>
+                                                <option value="" disabled>
+                                                    {availableAddresses.length > 0
+                                                        ? tMultiship('checkout.selectAddress')
+                                                        : tMultiship('checkout.noAddressAvailable')}
                                                 </option>
-                                            ))}
-                                        </NativeSelect>
-
-                                        <button
-                                            type="button"
-                                            onClick={handleOpenAddAddressDialog(productItem?.itemId ?? '')}
-                                            className="flex items-center gap-1 text-primary font-semibold text-sm mt-1 hover:underline text-left w-fit">
-                                            + {tMultiship('checkout.addNewAddress')}
-                                        </button>
+                                                {availableAddresses.map((address) => (
+                                                    <option key={address.addressId} value={address.addressId}>
+                                                        {formatAddress(address).fullAddress}
+                                                    </option>
+                                                ))}
+                                            </NativeSelect>
+                                        </div>
                                     </div>
                                 </div>
                             );
                         })}
 
-                        <div className="flex justify-end pt-4">
-                            <Button
-                                type="submit"
-                                disabled={isLoading}
-                                size="lg"
-                                className="min-w-56 h-12 text-base font-semibold">
+                        <div className="pt-2">
+                            <Button type="submit" disabled={isLoading} className="w-full">
                                 {isLoading ? tMultiship('checkout.submitting') : tMultiship('checkout.continue')}
                             </Button>
                         </div>
