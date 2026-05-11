@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, Suspense } from 'react';
+import { type ReactElement, Suspense, useState } from 'react';
 import { Await } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useDeferredRender } from '@/hooks/use-deferred-render';
@@ -66,6 +66,15 @@ export default function DeferredProductGrid({
 }): ReactElement {
     const shouldRenderNonCritical = useDeferredRender(nonCriticalCount > 0);
 
+    // Pin the non-critical promise to its first reference for the lifetime of this component
+    // instance. Without pinning, any non-navigating loader revalidation (e.g. a useFetcher.submit
+    // from a tile-level mutation like wishlist-add) returns a fresh promise from the loader, which
+    // <Await> treats as a new resolve and re-suspends — unmounting every tile (and any in-flight
+    // fetcher whose owning component lives inside). Routes invalidate this pinned reference by
+    // remounting via `key={productGridDataKey}` whenever URL identity changes (pagination, sort,
+    // refine), which is the only time we actually want fresh non-critical data.
+    const [pinnedNonCritical] = useState(() => nonCritical);
+
     const gridProps = {
         critical,
         hasRefinementsPanel,
@@ -93,7 +102,7 @@ export default function DeferredProductGrid({
 
     return (
         <Suspense fallback={<ProductGrid {...gridProps} skeletonCount={nonCriticalCount} />}>
-            <Await resolve={nonCritical} errorElement={errorFallback}>
+            <Await resolve={pinnedNonCritical} errorElement={errorFallback}>
                 {(products: ProductSearchHit[]) => <ProductGrid {...gridProps} nonCritical={products} />}
             </Await>
         </Suspense>

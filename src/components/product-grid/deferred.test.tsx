@@ -162,6 +162,52 @@ describe('DeferredProductGrid — three-phase rendering', () => {
     });
 });
 
+describe('DeferredProductGrid — promise pinning across revalidation', () => {
+    beforeEach(() => vi.clearAllMocks());
+    afterEach(() => vi.clearAllMocks());
+
+    test('does not re-suspend when parent re-renders with a fresh pending promise reference', async () => {
+        vi.mocked(useDeferredRender).mockReturnValue(true);
+
+        const initial = Promise.resolve([p2, p3]);
+
+        // A wrapper that lets us swap in a new promise without rebuilding the router (which
+        // would force a remount of the whole subtree and mask the bug).
+        function Harness({ promise }: { promise: Promise<(typeof p2)[]> }) {
+            return (
+                <ConfigWrapper>
+                    <DeferredProductGrid critical={[p1]} nonCritical={promise} nonCriticalCount={4} />
+                </ConfigWrapper>
+            );
+        }
+
+        const router = createMemoryRouter([{ path: '/test', element: <Harness promise={initial} /> }], {
+            initialEntries: ['/test'],
+        });
+
+        const { rerender } = render(<RouterProvider router={router} />);
+        await act(() => initial);
+
+        const initialTile = screen.getByTestId('product-tile-p2');
+        expect(initialTile).toBeInTheDocument();
+
+        // Simulate a non-navigating loader revalidation: a brand-new pending promise reference
+        // is passed in for the same conceptual data. Without pinning, <Await> would re-suspend
+        // and swap to its skeleton fallback — orphaning any in-flight useFetcher inside the
+        // grid (e.g. wishlist).
+        const fresh = new Promise<(typeof p2)[]>(() => {});
+        const router2 = createMemoryRouter([{ path: '/test', element: <Harness promise={fresh} /> }], {
+            initialEntries: ['/test'],
+        });
+        rerender(<RouterProvider router={router2} />);
+
+        // Tiles still rendered; no skeleton fallback was swapped in.
+        expect(screen.getByTestId('product-tile-p2')).toBeInTheDocument();
+        expect(screen.getByTestId('product-tile-p3')).toBeInTheDocument();
+        expect(screen.queryByTestId('product-tile-skeleton')).not.toBeInTheDocument();
+    });
+});
+
 describe('DeferredProductGrid — error handling', () => {
     beforeEach(() => vi.clearAllMocks());
     afterEach(() => vi.clearAllMocks());
