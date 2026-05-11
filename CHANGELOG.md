@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Fix multi-ship shipping method UI: correct step title size, wrap each shipment in a bordered card with a gray header band showing `Shipment N → Recipient`, separated address line, divider between address and shipping options, unbold method name second line, and full-width continue button (@W-22403507) ([#1645](https://github.com/commerce-emu/storefront-next/pull/1645))
 - Cart badge supports client-only rendering [#1592](https://github.com/commerce-emu/storefront-next/pull/1592)
 - Retype route actions and loaders for end-to-end type inference: consumers can now use `useFetcher<typeof action>()` / `useLoaderData<typeof loader>()` and TypeScript derives the response shape. Standardized every action on `data(payload, init?)` returns. See [README-DATA.md](./docs/README-DATA.md) for the pattern.
 - Add Einstein product recommendations to the cart page: render "You might also like" (driven by basket items) and "Recently viewed" carousels below the cart line items, reusing the existing `<ProductRecommendations>` component and the `EINSTEIN_RECOMMENDERS.CART_*` constants ([#1626](https://github.com/commerce-emu/storefront-next/pull/1626))

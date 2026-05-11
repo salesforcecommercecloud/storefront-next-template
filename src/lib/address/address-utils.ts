@@ -114,6 +114,8 @@ type FormattedAddress = {
     streetLine: string;
     /** City line (postalCode, city, stateCode, countryCode). */
     cityLine: string;
+    /** Street and city joined for display (streetLine + cityLine). */
+    addressLine: string;
     /** Single-line format for dropdowns: name, address1, city, stateCode, postalCode. */
     fullAddress: string;
 };
@@ -129,7 +131,7 @@ export function formatAddress(
     fallbackText: string = ''
 ): FormattedAddress {
     if (!address) {
-        return { nameLine: '', streetLine: '', cityLine: '', fullAddress: fallbackText };
+        return { nameLine: '', streetLine: '', cityLine: '', addressLine: '', fullAddress: fallbackText };
     }
     const nameLine =
         address.firstName && address.lastName
@@ -146,7 +148,8 @@ export function formatAddress(
         address.postalCode,
     ].filter(Boolean);
     const fullAddress = fullAddressParts.join(', ');
-    return { nameLine, streetLine, cityLine, fullAddress };
+    const addressLine = [streetLine, cityLine].filter(Boolean).join(', ');
+    return { nameLine, streetLine, cityLine, addressLine, fullAddress };
 }
 
 /**

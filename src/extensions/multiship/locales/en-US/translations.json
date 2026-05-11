@@ -32,6 +32,7 @@
         "continue": "Continue to Shipping Options",
         "submitting": "Submitting",
         "shipmentNumber": "Shipment {{number}}:",
+        "shipmentNumberWithRecipient": "Shipment {{number}} → {{name}}",
         "shippingMethodsForShipment": "Shipping methods for shipment {{number}}",
         "noShipmentsAvailable": "No shipments available",
         "noMethodSelected": "No method selected",

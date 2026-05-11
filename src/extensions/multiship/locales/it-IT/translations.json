@@ -32,6 +32,7 @@
         "continue": "Continuar a opciones de envío",
         "submitting": "Enviando",
         "shipmentNumber": "Envío {{number}}:",
+        "shipmentNumberWithRecipient": "Envío {{number}} → {{name}}",
         "shippingMethodsForShipment": "Métodos de envío para envío {{number}}",
         "noShipmentsAvailable": "No hay envíos disponibles",
         "noMethodSelected": "Ningún método seleccionado",
