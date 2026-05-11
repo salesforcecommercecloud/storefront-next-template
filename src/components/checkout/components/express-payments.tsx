@@ -15,6 +15,7 @@
  */
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import StaticPayPalButton from './static-paypal-button';
 import StaticVenmoButton from './static-venmo-button';
 import ApplePayLogo from './apple-pay-logo';
@@ -26,7 +27,7 @@ interface ExpressPaymentsProps {
     disabled?: boolean;
     /**
      * Layout orientation for the payment buttons
-     * - 'horizontal': Responsive grid layout (1 col mobile, 2 cols tablet, 4 cols desktop)
+     * - 'horizontal': Responsive grid layout (2 cols mobile/tablet, 5 cols desktop)
      * - 'vertical': Stacked vertical layout (all buttons in single column)
      * @default 'horizontal'
      */
@@ -135,8 +136,7 @@ export default function ExpressPayments({
         }
     };
 
-    const gridClasses =
-        layout === 'vertical' ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2';
+    const gridClasses = layout === 'vertical' ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-2 lg:grid-cols-5 gap-2';
 
     const separator = (
         <div className="relative flex items-center gap-[15px]">
@@ -179,11 +179,14 @@ export default function ExpressPayments({
                     <StaticPayPalButton onClick={handlePayPalClick} disabled={disabled} />
                     <StaticVenmoButton onClick={handleVenmoClick} disabled={disabled} />
 
-                    {/* Amazon Pay Button */}
+                    {/* Amazon Pay Button — spans full width when it's the unpaired last item in a 2-col grid */}
                     <Button
                         onClick={handleAmazonPayClick}
                         disabled={disabled}
-                        className="w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+                        className={cn(
+                            'w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors',
+                            layout === 'horizontal' && 'max-lg:col-span-2'
+                        )}
                         aria-label={amazonPayLabel}>
                         <AmazonPayLogo className="flex-shrink-0" decorative />
                     </Button>

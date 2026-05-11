@@ -174,7 +174,7 @@ describe('ExpressPayments Integration Tests', () => {
             const { container } = render(<ExpressPayments {...createDefaultProps()} />);
 
             const gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('grid-cols-2');
             expect(gridContainer).toHaveClass('lg:grid-cols-5');
         });
 
@@ -183,7 +183,7 @@ describe('ExpressPayments Integration Tests', () => {
 
             const gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).not.toHaveClass('grid-cols-2');
             expect(gridContainer).not.toHaveClass('lg:grid-cols-5');
         });
 
@@ -510,7 +510,7 @@ describe('ExpressPayments Integration Tests', () => {
             );
 
             let gridContainer = container.querySelector('.grid');
-            expect(gridContainer).toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).toHaveClass('grid-cols-2');
             expect(gridContainer).toHaveClass('lg:grid-cols-5');
 
             // Change to vertical
@@ -518,7 +518,7 @@ describe('ExpressPayments Integration Tests', () => {
 
             gridContainer = container.querySelector('.grid');
             expect(gridContainer).toHaveClass('grid-cols-1');
-            expect(gridContainer).not.toHaveClass('sm:grid-cols-3');
+            expect(gridContainer).not.toHaveClass('grid-cols-2');
         });
 
         test('updates separator position prop correctly', () => {
