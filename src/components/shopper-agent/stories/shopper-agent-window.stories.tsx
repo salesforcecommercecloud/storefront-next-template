@@ -51,6 +51,7 @@ It does not render visible UI; it mounts the embedded service. In Storybook the 
         currency: { control: 'text' },
         siteId: { control: 'text' },
         userId: { control: 'text' },
+        usid: { control: 'text' },
     },
 };
 
@@ -75,5 +76,16 @@ export const WithUserId: Story = {
         siteId: mockSiteObject.id,
         domainUrl: 'https://example.com/',
         userId: 'user-123',
+    },
+};
+
+export const WithUsid: Story = {
+    args: {
+        config: mockConfig,
+        locale: 'en-US',
+        currency: 'USD',
+        siteId: mockSiteObject.id,
+        domainUrl: 'https://example.com/',
+        usid: 'usid-abc-123',
     },
 };

@@ -45,18 +45,25 @@ interface ShopperAgentUIProps {
     locale: string;
     currency?: string;
     userId?: string;
+    usid?: string;
 }
 
 /**
  * Shopper Agent UI chunk – loads Embedded Messaging script and mounts the chat window.
  * Loaded after first paint via preload + requestAnimationFrame so it stays off the critical path.
  */
-export default function ShopperAgentUI({ commerceAgentConfiguration, locale, currency, userId }: ShopperAgentUIProps) {
+export default function ShopperAgentUI({
+    commerceAgentConfiguration,
+    locale,
+    currency,
+    userId,
+    usid,
+}: ShopperAgentUIProps) {
     if (!validateShopperAgentConfig(commerceAgentConfiguration)) {
         return null;
     }
 
-    const domainUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const domainUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
     return (
         <div data-testid="shopper-agent">
@@ -66,6 +73,7 @@ export default function ShopperAgentUI({ commerceAgentConfiguration, locale, cur
                 currency={currency}
                 siteId={commerceAgentConfiguration.siteId}
                 userId={userId}
+                usid={usid}
                 domainUrl={domainUrl}
             />
         </div>

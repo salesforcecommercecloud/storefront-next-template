@@ -41,6 +41,7 @@ interface ShopperAgentWindowProps {
     currency?: string;
     siteId: string;
     userId?: string;
+    usid?: string;
     domainUrl: string;
     onReady?: () => void;
 }
@@ -64,6 +65,7 @@ export function ShopperAgentWindow({
     currency,
     siteId,
     userId,
+    usid,
     domainUrl,
     onReady,
 }: ShopperAgentWindowProps) {
@@ -270,6 +272,10 @@ export function ShopperAgentWindow({
                     prechatFields.UserId = userId;
                 }
 
+                if (usid) {
+                    prechatFields.Usid = usid;
+                }
+
                 void window.embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields(prechatFields);
 
                 if (onReady) {
@@ -324,7 +330,7 @@ export function ShopperAgentWindow({
                 handleEmbeddedMessagingFirstBotMessageSent
             );
         };
-    }, [siteId, locale, currency, userId, domainUrl, onReady]);
+    }, [siteId, locale, currency, userId, usid, domainUrl, onReady]);
 
     // This component doesn't render visible UI, only manages the messaging service
     return null;

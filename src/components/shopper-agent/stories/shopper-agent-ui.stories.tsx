@@ -49,6 +49,7 @@ When configuration is invalid, renders null. In Storybook the embedded script is
         locale: { control: 'text' },
         currency: { control: 'text' },
         userId: { control: 'text' },
+        usid: { control: 'text' },
     },
 };
 
@@ -90,5 +91,14 @@ export const WithUserId: Story = {
         locale: 'en-US',
         currency: 'USD',
         userId: 'user-123',
+    },
+};
+
+export const WithUsid: Story = {
+    args: {
+        commerceAgentConfiguration: validConfig,
+        locale: 'en-US',
+        currency: 'USD',
+        usid: 'usid-abc-123',
     },
 };

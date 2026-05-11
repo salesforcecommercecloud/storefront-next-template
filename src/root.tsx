@@ -679,6 +679,7 @@ export default function App({
                     locale={shopperAgentLocale}
                     currency={currency}
                     userId={clientAuth?.customerId}
+                    usid={clientAuth?.usid}
                 />
             )}
         </ComposeProviders>
