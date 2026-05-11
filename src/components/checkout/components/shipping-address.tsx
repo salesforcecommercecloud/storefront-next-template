@@ -312,26 +312,28 @@ export default function ShippingAddress({
             isLoading={isLoading}>
             <ToggleCardEdit>
                 {hasSavedAddresses ? (
-                    <div className="flex flex-col gap-4 pt-2">
+                    <div className="flex flex-col gap-4 pt-2 pb-2">
                         <SavedAddressesList
                             addresses={savedAddresses}
                             value={effectiveSelectedId}
                             onValueChange={setSelectedAddressId}
                             onEditAddress={handleEditAddress}
                         />
-                        <Button
-                            type="button"
-                            disabled={isLoading}
-                            className="w-full"
-                            onClick={handleSavedAddressSubmit}>
-                            {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
-                        </Button>
+                        <div className="w-full pt-2">
+                            <Button
+                                type="button"
+                                disabled={isLoading}
+                                className="w-full"
+                                onClick={handleSavedAddressSubmit}>
+                                {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
+                            </Button>
+                        </div>
                     </div>
                 ) : (
                     <Form {...form}>
                         <form
                             onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
-                            className="flex flex-col gap-4 pt-2">
+                            className="flex flex-col gap-4 pt-2 pb-2">
                             <AddressFormFields
                                 form={form}
                                 showPhone={false}
@@ -340,9 +342,11 @@ export default function ShippingAddress({
                                 autoFocusField="firstName"
                                 countryCode={DEFAULT_COUNTRY_CODE}
                             />
-                            <Button type="submit" disabled={isLoading} className="w-full">
-                                {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
-                            </Button>
+                            <div className="w-full pt-2">
+                                <Button type="submit" disabled={isLoading} className="w-full">
+                                    {isLoading ? t('shippingAddress.saving') : t('shippingAddress.continue')}
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 )}

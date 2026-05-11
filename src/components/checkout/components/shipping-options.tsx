@@ -75,7 +75,7 @@ export default function ShippingOptions({
             showHeaderSeparator
             isLoading={isLoading}>
             <ToggleCardEdit>
-                <form method="post" className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                <form method="post" className="flex flex-col gap-4 pt-2 pb-2" onSubmit={handleSubmit}>
                     <RadioGroup
                         name="shippingMethodId"
                         defaultValue={selectedMethod?.id || defaultShippingMethodId || ''}

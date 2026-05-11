@@ -756,7 +756,7 @@ export default function CheckoutFormPage({
                     </div>
 
                     {/* Main Checkout Content - Single Page Layout */}
-                    <div className="space-y-6 order-2 lg:order-1 lg:col-span-2">
+                    <div className="space-y-6 order-2 lg:order-1 lg:col-span-2 [&_[data-slot=card-header].border-b]:pb-4">
                         <UITarget targetId="sfcc.checkout.mainContent.before" />
                         {/* Express Payments - Apple Pay, Google Pay, Amazon Pay, PayPal & Venmo (mobile only) */}
                         <UITarget targetId="sfcc.checkout.expressPayments.header.before" />

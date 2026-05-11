@@ -82,7 +82,7 @@ exports[`ShippingOptions stories snapshot > EditView story renders and matches s
         data-testid="sf-toggle-card-shipping-options-content"
       >
         <form
-          class="flex flex-col gap-4"
+          class="flex flex-col gap-4 pt-2 pb-2"
           method="post"
         >
           <div
@@ -326,7 +326,7 @@ exports[`ShippingOptions stories snapshot > EditViewWithDiscountedShipping story
         data-testid="sf-toggle-card-shipping-options-content"
       >
         <form
-          class="flex flex-col gap-4"
+          class="flex flex-col gap-4 pt-2 pb-2"
           method="post"
         >
           <div
@@ -585,7 +585,7 @@ exports[`ShippingOptions stories snapshot > EditViewWithFreeShipping story rende
         data-testid="sf-toggle-card-shipping-options-content"
       >
         <form
-          class="flex flex-col gap-4"
+          class="flex flex-col gap-4 pt-2 pb-2"
           method="post"
         >
           <div
@@ -780,7 +780,7 @@ exports[`ShippingOptions stories snapshot > SavingState story renders and matche
         data-testid="sf-toggle-card-shipping-options-content"
       >
         <form
-          class="flex flex-col gap-4"
+          class="flex flex-col gap-4 pt-2 pb-2"
           method="post"
         >
           <div

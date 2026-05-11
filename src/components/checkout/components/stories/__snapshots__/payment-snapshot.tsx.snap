@@ -85,7 +85,7 @@ exports[`Payment stories snapshot > EditView story renders and matches snapshot 
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -475,7 +475,7 @@ exports[`Payment stories snapshot > EditViewWithDifferentBilling story renders a
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -865,7 +865,7 @@ exports[`Payment stories snapshot > SavingState story renders and matches snapsh
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -1392,7 +1392,7 @@ exports[`Payment stories snapshot > WithBillingValidationErrors story renders an
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -1782,7 +1782,7 @@ exports[`Payment stories snapshot > WithNewBillingAddress story renders and matc
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -2172,7 +2172,7 @@ exports[`Payment stories snapshot > WithNewCreditCard story renders and matches 
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -2562,7 +2562,7 @@ exports[`Payment stories snapshot > WithSavedBillingAddresses story renders and 
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -2952,7 +2952,7 @@ exports[`Payment stories snapshot > WithSavedPaymentMethods story renders and ma
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"
@@ -3342,7 +3342,7 @@ exports[`Payment stories snapshot > WithValidationErrors story renders and match
           data-testid="sf-toggle-card-payment-content"
         >
           <form
-            class="space-y-6"
+            class="space-y-6 pt-2 pb-2"
           >
             <div
               class="space-y-4"

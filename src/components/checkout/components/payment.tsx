@@ -118,7 +118,9 @@ export default function Payment({
                 showHeaderSeparator>
                 <ToggleCardEdit>
                     <Form {...form}>
-                        <form onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)} className="space-y-6">
+                        <form
+                            onSubmit={(e) => void form.handleSubmit(handleFormSubmit)(e)}
+                            className="space-y-6 pt-2 pb-2">
                             <div className="space-y-4">
                                 <UITarget targetId="sfcc.checkout.payment.paymentMethods.before" />
                                 <UITarget targetId="sfcc.checkout.payment.paymentMethods">
