@@ -18,7 +18,7 @@ import type { ReactNode } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { AppConfig } from '@/types/config';
-import { mockConfig, mockBuildConfig } from './config';
+import { mockBuildConfig, mockConfig, mockSiteObject } from './config';
 import { UITargetProviders } from '@/targets/ui-target-providers';
 // @sfdc-extension-line SFDC_EXT_STORE_LOCATOR
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
@@ -26,7 +26,7 @@ import StoreLocatorProvider from '@/extensions/store-locator/providers/store-loc
 const defaultSiteId = mockBuildConfig.app.defaultSiteId;
 
 const defaultMockSite = {
-    ...mockBuildConfig.app.commerce.sites[0],
+    ...mockSiteObject,
     alias: mockBuildConfig.app.siteAliasMap?.[defaultSiteId] ?? undefined,
 };
 
@@ -82,7 +82,7 @@ export function AllProvidersWrapper({
             <SiteProvider
                 site={defaultMockSite}
                 locale={defaultMockLocale}
-                language={mockBuildConfig.app.commerce.sites[0].defaultLocale}
+                language={mockSiteObject.defaultLocale}
                 currency={currency}>
                 {/* @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */}
                 <StoreLocatorProvider>

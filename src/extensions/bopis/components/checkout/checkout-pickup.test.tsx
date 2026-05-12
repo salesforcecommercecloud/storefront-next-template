@@ -30,7 +30,11 @@ const defaultMockLocale =
 
 const wrapper = ({ children }: { children: ReactNode }) => (
     <ConfigProvider config={mockConfig}>
-        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+        <SiteProvider
+            site={defaultMockSite}
+            locale={defaultMockLocale}
+            language={mockAltSiteObject.defaultLocale}
+            currency={mockAltSiteObject.defaultCurrency}>
             {children}
         </SiteProvider>
     </ConfigProvider>
@@ -50,7 +54,7 @@ vi.mock('react-i18next', () => ({
         return {
             t: (key: string) => key,
             i18n: {
-                language: 'en-US',
+                language: mockAltSiteObject.defaultLocale,
             },
         };
     },
@@ -250,7 +254,11 @@ describe('CheckoutPickup', () => {
 
         rerender(
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+                <SiteProvider
+                    site={defaultMockSite}
+                    locale={defaultMockLocale}
+                    language={mockAltSiteObject.defaultLocale}
+                    currency={mockAltSiteObject.defaultCurrency}>
                     <CheckoutPickup
                         cart={cartWithNewStore}
                         productsByItemId={productsByItemId}

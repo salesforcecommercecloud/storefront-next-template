@@ -21,11 +21,11 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import type React from 'react';
 import BuyNowPayLater from './index';
 import type { InfoModalData } from '@/components/info-modal/types';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 // Mock the InfoModal component for BuyNowPayLater tests
 vi.mock('@/components/info-modal', () => ({
@@ -58,7 +58,11 @@ const renderWithRouter = (component: React.ReactElement) => {
             path: '/',
             element: (
                 <ConfigProvider config={mockConfig}>
-                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                    <SiteProvider
+                        site={mockSite}
+                        locale={mockLocale}
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         {component}
                     </SiteProvider>
                 </ConfigProvider>
@@ -153,7 +157,11 @@ describe('InfoModal - Payment Schedule Type', () => {
             {
                 path: '/',
                 element: (
-                    <DynSiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                    <DynSiteProvider
+                        site={mockSite}
+                        locale={mockLocale}
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         <InfoModal open={true} onOpenChange={mockOnOpenChange} data={mockPaymentScheduleData} />
                     </DynSiteProvider>
                 ),
@@ -171,7 +179,7 @@ describe('InfoModal - Payment Schedule Type', () => {
         expect(screen.getByText('Split your purchase into 4 interest-free payments')).toBeInTheDocument();
 
         // Verify payment schedule amounts are displayed (formatCurrency will format as $14.75)
-        const amounts = screen.getAllByText(/\$14\.75/);
+        const amounts = screen.getAllByText(/£14\.75/);
         expect(amounts.length).toBeGreaterThan(0);
         expect(screen.getByText('Today')).toBeInTheDocument();
         expect(screen.getByText('2 weeks')).toBeInTheDocument();

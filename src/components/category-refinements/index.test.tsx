@@ -19,7 +19,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig } from '@/test-utils/config';
 import CategoryRefinements from './index';
 
 const defaultMockSite = mockAltSiteObject;
@@ -61,7 +61,11 @@ const renderComponent = ({
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={defaultMockSite} locale={mockLocale} language="en-US" currency="USD">
+                        <SiteProvider
+                            site={defaultMockSite}
+                            locale={mockLocale}
+                            language={mockAltSiteObject.defaultLocale}
+                            currency={mockAltSiteObject.defaultCurrency}>
                             <CategoryRefinements result={result} refine={refine} />
                         </SiteProvider>
                     </ConfigProvider>

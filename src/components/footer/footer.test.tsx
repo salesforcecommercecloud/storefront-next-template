@@ -48,7 +48,11 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             {component}
                         </SiteProvider>
                     </ConfigProvider>

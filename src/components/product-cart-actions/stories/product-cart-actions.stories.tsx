@@ -21,7 +21,7 @@ import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import ProductViewProvider from '@/providers/product-view';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
@@ -83,10 +83,10 @@ const meta: Meta<typeof ProductCartActions> = {
             return (
                 <ConfigProvider config={mockConfig}>
                     <SiteProvider
-                        site={mockConfig.commerce.sites[0]}
+                        site={mockSiteObject}
                         locale={mockLocale}
-                        language="en-GB"
-                        currency="USD">
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         <ProductViewProvider product={context.args.product as any} initialQuantity={1} mode="add">
                             <ActionLogger>
                                 <Story />

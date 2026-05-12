@@ -16,10 +16,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router';
 import { OrderItemsList } from '../order-items-list';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const meta: Meta<typeof OrderItemsList> = {
     title: 'ACCOUNT/Order Details/Order Items List',
@@ -38,7 +38,11 @@ const meta: Meta<typeof OrderItemsList> = {
         (Story) => (
             <MemoryRouter>
                 <ConfigWrapper>
-                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                    <SiteProvider
+                        site={mockSite}
+                        locale={mockLocale}
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         <Story />
                     </SiteProvider>
                 </ConfigWrapper>

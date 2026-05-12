@@ -15,7 +15,7 @@ exports[`PriceRangeInput stories snapshot > Default story renders and matches sn
           aria-hidden="true"
           class="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
         >
-          $
+          £
         </span>
         <div
           class="text-muted-foreground text-left text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap"
@@ -42,7 +42,7 @@ exports[`PriceRangeInput stories snapshot > Default story renders and matches sn
           aria-hidden="true"
           class="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
         >
-          $
+          £
         </span>
         <div
           class="text-muted-foreground text-left text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap"
@@ -77,7 +77,7 @@ exports[`PriceRangeInput stories snapshot > WithLimits story renders and matches
           aria-hidden="true"
           class="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
         >
-          $
+          £
         </span>
         <div
           class="text-muted-foreground text-left text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap"
@@ -104,7 +104,7 @@ exports[`PriceRangeInput stories snapshot > WithLimits story renders and matches
           aria-hidden="true"
           class="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
         >
-          $
+          £
         </span>
         <div
           class="text-muted-foreground text-left text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap"
@@ -139,7 +139,7 @@ exports[`PriceRangeInput stories snapshot > WithValues story renders and matches
           aria-hidden="true"
           class="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
         >
-          $
+          £
         </span>
         <div
           class="text-muted-foreground text-left text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap"
@@ -166,7 +166,7 @@ exports[`PriceRangeInput stories snapshot > WithValues story renders and matches
           aria-hidden="true"
           class="shrink-0 flex items-center justify-center text-sm text-muted-foreground"
         >
-          $
+          £
         </span>
         <div
           class="text-muted-foreground text-left text-sm leading-normal font-normal relative overflow-hidden flex-1 truncate whitespace-nowrap"

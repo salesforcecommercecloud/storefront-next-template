@@ -24,9 +24,9 @@ import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -164,7 +164,11 @@ const meta: Meta<typeof OrderSummary> = {
     decorators: [
         (Story: React.ComponentType) => (
             <ActionLogger>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <Story />
                 </SiteProvider>
             </ActionLogger>

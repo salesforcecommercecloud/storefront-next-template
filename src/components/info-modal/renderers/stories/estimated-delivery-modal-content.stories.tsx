@@ -17,9 +17,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import { EstimatedDeliveryModalContent } from '../estimated-delivery-modal-content';
 import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
 
@@ -57,7 +57,7 @@ const mockDeliveryData: EstimatedDeliveryData = {
 
 function Wrapper({ deliveryData, currency }: { deliveryData: EstimatedDeliveryData; currency: string }) {
     return (
-        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency={currency}>
+        <SiteProvider site={mockSite} locale={mockLocale} language={mockSiteObject.defaultLocale} currency={currency}>
             <div className="max-w-2xl p-6 space-y-6">
                 <EstimatedDeliveryModalContent deliveryData={deliveryData} currency={currency} />
             </div>
@@ -80,7 +80,7 @@ type Story = StoryObj<typeof Wrapper>;
 export const Default: Story = {
     args: {
         deliveryData: mockDeliveryData,
-        currency: 'USD',
+        currency: mockSiteObject.defaultCurrency,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

@@ -33,7 +33,7 @@ const mockRecommendations = {
             product_name: 'Test Product 1',
             product_url: '/products/test1',
             price: 29.99,
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
         },
         {
             id: 'test-product-2',
@@ -43,7 +43,7 @@ const mockRecommendations = {
             product_name: 'Test Product 2',
             product_url: '/products/test2',
             price: 39.99,
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
         },
     ],
 };

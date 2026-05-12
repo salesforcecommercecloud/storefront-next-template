@@ -55,7 +55,11 @@ const mockData: EstimatedDeliveryData = {
 const renderWithConfig = (ui: React.ReactElement) =>
     render(
         <ConfigProvider config={mockConfig}>
-            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 {ui}
             </SiteProvider>
         </ConfigProvider>

@@ -19,10 +19,10 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { RateRecentPurchasesCard } from './rate-recent-purchases-card';
 import type { Order } from '@/components/account/order-list';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
+import { ConfigWrapper, getSitePrefix, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 const { t } = getTranslation();
 
 function renderRateCard(order: Order) {
@@ -32,7 +32,11 @@ function renderRateCard(order: Order) {
                 path: '/',
                 element: (
                     <ConfigWrapper>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             <RateRecentPurchasesCard order={order} />
                         </SiteProvider>
                     </ConfigWrapper>
@@ -50,7 +54,7 @@ describe('RateRecentPurchasesCard', () => {
         orderDate: '2024-09-14T10:30:00Z',
         status: 'completed',
         total: 100,
-        currency: 'USD',
+        currency: mockSiteObject.defaultCurrency,
         itemCount: 2,
         productItems: [
             {

@@ -124,7 +124,7 @@ const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
 const mockSearchResult: ShopperSearch.schemas['ProductSearchHit'] = {
     productId: 'test-product-id',
     productName: 'Test Product',
-    currency: 'USD',
+    currency: mockSiteObject.defaultCurrency,
     price: 29.99,
 } as ShopperSearch.schemas['ProductSearchHit'];
 

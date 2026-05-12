@@ -22,7 +22,7 @@ import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefro
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentProvider from '@/providers/product-content';
 import ProductViewProvider from '@/providers/product-view';
-import { mockBuildConfig, mockAltSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject, mockBuildConfig, mockSiteObject } from '@/test-utils/config';
 import Faq from '../index';
 import type { ReactElement } from 'react';
 
@@ -56,8 +56,8 @@ function FaqWrapper(): ReactElement {
             <SiteProvider
                 site={faqStoryConfig.commerce.sites[0]}
                 locale={faqStoryConfig.commerce.sites[0].supportedLocales[0]}
-                language="en-GB"
-                currency="USD">
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 <ProductContentProvider>
                     <ProductViewProvider product={mockProduct} mode="add">
                         <div className="max-w-md p-6">

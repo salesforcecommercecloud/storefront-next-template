@@ -22,7 +22,7 @@ import i18next from 'i18next';
 import { composeStories } from '@storybook/react-vite';
 import * as CarouselStories from './carousel.stories';
 import { render, cleanup } from '@testing-library/react';
-import { mockConfig } from '@/test-utils/config';
+import { mockConfig, mockSiteObject } from '@/test-utils/config';
 
 // Hoisted mock (must not live inside describe) so CI and local Vitest resolve react-router the same way.
 vi.mock('react-router', async (importOriginal) => {
@@ -78,7 +78,7 @@ function SnapshotShell({ children }: { children: ReactNode }): ReactElement {
     return (
         <ConfigProvider config={mockConfig}>
             <I18nextProvider i18n={i18next}>
-                <SiteProvider value={mockConfig.commerce.sites[0]}>{children}</SiteProvider>
+                <SiteProvider value={mockSiteObject}>{children}</SiteProvider>
             </I18nextProvider>
         </ConfigProvider>
     );

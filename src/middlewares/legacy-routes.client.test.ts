@@ -18,7 +18,7 @@ import { type DataStrategyResult, RouterContextProvider } from 'react-router';
 import legacyRoutesMiddleware, { matchesRoutePattern } from '@/middlewares/legacy-routes.client';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { mockAltSiteObject } from '@/test-utils/config';
+import { getSiteRef, mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
 
 describe('legacyRoutesMiddleware', () => {
     let mockContext: RouterContextProvider;
@@ -328,7 +328,7 @@ describe('legacyRoutesMiddleware', () => {
         });
 
         test('should redirect when multisite-prefixed URL matches a bare legacy route', () => {
-            const request = new Request('https://example.com/global/en-GB/checkout');
+            const request = new Request(`https://example.com/${getSiteRef()}/${mockSiteObject.defaultLocale}/checkout`);
 
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
@@ -337,7 +337,9 @@ describe('legacyRoutesMiddleware', () => {
         });
 
         test('should redirect for parameterized legacy routes with multisite prefix', () => {
-            const request = new Request('https://example.com/global/en-GB/product/123');
+            const request = new Request(
+                `https://example.com/${getSiteRef()}/${mockSiteObject.defaultLocale}/product/123`
+            );
 
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
@@ -346,7 +348,9 @@ describe('legacyRoutesMiddleware', () => {
         });
 
         test('should not redirect for non-legacy multisite routes', async () => {
-            const request = new Request('https://example.com/global/en-GB/category/womens');
+            const request = new Request(
+                `https://example.com/${getSiteRef()}/${mockSiteObject.defaultLocale}/category/womens`
+            );
 
             await legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 

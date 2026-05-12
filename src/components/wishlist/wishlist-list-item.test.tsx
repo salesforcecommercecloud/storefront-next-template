@@ -26,9 +26,9 @@ import { masterProduct, variantProduct } from '@/components/__mocks__/master-var
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const { t } = getTranslation();
 
@@ -42,7 +42,7 @@ vi.mock('react-i18next', () => ({
             }
             return t(key, options);
         },
-        i18n: { language: 'en-GB' },
+        i18n: { language: mockSiteObject.defaultLocale },
     }),
 }));
 
@@ -141,7 +141,11 @@ function renderWithRouter(component: React.ReactElement) {
         {
             path: '/',
             element: (
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     {component}
                 </SiteProvider>
             ),

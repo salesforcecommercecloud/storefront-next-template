@@ -18,7 +18,7 @@ import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { ConfigWrapper, createConfigWrapper, mockConfig, mockBuildConfig } from './config';
+import { ConfigWrapper, createConfigWrapper, mockBuildConfig, mockConfig, mockSiteObject } from './config';
 
 describe('Config Test Utils', () => {
     describe('ConfigWrapper', () => {
@@ -79,7 +79,7 @@ describe('Config Test Utils', () => {
                         ...mockBuildConfig.app.commerce,
                         sites: [
                             {
-                                ...mockBuildConfig.app.commerce.sites[0],
+                                ...mockSiteObject,
                                 defaultLocale: 'fr-FR',
                                 defaultCurrency: 'EUR',
                             },
@@ -121,15 +121,15 @@ describe('Config Test Utils', () => {
         it('should be a valid AppConfig object', () => {
             expect(mockConfig).toBeDefined();
             expect(mockConfig.commerce).toBeDefined();
-            expect(mockConfig.commerce.sites[0]).toBeDefined();
+            expect(mockSiteObject).toBeDefined();
             expect(mockConfig.global).toBeDefined();
         });
 
         it('should have expected test values', () => {
             expect(mockConfig.commerce.api.clientId).toBe('test-client');
             expect(mockConfig.commerce.api.organizationId).toBe('test-org');
-            expect(mockConfig.commerce.sites[0].defaultLocale).toBe('en-GB');
-            expect(mockConfig.commerce.sites[0].defaultCurrency).toBe('GBP');
+            expect(mockSiteObject.defaultLocale).toBe('en-GB');
+            expect(mockSiteObject.defaultCurrency).toBe('GBP');
         });
     });
 

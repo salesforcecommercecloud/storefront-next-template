@@ -68,7 +68,11 @@ const renderWithRouter = ({ initialLanguage = 'en-GB' }: { initialLanguage?: str
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             <LocaleSwitcher />
                         </SiteProvider>
                     </ConfigProvider>
@@ -267,7 +271,11 @@ describe('LocaleSwitcher', () => {
                         path: '/',
                         element: (
                             <ConfigProvider config={mockConfig}>
-                                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                                <SiteProvider
+                                    site={mockSite}
+                                    locale={mockLocale}
+                                    language={mockSiteObject.defaultLocale}
+                                    currency={mockSiteObject.defaultCurrency}>
                                     <LocaleSwitcher />
                                 </SiteProvider>
                             </ConfigProvider>

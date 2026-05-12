@@ -22,7 +22,7 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { ConfigProvider, useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { NativeSelect } from '@/components/ui/native-select';
 import { useTranslation } from 'react-i18next';
 
@@ -73,7 +73,11 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 // This avoids needing to mock react-router at the module level and allows state updates
 const mockFetcherSubmit = fn();
 
-function CurrencySwitcherMock({ initialCurrency = 'GBP' }: { initialCurrency?: string }): ReactElement {
+function CurrencySwitcherMock({
+    initialCurrency = mockSiteObject.defaultCurrency,
+}: {
+    initialCurrency?: string;
+}): ReactElement {
     const id = useId();
     const { t } = useTranslation('currencySwitcher');
     const config = useConfig<AppConfig>();
@@ -147,16 +151,17 @@ This component is typically used in the header or footer area to allow users to 
         (_Story: React.ComponentType, context) => {
             // Reset mock before each story
             mockFetcherSubmit.mockClear();
-            const initialCurrency = (context.args as { initialCurrency?: string }).initialCurrency ?? 'GBP';
+            const initialCurrency =
+                (context.args as { initialCurrency?: string }).initialCurrency ?? mockSiteObject.defaultCurrency;
 
             const RouterWrapper = (): ReactElement => {
                 const inRouter = useInRouterContext();
                 const content = (
                     <ConfigProvider config={mockConfig}>
                         <SiteProvider
-                            site={mockConfig.commerce.sites[0]}
+                            site={mockSiteObject}
                             locale={mockLocale}
-                            language="en-GB"
+                            language={mockSiteObject.defaultLocale}
                             currency={initialCurrency}>
                             <ActionLogger>
                                 <CurrencySwitcherMock initialCurrency={initialCurrency} />

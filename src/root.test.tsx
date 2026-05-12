@@ -42,7 +42,7 @@ import enGBTranslations from '@/locales/en-GB/translations.json';
 const enGBRouteError = enGBTranslations.routeError;
 
 const mockSite = {
-    ...mockBuildConfig.app.commerce.sites[0],
+    ...mockSiteObject,
     alias: mockBuildConfig.app.siteAliasMap?.[mockSiteObject.id] ?? undefined,
 };
 

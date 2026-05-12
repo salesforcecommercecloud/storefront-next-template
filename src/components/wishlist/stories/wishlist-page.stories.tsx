@@ -23,7 +23,7 @@ import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 
 // -- Mock product data --
 
@@ -123,7 +123,11 @@ Full client-side content for the My Wishlist page.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="USD">
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <Story />
                 </SiteProvider>
             </ConfigProvider>

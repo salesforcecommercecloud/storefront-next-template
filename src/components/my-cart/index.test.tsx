@@ -18,15 +18,19 @@ import { render as rtlRender, screen, type RenderOptions } from '@testing-librar
 import type { ReactNode } from 'react';
 import MyCart from './index';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 import { getPriceData } from '@/components/product-price/utils';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const render = (ui: React.ReactElement, options?: RenderOptions) =>
     rtlRender(ui, {
         wrapper: ({ children }: { children: ReactNode }) => (
-            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 {children}
             </SiteProvider>
         ),
@@ -397,7 +401,7 @@ describe('MyCart', () => {
 
         // priceAfterItemDiscount / quantity = 59.98 / 2 = 29.99
         expect(screen.getByText(/each/)).toBeInTheDocument();
-        expect(screen.getByText(/\$29\.99/)).toBeInTheDocument();
+        expect(screen.getByText(/£29\.99/)).toBeInTheDocument();
     });
 
     it('does not show "each" price when quantity is 1', () => {

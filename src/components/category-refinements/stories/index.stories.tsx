@@ -21,9 +21,9 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import CategoryRefinements from '../index';
 // @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
@@ -144,7 +144,11 @@ const meta: Meta<typeof CategoryRefinements> = {
     },
     decorators: [
         (Story: ComponentType) => (
-            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 <ActionLogger>
                     <Story />
                 </ActionLogger>

@@ -20,7 +20,7 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentProvider from '@/providers/product-content';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import ReturnsAndWarranty from '../index';
 import type { ReactElement } from 'react';
 
@@ -28,7 +28,11 @@ function ReturnsAndWarrantyWrapper(): ReactElement {
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={mockConfig}>
-            <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="USD">
+            <SiteProvider
+                site={mockSiteObject}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 <ProductContentProvider>
                     <div className="max-w-md p-6">
                         <ReturnsAndWarranty productId="test-product-123" />

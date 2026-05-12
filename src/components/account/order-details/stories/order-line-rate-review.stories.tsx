@@ -20,10 +20,10 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentProvider from '@/providers/product-content';
 import AuthProvider from '@/providers/auth';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { OrderLineRateReview } from '../order-line-rate-review';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const mockProduct = {
     id: '701643108633M',
@@ -56,7 +56,11 @@ const meta: Meta<typeof OrderLineRateReview> = {
             <MemoryRouter>
                 <ConfigProvider config={mockConfig}>
                     <AuthProvider value={{ userType: 'registered', customerId: 'cust-123' }}>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             <ProductContentProvider>
                                 <div className="p-2">
                                     <Story />

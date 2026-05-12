@@ -21,10 +21,10 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { OrderDetails } from '../index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const { t } = getTranslation();
 
@@ -105,7 +105,11 @@ const meta: Meta<typeof OrderDetails> = {
                 const inRouter = useInRouterContext();
                 const content = (
                     <ConfigWrapper>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             <Story />
                         </SiteProvider>
                     </ConfigWrapper>

@@ -17,9 +17,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import { OrderListItem, type OrderListItemData } from '../index';
 import heroNewArrivals from '/images/hero-02.webp';
 
@@ -27,7 +27,7 @@ const baseOrder: OrderListItemData = {
     orderNo: 'ORD-2024-001',
     orderDate: '2024-09-14T10:30:00Z',
     total: 48.38,
-    currency: 'GBP',
+    currency: mockSiteObject.defaultCurrency,
     status: 'ready_for_pickup',
     statusLabel: 'Ready for Pickup',
     itemCount: 2,
@@ -66,7 +66,11 @@ const meta: Meta<typeof OrderListItem> = {
     },
     decorators: [
         (Story) => (
-            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 <Story />
             </SiteProvider>
         ),

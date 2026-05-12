@@ -28,9 +28,9 @@ import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@sale
 import ProductItem from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
+import { getSitePrefix, mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 // Mock data
 import { bundleProd as mockedBundleProduct } from '../__mocks__/bundle-product';
@@ -56,7 +56,11 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/cart',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             {component}
                         </SiteProvider>
                     </ConfigProvider>
@@ -157,7 +161,7 @@ describe('ProductItem', () => {
             expect(quantityPicker).toBeInTheDocument();
 
             // Per-unit price with "each" label appears in both mobile and desktop views
-            const eachPriceElements = screen.getAllByText('$29.99 each');
+            const eachPriceElements = screen.getAllByText('£29.99 each');
             //Since we are using Tailwind css classes to show/hide (md:hidden),
             // JSDOM does not compute these classes into proper css properties
             // we can only assert if these two exists in DOM, but can't check the visibility
@@ -506,7 +510,7 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={productWithDiscountPrice} />);
 
             // Component uses priceAfterItemDiscount for "each" calculation: 59.98 / 2 = $29.99
-            const priceElements = screen.getAllByText('$29.99 each');
+            const priceElements = screen.getAllByText('£29.99 each');
             expect(priceElements).toHaveLength(1); // Rendered once
         });
 
@@ -521,7 +525,7 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={productWithoutDiscountPrice} />);
 
             // Falls back to price for "each" calculation: 79.98 / 2 = $39.99
-            const priceElements = screen.getAllByText('$39.99 each');
+            const priceElements = screen.getAllByText('£39.99 each');
             expect(priceElements).toHaveLength(1); // Rendered once
         });
     });
@@ -981,7 +985,7 @@ describe('ProductItem', () => {
             expect(eachElements.length).toBeGreaterThanOrEqual(1);
 
             // Per-unit price should be displayed (total / quantity = 88 / 2 = $44.00)
-            const perUnitPriceElements = screen.getAllByText('$44.00 each');
+            const perUnitPriceElements = screen.getAllByText('£44.00 each');
             expect(perUnitPriceElements.length).toBeGreaterThanOrEqual(1);
         });
 
@@ -1012,7 +1016,7 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={productWithDiscount} />);
 
             // Per-unit price = 59.97 / 3 = $19.99
-            const perUnitPriceElements = screen.getAllByText('$19.99 each');
+            const perUnitPriceElements = screen.getAllByText('£19.99 each');
             expect(perUnitPriceElements.length).toBeGreaterThanOrEqual(1);
         });
 
@@ -1043,7 +1047,7 @@ describe('ProductItem', () => {
             renderWithRouter(<ProductItem productItem={productWithoutDiscount} />);
 
             // Per-unit price = price / quantity = 50 / 2 = $25.00
-            const perUnitPriceElements = screen.getAllByText('$25.00 each');
+            const perUnitPriceElements = screen.getAllByText('£25.00 each');
             expect(perUnitPriceElements.length).toBeGreaterThanOrEqual(1);
         });
     });

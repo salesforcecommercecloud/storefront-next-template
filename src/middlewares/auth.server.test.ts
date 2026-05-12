@@ -20,7 +20,7 @@ import { type AuthStorageData, AUTH_TOKEN_INVALID_ERROR, authStorageContext } fr
 import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { mockConfig, mockSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 import authMiddleware, {
     refreshAccessToken,
@@ -118,7 +118,7 @@ vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: vi.fn(() => ({
         t: (key: string) => key,
     })),
-    getLocale: vi.fn(() => 'en-US'),
+    getLocale: vi.fn(() => mockAltSiteObject.defaultLocale),
     mockI18nContext: vi.fn(),
 }));
 
@@ -746,7 +746,7 @@ describe('auth middleware (server)', () => {
                     userId: userid,
                     usid: 'usid',
                     callbackUri: expect.any(String),
-                    locale: 'en-US',
+                    locale: mockAltSiteObject.defaultLocale,
                 })
             );
             expect(mockLogger.debug).toHaveBeenCalledWith('Auth: authorizePasswordless starting', {
@@ -1037,7 +1037,7 @@ describe('auth middleware (server)', () => {
                 userId: email,
                 callbackUri: 'https://example.com/reset-password-callback',
                 mode: 'email',
-                locale: 'en-US',
+                locale: mockAltSiteObject.defaultLocale,
             });
 
             // Verify performance timer was called
@@ -1060,7 +1060,7 @@ describe('auth middleware (server)', () => {
                 userId: email,
                 callbackUri: 'https://example.com/reset-password-callback',
                 mode: 'email',
-                locale: 'en-US',
+                locale: mockAltSiteObject.defaultLocale,
             });
         });
 
@@ -1077,7 +1077,7 @@ describe('auth middleware (server)', () => {
                 userId: email,
                 callbackUri: 'https://example.com/reset-password-callback',
                 mode: 'callback',
-                locale: 'en-US',
+                locale: mockAltSiteObject.defaultLocale,
             });
         });
 
@@ -1094,7 +1094,7 @@ describe('auth middleware (server)', () => {
                 userId: email,
                 callbackUri: 'https://custom-domain.com/reset',
                 mode: 'email',
-                locale: 'en-US',
+                locale: mockAltSiteObject.defaultLocale,
             });
         });
 
@@ -1111,7 +1111,7 @@ describe('auth middleware (server)', () => {
                 userId: email,
                 callbackUri: undefined,
                 mode: 'email',
-                locale: 'en-US',
+                locale: mockAltSiteObject.defaultLocale,
             });
         });
 
@@ -1128,7 +1128,7 @@ describe('auth middleware (server)', () => {
                 userId: email,
                 callbackUri: 'https://example.com/reset-password',
                 mode: 'email',
-                locale: 'en-US',
+                locale: mockAltSiteObject.defaultLocale,
             });
         });
 
@@ -1172,7 +1172,7 @@ describe('auth middleware (server)', () => {
                 userId: email,
                 email,
                 mode: 'email',
-                locale: 'en-US',
+                locale: mockAltSiteObject.defaultLocale,
             });
 
             expect(mockPerformanceTimer.mark).toHaveBeenCalledWith('authRequestOtp', 'start');

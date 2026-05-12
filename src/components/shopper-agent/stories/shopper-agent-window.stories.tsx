@@ -17,7 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ShopperAgentConfig } from '../shopper-agent.utils';
 import { ShopperAgentWindow } from '../shopper-agent-window';
-import { mockSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject } from '@/test-utils/config';
 
 const mockConfig: ShopperAgentConfig = {
     enabled: 'true',
@@ -26,7 +26,7 @@ const mockConfig: ShopperAgentConfig = {
     scriptSourceUrl: 'https://example.salesforce.com/embedded/script.js',
     scrt2Url: 'https://example.salesforce-scrt.com/scrt2',
     salesforceOrgId: '00D000000000000EAA',
-    siteId: mockSiteObject.id,
+    siteId: mockAltSiteObject.id,
 };
 
 const meta: Meta<typeof ShopperAgentWindow> = {
@@ -61,9 +61,9 @@ type Story = StoryObj<typeof ShopperAgentWindow>;
 export const Default: Story = {
     args: {
         config: mockConfig,
-        locale: 'en-US',
-        currency: 'USD',
-        siteId: mockSiteObject.id,
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
+        siteId: mockAltSiteObject.id,
         domainUrl: 'https://example.com/',
     },
 };
@@ -71,9 +71,9 @@ export const Default: Story = {
 export const WithUserId: Story = {
     args: {
         config: mockConfig,
-        locale: 'en-US',
-        currency: 'USD',
-        siteId: mockSiteObject.id,
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
+        siteId: mockAltSiteObject.id,
         domainUrl: 'https://example.com/',
         userId: 'user-123',
     },
@@ -82,9 +82,9 @@ export const WithUserId: Story = {
 export const WithUsid: Story = {
     args: {
         config: mockConfig,
-        locale: 'en-US',
-        currency: 'USD',
-        siteId: mockSiteObject.id,
+        locale: mockAltSiteObject.defaultLocale,
+        currency: mockAltSiteObject.defaultCurrency,
+        siteId: mockAltSiteObject.id,
         domainUrl: 'https://example.com/',
         usid: 'usid-abc-123',
     },

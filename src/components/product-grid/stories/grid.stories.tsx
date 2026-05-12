@@ -21,9 +21,9 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import ProductGrid from '../grid';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import {
     mockProductSearchItem,
     mockStandardProductHit,
@@ -152,7 +152,11 @@ Features:
     decorators: [
         (Story) => (
             <ActionLogger>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <div className="section-container py-8 bg-background">
                         <Story />
                     </div>

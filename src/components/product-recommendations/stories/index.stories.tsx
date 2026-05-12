@@ -18,10 +18,10 @@ import ProductRecommendations from '..';
 // @ts-expect-error mock file is JS
 import { mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
@@ -92,7 +92,11 @@ In Storybook, the component may not display recommendations without a real adapt
     decorators: [
         (Story: React.ComponentType) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <RecommendersProvider>
                         <ActionLogger>
                             <div className="p-8">

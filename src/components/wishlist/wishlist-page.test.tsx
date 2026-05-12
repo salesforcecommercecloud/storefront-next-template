@@ -71,7 +71,7 @@ const inStockProduct: Product = {
     id: 'prod-in-stock',
     name: 'Alpha Jacket',
     price: 150,
-    currency: 'USD',
+    currency: 'GBP',
     inventory: { ats: 5, orderable: true, id: 'inv1' },
 };
 
@@ -79,7 +79,7 @@ const outOfStockProduct: Product = {
     id: 'prod-out-of-stock',
     name: 'Beta Boots',
     price: 200,
-    currency: 'USD',
+    currency: 'GBP',
     inventory: { ats: 0, orderable: false, id: 'inv2' },
 };
 
@@ -87,7 +87,7 @@ const onSaleProduct: Product = {
     id: 'prod-on-sale',
     name: 'Charlie Coat',
     price: 75,
-    currency: 'USD',
+    currency: 'GBP',
     inventory: { ats: 3, orderable: true, id: 'inv3' },
 };
 

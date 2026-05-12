@@ -22,9 +22,9 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { checkoutWithMultipleItems, checkoutWithOneItem } from '@/components/__mocks__/checkout-data';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 function MyCartStoryHarness({ children }: { children: ReactNode }): ReactElement {
@@ -82,7 +82,11 @@ A collapsible cart component that displays cart items in an accordion format. Us
     decorators: [
         (Story) => (
             <MyCartStoryHarness>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <Story />
                 </SiteProvider>
             </MyCartStoryHarness>

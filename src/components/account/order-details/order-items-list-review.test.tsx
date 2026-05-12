@@ -19,11 +19,11 @@ import { describe, test, expect, vi } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { OrderItemsList, type OrderItemsListProps } from './order-items-list';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import ProductContentProvider from '@/providers/product-content';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 const { t } = getTranslation();
 
 vi.mock('@/components/info-modal', () => ({
@@ -69,7 +69,11 @@ function renderWithReviewOptions(props: OrderItemsListProps) {
                 path: '/',
                 element: (
                     <ConfigWrapper>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             <ProductContentProvider>
                                 <OrderItemsList orderNo="TEST-ORDER" {...props} />
                             </ProductContentProvider>

@@ -19,7 +19,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import PopularCategories from './popular-categories';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig } from '@/test-utils/config';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
 const defaultMockSite = mockAltSiteObject;
@@ -53,7 +53,11 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={defaultMockSite} locale={mockLocale} language="en-US" currency="USD">
+                        <SiteProvider
+                            site={defaultMockSite}
+                            locale={mockLocale}
+                            language={mockAltSiteObject.defaultLocale}
+                            currency={mockAltSiteObject.defaultCurrency}>
                             {component}
                         </SiteProvider>
                     </ConfigProvider>

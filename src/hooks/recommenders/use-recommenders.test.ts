@@ -401,7 +401,7 @@ describe('useRecommenders', () => {
                                     id: 'product-1',
                                     name: 'SCAPI Product Name',
                                     price: 99.99,
-                                    currency: 'USD',
+                                    currency: mockAltSiteObject.defaultCurrency,
                                 },
                             ],
                         },

@@ -17,14 +17,14 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import ChildProductCard from '../child-product-card';
 import { bundleProd } from '../../__mocks__/bundle-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import ProductViewProvider from '@/providers/product-view';
 import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
@@ -74,7 +74,11 @@ const meta: Meta<typeof ChildProductCard> = {
     decorators: [
         (Story, context) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <ProductViewProvider product={context.args.parentProduct as any} mode="add">
                         <ActionLogger>
                             <div className="w-80">

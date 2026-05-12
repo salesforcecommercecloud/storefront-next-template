@@ -101,7 +101,7 @@ vi.mock('@/components/link', () => ({
 
 vi.mock('@/config', () => ({
     useConfig: () => ({
-        i18n: { supportedLngs: ['en-GB'] },
+        i18n: { supportedLngs: [mockSiteObject.defaultLocale] },
         url: { showDefaults: true },
         localeAliasMap: {},
     }),
@@ -125,7 +125,11 @@ vi.mock('@/components/locale-switcher', () => ({
 }));
 
 vi.mock('@/components/currency-switcher', () => ({
-    default: () => <select aria-label="Select currency"><option>GBP</option></select>,
+    default: () => (
+        <select aria-label="Select currency">
+            <option>{mockSiteObject.defaultCurrency}</option>
+        </select>
+    ),
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
@@ -133,7 +137,15 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: mockSiteObject.id, defaultLocale: mockSiteObject.defaultLocale, defaultCurrency: mockSiteObject.defaultCurrency, supportedLocales: [{ id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency }], supportedCurrencies: ['EUR', mockSiteObject.defaultCurrency] },
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
             language: mockSiteObject.defaultLocale,
             currency: mockSiteObject.defaultCurrency,
         })),

@@ -18,12 +18,12 @@ import { describe, test, expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { OrderDetails } from './index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import ProductContentProvider from '@/providers/product-content';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const { t } = getTranslation();
 
@@ -80,7 +80,11 @@ function OrderDetailsWithProviders({ order = defaultOrder }: { order?: ShopperOr
     return (
         <MemoryRouter>
             <ConfigWrapper>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <ProductContentProvider>
                         <OrderDetails order={order} productsById={defaultProductsById} />
                     </ProductContentProvider>
@@ -189,8 +193,8 @@ describe('OrderDetails', () => {
         expect(screen.getByText('First Product')).toBeInTheDocument();
         expect(screen.getByText('Second Product')).toBeInTheDocument();
         // ProductPrice shows the price on screen (visible) and again in a hidden span for screen readers (sr-only), so the first item’s price appears twice in the DOM
-        expect(screen.getAllByText('$61.99')).toHaveLength(2);
-        expect(screen.getAllByText('$29.99')).toHaveLength(1);
+        expect(screen.getAllByText('£61.99')).toHaveLength(2);
+        expect(screen.getAllByText('£29.99')).toHaveLength(1);
         expect(screen.getAllByRole('listitem')).toHaveLength(2);
     });
 

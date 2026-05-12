@@ -19,9 +19,9 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import MiniCartItem from './mini-cart-item';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 // Helper function to render with Router context
 const renderWithRouter = (ui: React.ReactElement) => {
@@ -30,7 +30,11 @@ const renderWithRouter = (ui: React.ReactElement) => {
             {
                 path: '/',
                 element: (
-                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                    <SiteProvider
+                        site={mockSite}
+                        locale={mockLocale}
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         {ui}
                     </SiteProvider>
                 ),
@@ -131,8 +135,8 @@ describe('MiniCartItem', () => {
 
     it('renders pricing with savings', () => {
         renderWithRouter(<MiniCartItem product={mockProduct} />);
-        expect(screen.getByText('$20.00')).toBeInTheDocument();
-        expect(screen.getByText('$15.00')).toBeInTheDocument();
+        expect(screen.getByText('£20.00')).toBeInTheDocument();
+        expect(screen.getByText('£15.00')).toBeInTheDocument();
         // Strikethrough shows savings, badge only shows if there are promotions
     });
 
@@ -144,7 +148,7 @@ describe('MiniCartItem', () => {
             priceAfterItemDiscount: 15.0,
         };
         renderWithRouter(<MiniCartItem product={productWithoutSavings} />);
-        expect(screen.getByText('$15.00')).toBeInTheDocument();
+        expect(screen.getByText('£15.00')).toBeInTheDocument();
         expect(screen.queryByText(/Saved/)).not.toBeInTheDocument();
     });
 

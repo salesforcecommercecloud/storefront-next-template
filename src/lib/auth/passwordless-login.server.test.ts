@@ -88,10 +88,10 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
             sites: [
                 {
                     defaultSiteId: mockSiteObject.id,
-                    defaultLocale: 'en-US',
-                    defaultCurrency: 'USD',
-                    supportedLocales: [{ id: 'en-US', preferredCurrency: 'USD' }],
-                    supportedCurrencies: ['USD'],
+                    defaultLocale: mockSiteObject.defaultLocale,
+                    defaultCurrency: mockSiteObject.defaultCurrency,
+                    supportedLocales: mockSiteObject.supportedLocales,
+                    supportedCurrencies: mockSiteObject.supportedCurrencies,
                     cookies: {},
                 },
             ],

@@ -21,7 +21,7 @@ import { action } from 'storybook/actions';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import BuyNowPayLater from '../index';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
@@ -85,10 +85,10 @@ It uses the target system, allowing customers to register their own custom compo
                 const content = (
                     <ConfigProvider config={mockConfig}>
                         <SiteProvider
-                            site={mockConfig.commerce.sites[0]}
+                            site={mockSiteObject}
                             locale={mockLocale}
-                            language="en-GB"
-                            currency="USD">
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             <ActionLogger>
                                 <div className="max-w-md p-6">
                                     <Story />
@@ -130,7 +130,7 @@ export const Default: Story = {
 
         // Verify the installment message is displayed
         await expect(canvas.getByText(/Pay in 4 interest-free payments of/i)).toBeInTheDocument();
-        await expect(canvas.getByText('$12.25')).toBeInTheDocument();
+        await expect(canvas.getByText('£12.25')).toBeInTheDocument();
         await expect(canvas.getByText('Learn more')).toBeInTheDocument();
     },
 };

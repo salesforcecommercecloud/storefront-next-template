@@ -19,11 +19,11 @@ import { MemoryRouter } from 'react-router';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { ConfigWrapper, mockConfig, mockLocale } from '@/test-utils/config';
+import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { CarouselItem } from '@/components/ui/carousel';
 import { CarouselSection } from '../index';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 function DemoSlides(): ReactElement {
     return (
@@ -56,7 +56,11 @@ const meta: Meta<typeof CarouselSection> = {
         (Story) => (
             <MemoryRouter>
                 <ConfigWrapper>
-                    <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                    <SiteProvider
+                        site={mockSite}
+                        locale={mockLocale}
+                        language={mockSiteObject.defaultLocale}
+                        currency={mockSiteObject.defaultCurrency}>
                         <Story />
                     </SiteProvider>
                 </ConfigWrapper>

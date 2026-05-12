@@ -24,7 +24,7 @@ import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import BasketProvider from '@/providers/basket';
 
 // -- Shared mock data --
@@ -104,7 +104,7 @@ const minimalProduct: ShopperProducts.schemas['Product'] = {
     id: 'minimal-product-1',
     name: 'Simple Product',
     price: 19.99,
-    currency: 'USD',
+    currency: mockSiteObject.defaultCurrency,
     inventory: { ats: 5, orderable: true, id: 'inv' },
 };
 
@@ -147,7 +147,11 @@ Horizontal card row for a single wishlist product.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency="USD">
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <BasketProvider>
                         <Story />
                     </BasketProvider>
@@ -251,7 +255,7 @@ export const OnSale: Story = {
 
         await expect(canvas.getByText(onSaleProduct.name as string)).toBeInTheDocument();
         // Sale price rendered by ProductPrice — use getAllByText to handle visible + sr-only duplicates
-        const priceElements = canvas.getAllByText(/\$49\.99/);
+        const priceElements = canvas.getAllByText(/£49\.99/);
         await expect(priceElements.length).toBeGreaterThan(0);
     },
 };

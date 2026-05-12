@@ -17,7 +17,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { action } from './action.set-site-context';
 import type { ActionFunctionArgs } from 'react-router';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
-import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
 
 const mockSiteCookieSerialize = vi.fn((value: string) => Promise.resolve(`site_id=${value}; Path=/`));
 const mockLocaleCookieSerialize = vi.fn((value: string) => Promise.resolve(`lng=${value}; Path=/`));
@@ -32,7 +32,7 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
     siteContext: Symbol('siteContext'),
 }));
 
-const defaultSite = mockConfig.commerce.sites[0];
+const defaultSite = mockSiteObject;
 const mockSiteContext = {
     site: defaultSite,
 };

@@ -19,13 +19,13 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { OrderItemsList } from './order-items-list';
 import { getOrderLineReviewKey } from './order-line-review-key';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { ConfigWrapper, mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
+import { ConfigWrapper, getSitePrefix, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
 
 type OrderLine = ShopperOrders.schemas['ProductItem'];
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 const { t } = getTranslation();
 
@@ -37,7 +37,11 @@ describe('OrderItemsList', () => {
                     path: '/',
                     element: (
                         <ConfigWrapper>
-                            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="USD">
+                            <SiteProvider
+                                site={mockSite}
+                                locale={mockLocale}
+                                language={mockSiteObject.defaultLocale}
+                                currency={mockSiteObject.defaultCurrency}>
                                 <OrderItemsList items={items} productsById={productsById} />
                             </SiteProvider>
                         </ConfigWrapper>
@@ -82,7 +86,7 @@ describe('OrderItemsList', () => {
 
         expect(screen.getByText('Sweater')).toBeInTheDocument();
         expect(screen.getByText(t('account:orders.quantityLabel', { count: 3 }))).toBeInTheDocument();
-        expect(screen.getByText('$61.99')).toBeInTheDocument();
+        expect(screen.getByText('£61.99')).toBeInTheDocument();
 
         const buyAgainLink = screen.getByRole('link', { name: t('account:orders.buyAgain') });
         expect(buyAgainLink).toHaveAttribute('href', `${getSitePrefix()}/product/701643108633M`);
@@ -117,8 +121,8 @@ describe('OrderItemsList', () => {
         renderOrderItemsList(items, {});
         expect(screen.getByText('Product One')).toBeInTheDocument();
         expect(screen.getByText('Product Two')).toBeInTheDocument();
-        expect(screen.getByText('$10.00')).toBeInTheDocument();
-        expect(screen.getByText('$20.00')).toBeInTheDocument();
+        expect(screen.getByText('£10.00')).toBeInTheDocument();
+        expect(screen.getByText('£20.00')).toBeInTheDocument();
 
         const list = screen.getByRole('list');
         expect(list).toBeInTheDocument();
@@ -139,7 +143,7 @@ describe('OrderItemsList', () => {
         ];
         renderOrderItemsList(items, {});
         expect(screen.getByText('Standalone Item')).toBeInTheDocument();
-        expect(screen.getByText('$15.00')).toBeInTheDocument();
+        expect(screen.getByText('£15.00')).toBeInTheDocument();
         expect(screen.queryByRole('link', { name: t('account:orders.buyAgain') })).not.toBeInTheDocument();
     });
 

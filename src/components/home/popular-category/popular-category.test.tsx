@@ -45,7 +45,7 @@ vi.mock('react-i18next', () => ({
             };
             return translations[key] || key;
         },
-        i18n: { language: 'en-GB' },
+        i18n: { language: mockSiteObject.defaultLocale },
     }),
 }));
 
@@ -69,7 +69,11 @@ const renderComponent = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                        <SiteProvider
+                            site={mockSite}
+                            locale={mockLocale}
+                            language={mockSiteObject.defaultLocale}
+                            currency={mockSiteObject.defaultCurrency}>
                             {component}
                         </SiteProvider>
                     </ConfigProvider>

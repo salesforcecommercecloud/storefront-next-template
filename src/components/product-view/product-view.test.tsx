@@ -28,7 +28,7 @@ import { masterProduct as mockProduct } from '@/components/__mocks__/master-vari
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { bundleProd } from '@/components/__mocks__/bundle-product';
 import { setProduct } from '@/components/__mocks__/set-product';
-import { mockBuildConfig } from '@/test-utils/config';
+import { mockAltSiteObject, mockBuildConfig } from '@/test-utils/config';
 import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -233,7 +233,7 @@ describe('ProductView', () => {
                 id: 'minimal-product',
                 name: 'Minimal Product',
                 price: 99.99,
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 imageGroups: [],
                 variationAttributes: [],
             } as any;

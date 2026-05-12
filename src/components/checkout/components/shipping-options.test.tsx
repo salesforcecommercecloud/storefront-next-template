@@ -43,7 +43,7 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
 
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
-    currency: 'USD',
+    currency: mockAltSiteObject.defaultCurrency,
     customerInfo: { email: 'test@example.com' },
     shipments: [
         {

@@ -21,9 +21,9 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { OrderList, OrderListHeader, OrderListBody, type Order } from '../index';
 import heroNewArrivals from '/images/hero-02.webp';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale, getSitePrefix } from '@/test-utils/config';
+import { getSitePrefix, mockLocale, mockSiteObject } from '@/test-utils/config';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -171,7 +171,11 @@ const meta: Meta<typeof OrderList> = {
     decorators: [
         (Story) => (
             <ActionLogger>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <Story />
                 </SiteProvider>
             </ActionLogger>

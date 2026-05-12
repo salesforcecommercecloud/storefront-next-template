@@ -19,7 +19,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import StoreLocatorFooter from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockAltSiteObject, mockSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
 import StoreLocatorProvider from '@/extensions/store-locator/providers/store-locator';
 
 const defaultMockSite = mockAltSiteObject;
@@ -35,7 +35,11 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+                        <SiteProvider
+                            site={defaultMockSite}
+                            locale={defaultMockLocale}
+                            language={mockAltSiteObject.defaultLocale}
+                            currency={mockAltSiteObject.defaultCurrency}>
                             <StoreLocatorProvider>{component}</StoreLocatorProvider>
                         </SiteProvider>
                     </ConfigProvider>

@@ -23,7 +23,7 @@ import { ConfigWrapper, mockBuildConfig, mockLocale, mockSiteObject } from '@/te
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
 const mockSite = {
-    ...mockBuildConfig.app.commerce.sites[0],
+    ...mockSiteObject,
     alias: mockBuildConfig.app.siteAliasMap?.[mockSiteObject.id] ?? undefined,
 };
 

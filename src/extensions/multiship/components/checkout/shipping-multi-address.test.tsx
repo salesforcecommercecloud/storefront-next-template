@@ -30,7 +30,11 @@ const defaultMockLocale =
 
 const wrapper = ({ children }: { children: ReactNode }) => (
     <ConfigProvider config={mockConfig}>
-        <SiteProvider site={defaultMockSite} locale={defaultMockLocale} language="en-US" currency="USD">
+        <SiteProvider
+            site={defaultMockSite}
+            locale={defaultMockLocale}
+            language={mockAltSiteObject.defaultLocale}
+            currency={mockAltSiteObject.defaultCurrency}>
             {children}
         </SiteProvider>
     </ConfigProvider>
@@ -84,7 +88,11 @@ describe('ShippingMultiAddress', () => {
         setProductItemAddresses = vi.fn();
 
         // Default mock: empty basket
-        useBasket.mockReturnValue({ basketId: 'test-basket', currency: 'USD', productItems: [] });
+        useBasket.mockReturnValue({
+            basketId: 'test-basket',
+            currency: mockAltSiteObject.defaultCurrency,
+            productItems: [],
+        });
         useCustomerProfile.mockReturnValue({
             addresses: [],
             paymentInstruments: [],
@@ -129,7 +137,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: mockProductItems,
         });
 
@@ -185,7 +193,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: mockProductItems,
         });
 
@@ -209,7 +217,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: propProductItems,
         });
 
@@ -240,7 +248,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: propProductItems,
         });
 
@@ -264,7 +272,7 @@ describe('ShippingMultiAddress', () => {
 
         useBasket.mockReturnValue({
             basketId: 'test-basket',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: mockProductItems,
         });
 
@@ -289,7 +297,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -348,7 +356,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -417,7 +425,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -491,7 +499,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -521,7 +529,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -555,7 +563,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -625,7 +633,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -656,7 +664,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -691,7 +699,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -754,7 +762,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -809,7 +817,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -862,7 +870,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -912,7 +920,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -974,7 +982,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -1032,7 +1040,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -1112,7 +1120,7 @@ describe('ShippingMultiAddress', () => {
 
             const mockBasket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-1',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
                 shipments: [
                     {
@@ -1171,7 +1179,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -1238,7 +1246,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 
@@ -1307,7 +1315,7 @@ describe('ShippingMultiAddress', () => {
 
             useBasket.mockReturnValue({
                 basketId: 'test-basket',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: mockProductItems,
             });
 

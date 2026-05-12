@@ -44,7 +44,15 @@ vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOrigina
     return {
         ...actual,
         useSite: vi.fn(() => ({
-            site: { id: mockSiteObject.id, defaultLocale: mockSiteObject.defaultLocale, defaultCurrency: mockSiteObject.defaultCurrency, supportedLocales: [{ id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency }], supportedCurrencies: ['EUR', mockSiteObject.defaultCurrency] },
+            site: {
+                id: mockSiteObject.id,
+                defaultLocale: mockSiteObject.defaultLocale,
+                defaultCurrency: mockSiteObject.defaultCurrency,
+                supportedLocales: [
+                    { id: mockSiteObject.defaultLocale, preferredCurrency: mockSiteObject.defaultCurrency },
+                ],
+                supportedCurrencies: mockSiteObject.supportedCurrencies,
+            },
             language: mockSiteObject.defaultLocale,
             currency: mockSiteObject.defaultCurrency,
         })),

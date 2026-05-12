@@ -18,12 +18,12 @@ import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
 import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__mocks__/basket-with-multiple-items';
 import OrderSummary from '../index';
 import { OrderSummaryMobileAccordion } from '../mobile-heading';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 const mockBasket = basketWithMultipleItems as ShopperBasketsV2.schemas['Basket'];
 const mockProductMap: Record<string, ShopperProducts.schemas['Product']> = {};
 
@@ -49,7 +49,11 @@ const meta: Meta<typeof OrderSummaryMobileAccordion> = {
     },
     decorators: [
         (Story: React.ComponentType) => (
-            <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+            <SiteProvider
+                site={mockSite}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
                 <Story />
             </SiteProvider>
         ),

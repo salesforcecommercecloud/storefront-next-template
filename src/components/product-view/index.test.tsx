@@ -24,14 +24,14 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components
 import ProductView from './index';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import { createConfigWrapper } from '@/test-utils/config';
+import { createConfigWrapper, mockAltSiteObject } from '@/test-utils/config';
 
 // Create a wrapper with default config
 const defaultConfigWrapper = createConfigWrapper({
     app: {
         site: {
-            locale: 'en-US',
-            currency: 'USD',
+            locale: mockAltSiteObject.defaultLocale,
+            currency: mockAltSiteObject.defaultCurrency,
             features: {
                 passwordlessLogin: {
                     callbackUri: '/passwordless-login-callback',

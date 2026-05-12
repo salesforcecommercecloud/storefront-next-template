@@ -21,12 +21,12 @@ import {
     // @ts-expect-error mock file is JS
 } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 import DynamicImageProvider from '@/providers/dynamic-image';
 import { ProductTileProvider } from '../context';
 
@@ -40,7 +40,11 @@ const meta: Meta<typeof ProductTile> = {
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
                         <ProductTileProvider>
                             <div className="w-64">

@@ -18,14 +18,14 @@ import ProductItem from '../index';
 // @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockConfig.commerce.sites[0];
+const mockSite = mockSiteObject;
 
 // We need to mock useItemFetcherLoading.
 // Since we can't easily mock imports in stories without test-runner hooks,
@@ -106,7 +106,11 @@ A component that displays individual product information in cart or summary view
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={mockSite} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={mockSite}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <ActionLogger>
                         <div className="max-w-2xl mx-auto">
                             <Story />

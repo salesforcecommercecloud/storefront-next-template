@@ -16,10 +16,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockBuildConfig, mockLocale } from '@/test-utils/config';
+import { mockBuildConfig, mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import SiteSwitcher from '../index';
 
-const site = mockConfig.commerce.sites[0];
+const site = mockSiteObject;
 const siteWithAlias = { ...site, alias: mockConfig.siteAliasMap?.[site.id] };
 
 const meta: Meta<typeof SiteSwitcher> = {
@@ -37,7 +37,11 @@ const meta: Meta<typeof SiteSwitcher> = {
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <SiteProvider site={siteWithAlias} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={siteWithAlias}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <Story />
                 </SiteProvider>
             </ConfigProvider>
@@ -57,7 +61,7 @@ const singleSiteConfig = createAppConfig({
         ...mockBuildConfig.app,
         commerce: {
             ...mockBuildConfig.app.commerce,
-            sites: [mockBuildConfig.app.commerce.sites[0]],
+            sites: [mockSiteObject],
         },
     },
 });
@@ -67,7 +71,11 @@ export const SingleSite: Story = {
     decorators: [
         (Story) => (
             <ConfigProvider config={singleSiteConfig}>
-                <SiteProvider site={siteWithAlias} locale={mockLocale} language="en-GB" currency="GBP">
+                <SiteProvider
+                    site={siteWithAlias}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
                     <Story />
                 </SiteProvider>
             </ConfigProvider>

@@ -21,14 +21,14 @@ import { PaymentScheduleModalContent } from '../../payment-schedule-modal-conten
 import type { PaymentSchedule, StepInfo } from '../../../types';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale } from '@/test-utils/config';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import type { ReactElement } from 'react';
 
 function PaymentScheduleModalContentWrapper({
     paymentSchedule,
     steps,
     disclaimer,
-    currency = 'USD',
+    currency = mockSiteObject.defaultCurrency,
 }: {
     paymentSchedule?: PaymentSchedule;
     steps?: StepInfo[];
@@ -38,7 +38,11 @@ function PaymentScheduleModalContentWrapper({
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={mockConfig}>
-            <SiteProvider site={mockConfig.commerce.sites[0]} locale={mockLocale} language="en-GB" currency={currency}>
+            <SiteProvider
+                site={mockSiteObject}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={currency}>
                 <div className="max-w-md p-6">
                     <PaymentScheduleModalContent
                         paymentSchedule={paymentSchedule}
@@ -111,7 +115,7 @@ export const Default: Story = {
             { number: 4, text: 'Pay over time, interest-free' },
         ],
         disclaimer: 'Subject to credit approval. Terms apply.',
-        currency: 'USD',
+        currency: mockSiteObject.defaultCurrency,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -134,7 +138,7 @@ export const PaymentScheduleOnly: Story = {
                 { amount: 25.0, dueDate: '6 weeks' },
             ],
         },
-        currency: 'USD',
+        currency: mockSiteObject.defaultCurrency,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -151,7 +155,7 @@ export const StepsOnly: Story = {
             { number: 2, text: 'Choose Pay in 4' },
             { number: 3, text: 'Complete your purchase' },
         ],
-        currency: 'USD',
+        currency: mockSiteObject.defaultCurrency,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

@@ -48,8 +48,8 @@ describe('cookie-utils', () => {
             sites: [
                 {
                     defaultSiteId: mockAltSiteObject.id,
-                    defaultLocale: 'en-US',
-                    defaultCurrency: 'USD',
+                    defaultLocale: mockAltSiteObject.defaultLocale,
+                    defaultCurrency: mockAltSiteObject.defaultCurrency,
                     supportedLocales: [],
                     supportedCurrencies: [],
                     cookies: {},

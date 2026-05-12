@@ -26,7 +26,7 @@ import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-n
 import ProductItemsList from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
+import { mockAltSiteObject, mockConfig } from '@/test-utils/config';
 
 const defaultMockSite = mockAltSiteObject;
 const mockLocale =
@@ -40,7 +40,11 @@ const renderWithRouter = (component: React.ReactElement) => {
                 path: '/cart',
                 element: (
                     <ConfigProvider config={mockConfig}>
-                        <SiteProvider site={defaultMockSite} locale={mockLocale} language="en-US" currency="USD">
+                        <SiteProvider
+                            site={defaultMockSite}
+                            locale={mockLocale}
+                            language={mockAltSiteObject.defaultLocale}
+                            currency={mockAltSiteObject.defaultCurrency}>
                             {component}
                         </SiteProvider>
                     </ConfigProvider>

@@ -120,7 +120,7 @@ const server = setupServer(
     http.get('/api/baskets/:basketId', () => {
         return HttpResponse.json({
             basketId: 'test-basket-123',
-            currency: 'USD',
+            currency: mockAltSiteObject.defaultCurrency,
             productItems: [
                 {
                     itemId: 'item-1',
@@ -283,7 +283,7 @@ vi.mock('react-router', async () => {
 vi.mock('@/providers/basket', () => ({
     useBasket: () => ({
         basketId: 'test-basket-123',
-        currency: 'USD',
+        currency: mockAltSiteObject.defaultCurrency,
         productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1, shipmentId: 'me' }],
         productTotal: 99.99,
         orderTotal: 115.98,
@@ -595,7 +595,7 @@ describe('Checkout Flow Integration Tests', () => {
         http.get('/api/baskets/:basketId', () => {
             return HttpResponse.json({
                 basketId: 'test-basket-123',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 productItems: [
                     {
                         itemId: 'item-1',
@@ -2002,7 +2002,7 @@ describe('Checkout Flow Integration Tests', () => {
                 smsOptIn: false,
                 defaultShippingMethod: 'standard',
                 preferredLanguage: 'en_US',
-                currency: 'USD',
+                currency: mockAltSiteObject.defaultCurrency,
                 savePreferences: true,
             };
 
