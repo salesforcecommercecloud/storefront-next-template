@@ -32,7 +32,7 @@ apis:
     x-openapi-ts:
       output: ../src/scapi-client/generated/shopper-gift-certificates-v1.ts
   auth-v1:
-    root: ./auth-oas-1.47.0/auth-oas-v1-public.yaml
+    root: ./auth-oas-1.48.0/auth-oas-v1-public.yaml
     x-openapi-ts:
       output: ../src/scapi-client/generated/auth-v1.ts
   shopper-orders-v1:

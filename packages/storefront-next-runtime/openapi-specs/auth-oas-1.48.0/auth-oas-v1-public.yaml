@@ -3,7 +3,7 @@ info:
   x-api-type: Shopper
   x-api-family: Shopper
   title: Auth
-  version: 1.47.0
+  version: 1.48.0
   description: |-
     [Download API specification](https://developer.salesforce.com/static/commercecloud/commerce-api/auth/auth-oas-v1-public.yaml)
 
@@ -46,6 +46,7 @@ paths:
           schema:
             type: string
             example: Basic <client credentials>
+        - $ref: '#/components/parameters/slasClientAuth'
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -206,12 +207,14 @@ paths:
       parameters:
         - $ref: '#/components/parameters/organizationId'
         - $ref: '#/components/parameters/register_customer'
+        - $ref: '#/components/parameters/strict_verify'
         - name: Authorization
           in: header
           description: 'Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret`'
           required: false
           schema:
             type: string
+            maxLength: 4096
             example: Basic <client credentials>
       requestBody:
         content:
@@ -260,6 +263,8 @@ paths:
               examples:
                 BadOrMissingAccessToken400:
                   $ref: '#/components/examples/BadOrMissingAccessToken400'
+                UnverifiedShopper400:
+                  $ref: '#/components/examples/UnverifiedShopper400'
                 TooManyLoginRequests400:
                   description: |
                     This error is returned specifically when mode = email and the user has exceeded the maximum number of login attempts within the rate limit window.
@@ -583,6 +588,7 @@ paths:
             type: string
         - $ref: '#/components/parameters/code_challenge'
         - $ref: '#/components/parameters/ui_locales'
+        - $ref: '#/components/parameters/slasClientAuth'
       responses:
         '303':
           description: The authorization code was successfully added to the `redirect_uri`.
@@ -3525,6 +3531,19 @@ components:
         type: string
         minLength: 1
         maxLength: 32
+    slasClientAuth:
+      name: x-slas-client-auth
+      in: header
+      description: |-
+        Base64-encoded string of client credentials. The string is composed of
+        a client ID and client secret, separated by a colon (`:`). For example, `clientId:clientSecret`. Don't add the string `"Basic"`.
+
+        The `x-slas-client-auth` header is supported for SLAS private clients.
+        When strict client auth is enabled for the client, requests without
+        this header are rejected with a 401.
+      required: false
+      schema:
+        type: string
     register_customer:
       name: register_customer
       in: query
@@ -3537,6 +3556,18 @@ components:
       schema:
         maxLength: 5
         type: string
+    strict_verify:
+      name: strict_verify
+      in: query
+      description: |-
+        When set to `true`, blocks the passwordless login request and returns a `400` error if the shopper's email is not verified. Use this to enforce shopper email verification before allowing passwordless authentication. Available in B2C Commerce version 26.6 and later.
+
+        Default: `false`
+      required: false
+      schema:
+        type: boolean
+        default: false
+        example: true
     client_id:
       name: client_id
       in: query
@@ -4923,6 +4954,10 @@ components:
       value:
         error: invalid_request
         error_description: Bad or missing access token.
+    UnverifiedShopper400:
+      value:
+        error: invalid_request
+        error_description: Email not verified.
     InvalidClient401:
       value:
         error: invalid_client

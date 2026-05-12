@@ -1680,12 +1680,27 @@ export interface components {
          */
         organizationId: string;
         /**
+         * @description Base64-encoded string of client credentials. The string is composed of
+         *     a client ID and client secret, separated by a colon (`:`). For example, `clientId:clientSecret`. Don't add the string `"Basic"`.
+         *
+         *     The `x-slas-client-auth` header is supported for SLAS private clients.
+         *     When strict client auth is enabled for the client, requests without
+         *     this header are rejected with a 401.
+         */
+        slasClientAuth: string;
+        /**
          * @description When set to `true`, creates a new customer profile in B2C Commerce if one doesn't already exist. Requires `last_name` and `email` body parameters unless `user_id` is an email address. Optionally accepts `first_name` and `phone_number` body parameters.
          *     If the customer profile doesn't exist, it is created when the TOTP is validated via the `passwordless/token` endpoint.
          *
          *     When set to `false` (or omitted), no customer profile is created in B2C Commerce.
          */
         register_customer: string;
+        /**
+         * @description When set to `true`, blocks the passwordless login request and returns a `400` error if the shopper's email is not verified. Use this to enforce shopper email verification before allowing passwordless authentication. Available in B2C Commerce version 26.6 and later.
+         *
+         *     Default: `false`
+         */
+        strict_verify: boolean;
         /** @description The SLAS public client ID or SLAS private client ID for use with trusted-agent requests. When using a private client ID a PKCE code challenge is not required. */
         client_id: string;
         /** @description Refresh token that was given during the access token request. */
@@ -1782,6 +1797,15 @@ export interface operations {
             header: {
                 /** @description Base64-encoded username and password for HTTP basic authentication */
                 Authorization: string;
+                /**
+                 * @description Base64-encoded string of client credentials. The string is composed of
+                 *     a client ID and client secret, separated by a colon (`:`). For example, `clientId:clientSecret`. Don't add the string `"Basic"`.
+                 *
+                 *     The `x-slas-client-auth` header is supported for SLAS private clients.
+                 *     When strict client auth is enabled for the client, requests without
+                 *     this header are rejected with a 401.
+                 */
+                "x-slas-client-auth"?: components["parameters"]["slasClientAuth"];
             };
             path: {
                 /**
@@ -1903,6 +1927,12 @@ export interface operations {
                  *     When set to `false` (or omitted), no customer profile is created in B2C Commerce.
                  */
                 register_customer?: components["parameters"]["register_customer"];
+                /**
+                 * @description When set to `true`, blocks the passwordless login request and returns a `400` error if the shopper's email is not verified. Use this to enforce shopper email verification before allowing passwordless authentication. Available in B2C Commerce version 26.6 and later.
+                 *
+                 *     Default: `false`
+                 */
+                strict_verify?: components["parameters"]["strict_verify"];
             };
             header?: {
                 /** @description Base64-encoded string for HTTP Basic authentication. The string is composed of a client ID and client secret, separated by a colon (`:`), for example: `clientId:clientSecret` */
@@ -2202,7 +2232,17 @@ export interface operations {
                  */
                 ui_locales?: components["parameters"]["ui_locales"];
             };
-            header?: never;
+            header?: {
+                /**
+                 * @description Base64-encoded string of client credentials. The string is composed of
+                 *     a client ID and client secret, separated by a colon (`:`). For example, `clientId:clientSecret`. Don't add the string `"Basic"`.
+                 *
+                 *     The `x-slas-client-auth` header is supported for SLAS private clients.
+                 *     When strict client auth is enabled for the client, requests without
+                 *     this header are rejected with a 401.
+                 */
+                "x-slas-client-auth"?: components["parameters"]["slasClientAuth"];
+            };
             path: {
                 /**
                  * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html#instance-types).
