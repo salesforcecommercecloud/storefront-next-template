@@ -210,6 +210,84 @@ describe('turnstile-utils', () => {
                 expect(getTurnstileSiteKey(config, 'https://example.com/checkout')).toBe('PROD_KEY');
                 expect(getTurnstileSiteKey(config, 'https://example.com/path/to/page')).toBe('PROD_KEY');
             });
+
+            it('should handle malformed URL via fallback hostname extraction', () => {
+                // For inputs that don't parse as a URL (e.g. bare hostname without protocol),
+                // the fallback strips any `https?://` prefix, splits on `/` and `:`, and
+                // returns the leading segment.
+                const config: AppConfig = {
+                    security: {
+                        turnstile: {
+                            sites: {
+                                prod: [{ siteKey: 'PROD_KEY', domains: ['example.com'] }],
+                            },
+                        },
+                    },
+                } as unknown as AppConfig;
+
+                // No protocol scheme → URL throws → fallback path runs
+                expect(getTurnstileSiteKey(config, 'example.com/checkout')).toBe('PROD_KEY');
+                expect(getTurnstileSiteKey(config, 'example.com')).toBe('PROD_KEY');
+            });
+
+            it('returns null when malformed URL fallback yields a non-matching hostname', () => {
+                const config: AppConfig = {
+                    security: {
+                        turnstile: {
+                            sites: {
+                                prod: [{ siteKey: 'PROD_KEY', domains: ['example.com'] }],
+                            },
+                        },
+                    },
+                } as unknown as AppConfig;
+
+                expect(getTurnstileSiteKey(config, 'not-example.com')).toBeNull();
+            });
+
+            it('strips http:// protocol prefix in fallback path', () => {
+                const config: AppConfig = {
+                    security: {
+                        turnstile: {
+                            sites: {
+                                prod: [{ siteKey: 'PROD_KEY', domains: ['example.com'] }],
+                            },
+                        },
+                    },
+                } as unknown as AppConfig;
+
+                // Bare http:// without proper URL structure - fallback strips protocol
+                expect(getTurnstileSiteKey(config, 'http://example.com:8080')).toBe('PROD_KEY');
+                expect(getTurnstileSiteKey(config, 'https://example.com:443/path')).toBe('PROD_KEY');
+            });
+
+            it('returns null when both Origin and Referer would map to non-matching hostnames', () => {
+                const config: AppConfig = {
+                    security: {
+                        turnstile: {
+                            sites: {
+                                prod: [{ siteKey: 'PROD_KEY', domains: ['allowed.example.com'] }],
+                            },
+                        },
+                    },
+                } as unknown as AppConfig;
+
+                expect(getTurnstileSiteKey(config, 'https://attacker.example.com')).toBeNull();
+                expect(getTurnstileSiteKey(config, 'attacker.example.com')).toBeNull();
+            });
+
+            it('handles empty string input by treating it as a non-match', () => {
+                const config: AppConfig = {
+                    security: {
+                        turnstile: {
+                            sites: {
+                                prod: [{ siteKey: 'PROD_KEY', domains: ['example.com'] }],
+                            },
+                        },
+                    },
+                } as unknown as AppConfig;
+
+                expect(getTurnstileSiteKey(config, '')).toBeNull();
+            });
         });
     });
 
@@ -268,6 +346,16 @@ describe('turnstile-utils', () => {
             );
 
             consoleErrorSpy.mockRestore();
+        });
+
+        it('should return null when called from a browser context (window defined)', () => {
+            // Simulate the client-side environment where `typeof window !== 'undefined'`.
+            // Production server-only modules must not leak secrets into the bundle even if
+            // accidentally imported by client code.
+            globalThis.window = {} as Window & typeof globalThis;
+            vi.stubEnv('TURNSTILE_SECRET_KEYS', JSON.stringify({ '0x4AAA_US_KEY': 'secret_us' }));
+
+            expect(getTurnstileSecretKey('0x4AAA_US_KEY')).toBeNull();
         });
     });
 

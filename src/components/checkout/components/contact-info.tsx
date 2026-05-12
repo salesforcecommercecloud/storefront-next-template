@@ -44,7 +44,7 @@ import { Spinner } from '@/components/spinner';
 import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile/utils';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
 const LoginModal = lazy(() => import('@/components/login/login-modal'));
@@ -103,11 +103,22 @@ export default function ContactInfo({
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const [turnstileBypassed, setTurnstileBypassed] = useState(false);
     const turnstileResetRef = useRef<(() => void) | null>(null);
     const turnstileExecuteRef = useRef<(() => void) | null>(null);
     const tokenConsumedRef = useRef(false);
+    // Error message shown when server-side Turnstile verification rejects the request.
+    // Generic copy by design - we never tell the shopper *why* (bot detection, replay, etc.)
+    // to avoid leaking detection signals to attackers. See README-TURNSTILE.md.
+    const [verificationError, setVerificationError] = useState<string | null>(null);
+    // Cap auto-retries on consecutive verification failures so a misconfigured key or a
+    // genuinely-blocked client doesn't loop forever. After N failures, we still show the
+    // error but stop resetting the widget; shopper must refresh to try again.
+    const verificationFailureCountRef = useRef(0);
+    const MAX_VERIFICATION_RETRIES = 3;
 
     const turnstileEnabled = appConfig ? isTurnstileEnabled(appConfig as AppConfig) : false;
+    const turnstileMode = appConfig ? getTurnstileMode(appConfig as AppConfig) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!appConfig || !turnstileEnabled) return null;
         if (typeof window !== 'undefined') {
@@ -119,7 +130,7 @@ export default function ContactInfo({
 
     const [showTurnstile, setShowTurnstile] = useState(false);
 
-    const turnstilePending = !!(turnstileEnabled && turnstileSiteKey && !turnstileToken);
+    const turnstilePending = !!(turnstileEnabled && turnstileSiteKey && !turnstileToken && !turnstileBypassed);
 
     const resetTurnstile = useCallback(() => {
         setTurnstileToken(null);
@@ -141,6 +152,31 @@ export default function ContactInfo({
     const handleTurnstileExpire = useCallback(() => {
         setTurnstileToken(null);
     }, []);
+
+    // Interactive challenge timeout: Cloudflare's widget will auto-refresh (refresh-timeout
+    // 'auto'); we just clear our local token so the form stays in a "needs verification"
+    // state and tell the shopper their challenge was refreshed. Soft message — no escalation.
+    const handleTurnstileTimeout = useCallback(() => {
+        setTurnstileToken(null);
+        setVerificationError(t('contactInfo.verificationRefreshed'));
+    }, [t]);
+
+    const handleTurnstileBypass = useCallback(() => {
+        setTurnstileBypassed(true);
+    }, []);
+
+    // Widget-side retry exhaustion (3 consecutive non-infrastructure errors). The widget
+    // could not produce a token, so no place-order request will fire and the server will
+    // never send a 403. Surface the same generic verification-error message that WI-10
+    // shows for server-side rejection so the shopper isn't silently stuck. We do not
+    // auto-reset here - the widget already exhausted its own retry cap; further resets
+    // would just loop. The error clears when the shopper focuses the email field again,
+    // which also remounts the widget via showTurnstile and gives them a fresh try.
+    const handleTurnstileRetryExhausted = useCallback(() => {
+        setVerificationError(t('contactInfo.verificationFailed'));
+        // Clear any pending submission so the form doesn't try to re-trigger the widget.
+        pendingEmailRef.current = null;
+    }, [t]);
 
     const form = useForm<ContactInfoData, void, ContactInfoData>({
         resolver: zodResolver(schema),
@@ -188,7 +224,11 @@ export default function ContactInfo({
         if (turnstileEnabled && !showTurnstile) {
             setShowTurnstile(true);
         }
-    }, [turnstileEnabled, showTurnstile]);
+        // Clear any prior verification error when the shopper engages with the field again.
+        if (verificationError) {
+            setVerificationError(null);
+        }
+    }, [turnstileEnabled, showTurnstile, verificationError]);
 
     const handleEmailBlur = useCallback(
         (e: React.FocusEvent<HTMLInputElement>, fieldOnBlur: (e: React.FocusEvent<HTMLInputElement>) => void) => {
@@ -205,7 +245,7 @@ export default function ContactInfo({
             if (lastEmailSentRef.current === normalized) return;
             if (passwordlessEmailFetcher.state === 'submitting' || passwordlessEmailFetcher.state === 'loading') return;
 
-            if (turnstileEnabled && (!turnstileToken || tokenConsumedRef.current)) {
+            if (turnstileEnabled && !turnstileBypassed && (!turnstileToken || tokenConsumedRef.current)) {
                 pendingEmailRef.current = raw;
                 if (tokenConsumedRef.current) {
                     resetTurnstile();
@@ -236,6 +276,7 @@ export default function ContactInfo({
             passwordlessEmailFetcher,
             authorizePasswordlessEmailPath,
             turnstileToken,
+            turnstileBypassed,
             turnstileEnabled,
             showTurnstile,
             resetTurnstile,
@@ -243,10 +284,28 @@ export default function ContactInfo({
     );
 
     useEffect(() => {
-        if (turnstileToken === null && pendingEmailRef.current && turnstileEnabled) {
+        if (turnstileToken === null && pendingEmailRef.current && turnstileEnabled && !turnstileBypassed) {
             turnstileExecuteRef.current?.();
         }
-    }, [turnstileToken, turnstileEnabled]);
+    }, [turnstileToken, turnstileEnabled, turnstileBypassed]);
+
+    useEffect(() => {
+        if (!turnstileBypassed || !pendingEmailRef.current) return;
+        const raw = pendingEmailRef.current;
+        const normalized = raw.toLowerCase();
+        if (lastEmailSentRef.current === normalized) return;
+        lastEmailSentRef.current = normalized;
+        pendingEmailRef.current = null;
+
+        const formData = new FormData();
+        formData.append('email', raw);
+        void passwordlessEmailFetcher.submit(formData, {
+            method: 'POST',
+            action: authorizePasswordlessEmailPath,
+        });
+        if (otpFlowActiveRef) otpFlowActiveRef.current = true;
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- otpFlowActiveRef is a ref
+    }, [turnstileBypassed, passwordlessEmailFetcher, authorizePasswordlessEmailPath]);
 
     useEffect(() => {
         if (!turnstileToken || !pendingEmailRef.current || tokenConsumedRef.current) return;
@@ -285,6 +344,33 @@ export default function ContactInfo({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to requiresLogin flag
     }, [passwordlessEmailFetcher.state, passwordlessEmailFetcher.data?.requiresLogin]);
+
+    // Server-side Turnstile rejection (403 NOT_AUTHORIZED) handling.
+    // Without this the shopper is silently stuck on the contact step with no feedback.
+    // Industry guidance (Cloudflare, Stripe, Shopify): show a generic retry message,
+    // reset the widget so a fresh token can be generated, and cap auto-retries so a
+    // misconfigured key cannot loop forever.
+    useEffect(() => {
+        const { state, data } = passwordlessEmailFetcher;
+        if (state !== 'idle' || data?.success !== false) return;
+        if (data.error?.code !== 'NOT_AUTHORIZED') return;
+
+        verificationFailureCountRef.current += 1;
+        setVerificationError(t('contactInfo.verificationFailed'));
+
+        if (verificationFailureCountRef.current < MAX_VERIFICATION_RETRIES) {
+            // Allow the same email to retry by clearing the dedupe ref, and reset the
+            // widget so the next blur produces a fresh token.
+            lastEmailSentRef.current = null;
+            tokenConsumedRef.current = false;
+            resetTurnstile();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to verification rejection
+    }, [
+        passwordlessEmailFetcher.state,
+        passwordlessEmailFetcher.data?.success,
+        passwordlessEmailFetcher.data?.error?.code,
+    ]);
 
     const handleOtpSuccess = useCallback(
         () => {
@@ -440,11 +526,23 @@ export default function ContactInfo({
                                     onSuccess={handleTurnstileSuccess}
                                     onError={handleTurnstileError}
                                     onExpire={handleTurnstileExpire}
+                                    onTimeout={handleTurnstileTimeout}
+                                    onBypass={handleTurnstileBypass}
+                                    onRetryExhausted={handleTurnstileRetryExhausted}
                                     enabled={turnstileEnabled}
-                                    mode="non-interactive"
+                                    mode={turnstileMode}
                                     resetRef={turnstileResetRef}
                                     executeRef={turnstileExecuteRef}
                                 />
+                            )}
+
+                            {verificationError && (
+                                <div
+                                    role="alert"
+                                    className="text-destructive text-sm"
+                                    data-testid="contact-info-verification-error">
+                                    {verificationError}
+                                </div>
                             )}
 
                             <div className="flex items-start gap-2">

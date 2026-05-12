@@ -194,6 +194,7 @@ export default defineConfig<Config>(
             // See CONFIG-OPTIONS.md#features for detailed documentation
             features: {
                 passwordlessLogin: {
+                    enabled: false,
                     mode: 'email',
                     callbackUri: '/passwordless-login-callback',
                     landingUri: '/login',
@@ -456,20 +457,20 @@ export default defineConfig<Config>(
             security: {
                 turnstile: {
                     sites: (() => {
-                        if (!process.env.PUBLIC__security__turnstile__sites) return {};
+                        if (!process.env.PUBLIC__app__security__turnstile__sites) return {};
                         try {
-                            return JSON.parse(process.env.PUBLIC__security__turnstile__sites);
+                            return JSON.parse(process.env.PUBLIC__app__security__turnstile__sites);
                         } catch {
                             // eslint-disable-next-line no-console
                             console.error(
-                                '[Turnstile] Failed to parse PUBLIC__security__turnstile__sites — no sites configured (fail-closed)'
+                                '[Turnstile] Failed to parse PUBLIC__app__security__turnstile__sites - no sites configured (fail-closed)'
                             );
                             return {};
                         }
                     })(),
-                    enabled: process.env.PUBLIC__security__turnstile__enabled === 'true',
+                    enabled: process.env.PUBLIC__app__security__turnstile__enabled === 'true',
                     mode:
-                        (process.env.PUBLIC__security__turnstile__mode as
+                        (process.env.PUBLIC__app__security__turnstile__mode as
                             | 'managed'
                             | 'non-interactive'
                             | 'invisible') || 'managed',

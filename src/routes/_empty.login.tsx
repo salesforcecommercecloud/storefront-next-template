@@ -34,7 +34,7 @@ import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile/utils';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 // services
 import {
@@ -360,11 +360,11 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         pageUrl,
     } = loaderData;
 
-    // Turnstile for OTP resend — the PasswordlessLoginForm has its own widget for the
-    // initial submit, but once the OTP modal opens the resend needs a fresh token.
     const [resendTurnstileToken, setResendTurnstileToken] = useState<string | null>(null);
     const resendTurnstileResetRef = useRef<(() => void) | null>(null);
+
     const turnstileEnabled = config ? isTurnstileEnabled(config) : false;
+    const turnstileMode = config ? getTurnstileMode(config) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!config || !turnstileEnabled) return null;
         if (typeof window !== 'undefined') {
@@ -383,7 +383,6 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     const handleResendTurnstileExpire = useCallback(() => {
         setResendTurnstileToken(null);
     }, []);
-
     // Prefer actionData error (from form submission) over loaderData error (from URL params)
     const error = actionData?.error || loaderError || undefined;
 
@@ -466,6 +465,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                     onError={handleResendTurnstileError}
                     onExpire={handleResendTurnstileExpire}
                     enabled={turnstileEnabled}
+                    mode={turnstileMode}
                     resetRef={resendTurnstileResetRef}
                 />
             )}
@@ -491,7 +491,6 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                     void navigate(returnUrl || '/');
                 }}
                 onResendCode={async () => {
-                    // Resend the OTP code
                     const formData = new FormData();
                     formData.append('email', otpEmail || '');
                     formData.append('loginMode', 'passwordless');
@@ -505,7 +504,6 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                         method: 'POST',
                         body: formData,
                     });
-                    // Token is single-use — reset for the next resend
                     if (turnstileEnabled) {
                         setResendTurnstileToken(null);
                         resendTurnstileResetRef.current?.();

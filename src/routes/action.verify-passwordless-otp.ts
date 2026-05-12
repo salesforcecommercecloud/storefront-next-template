@@ -115,6 +115,11 @@ export async function action({
                 const currency = getBasketCurrency(context, current);
                 const recalculatedBasket = await calculateBasket(context, current.basketId, currency);
                 updateBasketResource(context, recalculatedBasket);
+                logger.info('VerifyOtp: basket recalculated after auth swap', {
+                    basketId: recalculatedBasket.basketId,
+                    itemCount: recalculatedBasket.productItems?.length ?? 0,
+                    orderTotal: recalculatedBasket.orderTotal,
+                });
             }
         } catch (error) {
             logger.error('VerifyPasswordlessOtp: basket recalculation after authentication failed', { error });

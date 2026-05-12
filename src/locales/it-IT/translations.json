@@ -448,7 +448,9 @@
             "saving": "Salvataggio in corso...",
             "lookupFallbackMessage": "Ricerca cliente non riuscita. Continua come ospite.",
             "saveError": "Impossibile salvare le informazioni di contatto",
-            "sessionExpired": "Sessione scaduta. Acceda nuovamente."
+            "sessionExpired": "Sessione scaduta. Acceda nuovamente.",
+            "verificationFailed": "Non è stato possibile verificare le tue informazioni. Riprova.",
+            "verificationRefreshed": "La verifica è scaduta. L'abbiamo aggiornata - riprova."
         },
         "addressModal": {
             "title": "Aggiungi nuovo indirizzo",

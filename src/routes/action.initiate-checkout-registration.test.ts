@@ -439,6 +439,8 @@ describe('action.initiate-checkout-registration', () => {
         });
 
         it('should block when no token and no cookie', async () => {
+            mockEnforceTurnstile.mockResolvedValue(false);
+
             const { createCookie } = await import('@/lib/cookie-utils.server');
             vi.mocked(createCookie).mockReturnValue({
                 parse: vi.fn().mockResolvedValue(null),

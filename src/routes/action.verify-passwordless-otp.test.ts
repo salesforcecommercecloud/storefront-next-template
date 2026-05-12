@@ -20,7 +20,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.verify-passwordless-otp';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
-import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
+import { calculateBasket, getBasketCurrency } from '@/lib/api/basket.server';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
@@ -39,7 +39,6 @@ vi.mock('@/lib/logger.server', () => ({
 const mockCreateApiClients = vi.mocked(createApiClients);
 const mockGetAuth = vi.mocked(getAuth);
 const mockUpdateAuth = vi.mocked(updateAuth);
-const mockMergeBasket = vi.mocked(mergeBasket);
 const mockCalculateBasket = vi.mocked(calculateBasket);
 const mockGetBasketCurrency = vi.mocked(getBasketCurrency);
 const mockGetBasket = vi.mocked(getBasket);
@@ -94,7 +93,6 @@ describe('action.verify-passwordless-otp', () => {
         mockIsTrackingConsentEnabled.mockReturnValue(false);
 
         mockGetAuth.mockReturnValue({ usid: 'test-usid' } as any);
-        mockMergeBasket.mockResolvedValue(undefined as any);
         mockGetBasket.mockResolvedValue({
             current: { basketId: 'basket-1', currency: 'USD' },
         } as any);
@@ -128,7 +126,7 @@ describe('action.verify-passwordless-otp', () => {
         expect(mockExchangeToken).not.toHaveBeenCalled();
     });
 
-    it('returns success, updates auth, and merges basket on valid OTP', async () => {
+    it('returns success, updates auth, and recalculates basket on valid OTP', async () => {
         const mockTokenResponse = {
             access_token: 'access-token',
             id_token: 'id-token',
@@ -159,8 +157,6 @@ describe('action.verify-passwordless-otp', () => {
         const updater = mockUpdateAuth.mock.calls[1][1] as (session: unknown) => unknown;
         expect(updater({})).toEqual({ userType: 'registered' });
 
-        expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
-
         expect(mockGetBasket).toHaveBeenCalledWith(mockContext);
         expect(mockGetBasketCurrency).toHaveBeenCalledWith(mockContext, { basketId: 'basket-1', currency: 'USD' });
         expect(mockCalculateBasket).toHaveBeenCalledWith(mockContext, 'basket-1', 'USD');
@@ -173,7 +169,7 @@ describe('action.verify-passwordless-otp', () => {
         });
     });
 
-    it('updates basket from merge then recalculates when merge returns a basket', async () => {
+    it('recalculates basket after OTP auth swap to apply registered pricing', async () => {
         const mockTokenResponse = {
             access_token: 'access-token',
             id_token: 'id-token',
@@ -188,20 +184,17 @@ describe('action.verify-passwordless-otp', () => {
             dwsid: 'dwsid',
         } as any;
 
-        const merged = { basketId: 'merged-basket', currency: 'USD' } as any;
-        const recalculated = { basketId: 'merged-basket', currency: 'USD', orderTotal: 99 } as any;
+        const basket = { basketId: 'basket-1', currency: 'USD' } as any;
+        const recalculated = { basketId: 'basket-1', currency: 'USD', orderTotal: 99 } as any;
 
         mockExchangeToken.mockResolvedValue(mockTokenResponse);
-        mockMergeBasket.mockResolvedValue(merged);
-        mockGetBasket.mockResolvedValue({
-            current: merged,
-        } as any);
+        mockGetBasket.mockResolvedValue({ current: basket } as any);
         mockCalculateBasket.mockResolvedValue(recalculated);
 
         await action(createActionArgs('12345678', 'test@example.com'));
 
-        expect(mockUpdateBasketResource).toHaveBeenNthCalledWith(1, mockContext, merged);
-        expect(mockUpdateBasketResource).toHaveBeenNthCalledWith(2, mockContext, recalculated);
+        expect(mockUpdateBasketResource).toHaveBeenCalledTimes(1);
+        expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, recalculated);
     });
 
     it('extracts error message from ApiError.rawBody JSON', async () => {

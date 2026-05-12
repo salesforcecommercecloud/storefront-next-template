@@ -92,17 +92,21 @@ export async function action({
         );
     }
 
+    // Set the verification cookie after Turnstile passes, regardless of whether the
+    // downstream SCAPI call succeeds. This prevents a state divergence where the client
+    // marks Turnstile as verified (sessionStorage) but the server never got the cookie
+    // because the SCAPI call failed.
+    const tvCookie = createCookie<string>(
+        COOKIE_TURNSTILE_VERIFIED,
+        getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
+        context
+    );
+    const setCookieHeader = await tvCookie.serialize('1');
+
     try {
         await authorizePasswordless(context, { userid: email });
 
         logger.info('AuthorizePasswordlessEmail: OTP sent');
-
-        const tvCookie = createCookie<string>(
-            COOKIE_TURNSTILE_VERIFIED,
-            getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
-            context
-        );
-        const setCookieHeader = await tvCookie.serialize('1');
 
         return data({ success: true, email }, { headers: { 'Set-Cookie': setCookieHeader } });
     } catch (error) {
@@ -110,7 +114,10 @@ export async function action({
             const errorMessage = extractErrorMessage(error);
             if (/email not verified/i.test(errorMessage)) {
                 logger.info('AuthorizePasswordlessEmail: email not verified, requires standard login', { email });
-                return data({ success: false, requiresLogin: true, email });
+                return data(
+                    { success: false, requiresLogin: true, email },
+                    { headers: { 'Set-Cookie': setCookieHeader } }
+                );
             }
 
             logger.error('AuthorizePasswordlessEmail: bad request', { email, error: errorMessage });
@@ -119,7 +126,7 @@ export async function action({
                     success: false,
                     error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
                 },
-                { status: 400 }
+                { status: 400, headers: { 'Set-Cookie': setCookieHeader } }
             );
         }
 
@@ -130,7 +137,7 @@ export async function action({
                 success: false,
                 error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
             },
-            { status: 500 }
+            { status: 500, headers: { 'Set-Cookie': setCookieHeader } }
         );
     }
 }

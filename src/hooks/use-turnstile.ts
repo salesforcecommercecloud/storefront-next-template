@@ -157,8 +157,26 @@ declare global {
                 options: {
                     sitekey: string;
                     callback?: (token: string) => void;
-                    'error-callback'?: () => void;
+                    /**
+                     * Fires on widget errors. The errorCode argument distinguishes failure
+                     * families: 200xxx/500xxx (CDN/iframe load), 300xxx/600xxx (bot detection),
+                     * 110xxx (challenge timed out). Cloudflare confirms this argument is part of
+                     * the public API.
+                     */
+                    'error-callback'?: (errorCode: string) => void;
                     'expired-callback'?: () => void;
+                    /** Fires when an interactive challenge times out without a response. */
+                    'timeout-callback'?: () => void;
+                    /** Fires before an interactive challenge UI is shown. Documented since 2023-04-17. */
+                    'before-interactive-callback'?: () => void;
+                    /** Fires after an interactive challenge has been resolved. Documented since 2023-04-17. */
+                    'after-interactive-callback'?: () => void;
+                    /**
+                     * Controls the widget's behavior when a challenge times out or expires.
+                     * 'auto' lets Cloudflare reset the widget on the documented schedule, replacing
+                     * any caller-side timers. 'manual' / 'never' leave reset entirely to the caller.
+                     */
+                    'refresh-timeout'?: 'auto' | 'manual' | 'never';
                     appearance?: 'always' | 'execute' | 'interaction-only';
                     execution?: 'render' | 'execute';
                     theme?: 'light' | 'dark' | 'auto';

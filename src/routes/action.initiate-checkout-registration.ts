@@ -86,7 +86,7 @@ export async function action({
             appConfig.security?.turnstile?.enabled && appConfig.security?.turnstile?.verification?.enabled;
 
         if (turnstileVerificationEnabled) {
-            if (turnstileToken) {
+            if (turnstileToken || !turnstileVerifiedViaCookie) {
                 const allowed = await enforceTurnstile({
                     request,
                     config: appConfig,
@@ -108,18 +108,6 @@ export async function action({
                     );
                 }
                 shouldSetCookie = !turnstileVerifiedViaCookie;
-            } else if (!turnstileVerifiedViaCookie) {
-                logger.warn('InitiateCheckoutRegistration: no turnstile token or verification cookie');
-                return data(
-                    {
-                        success: false,
-                        error: createActionError({
-                            code: ErrorCode.NOT_AUTHORIZED,
-                            message: 'Turnstile verification required',
-                        }),
-                    },
-                    { status: 403 }
-                );
             }
         }
 

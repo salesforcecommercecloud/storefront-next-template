@@ -17,6 +17,14 @@
 import type { AppConfig } from '@/types/config';
 import { verifyTurnstileToken } from '@/lib/turnstile/verify.server';
 import { getTurnstileSecretKey, getTurnstileSiteKey } from '@/lib/turnstile/utils';
+import { getSiteverifyMetricsSnapshot, isTurnstileDegraded } from '@/lib/turnstile/health.server';
+import { redactEmailForLog } from '@/lib/turnstile/log-redact.server';
+
+const INFRASTRUCTURE_ERROR_CODES = new Set(['internal-error']);
+// Only HTTP 5xx from siteverify is a CF-side failure. 4xx codes (400/401/403/etc.) mean
+// our request was malformed (bad secret, wrong content-type) — fail-closed so a
+// misconfiguration cannot silently bypass verification.
+const HTTP_INFRASTRUCTURE_ERROR_PATTERN = /^http-error-5\d{2}$/;
 
 interface TurnstileEnforceLogger {
     warn(message: string, meta?: Record<string, unknown>): void;
@@ -55,6 +63,12 @@ export async function enforceTurnstile({
         return true;
     }
 
+    // Email redaction: at scale (fail-open during a CF outage) raw emails accumulate as
+    // PII in MRT logs. Redacted form keeps the domain visible (forensics signal — many
+    // domains vs. single domain) and replaces the local-part with a stable hash so the
+    // same shopper still correlates across log lines.
+    const redactedEmail = redactEmailForLog(email);
+
     const requestUrl = request.headers.get('origin') || request.headers.get('referer') || '';
 
     if (!requestUrl) {
@@ -62,7 +76,7 @@ export async function enforceTurnstile({
             '[Turnstile] No Origin or Referer header — cannot determine site key. Check reverse-proxy config.',
             {
                 action: actionName,
-                email,
+                email: redactedEmail,
             }
         );
         return false;
@@ -81,7 +95,7 @@ export async function enforceTurnstile({
             requestUrl,
             remoteIp,
             userAgent,
-            email,
+            email: redactedEmail,
             action: actionName,
         });
         return false;
@@ -97,8 +111,19 @@ export async function enforceTurnstile({
     }
 
     if (!turnstileToken) {
+        const degraded = await isTurnstileDegraded();
+        if (degraded) {
+            logger.warn('[Turnstile] Missing token — allowed (Turnstile platform degraded)', {
+                email: redactedEmail,
+                remoteIp,
+                userAgent,
+                action: actionName,
+                metrics: getSiteverifyMetricsSnapshot(),
+            });
+            return true;
+        }
         logger.warn('[Turnstile] Missing token — blocked request without challenge completion', {
-            email,
+            email: redactedEmail,
             remoteIp,
             userAgent,
             action: actionName,
@@ -113,9 +138,25 @@ export async function enforceTurnstile({
     });
 
     if (!verification.success) {
+        const isInfrastructureError = verification.errorCodes.some(
+            (code) => INFRASTRUCTURE_ERROR_CODES.has(code) || HTTP_INFRASTRUCTURE_ERROR_PATTERN.test(code)
+        );
+
+        if (isInfrastructureError) {
+            logger.warn('[Turnstile] Verification failed due to infrastructure issue — allowed (fail-open)', {
+                errorCodes: verification.errorCodes,
+                email: redactedEmail,
+                remoteIp,
+                userAgent,
+                action: actionName,
+                metrics: getSiteverifyMetricsSnapshot(),
+            });
+            return true;
+        }
+
         logger.warn('[Turnstile] Verification failed — potential bot or replay attack', {
             errorCodes: verification.errorCodes,
-            email,
+            email: redactedEmail,
             remoteIp,
             userAgent,
             action: actionName,

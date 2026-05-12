@@ -23,7 +23,7 @@ import { getLoginModeHref } from './get-login-mode-href';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile/utils';
+import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 interface PasswordlessLoginFormProps {
     error?: string;
@@ -40,10 +40,10 @@ export default function PasswordlessLoginForm({
     const { t } = useTranslation('login');
     const config = useConfig<AppConfig>();
 
-    // Turnstile bot protection - gracefully degrades if token generation fails
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     const turnstileEnabled = config ? isTurnstileEnabled(config) : false;
+    const turnstileMode = config ? getTurnstileMode(config) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!config || !turnstileEnabled) return null;
         // Get base URL from window location (client-side)
@@ -94,7 +94,6 @@ export default function PasswordlessLoginForm({
                 />
             </div>
 
-            {/* Turnstile bot protection - gracefully degrades if load fails */}
             {turnstileEnabled && turnstileSiteKey && (
                 <TurnstileWidget
                     siteKey={turnstileSiteKey}
@@ -102,6 +101,7 @@ export default function PasswordlessLoginForm({
                     onError={handleTurnstileError}
                     onExpire={handleTurnstileExpire}
                     enabled={turnstileEnabled}
+                    mode={turnstileMode}
                 />
             )}
 
@@ -111,7 +111,6 @@ export default function PasswordlessLoginForm({
             {/* Hidden input to pass redirect URL */}
             {redirectPath && <input type="hidden" name="redirectPath" value={redirectPath} />}
 
-            {/* Hidden input for Turnstile token */}
             {turnstileToken && <input type="hidden" name="turnstileToken" value={turnstileToken} />}
 
             <FormSubmitButton defaultText={t('sendLoginLink')} submittingText={t('sendingLoginLink')} />

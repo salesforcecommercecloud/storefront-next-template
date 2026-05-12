@@ -16,7 +16,12 @@
 
 /**
  * Server-side Turnstile token verification via Cloudflare's siteverify API.
+ *
+ * Every call records its outcome via `recordSiteverifyOutcome` so the health module can
+ * compute a real-traffic failure rate (the primary fail-open signal).
  */
+
+import { recordSiteverifyOutcome } from './health.server';
 
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const VERIFY_TIMEOUT_MS = 5000;
@@ -54,6 +59,7 @@ export async function verifyTurnstileToken(options: VerifyTurnstileOptions): Pro
         body.set('remoteip', remoteIp);
     }
 
+    const startedAt = Date.now();
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), VERIFY_TIMEOUT_MS);
@@ -68,6 +74,8 @@ export async function verifyTurnstileToken(options: VerifyTurnstileOptions): Pro
         clearTimeout(timeoutId);
 
         if (!response.ok) {
+            // HTTP 5xx is a CF-side failure; 4xx is our problem (bad secret, etc.).
+            recordSiteverifyOutcome(response.status >= 500, Date.now() - startedAt);
             return {
                 success: false,
                 errorCodes: [`http-error-${response.status}`],
@@ -75,19 +83,28 @@ export async function verifyTurnstileToken(options: VerifyTurnstileOptions): Pro
         }
 
         const data = await response.json();
+        const errorCodes: string[] = data['error-codes'] || [];
+
+        // Only `internal-error` indicates a CF-side failure; other error codes
+        // (invalid-input-response, timeout-or-duplicate, etc.) reflect a working service
+        // that correctly rejected a bad request.
+        recordSiteverifyOutcome(errorCodes.includes('internal-error'), Date.now() - startedAt);
 
         return {
             success: data.success === true,
             challengeTs: data.challenge_ts,
             hostname: data.hostname,
-            errorCodes: data['error-codes'] || [],
+            errorCodes,
             action: data.action,
         };
     } catch (error: unknown) {
+        // Network failures and timeouts are CF-side from our perspective.
+        recordSiteverifyOutcome(true, Date.now() - startedAt);
+
         if (error instanceof Error && error.name === 'AbortError') {
             return {
                 success: false,
-                errorCodes: ['timeout-or-duplicate'],
+                errorCodes: ['internal-error'],
             };
         }
 
