@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { resolvePrefix } from '@salesforce/storefront-next-runtime/site-context';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+import type { AppConfig } from '@/types/config';
 import { ShopperAgentWindow } from './shopper-agent-window';
 import { validateShopperAgentConfig, type ShopperAgentConfig } from './shopper-agent.utils';
 
@@ -59,11 +63,16 @@ export default function ShopperAgentUI({
     userId,
     usid,
 }: ShopperAgentUIProps) {
+    const config = useConfig<AppConfig>();
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
+
     if (!validateShopperAgentConfig(commerceAgentConfiguration)) {
         return null;
     }
 
-    const domainUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const prefix = config.url?.prefix ? resolvePrefix(config.url.prefix, { siteId: siteRef, localeId: localeRef }) : '';
+    const domainUrl = `${origin}${prefix}`;
 
     return (
         <div data-testid="shopper-agent">
