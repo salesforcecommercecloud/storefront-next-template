@@ -38,8 +38,8 @@ vi.mock('@/extensions/bopis/components/delivery-options/delivery-options', () =>
 }));
 
 vi.mock('@/components/product-view/child-product-card', () => ({
-    default: ({ childProduct, onSelectionChange, onOrderabilityChange, swatchMode }: any) => (
-        <div data-testid={`child-product-${childProduct.id}`} data-swatch-mode={swatchMode}>
+    default: ({ childProduct, onSelectionChange, onOrderabilityChange }: any) => (
+        <div data-testid={`child-product-${childProduct.id}`}>
             <div>{childProduct.name}</div>
             <button
                 onClick={() =>

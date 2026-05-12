@@ -169,6 +169,9 @@ export function CartItemModalView({
                                             onBuyNow={mode === 'add' ? onBuyNow : undefined}
                                         />
                                     </ProductViewProvider>
+                                    {/* Both branches render inside the cart modal — selectionSource="local" so child
+                                        swatch clicks stay in component state and don't pollute the cart URL or
+                                        trigger _app.cart loader revalidation. */}
                                     {(isProductASet || isProductABundle) &&
                                         (mode === 'edit' && itemId ? (
                                             <ChildProducts
@@ -177,6 +180,7 @@ export function CartItemModalView({
                                                 itemId={itemId}
                                                 initialBundleQuantity={initialQuantity}
                                                 onBeforeCartAction={onBeforeCartAction}
+                                                selectionSource="local"
                                             />
                                         ) : (
                                             <ChildProducts
@@ -184,6 +188,7 @@ export function CartItemModalView({
                                                 mode="add"
                                                 initialBundleQuantity={initialQuantity}
                                                 onCartSuccess={onBeforeCartAction}
+                                                selectionSource="local"
                                             />
                                         ))}
                                 </ProductReviewsProvider>

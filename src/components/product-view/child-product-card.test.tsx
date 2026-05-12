@@ -438,39 +438,7 @@ describe('ChildProductCard', () => {
         });
     });
 
-    describe('swatch mode', () => {
-        test('supports controlled mode for swatches', () => {
-            const variantProduct = createVariantProduct();
-            const parentProduct = createSetProduct();
-
-            // Render in controlled mode
-            renderChildProductCard({
-                childProduct: variantProduct,
-                parentProduct,
-                onSelectionChange: mockOnSelectionChange,
-                swatchMode: 'controlled',
-            });
-
-            // Component should render (swatchMode doesn't affect rendering when no variations)
-            expect(screen.getByTestId('child-product')).toBeInTheDocument();
-        });
-
-        test('supports uncontrolled mode for swatches (default)', () => {
-            const variantProduct = createVariantProduct();
-            const parentProduct = createSetProduct();
-
-            // Render in uncontrolled mode (default)
-            renderChildProductCard({
-                childProduct: variantProduct,
-                parentProduct,
-                onSelectionChange: mockOnSelectionChange,
-                swatchMode: 'uncontrolled',
-            });
-
-            // Component should render
-            expect(screen.getByTestId('child-product')).toBeInTheDocument();
-        });
-
+    describe('swatches', () => {
         test('renders swatch rendering functions when variation attributes exist', async () => {
             const variationModule = await import('@/hooks/product/use-variation-attributes');
             const variantProduct = createVariantProduct();
@@ -524,7 +492,6 @@ describe('ChildProductCard', () => {
                 childProduct: variantProduct,
                 parentProduct,
                 onSelectionChange: mockOnSelectionChange,
-                swatchMode: 'uncontrolled',
             });
 
             // Verify swatches render with images for color (circle shape)
@@ -537,7 +504,7 @@ describe('ChildProductCard', () => {
             expect(screen.getByText('Small')).toBeInTheDocument();
         });
 
-        test('renders swatches in controlled mode without href', async () => {
+        test('renders swatches as buttons (no href) so clicks update URL params without navigation', async () => {
             const variationModule = await import('@/hooks/product/use-variation-attributes');
             const variantProduct = createVariantProduct();
             const parentProduct = createSetProduct();
@@ -562,10 +529,8 @@ describe('ChildProductCard', () => {
                 childProduct: variantProduct,
                 parentProduct,
                 onSelectionChange: mockOnSelectionChange,
-                swatchMode: 'controlled',
             });
 
-            // In controlled mode, swatches should render but without href
             expect(screen.getByText('Red Swatch')).toBeInTheDocument();
         });
 

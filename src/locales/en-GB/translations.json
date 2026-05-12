@@ -412,7 +412,12 @@
             "missingRequiredInfo": "Missing required information",
             "defaultTitle": "Bonus Products Available",
             "selectionCount": " ({{selected}} of {{max}} selected)",
-            "freeBadge": "Free"
+            "freeBadge": "Free",
+            "noSlotError": "No available bonus discount slot",
+            "loadError": "Failed to load product details. Please try again.",
+            "retry": "Retry",
+            "selectUpTo": "Select up to {{count}}",
+            "backToCart": "Back to Cart"
         },
         "inventory": {
             "blockMessage": "Some items exceed available stock. Please adjust quantities or remove items to continue."

@@ -26,7 +26,7 @@ import { useProductActions } from '@/hooks/product/use-product-actions';
 import ProductPrice from '@/components/product-price';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-import { type ReactElement, useEffect, useRef } from 'react';
+import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { isProductSet, isStandardProduct } from '@/lib/product/product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
@@ -47,8 +47,15 @@ interface ChildProductCardProps {
     onSelectionChange: (productId: string, selection: ProductSelectionValues) => void;
     /** Callback to notify parent component of orderability changes (stock, orderable status) */
     onOrderabilityChange?: (productId: string, orderability: { isOrderable: boolean; errorMessage?: string }) => void;
-    /** Mode for swatch interaction: 'uncontrolled' render as link button, controlled renders as normal button*/
-    swatchMode?: 'uncontrolled' | 'controlled';
+    /**
+     * Where swatch selection state lives:
+     * - `'url'` (default, PDP usage): swatch clicks update URL search params; selection is shareable
+     *   and routes can react via `useSearchParams`/loaders.
+     * - `'local'` (modal usage): swatch clicks mutate component-local state only. Use this when the
+     *   card is rendered inside a modal so selections don't pollute the page URL or trigger
+     *   route revalidation on every click.
+     */
+    selectionSource?: 'url' | 'local';
 }
 
 /**
@@ -62,27 +69,28 @@ interface ChildProductCardProps {
  * - Individual "Add to Cart" button (for sets only)
  * - Automatic parent notification on selection changes
  *
- * Supports two swatch modes:
- * - uncontrolled mode (default): Swatches use URL navigation for variant selection
- * - controlled mode: Swatches use callbacks for controlled variant selection (used in modals)
+ * Swatch behavior depends on `selectionSource`:
+ * - `'url'` (PDP): swatches render as `<NavLink href={swatchHref}>` so the URL is the source of truth.
+ * - `'local'` (modal): swatches render as buttons; clicks mutate component-local state via
+ *   `selectionsOverride` plumbed into `useSelectedVariations` / `useCurrentVariant` /
+ *   `useVariationAttributes`.
  *
- * @example Basic usage in ChildProducts component
+ * @example PDP usage (default)
  * ```tsx
  * <ChildProductCard
  *   childProduct={childProduct}
  *   parentProduct={parentProduct}
  *   onSelectionChange={setChildProductSelection}
- *   mode="add"
  * />
  * ```
  *
- * @example Edit mode (in modal)
+ * @example Modal usage (cart-edit / quick-add)
  * ```tsx
  * <ChildProductCard
  *   childProduct={childProduct}
  *   parentProduct={parentProduct}
  *   onSelectionChange={setChildProductSelection}
- *   mode="edit"
+ *   selectionSource="local"
  * />
  * ```
  *
@@ -94,21 +102,30 @@ export default function ChildProductCard({
     parentProduct,
     onSelectionChange,
     onOrderabilityChange,
-    swatchMode,
+    selectionSource = 'url',
 }: ChildProductCardProps): ReactElement {
     const { t } = useTranslation('product');
     const isParentProductASet = isProductSet(parentProduct);
     const { currency } = useSite();
 
+    // Local selection state for modal usage. Starts empty — `useSelectedVariations` already
+    // applies the same fallback chain (representedProduct → first orderable → single-value
+    // attributes) for child products, so an empty override yields the merchant defaults. In
+    // 'url' mode this state is unused; the URL is the source of truth.
+    const [localSelections, setLocalSelections] = useState<Record<string, string>>({});
+    const selectionsOverride = selectionSource === 'local' ? localSelections : undefined;
+
     // Get current variant for UI display and parent communication
     const currentVariant = useCurrentVariant({
         product,
         isChildProduct: true,
+        selectionsOverride,
     });
 
     const selectedAttributes = useSelectedVariations({
         product,
         isChildProduct: true,
+        selectionsOverride,
     });
     const { galleryImages } = useProductImages({
         product,
@@ -133,7 +150,15 @@ export default function ChildProductCard({
     const variationAttributes = useVariationAttributes({
         product,
         isChildProduct: true,
+        selectionsOverride,
     });
+
+    const handleSwatchChange = useCallback((attributeId: string, value: string) => {
+        setLocalSelections((prev) => {
+            if (prev[attributeId] === value) return prev;
+            return { ...prev, [attributeId]: value };
+        });
+    }, []);
 
     // Track previous selection to prevent infinite loops
     // This tracks what we last notified parent about, not just "previous render"
@@ -233,7 +258,11 @@ export default function ChildProductCard({
                     <ImageGallery key={product.id} images={galleryImages} eager={false} productName={product.name} />
                 </div>
 
-                {/* Variant Selection */}
+                {/* Variant Selection.
+                    URL mode: swatches render as <NavLink> (href set) — clicks navigate, the URL is
+                    the single source of truth, and the page is shareable.
+                    Local mode: swatches render as <button> with handleSelect → mutate component-
+                    local state only. No URL writes, no route revalidation. */}
                 {variationAttributes.map(({ id, name, selectedValue, values }) => {
                     const swatches = values.map((value) => {
                         const { href, name: valueName, image, value: swatchValue, orderable } = value;
@@ -250,8 +279,7 @@ export default function ChildProductCard({
                         return (
                             <Swatch
                                 key={swatchValue}
-                                // Don't use link button if the component is rendered in edit mode
-                                href={swatchMode === 'uncontrolled' ? href : undefined}
+                                href={selectionSource === 'url' ? href : undefined}
                                 disabled={!orderable}
                                 value={swatchValue}
                                 name={valueName}
@@ -266,7 +294,10 @@ export default function ChildProductCard({
                             key={id}
                             value={selectedValue?.value}
                             displayName={selectedValue?.name || ''}
-                            label={name}>
+                            label={name}
+                            handleChange={
+                                selectionSource === 'local' ? (value) => handleSwatchChange(id, value) : undefined
+                            }>
                             {swatches}
                         </SwatchGroup>
                     );

@@ -99,23 +99,6 @@ export const Default: Story = {
         parentProduct: bundleProd as any,
         onSelectionChange: action('onSelectionChange'),
         onOrderabilityChange: action('onOrderabilityChange'),
-        swatchMode: 'uncontrolled',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText(firstChild.name || '')).toBeInTheDocument();
-        // Should have link swatches in uncontrolled mode
-    },
-};
-
-export const Controlled: Story = {
-    args: {
-        childProduct: firstChild as any,
-        parentProduct: bundleProd as any,
-        onSelectionChange: action('onSelectionChange'),
-        onOrderabilityChange: action('onOrderabilityChange'),
-        swatchMode: 'controlled',
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

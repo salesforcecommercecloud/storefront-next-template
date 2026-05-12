@@ -21,6 +21,11 @@ import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 interface UseCurrentVariantProps {
     product: ShopperProducts.schemas['Product'];
     isChildProduct?: boolean;
+    /**
+     * Optional override forwarded to {@link useSelectedVariations}. Modal contexts pass their
+     * local selection state here to avoid reading from / writing to the page URL.
+     */
+    selectionsOverride?: Record<string, string>;
 }
 
 /**
@@ -47,11 +52,11 @@ interface UseCurrentVariantProps {
  * @param props.isChildProduct - If true, prevents URL updates (useful for product sets/bundles)
  * @returns The matching variant object or undefined if no exact match is found
  */
-export function useCurrentVariant({ product, isChildProduct = false }: UseCurrentVariantProps) {
+export function useCurrentVariant({ product, isChildProduct = false, selectionsOverride }: UseCurrentVariantProps) {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Use useSelectedVariations to get URL-aware selected attributes
-    const selectedAttributes = useSelectedVariations({ product, isChildProduct });
+    // Use useSelectedVariations to get URL-aware selected attributes (or override-driven in modal usage)
+    const selectedAttributes = useSelectedVariations({ product, isChildProduct, selectionsOverride });
 
     const variants = useMemo(() => product?.variants ?? [], [product]);
 
@@ -68,9 +73,16 @@ export function useCurrentVariant({ product, isChildProduct = false }: UseCurren
         return potentialVariants.length === 1 ? potentialVariants[0] : undefined;
     }, [selectedAttributes, variants]);
 
-    // Update URL when variant changes
+    // Update URL when variant changes. Skip when an override is supplied (modal usage) so swatch
+    // changes there don't pollute the page URL or trigger route revalidation.
     useEffect(() => {
-        if (product?.id && currentVariant && currentVariant.productId !== product.id && !isChildProduct) {
+        if (
+            product?.id &&
+            currentVariant &&
+            currentVariant.productId !== product.id &&
+            !isChildProduct &&
+            !selectionsOverride
+        ) {
             const currentPid = searchParams.get('pid');
             // Only set pid if it's not already set to the correct value
             if (currentPid !== currentVariant.productId) {
@@ -79,7 +91,7 @@ export function useCurrentVariant({ product, isChildProduct = false }: UseCurren
                 setSearchParams(newSearchParams, { replace: true, preventScrollReset: true });
             }
         }
-    }, [currentVariant, product, searchParams, setSearchParams, isChildProduct]);
+    }, [currentVariant, product, searchParams, setSearchParams, isChildProduct, selectionsOverride]);
 
     return currentVariant;
 }

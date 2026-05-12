@@ -35,7 +35,15 @@ import { AllProvidersWrapper } from '@/test-utils/context-provider';
 // Mock useScapiFetcher to prevent actual API calls
 const mockLoad = vi.fn().mockResolvedValue(undefined);
 const mockUseScapiFetcher = vi.fn(
-    (..._args: unknown[]): { load: typeof mockLoad; data: unknown; state: string; success: boolean } => ({
+    (
+        ..._args: unknown[]
+    ): {
+        load: typeof mockLoad;
+        data: unknown;
+        errors?: string[];
+        state: string;
+        success: boolean;
+    } => ({
         load: mockLoad,
         data: variantProduct,
         state: 'idle',
@@ -178,7 +186,8 @@ describe('CartItemModal — add mode', () => {
     test('renders error state with retry button when fetcher fails', () => {
         mockUseScapiFetcher.mockReturnValue({
             load: mockLoad,
-            data: { detail: 'Not found' },
+            data: undefined,
+            errors: ['Not found'],
             state: 'idle' as const,
             success: false,
         });

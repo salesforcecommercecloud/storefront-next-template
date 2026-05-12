@@ -646,7 +646,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             </span>
              
             <span
-              aria-label="List price from £159.00"
+              aria-label="List price: £159.00"
               class="text-sm font-medium leading-none text-left line-through text-muted-foreground"
             >
               £159.00
@@ -659,15 +659,6 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
               Quilted Jacket
                
               List price: £159.00
-            </span>
-          </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              class="line-clamp-2 text-[inherit] font-medium"
-            >
-              $10 off product set
             </span>
           </div>
         </div>
@@ -700,7 +691,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       type="image/webp"
                     />
                     <img
-                      alt="Quilted Jacket, , large"
+                      alt="Quilted Jacket, royal, large"
                       class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
@@ -721,7 +712,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-index="0"
                 >
                   <img
-                    alt="Quilted Jacket, , large"
+                    alt="Quilted Jacket, royal, large"
                     class="w-full h-full object-cover object-center"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwd9ed0401/images/large/PG.10205921.JJ5FUXX.PZ.webp?sfrm=jpg&q=70"
@@ -736,7 +727,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-index="1"
                 >
                   <img
-                    alt="Quilted Jacket, , large"
+                    alt="Quilted Jacket, royal, large"
                     class="w-full h-full object-cover object-center"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9ee2b9a1/images/large/PG.10205921.JJ5FUXX.BZ.webp?sfrm=jpg&q=70"
@@ -760,14 +751,17 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   Color
                   :
                 </span>
+                <span>
+                  royal
+                </span>
               </div>
               <div
                 class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
-                  aria-checked="false"
+                  aria-checked="true"
                   aria-label="royal"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                   href="/RefArchGlobal/en-GB/?25518447M=color%3DJJ5FUXX"
                   position="relative"
                   role="radio"
@@ -801,6 +795,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   Size
                   :
                 </span>
+                <span>
+                  L
+                </span>
               </div>
               <div
                 class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
@@ -812,7 +809,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   href="/RefArchGlobal/en-GB/?25518447M=size%3D9SM"
                   position="relative"
                   role="radio"
-                  tabindex="0"
+                  tabindex="-1"
                 >
                   <div
                     class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
@@ -844,13 +841,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   </div>
                 </a>
                 <a
-                  aria-checked="false"
+                  aria-checked="true"
                   aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-2xs"
                   href="/RefArchGlobal/en-GB/?25518447M=size%3D9LG"
                   position="relative"
                   role="radio"
-                  tabindex="-1"
+                  tabindex="0"
                 >
                   <div
                     class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
@@ -926,9 +923,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="text-center text-sm"
           >
             <span
-              class="text-muted-foreground"
+              class="text-primary font-medium"
             >
-              Select options above
+              ✓ Selected
             </span>
           </div>
           <div
@@ -1054,7 +1051,6 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             data-slot="button"
             data-testid="add-to-cart"
             data-variant="default"
-            disabled=""
           >
             Add to Cart
           </button>
@@ -1096,15 +1092,6 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             </span>
              
           </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              class="line-clamp-2 text-[inherit] font-medium"
-            >
-              $10 off product set
-            </span>
-          </div>
         </div>
         <div
           class="px-6 space-y-4"
@@ -1135,7 +1122,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       type="image/webp"
                     />
                     <img
-                      alt="Pull On Pant, , large"
+                      alt="Pull On Pant, Grey Heather, large"
                       class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
@@ -1156,7 +1143,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-index="0"
                 >
                   <img
-                    alt="Pull On Pant, , large"
+                    alt="Pull On Pant, Grey Heather, large"
                     class="w-full h-full object-cover object-center"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4702e758/images/large/PG.10218785.JJ2XNXX.PZ.webp?sfrm=jpg&q=70"
@@ -1171,7 +1158,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-index="1"
                 >
                   <img
-                    alt="Pull On Pant, , large"
+                    alt="Pull On Pant, Grey Heather, large"
                     class="w-full h-full object-cover object-center"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw94990901/images/large/PG.10218785.JJ2XNXX.BZ.webp?sfrm=jpg&q=70"
@@ -1195,14 +1182,17 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   Color
                   :
                 </span>
+                <span>
+                  Grey Heather
+                </span>
               </div>
               <div
                 class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
-                  aria-checked="false"
+                  aria-checked="true"
                   aria-label="Grey Heather"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                   href="/RefArchGlobal/en-GB/?25518704M=color%3DJJ2XNXX"
                   position="relative"
                   role="radio"
@@ -1236,6 +1226,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   Size
                   :
                 </span>
+                <span>
+                  L
+                </span>
               </div>
               <div
                 class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
@@ -1247,7 +1240,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   href="/RefArchGlobal/en-GB/?25518704M=size%3D9XS"
                   position="relative"
                   role="radio"
-                  tabindex="0"
+                  tabindex="-1"
                 >
                   <div
                     class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
@@ -1298,13 +1291,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   </div>
                 </a>
                 <a
-                  aria-checked="false"
+                  aria-checked="true"
                   aria-label="L"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-2xs"
                   href="/RefArchGlobal/en-GB/?25518704M=size%3D9LG"
                   position="relative"
                   role="radio"
-                  tabindex="-1"
+                  tabindex="0"
                 >
                   <div
                     class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
@@ -1380,9 +1373,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="text-center text-sm"
           >
             <span
-              class="text-muted-foreground"
+              class="text-primary font-medium"
             >
-              Select options above
+              ✓ Selected
             </span>
           </div>
           <div
@@ -1508,7 +1501,6 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             data-slot="button"
             data-testid="add-to-cart"
             data-variant="default"
-            disabled=""
           >
             Add to Cart
           </button>
@@ -1550,15 +1542,6 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             </span>
              
           </div>
-          <div
-            class="items-center gap-2"
-          >
-            <span
-              class="line-clamp-2 text-[inherit] font-medium"
-            >
-              $10 off product set
-            </span>
-          </div>
         </div>
         <div
           class="px-6 space-y-4"
@@ -1589,7 +1572,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                       type="image/webp"
                     />
                     <img
-                      alt="Zerrick, , large"
+                      alt="Zerrick, Black, large"
                       class="object-cover"
                       fetchpriority="auto"
                       loading="lazy"
@@ -1610,7 +1593,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-index="0"
                 >
                   <img
-                    alt="Zerrick, , large"
+                    alt="Zerrick, Black, large"
                     class="w-full h-full object-cover object-center"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw9c2ea908/images/large/PG.CJZERRICK.BLACKLE.PZ.webp?sfrm=jpg&q=70"
@@ -1625,7 +1608,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   data-index="1"
                 >
                   <img
-                    alt="Zerrick, , large"
+                    alt="Zerrick, Black, large"
                     class="w-full h-full object-cover object-center"
                     loading="lazy"
                     src="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dwa5064a0b/images/large/PG.CJZERRICK.BLACKLE.BZ.webp?sfrm=jpg&q=70"
@@ -1649,14 +1632,17 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   Color
                   :
                 </span>
+                <span>
+                  Black
+                </span>
               </div>
               <div
                 class="flex flex-wrap gap-[var(--swatch-pill-gap,0.5rem)] focus:outline-none"
               >
                 <a
-                  aria-checked="false"
+                  aria-checked="true"
                   aria-label="Black"
-                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border,transparent)] bg-[var(--swatch-color-bg,transparent)] text-[var(--swatch-color-text,inherit)] hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="border-[length:var(--swatch-border-width)] flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none w-[var(--swatch-pill-size)] h-[var(--swatch-pill-size)] p-[var(--swatch-pill-padding)] cursor-pointer border-[var(--swatch-color-border-selected,black)] bg-[var(--swatch-color-bg-selected,transparent)] text-[var(--swatch-color-text-selected,inherit)] shadow-[var(--swatch-color-shadow,none)]"
                   href="/RefArchGlobal/en-GB/?25772717M=color%3DBLACKLE"
                   position="relative"
                   role="radio"
@@ -1709,6 +1695,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   Size
                   :
                 </span>
+                <span>
+                  6.5
+                </span>
               </div>
               <div
                 class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
@@ -1720,7 +1709,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D060"
                   position="relative"
                   role="radio"
-                  tabindex="0"
+                  tabindex="-1"
                 >
                   <div
                     class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
@@ -1733,13 +1722,13 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   </div>
                 </a>
                 <a
-                  aria-checked="false"
+                  aria-checked="true"
                   aria-label="6.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-2xs"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D065"
                   position="relative"
                   role="radio"
-                  tabindex="-1"
+                  tabindex="0"
                 >
                   <div
                     class="flex items-center justify-center w-full h-full text-sm font-medium leading-5"
@@ -1811,7 +1800,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="8.5"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-not-allowed before:content-[""] before:absolute before:top-1/2 before:left-1/2 before:h-[32px] before:w-[1px] before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:bg-black dark:before:bg-white before:z-[1] bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs opacity-50"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D085"
                   position="relative"
                   role="radio"
@@ -1830,7 +1819,7 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                 <a
                   aria-checked="false"
                   aria-label="9"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-not-allowed before:content-[""] before:absolute before:top-1/2 before:left-1/2 before:h-[32px] before:w-[1px] before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:bg-black dark:before:bg-white before:z-[1] bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs opacity-50"
                   href="/RefArchGlobal/en-GB/?25772717M=size%3D090"
                   position="relative"
                   role="radio"
@@ -1921,14 +1910,17 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
                   Width
                   :
                 </span>
+                <span>
+                  M
+                </span>
               </div>
               <div
                 class="inline-flex flex-wrap gap-2 focus:outline-none bg-swatch-group-bg rounded-none p-1"
               >
                 <a
-                  aria-checked="false"
+                  aria-checked="true"
                   aria-label="M"
-                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg border border-swatch-border text-swatch-text shadow-2xs hover:border-[var(--swatch-color-border-hover,transparent)]"
+                  class="flex-shrink-0 relative group transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-w-8 min-h-8 rounded-none px-3 py-1 cursor-pointer bg-swatch-bg-selected border border-swatch-border-selected text-swatch-text-selected shadow-2xs"
                   href="/RefArchGlobal/en-GB/?25772717M=width%3DM"
                   position="relative"
                   role="radio"
@@ -1989,9 +1981,9 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             class="text-center text-sm"
           >
             <span
-              class="text-muted-foreground"
+              class="text-primary font-medium"
             >
-              Select options above
+              ✓ Selected
             </span>
           </div>
           <div
@@ -2117,7 +2109,6 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
             data-slot="button"
             data-testid="add-to-cart"
             data-variant="default"
-            disabled=""
           >
             Add to Cart
           </button>
@@ -2247,14 +2238,14 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
       class="flex items-center justify-center space-x-2 text-sm text-muted-foreground"
     >
       <span>
-        0 of {3} selected
+        3 of {3} selected
       </span>
       <div
         class="w-32 bg-muted rounded-full h-2"
       >
         <div
           class="bg-primary h-2 rounded-full transition-all duration-300"
-          style="width: 0%;"
+          style="width: 100%;"
         />
       </div>
     </div>
@@ -2267,7 +2258,6 @@ exports[`ChildProducts stories snapshot > ProductSet story renders and matches s
         data-slot="button"
         data-testid="add-to-cart"
         data-variant="default"
-        disabled=""
       >
         Add Set to Cart
       </button>

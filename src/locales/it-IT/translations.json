@@ -412,7 +412,12 @@
             "missingRequiredInfo": "Informazioni richieste mancanti",
             "defaultTitle": "Prodotti Bonus Disponibili",
             "selectionCount": " ({{selected}} di {{max}} selezionati)",
-            "freeBadge": "Gratis"
+            "freeBadge": "Gratis",
+            "noSlotError": "Nessuno slot sconto bonus disponibile",
+            "loadError": "Impossibile caricare i dettagli del prodotto. Riprova.",
+            "retry": "Riprova",
+            "selectUpTo": "Seleziona fino a {{count}}",
+            "backToCart": "Torna al carrello"
         },
         "inventory": {
             "blockMessage": "Alcuni articoli superano la disponibilità. Si prega di modificare le quantità o rimuovere gli articoli per continuare."

@@ -101,6 +101,12 @@ interface UseVariationAttributesParams {
     product: ShopperProducts.schemas['Product'];
     isChildProduct?: boolean;
     masterProduct?: ShopperProducts.schemas['Product'];
+    /**
+     * Optional override forwarded to {@link useSelectedVariations}. Modal contexts pass their
+     * local selection state here so generated `href`s and `selected` flags reflect the local
+     * picker instead of the page URL.
+     */
+    selectionsOverride?: Record<string, string>;
 }
 
 /**
@@ -147,9 +153,10 @@ interface UseVariationAttributesParams {
 export const useVariationAttributes = ({
     product,
     isChildProduct = false,
+    selectionsOverride,
 }: UseVariationAttributesParams): VariationAttribute[] => {
     const location = useLocation();
-    const selectedVariations = useSelectedVariations({ product, isChildProduct });
+    const selectedVariations = useSelectedVariations({ product, isChildProduct, selectionsOverride });
 
     return useMemo(() => {
         if (!product?.variationAttributes || !product?.id) return [];
