@@ -672,7 +672,7 @@ export default function CheckoutFormPage({
     return (
         <div className="bg-background">
             <UITarget targetId="sfcc.checkout.page.before" />
-            <div className="section-container py-8">
+            <div className="section-container pt-8 pb-6">
                 <Typography variant="h2" as="h1" className="mb-8">
                     {t('pageTitle')}
                 </Typography>
@@ -699,15 +699,13 @@ export default function CheckoutFormPage({
                         </OrderSummaryMobileAccordion>
                     </Suspense>
 
-                    <div className="mt-6">
-                        <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
-                            <MyCartWithData
-                                basket={cart}
-                                productMapPromise={productMapPromise}
-                                promotionsPromise={promotionsPromise}
-                            />
-                        </Suspense>
-                    </div>
+                    <Suspense fallback={<MyCartSkeleton itemCount={cart?.productItems?.length || 2} />}>
+                        <MyCartWithData
+                            basket={cart}
+                            productMapPromise={productMapPromise}
+                            promotionsPromise={promotionsPromise}
+                        />
+                    </Suspense>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -718,8 +716,8 @@ export default function CheckoutFormPage({
                         <UITarget targetId="sfcc.checkout.sidebar.before" />
                         <div className="space-y-6">
                             {/* Order Summary + Cart Items */}
-                            <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem]">
-                                <CardHeader className="border-b border-border pb-4">
+                            <Card className="rounded-none shadow-none [--cart-divider-extend:1.5rem] gap-4 py-4 pb-0">
+                                <CardHeader className="border-b-[1px] border-border pb-2">
                                     <CardTitle>
                                         <span className="text-2xl font-bold tracking-tight text-card-foreground">
                                             {t('orderSummary.title')}

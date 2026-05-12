@@ -108,12 +108,9 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
             const hasSavings = savings > 0;
 
             return (
-                <div
-                    key={item.itemId || `item-${index}`}
-                    className="py-4"
-                    data-testid={`my-cart-item-${item.productId ?? index}`}>
-                    <div className="flex gap-3 md:gap-4">
-                        {/* Product Image */}
+                <div key={item.itemId || `item-${index}`} data-testid={`my-cart-item-${item.productId ?? index}`}>
+                    <div className="flex items-start gap-3 md:gap-4">
+                        {/* Column 1: Product Image */}
                         <div className="flex-shrink-0">
                             <div className="w-16 h-16 md:w-20 md:h-20 bg-muted overflow-hidden flex items-center justify-center">
                                 {imageUrl ? (
@@ -128,30 +125,14 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                             </div>
                         </div>
 
-                        {/* Product Details */}
+                        {/* Column 2: Product Info (name, variants, price, qty) */}
                         <div className="flex-1 min-w-0">
-                            <div className="flex justify-between items-start gap-2">
-                                <Link
-                                    to={createProductUrl(productId)}
-                                    className="text-sm font-semibold text-foreground hover:text-primary">
-                                    {productName}
-                                </Link>
-                                <div className="flex flex-col items-end gap-1 shrink-0">
-                                    <span className="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1">
-                                        <Truck className="size-3" />
-                                        {t('myCart.delivery')}
-                                    </span>
-                                    {hasSavings && (
-                                        <span className="text-xs font-medium bg-muted px-1.5 py-0.5">
-                                            {t('myCart.saved', {
-                                                amount: formatCurrency(savings, i18n.language, currency),
-                                            })}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
+                            <Link
+                                to={createProductUrl(productId)}
+                                className="text-sm font-semibold text-foreground hover:text-primary">
+                                {productName}
+                            </Link>
 
-                            {/* Variation Attributes */}
                             <div className="mt-1 space-y-0.5 text-xs">
                                 {Object.entries(displayVariationValues).map(([name, value]) => (
                                     <div key={name}>
@@ -160,7 +141,6 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                                 ))}
                             </div>
 
-                            {/* Price */}
                             <div className="mt-1">
                                 <ProductPrice
                                     product={enrichedProduct}
@@ -188,10 +168,24 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
                                 )}
                             </div>
 
-                            {/* Quantity */}
                             <div className="mt-0.5 text-xs">
                                 {tCart('attributes.quantity')} {quantity}
                             </div>
+                        </div>
+
+                        {/* Column 3: Tags (delivery, savings) */}
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                            <span className="text-xs bg-muted px-1.5 py-0.5 flex items-center gap-1">
+                                <Truck className="size-3" />
+                                {t('myCart.delivery')}
+                            </span>
+                            {hasSavings && (
+                                <span className="text-xs font-medium bg-muted px-1.5 py-0.5">
+                                    {t('myCart.saved', {
+                                        amount: formatCurrency(savings, i18n.language, currency),
+                                    })}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -204,7 +198,7 @@ export default function MyCart({ basket, productMap = {} }: MyCartProps): ReactE
             <UITarget targetId="sfcc.myCart.header.before" />
             <div
                 data-testid="my-cart-toggle"
-                className="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 md:[&>*]:px-[var(--cart-divider-extend,0px)]">
+                className="divide-y divide-border -mx-[var(--cart-divider-extend,0px)] [&>*]:px-4 [&>*]:py-5 md:[&>*]:px-[var(--cart-divider-extend,0px)] md:[&>*]:py-6">
                 {productItems}
             </div>
         </div>
