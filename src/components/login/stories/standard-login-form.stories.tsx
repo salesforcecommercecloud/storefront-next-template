@@ -463,7 +463,7 @@ This is the most common configuration users will encounter on login pages.
         await expect(submitButton).toBeInTheDocument();
 
         // Test passwordless toggle link exists
-        const passwordlessLink = canvas.getByRole('link', { name: 'Login without password' });
+        const passwordlessLink = canvas.getByRole('link', { name: 'Log in without password' });
         await expect(passwordlessLink).toBeInTheDocument();
 
         // Test navigation links
@@ -580,7 +580,7 @@ When passwordless login is disabled, the form behavior changes:
         await expect(submitButton).toBeInTheDocument();
 
         // Test passwordless toggle link is NOT present
-        const passwordlessLink = canvas.queryByRole('link', { name: 'Login without password' });
+        const passwordlessLink = canvas.queryByRole('link', { name: 'Log in without password' });
         await expect(passwordlessLink).toBeNull();
 
         // Test other navigation links still exist

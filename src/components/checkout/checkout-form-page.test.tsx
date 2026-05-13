@@ -1240,7 +1240,7 @@ describe('CheckoutFormPage', () => {
 
             await waitFor(() => {
                 expect(mockShowToast).toHaveBeenCalledWith(
-                    "We couldn't validate your address. Check your address and try again.",
+                    'Address validation failed. Check your address and try again.',
                     'error'
                 );
             });
@@ -1275,7 +1275,7 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage({ showToast: mockShowToast });
 
             await waitFor(() => {
-                expect(mockShowToast).toHaveBeenCalledWith("We couldn't process your payment. Try again.", 'error');
+                expect(mockShowToast).toHaveBeenCalledWith('Payment processing failed. Try again.', 'error');
             });
         });
 
@@ -1291,7 +1291,7 @@ describe('CheckoutFormPage', () => {
             await renderCheckoutPage({ showToast: mockShowToast });
 
             await waitFor(() => {
-                expect(mockShowToast).toHaveBeenCalledWith("We couldn't create the order. Try again.", 'error');
+                expect(mockShowToast).toHaveBeenCalledWith('Failed to create order. Try again.', 'error');
             });
         });
 

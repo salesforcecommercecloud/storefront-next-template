@@ -128,7 +128,7 @@ describe('Footer', () => {
     test('renders LocaleSwitcher component with locale options', () => {
         renderWithRouter(<Footer />);
         expect(screen.getByRole('option', { name: 'English (UK)' })).toBeInTheDocument();
-        expect(screen.getByRole('option', { name: 'Italian (Italy)' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Italiano (Italia)' })).toBeInTheDocument();
     });
 
     test('renders copyright text with current year', () => {

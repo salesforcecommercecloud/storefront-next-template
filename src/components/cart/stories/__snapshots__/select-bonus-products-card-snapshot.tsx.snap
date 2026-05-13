@@ -12,7 +12,7 @@ exports[`SelectBonusProductsCard stories snapshot > Default story renders and ma
     data-testid="select-bonus-products-button-promo-buy-one-get-tie"
     data-variant="secondary"
   >
-    Select bonus products in Cart
+    Select bonus products in cart
   </button>
 </div>
 `;
@@ -29,7 +29,7 @@ exports[`SelectBonusProductsCard stories snapshot > DifferentPromotion story ren
     data-testid="select-bonus-products-button-promo-free-shipping"
     data-variant="secondary"
   >
-    Select bonus products in Cart
+    Select bonus products in cart
   </button>
 </div>
 `;
@@ -47,7 +47,7 @@ exports[`SelectBonusProductsCard stories snapshot > KeyboardNavigation story ren
       data-testid="select-bonus-products-button-promo-buy-one-get-tie"
       data-variant="secondary"
     >
-      Select bonus products in Cart
+      Select bonus products in cart
     </button>
   </div>
   <div
@@ -83,7 +83,7 @@ exports[`SelectBonusProductsCard stories snapshot > MultipleCards story renders 
         data-testid="select-bonus-products-button-promo-buy-one-get-tie"
         data-variant="secondary"
       >
-        Select bonus products in Cart
+        Select bonus products in cart
       </button>
     </div>
   </div>
@@ -106,7 +106,7 @@ exports[`SelectBonusProductsCard stories snapshot > MultipleCards story renders 
         data-testid="select-bonus-products-button-promo-buy-suit"
         data-variant="secondary"
       >
-        Select bonus products in Cart
+        Select bonus products in cart
       </button>
     </div>
   </div>

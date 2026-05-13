@@ -18,10 +18,7 @@
         "noImageAvailable": "No image available",
         "productGeneric": "Product",
         "noProductsFound": "No products found",
-        "productGrid": {
-            "loadFailed": "Unable to load additional products."
-        },
-        "productCarousel": "Product carousel",
+        "productCarousel": "Product Carousel",
         "productImageAlt": "Product Image",
         "suggestionImageAlt": "Suggestion Image",
         "hero": {
@@ -30,12 +27,15 @@
             "defaultCtaText": "Shop Now"
         },
         "previousImage": "Previous image",
-        "nextImage": "Next image"
+        "nextImage": "Next image",
+        "productGrid": {
+            "loadFailed": "Unable to load additional products."
+        }
     },
     "search": {
         "results": "Search Results for",
         "shopperAgent": {
-            "title": "Ask Shopping Agent",
+            "title": "Shop with your Shopper Agent",
             "description": "I can help you find the perfect piece for your space. Shop with me."
         },
         "suggestions": {
@@ -57,7 +57,7 @@
         },
         "messages": {
             "currentUserRecommendation": "Using your account information",
-            "guestRecommendation": "Continuing as guest. You can login later if you have an account."
+            "guestRecommendation": "Continuing as guest. You can log in later if you have an account."
         }
     },
     "removeItem": {
@@ -84,7 +84,6 @@
         "logoAlt": "Home",
         "openChat": "Open chat",
         "searchPlaceholder": "Search",
-        "searchSuggestions": "Search suggestions",
         "welcomeBack": "Welcome back!",
         "signIn": "Sign In",
         "signOut": "Sign Out",
@@ -107,7 +106,8 @@
             "signInForBestExperience": "Sign in for the best experience",
             "newCustomer": "New customer?",
             "createAccount": "Create account"
-        }
+        },
+        "searchSuggestions": "Search suggestions"
     },
     "login": {
         "title": "Sign in to your account",
@@ -120,8 +120,8 @@
         "emailPlaceholder": "Enter your email",
         "passwordLabel": "Password",
         "passwordPlaceholder": "Enter your password",
-        "loginWithoutPassword": "Login without password",
-        "loginWithPassword": "Login with password",
+        "loginWithoutPassword": "Log in without password",
+        "loginWithPassword": "Log in with password",
         "forgotPassword": "Forgot your password?",
         "noAccountQuestion": "Don't have an account? ",
         "signUp": "Sign up",
@@ -145,10 +145,9 @@
     "resetPassword": {
         "title": "Reset Password",
         "subtitle": "Enter your email to receive instructions on how to reset your password",
-        "enterNewPassword": "Enter your new password below",
         "checkEmailTitle": "Check Your Email",
         "checkEmailDescription": "You will receive an email at {{email}} with a link to reset your password shortly.",
-        "backToSignIn": "Back To Sign In",
+        "backToSignIn": "Back to Sign In",
         "emailLabel": "Email address",
         "emailPlaceholder": "Enter your email",
         "or": "or ",
@@ -169,7 +168,8 @@
         "resettingPassword": "Resetting password...",
         "invalidToken": "Invalid or expired reset link. Request a new one.",
         "resetSuccess": "Password was reset! Logging you in...",
-        "resetSuccessToast": "Password was reset! Sign in with your new password."
+        "resetSuccessToast": "Password was reset! Sign in with your new password.",
+        "enterNewPassword": "Enter your new password below"
     },
     "signup": {
         "title": "Create your account",
@@ -210,6 +210,7 @@
     },
     "errors": {
         "genericTryAgain": "Something went wrong. Try again.",
+        "somethingWentWrong": "Something went wrong. Try again.",
         "loginFailed": "Login failed. Check your credentials.",
         "accessTokenRefreshFailed": "Retrieving the refreshed access token failed.",
         "guestAccessTokenFailed": "Retrieving the new access token failed.",
@@ -221,20 +222,26 @@
         "tooManyLoginAttempts": "You reached the limit for login attempts. For your security, wait 10 minutes and try again.",
         "tooManyPasswordResetAttempts": "You reached the limit for password resets. For your security, wait 10 minutes and try again.",
         "invalidToken": "The verification code is invalid. Please try again.",
+        "expiredToken": "The verification code has expired. Please request a new one.",
         "promoCodeRequired": "Promo code is required.",
         "couponItemIdRequired": "Coupon item ID is required.",
         "noBasketFound": "No basket found.",
         "noCustomerFound": "No customer found in session",
         "api": {
             "orderNotFound": "Order not found. Check the order number and try again.",
-            "basketNotFound": "We couldn't find an active basket. Refresh the page and try again.",
+            "basketNotFound": "Shopping basket not found. Refresh the page and try again.",
             "basketQuotaExceeded": "Maximum number of baskets exceeded. Use your existing basket.",
+            "paymentFailed": "Payment failed. Check your payment information and try again.",
+            "paymentInformationRequired": "Payment information is required to complete your order.",
             "unableToLoadCustomerProfile": "Unable to load your profile. Please refresh the page and try again.",
-            "invalidOrderData": "Invalid order data. Check your checkout information and try again.",
+            "inventoryUnavailable": "Some items in your cart are no longer available. Review your cart.",
+            "invalidOrderData": "Invalid order data. Verify your checkout information and try again.",
+            "shippingAddressRequired": "Shipping address is required to continue.",
+            "billingAddressRequired": "Billing address is required to complete your order.",
             "networkError": "Network error. Check your connection and try again.",
-            "serverError": "Something went wrong. Try again later.",
-            "unauthorized": "Your session expired. Log in again.",
-            "badRequest": "You entered invalid information. Check your information and try again.",
+            "serverError": "Server error. Try again later.",
+            "unauthorized": "Your session has expired. Log in again.",
+            "badRequest": "Invalid request. Check your information and try again.",
             "forbidden": "Access denied. You don't have permission to perform this action.",
             "timeout": "Request timeout. Try again.",
             "unexpectedError": "An unexpected error occurred."
@@ -251,14 +258,17 @@
             "invalidPostalCode": "Enter a valid postal code."
         },
         "checkout": {
-            "checkoutIncomplete": "Some required information is missing. Review your details and try again.",
-            "orderCreationFailed": "We couldn't create the order. Try again.",
-            "paymentProcessingFailed": "We couldn't process your payment. Try again.",
+            "noActiveBasket": "No active basket found. Refresh the page and try again.",
+            "basketCalculationFailed": "Failed to calculate order total. Try again.",
+            "orderCreationFailed": "Failed to create order. Try again.",
+            "paymentProcessingFailed": "Payment processing failed. Try again.",
             "shippingMethodNotAvailable": "The selected shipping method isn't available. Choose another option.",
             "shippingMethodRequired": "Please select a shipping method to continue.",
+            "addressValidationFailed": "Address validation failed. Check your address and try again.",
+            "promoCodeInvalid": "Invalid promo code. Check and try again.",
+            "stockNotAvailable": "Insufficient stock for one or more items in your cart.",
+            "checkoutIncomplete": "Some required information is missing. Review your details and try again.",
             "contactInfoFailed": "We couldn't save the contact information. Try again.",
-            "addressValidationFailed": "We couldn't validate your address. Check your address and try again.",
-            "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart.",
             "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address."
         },
         "customer": {
@@ -309,21 +319,16 @@
     "_NOTICE_product": "Product translations have been moved to product.json as a separate namespace. Use t('product:key') to access them.",
     "cart": {
         "title": "Cart",
-        "meta": {
-            "title": "Cart",
-            "description": "View and manage items in your shopping cart"
-        },
         "delivery": {
+            "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items",
             "heading_one": "Delivery - {{deliveryCount}} out of {{count}} item",
             "heading_other": "Delivery - {{deliveryCount}} out of {{count}} items"
         },
-        "itemCount_one": "Cart (1 item)",
-        "itemCount_other": "Cart ({{count}} items)",
         "empty": {
-            "title": "Your cart is empty",
-            "registeredMessage": "Start shopping to add items to your cart",
-            "guestMessage": "Start shopping to add items to your cart",
-            "continueShopping": "Start Shopping",
+            "title": "Your cart is empty.",
+            "registeredMessage": "Continue shopping to add items to your cart.",
+            "guestMessage": "Sign in to retrieve your saved items or continue shopping.",
+            "continueShopping": "Continue Shopping",
             "signIn": "Sign In"
         },
         "summary": {
@@ -342,8 +347,8 @@
             "taxTbd": "TBD",
             "estimatedTotal": "Estimated Total",
             "orderTotal": "Order Total",
-            "total": "Total",
-            "noBasketData": "No basket data available"
+            "noBasketData": "No basket data available",
+            "total": "Total"
         },
         "promoCode": {
             "label": "Promo code",
@@ -371,22 +376,19 @@
             }
         },
         "items": {
+            "editCart": "Edit cart",
             "itemsInCart_zero": "0 items in cart",
             "itemsInCart_one": "1 item in cart",
-            "itemsInCart_other": "{{count}} items in cart",
-            "editCart": "Edit cart"
+            "itemsInCart_other": "{{count}} items in cart"
         },
         "checkout": {
-            "continueToCheckout": "Continue to Checkout",
-            "secure": "Secure"
+            "proceedToCheckout": "Proceed to Checkout",
+            "secure": "Secure",
+            "continueToCheckout": "Continue to Checkout"
         },
         "attributes": {
             "quantity": "Qty:",
             "promotions": "Promotions:"
-        },
-        "lineItem": {
-            "giftLabel": "This is a gift.",
-            "giftLearnMore": "Learn more."
         },
         "product": {
             "defaultName": "Product Name"
@@ -406,7 +408,7 @@
             "selectedOptions": "Selected Options"
         },
         "bonusProducts": {
-            "selectBonusProducts": "Select bonus products in Cart",
+            "selectBonusProducts": "Select bonus products in cart",
             "addedToCart": "Bonus product added to cart",
             "failedToAdd": "Failed to add bonus product: {{error}}",
             "missingRequiredInfo": "Missing required information",
@@ -419,6 +421,16 @@
             "selectUpTo": "Select up to {{count}}",
             "backToCart": "Back to Cart"
         },
+        "meta": {
+            "title": "Cart",
+            "description": "View and manage items in your shopping cart"
+        },
+        "itemCount_one": "Cart (1 item)",
+        "itemCount_other": "Cart ({{count}} items)",
+        "lineItem": {
+            "giftLabel": "This is a gift.",
+            "giftLearnMore": "Learn more."
+        },
         "inventory": {
             "blockMessage": "Some items exceed available stock. Please adjust quantities or remove items to continue."
         },
@@ -428,18 +440,17 @@
         }
     },
     "checkout": {
-        "pageTitle": "Checkout",
         "contactInfo": {
             "title": "Contact Information",
             "emailLabel": "Email Address",
             "emailPlaceholder": "Email Address",
-            "emailRequired": "Please enter your email address",
-            "emailInvalid": "Please enter a valid email address",
+            "emailRequired": "Please enter your email address.",
+            "emailInvalid": "Please enter a valid email address.",
             "countryCodeLabel": "Code",
             "phoneLabel": "Phone Number",
             "phonePlaceholder": "(000) 000-0000",
-            "phoneRequired": "Please enter your phone number",
-            "phoneInvalid": "Please enter a valid phone number",
+            "phoneRequired": "Please enter your phone number.",
+            "phoneInvalid": "Please enter a valid phone number.",
             "notProvided": "Not provided yet",
             "loginSuggestion": "💡 Have an account? You can continue as guest or ",
             "loginSuggestionLink": "sign in for faster checkout",
@@ -463,6 +474,7 @@
         },
         "shippingAddress": {
             "title": "Shipping Address",
+            "changeLabel": "Edit",
             "selectSavedAddress": "Select a saved address",
             "viewAllLink": "View all",
             "viewAllMore": "({{count}} more)",
@@ -553,16 +565,9 @@
             "cvvInvalid": "Enter a valid CVV",
             "cvvInvalidFormat": "Enter a valid CVV (3-4 digits).",
             "billingAddressRequired": "Billing address is required when different from shipping.",
-            "billingFirstNameRequired": "First name is required",
-            "billingLastNameRequired": "Last name is required",
-            "billingAddress1Required": "Address line 1 is required",
-            "billingCityRequired": "City is required",
-            "billingPostalCodeRequired": "Zip code is required",
-            "billingStateRequired": "State is required",
-            "billingCountryRequired": "Country is required",
             "useDifferentBilling": "Use a different billing address",
             "useDifferentBillingDescription": "Use the same address for billing and shipping",
-            "sameAsShippingAddress": "Same as Shipping Address",
+            "sameAsShippingAddress": "Same as shipping address",
             "selectAnAddress": "Select an address",
             "noBillingAddressSaved": "No billing address saved",
             "continue": "Continue to Review",
@@ -578,22 +583,29 @@
             "endingIn": "Ending in {{lastDigits}}",
             "expiresLabel": "Expires {{expiry}}",
             "summaryLabel": "{{methodLabel}} ending in {{lastDigits}}",
-            "summarySavedLabel": "{{methodLabel}} ending in {{lastDigits}}",
+            "summarySavedLabel": "Saved payment method: {{methodLabel}} ending in {{lastDigits}}",
             "noPaymentMethodSaved": "No payment method saved",
             "billingSummaryTitle": "Billing Address",
             "viewAllMore": "View all ({{count}} more)",
             "viewLess": "View less",
-            "savePaymentToProfile": "Save payment method for future use"
+            "savePaymentToProfile": "Save payment method for future use",
+            "billingFirstNameRequired": "First name is required",
+            "billingLastNameRequired": "Last name is required",
+            "billingAddress1Required": "Address line 1 is required",
+            "billingCityRequired": "City is required",
+            "billingPostalCodeRequired": "Zip code is required",
+            "billingStateRequired": "State is required",
+            "billingCountryRequired": "Country is required"
         },
         "expressPayments": {
-            "title": "Express Checkout",
-            "separator": "or continue below",
+            "separator": "Or",
             "venmoUnavailable": "Venmo is not available on this device.",
             "applePayLabel": "Apple Pay",
             "googlePayLabel": "Google Pay",
             "amazonPayLabel": "Amazon Pay",
             "payPalLabel": "PayPal",
-            "venmoLabel": "Venmo"
+            "venmoLabel": "Venmo",
+            "title": "Express Checkout"
         },
         "common": {
             "edit": "Edit",
@@ -691,6 +703,9 @@
                 "placeholder": "Email address",
                 "cta": "Join"
             },
+            "summaryTitle": "Summary",
+            "emptyItemsFallback": "Your items are being prepared.",
+            "productPlaceholderInitial": "Item",
             "postOrderRegistration": {
                 "title": "Create an account for a faster checkout next time",
                 "subtitle": "Save your details and track your orders by creating an account with your email.",
@@ -704,10 +719,7 @@
                 "creating": "Creating Account...",
                 "successTitle": "Account Created!",
                 "successDescription": "Your account has been created with {{email}}. You're now logged in and can track your orders."
-            },
-            "summaryTitle": "Summary",
-            "emptyItemsFallback": "Your items are being prepared.",
-            "productPlaceholderInitial": "Item"
+            }
         },
         "errorBoundary": {
             "title": "Checkout Temporarily Unavailable",
@@ -728,11 +740,12 @@
             "checkboxExpandedDescription": "When you place your order, we create an account for you and save your payment information and other details for future purchases. During your next checkout, confirm your account using the code we'll send to you.",
             "accountCreatedTitle": "Account Created",
             "verified": "Verified",
-            "accountCreatedDescription": "We've created and verified your account using the information from your order. Next time you checkout, just enter the code we send to log in - no password needed.",
+            "accountCreatedDescription": "We've created and verified your account using the information from your order. Next time you check out, just enter the code we send to log in - no password needed.",
             "accountCreationLabel": "Account Creation",
             "accountWillBeCreated": "Account will be created",
             "continueAsGuest": "Continue as guest"
-        }
+        },
+        "pageTitle": "Checkout"
     },
     "account": {
         "title": "Account Details",
@@ -761,13 +774,13 @@
                 "error": "Failed to load store details. Please try again later."
             },
             "authorizedPickupPeople": {
-                "heading": "Authorized Pickup People",
-                "description": "Add people who are authorized to pick up orders on your behalf",
+                "heading": "Authorised Pickup People",
+                "description": "Add people who are authorised to pick up orders on your behalf",
                 "addPerson": "Add Person",
-                "idNote": "Authorized pickup people will need to show a valid ID matching the name on file when picking up orders.",
+                "idNote": "Authorised pickup people will need to show a valid ID matching the name on file when picking up orders.",
                 "modal": {
-                    "addTitle": "Add Authorized Person",
-                    "editTitle": "Edit Authorized Person",
+                    "addTitle": "Add Authorised Person",
+                    "editTitle": "Edit Authorised Person",
                     "firstName": "First Name",
                     "firstNamePlaceholder": "First Name",
                     "lastName": "Last Name",
@@ -776,24 +789,24 @@
                     "emailPlaceholder": "email@example.com",
                     "relationship": "Relationship",
                     "relationshipPlaceholder": "Select Relationship",
-                    "modalNote": "This person will be authorized to pick up orders on your behalf. They will need to show a valid ID matching the name provided when picking up orders.",
+                    "modalNote": "This person will be authorised to pick up orders on your behalf. They will need to show a valid ID matching the name provided when picking up orders.",
                     "cancel": "Cancel",
                     "save": "Save",
-                    "firstNameRequired": "First name is required",
-                    "firstNameMax": "First name must be 50 characters or less",
-                    "lastNameRequired": "Last name is required",
-                    "lastNameMax": "Last name must be 50 characters or less",
-                    "emailRequired": "Email is required",
-                    "emailInvalid": "Please enter a valid email address",
-                    "emailMax": "Email must be 100 characters or less",
-                    "relationshipRequired": "Please select a relationship"
+                    "firstNameRequired": "First name is required.",
+                    "firstNameMax": "First name must be 50 characters or less.",
+                    "lastNameRequired": "Last name is required.",
+                    "lastNameMax": "Last name must be 50 characters or less.",
+                    "emailRequired": "Email is required.",
+                    "emailInvalid": "Please enter a valid email address.",
+                    "emailMax": "Email must be 100 characters or less.",
+                    "relationshipRequired": "Please select a relationship."
                 },
                 "statusActive": "Active",
                 "relationshipLabel": "Relationship: {{relationship}}",
                 "edit": "Edit",
                 "delete": "Delete",
-                "emptyState": "No authorized pickup people yet. Add someone who can pick up orders on your behalf.",
-                "deleteConfirmTitle": "Remove authorized person",
+                "emptyState": "No authorised pickup people yet. Add someone who can pick up orders on your behalf.",
+                "deleteConfirmTitle": "Remove authorised person",
                 "deleteConfirmDescription": "Are you sure you want to remove {{name}}? They will no longer be able to pick up orders on your behalf.",
                 "deleteConfirmCancel": "Cancel",
                 "deleteConfirmRemove": "Remove",
@@ -942,8 +955,6 @@
             "orderNotFound": "Order Not Found",
             "orderNotFoundDescription": "We couldn't find the order you're looking for.",
             "buyAgain": "Buy Again",
-            "rateAndReview": "Rate & Review",
-            "reviewSubmitted": "Review submitted",
             "emptyItemsFallback": "No items.",
             "productPlaceholderInitial": "Item",
             "productImageLinkFallback": "View product details",
@@ -951,7 +962,9 @@
             "trackingNumber": "Tracking Number",
             "shippingAddress": "Shipping Address",
             "paymentMethod": "Payment Method",
-            "paymentMethodEndingIn": "{{cardType}} Ending in {{lastDigits}}"
+            "paymentMethodEndingIn": "{{cardType}} Ending in {{lastDigits}}",
+            "rateAndReview": "Rate & Review",
+            "reviewSubmitted": "Review submitted"
         },
         "addresses": {
             "subtitle": "Manage your shipping addresses",
@@ -1008,16 +1021,16 @@
             "removeConfirmation": "Are you sure you want to remove this payment method?",
             "paymentMethod": "Payment Method",
             "defaultRemovalWarning": "This is your default payment method. Removing it will automatically set another payment method as default if available.",
-            "addSuccess": "Payment method added successfully",
-            "addError": "Failed to add payment method",
-            "removeSuccess": "Payment method removed successfully",
-            "removeError": "Failed to remove payment method",
-            "setDefaultSuccess": "Payment method set as default successfully",
-            "setDefaultError": "Failed to set payment method as default",
-            "validationError": "Please correct the errors in the form",
-            "addressValidationError": "Please correct the errors in the billing address",
-            "selectAddressError": "Please select a billing address",
-            "invalidExpiryFormat": "Invalid expiry date format"
+            "addSuccess": "Payment method added successfully.",
+            "addError": "Failed to add payment method.",
+            "removeSuccess": "Payment method removed successfully.",
+            "removeError": "Failed to remove payment method.",
+            "setDefaultSuccess": "Payment method set as default successfully.",
+            "setDefaultError": "Failed to set payment method as default.",
+            "validationError": "Please correct the errors in the form.",
+            "addressValidationError": "Please correct the errors in the billing address.",
+            "selectAddressError": "Please select a billing address.",
+            "invalidExpiryFormat": "Invalid expiry date format."
         },
         "addressForm": {
             "addressTitleLabel": "Address Title",
@@ -1045,9 +1058,9 @@
             "errorMessage": "Failed to save address. Try again.",
             "validation": {
                 "stateRequired": "State/Province is required",
-                "addressTitleRequired": "Address title is required",
-                "addressTitleMaxLength": "Address title must be 256 characters or less",
-                "phoneRequired": "Phone number is required"
+                "addressTitleRequired": "Address title is required.",
+                "addressTitleMaxLength": "Address title must be 256 characters or less.",
+                "phoneRequired": "Phone number is required."
             }
         },
         "profile": {
@@ -1078,12 +1091,12 @@
             "successMessage": "Your profile was updated.",
             "errorMessage": "We couldn't update your profile. Try again.",
             "validation": {
-                "firstNameRequired": "First name is required",
-                "lastNameRequired": "Last name is required",
-                "emailRequired": "Email is required",
-                "emailInvalid": "Enter a valid email address",
-                "phoneInvalid": "Enter a valid phone number",
-                "birthdayFuture": "Date of birth cannot be in the future"
+                "firstNameRequired": "First name is required.",
+                "lastNameRequired": "Last name is required.",
+                "emailRequired": "Email is required.",
+                "emailInvalid": "Enter a valid email address.",
+                "phoneInvalid": "Enter a valid phone number.",
+                "birthdayFuture": "Date of birth cannot be in the future."
             }
         },
         "password": {
@@ -1428,14 +1441,11 @@
         "promotionApplied": "Promotion Applied",
         "removeItemAriaLabel": "Remove item from cart",
         "emptyCart": "Your cart is empty",
-        "emptyTitle": "Your cart is empty",
-        "emptyMessage": "Looks like you haven't added anything to your cart yet. Start shopping to fill it up with amazing products!",
-        "startShopping": "Start Shopping",
         "loading": "Loading...",
         "viewCart": "View Cart",
-        "delivery": "Delivery",
         "saved": "Saved {{amount}}",
-        "free": "Free"
+        "free": "Free",
+        "closeAriaLabel": "Close"
     },
     "trackingConsent": {
         "title": "Tracking Consent",
@@ -1449,7 +1459,21 @@
         "locales": {
             "en-GB": "English (UK)",
             "en-US": "English (US)",
-            "it-IT": "Italian (Italy)"
+            "da-DK": "Dansk (Danmark)",
+            "de-DE": "Deutsch (Deutschland)",
+            "es-ES": "Español (España)",
+            "fi-FI": "Suomi (Suomi)",
+            "fr-FR": "Français (France)",
+            "it-IT": "Italiano (Italia)",
+            "ja-JP": "日本語 (日本)",
+            "ko-KR": "한국어 (대한민국)",
+            "nb-NO": "Norsk bokmål (Norge)",
+            "nl-NL": "Nederlands (Nederland)",
+            "pl-PL": "Polski (Polska)",
+            "pt-PT": "Português (Portugal)",
+            "sv-SE": "Svenska (Sverige)",
+            "zh-CN": "中文 (简体)",
+            "zh-TW": "中文 (繁體)"
         },
         "validation": {
             "unsupportedLocale": "Locale not supported",
@@ -1467,7 +1491,10 @@
             "KRW": "Korean Won (₩)",
             "BRL": "Brazilian Real (R$)",
             "CNY": "Chinese Yuan (¥)",
-            "TWD": "Taiwan Dollar (NT$)"
+            "TWD": "Taiwan Dollar (NT$)",
+            "DKK": "Danish Krone (kr)",
+            "PLN": "Polish Zloty (zł)",
+            "SEK": "Swedish Krona (kr)"
         },
         "validation": {
             "unsupportedCurrency": "Currency not supported",
@@ -1512,7 +1539,7 @@
     "writeReview": {
         "validation": {
             "pleaseFixFollowing": "Please fix the following:",
-            "ratingRequired": "Please select a rating",
+            "ratingRequired": "Please select a rating.",
             "reviewRequired": "Please fill out this field.",
             "reviewMinLength": "Your review must be at least {{count}} characters",
             "reviewMaxLength": "Please enter no more than {{count}} characters.",

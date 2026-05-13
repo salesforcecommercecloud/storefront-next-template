@@ -30,7 +30,16 @@ import { Link } from '@/components/link';
 import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
+import { XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import MiniCartItem from '@/components/cart/mini-cart-item';
@@ -213,7 +222,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
 
     return (
         <SheetContent
-            className="w-full sm:max-w-lg flex flex-col p-0"
+            className="mini-cart-flyout w-full sm:max-w-lg flex flex-col p-0"
             data-testid="mini-cart-flyout"
             onOpenAutoFocus={(event) => {
                 event.preventDefault();
@@ -222,6 +231,10 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                     titleElement?.focus();
                 }
             }}>
+            <SheetClose className="ring-offset-background focus:ring-ring rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none absolute top-4 right-4">
+                <XIcon className="size-6" strokeWidth={1.5} />
+                <span className="sr-only">{tMiniCart('closeAriaLabel')}</span>
+            </SheetClose>
             {/* Header */}
             <SheetHeader className="px-6 pt-6 pb-4 space-y-0">
                 <SheetTitle

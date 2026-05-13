@@ -334,7 +334,7 @@ describe('checkout-submit-multi-options', () => {
             expect(result).not.toBeNull();
             const jsonResult = await result?.json();
             expect(jsonResult.success).toBe(false);
-            expect(jsonResult.error).toBe('Something went wrong. Try again later.');
+            expect(jsonResult.error).toBe('Server error. Try again later.');
         });
     });
 });

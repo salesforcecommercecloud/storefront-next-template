@@ -140,6 +140,18 @@ export default defineConfig<Config>(
                                 preferredCurrency: 'GBP',
                             },
                             {
+                                id: 'da-DK',
+                                preferredCurrency: 'DKK',
+                            },
+                            {
+                                id: 'de-DE',
+                                preferredCurrency: 'EUR',
+                            },
+                            {
+                                id: 'fi-FI',
+                                preferredCurrency: 'EUR',
+                            },
+                            {
                                 id: 'fr-FR',
                                 preferredCurrency: 'EUR',
                             },
@@ -152,11 +164,31 @@ export default defineConfig<Config>(
                                 preferredCurrency: 'JPY',
                             },
                             {
+                                id: 'ko-KR',
+                                preferredCurrency: 'KRW',
+                            },
+                            {
+                                id: 'nl-NL',
+                                preferredCurrency: 'EUR',
+                            },
+                            {
+                                id: 'pl-PL',
+                                preferredCurrency: 'PLN',
+                            },
+                            {
+                                id: 'sv-SE',
+                                preferredCurrency: 'SEK',
+                            },
+                            {
                                 id: 'zh-CN',
                                 preferredCurrency: 'CNY',
                             },
+                            {
+                                id: 'zh-TW',
+                                preferredCurrency: 'TWD',
+                            },
                         ],
-                        supportedCurrencies: ['EUR', 'GBP'],
+                        supportedCurrencies: ['CNY', 'DKK', 'EUR', 'GBP', 'JPY', 'KRW', 'PLN', 'SEK', 'TWD'],
                     },
                     {
                         id: 'RefArch',
@@ -234,7 +266,22 @@ export default defineConfig<Config>(
             // make sure the app can fully be translated to another language
             i18n: {
                 fallbackLng: 'en-GB',
-                supportedLngs: ['it-IT', 'en-US', 'en-GB'], // Your supported languages, the fallback should be LAST
+                supportedLngs: [
+                    'da-DK',
+                    'de-DE',
+                    'fi-FI',
+                    'fr-FR',
+                    'it-IT',
+                    'ja-JP',
+                    'ko-KR',
+                    'nl-NL',
+                    'pl-PL',
+                    'sv-SE',
+                    'zh-CN',
+                    'zh-TW',
+                    'en-US',
+                    'en-GB',
+                ], // Your supported languages, the fallback should be LAST
             },
             // Global UI configuration and component settings
             // See CONFIG-OPTIONS.md#global for detailed documentation

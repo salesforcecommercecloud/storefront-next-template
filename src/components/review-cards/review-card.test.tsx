@@ -87,7 +87,7 @@ describe('ReviewCard', () => {
         const readMore = screen.getByTestId('review-read-more');
         expect(readMore).toHaveTextContent('Read More');
         await user.click(readMore);
-        expect(screen.getByTestId('review-read-less')).toHaveTextContent('Read less');
+        expect(screen.getByTestId('review-read-less')).toHaveTextContent('Read Less');
         await user.click(screen.getByTestId('review-read-less'));
         expect(screen.getByTestId('review-read-more')).toHaveTextContent('Read More');
     });

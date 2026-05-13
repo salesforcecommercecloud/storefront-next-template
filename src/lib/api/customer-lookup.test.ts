@@ -57,7 +57,7 @@ describe('Customer Lookup Functions', () => {
             expect(result).toEqual({
                 isRegistered: false,
                 recommendation: 'guest',
-                message: 'Continuing as guest. You can login later if you have an account.',
+                message: 'Continuing as guest. You can log in later if you have an account.',
                 error: undefined,
                 requiresLogin: false,
             });
@@ -98,7 +98,7 @@ describe('Customer Lookup Functions', () => {
             expect(result).toEqual({
                 isRegistered: false,
                 recommendation: 'guest',
-                message: 'Continuing as guest. You can login later if you have an account.',
+                message: 'Continuing as guest. You can log in later if you have an account.',
                 error: undefined,
                 requiresLogin: false,
             });
@@ -111,7 +111,7 @@ describe('Customer Lookup Functions', () => {
                 isRegistered: false,
                 error: 'Invalid email format',
                 recommendation: 'guest',
-                message: 'Continuing as guest. You can login later if you have an account.',
+                message: 'Continuing as guest. You can log in later if you have an account.',
             });
         });
 
@@ -134,7 +134,7 @@ describe('Customer Lookup Functions', () => {
                 isRegistered: false,
                 requiresLogin: false,
                 recommendation: 'guest',
-                message: 'Continuing as guest. You can login later if you have an account.',
+                message: 'Continuing as guest. You can log in later if you have an account.',
             });
         });
     });

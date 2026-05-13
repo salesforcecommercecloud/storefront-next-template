@@ -116,6 +116,9 @@ vi.mock('@/components/ui/sheet', () => ({
     SheetHeader: ({ children }: PropsWithChildren) => <div>{children}</div>,
     SheetTitle: ({ children }: PropsWithChildren) => <h2>{children}</h2>,
     SheetFooter: ({ children }: PropsWithChildren) => <div>{children}</div>,
+    SheetClose: ({ children, ...props }: PropsWithChildren<Record<string, unknown>>) => (
+        <button {...props}>{children}</button>
+    ),
 }));
 
 vi.mock('@/components/ui/button', () => ({

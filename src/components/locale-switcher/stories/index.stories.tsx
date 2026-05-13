@@ -104,9 +104,9 @@ export const Default: Story = {
         // Verify English is selected by default
         await expect(selector).toHaveValue('en-GB');
 
-        // Verify both language options are present
+        // Verify both language options are present (endonyms — always in each locale's own language)
         await expect(canvas.getByRole('option', { name: /english.*uk/i })).toBeInTheDocument();
-        await expect(canvas.getByRole('option', { name: /italian.*italy/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('option', { name: /italiano.*italia/i })).toBeInTheDocument();
     },
 };
 
@@ -126,9 +126,8 @@ export const ItalianSelected: Story = {
         // Verify Italian is selected
         await expect(selector).toHaveValue('it-IT');
 
-        // Verify both options are available
-        // When locale is Italian, translations are in Italian, so match Italian text
-        await expect(canvas.getByRole('option', { name: /inglese.*regno.*unito/i })).toBeInTheDocument();
+        // Verify both options are available (endonyms — language names stay in their own language)
+        await expect(canvas.getByRole('option', { name: /english.*uk/i })).toBeInTheDocument();
         await expect(canvas.getByRole('option', { name: /italiano.*italia/i })).toBeInTheDocument();
     },
 };

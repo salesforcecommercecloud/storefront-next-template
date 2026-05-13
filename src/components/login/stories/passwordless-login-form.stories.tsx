@@ -445,7 +445,7 @@ This is the most common state users will see when accessing the login page.
         await expect(submitButton).toBeInTheDocument();
 
         // Test password toggle link exists
-        const passwordToggleLink = canvas.getByRole('link', { name: 'Login with password' });
+        const passwordToggleLink = canvas.getByRole('link', { name: 'Log in with password' });
         await expect(passwordToggleLink).toBeInTheDocument();
 
         // Test forgot password link exists
@@ -505,7 +505,7 @@ Common error scenarios include:
         await expect(submitButton).not.toBeDisabled();
 
         // Test navigation links still work
-        const passwordToggleLink = canvas.getByRole('link', { name: 'Login with password' });
+        const passwordToggleLink = canvas.getByRole('link', { name: 'Log in with password' });
         const forgotPasswordLink = canvas.getByRole('link', { name: 'Forgot your password?' });
         await expect(passwordToggleLink).toBeInTheDocument();
         await expect(forgotPasswordLink).toBeInTheDocument();
@@ -547,7 +547,7 @@ This configuration is useful when:
         await expect(submitButton).toBeInTheDocument();
 
         // Test password toggle link is NOT present
-        const passwordToggleLink = canvas.queryByRole('link', { name: 'Login with password' });
+        const passwordToggleLink = canvas.queryByRole('link', { name: 'Log in with password' });
         await expect(passwordToggleLink).toBeNull();
 
         // Test forgot password link still exists

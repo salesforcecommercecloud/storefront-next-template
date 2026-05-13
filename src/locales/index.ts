@@ -14,8 +14,40 @@
  * limitations under the License.
  */
 import type { Resource } from 'i18next';
+import daDK from './da-DK';
+import deDE from './de-DE';
 import enGB from './en-GB';
 import enUS from './en-US';
+import esES from './es-ES';
+import fiFI from './fi-FI';
+import frFR from './fr-FR';
 import itIT from './it-IT';
+import jaJP from './ja-JP';
+import koKR from './ko-KR';
+import nbNO from './nb-NO';
+import nlNL from './nl-NL';
+import plPL from './pl-PL';
+import ptPT from './pt-PT';
+import svSE from './sv-SE';
+import zhCN from './zh-CN';
+import zhTW from './zh-TW';
 
-export default { 'en-GB': enGB, 'en-US': enUS, 'it-IT': itIT } satisfies Resource;
+export default {
+    'da-DK': daDK,
+    'de-DE': deDE,
+    'en-GB': enGB,
+    'en-US': enUS,
+    'es-ES': esES,
+    'fi-FI': fiFI,
+    'fr-FR': frFR,
+    'it-IT': itIT,
+    'ja-JP': jaJP,
+    'ko-KR': koKR,
+    'nb-NO': nbNO,
+    'nl-NL': nlNL,
+    'pl-PL': plPL,
+    'pt-PT': ptPT,
+    'sv-SE': svSE,
+    'zh-CN': zhCN,
+    'zh-TW': zhTW,
+} satisfies Resource;

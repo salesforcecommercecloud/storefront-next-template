@@ -34,13 +34,13 @@ describe('AuthorizedPickupPeople', () => {
     describe('Section content', () => {
         test('renders Authorized Pickup People heading', () => {
             renderComponent();
-            expect(screen.getByText('Authorized Pickup People')).toBeInTheDocument();
+            expect(screen.getByText('Authorised Pickup People')).toBeInTheDocument();
         });
 
         test('renders section description', () => {
             renderComponent();
             expect(
-                screen.getByText('Add people who are authorized to pick up orders on your behalf')
+                screen.getByText('Add people who are authorised to pick up orders on your behalf')
             ).toBeInTheDocument();
         });
 
@@ -53,7 +53,7 @@ describe('AuthorizedPickupPeople', () => {
             renderComponent();
             expect(
                 screen.getByText(
-                    /Authorized pickup people will need to show a valid ID matching the name on file when picking up orders/i
+                    /Authorised pickup people will need to show a valid ID matching the name on file when picking up orders/i
                 )
             ).toBeInTheDocument();
         });
@@ -61,7 +61,7 @@ describe('AuthorizedPickupPeople', () => {
         test('renders empty state when no people exist', () => {
             renderComponent();
             expect(
-                screen.getByText(/No authorized pickup people yet. Add someone who can pick up orders on your behalf/i)
+                screen.getByText(/No authorised pickup people yet. Add someone who can pick up orders on your behalf/i)
             ).toBeInTheDocument();
         });
     });
@@ -73,7 +73,7 @@ describe('AuthorizedPickupPeople', () => {
             await user.click(screen.getByRole('button', { name: /Add Person/i }));
 
             const dialog = screen.getByRole('dialog', {
-                name: 'Add Authorized Person',
+                name: 'Add Authorised Person',
             });
             expect(dialog).toBeInTheDocument();
             expect(screen.getByLabelText(/First Name/i)).toBeInTheDocument();
@@ -89,10 +89,10 @@ describe('AuthorizedPickupPeople', () => {
             const user = userEvent.setup();
             renderComponent();
             await user.click(screen.getByRole('button', { name: /Add Person/i }));
-            expect(screen.getByRole('dialog', { name: 'Add Authorized Person' })).toBeInTheDocument();
+            expect(screen.getByRole('dialog', { name: 'Add Authorised Person' })).toBeInTheDocument();
 
             await user.click(screen.getByRole('button', { name: 'Cancel' }));
-            expect(screen.queryByRole('dialog', { name: 'Add Authorized Person' })).not.toBeInTheDocument();
+            expect(screen.queryByRole('dialog', { name: 'Add Authorised Person' })).not.toBeInTheDocument();
         });
 
         test('shows validation errors when Save is clicked with empty required fields', async () => {
@@ -102,9 +102,9 @@ describe('AuthorizedPickupPeople', () => {
 
             await user.click(screen.getByRole('button', { name: 'Save' }));
 
-            expect(screen.getByText('First name is required')).toBeInTheDocument();
-            expect(screen.getByText('Last name is required')).toBeInTheDocument();
-            expect(screen.getByText('Email is required')).toBeInTheDocument();
+            expect(screen.getByText('First name is required.')).toBeInTheDocument();
+            expect(screen.getByText('Last name is required.')).toBeInTheDocument();
+            expect(screen.getByText('Email is required.')).toBeInTheDocument();
         });
 
         test('keeps modal open and shows validation when email is invalid', async () => {
@@ -118,7 +118,7 @@ describe('AuthorizedPickupPeople', () => {
             await user.click(screen.getByRole('button', { name: 'Save' }));
 
             // Validation prevents submit: dialog stays open (person not added)
-            expect(screen.getByRole('dialog', { name: 'Add Authorized Person' })).toBeInTheDocument();
+            expect(screen.getByRole('dialog', { name: 'Add Authorised Person' })).toBeInTheDocument();
         });
 
         test('adds a person and displays in list when form is valid', async () => {
@@ -132,7 +132,7 @@ describe('AuthorizedPickupPeople', () => {
             await user.selectOptions(screen.getByRole('combobox'), 'spouse');
             await user.click(screen.getByRole('button', { name: 'Save' }));
 
-            expect(screen.queryByRole('dialog', { name: 'Add Authorized Person' })).not.toBeInTheDocument();
+            expect(screen.queryByRole('dialog', { name: 'Add Authorised Person' })).not.toBeInTheDocument();
             expect(screen.getByText('Jane Doe')).toBeInTheDocument();
             expect(screen.getByText('jane.doe@example.com')).toBeInTheDocument();
             expect(screen.getByText('Active')).toBeInTheDocument();
@@ -160,7 +160,7 @@ describe('AuthorizedPickupPeople', () => {
             const editButton = screen.getByRole('button', { name: 'Edit' });
             await user.click(editButton);
 
-            expect(screen.getByRole('dialog', { name: 'Edit Authorized Person' })).toBeInTheDocument();
+            expect(screen.getByRole('dialog', { name: 'Edit Authorised Person' })).toBeInTheDocument();
             expect(screen.getByPlaceholderText('First Name')).toHaveValue('Jane');
             expect(screen.getByPlaceholderText('Last Name')).toHaveValue('Doe');
             expect(screen.getByPlaceholderText('email@example.com')).toHaveValue('jane@example.com');

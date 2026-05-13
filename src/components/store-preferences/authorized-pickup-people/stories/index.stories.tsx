@@ -43,12 +43,12 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        await expect(canvas.getByText('Authorized Pickup People')).toBeInTheDocument();
+        await expect(canvas.getByText('Authorised Pickup People')).toBeInTheDocument();
         await expect(
-            canvas.getByText('Add people who are authorized to pick up orders on your behalf')
+            canvas.getByText('Add people who are authorised to pick up orders on your behalf')
         ).toBeInTheDocument();
         await expect(canvas.getByRole('button', { name: /Add Person/i })).toBeInTheDocument();
-        await expect(canvas.getByText(/Authorized pickup people will need to show a valid ID/)).toBeInTheDocument();
+        await expect(canvas.getByText(/Authorised pickup people will need to show a valid ID/)).toBeInTheDocument();
     },
 };
 
@@ -63,7 +63,7 @@ export const OpenAddModal: Story = {
         const root = document.body;
         const view = within(root);
 
-        await expect(view.getByRole('dialog', { name: 'Add Authorized Person' })).toBeInTheDocument();
+        await expect(view.getByRole('dialog', { name: 'Add Authorised Person' })).toBeInTheDocument();
         await expect(view.getByPlaceholderText('First Name')).toBeInTheDocument();
         await expect(view.getByPlaceholderText('Last Name')).toBeInTheDocument();
         await expect(view.getByPlaceholderText('email@example.com')).toBeInTheDocument();

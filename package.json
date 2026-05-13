@@ -259,9 +259,64 @@
                 "comment": "Italian locale chunk. Italian translations are ~10% more verbose than English due to language characteristics (longer words, articles, formal address forms). Baseline: it-IT ~80 kB vs en-US ~73 kB."
             },
             {
+                "name": "assets/\\(locales\\)-\\(ja-JP\\)-index.*.js",
+                "limit": "90 kB",
+                "comment": "Japanese locale chunk. Multi-byte characters and longer formal phrasing inflate the JSON. Baseline ~87 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(fr-FR\\)-index.*.js",
+                "limit": "85 kB",
+                "comment": "French locale chunk. Romance-language verbosity (articles, gendered forms) inflates strings. Baseline ~82 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(de-DE\\)-index.*.js",
+                "limit": "83 kB",
+                "comment": "German locale chunk. Compound words and formal address inflate strings. Baseline ~81 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(es-ES\\)-index.*.js",
+                "limit": "82 kB",
+                "comment": "Spanish locale chunk. Romance-language verbosity inflates strings. Baseline ~80 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(ko-KR\\)-index.*.js",
+                "limit": "81 kB",
+                "comment": "Korean locale chunk. Multi-byte characters inflate the JSON. Baseline ~79 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(pl-PL\\)-index.*.js",
+                "limit": "81 kB",
+                "comment": "Polish locale chunk. Inflectional morphology (multiple plural forms) inflates strings. Baseline ~79 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(pt-PT\\)-index.*.js",
+                "limit": "80 kB",
+                "comment": "Portuguese locale chunk. Romance-language verbosity inflates strings. Baseline ~78 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(nl-NL\\)-index.*.js",
+                "limit": "79 kB",
+                "comment": "Dutch locale chunk. Compound words inflate strings. Baseline ~77 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(fi-FI\\)-index.*.js",
+                "limit": "78 kB",
+                "comment": "Finnish locale chunk. Agglutinative morphology produces long words. Baseline ~76 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(sv-SE\\)-index.*.js",
+                "limit": "78 kB",
+                "comment": "Swedish locale chunk. Compound words inflate strings. Baseline ~76 kB."
+            },
+            {
+                "name": "assets/\\(locales\\)-\\(da-DK\\)-index.*.js",
+                "limit": "76 kB",
+                "comment": "Danish locale chunk. Compound words inflate strings. Baseline ~75 kB."
+            },
+            {
                 "name": "assets/\\(locales\\)-*-index.*.js",
                 "limit": "75 kB",
-                "comment": "Default limit for other locale chunks. Update individually if Romance languages (es-ES, fr-FR, pt-PT) exceed this."
+                "comment": "Default limit for other locale chunks. Update individually if a locale exceeds this."
             },
             {
                 "name": "assets/\\(components\\)-\\(checkout\\)-*.js",

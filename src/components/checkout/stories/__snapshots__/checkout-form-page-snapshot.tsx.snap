@@ -738,7 +738,7 @@ exports[`CheckoutFormPage stories snapshot > EmptyCart story renders and matches
         <p
           class="text-sm text-muted-foreground text-center"
         >
-          Your cart is empty
+          Your cart is empty.
         </p>
       </div>
     </div>

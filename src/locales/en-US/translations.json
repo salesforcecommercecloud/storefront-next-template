@@ -145,6 +145,7 @@
     "resetPassword": {
         "title": "Reset Password",
         "subtitle": "Enter your email to receive instructions on how to reset your password",
+        "enterNewPassword": "Enter your new password below",
         "checkEmailTitle": "Check Your Email",
         "checkEmailDescription": "You will receive an email at {{email}} with a link to reset your password shortly.",
         "backToSignIn": "Back to Sign In",
@@ -238,7 +239,12 @@
             "badRequest": "You entered invalid information. Check your information and try again.",
             "forbidden": "Access denied. You don't have permission to perform this action.",
             "timeout": "Request timeout. Try again.",
-            "unexpectedError": "An unexpected error occurred."
+            "unexpectedError": "An unexpected error occurred.",
+            "paymentFailed": "Payment failed. Check your payment information and try again.",
+            "paymentInformationRequired": "Payment information is required to complete your order.",
+            "inventoryUnavailable": "Some items in your cart are no longer available. Review your cart.",
+            "shippingAddressRequired": "Shipping address is required to continue.",
+            "billingAddressRequired": "Billing address is required to complete your order."
         },
         "validation": {
             "required": "This field is required.",
@@ -260,7 +266,10 @@
             "contactInfoFailed": "We couldn't save the contact information. Try again.",
             "addressValidationFailed": "We couldn't validate your address. Check your address and try again.",
             "stockNotAvailable": "We couldn't complete your order. There's insufficient stock for one or more items in your cart.",
-            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address."
+            "noShippingMethodsForAddress": "We're unable to ship to the address you entered. Enter a different shipping address.",
+            "noActiveBasket": "No active basket found. Refresh the page and try again.",
+            "basketCalculationFailed": "Failed to calculate order total. Try again.",
+            "promoCodeInvalid": "Invalid promo code. Check and try again."
         },
         "customer": {
             "addressIdRequired": "Address title is required for customer address.",
@@ -316,7 +325,8 @@
         },
         "delivery": {
             "heading_one": "Delivery - {{deliveryCount}} out of {{count}} item",
-            "heading_other": "Delivery - {{deliveryCount}} out of {{count}} items"
+            "heading_other": "Delivery - {{deliveryCount}} out of {{count}} items",
+            "heading": "Delivery - {{deliveryCount}} out of {{totalCount}} items"
         },
         "itemCount_one": "Cart (1 item)",
         "itemCount_other": "Cart ({{count}} items)",
@@ -379,7 +389,8 @@
         },
         "checkout": {
             "continueToCheckout": "Continue to Checkout",
-            "secure": "Secure"
+            "secure": "Secure",
+            "proceedToCheckout": "Proceed to Checkout"
         },
         "attributes": {
             "quantity": "Qty:",
@@ -464,7 +475,6 @@
         },
         "shippingAddress": {
             "title": "Shipping Address",
-            "changeLabel": "Edit",
             "selectSavedAddress": "Select a saved address",
             "viewAllLink": "View all",
             "viewAllMore": "({{count}} more)",
@@ -484,7 +494,8 @@
             "failed": "Failed to save shipping address",
             "confirmed": "Shipping address confirmed",
             "notProvided": "Shipping address not provided yet",
-            "completePreviousSteps": "Complete previous steps to continue"
+            "completePreviousSteps": "Complete previous steps to continue",
+            "changeLabel": "Edit"
         },
         "addressForm": {
             "firstNameLabel": "First Name",
@@ -555,6 +566,13 @@
             "cvvInvalid": "Enter a valid CVV",
             "cvvInvalidFormat": "Enter a valid CVV (3-4 digits).",
             "billingAddressRequired": "Billing address is required when different from shipping.",
+            "billingFirstNameRequired": "First name is required",
+            "billingLastNameRequired": "Last name is required",
+            "billingAddress1Required": "Address line 1 is required",
+            "billingCityRequired": "City is required",
+            "billingPostalCodeRequired": "Zip code is required",
+            "billingStateRequired": "State is required",
+            "billingCountryRequired": "Country is required",
             "useDifferentBilling": "Use a different billing address",
             "useDifferentBillingDescription": "Use the same address for billing and shipping",
             "sameAsShippingAddress": "Same as shipping address",
@@ -1426,7 +1444,8 @@
         "loading": "Loading...",
         "viewCart": "View Cart",
         "saved": "Saved {{amount}}",
-        "free": "Free"
+        "free": "Free",
+        "closeAriaLabel": "Close"
     },
     "trackingConsent": {
         "title": "Tracking Consent",
@@ -1440,7 +1459,21 @@
         "locales": {
             "en-GB": "English (UK)",
             "en-US": "English (US)",
-            "it-IT": "Italian (Italy)"
+            "da-DK": "Dansk (Danmark)",
+            "de-DE": "Deutsch (Deutschland)",
+            "es-ES": "Español (España)",
+            "fi-FI": "Suomi (Suomi)",
+            "fr-FR": "Français (France)",
+            "it-IT": "Italiano (Italia)",
+            "ja-JP": "日本語 (日本)",
+            "ko-KR": "한국어 (대한민국)",
+            "nb-NO": "Norsk bokmål (Norge)",
+            "nl-NL": "Nederlands (Nederland)",
+            "pl-PL": "Polski (Polska)",
+            "pt-PT": "Português (Portugal)",
+            "sv-SE": "Svenska (Sverige)",
+            "zh-CN": "中文 (简体)",
+            "zh-TW": "中文 (繁體)"
         },
         "validation": {
             "unsupportedLocale": "Locale not supported",
@@ -1458,7 +1491,10 @@
             "KRW": "Korean Won (₩)",
             "BRL": "Brazilian Real (R$)",
             "CNY": "Chinese Yuan (¥)",
-            "TWD": "Taiwan Dollar (NT$)"
+            "TWD": "Taiwan Dollar (NT$)",
+            "DKK": "Danish Krone (kr)",
+            "PLN": "Polish Zloty (zł)",
+            "SEK": "Swedish Krona (kr)"
         },
         "validation": {
             "unsupportedCurrency": "Currency not supported",
