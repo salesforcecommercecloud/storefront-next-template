@@ -31,6 +31,10 @@ export const ACTION_HOOK_IDS = {
     CHECKOUT_FRAUD_BEFORE_PLACE: 'sfcc.checkout.fraud.beforePlace',
     CHECKOUT_PAYMENTS_BEFORE_PLACE_ORDER: 'sfcc.checkout.payments.beforePlaceOrder',
     CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER: 'sfcc.checkout.payments.afterPlaceOrder',
+    CHECKOUT_PAYMENTS_ON_REDIRECT_RETURN: 'sfcc.checkout.payments.onRedirectReturn',
+    CHECKOUT_PAYMENTS_ON_WEBHOOK: 'sfcc.checkout.payments.onWebhook',
+    CHECKOUT_PAYMENTS_ON_EXPRESS_COMPLETE: 'sfcc.checkout.payments.onExpressComplete',
+    CHECKOUT_PAYMENTS_ON_ORDER_FAILURE: 'sfcc.checkout.payments.onOrderFailure',
 } as const;
 
 export type ActionHookId = (typeof ACTION_HOOK_IDS)[keyof typeof ACTION_HOOK_IDS];

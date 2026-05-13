@@ -289,6 +289,20 @@ function OrderConfirmationContent({
                             </div>
                         </div>
 
+                        {order.paymentStatus === 'not_paid' && !order.paymentInstruments?.length && (
+                            <div className="rounded border border-border bg-muted p-4">
+                                <Typography variant="p" className="font-medium text-foreground">
+                                    {t('confirmation.paymentPending.title', { defaultValue: 'Payment Pending' })}
+                                </Typography>
+                                <Typography variant="p" className="text-muted-foreground text-sm mt-1">
+                                    {t('confirmation.paymentPending.description', {
+                                        defaultValue:
+                                            'Your order has been placed. We will confirm it once your payment is received. You will receive an email notification when your payment is processed.',
+                                    })}
+                                </Typography>
+                            </div>
+                        )}
+
                         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                             <Typography variant="p" className="text-foreground font-medium">
                                 {t('confirmation.hero.needHelp')}

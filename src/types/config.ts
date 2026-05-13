@@ -250,6 +250,33 @@ export type AppConfig = {
             forwardedHost: string;
         };
     };
+    payment?: {
+        /**
+         * Master switch for the payment integration framework.
+         *
+         * When `false` (default), framework-specific routes return 404 and
+         * `framework_paymentFlowType` form fields are ignored by `place-order`.
+         * The built-in inline payment flow (template's own card form) runs unchanged.
+         *
+         * When `true`, the framework activates: payment extensions can register hooks,
+         * the redirect/express/webhook routes are live, and `framework_paymentFlowType`
+         * formData triggers the extension-active code path on `place-order`.
+         *
+         * Why a config flag (instead of auto-detection from registered extensions):
+         * the action-hook system exposes `runHook(hookId)` but no introspection API for
+         * "is any handler registered for this hookId?". To auto-detect, the framework
+         * would need the SDK to scan target-config.json files at build time and emit a
+         * registry. An explicit opt-in flag is a smaller, clearer alternative: merchants
+         * flip it on after installing a payment extension, and framework code paths
+         * short-circuit until they do.
+         *
+         * Set this to `true` only after a payment extension is installed and configured;
+         * otherwise framework-active state is reachable from a hand-crafted form POST and
+         * the framework will reject it with a 500 (no instrument attached after hook),
+         * which is benign but not a state operators want to see in production logs.
+         */
+        frameworkEnabled?: boolean;
+    };
     performance: {
         caching: {
             apiCacheTtl: number;

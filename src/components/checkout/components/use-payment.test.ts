@@ -549,13 +549,15 @@ describe('usePayment hook', () => {
         test('populates formDataGetter that returns complete payment data', () => {
             const submissionRef: MutableRefObject<{
                 formDataGetter: (() => unknown) | null;
-                shouldPlaceOrderAfterPayment: boolean;
+                onPaymentSubmit: (() => void) | null;
+                onPaymentSuccess: (() => void) | null;
                 options: null;
                 setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
             }> = {
                 current: {
                     formDataGetter: null,
-                    shouldPlaceOrderAfterPayment: false,
+                    onPaymentSubmit: null,
+                    onPaymentSuccess: null,
                     options: null,
                     setFormErrors: null,
                 },
@@ -583,13 +585,15 @@ describe('usePayment hook', () => {
         test('setFormErrors propagates errors to form state', () => {
             const submissionRef: MutableRefObject<{
                 formDataGetter: (() => unknown) | null;
-                shouldPlaceOrderAfterPayment: boolean;
+                onPaymentSubmit: (() => void) | null;
+                onPaymentSuccess: (() => void) | null;
                 options: null;
                 setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
             }> = {
                 current: {
                     formDataGetter: null,
-                    shouldPlaceOrderAfterPayment: false,
+                    onPaymentSubmit: null,
+                    onPaymentSuccess: null,
                     options: null,
                     setFormErrors: null,
                 },
@@ -616,13 +620,15 @@ describe('usePayment hook', () => {
         test('cleans up ref callbacks on unmount', () => {
             const submissionRef: MutableRefObject<{
                 formDataGetter: (() => unknown) | null;
-                shouldPlaceOrderAfterPayment: boolean;
+                onPaymentSubmit: (() => void) | null;
+                onPaymentSuccess: (() => void) | null;
                 options: null;
                 setFormErrors: ((errors: Record<string, { type: string; message: string }>) => void) | null;
             }> = {
                 current: {
                     formDataGetter: null,
-                    shouldPlaceOrderAfterPayment: false,
+                    onPaymentSubmit: null,
+                    onPaymentSuccess: null,
                     options: null,
                     setFormErrors: null,
                 },

@@ -316,6 +316,9 @@ vi.mock('react-router', async () => {
             Form: ({ children, ...props }: MockFormProps) => <form {...props}>{children}</form>,
         }),
         Form: ({ children, ...props }: MockFormProps) => <form {...props}>{children}</form>,
+        // useSearchParams without a Router context throws; provide a minimal stub. Tests
+        // that need to drive the ?error= toast effect should override this per-test.
+        useSearchParams: () => [new URLSearchParams(), vi.fn()],
     };
 });
 

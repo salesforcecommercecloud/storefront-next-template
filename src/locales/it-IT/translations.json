@@ -285,6 +285,14 @@
             "missingCallbackToken": "Intestazione x-slas-callback-token mancante.",
             "missingRequiredFields": "Campi obbligatori mancanti: email_id e token."
         },
+        "payment": {
+            "payment_expired": "La sessione di pagamento è scaduta. Riprovi.",
+            "payment_invalid": "Non è stato possibile verificare la risposta del pagamento. Riprovi.",
+            "basket_changed": "Il carrello è cambiato durante il checkout. Verifichi l'ordine e riprovi.",
+            "payment_failed": "Il pagamento non è stato approvato. Provi un altro metodo di pagamento.",
+            "order_failed": "Non è stato possibile completare l'ordine. Riprovi o contatti il supporto.",
+            "unexpected": "Si è verificato un problema con il pagamento. Riprovi."
+        },
         "jwks": {
             "missingEnvironmentVariables": "Configurazione richiesta mancante: shortCode e organizationId.",
             "invalidResponse": "Risposta JWKS non valida: array di chiavi mancanti o non valido.",

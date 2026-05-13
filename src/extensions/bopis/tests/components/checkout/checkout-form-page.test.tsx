@@ -279,6 +279,9 @@ vi.mock('react-router', async () => {
             Form: ({ children, ...props }: MockFormProps) => <form {...props}>{children}</form>,
         }),
         Form: ({ children, ...props }: MockFormProps) => <form {...props}>{children}</form>,
+        // useSearchParams without a Router context throws; provide a minimal stub for tests
+        // that render CheckoutFormPage directly (it consumes ?error= query params via this hook).
+        useSearchParams: () => [new URLSearchParams(), vi.fn()],
     };
 });
 

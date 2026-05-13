@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { redirect } from 'react-router';
 import type { Route } from './+types/action.place-order';
-import { getBasket, updateBasketResource, destroyBasket } from '@/middlewares/basket.server';
+import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import {
@@ -36,11 +35,13 @@ import type { CustomerProfile } from '@/components/checkout/utils/checkout-conte
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
-import { buildUrlFromContext } from '@/lib/url.server';
 // @sfdc-extension-line SFDC_EXT_MULTISHIP
 import { resolveEmptyShipments } from '@/extensions/multiship/lib/api/basket.server';
 import { getLogger } from '@/lib/logger.server';
 import { ACTION_HOOK_IDS, runHookSafe } from '@/targets/action-hook.server';
+import { PAYMENT_FRAMEWORK_FIELDS } from '@/lib/payment-gateway.types';
+import { finalizeOrderSuccess } from '@/lib/payment/post-order.server';
+import { isPaymentFrameworkEnabled } from '@/lib/payment/framework-enabled.server';
 
 const normalizeAddressField = (value: string | undefined) => (value ?? '').trim().toLowerCase();
 
@@ -99,11 +100,11 @@ async function retryProfileSave(
 ): Promise<void> {
     const ok = await fn();
     if (ok) return;
-    logger.warn(`PlaceOrder: ${label} failed, retrying once`);
+    logger.warn(`[Payment] place-order: ${label} failed, retrying once`);
     await new Promise((r) => setTimeout(r, PROFILE_SAVE_RETRY_DELAY_MS));
     const retried = await fn();
     if (!retried) {
-        logger.error(`PlaceOrder: ${label} failed after retry`);
+        logger.error(`[Payment] place-order: ${label} failed after retry`);
     }
 }
 
@@ -168,11 +169,12 @@ export async function action({ request, context }: Route.ActionArgs) {
         const checkoutRegistrationIntent = formData.get('checkoutRegistrationIntent') === 'true';
         const savePaymentToProfile = formData.get('savePaymentToProfile') === 'true';
         const useDifferentBilling = formData.get('useDifferentBilling') === 'true';
+        const creditCardToken = formData.get(PAYMENT_FRAMEWORK_FIELDS.CREDIT_CARD_TOKEN)?.toString() || undefined;
 
         // Get current basket
         const basketResource = await getBasket(context);
         const basket = basketResource.current;
-        logger.debug('PlaceOrder: starting', { basketId: basket?.basketId });
+        logger.debug('[Payment] place-order: starting', { basketId: basket?.basketId });
 
         if (!basket || !basket.basketId) {
             return Response.json(
@@ -250,7 +252,16 @@ export async function action({ request, context }: Route.ActionArgs) {
             }
         }
 
-        if (!basket.paymentInstruments?.[0]) {
+        // When an external payment gateway extension is handling payment, it adds the
+        // instrument in the beforePlaceOrder hook (which runs later). Skip the built-in
+        // payment instrument check so we don't fail early.
+        // Gated on the framework-enabled flag so a hand-crafted POST with this field cannot
+        // trigger framework code paths on a deployment that hasn't installed any payment
+        // extension. See lib/payment/framework-enabled.server.ts.
+        const externalPaymentGatewayActive =
+            isPaymentFrameworkEnabled() && formData.has(PAYMENT_FRAMEWORK_FIELDS.PAYMENT_FLOW_TYPE);
+
+        if (!basket.paymentInstruments?.[0] && !externalPaymentGatewayActive) {
             // Check if this is a returning customer with saved payment methods
             const auth = getAuth(context);
             const customerId = auth.customerId;
@@ -372,7 +383,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         // Get the updated basket after potential payment application
         const updatedBasket = (await getBasket(context)).current;
 
-        if (!updatedBasket?.billingAddress) {
+        if (!updatedBasket?.billingAddress && !externalPaymentGatewayActive) {
             return Response.json(
                 {
                     success: false,
@@ -380,6 +391,17 @@ export async function action({ request, context }: Route.ActionArgs) {
                         code: ErrorCode.REQUIRED_FIELD,
                         message: 'Billing address is required',
                     }),
+                    step: 'placeOrder',
+                },
+                { status: 400 }
+            );
+        }
+
+        if (!updatedBasket) {
+            return Response.json(
+                {
+                    success: false,
+                    error: createActionError({ code: ErrorCode.NOT_FOUND, message: 'Basket not found' }),
                     step: 'placeOrder',
                 },
                 { status: 400 }
@@ -402,6 +424,9 @@ export async function action({ request, context }: Route.ActionArgs) {
             );
         }
 
+        // Race window: another tab could mutate the basket between calculateBasket and
+        // createOrder below. SCAPI's createOrder is the authoritative validator and rejects
+        // on drift; we accept the narrow window because the SCAPI write path catches it.
         const calculatedBasket = await calculateBasket(context, updatedBasket.basketId, currency);
 
         // Update local basket state with calculated totals
@@ -418,24 +443,75 @@ export async function action({ request, context }: Route.ActionArgs) {
         if (fraudHookResult.errorResponse) return fraudHookResult.errorResponse;
 
         // Extension hook: payment processing before order creation (blocking — e.g. authorization)
+        // formData is included so payment extensions can read provider-specific fields
+        // (e.g. provider-issued tokens passed via extraFormData from the client)
         const paymentHookResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_BEFORE_PLACE_ORDER,
-            context: { data: { basket: calculatedBasket }, actionContext: context },
+            context: { data: { basket: calculatedBasket, formData }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
             blocking: true,
         });
         if (paymentHookResult.errorResponse) return paymentHookResult.errorResponse;
 
+        // Post-hook contract check: when an extension is active, beforePlaceOrder is
+        // expected to attach a payment instrument to the basket. Without this guard, a
+        // missing instrument leads to an opaque SCAPI error from createOrder.
+        if (externalPaymentGatewayActive) {
+            const postHookBasket = (await getBasket(context)).current;
+            if (!postHookBasket?.paymentInstruments?.length) {
+                logger.error(
+                    '[Payment] place-order: extension active but no payment instrument attached after beforePlaceOrder hook',
+                    { basketId: calculatedBasket.basketId }
+                );
+                return Response.json(
+                    {
+                        success: false,
+                        error: createActionError({
+                            code: ErrorCode.OPERATION_FAILED,
+                            message: 'Payment extension did not attach a payment instrument',
+                        }),
+                        step: 'placeOrder',
+                    },
+                    { status: 500 }
+                );
+            }
+        }
+
         const clients = createApiClients(context);
 
-        const { data: order } = await clients.shopperOrders.createOrder({
-            params: {},
-            body: { basketId: calculatedBasket.basketId },
-        });
+        let order;
+        try {
+            const result = await clients.shopperOrders.createOrder({
+                params: {},
+                body: { basketId: calculatedBasket.basketId },
+            });
+            order = result.data;
+        } catch (orderError) {
+            // Recovery hook: let payment extensions void/refund orphaned authorizations
+            // when order creation fails after payment was already confirmed.
+            if (externalPaymentGatewayActive) {
+                const failureHookResult = await runHookSafe({
+                    hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_ON_ORDER_FAILURE,
+                    context: {
+                        data: { basket: calculatedBasket, formData, error: orderError },
+                        actionContext: context,
+                    },
+                    logger,
+                    fallbackStep: 'placeOrder',
+                });
+                if (failureHookResult.errorResponse) {
+                    logger.error(
+                        '[Payment] place-order: onOrderFailure hook itself failed — orphaned authorization possible, requires manual reconciliation',
+                        { basketId: calculatedBasket.basketId }
+                    );
+                }
+            }
+            throw orderError;
+        }
 
         if (!order || !order.orderNo) {
-            logger.error('PlaceOrder: empty order response', { basketId: calculatedBasket.basketId });
+            logger.error('[Payment] place-order: empty order response', { basketId: calculatedBasket.basketId });
             return Response.json(
                 {
                     success: false,
@@ -450,23 +526,26 @@ export async function action({ request, context }: Route.ActionArgs) {
         }
 
         const orderNo = order.orderNo;
-        logger.info('PlaceOrder: order created', { orderNo, basketId: calculatedBasket.basketId });
+        logger.info('[Payment] place-order: order created', { orderNo, basketId: calculatedBasket.basketId });
 
         // Extension hook: post-processing after order creation (e.g. capture, fulfillment triggers).
         // Order is already placed — never abort the action. Log at warn level with order
         // details so post-order failures (e.g. failed capture) are surfaced in monitoring.
         const afterPlaceResult = await runHookSafe({
             hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
-            context: { data: { order, basket: calculatedBasket }, actionContext: context },
+            context: { data: { order, basket: calculatedBasket, formData }, actionContext: context },
             logger,
             fallbackStep: 'placeOrder',
         });
         if (afterPlaceResult.errorResponse) {
-            logger.warn('PlaceOrder: afterPlaceOrder hook failed — order already placed, requires manual review', {
-                hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
-                orderNo: order.orderNo,
-                basketId: calculatedBasket.basketId,
-            });
+            logger.warn(
+                '[Payment] place-order: afterPlaceOrder hook failed — order already placed, requires manual review',
+                {
+                    hookId: ACTION_HOOK_IDS.CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER,
+                    orderNo: order.orderNo,
+                    basketId: calculatedBasket.basketId,
+                }
+            );
         }
 
         // Registration-at-checkout: requires both create-account intent AND active registration session (client flag).
@@ -508,7 +587,7 @@ export async function action({ request, context }: Route.ActionArgs) {
                     };
                 }
             } catch (error) {
-                logger.error('PlaceOrder: failed to load customer profile for post-order saves', { error });
+                logger.error('[Payment] place-order: failed to load customer profile for post-order saves', { error });
             }
 
             // Detect newly registered shoppers whose profile is still empty (in case they exit checkout without saving)
@@ -530,7 +609,8 @@ export async function action({ request, context }: Route.ActionArgs) {
                     if (!orderPaymentMatchesSavedProfile(instrument, profileSnapshot ?? undefined)) {
                         savePromises.push(
                             retryProfileSave(
-                                () => savePaymentMethodToCustomerViaOrder(context, orderNo, instrument),
+                                () =>
+                                    savePaymentMethodToCustomerViaOrder(context, orderNo, instrument, creditCardToken),
                                 'payment method save',
                                 logger
                             )
@@ -591,9 +671,10 @@ export async function action({ request, context }: Route.ActionArgs) {
                     savePaymentMethodToCustomerViaOrder(
                         context,
                         orderNo,
-                        order.paymentInstruments[0] as PaymentInstrumentForSave
+                        order.paymentInstruments[0] as PaymentInstrumentForSave,
+                        creditCardToken
                     ).catch((error) => {
-                        logger.error('PlaceOrder: failed to save payment method', { error });
+                        logger.error('[Payment] place-order: failed to save payment method', { error });
                     })
                 );
             }
@@ -604,27 +685,18 @@ export async function action({ request, context }: Route.ActionArgs) {
             }
         }
 
-        // Clear the basket from local cache and storage after successful order placement
-        // This follows the PWA Kit pattern - destroy locally, let Commerce Cloud handle server-side lifecycle
-        // The basket is auto-converted to an order, no explicit deletion needed
-        destroyBasket(context);
-
-        // Redirect to order confirmation page on success
-        // Include account creation and auto-login status as query parameters if account was created
-        let orderConfirmationUrl = buildUrlFromContext(`/order-confirmation/${order.orderNo}`, context);
-
-        if (registeredViaCheckout && order.customerInfo?.email) {
-            // User registered during checkout - include this in query params for order confirmation
-            const params = new URLSearchParams({
-                accountCreated: 'true',
-                email: order.customerInfo.email,
-                autoLoggedIn: 'true',
-            });
-
-            orderConfirmationUrl += `?${params.toString()}`;
-        }
-
-        return redirect(orderConfirmationUrl);
+        // Centralized post-success teardown: destroys local basket + redirects to order
+        // confirmation. Shared with redirect-finalize and express-complete so the cleanup
+        // contract has a single source of truth.
+        const queryParams =
+            registeredViaCheckout && order.customerInfo?.email
+                ? {
+                      accountCreated: 'true',
+                      email: order.customerInfo.email,
+                      autoLoggedIn: 'true',
+                  }
+                : undefined;
+        return finalizeOrderSuccess({ context, orderNo: order.orderNo, queryParams });
     } catch (error) {
         return Response.json(
             {
