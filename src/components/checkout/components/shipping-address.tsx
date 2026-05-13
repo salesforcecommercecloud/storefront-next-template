@@ -259,32 +259,32 @@ export default function ShippingAddress({
 
     const stepTitle =
         hasSavedAddresses && isEditing ? (
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between w-full gap-4">
                 <span className="text-2xl font-bold tracking-tight text-card-foreground">
                     {t('shippingAddress.title')}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-36 font-medium text-secondary-foreground sm:w-auto"
+                        onClick={() => setAddressModalOpen(true)}
+                        aria-label={t('shippingAddress.addNewAddressButton')}>
+                        {t('shippingAddress.addNewAddressButton')}
+                    </Button>
                     {/* @sfdc-extension-block-start SFDC_EXT_MULTISHIP */}
                     {enableMultiAddress && (
                         <Button
                             type="button"
                             variant="link"
                             size="sm"
-                            className="cursor-pointer text-xs font-normal leading-normal h-auto"
+                            className="h-auto w-36 cursor-pointer justify-start whitespace-normal px-0 text-left text-xs font-medium leading-normal sm:w-auto sm:justify-center"
                             onClick={handleToggleShippingAddressMode}>
                             {tMultiship('checkout.deliverToMultipleAddresses')}
                         </Button>
                     )}
                     {/* @sfdc-extension-block-end SFDC_EXT_MULTISHIP */}
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="font-medium text-secondary-foreground"
-                        onClick={() => setAddressModalOpen(true)}
-                        aria-label={t('shippingAddress.addNewAddressButton')}>
-                        {t('shippingAddress.addNewAddressButton')}
-                    </Button>
                 </div>
             </div>
         ) : (

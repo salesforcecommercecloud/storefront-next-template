@@ -16,6 +16,7 @@
 
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getCardIcon } from '@/lib/payment/card-icon-utils';
@@ -61,9 +62,11 @@ export function PaymentMethodCard({ paymentMethod, onRemove, onSetDefault }: Pay
                             {displayName} **** {paymentMethod.last4}
                         </span>
                         {paymentMethod.isDefault && (
-                            <span className="px-2 py-0.5 bg-muted border border-border text-primary text-xs font-semibold rounded">
+                            <Badge
+                                variant="secondary"
+                                className="text-xs font-normal bg-primary/10 text-primary rounded-none">
                                 {t('paymentMethods.default')}
-                            </span>
+                            </Badge>
                         )}
                     </div>
 

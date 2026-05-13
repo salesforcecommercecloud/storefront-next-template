@@ -344,29 +344,30 @@ export default function ShippingMultiAddress({
     };
 
     const stepTitle = isEditing ? (
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full gap-4">
             <span className="text-2xl font-bold tracking-tight text-card-foreground">
                 {tMultiship('checkout.shippingMultiAddressTitle')}
             </span>
-            <div className="flex items-center gap-2">
-                <Button
-                    type="button"
-                    variant="link"
-                    size="sm"
-                    className="cursor-pointer text-xs font-normal leading-normal h-auto"
-                    onClick={handleToggleShippingAddressModeToSingleAddress}>
-                    {tMultiship('checkout.shipItemsToOneAddress')}
-                </Button>
+            <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="text-xs font-normal"
+                    className="w-36 font-medium text-secondary-foreground sm:w-auto"
                     onClick={() => {
                         setCurrentItemId(undefined);
                         setAddAddressDialogOpen(true);
-                    }}>
+                    }}
+                    aria-label={tMultiship('checkout.addNewAddress')}>
                     {tMultiship('checkout.addNewAddress')}
+                </Button>
+                <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="h-auto w-36 cursor-pointer justify-start whitespace-normal px-0 text-left text-xs font-medium leading-normal sm:w-auto sm:justify-center"
+                    onClick={handleToggleShippingAddressModeToSingleAddress}>
+                    {tMultiship('checkout.shipItemsToOneAddress')}
                 </Button>
             </div>
         </div>

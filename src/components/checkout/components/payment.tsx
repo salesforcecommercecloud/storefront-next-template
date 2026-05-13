@@ -180,7 +180,9 @@ export default function Payment({
                                                                             {cardTypeLabel}
                                                                         </span>
                                                                         {method.preferred && (
-                                                                            <Badge variant="info">
+                                                                            <Badge
+                                                                                variant="secondary"
+                                                                                className="text-xs font-normal bg-primary/10 text-primary rounded-none">
                                                                                 {t('payment.defaultBadge')}
                                                                             </Badge>
                                                                         )}
@@ -456,7 +458,7 @@ export default function Payment({
                                     </p>
                                     {hasSummaryExpiry && (
                                         <p className="text-sm font-normal leading-5 text-foreground">
-                                            {`Expires ${summaryExpiryMonth}/${summaryExpiryYear}`}
+                                            {`Expires ${summaryExpiryMonth}/${summaryExpiryYear.slice(-2)}`}
                                         </p>
                                     )}
                                     {!useDifferentBilling ||
@@ -467,9 +469,9 @@ export default function Payment({
                                         </p>
                                     ) : (
                                         <div className="text-sm font-normal leading-5 text-foreground">
-                                            <p>{`Billing: ${formatAddress(billingAddress).nameLine}`}</p>
-                                            <p>{formatAddress(billingAddress).streetLine}</p>
-                                            <p>{formatAddress(billingAddress).cityLine}</p>
+                                            <p>Billing:</p>
+                                            <p>{formatAddress(billingAddress).nameLine}</p>
+                                            <p>{formatAddress(billingAddress).addressLine}</p>
                                         </div>
                                     )}
                                 </>

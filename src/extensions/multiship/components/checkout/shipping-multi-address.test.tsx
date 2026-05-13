@@ -640,7 +640,7 @@ describe('ShippingMultiAddress', () => {
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
             // One "Add New Address" button in the header, not one per item
-            expect(screen.getByRole('button', { name: 'Add New Address' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Add new address' })).toBeInTheDocument();
         });
 
         test('opens AddressModal when "Add New Address" header button is clicked', async () => {
@@ -670,7 +670,7 @@ describe('ShippingMultiAddress', () => {
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            await user.click(screen.getByRole('button', { name: 'Add New Address' }));
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             // Dialog should be open
             expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
@@ -712,7 +712,7 @@ describe('ShippingMultiAddress', () => {
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
             // Open dialog from header
-            await user.click(screen.getByRole('button', { name: 'Add New Address' }));
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             // Fill out the form
             await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Home');
@@ -774,7 +774,7 @@ describe('ShippingMultiAddress', () => {
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            await user.click(screen.getByRole('button', { name: 'Add New Address' }));
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             await user.type(screen.getByPlaceholderText(/e\.g\., Home, Work/i), 'Shared');
             await user.type(screen.getByPlaceholderText(/first name/i), 'Shared');
@@ -829,7 +829,7 @@ describe('ShippingMultiAddress', () => {
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            await user.click(screen.getByRole('button', { name: 'Add New Address' }));
+            await user.click(screen.getByRole('button', { name: 'Add new address' }));
 
             // addressId field should NOT be visible
             expect(screen.queryByPlaceholderText(/e\.g\., Home, Work/i)).not.toBeInTheDocument();
@@ -876,7 +876,7 @@ describe('ShippingMultiAddress', () => {
 
             render(<ShippingMultiAddress {...createDefaultProps()} />, { wrapper });
 
-            const addAddressButton = screen.getByRole('button', { name: 'Add New Address' });
+            const addAddressButton = screen.getByRole('button', { name: 'Add new address' });
             await user.click(addAddressButton);
 
             await user.type(screen.getByPlaceholderText(/first name/i), 'Test');

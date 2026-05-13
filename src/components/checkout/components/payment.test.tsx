@@ -780,7 +780,7 @@ describe('Payment Integration Tests', () => {
             render(<Payment {...createDefaultProps({ isCompleted: true, isEditing: false })} />);
 
             expect(screen.getByText(/1234/)).toBeInTheDocument();
-            expect(screen.getByText(/12\/2027/)).toBeInTheDocument();
+            expect(screen.getByText(/12\/27/)).toBeInTheDocument();
             expect(screen.getByText(/billing.*same as shipping/i)).toBeInTheDocument();
         });
 
