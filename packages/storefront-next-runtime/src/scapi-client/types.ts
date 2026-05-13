@@ -15,6 +15,14 @@
  */
 
 /* eslint-disable @typescript-eslint/no-namespace, import/no-namespace */
+// Shopper Availability
+import type * as ShopperAvailabilityTypes from './generated/shopper-availability-v1';
+export namespace ShopperAvailability {
+    export type endpoints = ShopperAvailabilityTypes.paths;
+    export type schemas = ShopperAvailabilityTypes.components['schemas'];
+    export type operations = ShopperAvailabilityTypes.operations;
+}
+
 // Shopper Baskets V1
 import type * as ShopperBasketsV1Types from './generated/shopper-baskets-v1';
 export namespace ShopperBasketsV1 {

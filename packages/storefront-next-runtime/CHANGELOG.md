@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Add Shopper Availability v1.1.0 SCAPI client (`clients.shopperAvailability`) for retrieving product inventory availability without loading full product details ([#1671](https://github.com/commerce-emu/storefront-next/pull/1671))
 - Update Shopper Login/Auth OAS to 1.48.0 and Shopper Customers OAS to 1.8.0 [#1623](https://github.com/commerce-emu/storefront-next/pull/1623)
 - Exclude OTP endpoints from auth token invalidation — 401 responses from `/oauth2/otp/` now surface as normal API errors instead of triggering `AuthTokenInvalidError` ([#1409](https://github.com/commerce-emu/storefront-next/pull/1409))
 - Update shopper-customers OAS from v1.3.2 to v1.8.0 and replace shopper-login OAS v1.42.2 with auth OAS v1.47.0 (@W-21451728) ([#1475](https://github.com/commerce-emu/storefront-next/pull/1475))

@@ -1,4 +1,8 @@
 apis:
+  shopper-availability-v1:
+    root: ./shopper-availability-oas-1.1.0/shopper-availability-oas-v1-public.yaml
+    x-openapi-ts:
+      output: ../src/scapi-client/generated/shopper-availability-v1.ts
   shopper-baskets-v1:
     root: ./shopper-baskets-oas-1.9.4/shopper-baskets-oas-v1-public.yaml
     x-openapi-ts:

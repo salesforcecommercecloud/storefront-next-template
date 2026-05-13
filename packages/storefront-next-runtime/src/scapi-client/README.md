@@ -694,6 +694,7 @@ clients.shopperBaskets.use((req, options) => {
 ### Available Clients
 
 ```typescript
+clients.shopperAvailability  // Product availability/inventory
 clients.shopperBasketsV1     // Basket operations (v1)
 clients.shopperBasketsV2     // Basket operations (v2)
 clients.shopperConsents      // Consent management

@@ -15,6 +15,7 @@
  */
 import createBaseClient, { type Middleware, type ClientOptions, type Client } from 'openapi-fetch';
 import type {
+    ShopperAvailability,
     ShopperBasketsV1,
     ShopperBasketsV2,
     ShopperConfigurations,
@@ -74,6 +75,7 @@ export interface CommerceApiClientConfig extends ClientOptions {
 }
 
 // Import operation maps for all APIs
+import { operations as shopperAvailabilityOps } from './generated/shopper-availability-v1.operations';
 import { operations as shopperBasketsV1Ops } from './generated/shopper-baskets-v1.operations';
 import { operations as shopperBasketsV2Ops } from './generated/shopper-baskets-v2.operations';
 import { operations as shopperConfigurationsOps } from './generated/shopper-configurations-v1.operations';
@@ -93,6 +95,7 @@ import { operations as shopperSeoOps } from './generated/shopper-seo-v1.operatio
 import { operations as shopperStoresOps } from './generated/shopper-stores-v1.operations';
 
 export type Clients = {
+    shopperAvailability: ProxyClient<Client<ShopperAvailability.endpoints>, typeof shopperAvailabilityOps>;
     shopperBasketsV1: ProxyClient<Client<ShopperBasketsV1.endpoints>, typeof shopperBasketsV1Ops>;
     shopperBasketsV2: ProxyClient<Client<ShopperBasketsV2.endpoints>, typeof shopperBasketsV2Ops>;
     shopperConfigurations: ProxyClient<Client<ShopperConfigurations.endpoints>, typeof shopperConfigurationsOps>;
@@ -171,6 +174,15 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
     };
 
     // Create base clients and wrap with proxy for operation methods
+    const shopperAvailability = createClient(
+        createBaseClient<ShopperAvailability.endpoints>({
+            baseUrl: `${baseUrl}/product/shopper-availability/v1`,
+            ...clientOptions,
+        }),
+        shopperAvailabilityOps,
+        globalParamsWithoutLocale, // API does not accept locale parameter
+        createClientOptions
+    );
     const shopperBasketsV1 = createClient(
         createBaseClient<ShopperBasketsV1.endpoints>({
             baseUrl: `${baseUrl}/checkout/shopper-baskets/v1`,
@@ -317,6 +329,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
     );
 
     const allClients = [
+        shopperAvailability,
         shopperBasketsV1,
         shopperBasketsV2,
         shopperConfigurations,
@@ -373,6 +386,7 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
     const basket = createBasketHelpers({ shopperBasketsClient: shopperBasketsV2 });
 
     return {
+        shopperAvailability,
         shopperBasketsV1,
         shopperBasketsV2,
         shopperConfigurations,

@@ -91,6 +91,7 @@ describe('createCommerceApiClients', () => {
         it('should create all required client instances', () => {
             const clients = createCommerceApiClients(defaultConfig);
 
+            expect(clients.shopperAvailability).toBeDefined();
             expect(clients.shopperBasketsV1).toBeDefined();
             expect(clients.shopperBasketsV2).toBeDefined();
             expect(clients.shopperConsents).toBeDefined();
@@ -151,6 +152,7 @@ describe('createCommerceApiClients', () => {
             const clients = createCommerceApiClients(defaultConfig);
 
             // Spy on each client's use method
+            const availabilitySpy = vi.spyOn(clients.shopperAvailability, 'use');
             const basketsV1Spy = vi.spyOn(clients.shopperBasketsV1, 'use');
             const basketsV2Spy = vi.spyOn(clients.shopperBasketsV2, 'use');
             const consentsSpy = vi.spyOn(clients.shopperConsents, 'use');
@@ -173,6 +175,7 @@ describe('createCommerceApiClients', () => {
             clients.use(middleware);
 
             // Verify that use was called on all clients
+            expect(availabilitySpy).toHaveBeenCalledWith(middleware);
             expect(basketsV1Spy).toHaveBeenCalledWith(middleware);
             expect(basketsV2Spy).toHaveBeenCalledWith(middleware);
             expect(consentsSpy).toHaveBeenCalledWith(middleware);
@@ -210,6 +213,7 @@ describe('createCommerceApiClients', () => {
             const clients: Clients = createCommerceApiClients(defaultConfig);
 
             // Type checking - these should compile without errors
+            expect(clients.shopperAvailability).toBeDefined();
             expect(clients.shopperBasketsV1).toBeDefined();
             expect(clients.shopperBasketsV2).toBeDefined();
             expect(clients.shopperConsents).toBeDefined();
