@@ -48,4 +48,9 @@ describe('baseConfigPlugin', () => {
         const config = invokeConfigHook(baseConfigPlugin());
         expect(config.optimizeDeps?.include).toEqual(['react-router', 'react-router/internal/react-server-client']);
     });
+
+    it('forces the SDK through Vite SSR transform via ssr.noExternal to keep module identity stable in dev', () => {
+        const config = invokeConfigHook(baseConfigPlugin());
+        expect(config.ssr?.noExternal).toEqual(['@salesforce/storefront-next-runtime']);
+    });
 });

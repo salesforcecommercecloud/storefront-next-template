@@ -1855,11 +1855,27 @@ function i18nPlugin(config) {
 * than in the template's vite.config.ts or in a new single-purpose plugin.
 *
 * Current defaults:
-* - `resolve.dedupe`: prevents duplicate React / React Router copies.
-*   Duplicate React instances cause hooks to throw "Invalid hook call".
+* - `resolve.dedupe`: prevents duplicate React / React Router copies on the
+*   client. Duplicate React instances cause hooks to throw "Invalid hook call".
 * - `optimizeDeps.include`: forces Vite's dep optimizer to pre-bundle
 *   `react-router` and its `/internal/react-server-client` entry so the
-*   React Router dev plugin resolves a single shared instance.
+*   React Router dev plugin resolves a single shared instance on the client.
+* - `ssr.noExternal`: forces the SDK through Vite's SSR transform pipeline
+*   in dev. The SDK exports module-level singletons (router contexts, etc.)
+*   whose object identity is load-bearing — they're used as `Map` keys, so
+*   reads and writes must reference the same object. In dev SSR, Vite can
+*   externalize a package for some import sites (loaded by Node's native
+*   ESM resolver) while transforming it for others (loaded by Vite's SSR
+*   transform pipeline), producing two distinct module records for the
+*   same file on disk. When that happens, the singletons are constructed
+*   twice and the keys no longer match — context lookups silently return
+*   the default value. `noExternal` collapses both paths into Vite's
+*   transform cache so there is exactly one module record. Production
+*   builds inline the SDK into the SSR bundle and are unaffected. We
+*   don't blanket-`noExternal` every dependency because most third-party
+*   packages are identity-agnostic (two copies work fine) and externalizing
+*   keeps dev startup fast — only packages exporting identity-sensitive
+*   singletons need this treatment.
 *
 * @returns {Plugin} A Vite plugin contributing the framework's base config.
 */
@@ -1872,7 +1888,8 @@ const baseConfigPlugin = () => ({
 				"react-dom",
 				"react-router"
 			] },
-			optimizeDeps: { include: ["react-router", "react-router/internal/react-server-client"] }
+			optimizeDeps: { include: ["react-router", "react-router/internal/react-server-client"] },
+			ssr: { noExternal: ["@salesforce/storefront-next-runtime"] }
 		};
 	}
 });
