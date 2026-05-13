@@ -23,7 +23,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { AddressFormFields } from '../index';
-import { createShippingAddressSchema } from '@/lib/checkout/schemas';
+import { createShippingAddressSchema, type ShippingAddressData } from '@/lib/checkout/schemas';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 /**
@@ -33,19 +33,6 @@ import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
  */
 
 // Form data interfaces
-interface ShippingFormData {
-    firstName: string;
-    lastName: string;
-    address1: string;
-    address2?: string;
-    city: string;
-    stateCode: string;
-    postalCode: string;
-    countryCode?: string;
-    phoneCountryCode?: string;
-    phone?: string;
-}
-
 interface BillingFormData {
     billingFirstName: string;
     billingLastName: string;
@@ -124,12 +111,12 @@ function ShippingAddressFormWrapper({
     autoFocus = false,
     className,
 }: {
-    defaultValues?: Partial<ShippingFormData>;
+    defaultValues?: Partial<ShippingAddressData>;
     showPhone?: boolean;
     autoFocus?: boolean;
     className?: string;
 }) {
-    const form = useForm<ShippingFormData>({
+    const form = useForm<ShippingAddressData>({
         defaultValues: {
             firstName: '',
             lastName: '',
@@ -162,7 +149,7 @@ function ShippingAddressFormWrapper({
 function ShippingAddressFormWrapperWithValidation() {
     const { t } = getTranslation();
     const schema = createShippingAddressSchema(t);
-    const form = useForm<ShippingFormData>({
+    const form = useForm<ShippingAddressData>({
         resolver: zodResolver(schema),
         defaultValues: {
             firstName: '',
