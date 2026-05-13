@@ -180,10 +180,10 @@ All four files import from there. This matches the existing pattern for `checkou
 | 2 | Stories represent valid, meaningful states | ⬜ Remove/fix redundant stories |
 | 3 | Interaction tests reflect real user flows | ⬜ Fix play functions (main scope) |
 | 4 | Snapshot DOM correct | ⬜ Verify after interaction fixes |
-| 5 | A11y violations resolved | ⬜ Run `pnpm test-storybook:a11y:agent` locally |
+| 5 | A11y violations resolved | ⬜ Run `pnpm storybook:test --type=a11y` locally |
 | 6 | Controls/args match public API | ✅ Done in PR #1531 |
 | 7 | Responsive variants accurate | ⬜ Fix DesktopView inconsistency in payment |
-| 8 | Interaction tests pass locally | ⬜ Run `pnpm test-storybook:interaction:agent` |
+| 8 | Interaction tests pass locally | ⬜ Run `pnpm storybook:test --type=interaction` |
 | 9 | Clean naming, no dead code | ⬜ Remove commented decorators, redundant stories |
 
 ---

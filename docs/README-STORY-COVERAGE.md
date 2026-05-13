@@ -18,7 +18,7 @@ The workflow performs the following automated steps:
 3. **Generates Coverage Report**: Analyzes component coverage by comparing components with their corresponding story files
 4. **Uploads Artifacts**: Saves coverage reports and metrics as GitHub Actions artifacts
 
-The workflow uses the `generate:story-tests:coverage` npm script which:
+The workflow uses `pnpm storybook:test --type=snapshot --coverage` which:
 - Runs `generate-story-tests.js` to create test files from stories
 - Executes Vitest with coverage enabled using the Storybook Vite config
 - Outputs coverage data to `.storybook/coverage/coverage-vitest/`
@@ -163,7 +163,7 @@ The GitHub Actions workflow file is located at:
 2. Setup pnpm
 3. Setup Node.js
 4. Install dependencies
-5. Run tests with code coverage (`generate:story-tests:coverage`)
+5. Run tests with code coverage (`storybook:test --type=snapshot --coverage`)
 6. Run story coverage script (`storyCoverageReport.js`)
 7. Upload JSON summary artifact
 8. Upload Markdown report artifact
@@ -195,9 +195,8 @@ The coverage scripts are located in the `scripts/` directory:
 
 **Usage**:
 ```bash
-pnpm generate:story-tests
-# or
 node scripts/generate-story-tests.js
+# (also runs automatically as part of `pnpm storybook:test --type=snapshot --coverage`)
 ```
 
 ### `scripts/storyCoverageReport.js`
@@ -230,9 +229,9 @@ node scripts/storyCoverageReport.js
 
 **Combined usage** (for CI):
 ```bash
-pnpm generate:story-tests:coverage
+pnpm storybook:test --type=snapshot --coverage
 # This runs:
-# 1. pnpm generate:story-tests
+# 1. node scripts/generate-story-tests.js
 # 2. vitest run --coverage --config .storybook/vite.config.ts
 # Then:
 node scripts/storyCoverageReport.js

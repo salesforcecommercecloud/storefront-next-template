@@ -9,29 +9,29 @@ This project uses Storybook for component development, testing, and documentatio
 pnpm storybook
 
 # Build Storybook for production
-pnpm build-storybook
+pnpm storybook:build
 ```
 
 ## Run tests on Command Line Interface
 
 ```bash
 # Run snapshot tests
-pnpm test-storybook:snapshot
+pnpm storybook:test --type=snapshot
 
-# Update Snapshot files locally and run tests
-pnpm test-storybook:snapshot:update
+# Update snapshot files locally and run tests
+pnpm storybook:test --type=snapshot --update
 
-# Run Interaction tests
-pnpm test-storybook:interaction
+# Run interaction tests
+pnpm storybook:test --type=interaction
 
-# Run Interaction tests against static build
-pnpm test-storybook:static:interaction
+# Run interaction tests against static build
+pnpm storybook:test --type=interaction --static
 
-# Run A11y tests
-pnpm test-storybook:a11y
+# Run a11y tests
+pnpm storybook:test --type=a11y
 
-# Run A11y tests against static build
-pnpm test-storybook:static:a11y
+# Run a11y tests against static build
+pnpm storybook:test --type=a11y --static
 ```
 
 **Storybook URL:** http://localhost:6006
@@ -41,13 +41,14 @@ pnpm test-storybook:static:a11y
 | Command | Description |
 |---------|-------------|
 | `pnpm storybook` | Start Storybook development server on port 6006 |
-| `pnpm build-storybook` | Build static Storybook for production deployment |
-| `pnpm test-storybook:snapshot` | Run snapshot tests |
-| `pnpm test-storybook:snapshot:update` | Update Snapshot files locally and run tests |
-| `pnpm test-storybook:interaction` | Run Interaction tests against live Storybook server |
-| `pnpm test-storybook:static:interaction` | Run Interaction tests against static Storybook build |
-| `pnpm test-storybook:a11y` | Run A11y tests against live Storybook server |
-| `pnpm test-storybook:static:a11y` | Run A11y tests against static Storybook build | 
+| `pnpm storybook:build` | Build static Storybook for production deployment |
+| `pnpm storybook:test --type=snapshot` | Run snapshot tests |
+| `pnpm storybook:test --type=snapshot --update` | Update snapshot files locally and run tests |
+| `pnpm storybook:test --type=interaction` | Run interaction tests against live Storybook server |
+| `pnpm storybook:test --type=interaction --static` | Run interaction tests against static Storybook build |
+| `pnpm storybook:test --type=a11y` | Run a11y tests against live Storybook server |
+| `pnpm storybook:test --type=a11y --static` | Run a11y tests against static Storybook build |
+| `--agent` flag (any of the above) | Condensed output for AI agents |
 
 ## Features & Addons
 

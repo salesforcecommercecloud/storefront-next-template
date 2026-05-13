@@ -37,39 +37,77 @@ pnpm storybook                   # Storybook at http://localhost:6006
 pnpm build                       # Production build
 pnpm preview                     # Preview production build
 pnpm push                        # Deploy to Commerce Cloud Managed Runtime
-pnpm generate:cartridge          # Extract Page Designer metadata
+pnpm cartridge:generate          # Extract Page Designer metadata
 
 # Quality
 pnpm typecheck
 pnpm lint                        # Strict: --max-warnings 0 (CI enforces)
 pnpm lint:fix
-pnpm bundlesize:test             # Verify bundle size limits
+pnpm bundlesize                  # Verify bundle size limits
 pnpm lighthouse:ci
 
-# Tests — prefer :agent variants for condensed output
-pnpm test:agent                  # Unit tests (summary only)
-pnpm test                        # Unit tests (verbose, with coverage)
-pnpm test:watch
+# Tests
+pnpm test                        # Unit tests
+pnpm test:watch                  # Unit tests in watch mode
 pnpm test src/components/foo     # Single file/dir
 
-pnpm test-storybook:interaction:agent
-pnpm test-storybook:a11y:agent
-pnpm test-storybook:snapshot:agent
+pnpm storybook:test --type=snapshot     # Snapshot tests
+pnpm storybook:test --type=interaction  # Interaction tests
+pnpm storybook:test --type=a11y         # A11y tests
 
 # UITargets
-pnpm --filter template-retail-rsc-app dev:ui-targets        # Visual overlay showing targets
-pnpm --filter template-retail-rsc-app smoke-test:generate   # Sync target-config.json (additive)
+pnpm dev:ui-targets        # Visual overlay showing targets
+pnpm smoke-test:generate   # Sync target-config.json (additive)
 ```
 
-### Agent Command Summary
+### Less common command variants
 
-| Command | Purpose | Output |
-|---------|---------|--------|
-| `pnpm test:agent` | Unit tests | Last 30 lines |
-| `pnpm test:agent:coverage` | Unit tests + coverage | Last 40 lines |
-| `pnpm test-storybook:snapshot:agent` | Snapshot tests | Last 30 lines |
-| `pnpm test-storybook:interaction:agent` | Interaction tests | Last 20 lines (PASS/FAIL only) |
-| `pnpm test-storybook:a11y:agent` | A11y tests | Last 20 lines (violations only) |
+Most of these are direct CLI passthroughs. Pass extra flags after the script
+name and pnpm forwards them to the underlying command.
+
+**Tests with extra flags** (forwarded to vitest):
+```bash
+pnpm test --coverage         # Coverage report
+pnpm test --ui               # Vitest UI
+pnpm test --reporter=verbose # Verbose output
+```
+
+**Lint variants** (extra eslint scans not covered by `pnpm lint`):
+```bash
+node scripts/check-typescript-only.js                                                  # No .js files in src/
+cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint src --rule 'no-restricted-classnames: error' --cache  # Color rule scan
+```
+
+**Storybook test variants:**
+```bash
+pnpm storybook:test --type=snapshot --update      # Refresh snapshot fixtures
+pnpm storybook:test --type=snapshot --coverage    # Snapshot tests + coverage (auto-generates story tests)
+pnpm storybook:test --type=interaction --static   # Build & serve static bundle, then test (CI mode)
+pnpm storybook:test --type=a11y --static          # Same, for a11y
+```
+
+**Bundle size with treemap:**
+```bash
+cross-env BUNDLES_SIZE_ANALYZE=true pnpm build    # Interactive treemap (build/client-bundle-size.html)
+```
+
+**Cartridge deploy with clean wipe:**
+```bash
+pnpm cartridge:deploy -- --delete                 # Delete old cartridge files first
+```
+
+**E2E variants** (run inside `e2e/` subpackage):
+```bash
+pnpm --filter ./e2e e2e:headless          # HEADLESS=true
+pnpm --filter ./e2e e2e:verbose
+pnpm --filter ./e2e e2e:debug             # DEBUG_E2E=true + --verbose
+pnpm --filter ./e2e report                # Open Allure report
+pnpm --filter ./e2e a11y:headless
+pnpm --filter ./e2e a11y:report           # Generate consolidated a11y report
+pnpm --filter ./e2e a11y:update-baseline  # Rewrite a11y baseline
+```
+
+You can also forward `--grep` directly: `pnpm e2e --grep "@checkout"`.
 
 ## Performance & Data Rules
 
@@ -112,7 +150,7 @@ These rules take priority when designing routes, components, and state. Apply th
 18. **Lazy-load overlays and heavy below-the-fold content.** Use `React.lazy()` with deferred mounting — only mount the `<Suspense>` subtree after the first user interaction. See [Lazy Loading for Overlays](./docs/README-PERFORMANCE.md#lazy-loading-for-overlays-modals-drawers-dialogs).
 19. **Self-host web fonts.** Use WOFF2 variable fonts, preload in `<head>`, inline the `@font-face` declaration, and set `font-display: swap` or `optional`. Never load fonts from third-party CDNs (cache partitioning, GDPR).
 20. **Never load third-party scripts synchronously.** Always use `async` or `defer`. Lazy-load interaction-driven widgets (chat, social) on scroll or click, not on page load.
-21. **Monitor bundle size.** Run `pnpm bundlesize:test` to verify against configured size limits — CI enforces these on every PR. Check bundle impact with `pnpm bundlesize:analyze` before adding large dependencies.
+21. **Monitor bundle size.** Run `pnpm bundlesize` to verify against configured size limits — CI enforces these on every PR. Check bundle impact with `pnpm bundlesize --analyze` before adding large dependencies.
 22. **Configure resource hints via `config.server.ts`.** Use `preconnect` for origins contacted on every page (e.g., image CDN), `dns-prefetch` for optional origins. Don't preconnect to origins that aren't used on every page.
 
 ## Code Conventions
