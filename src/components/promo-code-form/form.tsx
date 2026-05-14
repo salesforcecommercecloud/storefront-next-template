@@ -23,14 +23,17 @@ import { Form } from '@/components/ui/form';
 import { PromoCodeFields } from './promo-code-field';
 import { Check, X as CloseIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/currency';
 //hooks
 import { useToast } from '@/components/toast';
 import { usePromoCodeActions } from '@/hooks/use-promo-code-actions';
+import { FETCHER_STATES } from '@/lib/fetcher-states';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 
 //types
 import { createPromoCodeFormSchema, type PromoCodeFormData } from './index';
-import { type PromoCodeFormProps } from './types';
+import { type AppliedCouponRowProps, type PromoCodeFormProps } from './types';
 import { useTranslation } from 'react-i18next';
 
 // value for promo code accordion that will be used for open/close state
@@ -58,25 +61,12 @@ const PROMO_CODE_FORM_VAL = 'promo-code';
  *
  */
 export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
-    const { t, i18n } = useTranslation('cart');
+    const { t } = useTranslation('cart');
     const basketId = basket?.basketId;
     const [isOpen, setIsOpen] = useState(true);
-    const { applyPromoCode, removePromoCode, removeFetcher, applyFetcher } = usePromoCodeActions(basketId);
+    const { applyPromoCode, applyFetcher } = usePromoCodeActions(basketId);
     const { addToast } = useToast();
-
-    useEffect(() => {
-        if (removeFetcher.data) {
-            if (removeFetcher.data.success) {
-                addToast(t('promoCode.removeSuccessMessage'), 'success');
-            } else if (removeFetcher.data.error) {
-                addToast(t('promoCode.removeErrorMessage'), 'error');
-            }
-        }
-        // we do not need `updateBasket` and `addToast` in the dependency array
-        // because they are not likely to change once initialized
-        // linting is being cautious and warn about it, but we don't need to follow it
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [removeFetcher.data, t]);
+    const { currency: siteCurrency } = useSite();
 
     const schema = useMemo(() => createPromoCodeFormSchema(t), [t]);
 
@@ -169,38 +159,92 @@ export const PromoCodeForm = ({ basket }: PromoCodeFormProps) => {
             </Accordion>
 
             {basket && basket.couponItems && basket.couponItems.length > 0 && (
-                <div className="space-y-1">
-                    {basket.couponItems?.map((item) => (
-                        <div key={item.couponItemId} className="flex items-center justify-between py-1">
-                            <Badge
-                                variant="secondary"
-                                className="gap-1 rounded-none text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
-                                <Check className="size-3" />
-                                {item.code}
-                                <CloseIcon
-                                    className="size-3 cursor-pointer"
-                                    onClick={() => {
-                                        if (item.couponItemId) {
-                                            removePromoCode(item.couponItemId);
-                                        }
-                                    }}
-                                />
-                            </Badge>
-                            {item.statusCode === 'applied' &&
-                                basket.orderPriceAdjustments &&
-                                (() => {
-                                    const couponTotal = basket.orderPriceAdjustments
-                                        .filter((adj) => adj.couponCode === item.code)
-                                        .reduce((sum, adj) => sum + (adj.price ?? 0), 0);
-                                    return couponTotal !== 0 ? (
-                                        <span className="text-sm font-normal leading-5 text-muted-foreground text-right">
-                                            {formatCurrency(couponTotal, i18n.language, basket.currency ?? 'USD')}
-                                        </span>
-                                    ) : null;
-                                })()}
-                        </div>
+                <div className="space-y-1" data-testid="applied-coupons">
+                    {basket.couponItems.map((item) => (
+                        <AppliedCouponRow
+                            key={item.couponItemId}
+                            item={item}
+                            basketId={basketId}
+                            currency={basket.currency ?? siteCurrency}
+                            priceAdjustments={[
+                                ...(basket.orderPriceAdjustments ?? []),
+                                ...(basket.productItems ?? []).flatMap((p) => p.priceAdjustments ?? []),
+                            ]}
+                        />
                     ))}
                 </div>
+            )}
+        </div>
+    );
+};
+
+/**
+ * One applied coupon: badge + Remove button + optional discount line.
+ *
+ * Each row owns its own fetcher (via `usePromoCodeActions`) and its own remove-toast effect.
+ * Because every `useFetcher()` call returns an independent fetcher by default, sibling rows
+ * can be removed concurrently without sharing submission state. The disabled rule is therefore
+ * just `state !== IDLE` — no `formData.couponItemId` inspection needed.
+ *
+ * SCAPI basket has optimistic concurrency on basket version; rapidly firing concurrent removes
+ * can race and one may 409. The error toast surfaces this and the user retries.
+ */
+export const AppliedCouponRow = ({ item, basketId, currency, priceAdjustments }: AppliedCouponRowProps) => {
+    const { t, i18n } = useTranslation('cart');
+    const { removePromoCode, removeFetcher } = usePromoCodeActions(basketId);
+    const { addToast } = useToast();
+    const isRemoving = removeFetcher.state !== FETCHER_STATES.IDLE;
+
+    useEffect(() => {
+        if (removeFetcher.data) {
+            if (removeFetcher.data.success) {
+                addToast(t('promoCode.removeSuccessMessage'), 'success');
+            } else if (removeFetcher.data.error) {
+                addToast(t('promoCode.removeErrorMessage'), 'error');
+            }
+        }
+        // addToast is stable and does not need to be in the dependency array
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [removeFetcher.data, t]);
+
+    // Sum every price adjustment (order-level AND line-item-level) tied to this coupon.
+    // SCAPI splits coupon discounts across both based on whether the promotion targets
+    // the whole order or specific products — line-item-scoped promos like "10% off men's
+    // suits" only appear under productItems[].priceAdjustments. Values are negative,
+    // so formatCurrency renders e.g. "−£19.20" without extra negation.
+    const couponTotal =
+        priceAdjustments
+            ?.filter((adj) => adj.couponCode === item.code)
+            .reduce((sum, adj) => sum + (adj.price ?? 0), 0) ?? 0;
+
+    return (
+        <div className="flex items-center justify-between py-1">
+            <div className="inline-flex items-stretch">
+                <Badge
+                    variant="secondary"
+                    className="gap-1 rounded-none text-xs font-semibold leading-4 text-secondary-foreground whitespace-normal break-words">
+                    <Check className="size-3" />
+                    {item.code}
+                </Badge>
+                <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon-sm"
+                    aria-label={`${t('promoCode.remove')} ${item.code}`}
+                    disabled={isRemoving}
+                    className="h-auto w-auto rounded-none px-1.5 py-0.5"
+                    onClick={() => {
+                        if (item.couponItemId) {
+                            removePromoCode(item.couponItemId);
+                        }
+                    }}>
+                    <CloseIcon className="size-3" />
+                </Button>
+            </div>
+            {couponTotal !== 0 && (
+                <span className="text-sm font-normal leading-5 text-muted-foreground text-right">
+                    {formatCurrency(couponTotal, i18n.language, currency)}
+                </span>
             )}
         </div>
     );

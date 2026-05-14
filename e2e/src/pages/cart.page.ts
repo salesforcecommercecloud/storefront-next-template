@@ -71,6 +71,23 @@ class CartPage {
         cartBadge: locate('[data-testid*="cart-count"], [data-testid*="cart-badge"], [class*="badge"]').as(
             'Cart Badge'
         ),
+
+        // Promo code form (cart page)
+        promoCodeForm: locate('[data-testid="promo-code-form"]').as('Promo Code Form'),
+        promoCodeAccordionTrigger: locate('button')
+            .withText('Enter a Promotion Code')
+            .as('Promo Code Accordion Trigger'),
+        promoCodeInput: locate('[data-testid="promo-code-form"] input[name="code"]').as('Promo Code Input'),
+        promoCodeApplyButton: locate('[data-testid="promo-code-form"] button[type="submit"]').as(
+            'Promo Code Apply Button'
+        ),
+        // The applied coupons list — wraps each badge + Remove button row.
+        appliedCouponsList: locate('[data-testid="applied-coupons"]').as('Applied Coupons List'),
+        // Remove (X) button next to an applied coupon badge. Scoped to the applied-coupons list
+        // so the locator never collides with cart line-item remove buttons elsewhere on the page.
+        promoCodeRemoveButton: locate('[data-testid="applied-coupons"] button[aria-label^="Remove"]').as(
+            'Promo Code Remove Button'
+        ),
     };
 
     /**
@@ -215,6 +232,69 @@ class CartPage {
     validateCartHasItems(timeoutSeconds: number = 30): void {
         I.waitForElement(this.locators.cartItems, timeoutSeconds);
         I.seeElement(this.locators.cartItems);
+    }
+
+    /**
+     * Expand the promo code accordion if it is collapsed.
+     */
+    async expandPromoCodeAccordion(): Promise<void> {
+        I.scrollTo(this.locators.promoCodeAccordionTrigger);
+        const expanded = await I.grabAttributeFrom(this.locators.promoCodeAccordionTrigger, 'data-state');
+        if (expanded !== 'open') {
+            I.click(this.locators.promoCodeAccordionTrigger);
+        }
+        I.seeElement(this.locators.promoCodeInput);
+    }
+
+    /**
+     * Apply a promo code in the cart promo form.
+     */
+    applyPromoCode(code: string): void {
+        I.fillField(this.locators.promoCodeInput, code);
+        I.click(this.locators.promoCodeApplyButton);
+    }
+
+    /**
+     * Locator for an applied coupon badge by its code text.
+     */
+    appliedCouponBadge(code: string) {
+        return locate('[data-slot="badge"]').withText(code).as(`Applied Coupon Badge: ${code}`);
+    }
+
+    /**
+     * True if a coupon with the given code shows in the applied list.
+     */
+    async isCouponApplied(code: string): Promise<boolean> {
+        const count = await I.grabNumberOfVisibleElements(this.appliedCouponBadge(code));
+        return count > 0;
+    }
+
+    /**
+     * Wait for an applied coupon badge to render after submission.
+     * Apply is a fetcher submit (async SCAPI round-trip); the badge appears once the basket re-renders.
+     */
+    waitForCouponApplied(code: string, timeoutSeconds: number = 15): void {
+        I.waitForElement(this.appliedCouponBadge(code), timeoutSeconds);
+    }
+
+    /**
+     * Remove the applied coupon by clicking the X button next to its badge.
+     * The button's aria-label is "Remove {code}" (e.g. "Remove 5TIES"), so we match exactly on that.
+     * Scoped to `[data-testid="applied-coupons"]` to avoid collisions with cart line-item remove buttons.
+     */
+    removeAppliedCoupon(code: string): void {
+        const removeButton = locate(`[data-testid="applied-coupons"] button[aria-label="Remove ${code}"]`).as(
+            `Remove Button for Coupon: ${code}`
+        );
+        I.click(removeButton);
+    }
+
+    /**
+     * Wait until a coupon with the given code is no longer present in the applied list.
+     * The remove call is an async API request, so we poll for the badge to disappear.
+     */
+    waitForCouponRemoved(code: string, timeoutSeconds: number = 10): void {
+        I.waitForInvisible(this.appliedCouponBadge(code), timeoutSeconds);
     }
 
     /**

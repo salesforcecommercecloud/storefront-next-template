@@ -90,6 +90,9 @@ vi.mock('@/components/toast', () => ({
         addToast: () => {},
     }),
 }));
+vi.mock('@salesforce/storefront-next-runtime/site-context', () => ({
+    useSite: () => ({ currency: 'USD' }),
+}));
 
 import { composeStories } from '@storybook/react-vite';
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { buildSitePath } from '../utils/url-utils';
+
 const { I } = inject();
 
 /**
@@ -88,6 +90,14 @@ class ProductDetailPage {
             'button[data-testid*="wishlist"], button[data-testid*="favorite"], button[aria-label*="wishlist" i], button:has-text("Add to Wishlist"), button:has-text("Add to wishlist"), button:has-text("Remove from wishlist")'
         ).as('Wishlist Button'),
     };
+
+    /**
+     * Navigate directly to a product detail page.
+     * @param path - Product path including any query string (e.g. '/product/25752235M?color=YELLOSI&pid=682875540326M').
+     */
+    navigate(path: string): void {
+        I.amOnPage(buildSitePath(path));
+    }
 
     /**
      * Get the product title
