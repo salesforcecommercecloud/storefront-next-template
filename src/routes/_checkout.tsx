@@ -34,16 +34,17 @@ export default function CheckoutLayout() {
                 <Outlet />
             </main>
             <Footer variant="checkout" />
-            <PlaceOrderBarSpacer />
+            <CheckoutMobileBarSpacer />
         </div>
     );
 }
 
 /**
- * Spacer matching the fixed Place Order bar height so the footer is fully
- * visible above the bar when scrolled to the bottom. Only rendered on mobile
- * when the fixed Place Order bar is present.
+ * Spacer matching the fixed mobile checkout bar height (Place Order or
+ * step Continue button) so the footer is fully visible above the bar.
  */
-function PlaceOrderBarSpacer() {
-    return <div className="hidden h-20 group-has-[[data-place-order-bar]]/checkout:max-lg:block" aria-hidden="true" />;
+function CheckoutMobileBarSpacer() {
+    return (
+        <div className="hidden h-20 group-has-[[data-checkout-mobile-bar]]/checkout:max-lg:block" aria-hidden="true" />
+    );
 }

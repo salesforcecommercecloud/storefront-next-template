@@ -595,7 +595,9 @@ export default function ContactInfo({
                                 />
                             </div>
 
-                            <div className="w-full pt-2">
+                            <div
+                                data-checkout-mobile-bar
+                                className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0 lg:pt-2">
                                 <Button type="submit" disabled={isLoading || turnstilePending} className="w-full">
                                     {nextStepButtonLabel}
                                 </Button>

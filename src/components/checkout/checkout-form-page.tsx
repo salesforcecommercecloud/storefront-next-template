@@ -992,7 +992,7 @@ export default function CheckoutFormPage({
                                 <UITarget targetId="sfcc.checkout.placeOrder.before" />
                                 <UITarget targetId="sfcc.checkout.placeOrder">
                                     <form
-                                        data-place-order-bar
+                                        data-checkout-mobile-bar
                                         onSubmit={handlePlaceOrderSubmit}
                                         className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background px-6 py-4 lg:static lg:inset-auto lg:z-auto lg:w-full lg:border-0 lg:bg-transparent lg:p-0">
                                         <Button
