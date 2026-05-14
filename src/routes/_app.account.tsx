@@ -83,6 +83,11 @@ export function shouldRevalidate({ defaultShouldRevalidate, formAction }: Should
         return false;
     }
 
+    // Defer revalidation for OTP email verification so modal can close and email edit form can open
+    if (formAction?.includes('/action/otp-verify')) {
+        return false;
+    }
+
     return defaultShouldRevalidate;
 }
 

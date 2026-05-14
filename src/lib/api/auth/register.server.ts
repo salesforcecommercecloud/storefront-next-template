@@ -65,7 +65,7 @@ export const registerCustomer = async (
                 email: login,
                 password,
             },
-            customParameters
+            { customParameters }
         );
 
         if (loginResult.success) {

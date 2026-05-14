@@ -21,7 +21,6 @@ import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi
 export type CustomerProfileFormData = {
     firstName: string;
     lastName: string;
-    email: string;
     phone?: string;
     gender?: string;
     birthday?: string;

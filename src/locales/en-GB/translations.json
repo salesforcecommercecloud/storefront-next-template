@@ -1107,13 +1107,43 @@
                 "birthdayFuture": "Date of birth cannot be in the future."
             }
         },
+        "email": {
+            "title": "Email Address",
+            "description": "Manage your email address",
+            "changeEmail": "Change email",
+            "verifyEmail": "Verify Email",
+            "currentPassword": "Password",
+            "currentPasswordPlaceholder": "Enter your password",
+            "newEmail": "New Email Address",
+            "newEmailPlaceholder": "Enter your new email address",
+            "saveButton": "Save",
+            "saving": "Saving...",
+            "cancelButton": "Cancel",
+            "successMessage": "Email address updated successfully.",
+            "errorMessage": "Failed to update email address. Try again.",
+            "autoLoginFailed": "Email updated successfully, but automatic login failed. Please log in again.",
+            "otpSendFailed": "Failed to send verification code. Please try again.",
+            "otpVerified": "Verification successful.",
+            "invalidOtp": "Invalid verification code. Please try again.",
+            "verified": "Verified",
+            "unverified": "Unverified",
+            "validation": {
+                "passwordRequired": "Password is required.",
+                "emailRequired": "Email is required",
+                "emailInvalid": "Enter a valid email address"
+            }
+        },
         "password": {
             "title": "Password & Security",
             "description": "Manage your password and security settings",
             "edit": "Edit",
             "password": "Password",
             "hiddenPassword": "••••••••",
+            "notProvided": "Not provided",
             "changePassword": "Change password",
+            "resetPassword": "Reset password",
+            "resetPasswordToast": "You will receive an email at {{email}} with a link to reset your password shortly.",
+            "resetPasswordFailed": "Failed to send password reset email. Please try again.",
             "currentPassword": "Current Password",
             "currentPasswordPlaceholder": "Enter your current password",
             "newPassword": "New Password",
@@ -1124,6 +1154,7 @@
             "cancelButton": "Cancel",
             "successMessage": "Password was updated.",
             "errorMessage": "Failed to update password. Try again.",
+            "autoLoginFailed": "Password updated successfully, but automatic login failed. Please log in again.",
             "validation": {
                 "currentPasswordRequired": "Current password is required.",
                 "newPasswordRequired": "New password is required.",

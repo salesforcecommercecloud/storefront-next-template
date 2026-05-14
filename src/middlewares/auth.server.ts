@@ -147,12 +147,14 @@ export async function loginRegisteredUser(
     context: Readonly<RouterContextProvider>,
     email: string,
     password: string,
-    _options?: { customParameters?: Record<string, unknown> }
+    options?: { customParameters?: Record<string, unknown>; skipUsid?: boolean }
 ): Promise<AuthResponse> {
     const logger = getLogger(context);
     const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
-    const { usid } = getAuth(context);
+    // Skip the session USID when requested (e.g. after an email update where the current
+    // USID is tied to the old loginId identity). Omitting it lets SLAS create a fresh session.
+    const { usid } = options?.skipUsid ? { usid: undefined } : getAuth(context);
 
     // Get tracking consent from auth context (populated from cookies by middleware)
     // This ensures existing tracking consent preference from guest session propagates to registered user session

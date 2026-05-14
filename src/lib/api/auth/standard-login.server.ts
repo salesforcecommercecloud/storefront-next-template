@@ -23,7 +23,7 @@ import { getLogger } from '@/lib/logger.server';
 export const loginRegisteredUser = async (
     context: ActionFunctionArgs['context'],
     credentials: { email: string; password: string },
-    customParameters?: CustomQueryParameters
+    options?: { customParameters?: CustomQueryParameters; skipUsid?: boolean }
 ): Promise<{
     success: boolean;
     error?: string;
@@ -37,9 +37,7 @@ export const loginRegisteredUser = async (
             context,
             credentials.email,
             credentials.password,
-            {
-                customParameters,
-            }
+            options
         );
         // Update session with user tokens and info
         updateAuth(context, tokenResponse);
@@ -53,14 +51,14 @@ export const loginRegisteredUser = async (
             success: true,
         };
     } catch (error) {
-        const errorDetails = error instanceof Error ? error.message : String(error);
+        const errorMessageDetails = error instanceof Error ? error.message : String(error);
         logger.error('StandardLogin: failed', { error });
 
         const errorMessage = t('errors:loginFailed');
         return {
             success: false,
             error: errorMessage,
-            errorDetails, // Include detailed error for debugging
+            errorDetails: errorMessageDetails, // Include detailed error for debugging
         };
     }
 };

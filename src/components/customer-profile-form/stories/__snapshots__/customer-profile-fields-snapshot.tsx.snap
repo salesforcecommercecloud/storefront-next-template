@@ -78,51 +78,21 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
               data-slot="form-label"
               for="_r_2_-form-item"
             >
-              Email Address
+              Phone Number
             </label>
             <input
               aria-describedby="_r_2_-form-item-description"
               aria-invalid="false"
-              autocomplete="email"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
-              data-slot="form-control"
-              id="_r_2_-form-item"
-              name="email"
-              readonly=""
-              tabindex="-1"
-              type="email"
-              value=""
-            />
-          </div>
-          <div
-            class="grid gap-2"
-            data-slot="form-item"
-          >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_3_-form-item"
-            >
-              Phone Number
-            </label>
-            <input
-              aria-describedby="_r_3_-form-item-description"
-              aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_3_-form-item"
+              id="_r_2_-form-item"
               name="phone"
               placeholder="Enter your phone number"
               type="tel"
               value=""
             />
           </div>
-        </div>
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
           <div
             class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
@@ -131,7 +101,7 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_4_-form-item"
+              for="_r_3_-form-item"
             >
               Gender
             </label>
@@ -140,13 +110,13 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
               data-slot="native-select-wrapper"
             >
               <select
-                aria-describedby="_r_4_-form-item-description"
+                aria-describedby="_r_3_-form-item-description"
                 aria-invalid="false"
                 aria-label="Gender"
                 class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 min-w-0 appearance-none border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                 data-size="default"
                 data-slot="form-control"
-                id="_r_4_-form-item"
+                id="_r_3_-form-item"
                 name="gender"
               >
                 <option
@@ -185,6 +155,10 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
               </svg>
             </div>
           </div>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <div
             class="grid gap-2"
             data-slot="form-item"
@@ -193,18 +167,18 @@ exports[`CustomerProfileFields stories snapshot > Default story renders and matc
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_5_-form-item"
+              for="_r_4_-form-item"
             >
               Date of Birth
             </label>
             <input
-              aria-describedby="_r_5_-form-item-description"
+              aria-describedby="_r_4_-form-item-description"
               aria-invalid="false"
               aria-label="Date of Birth"
               autocomplete="bday"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_5_-form-item"
+              id="_r_4_-form-item"
               name="birthday"
               type="date"
               value=""
@@ -252,17 +226,17 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_o_-form-item"
+              for="_r_k_-form-item"
             >
               First Name
             </label>
             <input
-              aria-describedby="_r_o_-form-item-description"
+              aria-describedby="_r_k_-form-item-description"
               aria-invalid="false"
               autocomplete="given-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_o_-form-item"
+              id="_r_k_-form-item"
               name="firstName"
               placeholder="Enter your first name"
               type="text"
@@ -277,17 +251,17 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_p_-form-item"
+              for="_r_l_-form-item"
             >
               Last Name
             </label>
             <input
-              aria-describedby="_r_p_-form-item-description"
+              aria-describedby="_r_l_-form-item-description"
               aria-invalid="false"
               autocomplete="family-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_p_-form-item"
+              id="_r_l_-form-item"
               name="lastName"
               placeholder="Enter your last name"
               type="text"
@@ -306,53 +280,23 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_q_-form-item"
-            >
-              Email Address
-            </label>
-            <input
-              aria-describedby="_r_q_-form-item-description"
-              aria-invalid="false"
-              autocomplete="email"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
-              data-slot="form-control"
-              id="_r_q_-form-item"
-              name="email"
-              readonly=""
-              tabindex="-1"
-              type="email"
-              value=""
-            />
-          </div>
-          <div
-            class="grid gap-2"
-            data-slot="form-item"
-          >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_r_-form-item"
+              for="_r_m_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_r_-form-item-description"
+              aria-describedby="_r_m_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_r_-form-item"
+              id="_r_m_-form-item"
               name="phone"
               placeholder="Enter your phone number"
               type="tel"
               value=""
             />
           </div>
-        </div>
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
           <div
             class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
@@ -361,7 +305,7 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_s_-form-item"
+              for="_r_n_-form-item"
             >
               Gender
             </label>
@@ -370,13 +314,13 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               data-slot="native-select-wrapper"
             >
               <select
-                aria-describedby="_r_s_-form-item-description"
+                aria-describedby="_r_n_-form-item-description"
                 aria-invalid="false"
                 aria-label="Gender"
                 class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 min-w-0 appearance-none border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                 data-size="default"
                 data-slot="form-control"
-                id="_r_s_-form-item"
+                id="_r_n_-form-item"
                 name="gender"
               >
                 <option
@@ -415,6 +359,10 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               </svg>
             </div>
           </div>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <div
             class="grid gap-2"
             data-slot="form-item"
@@ -423,18 +371,18 @@ exports[`CustomerProfileFields stories snapshot > Interactive story renders and 
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_t_-form-item"
+              for="_r_o_-form-item"
             >
               Date of Birth
             </label>
             <input
-              aria-describedby="_r_t_-form-item-description"
+              aria-describedby="_r_o_-form-item-description"
               aria-invalid="false"
               aria-label="Date of Birth"
               autocomplete="bday"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_t_-form-item"
+              id="_r_o_-form-item"
               name="birthday"
               type="date"
               value=""
@@ -482,17 +430,17 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_i_-form-item"
+              for="_r_f_-form-item"
             >
               First Name
             </label>
             <input
-              aria-describedby="_r_i_-form-item-description"
+              aria-describedby="_r_f_-form-item-description"
               aria-invalid="false"
               autocomplete="given-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_i_-form-item"
+              id="_r_f_-form-item"
               name="firstName"
               placeholder="Enter your first name"
               type="text"
@@ -507,17 +455,17 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_j_-form-item"
+              for="_r_g_-form-item"
             >
               Last Name
             </label>
             <input
-              aria-describedby="_r_j_-form-item-description"
+              aria-describedby="_r_g_-form-item-description"
               aria-invalid="false"
               autocomplete="family-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_j_-form-item"
+              id="_r_g_-form-item"
               name="lastName"
               placeholder="Enter your last name"
               type="text"
@@ -536,53 +484,23 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_k_-form-item"
-            >
-              Email Address
-            </label>
-            <input
-              aria-describedby="_r_k_-form-item-description"
-              aria-invalid="false"
-              autocomplete="email"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
-              data-slot="form-control"
-              id="_r_k_-form-item"
-              name="email"
-              readonly=""
-              tabindex="-1"
-              type="email"
-              value="john.doe@example.com"
-            />
-          </div>
-          <div
-            class="grid gap-2"
-            data-slot="form-item"
-          >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_l_-form-item"
+              for="_r_h_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_l_-form-item-description"
+              aria-describedby="_r_h_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_l_-form-item"
+              id="_r_h_-form-item"
               name="phone"
               placeholder="Enter your phone number"
               type="tel"
               value="555-1234"
             />
           </div>
-        </div>
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
           <div
             class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
@@ -591,7 +509,7 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_m_-form-item"
+              for="_r_i_-form-item"
             >
               Gender
             </label>
@@ -600,13 +518,13 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               data-slot="native-select-wrapper"
             >
               <select
-                aria-describedby="_r_m_-form-item-description"
+                aria-describedby="_r_i_-form-item-description"
                 aria-invalid="false"
                 aria-label="Gender"
                 class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 min-w-0 appearance-none border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                 data-size="default"
                 data-slot="form-control"
-                id="_r_m_-form-item"
+                id="_r_i_-form-item"
                 name="gender"
               >
                 <option
@@ -645,6 +563,10 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               </svg>
             </div>
           </div>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <div
             class="grid gap-2"
             data-slot="form-item"
@@ -653,18 +575,18 @@ exports[`CustomerProfileFields stories snapshot > Submitting story renders and m
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_n_-form-item"
+              for="_r_j_-form-item"
             >
               Date of Birth
             </label>
             <input
-              aria-describedby="_r_n_-form-item-description"
+              aria-describedby="_r_j_-form-item-description"
               aria-invalid="false"
               aria-label="Date of Birth"
               autocomplete="bday"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_n_-form-item"
+              id="_r_j_-form-item"
               name="birthday"
               type="date"
               value="1990-05-15"
@@ -713,17 +635,17 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_c_-form-item"
+              for="_r_a_-form-item"
             >
               First Name
             </label>
             <input
-              aria-describedby="_r_c_-form-item-description"
+              aria-describedby="_r_a_-form-item-description"
               aria-invalid="false"
               autocomplete="given-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_c_-form-item"
+              id="_r_a_-form-item"
               name="firstName"
               placeholder="Enter your first name"
               type="text"
@@ -738,17 +660,17 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_d_-form-item"
+              for="_r_b_-form-item"
             >
               Last Name
             </label>
             <input
-              aria-describedby="_r_d_-form-item-description"
+              aria-describedby="_r_b_-form-item-description"
               aria-invalid="false"
               autocomplete="family-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_d_-form-item"
+              id="_r_b_-form-item"
               name="lastName"
               placeholder="Enter your last name"
               type="text"
@@ -767,53 +689,23 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_e_-form-item"
-            >
-              Email Address
-            </label>
-            <input
-              aria-describedby="_r_e_-form-item-description"
-              aria-invalid="false"
-              autocomplete="email"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
-              data-slot="form-control"
-              id="_r_e_-form-item"
-              name="email"
-              readonly=""
-              tabindex="-1"
-              type="email"
-              value=""
-            />
-          </div>
-          <div
-            class="grid gap-2"
-            data-slot="form-item"
-          >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_f_-form-item"
+              for="_r_c_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_f_-form-item-description"
+              aria-describedby="_r_c_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_f_-form-item"
+              id="_r_c_-form-item"
               name="phone"
               placeholder="Enter your phone number"
               type="tel"
               value=""
             />
           </div>
-        </div>
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
           <div
             class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
@@ -822,7 +714,7 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_g_-form-item"
+              for="_r_d_-form-item"
             >
               Gender
             </label>
@@ -831,13 +723,13 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               data-slot="native-select-wrapper"
             >
               <select
-                aria-describedby="_r_g_-form-item-description"
+                aria-describedby="_r_d_-form-item-description"
                 aria-invalid="false"
                 aria-label="Gender"
                 class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 min-w-0 appearance-none border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                 data-size="default"
                 data-slot="form-control"
-                id="_r_g_-form-item"
+                id="_r_d_-form-item"
                 name="gender"
               >
                 <option
@@ -876,6 +768,10 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               </svg>
             </div>
           </div>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <div
             class="grid gap-2"
             data-slot="form-item"
@@ -884,18 +780,18 @@ exports[`CustomerProfileFields stories snapshot > WithCancelButton story renders
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_h_-form-item"
+              for="_r_e_-form-item"
             >
               Date of Birth
             </label>
             <input
-              aria-describedby="_r_h_-form-item-description"
+              aria-describedby="_r_e_-form-item-description"
               aria-invalid="false"
               aria-label="Date of Birth"
               autocomplete="bday"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_h_-form-item"
+              id="_r_e_-form-item"
               name="birthday"
               type="date"
               value=""
@@ -952,17 +848,17 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_6_-form-item"
+              for="_r_5_-form-item"
             >
               First Name
             </label>
             <input
-              aria-describedby="_r_6_-form-item-description"
+              aria-describedby="_r_5_-form-item-description"
               aria-invalid="false"
               autocomplete="given-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_6_-form-item"
+              id="_r_5_-form-item"
               name="firstName"
               placeholder="Enter your first name"
               type="text"
@@ -977,17 +873,17 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_7_-form-item"
+              for="_r_6_-form-item"
             >
               Last Name
             </label>
             <input
-              aria-describedby="_r_7_-form-item-description"
+              aria-describedby="_r_6_-form-item-description"
               aria-invalid="false"
               autocomplete="family-name"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_7_-form-item"
+              id="_r_6_-form-item"
               name="lastName"
               placeholder="Enter your last name"
               type="text"
@@ -1006,53 +902,23 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_8_-form-item"
-            >
-              Email Address
-            </label>
-            <input
-              aria-describedby="_r_8_-form-item-description"
-              aria-invalid="false"
-              autocomplete="email"
-              class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none bg-muted text-muted-foreground cursor-default focus-visible:ring-0 focus-visible:border-input"
-              data-slot="form-control"
-              id="_r_8_-form-item"
-              name="email"
-              readonly=""
-              tabindex="-1"
-              type="email"
-              value="john.doe@example.com"
-            />
-          </div>
-          <div
-            class="grid gap-2"
-            data-slot="form-item"
-          >
-            <label
-              class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
-              data-error="false"
-              data-slot="form-label"
-              for="_r_9_-form-item"
+              for="_r_7_-form-item"
             >
               Phone Number
             </label>
             <input
-              aria-describedby="_r_9_-form-item-description"
+              aria-describedby="_r_7_-form-item-description"
               aria-invalid="false"
               autocomplete="tel"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_9_-form-item"
+              id="_r_7_-form-item"
               name="phone"
               placeholder="Enter your phone number"
               type="tel"
               value="555-1234"
             />
           </div>
-        </div>
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
           <div
             class="grid gap-2 [&_[data-slot=native-select-wrapper]]:w-full"
             data-slot="form-item"
@@ -1061,7 +927,7 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_a_-form-item"
+              for="_r_8_-form-item"
             >
               Gender
             </label>
@@ -1070,13 +936,13 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               data-slot="native-select-wrapper"
             >
               <select
-                aria-describedby="_r_a_-form-item-description"
+                aria-describedby="_r_8_-form-item-description"
                 aria-invalid="false"
                 aria-label="Gender"
                 class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 h-9 min-w-0 appearance-none border bg-transparent px-3 py-2 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed data-[size=sm]:h-8 data-[size=sm]:py-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-full rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
                 data-size="default"
                 data-slot="form-control"
-                id="_r_a_-form-item"
+                id="_r_8_-form-item"
                 name="gender"
               >
                 <option
@@ -1115,6 +981,10 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               </svg>
             </div>
           </div>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <div
             class="grid gap-2"
             data-slot="form-item"
@@ -1123,18 +993,18 @@ exports[`CustomerProfileFields stories snapshot > WithInitialValues story render
               class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive text-sm font-medium text-foreground"
               data-error="false"
               data-slot="form-label"
-              for="_r_b_-form-item"
+              for="_r_9_-form-item"
             >
               Date of Birth
             </label>
             <input
-              aria-describedby="_r_b_-form-item-description"
+              aria-describedby="_r_9_-form-item-description"
               aria-invalid="false"
               aria-label="Date of Birth"
               autocomplete="bday"
               class="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 h-9 w-full min-w-0 border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-none border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
               data-slot="form-control"
-              id="_r_b_-form-item"
+              id="_r_9_-form-item"
               name="birthday"
               type="date"
               value="1990-05-15"

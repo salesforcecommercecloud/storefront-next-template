@@ -194,6 +194,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
         const loginMode = formData.get('loginMode')?.toString();
         const provider = formData.get('provider')?.toString();
         const redirectPath = formData.get('redirectPath')?.toString();
+        const skipUsid = formData.get('skipUsid') === 'true';
         const isSocialLoginEnabled = Boolean(config.features.socialLogin?.enabled);
 
         if (loginMode === 'social') {
@@ -285,7 +286,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
             if (!email || !password) {
                 return { success: false, error: genericError };
             }
-            const result = await loginRegisteredUser(context, { email, password });
+            const result = await loginRegisteredUser(context, { email, password }, { skipUsid });
             if (!result.success) {
                 logger.warn('Login: standard login failed');
                 return { success: false, error: genericError };

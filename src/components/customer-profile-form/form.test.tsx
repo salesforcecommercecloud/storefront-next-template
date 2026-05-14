@@ -66,7 +66,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phone: '+15551234567',
                 gender: '2',
                 birthday: '1990-05-15',
@@ -89,7 +88,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phone: '',
             },
         });
@@ -110,7 +108,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'John',
                 lastName: 'Smith',
-                email: 'john@example.com',
                 gender: '1',
             },
         });
@@ -132,7 +129,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 birthday: '1990-05-15',
             },
         });
@@ -152,7 +148,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 birthday: '',
             },
         });
@@ -169,7 +164,7 @@ describe('CustomerProfileForm submission', () => {
     it('does not submit when required fields are missing', async () => {
         const user = userEvent.setup();
         renderForm({
-            initialData: { firstName: '', lastName: '', email: '' },
+            initialData: { firstName: '', lastName: '' },
         });
 
         await user.click(screen.getByRole('button', { name: /save/i }));
@@ -209,7 +204,6 @@ describe('CustomerProfileForm submission', () => {
             data: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phoneHome: '+15551234567',
             },
         });
@@ -227,7 +221,6 @@ describe('CustomerProfileForm submission', () => {
             expect.objectContaining({
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
                 phone: '+15551234567',
             })
         );
@@ -275,7 +268,6 @@ describe('CustomerProfileForm submission', () => {
             initialData: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                email: 'jane@example.com',
             },
             onCancel,
         });

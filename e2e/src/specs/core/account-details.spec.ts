@@ -173,44 +173,40 @@ Scenario('User can cancel profile editing without saving changes', async () => {
     .tag('@cancel');
 
 /**
- * Edit Profile - Email field is read-only
+ * Change Email with OTP Verification
  *
  * Test Flow:
  * 1. Navigate to account details
- * 2. Click Edit on profile card
- * 3. Enter invalid email format
- * 4. Attempt to save
- * 5. Verify error message
+ * 2. Click "Change Email" button
+ * 3. OTP modal opens with current email displayed
+ * 4. Verify modal UI elements are present
+ * 5. Close modal (actual OTP flow requires valid email/code)
  *
- * Skipped: email is read-only in the UI; scenario kept for reference.
+ * NOTE: Temporarily disabled - requires "Enable Email Verification" to be enabled in Business Manager
  */
-xScenario('Profile update fails with invalid email format', async () => {
-    accountDetailsPage.navigate();
+// Scenario('Change email button opens OTP modal', async () => {
+//     accountDetailsPage.navigate();
 
-    // Click Edit button
-    accountDetailsPage.clickEditProfile();
+//     // Click Change email button (lowercase 'e' per translation)
+//     I.click(locate('button').withText('Change email'));
 
-    // Fill with invalid email
-    accountDetailsPage.fillProfileForm({
-        email: 'invalid-email-format',
-    });
+//     // Verify OTP modal opens
+//     I.waitForElement(locate('[data-testid="otp-modal"]'), 5);
 
-    // Try to save
-    accountDetailsPage.clickSaveProfile();
+//     // Verify OTP input fields are present (8 digits)
+//     const otpInputCount = await I.grabNumberOfVisibleElements('input[type="text"][maxlength="1"]');
+//     expect(otpInputCount, 'Should have 8 OTP input fields').to.equal(8);
 
-    // Verify error is displayed (either form validation or toast)
-    // Note: This may show as form validation before submission
-    // Playwright auto-waits for next check - no explicit wait needed
+//     // Verify Resend Code button is present
+//     I.seeElement(locate('button').withText('Resend Code'));
 
-    // Check for validation error or form staying open
-    const isStillInEditMode = await accountDetailsPage.isProfileInEditMode();
-
-    expect(isStillInEditMode, 'Form should remain open due to validation error').to.be.true;
-})
-    .tag('@profile')
-    .tag('@edit')
-    .tag('@negative')
-    .tag('@validation');
+//     // Close modal
+//     I.click(locate('button[aria-label*="Close"]'));
+// })
+//     .tag('@profile')
+//     .tag('@email')
+//     .tag('@otp')
+//     .tag('@smoke');
 
 /**
  * Profile Data Persistence After Page Refresh

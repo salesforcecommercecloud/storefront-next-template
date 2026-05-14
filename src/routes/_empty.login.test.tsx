@@ -468,10 +468,14 @@ describe('Login Route', () => {
             expect(result).toBeInstanceOf(Response);
             expect((result as Response).status).toBe(302);
             expect((result as Response).headers.get('Location')).toBe('/');
-            expect(mockLoginRegisteredUser).toHaveBeenCalledWith(mockContext, {
-                email: 'test@example.com',
-                password: 'password123',
-            });
+            expect(mockLoginRegisteredUser).toHaveBeenCalledWith(
+                mockContext,
+                {
+                    email: 'test@example.com',
+                    password: 'password123',
+                },
+                { skipUsid: false }
+            );
             expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
             expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, mergedBasket);
         });

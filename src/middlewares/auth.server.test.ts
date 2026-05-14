@@ -721,6 +721,30 @@ describe('auth middleware (server)', () => {
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
         });
+
+        it.each([
+            {
+                label: 'skipUsid=true omits usid so SLAS issues a fresh session',
+                skipUsid: true,
+                expectedUsid: undefined,
+            },
+            {
+                label: 'skipUsid=false passes existing usid to preserve session',
+                skipUsid: false,
+                expectedUsid: 'usid',
+            },
+        ])('$label', async ({ skipUsid, expectedUsid }) => {
+            const authData = getMockRegisteredAuthData();
+            delete authData.trackingConsent;
+            const { provider } = mockContext(authData);
+            const mockTokenResponse = getMockTokenResponse();
+
+            mockAuth.loginWithCredentials.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            await loginRegisteredUser(provider, 'test@example.com', 'password123', { skipUsid });
+
+            expect(mockAuth.loginWithCredentials).toHaveBeenCalledWith(expect.objectContaining({ usid: expectedUsid }));
+        });
     });
 
     describe('authorizePasswordless', () => {

@@ -134,7 +134,7 @@ describe('useFetcherEffect', () => {
             expect(mockOnSuccess).toHaveBeenCalledWith(arrayData);
         });
 
-        it('should not call onSuccess when fetcher is not in idle state', () => {
+        it('should call onSuccess when fetcher is in loading state with data', () => {
             const testData: TestData = { id: '123', name: 'John Doe', email: 'john@example.com' };
             const fetcher = createMockFetcher('loading', testData);
 
@@ -144,7 +144,9 @@ describe('useFetcherEffect', () => {
 
             renderHook(() => useFetcherEffect(fetcher, config));
 
-            expect(mockOnSuccess).not.toHaveBeenCalled();
+            // Loading state with data means action completed but revalidation is happening
+            expect(mockOnSuccess).toHaveBeenCalledTimes(1);
+            expect(mockOnSuccess).toHaveBeenCalledWith(testData);
             expect(mockOnError).not.toHaveBeenCalled();
         });
 
@@ -216,7 +218,7 @@ describe('useFetcherEffect', () => {
             expect(mockOnSuccess).not.toHaveBeenCalled();
         });
 
-        it('should not call onError when fetcher is not in idle state', () => {
+        it('should call onError when fetcher is in loading state with error data', () => {
             const errorData: SuccessErrorData = {
                 success: false,
                 error: 'Some error',
@@ -229,7 +231,9 @@ describe('useFetcherEffect', () => {
 
             renderHook(() => useFetcherEffect(fetcher, config));
 
-            expect(mockOnError).not.toHaveBeenCalled();
+            // Loading state with data means action completed but revalidation is happening
+            expect(mockOnError).toHaveBeenCalledTimes(1);
+            expect(mockOnError).toHaveBeenCalledWith('Some error', errorData);
             expect(mockOnSuccess).not.toHaveBeenCalled();
         });
 

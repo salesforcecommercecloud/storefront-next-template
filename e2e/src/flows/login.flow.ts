@@ -95,8 +95,9 @@ class LoginFlow {
                 loginData = await this.ensureCredentialsExist();
             }
 
-            // Navigate to login page
-            loginPage.navigate();
+            // Navigate to login page with password mode to force standard login form
+            // (passwordless login is enabled by default when features.passwordlessLogin.enabled = true)
+            loginPage.navigate({ mode: 'password' });
 
             // Handle tracking consent first so it does not block the login form
             await storefrontPage.handleTrackingConsent(acceptTracking);

@@ -19,7 +19,7 @@ import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { createActionArgs, createLoaderArgs } from '@/lib/test-utils';
 import ResetPassword, { loader, action } from './_empty.reset-password';
-import { resetPasswordWithToken } from '@/middlewares/auth.server';
+import { resetPasswordWithToken, loginRegisteredUser, updateAuth } from '@/middlewares/auth.server';
 import { isPasswordValid } from '@/lib/utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
@@ -29,6 +29,8 @@ const { t } = getTranslation();
 // Mock the auth middleware
 vi.mock('@/middlewares/auth.server', () => ({
     resetPasswordWithToken: vi.fn(),
+    loginRegisteredUser: vi.fn(),
+    updateAuth: vi.fn(),
 }));
 
 // Mock utils
@@ -100,6 +102,8 @@ const mockContext = {
 } as any;
 
 const mockResetPasswordWithToken = vi.mocked(resetPasswordWithToken);
+const mockLoginRegisteredUser = vi.mocked(loginRegisteredUser);
+const mockUpdateAuth = vi.mocked(updateAuth);
 const mockIsPasswordValid = vi.mocked(isPasswordValid);
 
 describe('reset-password route', () => {
@@ -314,9 +318,16 @@ describe('reset-password route', () => {
         });
 
         describe('successful password reset', () => {
-            it('should redirect to login on successful password reset', async () => {
+            it('should redirect to login on successful password reset and auto-login with new password', async () => {
                 mockIsPasswordValid.mockReturnValue(true);
                 mockResetPasswordWithToken.mockResolvedValue({ data: undefined, response: new Response() });
+                const mockAuthResponse = {
+                    accessToken: 'new-access-token',
+                    refreshToken: 'new-refresh-token',
+                    usid: 'new-usid',
+                    customerId: 'customer-123',
+                };
+                mockLoginRegisteredUser.mockResolvedValue(mockAuthResponse as any);
 
                 const formData = new URLSearchParams();
                 formData.append('token', 'abc123');
@@ -342,6 +353,12 @@ describe('reset-password route', () => {
                     token: 'abc123',
                     newPassword: 'Test123!',
                 });
+
+                // Verify auto-login was attempted
+                expect(mockLoginRegisteredUser).toHaveBeenCalledWith(mockContext, 'test@example.com', 'Test123!', {
+                    skipUsid: true,
+                });
+                expect(mockUpdateAuth).toHaveBeenCalledWith(mockContext, mockAuthResponse);
 
                 expect(result).toBeInstanceOf(Response);
                 if (result instanceof Response) {

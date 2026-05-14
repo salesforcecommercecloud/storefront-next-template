@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useMemo, type ReactElement, Suspense, useState } from 'react';
+import { useEffect, useMemo, type ReactElement, Suspense, useState, lazy } from 'react';
 import { useOutletContext, Await, useFetcher, useRevalidator } from 'react-router';
 import { ToggleCard, ToggleCardSummary, ToggleCardEdit } from '@/components/toggle-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AccountDetailSkeleton } from '@/components/account-detail-skeleton';
 import { PasswordUpdateForm } from '@/components/password-update-form';
 import { CustomerProfileForm } from '@/components/customer-profile-form';
+import { EmailUpdateForm } from '@/components/email-update-form';
 import { InterestsPreferencesSection } from '@/components/account/interests-preferences-section';
 import { MarketingConsent } from '@/components/account/marketing-consent';
 import { useToast } from '@/components/toast';
@@ -33,10 +35,14 @@ import CustomerPreferencesProvider from '@/providers/customer-preferences';
 import { useTranslation } from 'react-i18next';
 import { formatDateForLocale } from '@/lib/date-utils';
 import { FETCHER_STATES } from '@/lib/fetcher-states';
+import { getPasswordlessErrorMessageKey } from '@/lib/auth/error-handler';
 import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import type { AppConfig } from '@/types/config';
+
+// Lazy load OTP modal for passwordless email editing
+const OtpModal = lazy(() => import('@/components/login/otp-modal').then((m) => ({ default: m.default })));
 import { UITarget } from '@/targets/ui-target';
 
 type Customer = ShopperCustomers.schemas['Customer'];
@@ -59,8 +65,16 @@ function AccountDetailsContent({
 }): ReactElement {
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isEditingPassword, setIsEditingPassword] = useState(false);
+    const [isEditingEmail, setIsEditingEmail] = useState(false);
     // Optimistic profile values shown after save until the server customer prop refreshes.
     const [profileOverride, setProfileOverride] = useState<Partial<Customer> | null>(null);
+
+    // OTP modal state for passwordless email editing
+    const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+    const [otpModalEmail, setOtpModalEmail] = useState<string>('');
+    const [otpModalLoaded, setOtpModalLoaded] = useState(false);
+    const [otpError, setOtpError] = useState<string | undefined>();
+    const [otpModalMode, setOtpModalMode] = useState<'changeEmail' | 'verifyEmail'>('changeEmail');
 
     // Clear the override when server data arrives (e.g. after navigation or revalidation).
     useEffect(() => {
@@ -68,13 +82,17 @@ function AccountDetailsContent({
     }, [customer]);
 
     const { addToast } = useToast();
-    const loginFetcher = useFetcher();
+    const updatePasswordLoginFetcher = useFetcher();
+    const updateEmailLoginFetcher = useFetcher();
+    const passwordResetFetcher = useFetcher<{ success?: boolean; error?: string }>();
+    const otpRequestFetcher = useFetcher();
     const revalidator = useRevalidator();
     const auth = useAuth();
     const { t, i18n } = useTranslation('account');
     const config = useConfig<AppConfig>();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const customerId = auth?.customerId;
+    const canSubmitCustomerUpdates = Boolean(customerId);
 
     const updateProfileFetcher = useScapiFetcher('shopperCustomers', 'updateCustomer', {
         params: {
@@ -94,6 +112,27 @@ function AccountDetailsContent({
         body: { currentPassword: '', password: '' },
     });
 
+    const updateEmailFetcher = useScapiFetcher('shopperCustomers', 'updateCustomer', {
+        params: {
+            path: {
+                customerId: customerId || '',
+            },
+        },
+        body: {},
+    });
+
+    const loginAction = buildUrl({
+        to: '/login',
+        urlConfig: config.url,
+        params: { siteId: siteRef, localeId: localeRef },
+    });
+
+    const accountUrl = buildUrl({
+        to: '/account',
+        urlConfig: config.url,
+        params: { siteId: siteRef, localeId: localeRef },
+    });
+
     // Merge server customer with optimistic override so saved values display immediately.
     const displayCustomer = useMemo((): Customer | null => {
         if (!customer) return null;
@@ -110,6 +149,11 @@ function AccountDetailsContent({
         }),
         [displayCustomer]
     );
+
+    // emailVerified is only present when "Enable Email Verification" is enabled in Storefront Login Preferences
+    const isEmailVerificationEnabled = displayCustomer?.emailVerified !== undefined;
+    const isEmailVerified = displayCustomer?.emailVerified ?? false;
+    const hasPassword = displayCustomer?.hasPassword !== false;
 
     /**
      * Handles successful login after password update.
@@ -134,7 +178,7 @@ function AccountDetailsContent({
      */
     const handleLoginError = () => {
         // Show error toast
-        addToast('Password updated successfully, but automatic login failed. Please log in again.', 'error');
+        addToast(t('password.autoLoginFailed'), 'error');
     };
 
     /**
@@ -142,6 +186,7 @@ function AccountDetailsContent({
      * Opens the profile form for editing.
      */
     const handleProfileEdit = () => {
+        if (!canSubmitCustomerUpdates) return;
         setIsEditingProfile(true);
     };
 
@@ -150,16 +195,56 @@ function AccountDetailsContent({
      * Opens the password form for editing.
      */
     const handlePasswordEdit = () => {
+        if (!canSubmitCustomerUpdates) return;
         setIsEditingPassword(true);
     };
 
-    // Watch loginFetcher for automatic login after password update
+    // Watch updatePasswordLoginFetcher for automatic login after password update
     // This fetcher is triggered by handlePasswordSuccess when the user updates their password.
     // We use useFetcherEffect to handle the login response and refresh customer data on success,
     // or show an error message if automatic login fails.
-    useFetcherEffect<unknown>(loginFetcher, {
+    useFetcherEffect<unknown>(updatePasswordLoginFetcher, {
         onSuccess: handleLoginSuccess,
         onError: handleLoginError,
+    });
+
+    // Watch updateEmailLoginFetcher for automatic login after email update
+    // This fetcher is triggered by handleEmailSuccess when the user updates their email address.
+    useFetcherEffect<unknown>(updateEmailLoginFetcher, {
+        onSuccess: handleLoginSuccess,
+        onError: () => addToast(t('email.autoLoginFailed'), 'error'),
+    });
+
+    // Watch passwordResetFetcher for password reset email sending
+    useFetcherEffect<{ success?: boolean; error?: string }>(passwordResetFetcher, {
+        onSuccess: (data) => {
+            if (data?.error) {
+                addToast(data.error, 'error');
+            } else {
+                addToast(t('password.resetPasswordToast', { email: userInfo.email }), 'success');
+            }
+        },
+        onError: (error) => {
+            const errorMessage = typeof error === 'string' ? error : t('password.resetPasswordFailed');
+            addToast(errorMessage, 'error');
+        },
+    });
+
+    // Watch otpRequestFetcher for OTP send errors
+    useFetcherEffect<unknown>(otpRequestFetcher, {
+        onSuccess: () => {
+            // OTP sent successfully - modal is already open
+            setOtpError(undefined);
+        },
+        onError: (error) => {
+            // OTP send failed - show error in modal or as toast
+            const errorMessage = typeof error === 'string' ? error : t('email.otpSendFailed');
+            setOtpError(errorMessage);
+            // If modal isn't open yet, show toast instead
+            if (!isOtpModalOpen) {
+                addToast(errorMessage, 'error');
+            }
+        },
     });
 
     /**
@@ -169,7 +254,6 @@ function AccountDetailsContent({
     const handleCustomerProfileSuccess = (formData: {
         firstName: string;
         lastName: string;
-        email: string;
         phone?: string;
         gender?: string;
         birthday?: string;
@@ -203,6 +287,181 @@ function AccountDetailsContent({
     };
 
     /**
+     * Handles email toggle card edit action.
+     * Triggers OTP verification flow before allowing email edit.
+     */
+    const handleEmailEdit = () => {
+        if (!canSubmitCustomerUpdates) return;
+        const currentEmail = userInfo.email;
+        if (!currentEmail) return;
+
+        if (customer?.hasPassword) {
+            setIsEditingEmail(true);
+            return;
+        }
+
+        // Send OTP first before allowing email edit
+        setOtpModalEmail(currentEmail);
+        setOtpError(undefined);
+        setOtpModalMode('changeEmail');
+
+        // Send OTP request
+        const formData = new FormData();
+        formData.append('email', currentEmail);
+
+        void otpRequestFetcher.submit(formData, {
+            method: 'POST',
+            action: '/action/otp-request',
+        });
+
+        // Open OTP modal (lazy load if first time)
+        setOtpModalLoaded(true);
+        setIsOtpModalOpen(true);
+    };
+
+    const handleVerifyEmailClick = () => {
+        const currentEmail = userInfo.email;
+        if (!currentEmail) return;
+
+        setOtpModalEmail(currentEmail);
+        setOtpError(undefined);
+        setOtpModalMode('verifyEmail');
+
+        const formData = new FormData();
+        formData.append('email', currentEmail);
+
+        void otpRequestFetcher.submit(formData, {
+            method: 'POST',
+            action: '/action/otp-request',
+        });
+
+        setOtpModalLoaded(true);
+        setIsOtpModalOpen(true);
+    };
+
+    /**
+     * Handles successful email update.
+     * Re-authenticates the user with the new email and current password to keep the session valid,
+     * since email also serves as the loginId in SFCC.
+     */
+    const handleEmailSuccess = (formData: { email: string; currentPassword: string | undefined }) => {
+        addToast(t('email.successMessage'), 'success');
+        setIsEditingEmail(false);
+        // Show saved email immediately via optimistic override.
+        // The override is cleared when the server customer prop refreshes.
+        setProfileOverride({ email: formData.email, login: formData.email });
+
+        if (formData.email && formData.currentPassword) {
+            void updateEmailLoginFetcher.submit(
+                {
+                    email: formData.email,
+                    password: formData.currentPassword,
+                    loginMode: 'password',
+                    returnUrl: accountUrl,
+                    // Email is used as loginId in SFCC; after an email update the current session
+                    // USID is tied to the old identity. Skip it so SLAS issues a fresh session.
+                    skipUsid: 'true',
+                },
+                {
+                    method: 'POST',
+                    action: loginAction,
+                }
+            );
+        } else {
+            addToast(t('email.autoLoginFailed'), 'error');
+        }
+    };
+
+    /**
+     * Handles email update errors.
+     */
+    const handleEmailError = () => {
+        addToast(t('email.errorMessage'), 'error');
+    };
+
+    /**
+     * Handles email cancel action.
+     */
+    const handleEmailCancel = () => setIsEditingEmail(false);
+
+    /**
+     * Handles successful OTP verification for passwordless email editing.
+     * Closes the OTP modal and opens the email edit form.
+     */
+    const handleOtpSuccess = () => {
+        setIsOtpModalOpen(false);
+        setOtpError(undefined);
+        if (otpModalMode === 'verifyEmail') {
+            setProfileOverride((prev) => ({ ...prev, emailVerified: true }));
+        } else {
+            setIsEditingEmail(true);
+        }
+    };
+
+    /**
+     * Handles OTP modal cancellation.
+     * Closes the modal and returns to view mode.
+     */
+    const handleOtpCancel = () => {
+        setIsOtpModalOpen(false);
+        setOtpError(undefined);
+    };
+
+    /**
+     * Handles OTP resend request.
+     * Sends a new OTP to the user's email.
+     */
+    const handleOtpResend = async () => {
+        if (otpModalEmail) {
+            setOtpError(undefined);
+            const formData = new FormData();
+            formData.append('email', otpModalEmail);
+
+            await otpRequestFetcher.submit(formData, {
+                method: 'POST',
+                action: '/action/otp-request',
+            });
+        }
+    };
+
+    /**
+     * Handles OTP code verification.
+     * Called when user submits OTP from modal.
+     * Uses direct fetch instead of fetcher to avoid overly complex state and lifecycle management for the modal,
+     * which would unmount the OTP modal before we can transition to the email edit form.
+     */
+    const handleVerifyOtp = async (code: string) => {
+        setOtpError(undefined);
+        try {
+            const formData = new FormData();
+            formData.append('otpCode', code);
+            formData.append('email', otpModalEmail);
+
+            const response = await fetch('/action/otp-verify', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = (await response.json()) as {
+                success?: boolean;
+                error?: { message: string };
+            };
+
+            if (data.success) {
+                handleOtpSuccess();
+            } else if (data.error?.message) {
+                setOtpError(
+                    getPasswordlessErrorMessageKey(data.error.message) === 'errors:invalidToken'
+                        ? t('email.invalidOtp')
+                        : data.error.message
+                );
+            }
+        } catch {
+            setOtpError(t('email.invalidOtp'));
+        }
+    };
+
+    /**
      * Handles successful password update.
      * Called when the password update form is successfully submitted.
      * Automatically authenticates the user with the new password.
@@ -223,17 +482,7 @@ function AccountDetailsContent({
         // Get email from customer data (userInfo) and password from formData
         if (userInfo.email && formData.password) {
             // Submit login request with the new password
-            const loginAction = buildUrl({
-                to: '/login',
-                urlConfig: config.url,
-                params: { siteId: siteRef, localeId: localeRef },
-            });
-            const accountUrl = buildUrl({
-                to: '/account',
-                urlConfig: config.url,
-                params: { siteId: siteRef, localeId: localeRef },
-            });
-            void loginFetcher.submit(
+            void updatePasswordLoginFetcher.submit(
                 {
                     email: userInfo.email,
                     password: formData.password,
@@ -247,7 +496,7 @@ function AccountDetailsContent({
             );
         } else {
             // console.warn('🔐 Missing email or password for authentication after password update');
-            addToast('Password updated successfully, but automatic login failed. Please log in again.', 'error');
+            addToast(t('password.autoLoginFailed'), 'error');
         }
     };
 
@@ -264,6 +513,23 @@ function AccountDetailsContent({
      */
     const handlePasswordCancel = () => {
         setIsEditingPassword(false);
+    };
+
+    /**
+     * Handles password reset request for users without a password.
+     * Sends password reset email by submitting to /action/request-password-reset.
+     * Success/error feedback is shown via passwordResetFetcher useFetcherEffect.
+     */
+    const handlePasswordReset = () => {
+        if (userInfo.email) {
+            const formData = new FormData();
+            formData.append('email', userInfo.email);
+
+            void passwordResetFetcher.submit(formData, {
+                method: 'POST',
+                action: '/action/request-password-reset',
+            });
+        }
     };
 
     /**
@@ -326,6 +592,7 @@ function AccountDetailsContent({
                             variant="outline"
                             size="sm"
                             onClick={handleProfileEdit}
+                            disabled={!canSubmitCustomerUpdates}
                             className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
                             {t('common.edit')}
                         </Button>
@@ -340,7 +607,6 @@ function AccountDetailsContent({
                             initialData={{
                                 firstName: displayCustomer?.firstName || '',
                                 lastName: displayCustomer?.lastName || '',
-                                email: displayCustomer?.email || displayCustomer?.login || '',
                                 phone: displayCustomer?.phoneHome || displayCustomer?.phoneMobile || '',
                                 gender: displayCustomer?.gender !== undefined ? String(displayCustomer.gender) : '',
                                 birthday: displayCustomer?.birthday || '',
@@ -417,6 +683,69 @@ function AccountDetailsContent({
             </Card>
             <UITarget targetId="sfcc.myAccount.identity.verification" />
 
+            {/* Email Address Toggle Card */}
+            <ToggleCard
+                id="email"
+                data-testid="sf-toggle-card-email"
+                title={t('email.title')}
+                description={t('email.description')}
+                editing={isEditingEmail}
+                showHeaderSeparator
+                className="bg-card border-border">
+                <ToggleCardSummary>
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-foreground">{t('email.title')}</p>
+                            <div className="flex items-center gap-2">
+                                <p className="text-sm text-foreground" data-testid="email-value">
+                                    {userInfo.email || t('profile.notProvided')}
+                                </p>
+                                {isEmailVerificationEnabled && (
+                                    <Badge
+                                        data-testid={
+                                            isEmailVerified ? 'email-verified-badge' : 'email-unverified-badge'
+                                        }
+                                        variant={isEmailVerified ? 'info' : 'secondary'}>
+                                        {isEmailVerified ? t('email.verified') : t('email.unverified')}
+                                    </Badge>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {isEmailVerificationEnabled && !isEmailVerified && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleVerifyEmailClick}
+                                    className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                    {t('email.verifyEmail')}
+                                </Button>
+                            )}
+                            {isEmailVerificationEnabled && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleEmailEdit}
+                                    disabled={!canSubmitCustomerUpdates}
+                                    className="rounded-sm bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
+                                    {t('email.changeEmail')}
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </ToggleCardSummary>
+                <ToggleCardEdit>
+                    <EmailUpdateForm
+                        initialData={{ email: userInfo.email }}
+                        updateFetcher={updateEmailFetcher}
+                        onSuccess={handleEmailSuccess}
+                        onError={handleEmailError}
+                        onCancel={handleEmailCancel}
+                        requirePassword={hasPassword}
+                    />
+                </ToggleCardEdit>
+            </ToggleCard>
+
             {/* Interests & Preferences Section */}
             {customerId && (
                 <CustomerPreferencesProvider>
@@ -431,37 +760,41 @@ function AccountDetailsContent({
             {/* Password & Security Toggle Card */}
             <ToggleCard
                 id="password"
+                data-testid="sf-toggle-card-password"
                 title={t('password.title')}
                 description={t('password.description')}
                 editing={isEditingPassword}
                 showHeaderSeparator
                 className="bg-card border-border">
                 <ToggleCardSummary>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between" data-testid="sf-toggle-card-password-content">
                         <div className="space-y-2">
                             <p className="text-sm font-medium leading-5 text-foreground">{t('password.password')}</p>
                             <p className="text-sm font-normal leading-5 text-muted-foreground">
-                                {t('password.hiddenPassword')}
+                                {hasPassword ? t('password.hiddenPassword') : t('password.notProvided')}
                             </p>
                         </div>
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={handlePasswordEdit}
+                            disabled={!canSubmitCustomerUpdates}
+                            onClick={hasPassword ? handlePasswordEdit : handlePasswordReset}
                             className="rounded-none bg-card border-border text-foreground hover:bg-muted/50 px-4 py-2 text-sm font-medium">
-                            {t('password.changePassword')}
+                            {hasPassword ? t('password.changePassword') : t('password.resetPassword')}
                         </Button>
                     </div>
                 </ToggleCardSummary>
 
-                <ToggleCardEdit>
-                    <PasswordUpdateForm
-                        updateFetcher={passwordFetcher}
-                        onSuccess={handlePasswordSuccess}
-                        onError={handlePasswordError}
-                        onCancel={handlePasswordCancel}
-                    />
-                </ToggleCardEdit>
+                {hasPassword && (
+                    <ToggleCardEdit>
+                        <PasswordUpdateForm
+                            updateFetcher={passwordFetcher}
+                            onSuccess={handlePasswordSuccess}
+                            onError={handlePasswordError}
+                            onCancel={handlePasswordCancel}
+                        />
+                    </ToggleCardEdit>
+                )}
             </ToggleCard>
             <UITarget targetId="sfcc.myAccount.gdpr.dataRequest" />
             <UITarget targetId="sfcc.myAccount.gdpr.deleteAccount" />
@@ -475,6 +808,24 @@ function AccountDetailsContent({
                 }}
                 onConsentUpdated={() => void revalidator.revalidate()}
             />
+
+            {/* OTP Modal for passwordless email editing */}
+            {otpModalLoaded && (
+                <Suspense fallback={null}>
+                    <OtpModal
+                        isOpen={isOtpModalOpen}
+                        onClose={handleOtpCancel}
+                        email={otpModalEmail}
+                        onSuccess={handleOtpSuccess}
+                        onResendCode={handleOtpResend}
+                        otpLength={config.auth?.otpLength ?? 6}
+                        initialError={otpError}
+                        onVerifyCode={(code) => {
+                            void handleVerifyOtp(code);
+                        }}
+                    />
+                </Suspense>
+            )}
         </div>
     );
 }

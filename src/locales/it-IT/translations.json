@@ -1088,11 +1088,43 @@
                 "birthdayFuture": "La data di nascita non può essere futura."
             }
         },
+        "email": {
+            "title": "Indirizzo email",
+            "description": "Gestisci il tuo indirizzo email",
+            "changeEmail": "Cambia email",
+            "verifyEmail": "Verifica email",
+            "currentPassword": "Password",
+            "currentPasswordPlaceholder": "Inserisci la tua password",
+            "newEmail": "Nuovo Indirizzo Email",
+            "newEmailPlaceholder": "Inserisci il tuo nuovo indirizzo email",
+            "saveButton": "Salva",
+            "saving": "Salvataggio in corso...",
+            "cancelButton": "Annulla",
+            "successMessage": "Indirizzo email aggiornato con successo.",
+            "errorMessage": "Impossibile aggiornare l'indirizzo email. Riprova.",
+            "autoLoginFailed": "Email aggiornata con successo, ma l'accesso automatico non è riuscito. Acceda nuovamente.",
+            "otpSendFailed": "Impossibile inviare il codice di verifica. Riprova.",
+            "otpVerified": "Verifica riuscita.",
+            "invalidOtp": "Codice di verifica non valido. Riprova.",
+            "verified": "Verificato",
+            "unverified": "Non verificato",
+            "validation": {
+                "passwordRequired": "La password è obbligatoria.",
+                "emailRequired": "L'email è obbligatoria",
+                "emailInvalid": "Inserisca un indirizzo email valido"
+            }
+        },
         "password": {
             "title": "Password e sicurezza",
             "description": "Gestisci la tua password e le impostazioni di sicurezza",
             "edit": "Modifica",
-            "changePassword": "Modifica password",
+            "password": "Password",
+            "hiddenPassword": "••••••••",
+            "notProvided": "Non fornito",
+            "changePassword": "Cambia password",
+            "resetPassword": "Reimposta password",
+            "resetPasswordToast": "Riceverai un'email a {{email}} con un link per reimpostare la tua password a breve.",
+            "resetPasswordFailed": "Impossibile inviare l'email di reimpostazione password. Riprova.",
             "currentPassword": "Password corrente",
             "currentPasswordPlaceholder": "Inserisci la tua password attuale",
             "newPassword": "Nuova password",
@@ -1103,6 +1135,7 @@
             "cancelButton": "Annulla",
             "successMessage": "La password è stata aggiornata.",
             "errorMessage": "Impossibile aggiornare la password. Riprova.",
+            "autoLoginFailed": "Password aggiornata con successo, ma l'accesso automatico non è riuscito. Acceda nuovamente.",
             "validation": {
                 "currentPasswordRequired": "La password corrente è obbligatoria.",
                 "newPasswordRequired": "La nuova password è obbligatoria.",

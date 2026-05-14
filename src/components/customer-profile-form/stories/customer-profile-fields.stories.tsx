@@ -163,7 +163,6 @@ The Customer Profile Fields component renders the form fields for editing custom
 
 **Features:**
 - First name and last name fields
-- Email field
 - Phone number field (optional)
 - Gender dropdown (optional) - Male/Female selection
 - Date of birth field (optional) - Date picker
@@ -213,7 +212,6 @@ export const Default: Story = {
             defaultValues: {
                 firstName: '',
                 lastName: '',
-                email: '',
                 phone: '',
                 gender: '',
                 birthday: '',
@@ -249,11 +247,6 @@ export const Default: Story = {
         const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
         await expect(lastNameInput).toBeInTheDocument();
 
-        // Email is read-only (no placeholder) — find by label
-        const emailInput = canvas.getByLabelText(t('account:profile.email'));
-        await expect(emailInput).toBeInTheDocument();
-        await expect(emailInput).toHaveAttribute('readonly');
-
         // Phone is editable — verify by placeholder
         const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
         await expect(phoneInput).toBeInTheDocument();
@@ -285,7 +278,6 @@ export const WithInitialValues: Story = {
             defaultValues: {
                 firstName: 'John',
                 lastName: 'Doe',
-                email: 'john.doe@example.com',
                 phone: '555-1234',
                 gender: '1',
                 birthday: '1990-05-15',
@@ -321,9 +313,6 @@ export const WithInitialValues: Story = {
         const lastNameInput = canvas.getByDisplayValue('Doe');
         await expect(lastNameInput).toBeInTheDocument();
 
-        const emailInput = canvas.getByDisplayValue('john.doe@example.com');
-        await expect(emailInput).toBeInTheDocument();
-
         // Verify gender dropdown has correct value
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
         await expect(genderSelect).toHaveValue('1');
@@ -346,7 +335,6 @@ export const WithCancelButton: Story = {
             defaultValues: {
                 firstName: '',
                 lastName: '',
-                email: '',
                 phone: '',
                 gender: '',
                 birthday: '',
@@ -399,7 +387,6 @@ export const Submitting: Story = {
             defaultValues: {
                 firstName: 'John',
                 lastName: 'Doe',
-                email: 'john.doe@example.com',
                 phone: '555-1234',
                 gender: '1',
                 birthday: '1990-05-15',
@@ -451,7 +438,6 @@ export const Interactive: Story = {
             defaultValues: {
                 firstName: '',
                 lastName: '',
-                email: '',
                 phone: '',
                 gender: '',
                 birthday: '',
@@ -493,10 +479,6 @@ export const Interactive: Story = {
         const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
         await userEvent.type(phoneInput, '555-0123');
         await expect(phoneInput).toHaveValue('555-0123');
-
-        // Email is read-only — verify it exists and is not editable
-        const emailInput = canvas.getByLabelText(t('account:profile.email'));
-        await expect(emailInput).toHaveAttribute('readonly');
 
         // Select gender
         const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });

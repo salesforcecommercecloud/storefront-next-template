@@ -38,7 +38,8 @@ interface OtpModalProps {
     onResendCode?: () => Promise<void>;
     otpLength?: number;
     initialError?: string;
-    verifyActionUrl?: string;
+    verifyActionUrl?: string; // Custom action endpoint (defaults to /action/verify-passwordless-otp)
+    onVerifyCode?: (code: string) => void; // Callback to handle OTP verification externally
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,14 +69,15 @@ export default function OtpModal({
     otpLength = 6,
     initialError,
     verifyActionUrl = '/action/verify-passwordless-otp',
+    onVerifyCode,
 }: OtpModalProps): ReactElement {
     // Track if we've already called onSuccess to prevent infinite loops
     const hasCalledOnSuccessRef = useRef(false);
     const { t } = useTranslation('login');
-    const fetcher = useFetcher<typeof verifyPasswordlessOtpAction>({ key: 'otp-verification' });
+    const fetcherKey = verifyActionUrl === '/action/otp-verify' ? 'otp-email-verification' : 'otp-verification';
+    const fetcher = useFetcher<typeof verifyPasswordlessOtpAction>({ key: fetcherKey });
     const [error, setError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);
-
     const [resendTimer, setResendTimer] = useState(0);
     const schema = useMemo(() => createOtpSchema(t, otpLength), [t, otpLength]);
     const form = useForm<z.infer<ReturnType<typeof createOtpSchema>>>({
@@ -88,13 +90,17 @@ export default function OtpModal({
     const isLoading = fetcher.state === 'submitting' || fetcher.state === 'loading';
 
     const handleVerify = (code: string) => {
-        setIsVerifying(true);
         setError(null);
-
-        // Update form value for consistency
         form.setValue('otpCode', code);
 
-        // Submit OTP for verification
+        // If onVerifyCode callback is provided, use it (parent handles verification)
+        if (onVerifyCode) {
+            onVerifyCode(code);
+            return;
+        }
+
+        // Otherwise use fetcher
+        setIsVerifying(true);
         const formData = new FormData();
         formData.append('otpCode', code);
         formData.append('email', email);
@@ -137,7 +143,18 @@ export default function OtpModal({
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, initialError]);
+    }, [isOpen]);
+
+    // Update error when initialError changes (for external fetcher/manual error handling)
+    useEffect(() => {
+        if (initialError) {
+            setError(initialError);
+            setIsVerifying(false);
+            // Clear OTP inputs so user can retry
+            otpInputsRef.current.clear();
+            form.setValue('otpCode', '');
+        }
+    }, [initialError, form, otpInputsRef]);
 
     // Reset success guard when closing or submitting
     useEffect(() => {
@@ -147,6 +164,11 @@ export default function OtpModal({
     }, [isOpen, fetcher.state]);
 
     useEffect(() => {
+        // Skip this effect if using onVerifyCode callback (parent handles verification externally)
+        if (onVerifyCode) {
+            return;
+        }
+
         // Only proceed when fetcher is idle (server action has completed)
         // AND we haven't already called onSuccess for this verification
         // AND we have success data
@@ -170,7 +192,7 @@ export default function OtpModal({
             form.setValue('otpCode', '');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetcher.state, fetcher.data, onSuccess]);
+    }, [fetcher.state, fetcher.data, onSuccess, onVerifyCode]);
 
     const handleResend = async () => {
         if (!onResendCode || resendTimer > 0) return;

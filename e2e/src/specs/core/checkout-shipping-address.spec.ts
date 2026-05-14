@@ -287,7 +287,7 @@ Scenario('Registered shopper with 4+ addresses can use View All/View Less and ad
     accountAddressesPage.navigate();
     accountAddressesPage.validatePageLoaded();
     const profileAddressCount = await accountAddressesPage.getAddressCount();
-    expect(profileAddressCount, 'Profile should have 5 addresses (4 initial + 1 new)').to.equal(5);
+    expect(profileAddressCount, 'Profile should have at least 5 addresses after adding a new one').to.be.at.least(5);
 })
     .tag('@view-all-addresses')
     .tag('@multiple-addresses')

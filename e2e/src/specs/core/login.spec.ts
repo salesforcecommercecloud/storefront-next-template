@@ -85,7 +85,7 @@ Scenario('Guest shopper login transitions cookies from guest to authenticated', 
  */
 Scenario('Login with invalid credentials fails with error message', async () => {
     // Navigate to login page
-    loginPage.navigate();
+    loginPage.navigate('/login?mode=password');
     // Dismiss tracking consent first so form is visible
     await storefrontPage.handleTrackingConsent(true);
     loginPage.validatePageLoaded();

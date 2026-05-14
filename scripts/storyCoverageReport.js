@@ -76,6 +76,8 @@ const EXCLUDED_COMPONENTS = new Set([
     'customer-address-form/customer-address-fields',
     'customer-profile-form/form',
     'customer-profile-form/index',
+    'email-update-form/form',
+    'email-update-form/index',
     'forgot-password-form/form',
     'header/cart-badge-icon',
     'header/user-actions/user-menu',

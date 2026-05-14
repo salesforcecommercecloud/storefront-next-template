@@ -152,10 +152,13 @@ export function useFetcherEffect<TData = unknown>(
         const currentState = fetcher.state;
         const currentData = fetcher.data;
 
-        // Only process when the state has changed and we're in idle state (operation completed)
+        // Only process when the state has changed and we're in idle or loading state with data
+        // Loading state with data means the action completed but revalidation is happening
         const stateChanged = previousStateRef.current !== currentState;
+        const hasCompletedOperation =
+            currentState === 'idle' || (currentState === 'loading' && currentData !== undefined);
 
-        if (stateChanged && currentState === 'idle') {
+        if (stateChanged && hasCompletedOperation) {
             // Check if the operation was successful
             const success = defaultIsSuccess(currentData);
             const error = defaultGetError(currentData);

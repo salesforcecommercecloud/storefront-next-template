@@ -91,7 +91,7 @@ describe('registerCustomer', () => {
                     email: 'test@example.com',
                     password: 'SecurePassword123!',
                 },
-                {}
+                { customParameters: {} }
             );
 
             expect(result).toEqual({ success: true });
@@ -137,10 +137,12 @@ describe('registerCustomer', () => {
                     password: 'SecurePassword456!',
                 },
                 {
-                    c_customField1: 'value1',
-                    c_customField2: 123,
-                    c_customField3: true,
-                    c_customArray: ['item1', 'item2'],
+                    customParameters: {
+                        c_customField1: 'value1',
+                        c_customField2: 123,
+                        c_customField3: true,
+                        c_customArray: ['item1', 'item2'],
+                    },
                 }
             );
 

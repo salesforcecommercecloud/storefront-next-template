@@ -87,6 +87,13 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
         });
 
         logger.info('ResetPassword: password reset succeeded');
+        // Auto-login the user with new password to maintain session validity
+        // This matches the behavior when hasPassword={true} users change their password
+        // and is especially important for users who previously had hasPassword=false
+        const { loginRegisteredUser, updateAuth } = await import('@/middlewares/auth.server');
+        const authResponse = await loginRegisteredUser(context, email, newPassword, { skipUsid: true });
+        updateAuth(context, authResponse);
+
         // Password reset successful - redirect to login
         return redirect(buildUrlFromContext('/login', context));
     } catch (error) {
