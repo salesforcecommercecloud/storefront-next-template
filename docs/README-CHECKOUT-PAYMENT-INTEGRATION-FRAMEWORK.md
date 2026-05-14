@@ -298,6 +298,16 @@ Three layers of recovery:
 - Apply a replay-window check (`isWithinReplayWindow`) so a signed-but-stale request can't be replayed by an attacker who captured a webhook.
 - Idempotently apply state transitions. The same webhook may arrive twice (provider retry); the extension's order-update logic must be idempotent.
 
+### Client-side dispatch uses `'ready'` — flow type travels via formData
+
+The deferred flow's **client-side dispatch** uses the same `status: 'ready'` discriminant as synchronous-charge inline extensions:
+
+```typescript
+{ status: 'ready', extraFormData: { framework_paymentFlowType: 'deferred', /* PSP fields */ } }
+```
+
+The `'deferred'` value of `flowType` is server-side metadata that travels in formData; server hooks branch on it to apply the deferred payment-timing pattern. The framework's `place-order` action runs `beforePlaceOrder` → `createOrder` → `afterPlaceOrder` → redirect, and the webhook plumbing on `/action/payment-webhook` handles eventual PSP confirmation. See "Step 7" in Part 2 for the recipe.
+
 ## Saved Payment Methods
 
 Two models, distinguished by *who holds the reusable token and who can charge with it*:
@@ -533,15 +543,175 @@ return { redirectUrl: session.redirectUrl };
 2. Verify the webhook signature using your provider's SDK
 3. Update order payment status accordingly
 
+## Step 7: Build a Deferred (Webhook-Confirmed) Extension
+
+Use this recipe when payment is confirmed asynchronously by the provider (bank transfer, ACH, SEPA direct debit, BNPL underwriting, Stripe Payment Intents with `requires_capture`, deferred-capture cards). The shopper places the order and is redirected to confirmation; the order's `paymentStatus` stays `not_paid` until the provider fires a webhook back.
+
+This is **not a separate flow type** from the client's perspective. You use the same `'ready'` dispatch as a synchronous-charge inline extension. The only differences are (1) the value of `framework_paymentFlowType` in formData and (2) what your server hooks do.
+
+### Step 7.1: Set the flow type at mount
+
+```typescript
+// extensions/your-provider/components/your-provider-payment.tsx
+useEffect(() => {
+  const ref = paymentSubmissionRef.current;
+  ref.flowType = 'deferred'; // Server hooks read this from formData
+  ref.onPaymentSubmit = (ctx) => void handlePaymentSubmit(ctx);
+  return () => {
+    ref.onPaymentSubmit = null;
+    ref.flowType = null;
+  };
+}, [handlePaymentSubmit, paymentSubmissionRef]);
+```
+
+`flowType: 'deferred'` is forwarded to formData as `framework_paymentFlowType` by the framework, where server hooks branch their logic.
+
+### Step 7.2: Submit with provider session reference
+
+```typescript
+const handlePaymentSubmit = useCallback(async ({ submitPlaceOrder, basket }: PaymentSubmitContext) => {
+  // 1. Create a provider-side session WITHOUT capturing payment.
+  //    For Stripe deferred capture, this is a PaymentIntent with capture_method: 'manual'.
+  //    For ACH, this is a payment-session that the bank will confirm later.
+  const session = await yourProviderClient.createSession({
+    amount: basket.orderTotal,
+    currency: basket.currency,
+    confirmation: 'deferred',
+  });
+
+  // 2. Hand the session reference to the framework. Note the discriminant is 'ready'
+  //    (NOT 'deferred') — the client-side dispatch is identical to sync-inline.
+  submitPlaceOrder({
+    yourProviderSessionId: session.id,
+    yourProviderClientSecret: session.clientSecret, // if needed by webhook
+  });
+}, []);
+```
+
+### Step 7.3: `beforePlaceOrder` — attach a placeholder instrument
+
+The order needs *some* payment instrument to be created via SCAPI's `createOrder`, even when the actual capture happens later. Attach a placeholder so the basket validates.
+
+```typescript
+// extensions/your-provider/hooks/before-place-order.ts
+import type { BeforePlaceOrderHookData } from '@/lib/payment-gateway.types';
+
+export default async function beforePlaceOrder({ basket, formData }: BeforePlaceOrderHookData, context) {
+  const flowType = formData.get('framework_paymentFlowType');
+  if (flowType !== 'deferred') return; // Other flow types handled elsewhere
+
+  const sessionId = formData.get('yourProviderSessionId');
+  if (!sessionId) {
+    throw new Error('Missing provider session reference');
+  }
+
+  // Attach a placeholder payment instrument so SCAPI's createOrder accepts the basket.
+  // The actual amount will be captured later via webhook; the order will be created with
+  // paymentStatus: 'not_paid'.
+  await addPaymentInstrumentToBasket(context, basket.basketId, {
+    paymentMethodId: 'YOUR_PROVIDER_DEFERRED',
+    amount: basket.orderTotal,
+  });
+}
+```
+
+### Step 7.4: `afterPlaceOrder` — record the provider-side session ↔ order mapping
+
+The webhook arrives later with the provider's session ID, and your `onWebhook` hook needs to look up the corresponding Commerce Cloud order. Record the mapping now.
+
+```typescript
+// extensions/your-provider/hooks/after-place-order.ts
+import type { AfterPlaceOrderHookData } from '@/lib/payment-gateway.types';
+
+export default async function afterPlaceOrder({ order, basket, formData }: AfterPlaceOrderHookData, context) {
+  const flowType = formData.get('framework_paymentFlowType');
+  if (flowType !== 'deferred') return;
+
+  const sessionId = formData.get('yourProviderSessionId');
+
+  // Persist the mapping wherever your extension stores its operational state.
+  // Common choices: a custom Commerce Cloud custom-object, a side database, or
+  // updating the order's custom attributes.
+  await yourProviderStorage.recordOrderMapping({
+    orderNo: order.orderNo,
+    sessionId,
+    expectedAmount: basket.orderTotal,
+    expectedCurrency: basket.currency,
+  });
+}
+```
+
+### Step 7.5: `onWebhook` — verify and update order on provider confirmation
+
+```typescript
+// extensions/your-provider/hooks/on-webhook.ts
+import type { PaymentWebhookHookData } from '@/lib/payment-gateway.types';
+import { verifyHmacSha256, isWithinReplayWindow } from '@/lib/payment/webhook-signature.server';
+
+export default async function onWebhook({ rawBody, headers, signature }: PaymentWebhookHookData, context) {
+  // 1. Verify signature against raw body bytes (NOT a re-serialized JSON).
+  const valid = verifyHmacSha256(rawBody, signature, process.env.YOUR_PROVIDER_WEBHOOK_SECRET);
+  if (!valid) {
+    throw new Error('Invalid webhook signature');
+  }
+
+  // 2. Replay-window check.
+  const timestamp = headers['x-your-provider-timestamp'];
+  if (!isWithinReplayWindow(timestamp, 300)) {
+    throw new Error('Webhook outside replay window');
+  }
+
+  // 3. Parse payload (only after signature verification).
+  const event = JSON.parse(rawBody);
+
+  // 4. Look up the order via the mapping recorded in afterPlaceOrder.
+  const mapping = await yourProviderStorage.getOrderMappingBySession(event.session_id);
+  if (!mapping) return; // Idempotency: webhook for an order we don't know about
+
+  // 5. Update payment status idempotently.
+  if (event.type === 'session.confirmed') {
+    await updateOrderPaymentStatus(context, mapping.orderNo, 'paid');
+    // Optionally: send custom email, log metric, etc.
+  } else if (event.type === 'session.failed') {
+    await updateOrderPaymentStatus(context, mapping.orderNo, 'failed');
+  }
+}
+```
+
+### Step 7.6: Register the hooks
+
+```json
+{
+  "hooks": {
+    "CHECKOUT_PAYMENTS_BEFORE_PLACE_ORDER": { "module": "./hooks/before-place-order.ts" },
+    "CHECKOUT_PAYMENTS_AFTER_PLACE_ORDER": { "module": "./hooks/after-place-order.ts" },
+    "CHECKOUT_PAYMENTS_ON_WEBHOOK": { "module": "./hooks/on-webhook.ts" }
+  }
+}
+```
+
+That's the entire deferred recipe. The framework's `place-order` action runs all four hooks (`beforePlaceOrder` → `createOrder` → `afterPlaceOrder` → redirect to confirmation) and the existing webhook route dispatches your `onWebhook` handler.
+
+### Order-confirmation UX during the pending window
+
+The order-confirmation route reads `paymentStatus` from the `/orders` SCAPI response. When `paymentStatus === 'not_paid'` and `paymentInstruments` is empty, the page renders a "Payment Pending" notice statically. The page does NOT poll — confirmation reaches the shopper via the email triggered by your `onWebhook` handler (line 281 of "Order confirmation refresh"). If your provider confirms in seconds rather than days, that's still the right pattern; the shopper sees confirmed-and-paid the next time they refresh or revisit.
+
+If a merchant wants live updates on the confirmation page, they extend the order-confirmation route with their own polling — that's a per-merchant decision, not a framework responsibility.
+
 ## Multi-Flow Extension Example
 
-A single extension supporting cards (inline) and redirect methods (iDEAL, Klarna):
+A single extension supporting cards (inline), redirect methods (iDEAL, Klarna), and deferred-capture (ACH, bank transfer):
 
 ```typescript
 // In onPaymentSubmit - decide flow dynamically based on selected method
 ref.onPaymentSubmit = async (ctx) => {
   if (selectedMethod === 'ideal' || selectedMethod === 'klarna') {
     ctx.submitPlaceOrder({ framework_paymentFlowType: 'redirect', paymentMethod: selectedMethod });
+  } else if (selectedMethod === 'ach' || selectedMethod === 'bank_transfer') {
+    // Deferred - create a provider session, attach session ID, framework redirects to
+    // confirmation immediately. Webhook confirms payment later. See Step 7.
+    const session = await provider.createDeferredSession({ amount: ctx.basket.orderTotal });
+    ctx.submitPlaceOrder({ framework_paymentFlowType: 'deferred', providerSessionId: session.id });
   } else {
     // Card - authorize first, then submit
     const result = await confirmCardPayment(ctx.basket);
@@ -550,5 +720,5 @@ ref.onPaymentSubmit = async (ctx) => {
 };
 ```
 
-Server hooks branch on `formData.get('framework_paymentFlowType')` to handle both paths.
+Server hooks branch on `formData.get('framework_paymentFlowType')` to handle all three paths.
 

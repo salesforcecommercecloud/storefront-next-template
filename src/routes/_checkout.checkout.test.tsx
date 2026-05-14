@@ -505,4 +505,105 @@ describe('Checkout Route Components', () => {
             expect(screen.getByTestId('error-boundary')).toBeInTheDocument();
         });
     });
+
+    describe('shouldRevalidate', () => {
+        // Place-order entry points (`action.place-order`, `action.payment-redirect-finalize`,
+        // `action.payment-express-complete`) destroy the basket and 302 to order
+        // confirmation. The default revalidation runs the checkout loader against the
+        // now-destroyed basket, which causes the route to re-render with `basket = null`
+        // and unmount payment-extension components mid-flow.
+        //
+        // We skip revalidation on any 3xx response from an action — the navigation will
+        // run the destination route's loaders fresh, so revalidating the source route
+        // is wasted at best and harmful (causes the unmount) at worst.
+        const baseArgs = {
+            currentUrl: new URL('http://localhost/checkout'),
+            currentParams: {},
+            nextUrl: new URL('http://localhost/checkout'),
+            nextParams: {},
+            formMethod: 'POST' as const,
+            formAction: '/action/place-order',
+            formEncType: 'application/x-www-form-urlencoded' as const,
+            text: undefined,
+            formData: new FormData(),
+            json: undefined,
+        };
+
+        it('skips revalidation when action returns a 3xx redirect', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            const result = shouldRevalidate({
+                ...baseArgs,
+                actionStatus: 302,
+                defaultShouldRevalidate: true,
+            });
+            expect(result).toBe(false);
+        });
+
+        it.each([300, 301, 303, 307, 308])('skips revalidation for any 3xx status (%i)', async (status) => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            const result = shouldRevalidate({
+                ...baseArgs,
+                actionStatus: status,
+                defaultShouldRevalidate: true,
+            });
+            expect(result).toBe(false);
+        });
+
+        it('returns defaultShouldRevalidate when actionStatus is undefined (e.g., navigation, no action)', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            // Both true and false default values should pass through unchanged.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    actionStatus: undefined,
+                    defaultShouldRevalidate: true,
+                })
+            ).toBe(true);
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    actionStatus: undefined,
+                    defaultShouldRevalidate: false,
+                })
+            ).toBe(false);
+        });
+
+        it('returns defaultShouldRevalidate for 2xx (action succeeded but did not redirect)', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            // RR sets defaultShouldRevalidate=true on 2xx; we let it through so normal
+            // checkout-step actions (contact-info, shipping, etc.) refresh the loader.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    actionStatus: 200,
+                    defaultShouldRevalidate: true,
+                })
+            ).toBe(true);
+        });
+
+        it('returns defaultShouldRevalidate for 4xx (RR already sets default to false)', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            // RR sets defaultShouldRevalidate=false on 4xx; we delegate to that, so the
+            // result is false. The route does not need its own 4xx handling.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    actionStatus: 400,
+                    defaultShouldRevalidate: false,
+                })
+            ).toBe(false);
+        });
+
+        it('returns defaultShouldRevalidate for 5xx (RR already sets default to false)', async () => {
+            const { shouldRevalidate } = await import('./_checkout.checkout');
+            // RR sets defaultShouldRevalidate=false on 5xx; we delegate to that.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    actionStatus: 500,
+                    defaultShouldRevalidate: false,
+                })
+            ).toBe(false);
+        });
+    });
 });
