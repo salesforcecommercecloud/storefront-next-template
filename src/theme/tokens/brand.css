@@ -1,3 +1,9 @@
+/*
+ * Market Street brand palette — NOT in Figma JSON.
+ * These are storefront-theme primitives owned by the brand team; downstream
+ * tokens may reference them, but Figma's design-system file does not define
+ * them as variables.
+ */
 :root {
     /* brand primary (e.g. Write a Review button) */
     --brand-primary: #000000;

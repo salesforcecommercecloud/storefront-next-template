@@ -172,9 +172,7 @@ export default function CustomerReviewsSection(): ReactElement {
                             ) : (
                                 <div className="space-y-6 pt-4">
                                     {/* Rating summary card: rounded box with background (per UX) */}
-                                    <div
-                                        className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8 p-4 sm:p-6 rounded-none"
-                                        style={{ backgroundColor: '#f8f8f8' }}>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8 p-4 sm:p-6 rounded-none bg-secondary">
                                         {/* Left: Overall Rating */}
                                         <div className="flex flex-col items-start space-y-2">
                                             <StarRating

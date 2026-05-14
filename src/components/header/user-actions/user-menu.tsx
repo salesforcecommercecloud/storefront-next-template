@@ -41,9 +41,9 @@ interface UserMenuProps {
 
 // Common className for menu item links
 const menuItemClassName = cn(
-    'flex items-center gap-2 px-3 py-2 text-sm text-foreground rounded-none',
+    'flex items-center gap-2 px-3 py-2 text-sm text-popover-foreground rounded-none',
     'hover:bg-muted/50 transition-colors',
-    'outline-none focus-visible:bg-muted focus-visible:text-foreground'
+    'outline-none focus-visible:bg-muted focus-visible:text-popover-foreground'
 );
 
 export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElement {
@@ -247,8 +247,8 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
                         <Link
                             to="/signup"
                             className={cn(
-                                'text-foreground hover:underline rounded-none px-1 py-0.5',
-                                'outline-none focus-visible:bg-muted focus-visible:text-foreground'
+                                'text-popover-foreground hover:underline rounded-none px-1 py-0.5',
+                                'outline-none focus-visible:bg-muted focus-visible:text-popover-foreground'
                             )}
                             onMouseEnter={handleMenuItemMouseEnter}>
                             {t('menu.createAccount')}

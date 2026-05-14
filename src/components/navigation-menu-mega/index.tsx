@@ -125,7 +125,7 @@ export function MobileMenuDropdown(): ReactElement | null {
     return (
         <div
             className={cn(
-                'lg:hidden absolute left-0 right-0 top-full bg-header-background text-header-foreground border-b border-border shadow-lg z-40 max-h-[70vh] overflow-y-auto',
+                'lg:hidden absolute left-0 right-0 top-full bg-header-background text-header-foreground shadow-lg z-40 max-h-[70vh] overflow-y-auto',
                 { hidden: !context.isOpen }
             )}
             aria-hidden={!context.isOpen}>
@@ -297,7 +297,7 @@ export default function ResponsiveNavigationMenu({
                                 delayDuration={0}
                                 propsViewport={() => ({
                                     className:
-                                        'rounded-none border-0 border-b border-border shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
+                                        'rounded-none border-0 shadow-lg [&[data-state=open]]:animate-[menuSlideDown_0.15s_ease-in] [&[data-state=closed]]:animate-none will-change-transform',
                                     style: {
                                         position: 'fixed',
                                         top: 'var(--header-height)',

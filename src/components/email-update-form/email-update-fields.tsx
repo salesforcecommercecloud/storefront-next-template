@@ -54,7 +54,7 @@ export function EmailUpdateFields({ form, updateFetcher, onCancel, requirePasswo
                             <Input
                                 type="email"
                                 placeholder={t('email.newEmailPlaceholder')}
-                                className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                className="rounded-sm border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                 {...field}
                             />
                         </FormControl>
@@ -77,7 +77,7 @@ export function EmailUpdateFields({ form, updateFetcher, onCancel, requirePasswo
                                 <Input
                                     type="password"
                                     placeholder={t('email.currentPasswordPlaceholder')}
-                                    className="rounded-sm border-border focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                                    className="rounded-sm border-border focus:ring-2 focus:ring-ring focus:border-transparent"
                                     {...field}
                                 />
                             </FormControl>

@@ -8,9 +8,12 @@
 
 /* Token definitions (:root and .dark values) */
 @import './tokens/core.css';
+@import './tokens/custom.css';
 @import './tokens/status.css';
 @import './tokens/swatch.css';
 @import './tokens/header.css';
+@import './tokens/sidebar.css';
+@import './tokens/agentic.css';
 @import './tokens/brand.css';
 @import './tokens/components.css';
 

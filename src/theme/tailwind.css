@@ -18,6 +18,8 @@
     --color-primary-foreground: var(--primary-foreground);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
+    --color-tertiary: var(--tertiary);
+    --color-tertiary-foreground: var(--tertiary-foreground);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
     --color-muted-hover: var(--muted-hover);
@@ -27,11 +29,6 @@
     --color-border-subtle: var(--border-subtle);
     --color-input: var(--input);
     --color-ring: var(--ring);
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar-primary: var(--sidebar-primary);
@@ -106,6 +103,21 @@
     --color-footer-background: var(--footer-background);
     --color-footer-foreground: var(--footer-foreground);
 
+    /* -- agentic palette -- */
+    --color-agentic: var(--agentic);
+    --color-agentic-foreground: var(--agentic-foreground);
+    --color-agentic-primary: var(--agentic-primary);
+    --color-agentic-primary-foreground: var(--agentic-primary-foreground);
+    --color-agentic-accent: var(--agentic-accent);
+    --color-agentic-accent-foreground: var(--agentic-accent-foreground);
+    --color-agentic-border: var(--agentic-border);
+    --color-agentic-ring: var(--agentic-ring);
+    --color-agentic-muted: var(--agentic-muted);
+    --color-agentic-muted-foreground: var(--agentic-muted-foreground);
+    --color-agentic-border-subtle: var(--agentic-border-subtle);
+    --color-agentic-message-output: var(--agentic-message-output);
+    --color-agentic-message-input: var(--agentic-message-input);
+
     /* -- filter -- */
     --color-filter-selected: var(--filter-selected);
     --color-filter-selected-border: var(--filter-selected-border);
@@ -127,8 +139,4 @@
     --color-brand-gray-700: var(--brand-gray-700);
     --color-brand-gray-800: var(--brand-gray-800);
     --color-brand-gray-900: var(--brand-gray-900);
-    --color-brand-blue-100: var(--brand-blue-100);
-    --color-brand-blue-200: var(--brand-blue-200);
-    --color-brand-blue-600: var(--brand-blue-600);
-    --color-brand-blue-700: var(--brand-blue-700);
 }

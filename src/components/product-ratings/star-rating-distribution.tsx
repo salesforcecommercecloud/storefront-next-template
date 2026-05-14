@@ -64,7 +64,7 @@ export const StarRatingDistribution = forwardRef<HTMLElement, StarRatingDistribu
 
         const rowClassName = cn(
             'flex items-center gap-2 text-sm rounded-none py-1 px-1 -mx-1',
-            isClickable && 'cursor-pointer hover:bg-[#f0f0f0]'
+            isClickable && 'cursor-pointer hover:bg-brand-gray-200'
         );
 
         const content = (
@@ -79,8 +79,10 @@ export const StarRatingDistribution = forwardRef<HTMLElement, StarRatingDistribu
 
                 {/* Percentage bar: light blue when selected, grey otherwise; yellow fill on top */}
                 <div
-                    className="flex-1 min-w-0 h-2 rounded-full overflow-hidden shrink-0"
-                    style={{ backgroundColor: isSelected ? '#dbeafe' : '#e5e5e5' }}
+                    className={cn(
+                        'flex-1 min-w-0 h-2 rounded-full overflow-hidden shrink-0',
+                        isSelected ? 'bg-info-foreground' : 'bg-brand-gray-300'
+                    )}
                     aria-hidden="true">
                     <div className="bg-rating h-full transition-all duration-300" style={{ width: `${percentage}%` }} />
                 </div>

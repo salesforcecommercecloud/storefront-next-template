@@ -1,3 +1,9 @@
+/*
+ * Swatch tokens — NOT in Figma JSON.
+ * Storefront-specific composition: most slots alias core tokens (--secondary,
+ * --primary, --input). The literal --swatch-color-shadow and --swatch-color-border-hover
+ * values are storefront chrome with no Figma counterpart.
+ */
 :root {
     --swatch-group-bg: transparent;
     --swatch-bg: var(--secondary);

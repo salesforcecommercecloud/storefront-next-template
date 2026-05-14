@@ -1,5 +1,11 @@
+/*
+ * Component-scoped tokens not part of the core/status palettes.
+ * Payment provider tokens (--paypal-gold, --venmo-blue) are NOT in Figma JSON —
+ * they're brand-mark colors fixed by external brand guidelines.
+ * Cart and product-badge tokens are semantic aliases of core Figma tokens.
+ */
 :root {
-    /* payment provider colors */
+    /* payment provider colors (not in Figma JSON; external brand guidelines) */
     --paypal-gold: #FFC439;
     --venmo-blue: #3D95CE;
 
@@ -7,18 +13,18 @@
     --cart-summary-px: 1rem;
 
     /* product badge — promo variant (Sale, Best Seller); values per Figma design system */
-    --product-badge-promo-bg: #131315;
-    --product-badge-promo-foreground: #dbeafe;
+    --product-badge-promo-bg: var(--primary);
+    --product-badge-promo-foreground: var(--info-foreground);
 }
 
 .dark {
-    /* payment provider colors */
+    /* payment provider colors (not in Figma JSON; external brand guidelines) */
     --paypal-gold: #FFC439;
     --venmo-blue: #3D95CE;
 
-    /* product badge — promo variant. Dark mode flips light values to keep WCAG AA contrast;
-       Figma's defined dark mode values for these tokens produce 1.19:1 (fails AA) — tracked in
-       a separate UX/design-system bug. */
-    --product-badge-promo-bg: #dbeafe;
+    /* product badge — promo variant. Dark mode flips bg to the light-blue --info-foreground
+       so the badge stays visible on a dark page bg. Foreground is hardcoded to near-black
+       because dark --primary (#EBEBEB) on #DBEAFE bg would fail WCAG AA. */
+    --product-badge-promo-bg: var(--info-foreground);
     --product-badge-promo-foreground: #131315;
 }

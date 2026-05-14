@@ -110,10 +110,9 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
             data-testid="review-card"
             aria-labelledby={`review-headline-${review.id}`}>
             <div className="flex gap-3">
-                {/* Avatar - circle with grey background (brand-gray-200) */}
+                {/* Avatar - circle with grey background */}
                 <div
-                    className="flex size-12 shrink-0 items-center justify-center rounded-full text-sm leading-7 font-medium text-brand-gray-600"
-                    style={{ backgroundColor: '#ededed' }}
+                    className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-gray-200 text-sm leading-7 font-medium text-brand-gray-600"
                     aria-hidden>
                     {initial}
                 </div>
@@ -156,7 +155,7 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                         <button
                             type="button"
                             onClick={() => setExpanded((prev) => !prev)}
-                            className="mt-1 cursor-pointer text-sm font-medium text-brand-blue hover:underline"
+                            className="mt-1 cursor-pointer text-sm font-medium text-info hover:underline"
                             data-testid={expanded ? 'review-read-less' : 'review-read-more'}>
                             {expanded ? t('readLess') : t('readMore')}
                         </button>
@@ -230,12 +229,11 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                             document.body
                         )}
 
-                    {/* Helpful + Report - hover: brand-blue (theme token) */}
                     <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
                         <button
                             type="button"
                             onClick={() => setHelpfulCount((c) => c + 1)}
-                            className="inline-flex cursor-pointer items-center gap-1 hover:text-brand-blue"
+                            className="inline-flex cursor-pointer items-center gap-1 hover:text-info"
                             data-testid="review-helpful">
                             <ThumbsUp className="size-4" aria-hidden />
                             {helpfulCount > 0 ? t('helpful', { count: helpfulCount }) : t('helpfulNoCount')}
@@ -243,7 +241,7 @@ export function ReviewCard({ review, className }: ReviewCardProps): ReactElement
                         {review.reportLabel && (
                             <button
                                 type="button"
-                                className="cursor-pointer hover:text-brand-blue hover:underline"
+                                className="cursor-pointer hover:text-info hover:underline"
                                 data-testid="review-report">
                                 {review.reportLabel}
                             </button>

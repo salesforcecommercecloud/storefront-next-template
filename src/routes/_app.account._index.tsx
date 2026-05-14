@@ -562,7 +562,7 @@ function AccountDetailsContent({
             <Card data-testid="profile-card" className="bg-card border-border rounded-none shadow-none">
                 <CardHeader className="flex flex-row items-start justify-between border-b border-border pb-4">
                     <div className="space-y-1.5">
-                        <CardTitle className="text-base font-semibold text-foreground">{t('profile.title')}</CardTitle>
+                        <CardTitle className="text-base font-semibold">{t('profile.title')}</CardTitle>
                         <CardDescription className="text-muted-foreground">{t('profile.description')}</CardDescription>
                     </div>
                     {isEditingProfile ? (

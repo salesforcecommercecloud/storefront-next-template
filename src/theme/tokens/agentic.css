@@ -1,0 +1,30 @@
+:root {
+    --agentic: #8A38F5;
+    --agentic-foreground: #17171B;
+    --agentic-primary: #131315;
+    --agentic-primary-foreground: #FFFFFF;
+    --agentic-accent: #ECECEC;
+    --agentic-accent-foreground: #373737;
+    --agentic-border: #9CA3AF;
+    --agentic-border-subtle: #D1D5DB;
+    --agentic-ring: #3B82F6;
+    --agentic-muted: #F9FAFB;
+    --agentic-muted-foreground: #35353B;
+    --agentic-message-output: #171717;
+    --agentic-message-input: #DBEAFE;
+}
+
+.dark {
+    --agentic: #8A38F5;
+    --agentic-foreground: #E5E5E5;
+    --agentic-primary: #EBEBEB;
+    --agentic-primary-foreground: #000000;
+    --agentic-accent: #000000;
+    --agentic-accent-foreground: #FFFFFF;
+    --agentic-border: #404040;
+    --agentic-ring: #3B82F6;
+    --agentic-muted: #262626;
+    --agentic-muted-foreground: #A3A3A3;
+    --agentic-message-output: #FAFAFA;
+    --agentic-message-input: #1D4ED8;
+}

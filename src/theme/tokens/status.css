@@ -1,10 +1,13 @@
+/*
+ * Status-specific tokens not in the core palette.
+ * Core tokens (--destructive, --success, --warning, --info and their -foreground pairs)
+ * are defined in core.css from the Figma source of truth — do not duplicate here.
+ *
+ * All tokens in this file are NOT in Figma JSON; they are storefront-specific
+ * compositions or legacy shades pending design-system unification.
+ */
 :root {
-    --destructive: #000000;
-    --destructive-foreground: #ffffff;
-
-    /* warning (e.g. caution messages, default-payment warning) */
-    --warning: #C2410C;
-    --warning-foreground: #9a3412;
+    /* warning extras (e.g. caution messages, default-payment warning) */
     --warning-bg: #fff7ed;
     --warning-border: #fed7aa;
 
@@ -13,17 +16,11 @@
     --active-foreground: #15803d;
 
     /* account/payment destructive actions (remove payment, remove address, etc.) — scoped so global --destructive is unchanged */
-    --account-action-destructive: #ef4444;
+    --account-action-destructive: var(--destructive);
     --account-action-destructive-foreground: #ffffff;
 
-    --success: #000000;
-    --success-foreground: #ffffff;
-
-    --info: #dbeafe;
-    --info-foreground: #1e40af;
-
     /* status colors (for inventory, availability indicators, etc.) */
-    --status-positive: #2E844A;
+    --status-positive: var(--success);
     --status-warning: #C2410C;
     --status-critical: #DC2626;
     --status-critical-strong: #dc2626;
@@ -34,13 +31,7 @@
 }
 
 .dark {
-    --destructive: #9e9e9e;
-    --destructive-foreground: #000000;
-
     /* account/payment destructive actions (same red as light for consistency) */
-    --account-action-destructive: #ef4444;
+    --account-action-destructive: var(--destructive);
     --account-action-destructive-foreground: #ffffff;
-
-    --success: #fafafa;
-    --success-foreground: #000000;
 }
