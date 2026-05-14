@@ -233,14 +233,44 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.error).toBeTruthy();
     });
 
-    it('does not return requiresLogin for non-400 ApiErrors', async () => {
+    it('treats SLAS 404 (unknown user) as a non-error guest path: HTTP 200 with success=false and no error', async () => {
         const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
         const apiError = new ApiError({
-            status: 500,
-            statusText: 'Internal Server Error',
+            status: 404,
+            statusText: 'Not Found',
             headers: new Headers(),
-            body: { type: 'error', title: 'Server Error', detail: 'Something went wrong' },
-            rawBody: '{"type":"error","title":"Server Error","detail":"Something went wrong"}',
+            body: { type: 'error', title: 'Not Found', detail: 'User not found' },
+            rawBody: '{"message":"User not found"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockAuthorizePasswordless.mockRejectedValue(apiError);
+
+        const formData = new FormData();
+        formData.append('email', 'unknown@example.com');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = response.data;
+
+        expectStatus(response, 200);
+        expect(result.success).toBe(false);
+        expect(result.email).toBe('unknown@example.com');
+        expect(result.error).toBeUndefined();
+        expect(result.requiresLogin).toBeUndefined();
+    });
+
+    it('treats SLAS 5xx upstream unavailability as requires-login fallback: HTTP 200 with requiresLogin=true', async () => {
+        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const apiError = new ApiError({
+            status: 502,
+            statusText: 'Bad Gateway',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Gateway', detail: 'Upstream timeout' },
+            rawBody: '{"type":"error","title":"Bad Gateway","detail":"Upstream timeout"}',
             url: 'https://api.example.com/authorize-passwordless',
             method: 'POST',
         });
@@ -256,9 +286,10 @@ describe('action.authorize-passwordless-email', () => {
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
         const result = response.data;
 
-        expectStatus(response, 500);
+        expectStatus(response, 200);
         expect(result.success).toBe(false);
-        expect(result.requiresLogin).toBeUndefined();
-        expect(result.error).toBeTruthy();
+        expect(result.requiresLogin).toBe(true);
+        expect(result.email).toBe('user@example.com');
+        expect(result.error).toBeUndefined();
     });
 });
