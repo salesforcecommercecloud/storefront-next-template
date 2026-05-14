@@ -1484,7 +1484,8 @@
         "viewCart": "View Cart",
         "saved": "Saved {{amount}}",
         "free": "Free",
-        "closeAriaLabel": "Close"
+        "closeAriaLabel": "Close",
+        "each": "each"
     },
     "trackingConsent": {
         "title": "Tracking Consent",

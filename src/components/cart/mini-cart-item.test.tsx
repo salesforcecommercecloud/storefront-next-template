@@ -152,6 +152,36 @@ describe('MiniCartItem', () => {
         expect(screen.queryByText(/Saved/)).not.toBeInTheDocument();
     });
 
+    it('renders line total and unit price each-row when quantity > 1', () => {
+        const productWithQty3 = {
+            ...mockProduct,
+            quantity: 3,
+            // priceAfterItemDiscount on basket items already represents the line total at qty
+            price: 60.0,
+            priceAfterItemDiscount: 45.0,
+        };
+        renderWithRouter(<MiniCartItem product={productWithQty3} />);
+        // Line total is shown as the primary price.
+        expect(screen.getByText('£45.00')).toBeInTheDocument();
+        // Unit price each-row appears under the line total.
+        expect(screen.getByText(/£15\.00\s+each/)).toBeInTheDocument();
+    });
+
+    it('does not render the each-row when quantity is 1', () => {
+        renderWithRouter(<MiniCartItem product={mockProduct} />);
+        expect(screen.queryByText(/each/)).not.toBeInTheDocument();
+    });
+
+    it('renders Free instead of price when item is a free bonus', () => {
+        const freeProduct = {
+            ...mockProduct,
+            price: 0,
+            priceAfterItemDiscount: 0,
+        };
+        renderWithRouter(<MiniCartItem product={freeProduct} />);
+        expect(screen.getByText('Free')).toBeInTheDocument();
+    });
+
     it('renders product image', () => {
         renderWithRouter(<MiniCartItem product={mockProduct} />);
         const img = screen.getByAltText('Product image');

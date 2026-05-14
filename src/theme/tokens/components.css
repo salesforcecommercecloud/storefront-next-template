@@ -5,8 +5,6 @@
 
     /* cart & mini-cart tokens */
     --cart-summary-px: 1rem;
-    --cart-free-price: #2E844A;
-    --cart-free-price-size: 1.125rem;
 
     /* product badge — promo variant (Sale, Best Seller); values per Figma design system */
     --product-badge-promo-bg: #131315;

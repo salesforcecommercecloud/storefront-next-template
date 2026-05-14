@@ -434,7 +434,7 @@ function ProductItem({
                                             <div className="inline-flex flex-col items-end font-semibold text-base">
                                                 {(productItem.priceAfterItemDiscount ?? productItem.price ?? 0) ===
                                                 0 ? (
-                                                    <span className="text-[var(--cart-free-price)] text-[length:var(--cart-free-price-size)] font-semibold">
+                                                    <span className="text-xl font-semibold text-status-positive">
                                                         {t('miniCart:free')}
                                                     </span>
                                                 ) : (

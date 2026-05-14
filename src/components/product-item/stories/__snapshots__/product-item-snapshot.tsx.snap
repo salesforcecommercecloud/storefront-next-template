@@ -96,7 +96,7 @@ exports[`ProductItem stories snapshot > AutoBonusProduct story renders and match
                         class="inline-flex flex-col items-end font-semibold text-base"
                       >
                         <span
-                          class="text-[var(--cart-free-price)] text-[length:var(--cart-free-price-size)] font-semibold"
+                          class="text-xl font-semibold text-status-positive"
                         >
                           Free
                         </span>
@@ -264,7 +264,7 @@ exports[`ProductItem stories snapshot > ChoiceBasedBonusProduct story renders an
                         class="inline-flex flex-col items-end font-semibold text-base"
                       >
                         <span
-                          class="text-[var(--cart-free-price)] text-[length:var(--cart-free-price-size)] font-semibold"
+                          class="text-xl font-semibold text-status-positive"
                         >
                           Free
                         </span>

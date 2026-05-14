@@ -37,6 +37,7 @@ import { getDisplayVariationValues } from '@/lib/product/product-utils';
 import { getEffectiveStockLevel } from '@/lib/product/inventory-utils';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { toImageUrl } from '@/lib/images/dynamic-image';
+import { formatCurrency } from '@/lib/currency';
 import ProductPrice from '@/components/product-price';
 import { Typography } from '@/components/typography';
 import QuantityPicker from '@/components/quantity-picker/quantity-picker';
@@ -110,7 +111,7 @@ export default function MiniCartItem({
     isPickup = false,
 }: MiniCartItemProps): ReactElement {
     const config = useConfig<AppConfig>();
-    const { t: tMiniCart } = useTranslation('miniCart');
+    const { t: tMiniCart, i18n } = useTranslation('miniCart');
     const { t: tRemoveItem } = useTranslation('removeItem');
     const { currency } = useSite();
     const productAltFallback = tMiniCart('productAltFallback') || 'Product';
@@ -219,28 +220,39 @@ export default function MiniCartItem({
                     </div>
 
                     <div className="flex w-full max-w-[11rem] justify-self-end flex-col items-end text-right">
-                        <ProductPrice
-                            product={product}
-                            currency={currency}
-                            quantity={1}
-                            type="unit"
-                            labelForA11y={product.productName || productAltFallback}
-                            className="flex flex-col-reverse items-end gap-0 text-right"
-                            currentPriceProps={{
-                                as: 'h5',
-                                className:
-                                    'text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0',
-                            }}
-                            listPriceProps={{
-                                as: 'h5',
-                                className:
-                                    'text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0',
-                            }}
-                            promoCalloutProps={{
-                                className:
-                                    'mt-1 inline-flex w-fit rounded-none border-0 bg-muted px-2 py-0.5 text-xs font-semibold leading-4 text-secondary-foreground',
-                            }}
-                        />
+                        {(product.priceAfterItemDiscount ?? product.price ?? 0) === 0 ? (
+                            <span className="text-xl font-semibold text-status-positive">{tMiniCart('free')}</span>
+                        ) : (
+                            <ProductPrice
+                                product={product}
+                                currency={currency}
+                                quantity={product.quantity ?? 1}
+                                type="total"
+                                labelForA11y={product.productName || productAltFallback}
+                                hidePromo
+                                className="flex flex-col-reverse items-end gap-0 text-right"
+                                currentPriceProps={{
+                                    as: 'h5',
+                                    className:
+                                        'text-xl font-semibold leading-none tracking-[-0.6px] text-card-foreground [&:not(:first-child)]:mt-0',
+                                }}
+                                listPriceProps={{
+                                    as: 'h5',
+                                    className:
+                                        'text-xl font-normal leading-[120%] tracking-[-0.6px] text-card-foreground line-through [&:not(:first-child)]:mt-0',
+                                }}
+                            />
+                        )}
+                        {(product.quantity ?? 1) > 1 && (
+                            <div className="text-right text-muted-foreground text-sm">
+                                {formatCurrency(
+                                    (product.priceAfterItemDiscount ?? product.price ?? 0) / (product.quantity || 1),
+                                    i18n.language,
+                                    currency
+                                )}{' '}
+                                {tMiniCart('each')}
+                            </div>
+                        )}
                         <UITarget targetId="sfcc.miniCart.shipping.deliveryEstimate" />
                         <UITarget targetId="sfcc.miniCart.tax.lineItemMessage" />
                         <ProductItemPromotions
