@@ -91,6 +91,28 @@ export function getPublicSessionData(session: AuthData): PublicSessionData {
 }
 
 /**
+ * Whether the session can authorize SCAPI shopper-customer reads against the customer's
+ * own resources. True for any session (guest or registered) that has a non-empty
+ * `customerId` and a still-valid access token. False for sessions missing a token or
+ * customerId, or whose token has expired.
+ *
+ * Use this anywhere a server-side caller needs to decide between "call SCAPI on behalf
+ * of this shopper" and "skip the call and return an empty payload". Replaces the older
+ * `userType === 'registered'` check, which excluded guests from endpoints that SCAPI
+ * itself accepts guest tokens for (product-lists, baskets, etc.).
+ */
+export function hasUsableShopperSession(
+    session: AuthData
+): session is AuthData & { customerId: string; accessToken: string; accessTokenExpiry: number } {
+    return Boolean(
+        session.customerId &&
+            session.accessToken &&
+            typeof session.accessTokenExpiry === 'number' &&
+            session.accessTokenExpiry > Date.now()
+    );
+}
+
+/**
  * Get refresh token expiry configuration for a specific user type.
  * Returns the final expiry time in seconds, either from environment variables or API response fallback.
  * If userType is not provided, returns the API response value.

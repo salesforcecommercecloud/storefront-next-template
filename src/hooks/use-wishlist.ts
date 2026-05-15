@@ -18,7 +18,6 @@ import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import { useToast } from '@/components/toast';
-import { useRequireAuth } from '@/hooks/use-require-auth';
 import type { action as wishlistAddAction } from '@/routes/action.wishlist-add';
 import type { action as wishlistRemoveAction } from '@/routes/action.wishlist-remove';
 
@@ -140,10 +139,11 @@ export const useWishlist = (options?: UseWishlistOptions) => {
         [wishlistItems]
     );
 
-    // Base toggle function (without auth check).
+    // Toggle the wishlist state for a product. Works for both guest and registered
+    // sessions — SCAPI accepts the underlying `customerId` from either token type.
     // Fire-and-forget: submit is called synchronously and the useEffect handlers
     // above react to the fetcher state/data changes on subsequent renders.
-    const toggleWishlistBase = useCallback(
+    const toggleWishlist = useCallback(
         (product: ShopperSearch.schemas['ProductSearchHit'], variant?: ShopperSearch.schemas['ProductSearchHit']) => {
             const productId = variant?.productId || product.productId;
             if (!productId) {
@@ -178,23 +178,6 @@ export const useWishlist = (options?: UseWishlistOptions) => {
         },
         [wishlistItems, addFetcher, removeFetcher, addToast, t]
     );
-
-    // Wrap with auth requirement
-    const toggleWishlist = useRequireAuth(toggleWishlistBase as (...args: unknown[]) => Promise<unknown>, {
-        actionName: 'addToWishlist',
-        getActionParams: (...args: unknown[]) => {
-            const product = args[0] as ShopperSearch.schemas['ProductSearchHit'];
-            const variant = args[1] as ShopperSearch.schemas['ProductSearchHit'] | undefined;
-            const productId = variant?.productId || product.productId;
-            const productName = product.productName;
-            return productId ? { productId, productName } : {};
-        },
-        getReturnUrl: () => window.location.pathname + window.location.search,
-        toastMessage: t('product:signInToAddToWishlist'),
-    }) as (
-        product: ShopperSearch.schemas['ProductSearchHit'],
-        variant?: ShopperSearch.schemas['ProductSearchHit']
-    ) => Promise<void>;
 
     return {
         wishlist: Array.from(wishlistItems),

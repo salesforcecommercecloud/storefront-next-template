@@ -18,9 +18,7 @@ import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi
 import { data } from 'react-router';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { isRegisteredCustomer } from '@/lib/api/customer.server';
-import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist.server';
+import { getOrCreateWishlist, getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
@@ -29,103 +27,14 @@ type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
 
 /**
- * Constants for wishlist operations
- */
-const WISHLIST_CREATION_DELAY_MS = 1500; // Time to wait for Commerce Cloud to index new wishlist
-const WISHLIST_RETRY_DELAY_MS = 2000; // Time to wait before retrying to fetch wishlist ID
-
-/**
- * Get or create the default wishlist (product list) for a customer
- */
-async function getOrCreateWishlist(
-    context: Route.ActionArgs['context'],
-    customerId: string
-): Promise<CustomerProductList> {
-    const { t } = getTranslation();
-    const clients = createApiClients(context);
-
-    try {
-        // Try to get the default wishlist using getWishlist
-        const { wishlist, id: listId } = await getWishlist(context, customerId);
-
-        if (wishlist) {
-            // Commerce Cloud may take time to index wishlists. If the wishlist exists but
-            // doesn't have a listId yet, wait and retry once to handle indexing delays.
-            // This ensures the function contract: always return a wishlist with valid listId.
-            if (listId) {
-                return wishlist; // Has valid listId
-            }
-
-            // Retry logic: wait and fetch again (Commerce Cloud indexing delay)
-            await new Promise((resolve) => setTimeout(resolve, WISHLIST_RETRY_DELAY_MS));
-
-            const { wishlist: retryWishlist, id: retryListId } = await getWishlist(context, customerId);
-
-            if (retryWishlist && retryListId) {
-                return retryWishlist;
-            }
-
-            throw new Error(t('account:wishlist.unableToRetrieveId'));
-        }
-
-        // Create a new wishlist if it doesn't exist
-        // Commerce SDK createCustomerProductList might not return listId immediately
-        // So we'll always fetch the list after creation to ensure we have the listId
-        await clients.shopperCustomers.createCustomerProductList({
-            params: {
-                path: { customerId },
-            },
-            body: {
-                type: 'wish_list',
-                public: false,
-                name: t('account:wishlist.wishlistName'),
-            },
-        });
-
-        // Wait for the list to be fully created and indexed in Commerce Cloud
-        // This is necessary because Commerce Cloud may not return listId in the create response
-        await new Promise((resolve) => setTimeout(resolve, WISHLIST_CREATION_DELAY_MS));
-
-        // Fetch the newly created wishlist using getWishlist
-        const { wishlist: createdWishlist, id: createdListId } = await getWishlist(context, customerId);
-
-        if (!createdWishlist || !createdListId) {
-            throw new Error(t('account:wishlist.failedToCreate'));
-        }
-        return createdWishlist;
-    } catch (error) {
-        // If creating fails, try to get the first available list
-        const { data: productLists } = await clients.shopperCustomers.getCustomerProductLists({
-            params: {
-                path: { customerId },
-            },
-        });
-        const firstList = productLists?.data?.[0];
-        if (firstList) {
-            return firstList;
-        }
-        throw error;
-    }
-}
-
-/**
- * Add a product to the customer's wishlist
+ * Add a product to the customer's wishlist. Works for both guest (gcid) and
+ * registered (rcid) sessions — SCAPI's product-list endpoints accept either
+ * shopper token type, so the only requirement is a valid customerId on the session.
  */
 async function addToWishlist(
     context: Route.ActionArgs['context'],
     productId: string
 ): Promise<WishlistActionResponse & { productList?: CustomerProductList }> {
-    // Check if user is authenticated as registered customer
-    if (!isRegisteredCustomer(context)) {
-        return {
-            success: false,
-            error: createActionError({
-                code: ErrorCode.NOT_AUTHENTICATED,
-                message: 'You must be logged in to add items to your wishlist',
-            }),
-        };
-    }
-
     const session = getAuth(context);
     if (!session.customerId) {
         return {

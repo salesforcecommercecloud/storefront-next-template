@@ -135,7 +135,6 @@
     "addedToWishlist": "Added {{productName}} to wishlist.",
     "alreadyInWishlist": "{{productName}} is already in your wishlist.",
     "failedToAddToWishlist": "Failed to add item to wishlist.",
-    "signInToAddToWishlist": "Sign in to add items to your wishlist.",
     "signInToContinue": "Sign in to continue.",
     "removedFromWishlist": "Removed from wishlist.",
     "failedToRemoveFromWishlist": "Failed to remove item from wishlist.",

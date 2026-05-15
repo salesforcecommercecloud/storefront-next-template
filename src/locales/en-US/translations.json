@@ -898,6 +898,8 @@
             "itemNotFound": "Item not found in wishlist",
             "mustLoginToAdd": "You must be logged in to add items to your wishlist.",
             "mustLoginToRemove": "You must be logged in to remove items from your wishlist.",
+            "loadErrorMessage": "We couldn't load your wishlist. Please try again.",
+            "loadErrorRetry": "Try again",
             "sortBy": "Sort by",
             "sort": {
                 "recentlyAdded": "Recently Added",

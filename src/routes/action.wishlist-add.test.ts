@@ -21,17 +21,12 @@ import { createTestContext, expectStatus } from '@/lib/test-utils';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 
 // Mock dependencies
-const mockIsRegisteredCustomer = vi.fn();
 const mockGetAuth = vi.fn();
 const mockCreateApiClients = vi.fn();
 const mockExtractResponseError = vi.fn();
 
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: () => mockGetAuth(),
-}));
-
-vi.mock('@/lib/api/customer.server', () => ({
-    isRegisteredCustomer: () => mockIsRegisteredCustomer(),
 }));
 
 vi.mock('@/lib/api-clients.server', () => ({
@@ -89,7 +84,6 @@ describe('action.wishlist-add', () => {
         vi.clearAllMocks();
 
         // Setup default mocks
-        mockIsRegisteredCustomer.mockReturnValue(true);
         mockGetAuth.mockReturnValue({
             customerId: 'customer-123',
             userType: 'registered',
@@ -184,8 +178,15 @@ describe('action.wishlist-add', () => {
             expect(json).toHaveProperty('error');
         });
 
-        test('should return error when user is not authenticated', async () => {
-            mockIsRegisteredCustomer.mockReturnValue(false);
+        test('should return error when session has no customerId', async () => {
+            // The auth-gate-by-userType was removed when guest support was added.
+            // The remaining session check rejects requests with no customerId at all
+            // (e.g. a torn-down session) — both guest (gcid) and registered (rcid)
+            // tokens supply customerId on a valid session.
+            mockGetAuth.mockReturnValue({
+                customerId: null,
+                userType: 'guest',
+            } as any);
             const request = createRequest('product-123');
             const args: ActionFunctionArgs = {
                 request,
@@ -195,7 +196,6 @@ describe('action.wishlist-add', () => {
             };
 
             const response = await action(args);
-            // data() returns DataWithResponseInit with data property
             let json: any;
             if (response instanceof Response) {
                 json = await response.json();
@@ -206,6 +206,48 @@ describe('action.wishlist-add', () => {
             }
             expect(json.success).toBe(false);
             expect(json.error).toBeDefined();
+        });
+
+        test('should add to wishlist as a guest user (gcid customerId)', async () => {
+            // Guest sessions have userType='guest' and customerId=gcid.
+            // The action route accepts these the same as registered sessions —
+            // SCAPI's product-list endpoints accept guest tokens.
+            mockGetAuth.mockReturnValue({
+                customerId: 'guest-gcid-456',
+                userType: 'guest',
+            } as any);
+
+            const guestWishlist = {
+                id: 'guest-wl-1',
+                listId: 'guest-wl-1',
+                type: 'wish_list',
+                items: [],
+            };
+
+            mockShopperCustomers.getCustomerProductLists.mockResolvedValue({
+                data: { data: [guestWishlist] },
+            });
+            mockShopperCustomers.getCustomerProductList.mockResolvedValue({
+                data: { ...guestWishlist, items: [{ id: 'item-1', productId: 'product-123' }] },
+            });
+            mockShopperCustomers.createCustomerProductListItem.mockResolvedValue({});
+
+            const request = createRequest('product-123');
+            const args: ActionFunctionArgs = {
+                request,
+                context: mockContext,
+                params: {},
+                unstable_pattern: 'action/wishlist-add',
+            };
+
+            const response = await action(args);
+            const json = response instanceof Response ? await response.json() : (response as any).data;
+            expect(json.success).toBe(true);
+            expect(mockShopperCustomers.createCustomerProductListItem).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    params: { path: { customerId: 'guest-gcid-456', listId: 'guest-wl-1' } },
+                })
+            );
         });
 
         test('should successfully add product to existing wishlist', async () => {

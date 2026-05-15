@@ -27,7 +27,6 @@ import { getPickupStoreFromMap } from '@/extensions/bopis/lib/store-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
-import { useRequireAuth } from '@/hooks/use-require-auth';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { useAnalytics } from '../use-analytics';
 import {
@@ -583,41 +582,20 @@ export function useProductActions({
         [product, isMasterOrVariantProduct, currentVariant, addToast]
     );
 
-    // Handle adding to wishlist - using generic handler
-    const handleAddToWishlistBase = useMemo(
+    // Handle adding to wishlist. Guests are allowed: SCAPI accepts the gcid token
+    // for product-list mutations, and the action route already rejects sessions
+    // without a customerId as NOT_AUTHENTICATED.
+    const handleAddToWishlist = useMemo(
         () =>
             createProductActionHandler<{ productId: string }>({
                 actionRoute: '/action/wishlist-add',
                 fetcher: wishlistFetcher,
                 errorMessage: t('product:failedToAddProductToWishlist'),
                 buildFormData: (params) => ({ productId: String(params.productId) }),
-                actionName: 'handleAddToWishlistBase',
+                actionName: 'handleAddToWishlist',
             }),
         [createProductActionHandler, wishlistFetcher, t]
     );
-
-    // Wrap the base handler with auth requirement - must be called at render time (not in async functions)
-    const handleAddToWishlist = useRequireAuth(
-        (async (...args: unknown[]) => {
-            const variant = args[0] as ShopperProducts.schemas['Variant'] | undefined;
-            return handleAddToWishlistBase(variant);
-        }) as (...args: unknown[]) => Promise<unknown>,
-        {
-            actionName: 'addToWishlist',
-            getActionParams: (...args: unknown[]) => {
-                const variant = args[0] as ShopperProducts.schemas['Variant'] | undefined;
-                const productToAdd = isMasterOrVariantProduct ? variant || currentVariant : product;
-                const itemProductId = getProductId(productToAdd) || product.id;
-                if (!itemProductId) {
-                    throw new Error(t('product:productIdRequired'));
-                }
-                return { productId: itemProductId };
-            },
-            getReturnUrl: () =>
-                typeof window !== 'undefined' ? window.location.pathname + window.location.search : '',
-            toastMessage: t('product:signInToAddToWishlist'),
-        }
-    ) as (variant?: ShopperProducts.schemas['Variant']) => Promise<void>;
 
     // Handle product set add to cart (multiple products)
     const handleProductSetAddToCart = useCallback(

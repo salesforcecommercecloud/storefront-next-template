@@ -18,7 +18,6 @@ import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi
 import { data } from 'react-router';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
-import { isRegisteredCustomer } from '@/lib/api/customer.server';
 import { getWishlist, type WishlistActionResponse } from '@/lib/api/wishlist.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
@@ -51,17 +50,6 @@ async function removeFromWishlist(
             error: createActionError({
                 code: ErrorCode.REQUIRED_FIELD,
                 message: 'Either productId or itemId is required',
-            }),
-        };
-    }
-
-    // Check if user is authenticated as registered customer
-    if (!isRegisteredCustomer(context)) {
-        return {
-            success: false,
-            error: createActionError({
-                code: ErrorCode.NOT_AUTHENTICATED,
-                message: 'You must be logged in to remove items from your wishlist',
             }),
         };
     }

@@ -759,19 +759,18 @@ describe('account.wishlist loaders', () => {
             expect(result.items).toEqual([]);
         });
 
-        test('should return empty wishlist when API call fails', async () => {
+        test('should rethrow non-auth API errors so the route boundary can render a fallback', async () => {
             const apiError = new Error('API Error');
             mockGetCustomerProductLists.mockRejectedValue(apiError);
 
-            const result = await loader({
-                context: mockContext,
-                request: new Request('http://localhost/account/wishlist'),
-                params: { siteId: 'test-site', localeId: 'en-US' },
-                unstable_pattern: UNSTABLE_PATTERN,
-            });
-
-            expect(result.wishlist).toBeNull();
-            expect(result.items).toEqual([]);
+            await expect(
+                loader({
+                    context: mockContext,
+                    request: new Request('http://localhost/account/wishlist'),
+                    params: { siteId: 'test-site', localeId: 'en-US' },
+                    unstable_pattern: UNSTABLE_PATTERN,
+                })
+            ).rejects.toThrow();
         });
 
         test('should use id field when listId is not available', async () => {
@@ -906,5 +905,12 @@ describe('WishlistSkeleton Component', () => {
 
         // Should NOT render the old product carousel skeleton
         expect(container.querySelector('[data-testid="product-carousel-skeleton"]')).not.toBeInTheDocument();
+    });
+});
+
+describe('ErrorBoundary', () => {
+    test('exports a route-level ErrorBoundary that renders the WishlistLoadError', async () => {
+        const { ErrorBoundary } = await import('./_app.account.wishlist');
+        expect(typeof ErrorBoundary).toBe('function');
     });
 });

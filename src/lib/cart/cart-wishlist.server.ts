@@ -15,28 +15,24 @@
  */
 import type { LoaderFunctionArgs } from 'react-router';
 import { getAuth } from '@/middlewares/auth.server';
+import { hasUsableShopperSession } from '@/middlewares/auth.utils';
 import { getWishlist } from '@/lib/api/wishlist.server';
 
 /**
- * Loads wishlist product IDs for the signed-in customer so cart line wishlist UI matches
- * server state after refresh.
+ * Loads wishlist product IDs for the current shopper so cart line wishlist UI matches
+ * server state after refresh. Works for both guest and registered shoppers; SCAPI's
+ * customer-product-list endpoints accept guest tokens.
  *
- * Composes `getWishlist` (which throws `NormalizedApiError` on failure) — does NOT catch errors.
- * Errors propagate to the cart route's `<Await errorElement={null}>` for silent degradation
- * (cart still renders; the wishlist toggle defaults to "Add to wishlist" mode).
+ * Composes `getWishlist` (which throws `NormalizedApiError` on failure) without catching.
+ * Errors propagate to the cart route's `<Await errorElement={null}>` for silent
+ * degradation (cart still renders; wishlist toggle defaults to "Add to wishlist" mode).
  *
- * Guest users and expired sessions return `[]` without calling SCAPI.
+ * Sessions without a valid access token or customerId return `[]` without calling SCAPI.
  */
 export async function fetchWishlistProductIdsForCart(context: LoaderFunctionArgs['context']): Promise<string[]> {
     const session = getAuth(context);
-    const isRegistered =
-        session.userType === 'registered' &&
-        Boolean(session.customerId) &&
-        Boolean(session.accessToken) &&
-        typeof session.accessTokenExpiry === 'number' &&
-        session.accessTokenExpiry > Date.now();
 
-    if (!isRegistered || !session.customerId) {
+    if (!hasUsableShopperSession(session)) {
         return [];
     }
 

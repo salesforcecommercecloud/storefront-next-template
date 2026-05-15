@@ -33,14 +33,34 @@ describe('fetchWishlistProductIdsForCart', () => {
         vi.clearAllMocks();
     });
 
-    test('returns [] for guest user without calling getWishlist', async () => {
-        vi.mocked(getAuth).mockReturnValue({ userType: 'guest' } as any);
+    test('returns [] for session without an access token', async () => {
+        vi.mocked(getAuth).mockReturnValue({ userType: 'guest', customerId: 'guest-1' } as any);
         const context = createTestContext();
 
         const result = await fetchWishlistProductIdsForCart(context);
 
         expect(result).toEqual([]);
         expect(getWishlist).not.toHaveBeenCalled();
+    });
+
+    test('returns guest wishlist product IDs when guest session is usable', async () => {
+        vi.mocked(getAuth).mockReturnValue({
+            userType: 'guest',
+            customerId: 'guest-1',
+            accessToken: 'tok',
+            accessTokenExpiry: Date.now() + 60_000,
+        } as any);
+        vi.mocked(getWishlist).mockResolvedValue({
+            wishlist: { id: 'list-g', listId: 'list-g' } as any,
+            items: [{ productId: 'sku-g1', id: 'item-1' } as any],
+            id: 'list-g',
+        });
+        const context = createTestContext();
+
+        const result = await fetchWishlistProductIdsForCart(context);
+
+        expect(result).toEqual(['sku-g1']);
+        expect(getWishlist).toHaveBeenCalledWith(context, 'guest-1');
     });
 
     test('returns [] when registered user has no customerId', async () => {

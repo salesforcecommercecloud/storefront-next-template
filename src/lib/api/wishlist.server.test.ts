@@ -16,11 +16,13 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { NormalizedApiError } from './normalized-api-error';
-import { getWishlist } from './wishlist.server';
+import { getWishlist, loadWishlistPageData } from './wishlist.server';
 
 const mockGetCustomerProductList = vi.fn();
 const mockGetCustomerProductLists = vi.fn();
 const mockLoggerError = vi.fn();
+const mockLoggerWarn = vi.fn();
+const mockGetAuth = vi.fn();
 
 vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
@@ -34,11 +36,22 @@ vi.mock('@/lib/api-clients.server', () => ({
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({
         error: mockLoggerError,
-        warn: vi.fn(),
+        warn: mockLoggerWarn,
         info: vi.fn(),
         debug: vi.fn(),
     })),
 }));
+
+vi.mock('@/middlewares/auth.server', () => ({
+    getAuth: (...args: unknown[]) => mockGetAuth(...args),
+}));
+
+const usableSession = {
+    userType: 'guest' as const,
+    customerId: 'cust-1',
+    accessToken: 'tok',
+    accessTokenExpiry: Date.now() + 60_000,
+};
 
 describe('getWishlist — list-search branch (no listId)', () => {
     const mockContext = {} as any;
@@ -161,6 +174,100 @@ describe('getWishlist — listId-direct branch', () => {
         expect(mockLoggerError).toHaveBeenCalledWith(
             'shopperCustomers.getCustomerProductList failed',
             expect.objectContaining({ customerId: 'cust-1', listId: 'list-1' })
+        );
+    });
+});
+
+describe('loadWishlistPageData', () => {
+    const mockContext = {} as any;
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockLoggerError.mockClear();
+        mockLoggerWarn.mockClear();
+    });
+
+    test('returns empty payload when session has no usable token', async () => {
+        mockGetAuth.mockReturnValue({ userType: 'guest', customerId: 'cust-1' });
+
+        const result = await loadWishlistPageData(mockContext);
+
+        expect(result).toEqual({
+            wishlist: null,
+            items: [],
+            productsByProductId: expect.any(Promise),
+        });
+        await expect(result.productsByProductId).resolves.toEqual({});
+        expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
+    });
+
+    test('returns empty payload when getWishlist returns no list', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        mockGetCustomerProductLists.mockResolvedValue({ data: { data: [] } });
+
+        const result = await loadWishlistPageData(mockContext);
+
+        expect(result.wishlist).toBeNull();
+        expect(result.items).toEqual([]);
+        await expect(result.productsByProductId).resolves.toEqual({});
+    });
+
+    test('returns wishlist payload for a usable session', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        const wishlist = {
+            id: 'list-1',
+            type: 'wish_list',
+            customerProductListItems: [],
+        };
+        mockGetCustomerProductLists.mockResolvedValue({ data: { data: [wishlist] } });
+
+        const result = await loadWishlistPageData(mockContext);
+
+        expect(result.wishlist).toEqual(wishlist);
+        expect(result.items).toEqual([]);
+        await expect(result.productsByProductId).resolves.toEqual({});
+    });
+
+    test('returns empty payload and logs at warn level on 401 from SCAPI', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        const apiError = new ApiError({
+            status: 401,
+            statusText: 'Unauthorized',
+            headers: new Headers(),
+            body: { type: 'Unauthorized', title: 'Unauthorized', detail: 'Invalid credentials' },
+            rawBody: '{}',
+            url: 'https://api.example.com',
+            method: 'GET',
+        });
+        mockGetCustomerProductLists.mockRejectedValue(apiError);
+
+        const result = await loadWishlistPageData(mockContext);
+
+        expect(result.wishlist).toBeNull();
+        expect(result.items).toEqual([]);
+        expect(mockLoggerWarn).toHaveBeenCalledWith(
+            'Wishlist: auth error, returning empty wishlist',
+            expect.objectContaining({ status: 401 })
+        );
+    });
+
+    test('rethrows non-401/403 errors so the route boundary surfaces them', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        const apiError = new ApiError({
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers(),
+            body: { type: 'ServiceUnavailable', title: 'Service Unavailable', detail: 'Try again later' },
+            rawBody: '{}',
+            url: 'https://api.example.com',
+            method: 'GET',
+        });
+        mockGetCustomerProductLists.mockRejectedValue(apiError);
+
+        await expect(loadWishlistPageData(mockContext)).rejects.toBeInstanceOf(NormalizedApiError);
+        expect(mockLoggerError).toHaveBeenCalledWith(
+            'Wishlist: failed to load wishlist',
+            expect.objectContaining({ error: expect.any(NormalizedApiError) })
         );
     });
 });

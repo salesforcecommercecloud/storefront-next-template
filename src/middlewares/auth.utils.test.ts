@@ -23,6 +23,7 @@ import {
     getCustomerIdFromClaims,
     isTrackingConsentEnabled,
     getPublicSessionData,
+    hasUsableShopperSession,
 } from './auth.utils';
 import type { SessionData } from '@/lib/api/types';
 import type { AppConfig } from '@/types/config';
@@ -581,6 +582,74 @@ describe('auth.utils', () => {
             expect(publicData).not.toHaveProperty('codeVerifier');
             expect(publicData).not.toHaveProperty('idpAccessToken');
             expect(publicData).not.toHaveProperty('dwsid');
+        });
+    });
+
+    describe('hasUsableShopperSession', () => {
+        const inFuture = Date.now() + 60_000;
+        const inPast = Date.now() - 60_000;
+
+        it('returns true for a guest with a valid token and customerId', () => {
+            const session: SessionData = {
+                userType: 'guest',
+                customerId: 'guest-1',
+                accessToken: 'tok',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(true);
+        });
+
+        it('returns true for a registered shopper with a valid token and customerId', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                customerId: 'cust-1',
+                accessToken: 'tok',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(true);
+        });
+
+        it('returns false when customerId is missing', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                accessToken: 'tok',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
+        });
+
+        it('returns false when accessToken is missing', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                customerId: 'cust-1',
+                accessTokenExpiry: inFuture,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
+        });
+
+        it('returns false when accessTokenExpiry is in the past', () => {
+            const session: SessionData = {
+                userType: 'registered',
+                customerId: 'cust-1',
+                accessToken: 'tok',
+                accessTokenExpiry: inPast,
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
+        });
+
+        it('returns false when accessTokenExpiry is undefined', () => {
+            const session: SessionData = {
+                userType: 'guest',
+                customerId: 'guest-1',
+                accessToken: 'tok',
+            };
+
+            expect(hasUsableShopperSession(session)).toBe(false);
         });
     });
 });

@@ -16,94 +16,24 @@
 import { type ReactElement, Suspense } from 'react';
 import { Await, type ShouldRevalidateFunctionArgs } from 'react-router';
 import type { Route } from './+types/_app.account.wishlist';
-import { type ShopperCustomers, type ShopperProducts, ApiError } from '@salesforce/storefront-next-runtime/scapi';
-import { getAuth } from '@/middlewares/auth.server';
-import { fetchProductsForWishlist, getWishlist } from '@/lib/api/wishlist.server';
+import { loadWishlistPageData, type WishlistPageData } from '@/lib/api/wishlist.server';
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
+import { WishlistLoadError } from '@/components/wishlist/wishlist-load-error';
 import { SeoMeta } from '@/components/seo-meta';
 import { getLogger } from '@/lib/logger.server';
 import { useTranslation } from 'react-i18next';
 
-type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
-type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
-type Product = ShopperProducts.schemas['Product'];
-
 /**
- * Server-side loader to fetch the customer's wishlist items and product details.
- * Product details are returned as a Promise for streaming — the Suspense boundary
- * in the component shows a skeleton until they resolve.
+ * Server-side loader. Delegates to `loadWishlistPageData` (shared with the
+ * guest `/wishlist` route) so both code paths render the same data shape.
+ * The parent `_app.account` layout already enforces auth, so we don't repeat
+ * the redirect here.
  */
-export async function loader({ context }: Route.LoaderArgs): Promise<{
-    wishlist: CustomerProductList | null;
-    items: CustomerProductListItem[];
-    productsByProductId: Promise<Record<string, Product>>;
-}> {
+export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPageData> {
     const logger = getLogger(context);
     logger.debug('Wishlist: loader starting');
 
-    const session = getAuth(context);
-
-    const isRegistered =
-        session.userType === 'registered' &&
-        session.customerId &&
-        session.accessToken &&
-        session.accessTokenExpiry &&
-        session.accessTokenExpiry > Date.now();
-
-    if (!isRegistered || !session.customerId) {
-        logger.warn('Wishlist: user not registered, returning empty wishlist');
-        return {
-            wishlist: null,
-            items: [],
-            productsByProductId: Promise.resolve({}),
-        };
-    }
-
-    try {
-        const customerId = session.customerId;
-        const { wishlist, items, id: listId } = await getWishlist(context, customerId);
-
-        if (!wishlist || !listId) {
-            return {
-                wishlist: null,
-                items: [],
-                productsByProductId: Promise.resolve({}),
-            };
-        }
-
-        return {
-            wishlist,
-            items,
-            // Fetch ALL items' product details — no initial-batch limit since pagination
-            // is not yet implemented on the list view. Returned as a Promise so the
-            // server can stream the response and the Suspense boundary renders a
-            // skeleton while products load.
-            productsByProductId: fetchProductsForWishlist(context, items),
-        };
-    } catch (error) {
-        logger.error('Wishlist: failed to load wishlist', { error });
-
-        let status_code: string | undefined;
-
-        if (error instanceof ApiError) {
-            status_code = String(error.status);
-        }
-
-        if (status_code === '401' || status_code === '403') {
-            logger.warn('Wishlist: auth error, returning empty wishlist', { status_code });
-            return {
-                wishlist: null,
-                items: [],
-                productsByProductId: Promise.resolve({}),
-            };
-        }
-
-        return {
-            wishlist: null,
-            items: [],
-            productsByProductId: Promise.resolve({}),
-        };
-    }
+    return loadWishlistPageData(context);
 }
 
 /**
@@ -115,6 +45,16 @@ export function shouldRevalidate({ formAction, defaultShouldRevalidate }: Should
         return false;
     }
     return defaultShouldRevalidate;
+}
+
+/**
+ * Route-level error boundary for non-auth loader failures (5xx, network).
+ * Keeps the wishlist failure scoped to this page instead of escalating to the
+ * root error page. Auth errors (401/403) still degrade silently to an empty
+ * wishlist via `loadWishlistPageData`.
+ */
+export function ErrorBoundary(): ReactElement {
+    return <WishlistLoadError retryHref="/account/wishlist" />;
 }
 
 export default function AccountWishlist({
