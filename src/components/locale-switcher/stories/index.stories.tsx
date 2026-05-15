@@ -15,129 +15,92 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
-import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import i18next from 'i18next';
-import { type ReactElement, useId } from 'react';
-import { useTranslation } from 'react-i18next';
-import { NativeSelect } from '@/components/ui/native-select';
+import LocaleSwitcher from '../index';
 
-// Create a mock version of LocaleSwitcher for Storybook
-// This avoids needing to mock react-router at the module level
-const mockFetcherSubmit = fn();
+/**
+ * The real `LocaleSwitcher` performs `window.location.href = pathname` after a successful submit,
+ * triggering a full page reload. `window.location` is `[Unforgeable]` in real browsers, so we
+ * can't safely intercept the navigation here without elaborate test-runner shims. Instead, the
+ * play functions below verify the *immediate, observable* effects of selecting an option:
+ *   - the change event reaches `i18next` (the component awaits `i18n.changeLanguage(newLocale)`
+ *     before posting to the action and before the redirect)
+ *   - the `<select>` reflects the new value
+ *
+ * The actual page reload is exercised by E2E tests, not Storybook.
+ */
 
-function LocaleSwitcherMock(): ReactElement {
-    const id = useId();
-    const { t, i18n } = useTranslation('localeSwitcher');
-
-    const handleLocaleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newLocale = e.target.value;
-        const formData = new FormData();
-        formData.append('type', 'locale');
-        formData.append('payload', JSON.stringify({ locale: newLocale }));
-
-        // Change the language in i18next client-side for immediate UX
-        await i18n.changeLanguage(newLocale);
-
-        // Mock the server-side submission
-        mockFetcherSubmit(formData, {
-            method: 'POST',
-            action: '/action/set-site-context',
-        });
-    };
-
-    return (
-        <div className="*:not-first:mt-2">
-            <NativeSelect
-                id={id}
-                onChange={(e) => void handleLocaleChange(e)}
-                aria-label={t('ariaLabel')}
-                value={i18n.language}>
-                <option value="en-GB">{t('locales.en-GB')}</option>
-                <option value="it-IT">{t('locales.it-IT')}</option>
-            </NativeSelect>
-        </div>
-    );
-}
-
-const meta: Meta<typeof LocaleSwitcherMock> = {
+const meta: Meta<typeof LocaleSwitcher> = {
     title: 'Components/LocaleSwitcher',
-    component: LocaleSwitcherMock,
+    component: LocaleSwitcher,
     parameters: {
         chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'centered',
         docs: {
             description: {
                 component:
-                    'A language selector component that allows users to switch between supported locales. Changes are applied immediately on the client-side and persisted to the server via cookie.',
+                    'A language selector component that allows users to switch between supported locales. Changes are applied immediately on the client-side, persisted to the server via cookie, and trigger a full page reload so loaders, Suspense boundaries, and i18n re-run with the new locale.',
             },
         },
     },
     tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => {
-            // Reset mock before each story
-            mockFetcherSubmit.mockClear();
-            return <Story />;
-        },
-    ],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    render: () => {
-        // Set English as the default language
-        void i18next.changeLanguage('en-GB');
-        return <LocaleSwitcherMock />;
-    },
+    loaders: [
+        async () => {
+            await i18next.changeLanguage('en-GB');
+            return {};
+        },
+    ],
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify the selector is rendered with correct accessibility label
         const selector = canvas.getByRole('combobox');
         await expect(selector).toBeInTheDocument();
         await expect(selector).toHaveAttribute('aria-label');
 
-        // Verify English is selected by default
         await expect(selector).toHaveValue('en-GB');
 
-        // Verify both language options are present (endonyms — always in each locale's own language)
+        // Endonyms — translation values are stored in each locale's own language
         await expect(canvas.getByRole('option', { name: /english.*uk/i })).toBeInTheDocument();
         await expect(canvas.getByRole('option', { name: /italiano.*italia/i })).toBeInTheDocument();
     },
 };
 
 export const ItalianSelected: Story = {
-    render: () => {
-        // Set Italian as the current language
-        void i18next.changeLanguage('it-IT');
-        return <LocaleSwitcherMock />;
-    },
+    loaders: [
+        async () => {
+            await i18next.changeLanguage('it-IT');
+            return {};
+        },
+    ],
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
         const selector = canvas.getByRole('combobox');
         await expect(selector).toBeInTheDocument();
-
-        // Verify Italian is selected
         await expect(selector).toHaveValue('it-IT');
 
-        // Verify both options are available (endonyms — language names stay in their own language)
         await expect(canvas.getByRole('option', { name: /english.*uk/i })).toBeInTheDocument();
         await expect(canvas.getByRole('option', { name: /italiano.*italia/i })).toBeInTheDocument();
     },
 };
 
 export const LanguageSwitch: Story = {
-    render: () => {
-        // Start with English
-        void i18next.changeLanguage('en-GB');
-        return <LocaleSwitcherMock />;
-    },
+    loaders: [
+        async () => {
+            await i18next.changeLanguage('en-GB');
+            return {};
+        },
+    ],
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
@@ -145,41 +108,24 @@ export const LanguageSwitch: Story = {
         const selector = canvas.getByRole('combobox');
         await expect(selector).toHaveValue('en-GB');
 
-        // Switch to Italian
         await userEvent.selectOptions(selector, 'it-IT');
 
-        // Verify the language changed in i18next
+        // The real component awaits `i18n.changeLanguage(newLocale)` before submitting to the
+        // server action, so we observe the i18next change synchronously after `selectOptions`.
         await waitFor(() => {
             expect(i18next.language).toBe('it-IT');
         });
-
-        // Verify the selector shows the new value
         await expect(selector).toHaveValue('it-IT');
-
-        // Verify fetcher.submit was called with correct parameters
-        await waitFor(() => {
-            expect(mockFetcherSubmit).toHaveBeenCalled();
-        });
-
-        const submitCall = mockFetcherSubmit.mock.calls[0];
-        const formData = submitCall[0] as FormData;
-        const options = submitCall[1];
-
-        const payload = JSON.parse(formData.get('payload') as string);
-        await expect(payload.locale).toBe('it-IT');
-        await expect(options).toEqual({
-            method: 'POST',
-            action: '/action/set-site-context',
-        });
     },
 };
 
 export const ItalianToEnglish: Story = {
-    render: () => {
-        // Start with Italian
-        void i18next.changeLanguage('it-IT');
-        return <LocaleSwitcherMock />;
-    },
+    loaders: [
+        async () => {
+            await i18next.changeLanguage('it-IT');
+            return {};
+        },
+    ],
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
@@ -187,54 +133,32 @@ export const ItalianToEnglish: Story = {
         const selector = canvas.getByRole('combobox');
         await expect(selector).toHaveValue('it-IT');
 
-        // Switch to English
         await userEvent.selectOptions(selector, 'en-GB');
 
-        // Verify the language changed in i18next
         await waitFor(() => {
             expect(i18next.language).toBe('en-GB');
         });
-
-        // Verify the selector shows the new value
         await expect(selector).toHaveValue('en-GB');
-
-        // Verify server-side persistence was triggered
-        await waitFor(() => {
-            expect(mockFetcherSubmit).toHaveBeenCalled();
-        });
-
-        const submitCall = mockFetcherSubmit.mock.calls[0];
-        const formData = submitCall[0] as FormData;
-        const options = submitCall[1];
-
-        const payload = JSON.parse(formData.get('payload') as string);
-        await expect(payload.locale).toBe('en-GB');
-        await expect(options).toEqual({
-            method: 'POST',
-            action: '/action/set-site-context',
-        });
     },
 };
 
 export const KeyboardAccessible: Story = {
-    render: () => {
-        void i18next.changeLanguage('en-GB');
-        return <LocaleSwitcherMock />;
-    },
+    loaders: [
+        async () => {
+            await i18next.changeLanguage('en-GB');
+            return {};
+        },
+    ],
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
         const selector = canvas.getByRole('combobox');
 
-        // Tab to the selector
         await userEvent.tab();
         await expect(selector).toHaveFocus();
 
-        // Change language using keyboard
         await userEvent.selectOptions(selector, 'it-IT');
-
-        // Verify the selection changed
         await waitFor(() => {
             expect(selector).toHaveValue('it-IT');
         });

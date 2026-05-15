@@ -14,115 +14,15 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within, userEvent, fn } from 'storybook/test';
+import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, useState, useId, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { ConfigProvider, useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
-import { NativeSelect } from '@/components/ui/native-select';
-import { useTranslation } from 'react-i18next';
+import { mockLocale, mockSiteObject } from '@/test-utils/config';
+import CurrencySwitcher from '../index';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logChange = action('currency-change');
-        const logClick = action('interaction');
-
-        const handleChange = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            const select = target.closest('select');
-            if (select instanceof HTMLSelectElement) {
-                logChange({ currency: select.value });
-            }
-        };
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-
-            const button = target.closest('button, [role="button"]');
-            if (button) {
-                const label = button.textContent?.trim() || button.getAttribute('aria-label') || '';
-                logClick({ type: 'click', element: 'button', label });
-            }
-        };
-
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('click', handleClick, true);
-
-        return () => {
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-// Create a mock version of CurrencySwitcher for Storybook
-// This avoids needing to mock react-router at the module level and allows state updates
-const mockFetcherSubmit = fn();
-
-function CurrencySwitcherMock({
-    initialCurrency = mockSiteObject.defaultCurrency,
-}: {
-    initialCurrency?: string;
-}): ReactElement {
-    const id = useId();
-    const { t } = useTranslation('currencySwitcher');
-    const config = useConfig<AppConfig>();
-    // this will change when site context support is implemented. Use first site for now
-    const currentSite = config.commerce.sites[0];
-    const [currentCurrency, setCurrentCurrency] = useState(initialCurrency);
-
-    const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newCurrency = e.target.value;
-
-        // Validate: Check if currency is in supportedCurrencies
-        if (!currentSite.supportedCurrencies.includes(newCurrency)) {
-            return;
-        }
-
-        // Update currency state immediately for UX
-        setCurrentCurrency(newCurrency);
-
-        const formData = new FormData();
-        formData.append('type', 'currency');
-        formData.append('payload', JSON.stringify({ currency: newCurrency }));
-
-        // Mock the server-side submission
-        mockFetcherSubmit(formData, {
-            method: 'POST',
-            action: '/action/set-site-context',
-        });
-    };
-
-    return (
-        <div>
-            <NativeSelect id={id} onChange={handleCurrencyChange} aria-label={t('ariaLabel')} value={currentCurrency}>
-                {currentSite.supportedCurrencies.map((currency) => (
-                    <option key={currency} value={currency}>
-                        {t(`currencies.${currency}`, { defaultValue: currency })}
-                    </option>
-                ))}
-            </NativeSelect>
-        </div>
-    );
-}
-
-const meta: Meta<typeof CurrencySwitcherMock> = {
+const meta: Meta<typeof CurrencySwitcher> = {
     title: 'INPUTS/Currency Switcher',
-    component: CurrencySwitcherMock,
+    component: CurrencySwitcher,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
@@ -133,12 +33,12 @@ The CurrencySwitcher component allows users to manually select a currency from t
 
 ## Features
 
-- **Currency Selection**: Native select dropdown with supported currencies
-- **Persistence**: Selected currency is stored in a cookie and persists across sessions
+- **Currency Selection**: Native select dropdown populated from \`useSite().site.supportedCurrencies\`
+- **Persistence**: Selection is submitted to \`/action/set-site-context\` and stored in a cookie
 - **Locale Override**: Manual selection takes precedence over locale-based currency
-- **Validation**: Only supported currencies are allowed
-- **Accessibility**: Proper ARIA labels and semantic HTML
-- **Internationalization**: Supports translation keys for currency names
+- **Validation**: Shows an error toast for currencies not in \`supportedCurrencies\`
+- **Accessibility**: Native \`<select>\` with translated aria-label
+- **Internationalization**: Currency labels come from the \`currencySwitcher.currencies.*\` namespace
 
 ## Usage
 
@@ -147,144 +47,67 @@ This component is typically used in the header or footer area to allow users to 
             },
         },
     },
-    decorators: [
-        (_Story: React.ComponentType, context) => {
-            // Reset mock before each story
-            mockFetcherSubmit.mockClear();
-            const initialCurrency =
-                (context.args as { initialCurrency?: string }).initialCurrency ?? mockSiteObject.defaultCurrency;
-
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <ConfigProvider config={mockConfig}>
-                        <SiteProvider
-                            site={mockSiteObject}
-                            locale={mockLocale}
-                            language={mockSiteObject.defaultLocale}
-                            currency={initialCurrency}>
-                            <ActionLogger>
-                                <CurrencySwitcherMock initialCurrency={initialCurrency} />
-                            </ActionLogger>
-                        </SiteProvider>
-                    </ConfigProvider>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
 };
 
 export default meta;
-type Story = StoryObj<typeof CurrencySwitcherMock>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Default currency switcher showing:
-- Native select dropdown with supported currencies
-- Current currency selected (GBP)
-- Proper accessibility labels
-
-This is the standard currency switcher component.
-                `,
-            },
-        },
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
         const canvas = within(canvasElement);
 
-        // Verify select element is present
         const select = await canvas.findByRole('combobox', {}, { timeout: 5000 });
         await expect(select).toBeInTheDocument();
+        await expect(select).toHaveValue('GBP');
 
-        // Verify options are present (EUR and GBP from mockConfig.commerce.sites[siteId].supportedCurrencies)
         const options = canvas.getAllByRole('option');
-        await expect(options.length).toBeGreaterThanOrEqual(2);
+        await expect(options.length).toBe(2);
+        await expect(canvas.getByRole('option', { name: /british pound/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('option', { name: /euro/i })).toBeInTheDocument();
     },
 };
 
 export const WithCurrencyChange: Story = {
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Currency switcher with currency change interaction. Shows:
-- User can select different currencies
-- Currency change is logged
-- Form submission triggers to persist the selection
-
-This demonstrates the interactive behavior of the currency switcher.
-                `,
-            },
-        },
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
         const canvas = within(canvasElement);
 
-        // Find and interact with the select
         const select = await canvas.findByRole('combobox', {}, { timeout: 5000 });
         await expect(select).toBeInTheDocument();
 
-        // Change currency to EUR
+        // The real `<select>` is controlled by `useSite().currency`, which only updates after the
+        // server action sets the cookie and the page reloads — neither happens in Storybook. So
+        // selecting EUR cannot change the displayed value, and `toHaveValue('GBP')` below is only
+        // a steady-state check; it does NOT prove `handleCurrencyChange` actually fired.
+        //
+        // TODO (W-22451538): once the storybook infra exposes `parameters.mockRoutes`, upgrade
+        // this story to assert that selecting EUR posted `type=currency` and
+        // `payload.currency='EUR'` to the mocked `/action/set-site-context` route. That's the
+        // real handler-ran verification.
         await userEvent.selectOptions(select, 'EUR');
-
-        // Verify the value changed
-        await expect(select).toHaveValue('EUR');
-
-        // Change currency back to GBP
-        await userEvent.selectOptions(select, 'GBP');
-
-        // Verify the value changed back
         await expect(select).toHaveValue('GBP');
     },
 };
 
 export const WithEuroCurrency: Story = {
-    args: {
-        initialCurrency: 'EUR',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Currency switcher with EUR as the initial currency. Shows:
-- EUR is pre-selected
-- Other currencies still available
-- Demonstrates different initial states
-                `,
-            },
-        },
-    },
+    decorators: [
+        (Story) => (
+            // Shadow the global StorybookSiteProvider so `useSite().currency` returns 'EUR'.
+            // The inner SiteProvider wins because both providers use the same React context.
+            <SiteProvider
+                site={mockSiteObject}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency="EUR">
+                <Story />
+            </SiteProvider>
+        ),
+    ],
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
         const canvas = within(canvasElement);
 
-        // Verify select element is present with EUR selected
         const select = await canvas.findByRole('combobox', {}, { timeout: 5000 });
         await expect(select).toBeInTheDocument();
         await expect(select).toHaveValue('EUR');

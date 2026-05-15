@@ -15,166 +15,45 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { mockConfig } from '@/test-utils/config';
+import type { AppConfig } from '@/types/config';
 import { TrackingConsent } from '@/types/tracking-consent';
-import { useState } from 'react';
+import { TrackingConsentBanner } from '../index';
 
-// Mock translation function
-const mockT = (key: string) => {
-    const translations: Record<string, string> = {
-        title: 'Cookie Preferences',
-        description:
-            'We use cookies to improve your experience. By accepting, you agree to our use of cookies for analytics and personalization.',
-        accept: 'Accept',
-        decline: 'Decline',
-        closeAriaLabel: 'Close banner',
-    };
-    return translations[key] || key;
-};
-
-// Create a wrapper component that mocks the hooks
-interface MockedTrackingConsentBannerProps {
-    shouldShowBanner?: boolean;
-    isTrackingConsentEnabled?: boolean;
-    defaultTrackingConsent?: TrackingConsent;
-    setTrackingConsent?: (consent: TrackingConsent) => Promise<void>;
-    onConsentChange?: (consent: TrackingConsent) => void | Promise<void>;
-    configPosition?: 'bottom-left' | 'bottom-right' | 'bottom-center';
+/**
+ * Builds an `AppConfig` clone with `engagement.analytics.trackingConsent.position` overridden
+ * for position-variant stories. Returning a fresh object preserves the rest of `mockConfig`
+ * and lets a per-story `<ConfigProvider>` shadow the global one.
+ */
+function withTrackingConsentPosition(position: 'bottom-left' | 'bottom-right' | 'bottom-center'): AppConfig {
+    return {
+        ...mockConfig,
+        engagement: {
+            ...mockConfig.engagement,
+            analytics: {
+                ...mockConfig.engagement.analytics,
+                trackingConsent: {
+                    ...mockConfig.engagement.analytics.trackingConsent,
+                    position,
+                },
+            },
+        },
+    } as AppConfig;
 }
 
-function MockedTrackingConsentBanner({
-    shouldShowBanner = true,
-    isTrackingConsentEnabled = true,
-    defaultTrackingConsent = TrackingConsent.Declined,
-    setTrackingConsent = async () => {},
-    onConsentChange,
-    configPosition = 'bottom-center',
-}: MockedTrackingConsentBannerProps) {
-    // Since we can't mock the hooks directly in Storybook, we'll create a test wrapper
-    // that mimics the component's behavior for testing purposes
-    const [processingAction, setProcessingAction] = useState<'accept' | 'decline' | 'close' | null>(null);
-    const [showBanner, setShowBanner] = useState(shouldShowBanner);
-
-    if (!showBanner) {
-        return null;
-    }
-
-    const handleConsent = async (consent: TrackingConsent, actionType: 'accept' | 'decline' | 'close') => {
-        if (processingAction !== null || !isTrackingConsentEnabled) return;
-
-        setProcessingAction(actionType);
-
-        try {
-            await setTrackingConsent(consent);
-            if (onConsentChange) {
-                await onConsentChange(consent);
-            }
-            // Simulate banner hiding after consent
-            setTimeout(() => setShowBanner(false), 100);
-        } catch {
-            // Handle error
-        } finally {
-            setProcessingAction(null);
-        }
-    };
-
-    const handleClose = () => {
-        void handleConsent(defaultTrackingConsent, 'close');
-    };
-
-    const handleAccept = () => {
-        void handleConsent(TrackingConsent.Accepted, 'accept');
-    };
-
-    const handleDecline = () => {
-        void handleConsent(TrackingConsent.Declined, 'decline');
-    };
-
-    const isProcessing = processingAction !== null;
-
-    const positionClasses = {
-        'bottom-left': 'left-0 md:left-4 bottom-0 md:bottom-4',
-        'bottom-right': 'right-0 md:right-4 bottom-0 md:bottom-4',
-        'bottom-center': 'left-0 md:left-1/2 md:-translate-x-1/2 bottom-0 md:bottom-4',
-    };
-
-    const cn = (...classes: (string | undefined | false)[]) => classes.filter(Boolean).join(' ');
-
-    return (
-        <div
-            className={cn(
-                'fixed z-50 w-full md:max-w-md animate-in slide-in-from-bottom-5 duration-300',
-                positionClasses[configPosition] || positionClasses['bottom-center']
-            )}
-            role="dialog"
-            aria-labelledby="tracking-consent-banner-title"
-            aria-describedby="tracking-consent-banner-description">
-            <div className="relative shadow-lg border rounded-none bg-card text-card-foreground">
-                <button
-                    className="absolute right-4 top-4 h-8 w-8 shrink-0 opacity-70 transition-opacity hover:opacity-100 inline-flex items-center justify-center rounded-none"
-                    onClick={handleClose}
-                    disabled={isProcessing}
-                    aria-label={mockT('closeAriaLabel')}>
-                    {processingAction === 'close' ? (
-                        <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                    ) : (
-                        <svg
-                            className="size-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    )}
-                    <span className="sr-only">{mockT('closeAriaLabel')}</span>
-                </button>
-                <div className="p-6 pt-6 pr-10">
-                    <div className="space-y-2">
-                        <h2 id="tracking-consent-banner-title" className="text-sm font-semibold">
-                            {mockT('title')}
-                        </h2>
-                        <p id="tracking-consent-banner-description" className="text-sm text-muted-foreground">
-                            {mockT('description')}
-                        </p>
-                    </div>
-                </div>
-                <div className="flex gap-2 p-6 pt-0">
-                    <button
-                        className="flex-1 inline-flex items-center justify-center rounded-none border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm font-medium disabled:pointer-events-none disabled:opacity-50"
-                        onClick={handleDecline}
-                        disabled={isProcessing}>
-                        {processingAction === 'decline' && (
-                            <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-                        )}
-                        {mockT('decline')}
-                    </button>
-                    <button
-                        className="flex-1 inline-flex items-center justify-center rounded-none bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 text-sm font-medium disabled:pointer-events-none disabled:opacity-50"
-                        onClick={handleAccept}
-                        disabled={isProcessing}>
-                        {processingAction === 'accept' && (
-                            <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-                        )}
-                        {mockT('accept')}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-const meta: Meta<typeof MockedTrackingConsentBanner> = {
+const meta: Meta<typeof TrackingConsentBanner> = {
     title: 'Tracking Consent Banner',
-    component: MockedTrackingConsentBanner,
+    component: TrackingConsentBanner,
     parameters: {
         layout: 'fullscreen',
+        // The banner reads useRouteLoaderData('root') and suppresses itself when
+        // pageDesignerMode is true. Stories run inside a memory router that defaults
+        // to no `root` ancestor; we explicitly inject a non-page-designer root so
+        // the suppression branch isn't accidentally hit.
+        routeLoaderData: { root: { pageDesignerMode: false } },
         docs: {
             description: {
                 component: `
@@ -187,13 +66,12 @@ A non-intrusive banner that collects user consent for tracking cookies and analy
 ## Features
 
 The banner:
-- Only shows if tracking consent is enabled in config and user hasn't responded
-- Refreshes SLAS token with tracking consent value (server sets dw_dnt cookie)
-- Supports custom onConsentChange callback for external analytics integration
-- Can be positioned at bottom-left, bottom-right, or bottom-center
+- Only shows if tracking consent is enabled in config and the visitor's session has no tracking consent yet
+- Submits the chosen value to \`/action/update-tracking-consent\`, which refreshes the SLAS token (server sets the dw_dnt cookie via Set-Cookie header)
+- Supports a custom \`onConsentChange\` callback for external analytics integration
+- Can be positioned at bottom-left, bottom-right, or bottom-center via \`config.engagement.analytics.trackingConsent.position\`
 - Shows loading spinners during async operations
-- Includes a close button (X) that applies default consent
-- Dismisses immediately upon interaction for minimal user disruption
+- Includes a close button (X) that applies the configured default consent
 
 ## Accessibility
 
@@ -211,60 +89,46 @@ The banner:
         },
     },
     tags: ['autodocs', 'interaction', 'tracking-consent', 'engagement', 'dnt', 'do-not-track'],
-    argTypes: {
-        onConsentChange: {
-            description: 'Optional callback called after user responds to consent banner',
-            table: { disable: true },
-        },
-    },
     decorators: [
-        (Story) => {
-            return (
-                <div style={{ minHeight: '100vh', position: 'relative', padding: '2rem' }}>
-                    <div>
-                        <h1>Sample Page Content</h1>
-                        <p>This is sample content to demonstrate the banner positioning.</p>
-                    </div>
-                    <Story />
+        (Story) => (
+            <div style={{ minHeight: '100vh', position: 'relative', padding: '2rem' }}>
+                <div>
+                    <h1>Sample Page Content</h1>
+                    <p>This is sample content to demonstrate the banner positioning.</p>
                 </div>
-            );
-        },
+                <Story />
+            </div>
+        ),
     ],
 };
 
 export default meta;
-type Story = StoryObj<typeof MockedTrackingConsentBanner>;
+type Story = StoryObj<typeof meta>;
 
 /**
- * Default story showing the banner when it should be displayed
+ * Default story showing the banner when it should be displayed.
+ *
+ * The global Storybook AuthProvider supplies a guest session with `trackingConsent: undefined`,
+ * and `mockConfig.engagement.analytics.trackingConsent.enabled === true`, so the real
+ * useTrackingConsent hook returns `shouldShowBanner === true`.
  */
 export const Default: Story = {
-    args: {
-        shouldShowBanner: true,
-        isTrackingConsentEnabled: true,
-        defaultTrackingConsent: TrackingConsent.Declined,
-        setTrackingConsent: async () => {},
-    },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Check banner dialog is present
         const banner = await canvas.findByRole('dialog', {}, { timeout: 3000 });
         await expect(banner).toBeInTheDocument();
 
-        // Check title
-        const title = canvas.getByText('Cookie Preferences');
+        // Title and description are rendered from the trackingConsent translation namespace
+        const title = canvas.getByText('Tracking Consent');
         await expect(title).toBeInTheDocument();
-
-        // Check description
-        const description = canvas.getByText(/We use cookies to improve your experience/i);
+        const description = canvas.getByText(/lorem ipsum/i);
         await expect(description).toBeInTheDocument();
 
-        // Check buttons
         const acceptButton = canvas.getByRole('button', { name: 'Accept' });
         const declineButton = canvas.getByRole('button', { name: 'Decline' });
-        const closeButton = canvas.getByRole('button', { name: /close banner/i });
+        const closeButton = canvas.getByRole('button', { name: /close/i });
 
         await expect(acceptButton).toBeInTheDocument();
         await expect(declineButton).toBeInTheDocument();
@@ -277,16 +141,13 @@ export const Default: Story = {
 };
 
 /**
- * Interactive story demonstrating user interactions with the banner.
- * Users can accept, decline, or close (applies default) the banner.
- * The banner dismisses immediately for minimal user disruption.
+ * Demonstrates user interactions with the banner buttons.
+ *
+ * The banner hides itself immediately when the user responds (`hasResponded` flips
+ * synchronously), so the assertion checks that the banner is gone after clicking Accept.
  */
 export const Interaction: Story = {
     args: {
-        shouldShowBanner: true,
-        isTrackingConsentEnabled: true,
-        defaultTrackingConsent: TrackingConsent.Declined,
-        setTrackingConsent: async () => {},
         onConsentChange: action('consent-changed'),
     },
     parameters: {
@@ -300,32 +161,34 @@ export const Interaction: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify all interactive elements are present
         const acceptButton = await canvas.findByRole('button', { name: 'Accept' }, { timeout: 3000 });
         const declineButton = canvas.getByRole('button', { name: 'Decline' });
-        const closeButton = canvas.getByRole('button', { name: /close banner/i });
+        const closeButton = canvas.getByRole('button', { name: /close/i });
 
         await expect(acceptButton).toBeInTheDocument();
         await expect(declineButton).toBeInTheDocument();
         await expect(closeButton).toBeInTheDocument();
 
-        // Click accept button to demonstrate interaction
-        // Banner dismisses immediately (by design - least intrusive)
         await userEvent.click(acceptButton);
+
+        // The hook flips `hasResponded` synchronously, hiding the banner.
+        await waitFor(() => {
+            expect(canvas.queryByRole('dialog')).not.toBeInTheDocument();
+        });
     },
 };
 
 /**
- * Banner positioned at bottom-left
+ * Banner positioned at bottom-left via a config override.
  */
 export const PositionBottomLeft: Story = {
-    args: {
-        shouldShowBanner: true,
-        isTrackingConsentEnabled: true,
-        defaultTrackingConsent: TrackingConsent.Declined,
-        setTrackingConsent: async () => {},
-        configPosition: 'bottom-left',
-    },
+    decorators: [
+        (Story) => (
+            <ConfigProvider config={withTrackingConsentPosition('bottom-left')}>
+                <Story />
+            </ConfigProvider>
+        ),
+    ],
     parameters: {
         docs: {
             description: {
@@ -339,20 +202,21 @@ export const PositionBottomLeft: Story = {
 
         const banner = await canvas.findByRole('dialog', {}, { timeout: 3000 });
         await expect(banner).toBeInTheDocument();
+        await expect(banner.className).toMatch(/left-0/);
     },
 };
 
 /**
- * Banner positioned at bottom-right
+ * Banner positioned at bottom-right via a config override.
  */
 export const PositionBottomRight: Story = {
-    args: {
-        shouldShowBanner: true,
-        isTrackingConsentEnabled: true,
-        defaultTrackingConsent: TrackingConsent.Declined,
-        setTrackingConsent: async () => {},
-        configPosition: 'bottom-right',
-    },
+    decorators: [
+        (Story) => (
+            <ConfigProvider config={withTrackingConsentPosition('bottom-right')}>
+                <Story />
+            </ConfigProvider>
+        ),
+    ],
     parameters: {
         docs: {
             description: {
@@ -366,20 +230,20 @@ export const PositionBottomRight: Story = {
 
         const banner = await canvas.findByRole('dialog', {}, { timeout: 3000 });
         await expect(banner).toBeInTheDocument();
+        await expect(banner.className).toMatch(/right-0/);
     },
 };
 
 /**
- * Banner with custom consent callback
+ * Banner with a custom consent callback that fires after the SLAS token is refreshed.
  */
 export const WithCustomCallback: Story = {
     args: {
-        shouldShowBanner: true,
-        isTrackingConsentEnabled: true,
-        defaultTrackingConsent: TrackingConsent.Declined,
-        setTrackingConsent: async () => {},
         onConsentChange: (consent) => {
-            action('custom-analytics-integration')({ consent, timestamp: new Date().toISOString() });
+            action('custom-analytics-integration')({
+                consent: consent === TrackingConsent.Accepted ? 'accepted' : 'declined',
+                timestamp: new Date().toISOString(),
+            });
         },
     },
     parameters: {
@@ -397,8 +261,30 @@ export const WithCustomCallback: Story = {
         const banner = await canvas.findByRole('dialog', {}, { timeout: 3000 });
         await expect(banner).toBeInTheDocument();
 
-        // User can interact with accept or decline
         const acceptButton = canvas.getByRole('button', { name: 'Accept' });
         await expect(acceptButton).toBeInTheDocument();
+    },
+};
+
+/**
+ * Banner is suppressed when `useRouteLoaderData('root').pageDesignerMode === true`.
+ *
+ * This guards against authoring-time noise and is part of the real component's behavior —
+ * not the mock's. Verifying it ensures the real `useRouteLoaderData('root')` branch is wired.
+ */
+export const HiddenInPageDesignerMode: Story = {
+    parameters: {
+        routeLoaderData: { root: { pageDesignerMode: true } },
+        docs: {
+            description: {
+                story: 'When the root loader exposes `pageDesignerMode: true`, the banner returns null. Used by Page Designer authoring environments.',
+            },
+        },
+        chromatic: { disableSnapshot: true },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.queryByRole('dialog')).not.toBeInTheDocument();
     },
 };

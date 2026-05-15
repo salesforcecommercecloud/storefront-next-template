@@ -13,7 +13,11 @@ import { UITargetProviders } from '@/targets/ui-target-providers';
 // This uses the real provider components with mock data injected via wrapper components
 const withStorybookProviders = applyProviders(...storybookProviders);
 
-// Create a stable wrapper component that applies providers
+// Create a stable wrapper component that applies providers.
+// Note: sonner's `toast()` API queues without a mounted <Toaster /> — calls don't error.
+// Stories that need to assert on a rendered toast can mount <ToasterTheme /> in their
+// own decorator. Mounting it globally would introduce duplicate-landmark axe failures on
+// stories that already render their own <section> landmarks (e.g. checkout, contact).
 const StorybookWrapper = withStorybookProviders(({ children }: { children: ReactNode }) => (
     <div className="min-h-screen bg-background text-foreground">{children}</div>
 ));
@@ -44,6 +48,12 @@ const RouterWrapper = ({
         </StorybookWrapper>
     );
 
+    // Default action for the story root route: absorbs page-level fetcher.submit() calls that
+    // omit an explicit `action` (e.g. useCheckoutActions submits contact/shipping/payment forms
+    // to the current route). Returns a generic success so the action's `data` is defined and
+    // doesn't trigger the component's "blocking error" toast paths.
+    const defaultStoryAction = () => ({ success: true });
+
     // Build the main story route. When routeLoaderData is provided, each entry becomes a
     // pathless ancestor layout route (element: <Outlet />) so useRouteLoaderData(id) resolves.
     // The outermost entry gets path: '/' to anchor the route tree.
@@ -51,7 +61,7 @@ const RouterWrapper = ({
         routeLoaderData && Object.keys(routeLoaderData).length > 0
             ? Object.entries(routeLoaderData).reduceRight<RouteObject>(
                   (child, [id, data], i) => ({
-                      ...(i === 0 ? { path: '/' } : {}),
+                      ...(i === 0 ? { path: '/', action: defaultStoryAction } : {}),
                       id,
                       loader: () => data,
                       element: <Outlet />,
@@ -59,7 +69,7 @@ const RouterWrapper = ({
                   }),
                   { index: true, element: WrappedStory }
               )
-            : { path: '/', element: WrappedStory };
+            : { path: '/', element: WrappedStory, action: defaultStoryAction };
 
     // Create a memory router for components that use React Router hooks (e.g., useFetcher)
     // This provides the data router context needed for useFetcher and other React Router hooks
@@ -171,6 +181,40 @@ const RouterWrapper = ({
                         // Mock action route for removing items from wishlist
                         // Used by useWishlist hook via fetcher.submit()
                         path: '/action/wishlist-remove',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for site-context updates (currency / locale).
+                        // Used by CurrencySwitcher and LocaleSwitcher via fetcher.submit().
+                        //
+                        // Two consumers, two paths:
+                        //   - `type=locale` — LocaleSwitcher follows the await with
+                        //     `window.location.href = pathname`. `window.location` is
+                        //     `[Unforgeable]` so we can't intercept the redirect; instead we
+                        //     hang the fetcher so the iframe stays alive for play assertions.
+                        //   - `type=currency` — CurrencySwitcher uses a fire-and-forget
+                        //     `void fetcher.submit(...)` and stays on the page. Returning
+                        //     success immediately keeps the fetcher's state idle so it doesn't
+                        //     leak `submitting` into other stories rendered in the same iframe.
+                        path: '/action/set-site-context',
+                        action: async ({ request }) => {
+                            const formData = await request.formData();
+                            if (formData.get('type') === 'locale') {
+                                return new Promise(() => {});
+                            }
+                            return { success: true };
+                        },
+                    },
+                    {
+                        // Mock action route for tracking consent updates
+                        // Used by useTrackingConsent (TrackingConsentBanner) via fetcher.submit()
+                        path: '/action/update-tracking-consent',
+                        action: () => ({ success: true }),
+                    },
+                    {
+                        // Mock action route for the checkout place-order step
+                        // Used by useCheckoutActions.submitPlaceOrder via fetcher.submit()
+                        path: '/action/place-order',
                         action: () => ({ success: true }),
                     },
                     {
