@@ -18,11 +18,22 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { PropsWithChildren } from 'react';
 import CartBadge from './cart-badge';
-import { useBasketSnapshot } from '@/providers/basket';
+import { useBasketLoader, useBasketSnapshot } from '@/providers/basket';
+import { useBasketWithProductsLoader } from '@/hooks/use-basket-with-products';
+import { useBasketWithPromotionsLoader } from '@/hooks/use-basket-with-promotions';
 
 vi.mock('@/providers/basket', () => ({
     useBasketSnapshot: vi.fn(),
+    useBasketLoader: vi.fn(),
     useMiniCart: () => ({ miniCartOpen: false, setMiniCartOpen: vi.fn() }),
+}));
+
+vi.mock('@/hooks/use-basket-with-products', () => ({
+    useBasketWithProductsLoader: vi.fn(),
+}));
+
+vi.mock('@/hooks/use-basket-with-promotions', () => ({
+    useBasketWithPromotionsLoader: vi.fn(),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -37,9 +48,21 @@ vi.mock('./cart-sheet', () => ({
 
 describe('CartBadge', () => {
     const mockUseBasketSnapshot = vi.mocked(useBasketSnapshot);
+    const mockUseBasketLoader = vi.mocked(useBasketLoader);
+    const mockUseBasketWithProductsLoader = vi.mocked(useBasketWithProductsLoader);
+    const mockUseBasketWithPromotionsLoader = vi.mocked(useBasketWithPromotionsLoader);
+    const loadBasket = vi.fn();
+    const loadProducts = vi.fn();
+    const loadPromotions = vi.fn();
 
     beforeEach(() => {
         mockUseBasketSnapshot.mockReset();
+        loadBasket.mockReset();
+        loadProducts.mockReset();
+        loadPromotions.mockReset();
+        mockUseBasketLoader.mockReturnValue(loadBasket);
+        mockUseBasketWithProductsLoader.mockReturnValue(loadProducts);
+        mockUseBasketWithPromotionsLoader.mockReturnValue(loadPromotions);
     });
 
     it('renders a badge with the snapshot count', () => {
@@ -78,5 +101,83 @@ describe('CartBadge', () => {
 
         expect(await screen.findByTestId('cart-sheet')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'My Cart (1)' })).toBeInTheDocument();
+    });
+
+    it('triggers prefetch on hover without opening the cart sheet', async () => {
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 1,
+            uniqueProductCount: 1,
+        });
+
+        render(<CartBadge />);
+
+        const user = userEvent.setup();
+        await user.hover(screen.getByRole('button', { name: 'My Cart (1)' }));
+
+        expect(loadBasket).toHaveBeenCalledTimes(1);
+        expect(loadProducts).toHaveBeenCalledTimes(1);
+        expect(loadPromotions).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('cart-sheet')).not.toBeInTheDocument();
+    });
+
+    it('triggers prefetch on keyboard focus', async () => {
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 1,
+            uniqueProductCount: 1,
+        });
+
+        render(<CartBadge />);
+
+        const user = userEvent.setup();
+        await user.tab();
+
+        expect(screen.getByRole('button', { name: 'My Cart (1)' })).toHaveFocus();
+        expect(loadBasket).toHaveBeenCalled();
+        expect(loadProducts).toHaveBeenCalled();
+        expect(loadPromotions).toHaveBeenCalled();
+        expect(screen.queryByTestId('cart-sheet')).not.toBeInTheDocument();
+    });
+
+    it('does not prefetch when the cart is empty', async () => {
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 0,
+            uniqueProductCount: 0,
+        });
+
+        render(<CartBadge />);
+
+        const user = userEvent.setup();
+        await user.hover(screen.getByRole('button', { name: 'My Cart (0)' }));
+
+        expect(loadBasket).not.toHaveBeenCalled();
+        expect(loadProducts).not.toHaveBeenCalled();
+        expect(loadPromotions).not.toHaveBeenCalled();
+    });
+
+    it('keeps prefetch handlers wired after the sheet has been mounted', async () => {
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 1,
+            uniqueProductCount: 1,
+        });
+
+        render(<CartBadge />);
+
+        const user = userEvent.setup();
+        const button = screen.getByRole('button', { name: 'My Cart (1)' });
+        await user.click(button);
+
+        // Sheet is now mounted; second hover on the post-click button should still prefetch.
+        loadBasket.mockClear();
+        loadProducts.mockClear();
+        loadPromotions.mockClear();
+        await user.hover(screen.getByRole('button', { name: 'My Cart (1)' }));
+
+        expect(loadBasket).toHaveBeenCalled();
+        expect(loadProducts).toHaveBeenCalled();
+        expect(loadPromotions).toHaveBeenCalled();
     });
 });

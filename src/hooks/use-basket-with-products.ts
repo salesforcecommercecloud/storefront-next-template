@@ -19,7 +19,7 @@
  * Uses a resource route to fetch product data
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFetcher } from 'react-router';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import type { loader as basketProductsLoader } from '@/routes/resource.basket-products';
@@ -38,6 +38,38 @@ interface UseBasketWithProductsResult {
     productItems: BasketItemWithProduct[];
     isLoading: boolean;
     error: Error | null;
+}
+
+// Shared React Router fetcher key for the basket-products resource. Both useBasketWithProducts (mounted by the cart
+// sheet) and useBasketWithProductsLoader (used for prefetch) attach to this key so they observe the same fetcher state
+// — a prefetch in flight is reused by the cart sheet rather than dispatched a second time.
+const BASKET_PRODUCTS_FETCHER_KEY = 'basket-products';
+const BASKET_PRODUCTS_RESOURCE_URL = '/resource/basket-products';
+
+/**
+ * Imperative loader for the basket-products resource. Returns a reference-stable callback that dispatches a load if
+ * the shared fetcher is idle and has no data, and is a no-op otherwise. Calling this hook allocates a React Router
+ * fetcher slot on every page that mounts it, but no network call fires until the returned callback is invoked.
+ *
+ * Scope: This is a one-shot pre-warm intended for the first cart-sheet open of a session. Once data is present, the
+ * loader is a no-op even if the basket later grows with new productIds — refetching for added items is the job of
+ * {@link useBasketWithProducts}, which is mounted by the cart sheet and applies a stricter `hasUnfetchedProducts`
+ * gate. The narrow gap (item added, sheet not yet opened, hover-then-click) shows the new item briefly unenriched.
+ */
+export function useBasketWithProductsLoader(): () => void {
+    const fetcher = useFetcher<typeof basketProductsLoader>({ key: BASKET_PRODUCTS_FETCHER_KEY });
+
+    // useFetcher returns a fresh object every render. Mirror into a ref so the returned callback can have empty
+    // useCallback deps and stay reference-stable across renders.
+    const fetcherRef = useRef(fetcher);
+    fetcherRef.current = fetcher;
+
+    return useCallback(() => {
+        const f = fetcherRef.current;
+        if (f.state === 'idle' && !f.data) {
+            void f.load(BASKET_PRODUCTS_RESOURCE_URL);
+        }
+    }, []);
 }
 
 const deriveVariationValuesFromAttributes = (
@@ -82,7 +114,11 @@ const getFallbackImageGroup = (
 export function useBasketWithProducts(
     basket: ShopperBasketsV2.schemas['Basket'] | undefined
 ): UseBasketWithProductsResult {
-    const fetcher = useFetcher<typeof basketProductsLoader>();
+    // Shared fetcher key so prefetch (e.g. on cart-badge hover via useBasketWithProductsLoader) and the cart-sheet
+    // panel observe the same fetcher state — avoids a duplicate request when click follows a hover prefetch. We can't
+    // delegate to useBasketWithProductsLoader here because this hook reads fetcher state/data for the merge logic and
+    // applies a stricter gate (force refetch when basket items grow with unfetched product IDs).
+    const fetcher = useFetcher<typeof basketProductsLoader>({ key: BASKET_PRODUCTS_FETCHER_KEY });
     const { state: fetcherState, data: fetcherData, load: loadProducts } = fetcher;
     const [productItems, setProductItems] = useState<BasketItemWithProduct[]>([]);
     const [error, setError] = useState<Error | null>(null);
@@ -102,7 +138,7 @@ export function useBasketWithProducts(
 
         // Trigger fetch when we have no data yet, or basket contains product IDs not yet fetched.
         if (fetcherState === 'idle' && (!fetcherData || hasUnfetchedProducts)) {
-            void loadProducts('/resource/basket-products');
+            void loadProducts(BASKET_PRODUCTS_RESOURCE_URL);
         }
     }, [basketProductIds, fetcherState, fetcherData, loadProducts]);
 

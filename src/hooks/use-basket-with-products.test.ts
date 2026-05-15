@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
-import { useBasketWithProducts } from './use-basket-with-products';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { useBasketWithProducts, useBasketWithProductsLoader } from './use-basket-with-products';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 
@@ -256,5 +256,59 @@ describe('useBasketWithProducts', () => {
                 selectedVariationAttributes: { color: 'red', size: 'M' },
             });
         });
+    });
+});
+
+describe('useBasketWithProductsLoader', () => {
+    beforeEach(() => {
+        mockFetcher.state = 'idle';
+        mockFetcher.data = null;
+        mockFetcher.load.mockReset();
+    });
+
+    it('loads the basket-products resource when called', () => {
+        const { result } = renderHook(() => useBasketWithProductsLoader());
+
+        act(() => {
+            result.current();
+        });
+
+        expect(mockFetcher.load).toHaveBeenCalledWith('/resource/basket-products');
+    });
+
+    it('skips dispatch when fetcher is in flight', () => {
+        mockFetcher.state = 'loading';
+
+        const { result } = renderHook(() => useBasketWithProductsLoader());
+
+        act(() => {
+            result.current();
+        });
+
+        expect(mockFetcher.load).not.toHaveBeenCalled();
+    });
+
+    it('skips dispatch when fetcher already has data', () => {
+        mockFetcher.data = { 'product-1': {} as ShopperProducts.schemas['Product'] };
+
+        const { result } = renderHook(() => useBasketWithProductsLoader());
+
+        act(() => {
+            result.current();
+        });
+
+        expect(mockFetcher.load).not.toHaveBeenCalled();
+    });
+
+    it('returns a reference-stable callback across renders', () => {
+        // Regression guard: like useBasketLoader, this callback ends up wired into
+        // usePrefetchCart and downstream useEffect dep arrays. The ref-mirror pattern keeps
+        // identity stable; this test fails if a future refactor reintroduces fetcher-keyed deps.
+        const { result, rerender } = renderHook(() => useBasketWithProductsLoader());
+
+        const first = result.current;
+        rerender();
+        rerender();
+        expect(result.current).toBe(first);
     });
 });

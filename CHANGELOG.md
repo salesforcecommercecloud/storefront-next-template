@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Prefetch basket data when hovering over cart badge ([#1704](https://github.com/commerce-emu/storefront-next/pull/1704))
 - Rename `sfnext create-storefront` config prompt labels for clarity: `API Client ID` → `SLAS Client ID`, `API Organization ID` → `Organization ID`, `API Short Code` → `Short Code`, `Default Site ID` → `Site ID` (matches Commerce Cloud documentation nomenclature). Labels are sourced from the template's `config-meta.json`.
 - Rewrite extension descriptions in `src/extensions/config.json` to use "Enables" instead of "allows" (Salesforce style guide reserves "allow" for permissions). Also fix the Buy Online Pickup In Store description, which incorrectly claimed Multiship was a required dependency — only Store Locator is required.
 - Fix unclickable X button on applied coupon badges in the cart. The `<CloseIcon>` was a direct SVG child of `<Badge>` whose CVA includes `[&>svg]:pointer-events-none`, so the click never reached the handler. Extracted the X into a sibling `<Button variant="secondary" size="icon-sm">` styled to read as one connected pill with the badge, and disabled it while the matching `removeFetcher` submission is in flight to prevent double-submits (@W-22166586) ([#1680](https://github.com/commerce-emu/storefront-next/pull/1680))

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, render, renderHook, waitFor } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import type { PropsWithChildren } from 'react';
 import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
@@ -22,6 +22,7 @@ import type { BasketSnapshot } from '@/middlewares/basket.server';
 import BasketProvider, {
     useBasket,
     useBasketHydrated,
+    useBasketLoader,
     useBasketReset,
     useBasketSnapshot,
     useBasketUpdater,
@@ -252,6 +253,387 @@ describe('BasketProvider hooks', () => {
             });
             expect(result.current.basket).toBeUndefined();
         });
+
+        it('drops a stale onSuccess payload when basketId changed mid-flight', async () => {
+            // Defense-in-depth guard: useScapiFetcher's key includes basketId, so a basketId change
+            // normally swaps the underlying useFetcher slot and the old request's resolution does
+            // not reach this provider's onSuccess. If that key construction ever changed, a stale
+            // basket payload could land in context after a guest→registered handoff. The id-equality
+            // check in onSuccess prevents the write regardless of upstream key behavior.
+            //
+            // The test passes `basket` alongside `snapshot` so useBasket's auto-load effect skips
+            // (current is defined). We drive the load explicitly via useBasketLoader, then flip the
+            // snapshot id without re-triggering loadBasket, leaving inFlightIdRef pinned at the
+            // original id when the fetcher resolves.
+            mockFetcher.state = 'loading';
+
+            type Props = { snapshot: BasketSnapshot; basket: ShopperBasketsV2.schemas['Basket'] };
+            let currentProps: Props = { snapshot: mockSnapshot, basket: mockBasket };
+
+            const loaderRef: { current: (() => void) | null } = { current: null };
+            const Consumer = () => {
+                loaderRef.current = useBasketLoader();
+                return { basket: useBasket(), hydrated: useBasketHydrated() };
+            };
+
+            const { result, rerender } = renderHook(() => Consumer(), {
+                wrapper: ({ children }) => (
+                    <BasketProvider snapshot={currentProps.snapshot} basket={currentProps.basket}>
+                        {children}
+                    </BasketProvider>
+                ),
+            });
+
+            // Drive the load explicitly so inFlightIdRef holds the original basket id.
+            act(() => {
+                loaderRef.current?.();
+            });
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+
+            // basketId flips before the in-flight A request resolves. useBasket does not re-trigger
+            // loadBasket because `current` is already defined.
+            currentProps = {
+                snapshot: { ...mockSnapshot, basketId: 'basket-merged' },
+                basket: mockBasket,
+            };
+            rerender();
+
+            // Now the original request "resolves" with basket A's data. completedId is still 'A',
+            // basketIdForFetcherRef is now 'basket-merged' — the guard drops the payload.
+            const staleData: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                productItems: [{ productId: 'stale-product', quantity: 1 }],
+            };
+            mockFetcher.state = 'idle';
+            mockFetcher.success = true;
+            mockFetcher.data = staleData;
+            rerender();
+
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalled();
+            });
+            // Context still reflects the prop basket; the stale payload (stale-product item) did
+            // not land. hydrated stays as it was (true from the basket prop, no error).
+            expect(result.current.basket?.productItems).toEqual([]);
+        });
+
+        it('drops a stale onError when basketId changed mid-flight', async () => {
+            // Same id-equality guard on the failure path: a stale error must not overwrite the error
+            // state of a load now targeting a different basketId. The error field isn't surfaced via
+            // a public hook, so we detect "setBasket was not called" by counting Consumer renders
+            // attributable to the error effect — without the guard, setBasket would write a new
+            // state object and force one extra render.
+            mockFetcher.state = 'loading';
+
+            type Props = { snapshot: BasketSnapshot; basket: ShopperBasketsV2.schemas['Basket'] };
+            let currentProps: Props = { snapshot: mockSnapshot, basket: mockBasket };
+
+            const renderCounter = { value: 0 };
+            const loaderRef: { current: (() => void) | null } = { current: null };
+            const Consumer = () => {
+                renderCounter.value += 1;
+                loaderRef.current = useBasketLoader();
+                useBasket();
+                return null;
+            };
+
+            const { rerender } = render(
+                <BasketProvider snapshot={currentProps.snapshot} basket={currentProps.basket}>
+                    <Consumer />
+                </BasketProvider>
+            );
+
+            act(() => {
+                loaderRef.current?.();
+            });
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+
+            // basketId flips before the in-flight A request resolves with an error.
+            currentProps = {
+                snapshot: { ...mockSnapshot, basketId: 'basket-merged' },
+                basket: mockBasket,
+            };
+            rerender(
+                <BasketProvider snapshot={currentProps.snapshot} basket={currentProps.basket}>
+                    <Consumer />
+                </BasketProvider>
+            );
+            // Settle any renders triggered by the snapshot change before measuring the error effect.
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+            const rendersBeforeError = renderCounter.value;
+
+            // Stale error resolution. With the guard, setBasket is not called → no extra render.
+            // Without the guard, setBasket writes new state → at least one extra render.
+            mockFetcher.state = 'idle';
+            mockFetcher.success = false;
+            mockFetcher.errors = ['stale-error'];
+            rerender(
+                <BasketProvider snapshot={currentProps.snapshot} basket={currentProps.basket}>
+                    <Consumer />
+                </BasketProvider>
+            );
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalled();
+            });
+            // The rerender itself causes one render of Consumer; setBasket would cause an additional
+            // one on top of that. Allow the rerender's render but no more.
+            expect(renderCounter.value - rendersBeforeError).toBeLessThanOrEqual(1);
+        });
+
+        it('still hydrates context when onSuccess fires with the matching basketId', async () => {
+            // Positive case for the guard: when the in-flight id matches the current basketId at
+            // resolution, the payload is written normally. The explicit assertion documents that
+            // the guard does not regress the happy path.
+            mockFetcher.state = 'loading';
+
+            const Consumer = () => {
+                const basket = useBasket();
+                const hydrated = useBasketHydrated();
+                return { basket, hydrated };
+            };
+
+            const { result, rerender } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+
+            mockFetcher.state = 'idle';
+            mockFetcher.success = true;
+            mockFetcher.data = mockBasket;
+            rerender();
+
+            await waitFor(() => {
+                expect(result.current.basket).toBe(mockBasket);
+            });
+            expect(result.current.hydrated).toBe(true);
+        });
+
+        it('hydrates context when the basket fetcher auto-revalidates after a mutation', async () => {
+            // Mini-cart quantity update flow: after the initial loadBasket() resolves, React Router
+            // auto-revalidates the basket fetcher whenever a sibling action (e.g. cart-item-update)
+            // submits. The auto-revalidation re-runs the fetcher's loader without going through
+            // loadBasket(), so inFlightIdRef is null when the new payload arrives. The provider must
+            // still write the fresh payload to context — otherwise the panel keeps showing the
+            // pre-mutation quantities.
+            mockFetcher.state = 'loading';
+
+            const Consumer = () => {
+                const basket = useBasket();
+                return { basket };
+            };
+
+            const { result, rerender } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+
+            // Initial explicit load resolves.
+            mockFetcher.state = 'idle';
+            mockFetcher.success = true;
+            mockFetcher.data = mockBasket;
+            rerender();
+            await waitFor(() => {
+                expect(result.current.basket).toBe(mockBasket);
+            });
+
+            // Auto-revalidation: the fetcher's data flips to a new basket payload (same basketId,
+            // updated quantities) without loadBasket() being called. inFlightIdRef is null at this
+            // point because the previous load already cleared it.
+            const updatedBasket: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                productItems: [{ productId: 'product-1', quantity: 5 }],
+            };
+            mockFetcher.state = 'loading';
+            rerender();
+            mockFetcher.state = 'idle';
+            mockFetcher.success = true;
+            mockFetcher.data = updatedBasket;
+            rerender();
+
+            await waitFor(() => {
+                expect(result.current.basket).toBe(updatedBasket);
+            });
+        });
+    });
+
+    describe('useBasketLoader', () => {
+        it('triggers a single basket load when called repeatedly for the same id', () => {
+            const Consumer = () => useBasketLoader();
+            const { result } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            act(() => {
+                result.current();
+                result.current();
+                result.current();
+            });
+
+            // Provider-owned dedup: inFlightIdRef holds the id while the request is pending.
+            expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+        });
+
+        it('allows a retry after the previous load failed', async () => {
+            // Regression guard: setting the dedup ref before dispatch (instead of clearing it on
+            // resolve) would permanently mute the loader after the first failure and force a full
+            // page refresh to recover. The retry path must work.
+            mockFetcher.state = 'loading';
+
+            const Consumer = () => useBasketLoader();
+            const { result, rerender } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            act(() => {
+                result.current();
+            });
+            expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+
+            // First load completes with an error.
+            mockFetcher.state = 'idle';
+            mockFetcher.success = false;
+            mockFetcher.errors = ['network-error'];
+            rerender();
+            await waitFor(() => {
+                // The error effect ran; inFlightIdRef cleared.
+            });
+
+            // Reset state for the retry attempt and re-trigger.
+            mockFetcher.state = 'idle';
+            mockFetcher.errors = undefined;
+            act(() => {
+                result.current();
+            });
+            expect(mockFetcher.load).toHaveBeenCalledTimes(2);
+        });
+
+        it('does not re-dispatch after a successful load for the same basket id', async () => {
+            // Regression guard: hovering the cart badge repeatedly, or re-focusing it on cart
+            // sheet close, must not refire getBasket once the basket is already loaded.
+            mockFetcher.state = 'loading';
+
+            const Consumer = () => useBasketLoader();
+            const { result, rerender } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            act(() => {
+                result.current();
+            });
+            expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+
+            // Resolve the load successfully.
+            mockFetcher.state = 'idle';
+            mockFetcher.success = true;
+            mockFetcher.data = mockBasket;
+            rerender();
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+
+            // Subsequent calls for the same id are no-ops.
+            act(() => {
+                result.current();
+                result.current();
+            });
+            expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+        });
+
+        it('is a no-op when no snapshot is available', () => {
+            const Consumer = () => useBasketLoader();
+            const { result } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({}),
+            });
+
+            act(() => {
+                result.current();
+            });
+
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+
+        it('keeps callback identity stable across context state changes', () => {
+            // Regression guard for the cart-page bug: an unstable loadBasket reference propagates
+            // through BasketUpdaterContext and breaks consumers that put useBasketUpdater's
+            // callback in a useEffect dep array (cart-content, mini-cart, checkout). The mutation
+            // path is: action resolves → updater(basket) → setBasket → re-render. The callback
+            // identity must survive that render.
+            const Consumer = () => ({
+                load: useBasketLoader(),
+                update: useBasketUpdater(),
+            });
+            const { result } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            const firstLoad = result.current.load;
+            const firstUpdate = result.current.update;
+
+            // Trigger a context state change identical to a mutation flow.
+            act(() => {
+                result.current.update({ basketId: 'basket-123', productItems: [{ productId: 'p1', quantity: 1 }] });
+            });
+
+            expect(result.current.load).toBe(firstLoad);
+            expect(result.current.update).toBe(firstUpdate);
+        });
+
+        it('does not duplicate the load when prefetch is followed by a useBasket mount', async () => {
+            // Models the real prefetch-then-open flow: the header calls useBasketLoader
+            // (prefetch), then the cart sheet lazy-mounts useBasket which auto-loads. Both
+            // consumers share one provider; provider-owned in-flight tracking means the second
+            // call is a no-op while the first is in flight.
+            mockFetcher.state = 'loading';
+
+            const prefetchRef: { current: (() => void) | null } = { current: null };
+
+            const PrefetchConsumer = () => {
+                prefetchRef.current = useBasketLoader();
+                return null;
+            };
+            const BasketConsumer = () => {
+                useBasket();
+                return null;
+            };
+
+            const { rerender } = render(
+                <BasketProvider snapshot={mockSnapshot}>
+                    <PrefetchConsumer />
+                </BasketProvider>
+            );
+
+            // Prefetch first — the in-flight ref now holds the basket id.
+            act(() => {
+                prefetchRef.current?.();
+            });
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+
+            // Now mount useBasket alongside — its auto-load effect must observe the in-flight ref
+            // and skip dispatching.
+            rerender(
+                <BasketProvider snapshot={mockSnapshot}>
+                    <PrefetchConsumer />
+                    <BasketConsumer />
+                </BasketProvider>
+            );
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+        });
     });
 
     describe('useBasketSnapshot', () => {
@@ -378,6 +760,23 @@ describe('BasketProvider hooks', () => {
     });
 
     describe('useBasketUpdater', () => {
+        it('returns a reference-stable callback through a basket mutation', () => {
+            // Cart, mini-cart, and checkout consumers put the updater callback into a useEffect
+            // dep array. A mutation flow is: action resolves → updater(basket) → setBasket →
+            // re-render. The callback identity must survive the resulting context state change,
+            // otherwise the consumer's effect re-fires and either loops or breaks visible updates.
+            const Consumer = () => useBasketUpdater();
+            const { result } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            const first = result.current;
+            act(() => {
+                result.current({ basketId: 'basket-123', productItems: [{ productId: 'p1', quantity: 1 }] });
+            });
+            expect(result.current).toBe(first);
+        });
+
         it('sets the basket and derives a snapshot from it', () => {
             const basket: ShopperBasketsV2.schemas['Basket'] = {
                 basketId: 'basket-abc',
