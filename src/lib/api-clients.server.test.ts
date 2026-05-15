@@ -15,11 +15,13 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
-import { createApiClients } from './api-clients.server';
-import { authContext } from '@/middlewares/auth.utils';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import { authContext } from '@/middlewares/auth.utils';
 import type { SessionData } from '@/lib/api/types';
+import type { Logger } from '@/lib/logger';
+import { loggerContext } from '@/lib/logger.server';
 import { scapiMiddlewareContext } from './scapi-middleware';
+import { createApiClients, createDedupedFetch } from './api-clients.server';
 
 const scapiMocks = vi.hoisted(() => {
     const mockUse = vi.fn();
@@ -549,6 +551,466 @@ describe('createApiClients', () => {
                 expect(result.headers.get('Authorization')).toBeNull();
                 expect(result.headers.get('sfdc_dwsid')).toBeNull();
             });
+        });
+    });
+});
+
+// ===========================================================================
+// Fetch-level dedupe — tests for `createDedupedFetch`, the opinionated reference
+// dedupe implementation that wraps the base `fetch` before it's handed to the
+// SCAPI clients.
+// ===========================================================================
+
+type MockLogger = {
+    info: ReturnType<typeof vi.fn>;
+};
+
+function makeContext(): RouterContextProvider & { logger: MockLogger } {
+    // The registry is keyed by the context object itself (WeakMap), so any
+    // unique object instance per "request" is sufficient for test isolation.
+    // We wire a mock logger into `loggerContext` so cache-hit logging is
+    // observable from tests (and so `getLogger(context)` doesn't fall back
+    // to a console logger that would emit noise during the run).
+    const store = new Map<unknown, unknown>();
+    const logger: MockLogger = {
+        info: vi.fn(),
+    };
+    store.set(loggerContext, logger as unknown as Logger);
+    const ctx = {
+        get(key: unknown) {
+            return store.get(key);
+        },
+        set(key: unknown, value: unknown) {
+            store.set(key, value);
+            return value;
+        },
+    } as unknown as RouterContextProvider & { logger: MockLogger };
+    ctx.logger = logger;
+    return ctx;
+}
+
+describe('createDedupedFetch', () => {
+    function makeBaseFetch() {
+        let counter = 0;
+        return vi.fn(() => {
+            const id = ++counter;
+            return Promise.resolve(
+                new Response(JSON.stringify({ id }), {
+                    status: 200,
+                    headers: { 'content-type': 'application/json' },
+                })
+            );
+        });
+    }
+
+    it('shares one underlying fetch for two parallel identical GETs', async () => {
+        const ctx = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        const [r1, r2] = await Promise.all([fetch('https://api.example.com/x'), fetch('https://api.example.com/x')]);
+
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+        // The second caller hit the cache and emits an info log.
+        expect(ctx.logger.info).toHaveBeenCalledTimes(1);
+        expect(ctx.logger.info).toHaveBeenCalledWith('fetch cache hit GET /x');
+        // Both callers must be able to consume the body independently (responses are cloned).
+        await expect(r1.json()).resolves.toEqual({ id: 1 });
+        await expect(r2.json()).resolves.toEqual({ id: 1 });
+    });
+
+    it('treats reordered query parameters as identical', async () => {
+        const ctx = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        await Promise.all([fetch('https://api.example.com/x?a=1&b=2'), fetch('https://api.example.com/x?b=2&a=1')]);
+
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+        expect(ctx.logger.info).toHaveBeenCalledTimes(1);
+        // Query keys are sorted and values are masked, so reordered params produce a stable log line.
+        expect(ctx.logger.info).toHaveBeenCalledWith('fetch cache hit GET /x?a=*&b=*');
+    });
+
+    it('does not dedupe POST requests', async () => {
+        const ctx = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        await Promise.all([
+            fetch('https://api.example.com/x', { method: 'POST', body: 'a' }),
+            fetch('https://api.example.com/x', { method: 'POST', body: 'a' }),
+        ]);
+
+        expect(baseFetch).toHaveBeenCalledTimes(2);
+        // Mutations are never cache hits — no info log should fire.
+        expect(ctx.logger.info).not.toHaveBeenCalled();
+    });
+
+    it('isolates registries between two contexts (no cross-request leakage)', async () => {
+        const ctxA = makeContext();
+        const ctxB = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetchA = createDedupedFetch(ctxA, baseFetch as unknown as typeof globalThis.fetch);
+        const fetchB = createDedupedFetch(ctxB, baseFetch as unknown as typeof globalThis.fetch);
+
+        await fetchA('https://api.example.com/x');
+        await fetchB('https://api.example.com/x');
+
+        expect(baseFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('shares a rejected promise across concurrent callers and evicts on rejection', async () => {
+        const ctx = makeContext();
+        const baseFetch = vi.fn();
+        baseFetch.mockRejectedValueOnce(new Error('network'));
+        // Second call (after eviction) succeeds.
+        baseFetch.mockResolvedValueOnce(new Response('ok'));
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        const p1 = fetch('https://api.example.com/x');
+        const p2 = fetch('https://api.example.com/x');
+        await expect(p1).rejects.toThrow('network');
+        await expect(p2).rejects.toThrow('network');
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+
+        // Subsequent identical call retries because the rejected entry was evicted.
+        await expect(fetch('https://api.example.com/x')).resolves.toBeInstanceOf(Response);
+        expect(baseFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('clears the registry on mutation settle (read → mutate → re-read)', async () => {
+        const ctx = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        await fetch('https://api.example.com/x');
+        await fetch('https://api.example.com/x');
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+        // Second GET was a cache hit.
+        expect(ctx.logger.info).toHaveBeenCalledTimes(1);
+        expect(ctx.logger.info).toHaveBeenLastCalledWith('fetch cache hit GET /x');
+
+        await fetch('https://api.example.com/x', { method: 'POST', body: 'a' });
+
+        await fetch('https://api.example.com/x');
+        // 1 GET (deduped) + 1 POST + 1 GET after invalidation = 3.
+        expect(baseFetch).toHaveBeenCalledTimes(3);
+        // Post-invalidation read missed the cache, so the info log count did not change.
+        expect(ctx.logger.info).toHaveBeenCalledTimes(1);
+    });
+
+    it('clears the registry across URL boundaries on mutation settle', async () => {
+        const ctx = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        await fetch('https://api.example.com/a');
+        await fetch('https://api.example.com/b');
+        expect(baseFetch).toHaveBeenCalledTimes(2);
+
+        await fetch('https://api.example.com/x', { method: 'POST', body: 'a' });
+
+        await fetch('https://api.example.com/a');
+        await fetch('https://api.example.com/b');
+        // 2 GETs + 1 POST + 2 fresh GETs after invalidation = 5.
+        expect(baseFetch).toHaveBeenCalledTimes(5);
+    });
+
+    it('invalidates on mutation rejection (failure must not leave stale cache)', async () => {
+        const ctx = makeContext();
+        const baseFetch = vi.fn();
+        baseFetch.mockResolvedValueOnce(new Response('ok')); // first GET
+        baseFetch.mockRejectedValueOnce(new Error('boom')); // POST fails
+        baseFetch.mockResolvedValueOnce(new Response('ok')); // second GET (after invalidation)
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        await fetch('https://api.example.com/x');
+        await expect(fetch('https://api.example.com/x', { method: 'POST', body: 'a' })).rejects.toThrow('boom');
+
+        await fetch('https://api.example.com/x');
+        expect(baseFetch).toHaveBeenCalledTimes(3);
+    });
+
+    it('lets concurrent in-flight reads complete against the pre-mutation snapshot', async () => {
+        const ctx = makeContext();
+
+        let resolveGet: ((value: Response) => void) | undefined;
+        const baseFetch = vi.fn();
+        baseFetch.mockImplementationOnce(
+            () =>
+                new Promise<Response>((resolve) => {
+                    resolveGet = resolve;
+                })
+        );
+        baseFetch.mockResolvedValueOnce(new Response('mutated')); // POST
+        baseFetch.mockResolvedValueOnce(new Response('fresh')); // GET after invalidation
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        const inFlight = fetch('https://api.example.com/x');
+
+        // Mutation settles while the read is still pending.
+        await fetch('https://api.example.com/x', { method: 'POST', body: 'a' });
+
+        // Pending read resolves to its original (pre-mutation) response.
+        resolveGet?.(new Response('snapshot'));
+        await expect((await inFlight).text()).resolves.toBe('snapshot');
+
+        // 1 pending GET + 1 POST = 2 underlying calls so far.
+        expect(baseFetch).toHaveBeenCalledTimes(2);
+
+        // Subsequent read goes to the network.
+        await fetch('https://api.example.com/x');
+        expect(baseFetch).toHaveBeenCalledTimes(3);
+    });
+
+    it('passes a Request object through to the base fetch (reconstructed to neutralize signal)', async () => {
+        const ctx = makeContext();
+        const baseFetch = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) =>
+            Promise.resolve(new Response('ok'))
+        );
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        const req = new Request('https://api.example.com/x', {
+            method: 'GET',
+            headers: { 'X-Test': 'value' },
+        });
+        await fetch(req);
+
+        // Underlying fetch must receive a Request (so SDK Request semantics — method, headers, body —
+        // survive), but it MUST NOT be the caller's Request: we reconstruct so the inner Request's signal
+        // is independent of any signal the caller may have attached to its own Request.
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+        const passedInput = baseFetch.mock.calls[0][0] as Request;
+        expect(passedInput).toBeInstanceOf(Request);
+        expect(passedInput).not.toBe(req);
+        expect(passedInput.url).toBe(req.url);
+        expect(passedInput.method).toBe('GET');
+        expect(passedInput.headers.get('X-Test')).toBe('value');
+    });
+
+    it('dedupes HEAD requests and shares the response across callers', async () => {
+        const ctx = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        const [r1, r2] = await Promise.all([
+            fetch('https://api.example.com/x', { method: 'HEAD' }),
+            fetch('https://api.example.com/x', { method: 'HEAD' }),
+        ]);
+
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+        // The HEAD cache hit is logged with the matching method.
+        expect(ctx.logger.info).toHaveBeenCalledTimes(1);
+        expect(ctx.logger.info).toHaveBeenCalledWith('fetch cache hit HEAD /x');
+        // Each cache hit returns its own clone — both callers can read independently.
+        expect(r1).toBeInstanceOf(Response);
+        expect(r2).toBeInstanceOf(Response);
+    });
+
+    it('logs the URL pathname and query keys with masked values on cache hit', async () => {
+        const ctx = makeContext();
+        const baseFetch = makeBaseFetch();
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        await Promise.all([
+            fetch('https://api.example.com/baskets/abc?siteId=site&token=secret&customerId=12345'),
+            fetch('https://api.example.com/baskets/abc?siteId=site&token=secret&customerId=12345'),
+        ]);
+
+        expect(ctx.logger.info).toHaveBeenCalledTimes(1);
+        const message = ctx.logger.info.mock.calls[0][0] as string;
+        // Pathname + sorted query keys with values masked. Keys are observable for diagnostics, values
+        // (which can carry tokens, basket IDs, customer IDs, or other PII) are not.
+        expect(message).toBe('fetch cache hit GET /baskets/abc?customerId=*&siteId=*&token=*');
+        expect(message).not.toContain('api.example.com');
+        expect(message).not.toContain('secret');
+        expect(message).not.toContain('=site');
+        expect(message).not.toContain('12345');
+    });
+
+    it.each(['PUT', 'PATCH', 'DELETE'])(
+        'invalidates the registry on %s settle (not just POST)',
+        async (mutationMethod) => {
+            const ctx = makeContext();
+            const baseFetch = makeBaseFetch();
+            const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            await fetch('https://api.example.com/x');
+            await fetch('https://api.example.com/x');
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+
+            await fetch('https://api.example.com/x', { method: mutationMethod, body: 'a' });
+
+            await fetch('https://api.example.com/x');
+            // 1 GET (deduped) + 1 mutation + 1 GET after invalidation = 3.
+            expect(baseFetch).toHaveBeenCalledTimes(3);
+        }
+    );
+
+    it('serializes concurrent mutations and invalidates the registry once each settles', async () => {
+        const ctx = makeContext();
+        const baseFetch = vi.fn();
+        baseFetch.mockResolvedValueOnce(new Response('initial'));
+        baseFetch.mockResolvedValueOnce(new Response('m1'));
+        baseFetch.mockResolvedValueOnce(new Response('m2'));
+        baseFetch.mockResolvedValueOnce(new Response('fresh'));
+        const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+        // Prime the cache with one read.
+        await fetch('https://api.example.com/x');
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+
+        // Two concurrent mutations — each must hit the network (mutations are never deduped).
+        await Promise.all([
+            fetch('https://api.example.com/x', { method: 'POST', body: '1' }),
+            fetch('https://api.example.com/x', { method: 'POST', body: '2' }),
+        ]);
+        expect(baseFetch).toHaveBeenCalledTimes(3);
+
+        // After both mutations settle the registry is empty, so a fresh read goes to the network.
+        await fetch('https://api.example.com/x');
+        expect(baseFetch).toHaveBeenCalledTimes(4);
+    });
+
+    describe('abort handling', () => {
+        // Construct a base fetch that resolves only when we tell it to, so we can interleave aborts.
+        function makeControllableFetch() {
+            let resolveCurrent: ((response: Response) => void) | undefined;
+            const baseFetch = vi.fn(
+                (_input: RequestInfo | URL, _init?: RequestInit) =>
+                    new Promise<Response>((resolve) => {
+                        resolveCurrent = resolve;
+                    })
+            );
+            return {
+                baseFetch,
+                resolve: (response = new Response('ok')) => {
+                    resolveCurrent?.(response);
+                    resolveCurrent = undefined;
+                },
+            };
+        }
+
+        it("does not forward the caller's signal to the underlying fetch", async () => {
+            const ctx = makeContext();
+            const { baseFetch, resolve } = makeControllableFetch();
+            const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const controller = new AbortController();
+            const fetchPromise = fetch('https://api.example.com/x', { signal: controller.signal });
+
+            // Whatever init was passed to the underlying fetch must NOT carry the caller's signal — otherwise
+            // the next assertion (caller's abort doesn't cancel the underlying fetch) would be a coincidence.
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+            const passedInit = baseFetch.mock.calls[0]?.[1];
+            expect(passedInit?.signal).toBeUndefined();
+
+            controller.abort(new Error('caller aborted'));
+            await expect(fetchPromise).rejects.toThrow('caller aborted');
+
+            // Underlying fetch is still running — it has not been aborted.
+            resolve();
+            // Allow the unraced underlying fetch to settle without errors leaking out.
+            await new Promise<void>((r) => setTimeout(r, 0));
+        });
+
+        it('aborts only the calling await, not the shared fetch (other callers complete normally)', async () => {
+            const ctx = makeContext();
+            const { baseFetch, resolve } = makeControllableFetch();
+            const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const controllerA = new AbortController();
+            const a = fetch('https://api.example.com/x', { signal: controllerA.signal });
+            const b = fetch('https://api.example.com/x'); // no signal
+
+            controllerA.abort(new Error('A only'));
+            await expect(a).rejects.toThrow('A only');
+
+            // The underlying fetch was not aborted by A's abort, so B can still resolve.
+            resolve(new Response('shared body'));
+            await expect((await b).text()).resolves.toBe('shared body');
+
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+        });
+
+        it('rejects immediately when the caller signal is already aborted', async () => {
+            const ctx = makeContext();
+            const baseFetch = makeBaseFetch();
+            const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const controller = new AbortController();
+            controller.abort(new Error('already gone'));
+
+            // The signal was already aborted before fetch was called. Caller's await must reject.
+            await expect(fetch('https://api.example.com/x', { signal: controller.signal })).rejects.toThrow(
+                'already gone'
+            );
+        });
+
+        it('does not forward a signal carried on a Request input to the underlying fetch', async () => {
+            const ctx = makeContext();
+            const { baseFetch, resolve } = makeControllableFetch();
+            const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const controller = new AbortController();
+            const req = new Request('https://api.example.com/x', { signal: controller.signal });
+            const fetchPromise = fetch(req);
+
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+            const passedInput = baseFetch.mock.calls[0][0] as Request;
+            // The underlying fetch must receive a Request whose signal is NOT the caller's signal.
+            expect(passedInput).toBeInstanceOf(Request);
+            expect(passedInput).not.toBe(req);
+            expect(passedInput.signal).not.toBe(controller.signal);
+            expect(passedInput.signal.aborted).toBe(false);
+
+            controller.abort(new Error('caller aborted via Request'));
+            await expect(fetchPromise).rejects.toThrow('caller aborted via Request');
+
+            // Underlying fetch's signal must NOT have followed the caller's abort.
+            expect(passedInput.signal.aborted).toBe(false);
+
+            resolve();
+            await new Promise<void>((r) => setTimeout(r, 0));
+        });
+
+        it('aborts only the calling await when the signal is on a Request input (other callers complete)', async () => {
+            const ctx = makeContext();
+            const { baseFetch, resolve } = makeControllableFetch();
+            const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const controllerA = new AbortController();
+            const reqA = new Request('https://api.example.com/x', { signal: controllerA.signal });
+            const a = fetch(reqA);
+            const b = fetch('https://api.example.com/x'); // no signal
+
+            controllerA.abort(new Error('A only (Request signal)'));
+            await expect(a).rejects.toThrow('A only (Request signal)');
+
+            // Underlying fetch was not aborted — the second caller still observes a normal resolution.
+            resolve(new Response('shared body'));
+            await expect((await b).text()).resolves.toBe('shared body');
+
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+        });
+
+        it('keeps the cache populated for later (non-aborted) callers when the first caller aborts', async () => {
+            const ctx = makeContext();
+            const { baseFetch, resolve } = makeControllableFetch();
+            const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
+
+            const controllerA = new AbortController();
+            const a = fetch('https://api.example.com/x', { signal: controllerA.signal });
+            controllerA.abort(new Error('A bailed'));
+            await expect(a).rejects.toThrow('A bailed');
+
+            // A second caller arrives after A aborted — should still share the in-flight fetch (no new fetch).
+            const b = fetch('https://api.example.com/x');
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+
+            resolve(new Response('shared'));
+            await expect((await b).text()).resolves.toBe('shared');
         });
     });
 });

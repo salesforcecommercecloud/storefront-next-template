@@ -23,6 +23,8 @@ import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 const apiClientMocks = vi.hoisted(() => ({
     mockShopperCustomersGetCustomer: vi.fn(),
     mockShopperCustomersUpdateCustomer: vi.fn(),
+    mockShopperCustomersUse: vi.fn(),
+    mockShopperCustomersEject: vi.fn(),
     mockShopperBasketsAddItemToBasket: vi.fn(),
     mockBasketGetOrCreateBasket: vi.fn(),
     mockAuthLoginAsGuest: vi.fn(),
@@ -41,6 +43,8 @@ vi.mock('@/lib/utils', () => ({
 const {
     mockShopperCustomersGetCustomer,
     mockShopperCustomersUpdateCustomer,
+    mockShopperCustomersUse,
+    mockShopperCustomersEject,
     mockShopperBasketsAddItemToBasket,
     mockBasketGetOrCreateBasket,
     mockAuthLoginAsGuest,
@@ -55,6 +59,10 @@ vi.mock('@/lib/api-clients.server', () => ({
         shopperCustomers: {
             getCustomer: mockShopperCustomersGetCustomer,
             updateCustomer: mockShopperCustomersUpdateCustomer,
+            // Reserved proxy members exposed by the underlying ProxyClient — must NOT be
+            // invocable through the resource route, even though they are functions.
+            use: mockShopperCustomersUse,
+            eject: mockShopperCustomersEject,
         },
         shopperBasketsV2: {
             addItemToBasket: mockShopperBasketsAddItemToBasket,
@@ -304,6 +312,21 @@ describe('Commerce SDK resource', () => {
                     success: false,
                     errors: ['Unknown error'],
                 });
+            });
+
+            // ProxyClient exposes `use` and `eject` as functions on every SCAPI client.
+            // They are not SCAPI operations and must not be invocable from a crafted resource URL.
+            it.each(['use', 'eject'])('should reject reserved proxy member "%s" in loader calls', async (reserved) => {
+                const invalidResource = encodeBase64Url(JSON.stringify(['shopperCustomers', reserved, { params: {} }]));
+
+                const result = await loader(createLoaderArgs(invalidResource));
+
+                expect(result).toEqual({
+                    success: false,
+                    errors: [`Method not found: "shopperCustomers.${reserved}"`],
+                });
+                expect(mockShopperCustomersUse).not.toHaveBeenCalled();
+                expect(mockShopperCustomersEject).not.toHaveBeenCalled();
             });
         });
     });
@@ -662,6 +685,21 @@ describe('Commerce SDK resource', () => {
                     success: false,
                     errors: ['Method not found: "loyalty.missingMethod"'],
                 });
+            });
+
+            // ProxyClient exposes `use` and `eject` as functions on every SCAPI client.
+            // They are not SCAPI operations and must not be invocable from a crafted resource URL.
+            it.each(['use', 'eject'])('should reject reserved proxy member "%s" in action calls', async (reserved) => {
+                const invalidResource = encodeBase64Url(JSON.stringify(['shopperCustomers', reserved, { params: {} }]));
+
+                const result = await action(createActionArgs(invalidResource));
+
+                expect(result).toEqual({
+                    success: false,
+                    errors: [`Method not found: "shopperCustomers.${reserved}"`],
+                });
+                expect(mockShopperCustomersUse).not.toHaveBeenCalled();
+                expect(mockShopperCustomersEject).not.toHaveBeenCalled();
             });
         });
     });

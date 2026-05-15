@@ -37,6 +37,9 @@ import { getLogger } from '@/lib/logger.server';
 const HELPER_NAMESPACE_MAP = { auth: true, basket: true } as const;
 const HELPER_NAMESPACES = new Set(Object.keys(HELPER_NAMESPACE_MAP));
 
+// Proxy client members that are not SCAPI operations and must not be invocable from a crafted resource URL.
+const RESERVED_PROXY_MEMBERS = new Set(['use', 'eject']);
+
 /**
  * Keys for helper namespaces (e.g., 'auth', 'basket'), derived from the runtime allow-list.
  */
@@ -226,7 +229,7 @@ export async function loader<
         const client = clients[clientKey] as Record<string, unknown>;
         const methodName = resource[1] as string;
 
-        if (!client || typeof client[methodName] !== 'function') {
+        if (!client || typeof client[methodName] !== 'function' || RESERVED_PROXY_MEMBERS.has(methodName)) {
             throw new TypeError(`Method not found: "${resource[0]}.${methodName}"`);
         }
 
@@ -370,7 +373,7 @@ export async function action<
         const client = clients[clientKey] as Record<string, unknown>;
         const methodName = resource[1] as string;
 
-        if (!client || typeof client[methodName] !== 'function') {
+        if (!client || typeof client[methodName] !== 'function' || RESERVED_PROXY_MEMBERS.has(methodName)) {
             throw new TypeError(`Method not found: "${resource[0]}.${methodName}"`);
         }
 
