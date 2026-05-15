@@ -86,6 +86,14 @@ const EXCLUDED_COMPONENTS = new Set([
     'password-update-form/index',
     'promo-code-form/index',
     'signup-form/form',
+    // Footer sub-components — composed inside `footer/index` and exercised by the Footer stories.
+    'footer/checkout-footer',
+    'footer/legal-links',
+    'footer/main-footer',
+    'footer/newsletter-section',
+    'footer/policy-links',
+    'footer/social-icons',
+    'footer/switchers',
 ]);
 // Ensure OUTPUT DIR exists
 if (!fs.existsSync(OUTPUT_DIR)) {

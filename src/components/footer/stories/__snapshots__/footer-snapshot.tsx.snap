@@ -68,54 +68,54 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
           <div
             class="text-footer-foreground"
           >
-            <div>
+            <div
+              class="flex flex-col gap-6"
+            >
               <div
-                class="flex flex-col gap-6"
+                class="flex w-full flex-col items-start lg:flex-row gap-6"
               >
                 <div
-                  class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                  class="flex w-full items-center gap-6"
                 >
-                  <div
-                    class="flex items-center gap-6"
+                  <a
+                    href="/"
                   >
-                    <div
-                      class="flex items-center gap-2"
+                    <img
+                      alt="Market Street"
+                      class="h-4 w-auto"
+                      src="/images/logo.svg"
+                    />
+                  </a>
+                  <div
+                    class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground hidden lg:flex"
+                  >
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/about-us"
                     >
-                      <a
-                        href="/"
-                      >
-                        <img
-                          alt="Market Street"
-                          class="h-4 w-auto"
-                          src="/images/logo.svg"
-                        />
-                      </a>
-                    </div>
-                    <div
-                      class="flex items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                      About Us
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/accessibility"
                     >
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/accessibility"
-                      >
-                        Accessibility Statement
-                      </a>
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/privacy"
-                      >
-                        Privacy Policy
-                      </a>
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/privacy-choices"
-                      >
-                        Your Privacy Choices
-                      </a>
-                    </div>
+                      Accessibility Statement
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/privacy"
+                    >
+                      Privacy Policy
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/privacy-choices"
+                    >
+                      Your Privacy Choices
+                    </a>
                   </div>
                   <div
-                    class="flex items-center gap-4"
+                    class="flex items-end gap-4 ml-auto"
                   >
                     <a
                       aria-label="Youtube"
@@ -204,14 +204,46 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                   </div>
                 </div>
                 <div
-                  class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                  class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground flex lg:hidden"
                 >
-                  <div>
-                    © 
-                    2026
-                     
-                    Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
-                  </div>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/about-us"
+                  >
+                    About Us
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/accessibility"
+                  >
+                    Accessibility Statement
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy-choices"
+                  >
+                    Your Privacy Choices
+                  </a>
+                </div>
+              </div>
+              <div
+                class="flex flex-col items-start xl:flex-row xl:items-center justify-between gap-4 text-sm font-normal leading-5 text-muted-foreground"
+              >
+                <div>
+                  © 
+                  2026
+                   
+                  Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
+                </div>
+                <div
+                  class="flex flex-col items-start sm:flex-row sm:items-center gap-4"
+                >
                   <div
                     class="flex items-center gap-4"
                   >
@@ -229,6 +261,10 @@ exports[`Footer stories snapshot > DarkBackground story renders and matches snap
                         GBP
                       </option>
                     </select>
+                  </div>
+                  <div
+                    class="flex items-center gap-4"
+                  >
                     <a
                       class="hover:text-foreground transition-colors"
                       href="/privacy"
@@ -315,54 +351,54 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
         <div
           class="text-footer-foreground"
         >
-          <div>
+          <div
+            class="flex flex-col gap-6"
+          >
             <div
-              class="flex flex-col gap-6"
+              class="flex w-full flex-col items-start lg:flex-row gap-6"
             >
               <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                class="flex w-full items-center gap-6"
               >
-                <div
-                  class="flex items-center gap-6"
+                <a
+                  href="/"
                 >
-                  <div
-                    class="flex items-center gap-2"
+                  <img
+                    alt="Market Street"
+                    class="h-4 w-auto"
+                    src="/images/logo.svg"
+                  />
+                </a>
+                <div
+                  class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground hidden lg:flex"
+                >
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/about-us"
                   >
-                    <a
-                      href="/"
-                    >
-                      <img
-                        alt="Market Street"
-                        class="h-4 w-auto"
-                        src="/images/logo.svg"
-                      />
-                    </a>
-                  </div>
-                  <div
-                    class="flex items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                    About Us
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/accessibility"
                   >
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/accessibility"
-                    >
-                      Accessibility Statement
-                    </a>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/privacy"
-                    >
-                      Privacy Policy
-                    </a>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/privacy-choices"
-                    >
-                      Your Privacy Choices
-                    </a>
-                  </div>
+                    Accessibility Statement
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy-choices"
+                  >
+                    Your Privacy Choices
+                  </a>
                 </div>
                 <div
-                  class="flex items-center gap-4"
+                  class="flex items-end gap-4 ml-auto"
                 >
                   <a
                     aria-label="Youtube"
@@ -451,14 +487,46 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                 </div>
               </div>
               <div
-                class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground flex lg:hidden"
               >
-                <div>
-                  © 
-                  2026
-                   
-                  Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
-                </div>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/about-us"
+                >
+                  About Us
+                </a>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/accessibility"
+                >
+                  Accessibility Statement
+                </a>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/privacy"
+                >
+                  Privacy Policy
+                </a>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/privacy-choices"
+                >
+                  Your Privacy Choices
+                </a>
+              </div>
+            </div>
+            <div
+              class="flex flex-col items-start xl:flex-row xl:items-center justify-between gap-4 text-sm font-normal leading-5 text-muted-foreground"
+            >
+              <div>
+                © 
+                2026
+                 
+                Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
+              </div>
+              <div
+                class="flex flex-col items-start sm:flex-row sm:items-center gap-4"
+              >
                 <div
                   class="flex items-center gap-4"
                 >
@@ -476,6 +544,10 @@ exports[`Footer stories snapshot > Default story renders and matches snapshot 1`
                       GBP
                     </option>
                   </select>
+                </div>
+                <div
+                  class="flex items-center gap-4"
+                >
                   <a
                     class="hover:text-foreground transition-colors"
                     href="/privacy"
@@ -648,54 +720,54 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
           <div
             class="text-footer-foreground"
           >
-            <div>
+            <div
+              class="flex flex-col gap-6"
+            >
               <div
-                class="flex flex-col gap-6"
+                class="flex w-full flex-col items-start lg:flex-row gap-6"
               >
                 <div
-                  class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                  class="flex w-full items-center gap-6"
                 >
-                  <div
-                    class="flex items-center gap-6"
+                  <a
+                    href="/"
                   >
-                    <div
-                      class="flex items-center gap-2"
+                    <img
+                      alt="Market Street"
+                      class="h-4 w-auto"
+                      src="/images/logo.svg"
+                    />
+                  </a>
+                  <div
+                    class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground hidden lg:flex"
+                  >
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/about-us"
                     >
-                      <a
-                        href="/"
-                      >
-                        <img
-                          alt="Market Street"
-                          class="h-4 w-auto"
-                          src="/images/logo.svg"
-                        />
-                      </a>
-                    </div>
-                    <div
-                      class="flex items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                      About Us
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/accessibility"
                     >
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/accessibility"
-                      >
-                        Accessibility Statement
-                      </a>
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/privacy"
-                      >
-                        Privacy Policy
-                      </a>
-                      <a
-                        class="hover:text-foreground transition-colors"
-                        href="/privacy-choices"
-                      >
-                        Your Privacy Choices
-                      </a>
-                    </div>
+                      Accessibility Statement
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/privacy"
+                    >
+                      Privacy Policy
+                    </a>
+                    <a
+                      class="hover:text-foreground transition-colors"
+                      href="/privacy-choices"
+                    >
+                      Your Privacy Choices
+                    </a>
                   </div>
                   <div
-                    class="flex items-center gap-4"
+                    class="flex items-end gap-4 ml-auto"
                   >
                     <a
                       aria-label="Youtube"
@@ -784,14 +856,46 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                   </div>
                 </div>
                 <div
-                  class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                  class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground flex lg:hidden"
                 >
-                  <div>
-                    © 
-                    2026
-                     
-                    Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
-                  </div>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/about-us"
+                  >
+                    About Us
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/accessibility"
+                  >
+                    Accessibility Statement
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy-choices"
+                  >
+                    Your Privacy Choices
+                  </a>
+                </div>
+              </div>
+              <div
+                class="flex flex-col items-start xl:flex-row xl:items-center justify-between gap-4 text-sm font-normal leading-5 text-muted-foreground"
+              >
+                <div>
+                  © 
+                  2026
+                   
+                  Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
+                </div>
+                <div
+                  class="flex flex-col items-start sm:flex-row sm:items-center gap-4"
+                >
                   <div
                     class="flex items-center gap-4"
                   >
@@ -809,6 +913,10 @@ exports[`Footer stories snapshot > LongPage story renders and matches snapshot 1
                         GBP
                       </option>
                     </select>
+                  </div>
+                  <div
+                    class="flex items-center gap-4"
+                  >
                     <a
                       class="hover:text-foreground transition-colors"
                       href="/privacy"
@@ -895,54 +1003,54 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
         <div
           class="text-footer-foreground"
         >
-          <div>
+          <div
+            class="flex flex-col gap-6"
+          >
             <div
-              class="flex flex-col gap-6"
+              class="flex w-full flex-col items-start lg:flex-row gap-6"
             >
               <div
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                class="flex w-full items-center gap-6"
               >
-                <div
-                  class="flex items-center gap-6"
+                <a
+                  href="/"
                 >
-                  <div
-                    class="flex items-center gap-2"
+                  <img
+                    alt="Market Street"
+                    class="h-4 w-auto"
+                    src="/images/logo.svg"
+                  />
+                </a>
+                <div
+                  class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground hidden lg:flex"
+                >
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/about-us"
                   >
-                    <a
-                      href="/"
-                    >
-                      <img
-                        alt="Market Street"
-                        class="h-4 w-auto"
-                        src="/images/logo.svg"
-                      />
-                    </a>
-                  </div>
-                  <div
-                    class="flex items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                    About Us
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/accessibility"
                   >
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/accessibility"
-                    >
-                      Accessibility Statement
-                    </a>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/privacy"
-                    >
-                      Privacy Policy
-                    </a>
-                    <a
-                      class="hover:text-foreground transition-colors"
-                      href="/privacy-choices"
-                    >
-                      Your Privacy Choices
-                    </a>
-                  </div>
+                    Accessibility Statement
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy"
+                  >
+                    Privacy Policy
+                  </a>
+                  <a
+                    class="hover:text-foreground transition-colors"
+                    href="/privacy-choices"
+                  >
+                    Your Privacy Choices
+                  </a>
                 </div>
                 <div
-                  class="flex items-center gap-4"
+                  class="flex items-end gap-4 ml-auto"
                 >
                   <a
                     aria-label="Youtube"
@@ -1031,14 +1139,46 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                 </div>
               </div>
               <div
-                class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-normal leading-5 text-muted-foreground"
+                class="flex-wrap items-center gap-x-4 gap-y-2 text-sm font-normal leading-5 text-muted-foreground flex lg:hidden"
               >
-                <div>
-                  © 
-                  2026
-                   
-                  Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
-                </div>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/about-us"
+                >
+                  About Us
+                </a>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/accessibility"
+                >
+                  Accessibility Statement
+                </a>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/privacy"
+                >
+                  Privacy Policy
+                </a>
+                <a
+                  class="hover:text-foreground transition-colors"
+                  href="/privacy-choices"
+                >
+                  Your Privacy Choices
+                </a>
+              </div>
+            </div>
+            <div
+              class="flex flex-col items-start xl:flex-row xl:items-center justify-between gap-4 text-sm font-normal leading-5 text-muted-foreground"
+            >
+              <div>
+                © 
+                2026
+                 
+                Salesforce or its affiliates. All rights reserved. This is a demo store only. Orders made WILL NOT be processed.
+              </div>
+              <div
+                class="flex flex-col items-start sm:flex-row sm:items-center gap-4"
+              >
                 <div
                   class="flex items-center gap-4"
                 >
@@ -1056,6 +1196,10 @@ exports[`Footer stories snapshot > MobileView story renders and matches snapshot
                       GBP
                     </option>
                   </select>
+                </div>
+                <div
+                  class="flex items-center gap-4"
+                >
                   <a
                     class="hover:text-foreground transition-colors"
                     href="/privacy"

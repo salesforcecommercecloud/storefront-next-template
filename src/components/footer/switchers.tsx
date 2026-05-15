@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 import { type ReactElement } from 'react';
-import CheckoutFooter from './checkout-footer';
-import MainFooter from './main-footer';
+import LocaleSwitcher from '@/components/locale-switcher';
+import CurrencySwitcher from '@/components/currency-switcher';
+import { cn } from '@/lib/utils';
 
-interface FooterProps {
-    variant?: 'full' | 'checkout';
-}
-
-export default function Footer({ variant = 'full' }: FooterProps): ReactElement {
-    return variant === 'checkout' ? <CheckoutFooter /> : <MainFooter />;
+export default function Switchers({ className }: { className?: string }): ReactElement {
+    return (
+        <div className={cn('flex items-center gap-4', className)}>
+            <LocaleSwitcher />
+            <CurrencySwitcher />
+        </div>
+    );
 }

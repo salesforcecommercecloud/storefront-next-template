@@ -131,6 +131,27 @@ describe('Footer', () => {
         expect(screen.getByRole('option', { name: 'Italiano (Italia)' })).toBeInTheDocument();
     });
 
+    test('renders About Us links pointing to /about-us, before each Accessibility Statement', () => {
+        renderWithRouter(<Footer />);
+
+        // Footer renders PolicyLinks twice for responsive layout (mobile copy + desktop copy).
+        const aboutUsLinks = screen.getAllByRole('link', { name: t('footer:links.aboutUs') });
+        expect(aboutUsLinks).toHaveLength(2);
+        for (const link of aboutUsLinks) {
+            expect(link.getAttribute('href')).toMatch(/\/about-us$/);
+        }
+
+        const accessibilityLinks = screen.getAllByRole('link', { name: t('footer:links.accessibility') });
+        expect(accessibilityLinks).toHaveLength(2);
+
+        // Within each PolicyLinks block, About Us must precede Accessibility Statement.
+        for (let i = 0; i < aboutUsLinks.length; i++) {
+            expect(
+                aboutUsLinks[i].compareDocumentPosition(accessibilityLinks[i]) & Node.DOCUMENT_POSITION_FOLLOWING
+            ).toBeTruthy();
+        }
+    });
+
     test('renders copyright text with current year', () => {
         renderWithRouter(<Footer />);
 
