@@ -288,19 +288,21 @@ function AccountDetailsContent({
 
     /**
      * Handles email toggle card edit action.
-     * Triggers OTP verification flow before allowing email edit.
+     * For shoppers with a password OR verified email, allow direct editing.
+     * For unverified passwordless shoppers, trigger OTP verification flow first.
      */
     const handleEmailEdit = () => {
         if (!canSubmitCustomerUpdates) return;
         const currentEmail = userInfo.email;
         if (!currentEmail) return;
 
-        if (customer?.hasPassword) {
+        // Allow direct edit if customer has password OR email is already verified
+        if (customer?.hasPassword || isEmailVerified) {
             setIsEditingEmail(true);
             return;
         }
 
-        // Send OTP first before allowing email edit
+        // For unverified passwordless shoppers, send OTP first before allowing email edit
         setOtpModalEmail(currentEmail);
         setOtpError(undefined);
         setOtpModalMode('changeEmail');
