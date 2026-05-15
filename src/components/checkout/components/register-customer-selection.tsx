@@ -70,13 +70,14 @@ export default function RegisterCustomerSelection({
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const turnstileResetRef = useRef<(() => void) | null>(null);
-    const [alreadyVerified, setAlreadyVerified] = useState(false);
-    useEffect(() => {
-        if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('turnstileVerified') === '1') {
-            setAlreadyVerified(true);
-        }
-    }, []);
-    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) && !alreadyVerified : false;
+    // The widget is always rendered when Turnstile is enabled. The server's `cc-tv`
+    // httpOnly cookie is the single source of truth for "this client passed Turnstile
+    // recently"; if it's present the server skips re-verification regardless of whether
+    // the client also sends a token, so the cost of mounting the widget here is just an
+    // extra silent siteverify roundtrip in the rare interactive-required case.
+    // Mirroring the cookie via client-side state (e.g. sessionStorage) would just
+    // duplicate state for no benefit — the server cookie already covers the skip path.
+    const turnstileEnabled = config ? isTurnstileEnabled(config as AppConfig) : false;
     const turnstileMode = config ? getTurnstileMode(config as AppConfig) : 'managed';
     const turnstileSiteKey = useMemo(() => {
         if (!config || !turnstileEnabled) return null;

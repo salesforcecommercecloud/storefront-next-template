@@ -92,10 +92,15 @@ export async function action({
         );
     }
 
-    // Set the verification cookie after Turnstile passes, regardless of whether the
-    // downstream SCAPI call succeeds. This prevents a state divergence where the client
-    // marks Turnstile as verified (sessionStorage) but the server never got the cookie
-    // because the SCAPI call failed.
+    // The cc-tv cookie attests that this client cleared the Turnstile gate. We set it
+    // here, immediately after enforceTurnstile returned true, so every response path
+    // below carries it — success, 400, 404, 5xx, generic 500. The cookie's job is to
+    // record "Turnstile passed" so other Turnstile-protected endpoints (e.g.
+    // /initiate-checkout-registration) can skip a fresh challenge within the 30-minute
+    // window. SCAPI's later verdict is about the email/account, not about whether the
+    // client is a bot — conditioning the cookie on SCAPI success would force a fresh
+    // challenge on legitimate shoppers for events (typed unrecognized email, transient
+    // SLAS blip) that have nothing to do with bot detection.
     const tvCookie = createCookie<string>(
         COOKIE_TURNSTILE_VERIFIED,
         getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),

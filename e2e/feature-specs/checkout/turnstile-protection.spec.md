@@ -236,9 +236,9 @@ Shoppers who already passed a challenge at checkout contact info should not be c
 
 - Contact info widget uses `execution: 'execute'` mode — mounts on email focus, explicitly executed on blur via `executeRef`
 - `tokenConsumedRef` prevents premature reset when token is pending server verification
-- `sessionStorage('turnstileVerified', '1')` set client-side on success — registration component skips widget render if present
-- Server sets `cc-tv` httpOnly cookie (`COOKIE_TURNSTILE_VERIFIED`, 30min TTL) via `action.authorize-passwordless-email.ts`
-- `action.initiate-checkout-registration.ts` parses `cc-tv` cookie — if `'1'`, skips token requirement
+- The `cc-tv` httpOnly cookie is the single source of truth for "this client cleared Turnstile recently." No mirroring client-side state.
+- Server sets `cc-tv` httpOnly cookie (`COOKIE_TURNSTILE_VERIFIED`, 30min TTL) via `action.authorize-passwordless-email.ts` on every response path where `enforceTurnstile` returned true (success, 400, 404, 5xx, generic 500); never on the Turnstile-rejected path
+- `action.initiate-checkout-registration.ts` parses `cc-tv` cookie — if `'1'`, skips token requirement; otherwise calls `enforceTurnstile` and sets the cookie on every response path where it returned true
 
 ### Turnstile-WI-7: Graceful Degradation [done]
 
@@ -496,8 +496,8 @@ This section covers cross-cutting design decisions that apply across all work it
 **Protected Endpoints:**
 | Endpoint | Component | Enforcement |
 |----------|-----------|-------------|
-| `action.authorize-passwordless-email` | `contact-info.tsx` | Token required; sets `cc-tv` cookie on success |
-| `action.initiate-checkout-registration` | `register-customer-selection.tsx` | Token OR `cc-tv` cookie required |
+| `action.authorize-passwordless-email` | `contact-info.tsx` | Token required; sets `cc-tv` cookie on every response path where `enforceTurnstile` returned true (success or any SCAPI failure) |
+| `action.initiate-checkout-registration` | `register-customer-selection.tsx` | Token OR `cc-tv` cookie required; sets `cc-tv` cookie on every response path when verified by fresh token |
 | `_empty.login.tsx` (server action) | `_empty.login.tsx` | Token required (login page) |
 
 ### Cloudflare Siteverify API
@@ -578,9 +578,9 @@ PUBLIC__security__turnstile__sites={"local-dev":[{"siteKey":"1x00000000000000000
 
 **Checkout registration:**
 1. Shopper checks "Save for faster checkout" checkbox
-2. Client checks `sessionStorage('turnstileVerified')` — if set, no widget rendered
-3. Server checks `cc-tv` cookie — if present, request proceeds without token
-4. If neither: widget renders, token generated, sent with request, verified server-side
+2. Widget always mounts when Turnstile is enabled; the server cookie alone decides whether to skip re-verification
+3. Server checks `cc-tv` cookie — if present, request proceeds without token (no fresh check)
+4. Otherwise: widget-generated token sent with request, server calls `enforceTurnstile`, sets `cc-tv` cookie on every response path on pass
 
 ### Server Logging
 

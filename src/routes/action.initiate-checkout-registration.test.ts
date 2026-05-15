@@ -480,6 +480,43 @@ describe('action.initiate-checkout-registration', () => {
             expect(mockPasswordlessAuthorize).not.toHaveBeenCalled();
             expect(mockGetBasket).not.toHaveBeenCalled();
         });
+
+        it('rejects when no cc-tv cookie and no fresh token', async () => {
+            // Edge case: a client (e.g., a bot probing /initiate-checkout-registration
+            // directly) hits this endpoint with no Turnstile token AND no cc-tv cookie
+            // from a prior session. enforceTurnstile is consulted, which we expect to
+            // reject the missing-token-and-platform-healthy case in production. The
+            // request must NOT reach SCAPI's authorize.
+            const { createCookie } = await import('@/lib/cookie-utils.server');
+            vi.mocked(createCookie).mockReturnValue({
+                parse: vi.fn().mockResolvedValue(null), // no cc-tv cookie present
+                serialize: vi.fn().mockResolvedValue(''),
+            } as never);
+            mockEnforceTurnstile.mockResolvedValue(false); // simulates the missing-token-and-platform-healthy block path
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            // Deliberately no turnstileToken — bot would also lack one.
+
+            mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+            const result = response.data;
+
+            expect(result.success).toBe(false);
+            expect(result.error?.code).toBe('NOT_AUTHORIZED');
+            expect(mockPasswordlessAuthorize).not.toHaveBeenCalled();
+            expect(mockEnforceTurnstile).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    turnstileToken: undefined,
+                    actionName: 'initiate-checkout-registration',
+                    email: 'user@example.com',
+                })
+            );
+        });
     });
 
     it('should return unavailable when SLAS responds with 400 email not verified', async () => {
@@ -569,5 +606,175 @@ describe('action.initiate-checkout-registration', () => {
         expect(result.success).toBe(false);
         expect(result.unavailable).toBeUndefined();
         expect(result.error).toBeTruthy();
+    });
+
+    describe('cc-tv cookie placement', () => {
+        // Cookie attests "this client cleared the Turnstile gate" — nothing more. It
+        // is set on every response path where enforceTurnstile freshly verified the
+        // request, regardless of what SCAPI returns afterward (success / 400 unavailable
+        // / 400 generic / 500). SCAPI's verdict is about the email/account, not about
+        // whether the client is a bot. The only case where the cookie is NOT set is
+        // when enforceTurnstile rejected the request, OR when the request was already
+        // covered by a prior valid cookie (no point re-emitting).
+
+        function getSetCookie(response: { init?: ResponseInit | null }): string | undefined {
+            const headers = response.init?.headers;
+            if (!headers) return undefined;
+            if (headers instanceof Headers) return headers.get('Set-Cookie') ?? undefined;
+            const record = headers as Record<string, string>;
+            return record['Set-Cookie'];
+        }
+
+        beforeEach(async () => {
+            // Turnstile verification must be enabled in config for the action's
+            // shouldSetCookie path to execute at all (without it, the action skips
+            // enforceTurnstile entirely and never sets shouldSetCookie).
+            const { getConfig } = await import('@salesforce/storefront-next-runtime/config');
+            vi.mocked(getConfig).mockReturnValue({
+                security: { turnstile: { enabled: true, verification: { enabled: true } } },
+            } as never);
+
+            // Force the no-prior-cookie path so shouldSetCookie becomes true after the
+            // fresh enforceTurnstile pass. The default mock in the outer describe sets
+            // parse → '1' (i.e., cookie already valid), which would short-circuit
+            // shouldSetCookie to false and is already covered by other tests.
+            const { createCookie } = await import('@/lib/cookie-utils.server');
+            vi.mocked(createCookie).mockReturnValue({
+                parse: vi.fn().mockResolvedValue(null),
+                serialize: vi.fn().mockResolvedValue('cc-tv=1'),
+            } as never);
+            mockEnforceTurnstile.mockResolvedValue(true);
+        });
+
+        it('sets cc-tv cookie on success', async () => {
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            formData.append('turnstileToken', 'fresh-token');
+            mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+            expect(response.data.success).toBe(true);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie when SCAPI returns 400 email-not-verified (unavailable)', async () => {
+            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const apiError = new ApiError({
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+                rawBody: '{"message":"Email not verified"}',
+                url: 'https://api.example.com/authorize-passwordless',
+                method: 'POST',
+            });
+            mockPasswordlessAuthorize.mockRejectedValue(apiError);
+            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+            vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            formData.append('turnstileToken', 'fresh-token');
+            mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+            expect(response.data.unavailable).toBe(true);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie when SCAPI returns a different 400 error', async () => {
+            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const apiError = new ApiError({
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: { type: 'error', title: 'Bad Request', detail: 'Some other error' },
+                rawBody: '{"message":"Some other error"}',
+                url: 'https://api.example.com/authorize-passwordless',
+                method: 'POST',
+            });
+            mockPasswordlessAuthorize.mockRejectedValue(apiError);
+            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+            vi.mocked(extractErrorMessage).mockReturnValue('Some other error');
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            formData.append('turnstileToken', 'fresh-token');
+            mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+            expectStatus(response, 400);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie when SCAPI throws a non-ApiError', async () => {
+            mockPasswordlessAuthorize.mockRejectedValue(new Error('network failure'));
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            formData.append('turnstileToken', 'fresh-token');
+            mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+            expectStatus(response, 500);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('does NOT set cc-tv cookie when Turnstile rejects', async () => {
+            mockEnforceTurnstile.mockResolvedValue(false);
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            formData.append('turnstileToken', 'fresh-token');
+            mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+            expect(response.data.error?.code).toBe('NOT_AUTHORIZED');
+            expect(getSetCookie(response)).toBeUndefined();
+        });
+
+        it('does NOT re-emit cc-tv cookie when prior valid cookie was already present', async () => {
+            // When turnstileVerifiedViaCookie is true, enforceTurnstile is skipped entirely
+            // (no fresh token, no fresh check), shouldSetCookie stays false, and the
+            // response carries no Set-Cookie. Nothing new to record.
+            const { createCookie } = await import('@/lib/cookie-utils.server');
+            vi.mocked(createCookie).mockReturnValue({
+                parse: vi.fn().mockResolvedValue('1'), // prior valid cookie
+                serialize: vi.fn().mockResolvedValue('cc-tv=1'),
+            } as never);
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            // No fresh turnstileToken; cookie is the only credential.
+            mockRequest = new Request('http://localhost/action/initiate-checkout-registration', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request: mockRequest, context: mockContext } as ActionFunctionArgs);
+
+            expect(response.data.success).toBe(true);
+            expect(getSetCookie(response)).toBeUndefined();
+        });
     });
 });

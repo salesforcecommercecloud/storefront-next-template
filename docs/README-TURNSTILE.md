@@ -153,9 +153,8 @@ What Cloudflare validates inside siteverify (we don't see the internals, but per
 ### Step 7: BFF → response (BFF → browser)
 
 If `enforceTurnstile` returned `true`:
-- The action proceeds with its real work (e.g. SLAS `authorizePasswordless` for the email step).
-- On success, the action sets a `Set-Cookie: cc-tv=1; Max-Age=1800; HttpOnly; Secure; SameSite=Lax` header. This is the session-scoped proof-of-humanity (see "Cookie-based session reuse" below).
-- Response is returned to the browser.
+- The action sets a `Set-Cookie: cc-tv=1; Max-Age=1800; HttpOnly; Secure; SameSite=Lax` header. This is the session-scoped proof-of-humanity (see "Cookie-based session reuse" below). The cookie is attached to **every** response path on this request — success, 400, 404, 5xx, generic 500. The cookie attests that the client cleared the Turnstile gate, which has nothing to do with how SCAPI later decides about the email or account.
+- The action proceeds with its real work (e.g. SLAS `authorizePasswordless` for the email step) and returns the response (with the cookie attached).
 
 If `enforceTurnstile` returned `false`:
 - The action returns HTTP 403 with `{ success: false, error: { code: 'NOT_AUTHORIZED', message: 'Turnstile verification failed' } }`.
@@ -167,7 +166,7 @@ For the remainder of the 30-minute `cc-tv` cookie lifetime, the shopper can inte
 
 ```
 1. Read cc-tv cookie → if value === '1' AND no new turnstileToken submitted: skip enforceTurnstile, allow.
-2. Otherwise (cookie missing/expired or token submitted): call enforceTurnstile with the new token, set the cookie on success.
+2. Otherwise (cookie missing/expired or token submitted): call enforceTurnstile with the new token; if it returns true, set the cookie on every response path; if it returns false, return 403 with no cookie.
 ```
 
 This avoids forcing a Turnstile widget on every checkout step, which would be unacceptable friction.
@@ -276,7 +275,7 @@ Single function called by every protected action. Decision flow:
 
 ### Cookie-based session reuse (`cc-tv`)
 
-After a successful verify, the action sets a 30-minute httpOnly cookie named `cc-tv` containing the value `'1'`. Subsequent protected actions in the same checkout session check this cookie first:
+After `enforceTurnstile` returns true, the action sets a 30-minute httpOnly cookie named `cc-tv` containing the value `'1'`. Subsequent protected actions in the same checkout session check this cookie first:
 
 ```typescript
 // from action.initiate-checkout-registration.ts
@@ -291,6 +290,18 @@ if (turnstileToken || !turnstileVerifiedViaCookie) {
 Why: forcing a Turnstile widget on every checkout step would be extremely friction-heavy. The cookie functions as a session-scoped proof-of-humanity, with the same TTL (30 min) as a typical SLAS session.
 
 The cookie is httpOnly (no JS access), Secure, and SameSite-Lax. It is never trusted across origins.
+
+#### When the cookie is set
+
+The cookie is set on **every response path** where `enforceTurnstile` returned `true` on the current request — success, 400, 404, 5xx, generic 500 — not only on the success path of the gated business action.
+
+The reason is the cookie's semantics. The cookie attests "this client cleared the Turnstile gate." Once a request reaches SLAS at all, the client has already cleared Turnstile (either solved a challenge, was passed silently by Cloudflare, or hit the fail-open path because Cloudflare itself was unavailable — see Two-tier health signal below). None of that changes based on whether SLAS later returns 200, 400, 404, or 5xx. SCAPI's verdict is about the email or the account, not about whether the client is a bot.
+
+If we conditioned the cookie on SCAPI success, every legitimate shopper who typed an unrecognized email or hit a transient SLAS upstream blip on their first attempt would be forced through a fresh Turnstile challenge on the next protected endpoint. That punishes real shoppers for events that have nothing to do with bot detection. Bot-mitigation TTL is the cookie's `Max-Age`, not the boolean of SCAPI-success.
+
+The only path that does NOT set the cookie is when `enforceTurnstile` itself rejected the request (returning HTTP 403). In that case the gate explicitly said no, so the response carries no cookie and the next request will be forced to verify again.
+
+For actions that read the cookie before deciding whether to call `enforceTurnstile` (e.g. `action.initiate-checkout-registration`), the cookie is also not re-emitted when a prior valid cookie was already present — there's nothing new to record.
 
 ## Two-tier health signal
 

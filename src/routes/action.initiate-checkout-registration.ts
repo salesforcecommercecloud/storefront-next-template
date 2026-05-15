@@ -66,6 +66,38 @@ export async function action({
         );
     }
 
+    const tvCookie = createCookie<string>(
+        COOKIE_TURNSTILE_VERIFIED,
+        getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
+        context
+    );
+    let shouldSetCookie = false;
+
+    /**
+     * Attach the cc-tv cookie to every response that originated from a
+     * freshly-verified Turnstile pass on this request, regardless of whether
+     * the downstream SCAPI call succeeded. The cookie attests "this client
+     * cleared the Turnstile gate" — nothing more. Conditioning it on SCAPI
+     * outcome would force a fresh challenge on legitimate shoppers for events
+     * (typed unrecognized email, transient SLAS blip) that have nothing to do
+     * with bot detection.
+     *
+     * When the request was already covered by a prior valid cookie
+     * (`turnstileVerifiedViaCookie === true`), shouldSetCookie stays false
+     * and we don't re-emit the cookie — there's nothing new to record.
+     */
+    const respondWithCookie = async <T>(body: T, init?: ResponseInit): Promise<ReturnType<typeof data<T>>> => {
+        if (!shouldSetCookie) return data(body, init);
+        const setCookieHeader = await tvCookie.serialize('1');
+        const existingHeaders = init?.headers;
+        const mergedHeaders =
+            existingHeaders instanceof Headers
+                ? Object.fromEntries(existingHeaders.entries())
+                : { ...((existingHeaders as Record<string, string> | undefined) ?? {}) };
+        mergedHeaders['Set-Cookie'] = setCookieHeader;
+        return data(body, { ...init, headers: mergedHeaders });
+    };
+
     try {
         const formData = await request.formData();
         const email = formData.get('email')?.toString();
@@ -73,15 +105,9 @@ export async function action({
 
         const appConfig = getConfig<AppConfig>(context);
 
-        const tvCookie = createCookie<string>(
-            COOKIE_TURNSTILE_VERIFIED,
-            getCookieConfig({ httpOnly: true, maxAge: TURNSTILE_VERIFIED_MAX_AGE }, context),
-            context
-        );
         const cookieHeader = request.headers.get('Cookie');
         const turnstileVerifiedViaCookie = (await tvCookie.parse(cookieHeader)) === '1';
 
-        let shouldSetCookie = false;
         const turnstileVerificationEnabled =
             appConfig.security?.turnstile?.enabled && appConfig.security?.turnstile?.verification?.enabled;
 
@@ -119,7 +145,7 @@ export async function action({
 
             if (!basketEmail) {
                 logger.warn('InitiateCheckoutRegistration: email not found in form or basket');
-                return data(
+                return respondWithCookie(
                     {
                         success: false,
                         error: createActionError({ code: ErrorCode.REQUIRED_FIELD, message: 'Email is required' }),
@@ -140,7 +166,7 @@ export async function action({
                     hasFirstName: !!firstName,
                     hasLastName: !!lastName,
                 });
-                return data(
+                return respondWithCookie(
                     {
                         success: false,
                         error: createActionError({
@@ -190,12 +216,7 @@ export async function action({
 
             logger.info('InitiateCheckoutRegistration: succeeded with basket email');
 
-            const responseBody = { success: true, email: basketEmail };
-            if (shouldSetCookie) {
-                const setCookieHeader = await tvCookie.serialize('1');
-                return data(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
-            }
-            return data(responseBody);
+            return respondWithCookie({ success: true, email: basketEmail });
         }
 
         logger.debug('InitiateCheckoutRegistration: email provided in form');
@@ -214,7 +235,7 @@ export async function action({
                 hasFirstName: !!firstName,
                 hasLastName: !!lastName,
             });
-            return data(
+            return respondWithCookie(
                 {
                     success: false,
                     error: createActionError({
@@ -254,22 +275,17 @@ export async function action({
 
         logger.info('InitiateCheckoutRegistration: succeeded with form email');
 
-        const responseBody = { success: true, email };
-        if (shouldSetCookie) {
-            const setCookieHeader = await tvCookie.serialize('1');
-            return data(responseBody, { headers: { 'Set-Cookie': setCookieHeader } });
-        }
-        return data(responseBody);
+        return respondWithCookie({ success: true, email });
     } catch (error) {
         if (error instanceof ApiError && error.status === 400) {
             const errorMessage = extractErrorMessage(error);
             if (/email not verified/i.test(errorMessage)) {
                 logger.info('InitiateCheckoutRegistration: email not verified, feature unavailable');
-                return data({ success: false, unavailable: true });
+                return respondWithCookie({ success: false, unavailable: true });
             }
 
             logger.error('InitiateCheckoutRegistration: bad request', { error: errorMessage });
-            return data(
+            return respondWithCookie(
                 {
                     success: false,
                     error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
@@ -280,7 +296,7 @@ export async function action({
 
         logger.error('InitiateCheckoutRegistration: failed', { error });
         const errorMessage = extractErrorMessage(error);
-        return data(
+        return respondWithCookie(
             {
                 success: false,
                 error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),

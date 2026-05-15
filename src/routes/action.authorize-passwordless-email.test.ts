@@ -292,4 +292,187 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.email).toBe('user@example.com');
         expect(result.error).toBeUndefined();
     });
+
+    describe('cc-tv cookie placement', () => {
+        // Cookie attests "this client cleared the Turnstile gate" — nothing more. It is
+        // set on every response path where enforceTurnstile returned true, regardless of
+        // what SCAPI returns afterward (success / 400 / 404 / 5xx / generic 500). SCAPI's
+        // verdict is about the email/account, not about whether the client is a bot;
+        // conditioning the cookie on SCAPI success would force a fresh challenge for
+        // events (typed unrecognized email, transient SLAS blip) that have nothing to do
+        // with bot detection. The only case where the cookie is NOT set is when
+        // enforceTurnstile itself rejected the request (NOT_AUTHORIZED).
+
+        function getSetCookie(response: { init?: ResponseInit | null }): string | undefined {
+            const headers = response.init?.headers;
+            if (!headers) return undefined;
+            // headers may be a plain object or a Headers instance
+            if (headers instanceof Headers) return headers.get('Set-Cookie') ?? undefined;
+            const record = headers as Record<string, string>;
+            return record['Set-Cookie'];
+        }
+
+        it('sets cc-tv cookie on success', async () => {
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expect(response.data).toEqual({ success: true, email: 'user@example.com' });
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('does NOT set cc-tv cookie when Turnstile rejects', async () => {
+            mockEnforceTurnstile.mockResolvedValue(false);
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expect(response.data.error?.code).toBe('NOT_AUTHORIZED');
+            expect(getSetCookie(response)).toBeUndefined();
+        });
+
+        it('still sets cc-tv cookie when SCAPI returns requiresLogin (400 email-not-verified)', async () => {
+            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const apiError = new ApiError({
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+                rawBody: '{"message":"Email not verified"}',
+                url: 'https://api.example.com/authorize-passwordless',
+                method: 'POST',
+            });
+            mockAuthorizePasswordless.mockRejectedValue(apiError);
+            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+            vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expect(response.data.requiresLogin).toBe(true);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie when SCAPI returns a different 400 error', async () => {
+            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const apiError = new ApiError({
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: { type: 'error', title: 'Bad Request', detail: 'Some other error' },
+                rawBody: '{"message":"Some other error"}',
+                url: 'https://api.example.com/authorize-passwordless',
+                method: 'POST',
+            });
+            mockAuthorizePasswordless.mockRejectedValue(apiError);
+            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+            vi.mocked(extractErrorMessage).mockReturnValue('Some other error');
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expectStatus(response, 400);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie when SCAPI throws a non-ApiError', async () => {
+            mockAuthorizePasswordless.mockRejectedValue(new Error('network failure'));
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expectStatus(response, 500);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie when SCAPI returns a 5xx (5xx → requiresLogin fallback)', async () => {
+            // 5xx ApiError flows to the SLAS-upstream-unavailable branch which returns
+            // HTTP 200 + requiresLogin: true. The shopper has cleared Turnstile already;
+            // a transient SLAS blip is not a bot signal, so the cookie still attaches.
+            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const apiError = new ApiError({
+                status: 502,
+                statusText: 'Bad Gateway',
+                headers: new Headers(),
+                body: { type: 'error', title: 'Bad Gateway', detail: 'upstream timeout' },
+                rawBody: '{"type":"error","title":"Bad Gateway","detail":"upstream timeout"}',
+                url: 'https://api.example.com/authorize-passwordless',
+                method: 'POST',
+            });
+            mockAuthorizePasswordless.mockRejectedValue(apiError);
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expectStatus(response, 200);
+            expect(response.data.requiresLogin).toBe(true);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie when SCAPI returns 404 (unknown-user → guest path)', async () => {
+            // 404 ApiError flows to the unknown-user branch which returns HTTP 200 +
+            // success: false. The shopper proceeds as guest. They cleared Turnstile, so
+            // subsequent actions in the same session can trust the cookie.
+            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const apiError = new ApiError({
+                status: 404,
+                statusText: 'Not Found',
+                headers: new Headers(),
+                body: { type: 'error', title: 'Not Found', detail: 'User not found' },
+                rawBody: '{"message":"User not found"}',
+                url: 'https://api.example.com/authorize-passwordless',
+                method: 'POST',
+            });
+            mockAuthorizePasswordless.mockRejectedValue(apiError);
+
+            const formData = new FormData();
+            formData.append('email', 'unknown@example.com');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expectStatus(response, 200);
+            expect(response.data.success).toBe(false);
+            expect(response.data.requiresLogin).toBeUndefined();
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+    });
 });

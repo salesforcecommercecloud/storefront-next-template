@@ -140,9 +140,6 @@ export default function ContactInfo({
     const handleTurnstileSuccess = useCallback((token: string) => {
         tokenConsumedRef.current = false;
         setTurnstileToken(token);
-        if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem('turnstileVerified', '1');
-        }
     }, []);
 
     const handleTurnstileError = useCallback(() => {
