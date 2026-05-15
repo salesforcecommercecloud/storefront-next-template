@@ -331,7 +331,7 @@ describe('create-storefront', () => {
                 extensions: {
                     SFDC_EXT_STORE_LOCATOR: {
                         name: 'Store Locator',
-                        description: 'Store Locator allows a shopper to find the closest store to them.',
+                        description: 'Enables a shopper to find a store based on a given location.',
                     },
                 },
             })
@@ -348,7 +348,7 @@ describe('create-storefront', () => {
                 extensions: {
                     SFDC_EXT_STORE_LOCATOR: {
                         name: 'Store Locator',
-                        description: 'Store Locator allows a shopper to find the closest store to them.',
+                        description: 'Enables a shopper to find a store based on a given location.',
                     },
                 },
             }
@@ -366,11 +366,11 @@ describe('create-storefront', () => {
                 return JSON.stringify({
                     configs: [
                         {
-                            name: 'API Client ID',
+                            name: 'SLAS Client ID',
                             key: 'PUBLIC__app__commerce__api__clientId',
                         },
                         {
-                            name: 'API Organization ID',
+                            name: 'Organization ID',
                             key: 'PUBLIC__app__commerce__api__organizationId',
                         },
                     ],
@@ -392,12 +392,13 @@ describe('create-storefront', () => {
             extensions: {
                 SFDC_EXT_STORE_LOCATOR: {
                     name: 'Store Locator',
-                    description: 'Store Locator allows a shopper to find the closest store to them.',
+                    description: 'Enables a shopper to find a store based on a given location.',
                     dependencies: [],
                 },
                 SFDC_EXT_BOPIS: {
                     name: 'Buy Online Pickup In Store',
-                    description: 'BOPIS allows a shopper to pick up their order at a store.',
+                    description:
+                        'Enables a shopper to order online and pick up their order at a physical store. Requires the Store Locator extension to be installed.',
                     dependencies: ['SFDC_EXT_STORE_LOCATOR'],
                 },
             },
@@ -537,12 +538,13 @@ describe('create-storefront', () => {
                     },
                     SFDC_EXT_STORE_LOCATOR: {
                         name: 'Store Locator',
-                        description: 'Store Locator allows a shopper to find the closest store to them.',
+                        description: 'Enables a shopper to find a store based on a given location.',
                         dependencies: ['SFDC_EXT_BASE_MAPS'],
                     },
                     SFDC_EXT_BOPIS: {
                         name: 'Buy Online Pickup In Store',
-                        description: 'BOPIS allows a shopper to pick up their order at a store.',
+                        description:
+                            'Enables a shopper to order online and pick up their order at a physical store. Requires the Store Locator extension to be installed.',
                         dependencies: ['SFDC_EXT_STORE_LOCATOR'],
                     },
                 },
@@ -861,7 +863,7 @@ describe('create-storefront', () => {
                 }
                 if (String(p).endsWith('config-meta.json')) {
                     return JSON.stringify({
-                        configs: [{ name: 'API Client ID', key: 'PUBLIC__app__commerce__api__clientId' }],
+                        configs: [{ name: 'SLAS Client ID', key: 'PUBLIC__app__commerce__api__clientId' }],
                     });
                 }
                 if (String(p).endsWith('.env.default')) {
@@ -927,7 +929,7 @@ describe('create-storefront', () => {
             vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
                 if (String(p).endsWith('config-meta.json')) {
                     return JSON.stringify({
-                        configs: [{ name: 'API Client ID', key: 'PUBLIC__app__commerce__api__clientId' }],
+                        configs: [{ name: 'SLAS Client ID', key: 'PUBLIC__app__commerce__api__clientId' }],
                     });
                 }
                 if (String(p).endsWith('.env.default')) {

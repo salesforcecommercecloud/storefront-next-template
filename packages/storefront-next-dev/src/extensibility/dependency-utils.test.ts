@@ -31,7 +31,7 @@ const twoLayerConfig: ExtensionConfig = {
     extensions: {
         SFDC_EXT_STORE_LOCATOR: {
             name: 'Store Locator',
-            description: 'Store Locator allows a shopper to find the closest store to them.',
+            description: 'Enables a shopper to find a store based on a given location.',
             installationInstructions: 'instructions/install-store-locator.mdc',
             uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
             folder: 'store-locator',
@@ -39,7 +39,8 @@ const twoLayerConfig: ExtensionConfig = {
         },
         SFDC_EXT_BOPIS: {
             name: 'Buy Online Pickup In Store',
-            description: 'Buy Online Pickup In Store allows a shopper to pick up their order at a store.',
+            description:
+                'Enables a shopper to order online and pick up their order at a physical store. Requires the Store Locator extension to be installed.',
             installationInstructions: 'instructions/install-buy-online-pickup-in-store.mdc',
             uninstallationInstructions: 'instructions/uninstall-buy-online-pickup-in-store.mdc',
             folder: 'bopis',
@@ -47,7 +48,7 @@ const twoLayerConfig: ExtensionConfig = {
         },
         SFDC_EXT_THEME_SWITCHER: {
             name: 'Theme Switcher',
-            description: 'Theme Switcher allows a developer to switch the theme of the store.',
+            description: 'Enables a developer to switch the theme of the store.',
             installationInstructions: 'instructions/install-theme-switcher.mdc',
             uninstallationInstructions: 'instructions/uninstall-theme-switcher.mdc',
             folder: 'theme-switcher',
@@ -69,7 +70,7 @@ const threeLayerConfig: ExtensionConfig = {
         },
         SFDC_EXT_STORE_LOCATOR: {
             name: 'Store Locator',
-            description: 'Store Locator allows a shopper to find the closest store to them.',
+            description: 'Enables a shopper to find a store based on a given location.',
             installationInstructions: 'instructions/install-store-locator.mdc',
             uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
             folder: 'store-locator',
@@ -77,7 +78,8 @@ const threeLayerConfig: ExtensionConfig = {
         },
         SFDC_EXT_BOPIS: {
             name: 'Buy Online Pickup In Store',
-            description: 'Buy Online Pickup In Store allows a shopper to pick up their order at a store.',
+            description:
+                'Enables a shopper to order online and pick up their order at a physical store. Requires the Store Locator extension to be installed.',
             installationInstructions: 'instructions/install-buy-online-pickup-in-store.mdc',
             uninstallationInstructions: 'instructions/uninstall-buy-online-pickup-in-store.mdc',
             folder: 'bopis',

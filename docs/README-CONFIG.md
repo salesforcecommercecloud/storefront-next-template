@@ -285,15 +285,15 @@ export function loader({ context }: LoaderFunctionArgs) {
 {
     "configs": [
         {
-            "name": "API Client ID",
+            "name": "SLAS Client ID",
             "key": "PUBLIC__app__commerce__api__clientId"
         },
         {
-            "name": "API Organization ID",
+            "name": "Organization ID",
             "key": "PUBLIC__app__commerce__api__organizationId"
         },
         {
-            "name": "API Short Code",
+            "name": "Short Code",
             "key": "PUBLIC__app__commerce__api__shortCode"
         }
     ]

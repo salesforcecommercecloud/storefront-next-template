@@ -76,7 +76,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             installationInstructions: 'instructions/install-store-locator.mdc',
                             uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
                             folder: 'store-locator',
@@ -159,7 +159,7 @@ describe('manageExtensions', () => {
                 extensions: {
                     SFDC_EXT_STORE_LOCATOR: {
                         name: 'Store Locator',
-                        description: 'Store Locator allows a shopper to find the closest store to them.',
+                        description: 'Enables a shopper to find a store based on a given location.',
                         installationInstructions: 'instructions/install-store-locator.mdc',
                         uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
                         folder: 'store-locator',
@@ -178,7 +178,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             folder: 'store-locator',
                             dependencies: [],
                         },
@@ -220,7 +220,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             folder: 'store-locator',
                             dependencies: [],
                         },
@@ -266,7 +266,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             installationInstructions: 'instructions/install-store-locator.mdc',
                             uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
                             folder: 'store-locator',
@@ -343,7 +343,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             installationInstructions: 'instructions/install-store-locator.mdc',
                             uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
                             folder: 'store-locator',
@@ -417,7 +417,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             installationInstructions: 'instructions/install-store-locator.mdc',
                             uninstallationInstructions: 'instructions/uninstall-store-locator.mdc',
                             folder: 'store-locator',
@@ -457,7 +457,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             dependencies: [],
                         },
                     },
@@ -485,7 +485,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             folder: 'store-locator',
                             dependencies: [],
                         },
@@ -543,7 +543,7 @@ describe('manageExtensions', () => {
                     extensions: {
                         SFDC_EXT_STORE_LOCATOR: {
                             name: 'Store Locator',
-                            description: 'Store Locator allows a shopper to find the closest store to them.',
+                            description: 'Enables a shopper to find a store based on a given location.',
                             folder: 'store-locator',
                             dependencies: [],
                         },
