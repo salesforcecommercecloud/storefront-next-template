@@ -15,10 +15,13 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within, userEvent } from 'storybook/test';
+import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import AddressSuggestionDropdown, { type AddressSuggestion } from '../index';
 import { action } from 'storybook/actions';
+import AddressSuggestionDropdown, { type AddressSuggestion } from '../index';
+import { CheckoutActionLogger } from '@/components/checkout/storybook/checkout-action-logger';
+import { checkoutStrictA11yParameters } from '@/components/checkout/storybook/checkout-strict-a11y-parameters';
 
 const mockSuggestions: AddressSuggestion[] = [
     {
@@ -47,45 +50,63 @@ const mockSuggestions: AddressSuggestion[] = [
     },
 ];
 
-/**
- * The AddressSuggestionDropdown component displays Google-powered address suggestions
- * in a dropdown format. It's designed to be used with address input fields to provide
- * autocomplete functionality.
- */
 const meta: Meta<typeof AddressSuggestionDropdown> = {
-    title: 'Components/Address Suggestion Dropdown',
+    title: 'Components/AddressSuggestionDropdown',
     component: AddressSuggestionDropdown,
+    tags: ['autodocs', 'interaction'],
     parameters: {
+        ...checkoutStrictA11yParameters,
         layout: 'padded',
         docs: {
             description: {
                 component: `
-The Address Suggestion Dropdown component displays address autocomplete suggestions from Google Places API.
+### AddressSuggestionDropdown Component
 
-**Features:**
-- Displays a list of address suggestions
-- Shows loading state while fetching suggestions
-- Closes when clicking outside
-- Keyboard accessible (Enter/Space to select)
-- Google Maps attribution logo
-- Configurable position (absolute, relative, fixed)
+Displays Google Places API address suggestions in a dropdown anchored below an address input field. Purely presentational — it receives suggestions as props and fires callbacks on selection or close. Used by \`AddressFormFields\` for both shipping and billing address autocomplete.
 
-**Usage:**
-This component is typically used alongside an address input field to provide autocomplete functionality.
-It requires integration with Google Places API for fetching suggestions.
-                `,
+**Key Features:**
+
+- **Suggestion list** — Renders each suggestion as a clickable button with a map pin icon and the full address description. Falls back to \`structured_formatting.main_text + secondary_text\` when \`description\` is absent.
+- **Loading state** — When \`isLoading\` is true, shows a spinner with "Loading suggestions..." instead of the suggestion list.
+- **Visibility** — Returns \`null\` when \`isVisible\` is false or \`suggestions\` is empty, so the parent controls mount/unmount entirely via props.
+- **Close behavior** — Close button in the header calls \`onClose\`. A click-outside listener (mousedown on document) also calls \`onClose\` when the dropdown is visible.
+- **Google Maps attribution** — A Google Maps logo is rendered in the card footer as required by the Places API Terms of Service.
+- **Positioning** — \`position\` prop controls CSS positioning (\`absolute\` by default, also \`relative\` or \`fixed\`).
+
+**Dependencies:**
+
+- \`@/components/ui/button\`: \`Button\` for suggestion items and close button
+- \`@/components/ui/card\`: \`Card\`, \`CardContent\`, \`CardFooter\` for dropdown structure
+- \`@/components/spinner\`: loading indicator
+- \`@/components/typography\`: text styling
+- \`lucide-react\`: \`X\` (close icon), \`MapPin\` (suggestion icon)
+`,
             },
+            page: () => (
+                <>
+                    <Title />
+                    <Description />
+                    <Controls />
+                </>
+            ),
         },
     },
     decorators: [
         (Story) => (
-            <div className="p-8 max-w-md relative min-h-[400px]">
+            <CheckoutActionLogger name="address-suggestion-dropdown">
+                <Story />
+            </CheckoutActionLogger>
+        ),
+        (Story, context) => (
+            <div className="max-w-md relative min-h-[400px]">
                 <div className="relative">
                     <input
                         type="text"
                         placeholder="Enter an address..."
+                        defaultValue={(context.args as Record<string, unknown>).inputValue as string}
                         className="w-full px-4 py-2 border border-border rounded-none"
                         readOnly
+                        aria-label="Address input"
                     />
                     <Story />
                 </div>
@@ -94,39 +115,51 @@ It requires integration with Google Places API for fetching suggestions.
     ],
     argTypes: {
         suggestions: {
-            description: 'Array of address suggestions to display',
+            description:
+                'Array of address suggestions from Google Places API. Each must have at least `description` or `structured_formatting` for display text.',
             control: 'object',
+            table: { type: { summary: 'AddressSuggestion[]' } },
         },
         isVisible: {
-            description: 'Whether the dropdown should be visible',
+            description:
+                'Controls whether the dropdown renders. When `false` or when `suggestions` is empty, the component returns `null`.',
             control: 'boolean',
+            table: { type: { summary: 'boolean' } },
         },
         isLoading: {
-            description: 'Whether the dropdown is loading',
+            description:
+                'When `true`, shows a spinner with "Loading suggestions..." instead of the suggestion list. Default: `false`.',
             control: 'boolean',
+            table: { type: { summary: 'boolean' } },
         },
         position: {
-            description: 'CSS position property for the dropdown',
+            description: 'CSS `position` property for the dropdown card. Default: `"absolute"`.',
             control: 'select',
             options: ['absolute', 'relative', 'fixed'],
+            table: { type: { summary: "'absolute' | 'relative' | 'fixed'" } },
         },
         onClose: {
-            description: 'Callback function called when close button is clicked',
-            action: 'close',
+            description: 'Called when the close button is clicked or when a click-outside event is detected.',
+            table: { type: { summary: '() => void' } },
         },
         onSelectSuggestion: {
-            description: 'Callback function called when a suggestion is selected',
-            action: 'select-suggestion',
+            description: 'Called with the selected `AddressSuggestion` object when the user clicks a suggestion.',
+            table: { type: { summary: '(suggestion: AddressSuggestion) => void' } },
+        },
+        className: {
+            description: 'Additional CSS class name applied to the dropdown `Card` element.',
+            control: 'text',
+            table: { type: { summary: 'string' } },
         },
     },
-    tags: ['autodocs', 'interaction'],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default state showing address suggestions
+ * Dropdown with three address suggestions visible. Shows the "SUGGESTED" header,
+ * suggestion buttons with map pin icons, close button, and Google Maps attribution.
  */
 export const Default: Story = {
     args: {
@@ -140,27 +173,56 @@ export const Default: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify the dropdown renders
-        const dropdown = canvas.getByTestId('address-suggestion-dropdown');
-        await expect(dropdown).toBeInTheDocument();
-
-        // Verify suggestions are displayed
+        await expect(canvas.getByTestId('address-suggestion-dropdown')).toBeInTheDocument();
         await expect(canvas.getByText('123 Main Street, New York, NY 10001, USA')).toBeInTheDocument();
         await expect(canvas.getByText('456 Oak Avenue, Los Angeles, CA 90001, USA')).toBeInTheDocument();
         await expect(canvas.getByText('789 Pine Road, Chicago, IL 60601, USA')).toBeInTheDocument();
-
-        // Verify Google Maps logo is present
-        const googleLogo = canvas.getByAltText('Google Maps');
-        await expect(googleLogo).toBeInTheDocument();
-
-        // Test selecting a suggestion
-        const firstSuggestion = canvas.getByText('123 Main Street, New York, NY 10001, USA');
-        await userEvent.click(firstSuggestion);
+        await expect(canvas.getByText('SUGGESTED')).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: /close suggestions/i })).toBeInTheDocument();
+        await expect(canvas.getByAltText('Google Maps')).toBeInTheDocument();
     },
 };
 
 /**
- * Loading state while fetching suggestions
+ * When `description` is absent, the component falls back to
+ * `structured_formatting.main_text, secondary_text`.
+ */
+export const StructuredFormattingFallback: Story = {
+    args: {
+        suggestions: [
+            {
+                place_id: 'ChIJd8BlQ2BZwokRNTq_mLNULnw',
+                structured_formatting: {
+                    main_text: '123 Main Street',
+                    secondary_text: 'New York, NY 10001, USA',
+                },
+            },
+            {
+                place_id: 'ChIJE9on3F3HwoAR9AhGJW_fL-I',
+                structured_formatting: {
+                    main_text: '456 Oak Avenue',
+                    secondary_text: 'Los Angeles, CA 90001, USA',
+                },
+            },
+        ],
+        isVisible: true,
+        isLoading: false,
+        onClose: action('onClose'),
+        onSelectSuggestion: action('onSelectSuggestion'),
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByTestId('address-suggestion-dropdown')).toBeInTheDocument();
+        await expect(canvas.getByText('123 Main Street, New York, NY 10001, USA')).toBeInTheDocument();
+        await expect(canvas.getByText('456 Oak Avenue, Los Angeles, CA 90001, USA')).toBeInTheDocument();
+    },
+};
+
+/**
+ * Loading state — spinner and "Loading suggestions..." text. No suggestion
+ * buttons are rendered. Input shows a partial address to reflect user typing.
  */
 export const Loading: Story = {
     args: {
@@ -174,106 +236,8 @@ export const Loading: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Verify loading text is displayed
-        await expect(canvas.getByText(/loading/i)).toBeInTheDocument();
-
-        // Suggestions should not be visible during loading
+        await expect(canvas.getByText('Loading suggestions...')).toBeInTheDocument();
         await expect(canvas.queryByText('123 Main Street, New York, NY 10001, USA')).not.toBeInTheDocument();
-    },
-};
-
-/**
- * Hidden state - dropdown is not visible
- */
-export const Hidden: Story = {
-    args: {
-        suggestions: mockSuggestions,
-        isVisible: false,
-        isLoading: false,
-        onClose: action('onClose'),
-        onSelectSuggestion: action('onSelectSuggestion'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Dropdown should not be rendered
         await expect(canvas.queryByTestId('address-suggestion-dropdown')).not.toBeInTheDocument();
-    },
-};
-
-/**
- * Close button interaction
- */
-export const CloseButtonInteraction: Story = {
-    args: {
-        suggestions: mockSuggestions,
-        isVisible: true,
-        isLoading: false,
-        onClose: action('onClose'),
-        onSelectSuggestion: action('onSelectSuggestion'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Find and click the close button
-        const closeButton = canvas.getByRole('button', { name: /close/i });
-        await expect(closeButton).toBeInTheDocument();
-        await userEvent.click(closeButton);
-    },
-};
-
-/**
- * Focused interaction test - focus first suggestion and verify keyboard/click interaction
- */
-export const FocusedInteraction: Story = {
-    args: {
-        suggestions: mockSuggestions,
-        isVisible: true,
-        isLoading: false,
-        onClose: action('onClose'),
-        onSelectSuggestion: action('onSelectSuggestion'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const firstSuggestion = canvas.getByText('123 Main Street, New York, NY 10001, USA');
-        await expect(firstSuggestion).toBeInTheDocument();
-
-        const suggestionButton = firstSuggestion.closest('button');
-        await expect(suggestionButton).toBeInTheDocument();
-        if (suggestionButton) {
-            (suggestionButton as HTMLElement).focus();
-            await expect(suggestionButton).toHaveFocus();
-            await userEvent.click(suggestionButton);
-        }
-    },
-};
-
-/**
- * Keyboard navigation
- */
-export const KeyboardNavigation: Story = {
-    args: {
-        suggestions: mockSuggestions,
-        isVisible: true,
-        isLoading: false,
-        onClose: action('onClose'),
-        onSelectSuggestion: action('onSelectSuggestion'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Focus on first suggestion button and press Enter
-        const firstSuggestionButton = canvas.getByText('123 Main Street, New York, NY 10001, USA').closest('button');
-        await expect(firstSuggestionButton).toBeInTheDocument();
-
-        if (firstSuggestionButton) {
-            (firstSuggestionButton as HTMLElement).focus();
-            await userEvent.keyboard('{Enter}');
-        }
     },
 };

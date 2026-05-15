@@ -15,13 +15,14 @@
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
 
-// Mock basket provider
-vi.mock('@/providers/basket', () => ({
-    useBasket: vi.fn(() => ({
-        basket: null,
-        isLoading: false,
-    })),
-}));
+// Mock basket provider — keep the real BasketProvider component but mock useBasket
+vi.mock('@/providers/basket', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/providers/basket')>();
+    return {
+        ...actual,
+        useBasket: vi.fn(() => undefined),
+    };
+});
 
 import { composeStories } from '@storybook/react-vite';
 

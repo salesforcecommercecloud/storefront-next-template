@@ -71,6 +71,10 @@ const EXCLUDED_COMPONENTS = new Set([
     // depend on `useAsyncError()` which only resolves inside an `<Await>` boundary, so a
     // standalone story is awkward and offers little value beyond the unit test
     'cart/cart-load-error',
+    // Mock-based composite story deleted — real component has deep hook deps, sub-components have own stories
+    'checkout/checkout-form-page',
+    // Storybook-only utility (renders nothing visible), covered by unit test
+    'checkout/storybook/checkout-action-logger',
     // These are basically wrappers around other components, so no value in having storybook stories for them
     'checkout/components/checkout-skeletons',
     'customer-address-form/customer-address-fields',

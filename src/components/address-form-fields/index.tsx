@@ -472,6 +472,7 @@ export function AddressFormFields<TFormValues extends FieldValues>({
                         <Input
                             value={tCountries(`${countryCode}.name` as `US.name`)}
                             readOnly
+                            aria-label={t('addressForm.countryLabel')}
                             className="text-foreground bg-background cursor-default"
                             tabIndex={-1}
                         />
