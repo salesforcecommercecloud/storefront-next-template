@@ -1305,15 +1305,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "テーマモード切り替え",
-        "lightTheme": "ライト",
-        "darkTheme": "ダーク",
-        "themeFamily": "テーマ",
-        "themeMode": "モード",
-        "themeFamilyAriaLabel": "テーマファミリー切り替え",
-        "foundations": "基本"
-    },
     "miniCart": {
         "noImage": "画像なし",
         "productAltFallback": "商品",

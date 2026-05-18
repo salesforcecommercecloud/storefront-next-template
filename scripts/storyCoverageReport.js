@@ -57,7 +57,6 @@ const EXCLUDED_COMPONENTS = new Set([
     'product-skeleton/index',
     'product-tile/index',
     'product-view/index',
-    'theme-switcher/components/footer/index',
     'store-locator/components/footer/index',
     // Thin async wrapper (Suspense/Await) and barrel re-export, no visual rendering of their own
     'product-grid/deferred',

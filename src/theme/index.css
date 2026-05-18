@@ -1,12 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
-
 /* Tailwind theme bridge — registers CSS vars as Tailwind utilities */
 @import './tailwind.css';
 
-/* Token definitions (:root and .dark values) */
+/* Token definitions (:root values) */
 @import './tokens/core.css';
 @import './tokens/custom.css';
 @import './tokens/status.css';

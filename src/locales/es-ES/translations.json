@@ -1255,15 +1255,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Conmutador de modo de tema",
-        "lightTheme": "Ligero",
-        "darkTheme": "Oscuro",
-        "themeFamily": "Tema",
-        "themeMode": "Modo",
-        "themeFamilyAriaLabel": "Conmutador de familia de temas",
-        "foundations": "Cimientos"
-    },
     "miniCart": {
         "noImage": "Sin imagen",
         "productAltFallback": "Producto",

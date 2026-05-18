@@ -86,7 +86,7 @@ vi.mock('/fonts/sen-variable.woff2', () => ({
 
 vi.mock('@/components/toast', async () => ({
     ...(await vi.importActual('@/components/toast')),
-    ToasterTheme: () => <div data-testid="toaster">Toaster</div>,
+    AppToaster: () => <div data-testid="toaster">Toaster</div>,
 }));
 
 vi.mock('@/components/tracking-consent-banner', async () => ({

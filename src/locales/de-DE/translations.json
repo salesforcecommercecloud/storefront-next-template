@@ -1243,14 +1243,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Designmodus-Switcher",
-        "lightTheme": "Hell",
-        "darkTheme": "Dunkel",
-        "themeFamily": "Design",
-        "themeMode": "Modus",
-        "themeFamilyAriaLabel": "Designkategorie-Switcher"
-    },
     "miniCart": {
         "noImage": "Kein Bild",
         "productAltFallback": "Produkt",

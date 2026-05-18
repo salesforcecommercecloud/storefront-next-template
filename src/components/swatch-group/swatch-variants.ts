@@ -39,7 +39,7 @@ const swatchVariants = cva(
                 false: '',
             },
             disabled: {
-                true: 'cursor-not-allowed before:content-[""] before:absolute before:top-1/2 before:left-1/2 before:h-[32px] before:w-[1px] before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:bg-black dark:before:bg-white before:z-[1]',
+                true: 'cursor-not-allowed before:content-[""] before:absolute before:top-1/2 before:left-1/2 before:h-[32px] before:w-[1px] before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:bg-black before:z-[1]',
                 false: 'cursor-pointer',
             },
         },

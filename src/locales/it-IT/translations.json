@@ -1383,15 +1383,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Selettore modalità tema",
-        "lightTheme": "Chiaro",
-        "darkTheme": "Scuro",
-        "themeFamily": "Tema",
-        "themeMode": "Modalità",
-        "themeFamilyAriaLabel": "Selettore famiglia tema",
-        "foundations": "Principi fondamentali"
-    },
     "miniCart": {
         "noImage": "Nessuna immagine",
         "productAltFallback": "Prodotto",

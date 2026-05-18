@@ -1242,15 +1242,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Skift mellem forskellige temaer",
-        "lightTheme": "Lys",
-        "darkTheme": "Mørk",
-        "themeFamily": "Tema",
-        "themeMode": "Tilstand",
-        "themeFamilyAriaLabel": "Skift mellem temafamilier",
-        "foundations": "Fundament"
-    },
     "miniCart": {
         "noImage": "Intet billede",
         "productAltFallback": "Produkt",

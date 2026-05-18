@@ -30,7 +30,7 @@ export default class Install extends Command {
 
     static examples = [
         '<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR',
-        '<%= config.bin %> <%= command.id %> -d ./my-project -e SFDC_EXT_THEME_SWITCHER',
+        '<%= config.bin %> <%= command.id %> -d ./my-project -e SFDC_EXT_BOPIS',
     ];
 
     static flags = {

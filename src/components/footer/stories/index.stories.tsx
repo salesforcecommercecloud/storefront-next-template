@@ -35,8 +35,6 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 
         const logNav = action('footer-navigate');
         const logNewsletter = action('footer-newsletter');
-        const logTheme = action('footer-theme');
-        const logThemeSelect = action('footer-theme-select');
 
         const handleClick = (event: Event) => {
             const target = event.target as HTMLElement | null;
@@ -49,17 +47,6 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
                 const text = (link as HTMLElement).textContent?.trim() || '';
                 event.preventDefault();
                 logNav({ href, text });
-                return;
-            }
-
-            // Theme switcher button
-            const themeBtn = target.closest(
-                'button[aria-label*="theme" i], button[aria-label*="dark" i], button[aria-label*="light" i]'
-            );
-            if (themeBtn) {
-                event.preventDefault();
-                const label = (themeBtn as HTMLElement).getAttribute('aria-label') || '';
-                logTheme({ label });
             }
         };
 
@@ -74,30 +61,11 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
             }
         };
 
-        const handleChange = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const selectEl = target.closest('select');
-            if (!(selectEl instanceof HTMLSelectElement)) return;
-
-            const aria = (selectEl.getAttribute('aria-label') || '').toLowerCase();
-            const hasThemeLabel = /theme|dark|light/.test(aria);
-            const hasThemeOptions = Array.from(selectEl.options).some((o) => /^(light|dark)$/i.test(o.value));
-            if (hasThemeLabel || hasThemeOptions) {
-                const value = selectEl.value;
-                const selected = selectEl.selectedOptions && selectEl.selectedOptions[0];
-                const label = selected ? selected.text : '';
-                logThemeSelect({ value, label });
-            }
-        };
-
         root.addEventListener('click', handleClick, true);
         root.addEventListener('submit', handleSubmit, true);
-        root.addEventListener('change', handleChange, true);
         return () => {
             root.removeEventListener('click', handleClick, true);
             root.removeEventListener('submit', handleSubmit, true);
-            root.removeEventListener('change', handleChange, true);
         };
     }, []);
 
@@ -113,7 +81,7 @@ const meta: Meta<typeof Footer> = {
         docs: {
             description: {
                 component: `
-Site footer with support, account, company links, newsletter signup, social icons, and theme switcher (if enabled).
+Site footer with support, account, company links, newsletter signup, and social icons.
                 `,
             },
         },
@@ -191,19 +159,6 @@ export const Default: Story = {
             }
         });
 
-        await step('Test select interactions', async () => {
-            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
-            if (themeSelect) {
-                // Test changing to dark theme
-                await userEvent.selectOptions(themeSelect, 'dark');
-                await expect(themeSelect).toHaveValue('dark');
-
-                // Test changing back to light theme
-                await userEvent.selectOptions(themeSelect, 'light');
-                await expect(themeSelect).toHaveValue('light');
-            }
-        });
-
         await step('Verify component state after interaction', () => {
             // Component should remain functional after interactions
             void expect(canvasElement.firstChild).toBeInTheDocument();
@@ -276,19 +231,6 @@ export const LongPage: Story = {
             }
         });
 
-        await step('Test select interactions', async () => {
-            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
-            if (themeSelect) {
-                // Test changing to dark theme
-                await userEvent.selectOptions(themeSelect, 'dark');
-                await expect(themeSelect).toHaveValue('dark');
-
-                // Test changing back to light theme
-                await userEvent.selectOptions(themeSelect, 'light');
-                await expect(themeSelect).toHaveValue('light');
-            }
-        });
-
         await step('Verify component state after interaction', () => {
             // Component should remain functional after interactions
             void expect(canvasElement.firstChild).toBeInTheDocument();
@@ -340,19 +282,6 @@ export const MobileView: Story = {
                 await userEvent.clear(emailInput);
                 await userEvent.type(emailInput, 'test@example.com');
                 await expect(emailInput).toHaveValue('test@example.com');
-            }
-        });
-
-        await step('Test select interactions', async () => {
-            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
-            if (themeSelect) {
-                // Test changing to dark theme
-                await userEvent.selectOptions(themeSelect, 'dark');
-                await expect(themeSelect).toHaveValue('dark');
-
-                // Test changing back to light theme
-                await userEvent.selectOptions(themeSelect, 'light');
-                await expect(themeSelect).toHaveValue('light');
             }
         });
 
@@ -430,19 +359,6 @@ export const DarkBackground: Story = {
                 await userEvent.clear(emailInput);
                 await userEvent.type(emailInput, 'test@example.com');
                 await expect(emailInput).toHaveValue('test@example.com');
-            }
-        });
-
-        await step('Test select interactions', async () => {
-            const themeSelect = canvas.queryByRole('combobox', { name: /theme switcher/i });
-            if (themeSelect) {
-                // Test changing to dark theme
-                await userEvent.selectOptions(themeSelect, 'dark');
-                await expect(themeSelect).toHaveValue('dark');
-
-                // Test changing back to light theme
-                await userEvent.selectOptions(themeSelect, 'light');
-                await expect(themeSelect).toHaveValue('light');
             }
         });
 

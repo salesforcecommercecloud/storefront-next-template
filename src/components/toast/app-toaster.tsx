@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-import ThemeSwitcher from '@/extensions/theme-switcher/components/theme-switcher';
+import { Toaster } from 'sonner';
+import { Check } from 'lucide-react';
 
-export default function ThemeSwitcherFooter(): ReactElement {
-    const { t } = useTranslation('extThemeSwitcher');
+export function AppToaster() {
     return (
-        <li>
-            <h3 className="text-sm font-semibold my-4">{t('footer.sections.switchThemes')}</h3>
-            <div className="flex items-center gap-2">
-                <ThemeSwitcher />
-            </div>
-        </li>
+        <Toaster
+            expand
+            position="top-center"
+            closeButton
+            className="toaster"
+            theme="light"
+            offset="calc(var(--header-height, 0px) + 0.75rem)"
+            icons={{ success: <Check size={20} strokeWidth={2.5} /> }}
+            toastOptions={{ unstyled: true }}
+        />
     );
 }

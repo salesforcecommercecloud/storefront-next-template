@@ -1307,15 +1307,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "主题模式切换器",
-        "lightTheme": "（扫描仪）光线",
-        "darkTheme": "深色",
-        "themeFamily": "主题",
-        "themeMode": "模式",
-        "themeFamilyAriaLabel": "主题系列切换器",
-        "foundations": "基础"
-    },
     "miniCart": {
         "noImage": "无图片",
         "productAltFallback": "产品",

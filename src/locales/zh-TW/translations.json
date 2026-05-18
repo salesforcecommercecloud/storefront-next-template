@@ -1305,15 +1305,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "主題模式切換器",
-        "lightTheme": "淺色",
-        "darkTheme": "深色",
-        "themeFamily": "主題",
-        "themeMode": "模式",
-        "themeFamilyAriaLabel": "主題系列切換器",
-        "foundations": "基礎"
-    },
     "miniCart": {
         "noImage": "沒有圖片",
         "productAltFallback": "產品",

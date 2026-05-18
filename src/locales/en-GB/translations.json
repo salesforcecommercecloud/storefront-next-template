@@ -1461,16 +1461,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Theme mode switcher",
-        "lightTheme": "Light",
-        "darkTheme": "Dark",
-        "themeFamily": "Theme",
-        "themeMode": "Mode",
-        "themeFamilyAriaLabel": "Theme family switcher",
-        "marketStreet": "Market Street",
-        "foundations": "Foundations"
-    },
     "miniCart": {
         "noImage": "No image",
         "productAltFallback": "Product",

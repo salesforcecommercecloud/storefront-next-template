@@ -20,7 +20,7 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
       >
         <button
           aria-label="Google Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -37,7 +37,7 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         </button>
         <button
           aria-label="Apple Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -54,7 +54,7 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         </button>
         <button
           aria-label="PayPal"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -70,7 +70,7 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -87,7 +87,7 @@ exports[`ExpressPayments stories snapshot > CustomSeparatorText story renders an
         </button>
         <button
           aria-label="Amazon Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -143,7 +143,7 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
       >
         <button
           aria-label="Google Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -160,7 +160,7 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         </button>
         <button
           aria-label="Apple Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -177,7 +177,7 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         </button>
         <button
           aria-label="PayPal"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -193,7 +193,7 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -210,7 +210,7 @@ exports[`ExpressPayments stories snapshot > Default story renders and matches sn
         </button>
         <button
           aria-label="Amazon Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -266,7 +266,7 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
       >
         <button
           aria-label="Google Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -284,7 +284,7 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         </button>
         <button
           aria-label="Apple Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -302,7 +302,7 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         </button>
         <button
           aria-label="PayPal"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -319,7 +319,7 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -337,7 +337,7 @@ exports[`ExpressPayments stories snapshot > Disabled story renders and matches s
         </button>
         <button
           aria-label="Amazon Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -410,7 +410,7 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
       >
         <button
           aria-label="Google Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -427,7 +427,7 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         </button>
         <button
           aria-label="Apple Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -444,7 +444,7 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         </button>
         <button
           aria-label="PayPal"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -460,7 +460,7 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -477,7 +477,7 @@ exports[`ExpressPayments stories snapshot > SeparatorAtTop story renders and mat
         </button>
         <button
           aria-label="Amazon Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors max-lg:col-span-2"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -517,7 +517,7 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
       >
         <button
           aria-label="Google Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -534,7 +534,7 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         </button>
         <button
           aria-label="Apple Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -551,7 +551,7 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         </button>
         <button
           aria-label="PayPal"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -567,7 +567,7 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -584,7 +584,7 @@ exports[`ExpressPayments stories snapshot > VerticalLayout story renders and mat
         </button>
         <button
           aria-label="Amazon Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -656,7 +656,7 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
       >
         <button
           aria-label="Google Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -673,7 +673,7 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         </button>
         <button
           aria-label="Apple Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-foreground hover:bg-foreground/90 text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -690,7 +690,7 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         </button>
         <button
           aria-label="PayPal"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--paypal-gold)] hover:bg-[#FFB800] text-[#1F2937] border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -706,7 +706,7 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         </button>
         <button
           aria-label="Venmo"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-[var(--venmo-blue)] hover:bg-[#2d7fb8] text-background border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"
@@ -723,7 +723,7 @@ exports[`ExpressPayments stories snapshot > VerticalWithTopSeparator story rende
         </button>
         <button
           aria-label="Amazon Pay"
-          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
+          class="gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive text-primary-foreground px-4 py-2 has-[>svg]:px-3 w-full h-9 bg-muted hover:bg-muted-hover border-0 flex items-center justify-center transition-colors"
           data-size="default"
           data-slot="button"
           data-variant="default"

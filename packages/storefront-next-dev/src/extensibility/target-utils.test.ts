@@ -331,7 +331,7 @@ describe('target-utils', () => {
                     },
                     {
                         targetId: 'footer.ourcompany.start',
-                        path: 'extensions/theme-switcher/components/footer/index.tsx',
+                        path: 'extensions/multiship/components/footer/index.tsx',
                         order: 1,
                     },
                     {
@@ -554,7 +554,7 @@ describe('target-utils', () => {
 
             const { componentRegistry } = buildTargetRegistry(join(extensionsRoot, 'src'));
             expect(componentRegistry['footer.ourcompany.start']).toHaveLength(1);
-            expect(componentRegistry['footer.ourcompany.start'][0].path).toContain('theme-switcher');
+            expect(componentRegistry['footer.ourcompany.start'][0].path).toContain('multiship');
         });
 
         it('should include components with enabled === true', () => {

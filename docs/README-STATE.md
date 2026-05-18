@@ -385,47 +385,46 @@ const handleDelete = useCallback((id: string) => {
 > [!NOTE]
 > For request-scoped data that loaders and actions need (session, auth, config), see [Middleware Context](#middleware-context). The React Context API is for UI state shared across the component tree during rendering.
 
-**Good use cases:** theme, locale, user preferences, feature flags.
+**Good use cases:** locale, user preferences, feature flags.
 
 **Poor use cases:** high-frequency updates (for example, mouse position, real-time data), large state objects where many consumers only need a small slice.
 
 #### Basic Setup
 
 ```jsx
-// theme-context.tsx
-type ThemeState = { theme: 'light' | 'dark'; toggle: () => void };
-const ThemeContext = createContext<ThemeState | null>(null);
+// preferences-context.tsx
+type PreferencesState = { density: 'compact' | 'comfortable'; setDensity: (d: 'compact' | 'comfortable') => void };
+const PreferencesContext = createContext<PreferencesState | null>(null);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const toggle = () => setTheme(t => (t === 'light' ? 'dark' : 'light'));
+export function PreferencesProvider({ children }: { children: React.ReactNode }) {
+  const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
 
   return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
+    <PreferencesContext.Provider value={{ density, setDensity }}>
       {children}
-    </ThemeContext.Provider>
+    </PreferencesContext.Provider>
   );
 }
 
-export function useTheme() {
-  const ctx = useContext(ThemeContext);
+export function usePreferences() {
+  const ctx = useContext(PreferencesContext);
   if (!ctx) {
-    throw new Error('useTheme must be used within ThemeProvider');
+    throw new Error('usePreferences must be used within PreferencesProvider');
   }
   return ctx;
 }
 ```
 
 > [!NOTE]
-> Every context value change re-renders all its consumers, regardless of whether they use the changed part of the value. Mitigate this by splitting contexts. A component using, for example, only `ThemeContext` will not re-render when `user` changes.
+> Every context value change re-renders all its consumers, regardless of whether they use the changed part of the value. Mitigate this by splitting contexts. A component using, for example, only `PreferencesContext` will not re-render when `user` changes.
 
 ```jsx
 // Instead of one large context:
-<AppContext.Provider value={{ user, theme, locale }} />
+<AppContext.Provider value={{ user, preferences, locale }} />
 
 // Split into focused contexts:
 <UserContext.Provider value={user} />
-<ThemeContext.Provider value={theme} />
+<PreferencesContext.Provider value={preferences} />
 <LocaleContext.Provider value={locale} />
 ```
 

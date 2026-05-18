@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ToasterTheme } from '../toaster-theme';
+import { AppToaster } from '../app-toaster';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
@@ -27,22 +27,21 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
         const root = containerRef.current;
         if (!root) return;
 
-        const logRender = action('toaster-theme-render');
+        const logRender = action('app-toaster-render');
         logRender({});
     }, []);
 
     return <div ref={containerRef}>{children}</div>;
 }
 
-const meta: Meta<typeof ToasterTheme> = {
-    title: 'TOAST/ToasterTheme',
-    component: ToasterTheme,
+const meta: Meta<typeof AppToaster> = {
+    title: 'TOAST/AppToaster',
+    component: AppToaster,
     parameters: {
         layout: 'fullscreen',
         docs: {
             description: {
-                component:
-                    'Client-side Toaster component that adapts to theme changes. Watches for changes to the dark class on document.documentElement and updates the toaster theme accordingly.',
+                component: 'Client-side Toaster component used to render toast notifications.',
             },
         },
     },
@@ -57,7 +56,7 @@ const meta: Meta<typeof ToasterTheme> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ToasterTheme>;
+type Story = StoryObj<typeof AppToaster>;
 
 export const Default: Story = {
     play: async ({ canvasElement }) => {

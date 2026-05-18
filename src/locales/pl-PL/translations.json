@@ -1277,15 +1277,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Przełącznik trybu motywu",
-        "lightTheme": "Jasny",
-        "darkTheme": "Ciemny",
-        "themeFamily": "Motyw",
-        "themeMode": "Tryb",
-        "themeFamilyAriaLabel": "Przełącznik rodziny motywów",
-        "foundations": "Podstawy"
-    },
     "miniCart": {
         "noImage": "Brak obrazu",
         "productAltFallback": "Produkt",

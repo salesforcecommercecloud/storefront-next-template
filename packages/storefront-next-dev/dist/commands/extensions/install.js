@@ -12,7 +12,7 @@ const DEFAULT_TEMPLATE_GIT_URL = process.env.DEFAULT_TEMPLATE_GIT_URL || "https:
 */
 var Install = class Install extends Command {
 	static description = "Install an extension into a storefront project";
-	static examples = ["<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR", "<%= config.bin %> <%= command.id %> -d ./my-project -e SFDC_EXT_THEME_SWITCHER"];
+	static examples = ["<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR", "<%= config.bin %> <%= command.id %> -d ./my-project -e SFDC_EXT_BOPIS"];
 	static flags = {
 		...commonFlags,
 		extension: Flags.string({

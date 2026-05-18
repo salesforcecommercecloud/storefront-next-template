@@ -29,9 +29,3 @@
     --status-critical-border: #fecaca;
     --status-info: #2563eb;
 }
-
-.dark {
-    /* account/payment destructive actions (same red as light for consistency) */
-    --account-action-destructive: var(--destructive);
-    --account-action-destructive-foreground: #ffffff;
-}

@@ -16,15 +16,3 @@
     --product-badge-promo-bg: var(--primary);
     --product-badge-promo-foreground: var(--info-foreground);
 }
-
-.dark {
-    /* payment provider colors (not in Figma JSON; external brand guidelines) */
-    --paypal-gold: #FFC439;
-    --venmo-blue: #3D95CE;
-
-    /* product badge — promo variant. Dark mode flips bg to the light-blue --info-foreground
-       so the badge stays visible on a dark page bg. Foreground is hardcoded to near-black
-       because dark --primary (#EBEBEB) on #DBEAFE bg would fail WCAG AA. */
-    --product-badge-promo-bg: var(--info-foreground);
-    --product-badge-promo-foreground: #131315;
-}

@@ -1242,15 +1242,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Veksler for temamodus",
-        "lightTheme": "Lys",
-        "darkTheme": "Mørk",
-        "themeFamily": "Tema",
-        "themeMode": "Modus",
-        "themeFamilyAriaLabel": "Bytting av temafamilie",
-        "foundations": "Fundamenter"
-    },
     "miniCart": {
         "noImage": "Ikke noe bilde",
         "productAltFallback": "Produkt",

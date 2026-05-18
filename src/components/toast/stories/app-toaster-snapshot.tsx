@@ -15,16 +15,16 @@
  */
 import { composeStories } from '@storybook/react-vite';
 
-import * as ToasterThemeStories from './toaster-theme.stories';
+import * as AppToasterStories from './app-toaster.stories';
 import { expect, test, describe, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
-const composed = composeStories(ToasterThemeStories);
+const composed = composeStories(AppToasterStories);
 
 afterEach(() => {
     cleanup();
 });
 
-describe('ToasterTheme stories snapshot', () => {
+describe('AppToaster stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);

@@ -1251,15 +1251,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Teematilan vaihtaja",
-        "lightTheme": "Vaalea",
-        "darkTheme": "Tumma",
-        "themeFamily": "Teema",
-        "themeMode": "Tila",
-        "themeFamilyAriaLabel": "Teemaperheen vaihtaja",
-        "foundations": "Perustukset"
-    },
     "miniCart": {
         "noImage": "Ei kuvaa",
         "productAltFallback": "Tuote",

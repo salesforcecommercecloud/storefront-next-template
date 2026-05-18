@@ -20,12 +20,10 @@
 import bopisTranslations from '@/extensions/bopis/locales/zh-TW/translations.json';
 import multishipTranslations from '@/extensions/multiship/locales/zh-TW/translations.json';
 import storeLocatorTranslations from '@/extensions/store-locator/locales/zh-TW/translations.json';
-import themeSwitcherTranslations from '@/extensions/theme-switcher/locales/zh-TW/translations.json';
 
 // Namespace is based on the following convention: extPascalCase, and it's the pascal case of the folder name (e.g. store-locator -> extStoreLocator)
 export default {
     extBopis: bopisTranslations,
     extMultiship: multishipTranslations,
     extStoreLocator: storeLocatorTranslations,
-    extThemeSwitcher: themeSwitcherTranslations,
 };

@@ -85,7 +85,7 @@ import { correlationContext } from '@/lib/correlation';
 import RecommendersProvider from '@/providers/recommenders';
 
 // Components
-import { ToasterTheme } from '@/components/toast';
+import { AppToaster } from '@/components/toast';
 import { TrackingConsentBanner } from '@/components/tracking-consent-banner';
 import ShopperAgent from '@/components/shopper-agent';
 
@@ -302,7 +302,7 @@ export function Layout({ children }: PropsWithChildren) {
             </head>
             <body className="antialiased flex flex-col min-h-screen">
                 {children}
-                <ToasterTheme />
+                <AppToaster />
                 <ScrollRestoration />
                 <Scripts />
                 {/* Dev-only overlay: mounts outside the React tree to avoid interfering with app state/context. Zero production overhead — tree-shaken by Vite when PROD=true. */}

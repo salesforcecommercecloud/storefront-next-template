@@ -1244,15 +1244,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Themamodus wisselen",
-        "lightTheme": "Licht",
-        "darkTheme": "Donker",
-        "themeFamily": "Thema",
-        "themeMode": "Modus",
-        "themeFamilyAriaLabel": "Themafamilie wisselen",
-        "foundations": "Grondslagen"
-    },
     "miniCart": {
         "noImage": "Geen afbeelding",
         "quantityLabel": "Hoeveelheid:",

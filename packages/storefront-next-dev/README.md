@@ -152,7 +152,7 @@ Run `pnpm sfnext extensions install` to install a new extension
 Run `pnpm sfnext extensions remove` to remove existing extensions
 
 - `-d, --project-directory`: Target project directory (default: current directory)
-- `-e, --extensions`: Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_INTERNAL_THEME_SWITCHER)
+- `-e, --extensions`: Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_BOPIS)
 - `-v, --verbose`: Verbose mode
 
 Run `pnpm sfnext extensions create` to create a new extension scaffolding

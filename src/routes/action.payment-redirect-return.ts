@@ -94,7 +94,6 @@ export function loader({ request, context }: LoaderFunctionArgs): Response {
   @keyframes spin{to{transform:rotate(360deg);}}
   .ns-btn{margin-top:1rem;padding:.6rem 1.2rem;background:#0070d2;color:#fff;border:none;border-radius:4px;font-size:.95rem;cursor:pointer;}
   .ns-btn:hover{background:#005fb2;}
-  @media (prefers-color-scheme:dark){body{background:#1a1a1a;color:#eee;}.card{background:#262626;border-color:#3a3a3a;}p{color:#aaa;}.spinner{border-color:#3a3a3a;border-top-color:#5ba0e8;}.ns-btn{background:#1976d2;}.ns-btn:hover{background:#155bb5;}}
 </style>
 </head>
 <body>

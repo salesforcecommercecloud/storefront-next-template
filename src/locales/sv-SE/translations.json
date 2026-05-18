@@ -1244,15 +1244,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "Temaväxlare",
-        "lightTheme": "Ljus",
-        "darkTheme": "Mörk",
-        "themeFamily": "Tema",
-        "themeMode": "Läge",
-        "themeFamilyAriaLabel": "Växlare för temafamilj",
-        "foundations": "Stiftelser"
-    },
     "miniCart": {
         "noImage": "Ingen bild",
         "productAltFallback": "Produkt",

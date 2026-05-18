@@ -13,18 +13,3 @@
     --agentic-message-output: #171717;
     --agentic-message-input: #DBEAFE;
 }
-
-.dark {
-    --agentic: #8A38F5;
-    --agentic-foreground: #E5E5E5;
-    --agentic-primary: #EBEBEB;
-    --agentic-primary-foreground: #000000;
-    --agentic-accent: #000000;
-    --agentic-accent-foreground: #FFFFFF;
-    --agentic-border: #404040;
-    --agentic-ring: #3B82F6;
-    --agentic-muted: #262626;
-    --agentic-muted-foreground: #A3A3A3;
-    --agentic-message-output: #FAFAFA;
-    --agentic-message-input: #1D4ED8;
-}

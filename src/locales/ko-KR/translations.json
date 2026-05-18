@@ -1301,15 +1301,6 @@
             }
         }
     },
-    "themeSwitcher": {
-        "ariaLabel": "테마 모드 전환",
-        "lightTheme": "라이트",
-        "darkTheme": "다크",
-        "themeFamily": "테마",
-        "themeMode": "모드",
-        "themeFamilyAriaLabel": "테마 모음 전환",
-        "foundations": "파운데이션"
-    },
     "miniCart": {
         "noImage": "이미지 없음",
         "productAltFallback": "제품",

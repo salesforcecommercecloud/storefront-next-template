@@ -11,12 +11,12 @@ import { Command, Flags } from "@oclif/core";
 */
 var Remove = class Remove extends Command {
 	static description = "Remove one or more installed extensions from a storefront project";
-	static examples = ["<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR", "<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR,SFDC_EXT_THEME_SWITCHER"];
+	static examples = ["<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR", "<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR,SFDC_EXT_BOPIS"];
 	static flags = {
 		...commonFlags,
 		extensions: Flags.string({
 			char: "e",
-			description: "Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_THEME_SWITCHER)"
+			description: "Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_BOPIS)"
 		})
 	};
 	async run() {

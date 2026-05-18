@@ -26,15 +26,14 @@ export default class Remove extends Command {
 
     static examples = [
         '<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR',
-        '<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR,SFDC_EXT_THEME_SWITCHER',
+        '<%= config.bin %> <%= command.id %> -e SFDC_EXT_STORE_LOCATOR,SFDC_EXT_BOPIS',
     ];
 
     static flags = {
         ...commonFlags,
         extensions: Flags.string({
             char: 'e',
-            description:
-                'Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_THEME_SWITCHER)',
+            description: 'Comma-separated list of extension marker values (e.g. SFDC_EXT_STORE_LOCATOR,SFDC_EXT_BOPIS)',
         }),
     };
 

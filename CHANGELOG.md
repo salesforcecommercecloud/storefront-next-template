@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Remove dark mode tokens entirely (Phase 1 follow-up to the CSS color token audit).(@W-22497061)
 - Prefetch basket data when hovering over cart badge ([#1704](https://github.com/commerce-emu/storefront-next/pull/1704))
 - Replace hand-rolled `Mock<Component>` Storybook stories with the real components for `TrackingConsentBanner`, `CurrencySwitcher`, and `LocaleSwitcher`. Each story now imports the production component and relies on the existing global preview decorator (memory router + provider chain) instead of a hand-rolled JSX duplicate. Splits `/action/set-site-context` so currency submissions resolve immediately and locale submissions hang (preventing the unforgeable `window.location.href` redirect from crashing the test runner).
 - Rename `sfnext create-storefront` config prompt labels for clarity: `API Client ID` → `SLAS Client ID`, `API Organization ID` → `Organization ID`, `API Short Code` → `Short Code`, `Default Site ID` → `Site ID` (matches Commerce Cloud documentation nomenclature). Labels are sourced from the template's `config-meta.json`.

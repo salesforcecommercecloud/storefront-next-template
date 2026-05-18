@@ -46,12 +46,12 @@ const twoLayerConfig: ExtensionConfig = {
             folder: 'bopis',
             dependencies: ['SFDC_EXT_STORE_LOCATOR'],
         },
-        SFDC_EXT_THEME_SWITCHER: {
-            name: 'Theme Switcher',
-            description: 'Enables a developer to switch the theme of the store.',
-            installationInstructions: 'instructions/install-theme-switcher.mdc',
-            uninstallationInstructions: 'instructions/uninstall-theme-switcher.mdc',
-            folder: 'theme-switcher',
+        SFDC_EXT_MULTISHIP: {
+            name: 'Multiship',
+            description: 'Multiship allows a shopper to ship items in their order to multiple addresses.',
+            installationInstructions: 'instructions/install-multiship.mdc',
+            uninstallationInstructions: 'instructions/uninstall-multiship.mdc',
+            folder: 'multiship',
             dependencies: [],
         },
     },
@@ -223,7 +223,7 @@ describe('dependency-utils', () => {
         });
 
         it('returns empty array for extension with no dependents', () => {
-            const result = getDependents('SFDC_EXT_THEME_SWITCHER', twoLayerConfig);
+            const result = getDependents('SFDC_EXT_MULTISHIP', twoLayerConfig);
             expect(result).toEqual([]);
         });
     });
@@ -329,13 +329,10 @@ describe('dependency-utils', () => {
 
     describe('resolveDependenciesForMultiple', () => {
         it('merges dependencies for multiple extensions', () => {
-            const result = resolveDependenciesForMultiple(
-                ['SFDC_EXT_BOPIS', 'SFDC_EXT_THEME_SWITCHER'],
-                twoLayerConfig
-            );
+            const result = resolveDependenciesForMultiple(['SFDC_EXT_BOPIS', 'SFDC_EXT_MULTISHIP'], twoLayerConfig);
             expect(result).toContain('SFDC_EXT_STORE_LOCATOR');
             expect(result).toContain('SFDC_EXT_BOPIS');
-            expect(result).toContain('SFDC_EXT_THEME_SWITCHER');
+            expect(result).toContain('SFDC_EXT_MULTISHIP');
         });
 
         it('deduplicates shared dependencies', () => {
