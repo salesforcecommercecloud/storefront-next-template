@@ -29,6 +29,8 @@ import {
     type WishlistFilterOption,
 } from '@/components/wishlist/wishlist-sort-filter';
 import { getPriceData } from '@/components/product-price/utils';
+import { Link } from '@/components/link';
+import { useAuth } from '@/providers/auth';
 
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
 type Product = ShopperProducts.schemas['Product'];
@@ -125,6 +127,10 @@ export interface WishlistPageContentProps {
  */
 export function WishlistPageContent({ items, productsByProductId }: WishlistPageContentProps): ReactElement {
     const { t } = useTranslation('account');
+    // Positive check: only show the guest sign-in CTA when we know the session is a guest.
+    // Falls back to hidden when AuthProvider isn't wired (SSR error, isolated stories) so we
+    // never render the CTA to a registered shopper.
+    const isGuest = useAuth()?.userType === 'guest';
 
     // Track removed items client-side, persisted in sessionStorage to survive revalidations
     const [disabledItemIds, setDisabledItemIds] = useState<Set<string>>(() => {
@@ -231,6 +237,16 @@ export function WishlistPageContent({ items, productsByProductId }: WishlistPage
                         <Heart className="w-16 h-16 text-muted-foreground/40 mb-4" />
                         <h3 className="text-sm font-medium text-foreground mb-2">{t('wishlist.emptyTitle')}</h3>
                         <p className="text-muted-foreground">{t('wishlist.emptySubtitle')}</p>
+                        {isGuest && (
+                            <p className="text-sm text-muted-foreground mt-4">
+                                {t('wishlist.guestEmptySignInPrompt')}{' '}
+                                <Link
+                                    to="/login?returnUrl=/wishlist"
+                                    className="font-medium text-primary hover:underline">
+                                    {t('wishlist.guestEmptySignInCta')}
+                                </Link>
+                            </p>
+                        )}
                     </div>
                 ) : displayItems.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">

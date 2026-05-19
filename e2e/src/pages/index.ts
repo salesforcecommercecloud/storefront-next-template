@@ -39,5 +39,6 @@ export const pageObjects = {
     orderListPage: './src/pages/order-list.page.ts',
     orderDetailsPage: './src/pages/order-details.page.ts',
     accountWishlistPage: './src/pages/account-wishlist.page.ts',
+    wishlistPage: './src/pages/wishlist.page.ts',
     passwordlessLoginPage: './src/pages/passwordless-login.page.ts',
 };

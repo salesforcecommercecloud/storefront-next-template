@@ -1,7 +1,7 @@
 import { a as sitePreferencesContext, i as getSitePreferences, n as SitePreferences, t as DEFAULT_SITE_PREFERENCES_KEY } from "./custom-site-preferences.js";
 import { a as getCustomGlobalPreferences, n as DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, r as customGlobalPreferencesContext, t as CustomGlobalPreferences } from "./custom-global-preferences.js";
 import { a as getGcpApiKey, n as GcpPreferences, o as getGcpPreferences, r as gcpPreferencesContext, t as DEFAULT_GCP_PREFERENCES_KEY } from "./gcp-preferences.js";
-import * as react_router10 from "react-router";
+import * as react_router7 from "react-router";
 import { MiddlewareFunction, RouterContextProvider, createContext } from "react-router";
 import { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities/data-store";
 
@@ -54,7 +54,7 @@ declare function getDataStoreEntry<TValue = unknown>(key: string): Promise<DataS
 type LoginPreferences = {
   emailVerificationEnabled?: boolean;
 };
-declare const loginPreferencesContext: react_router10.RouterContext<LoginPreferences | null>;
+declare const loginPreferencesContext: react_router7.RouterContext<LoginPreferences | null>;
 /**
  * Read login preferences from router context.
  *
@@ -64,7 +64,7 @@ declare const loginPreferencesContext: react_router10.RouterContext<LoginPrefere
 declare function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences;
 //#endregion
 //#region src/data-store/index.d.ts
-declare const dataStoreMiddleware: react_router10.MiddlewareFunction<Response>[];
+declare const dataStoreMiddleware: react_router7.MiddlewareFunction<Response>[];
 //#endregion
 export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, sitePreferencesContext };
 //# sourceMappingURL=data-store.d.ts.map

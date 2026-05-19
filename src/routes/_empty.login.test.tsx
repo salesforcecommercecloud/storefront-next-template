@@ -27,6 +27,7 @@ import { authorizeIDP } from '@/lib/api/auth/social-login.server';
 import { mergeBasket } from '@/lib/api/basket.server';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
+import { buildUrlFromContext } from '@/lib/url.server';
 
 vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(),
@@ -53,6 +54,13 @@ vi.mock('@/middlewares/basket.server', () => ({
 
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({ error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() })),
+}));
+
+// Mock buildUrlFromContext to pass-through by default so existing assertions on bare paths
+// continue to hold. Individual tests can override the mock to verify that the wrap is in
+// place and producing site/locale-prefixed URLs.
+vi.mock('@/lib/url.server', () => ({
+    buildUrlFromContext: vi.fn((to: string) => to),
 }));
 
 vi.mock('@/lib/utils', () => ({
@@ -129,6 +137,7 @@ const mockUpdateBasketResource = vi.mocked(updateBasketResource);
 const mockGetAppOrigin = vi.mocked(getAppOrigin);
 const mockIsAbsoluteURL = vi.mocked(isAbsoluteURL);
 const mockExtractResponseError = vi.mocked(extractResponseError);
+const mockBuildUrlFromContext = vi.mocked(buildUrlFromContext);
 
 describe('Login Route', () => {
     beforeEach(() => {
@@ -136,6 +145,8 @@ describe('Login Route', () => {
         mockGetAppOrigin.mockReturnValue('http://localhost:5173');
         mockIsAbsoluteURL.mockImplementation((url: string) => /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url));
         mockExtractResponseError.mockResolvedValue({ responseMessage: 'error' } as any);
+        // Default: pass-through. Tests that exercise the site/locale prefix override this.
+        mockBuildUrlFromContext.mockImplementation((to: string) => to);
     });
 
     afterEach(() => {
@@ -200,6 +211,51 @@ describe('Login Route', () => {
             if (result instanceof Response) {
                 expect(result.headers.get('Location')).toBe('/');
                 expect(result.headers.get('Location')).not.toContain('evil.com');
+            }
+        });
+
+        it('applies site/locale prefix to home redirect when already authenticated with no returnUrl', async () => {
+            // Mock buildUrlFromContext to apply a representative '/global/en-GB' prefix.
+            // buildUrlFromContext returns '/' as-is for the home path (cookie-driven), so we
+            // assert the wrap is *called* with '/' rather than expecting a prefixed location.
+            mockBuildUrlFromContext.mockImplementation((to: string) => (to === '/' ? '/' : `/global/en-GB${to}`));
+            mockGetAuth.mockReturnValue({
+                accessToken: 'valid-token',
+                accessTokenExpiry: Date.now() + 10000,
+                userType: 'registered',
+                customerId: 'customer-123',
+            });
+
+            const mockRequest = new Request('http://localhost:5173/login');
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
+
+            expect(mockBuildUrlFromContext).toHaveBeenCalledWith('/', mockContext);
+            if (result instanceof Response) {
+                expect(result.headers.get('Location')).toBe('/');
+            }
+        });
+
+        it('applies site/locale prefix to returnUrl on already-authenticated redirect', async () => {
+            mockBuildUrlFromContext.mockImplementation((to: string) => (to === '/' ? '/' : `/global/en-GB${to}`));
+            mockGetAuth.mockReturnValue({
+                accessToken: 'valid-token',
+                accessTokenExpiry: Date.now() + 10000,
+                userType: 'registered',
+                customerId: 'customer-123',
+            });
+
+            const mockRequest = new Request('http://localhost:5173/login?returnUrl=/wishlist');
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await loader(
+                createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
+
+            expect(mockBuildUrlFromContext).toHaveBeenCalledWith('/wishlist', mockContext);
+            if (result instanceof Response) {
+                expect(result.headers.get('Location')).toBe('/global/en-GB/wishlist');
             }
         });
 
@@ -540,6 +596,101 @@ describe('Login Route', () => {
             expect(result).toBeInstanceOf(Response);
             expect((result as Response).status).toBe(302);
             expect((result as Response).headers.get('Location')).toBe('/');
+        });
+
+        it('applies site/locale prefix to returnUrl on successful standard login', async () => {
+            mockBuildUrlFromContext.mockImplementation((to: string) => (to === '/' ? '/' : `/global/en-GB${to}`));
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
+            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            mockMergeBasket.mockResolvedValue({ basketId: 'basket-1' } as any);
+
+            const formData = new URLSearchParams();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+            formData.append('returnUrl', '/wishlist');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString(),
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
+
+            expect(mockBuildUrlFromContext).toHaveBeenCalledWith('/wishlist', mockContext);
+            expect(result).toBeInstanceOf(Response);
+            expect((result as Response).headers.get('Location')).toBe('/global/en-GB/wishlist');
+        });
+
+        it('applies site/locale prefix to home redirect on successful standard login with no returnUrl', async () => {
+            mockBuildUrlFromContext.mockImplementation((to: string) => (to === '/' ? '/' : `/global/en-GB${to}`));
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
+            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            mockMergeBasket.mockResolvedValue({ basketId: 'basket-1' } as any);
+
+            const formData = new URLSearchParams();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString(),
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
+
+            // Home redirect path stays cookie-driven — buildUrlFromContext is not called for the
+            // bare `redirect('/')` branch (line 336 of _empty.login.tsx).
+            expect((result as Response).headers.get('Location')).toBe('/');
+        });
+
+        it('applies site/locale prefix to returnUrl + action params on successful standard login', async () => {
+            mockBuildUrlFromContext.mockImplementation((to: string) => (to === '/' ? '/' : `/global/en-GB${to}`));
+            mockGetAuth.mockReturnValue({
+                userType: 'registered',
+                customerId: 'test-customer-123',
+                accessToken: 'test-token',
+            });
+            mockLoginRegisteredUser.mockResolvedValue({ success: true });
+            mockMergeBasket.mockResolvedValue({ basketId: 'basket-1' } as any);
+
+            const formData = new URLSearchParams();
+            formData.append('email', 'test@example.com');
+            formData.append('password', 'password123');
+            formData.append('loginMode', 'password');
+            formData.append('returnUrl', '/wishlist');
+            formData.append('action', 'addToCart');
+            formData.append('actionParams', '{"productId":"123"}');
+
+            const mockRequest = new Request('http://localhost:5173/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString(),
+            });
+            const mockContext = { get: vi.fn(), set: vi.fn() };
+            const result = await action(
+                createActionArgs<Route.ActionArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+            );
+
+            const location = (result as Response).headers.get('Location') ?? '';
+            expect(location.startsWith('/global/en-GB/wishlist')).toBe(true);
+            expect(location).toContain('action=addToCart');
+            expect(location).toContain('actionParams=');
         });
 
         it('should preserve action and actionParams in returnUrl on successful login', async () => {

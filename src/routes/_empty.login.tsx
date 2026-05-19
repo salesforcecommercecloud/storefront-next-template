@@ -89,7 +89,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         customerId
     ) {
         logger.debug('Login: already authenticated, redirecting');
-        return redirect(returnUrl || '/');
+        return redirect(buildUrlFromContext(returnUrl || '/', context));
     }
 
     const passwordlessSent = url.searchParams.get('passwordless') === 'sent';
@@ -130,7 +130,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
             }
 
             logger.info('Login: passwordless verification succeeded');
-            return redirect(returnUrl || '/');
+            return redirect(buildUrlFromContext(returnUrl || '/', context));
         } catch (verifyError) {
             // Auto-verification failed - show error with OTP form
             logger.warn('Login: passwordless auto-verification failed');
@@ -328,9 +328,9 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
                     if (actionParams) {
                         returnUrlObj.searchParams.set('actionParams', actionParams);
                     }
-                    return redirect(returnUrlObj.pathname + returnUrlObj.search);
+                    return redirect(buildUrlFromContext(returnUrlObj.pathname + returnUrlObj.search, context));
                 }
-                return redirect(returnUrl);
+                return redirect(buildUrlFromContext(returnUrl, context));
             }
 
             return redirect('/');
