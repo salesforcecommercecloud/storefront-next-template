@@ -71,7 +71,9 @@ export default function ShopperAgentUI({
     }
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const prefix = config.url?.prefix ? resolvePrefix(config.url.prefix, { siteId: siteRef, localeId: localeRef }) : '';
+    const prefix = config.url?.prefix
+        ? resolvePrefix({ prefix: config.url.prefix, params: { siteId: siteRef, localeId: localeRef } })
+        : '';
     const domainUrl = `${origin}${prefix}`;
 
     return (

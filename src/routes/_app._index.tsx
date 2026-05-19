@@ -106,7 +106,10 @@ export function loader(args: Route.LoaderArgs): HomePageData {
         const defaultSite = config.commerce.sites.find((s) => s.id === config.defaultSiteId);
         const defaultLocale = defaultSite?.defaultLocale ?? config.i18n.fallbackLng;
         const localeRef = config.localeAliasMap?.[defaultLocale] ?? defaultLocale;
-        const prefixedPath = resolvePrefix(config.url.prefix, { siteId: siteRef, localeId: localeRef });
+        const prefixedPath = resolvePrefix({
+            prefix: config.url.prefix,
+            params: { siteId: siteRef, localeId: localeRef },
+        });
         throw redirect(`${prefixedPath}/`);
     }
 

@@ -113,7 +113,7 @@ export async function loader(args: Route.LoaderArgs) {
     const logger = getLogger(args.context);
     const config = getConfig<AppConfig>(args.context);
     const url = new URL(args.request.url);
-    const strippedPath = stripPathPrefix(url.pathname, config.url?.prefix ?? '');
+    const strippedPath = stripPathPrefix({ pathname: url.pathname, prefix: config.url?.prefix ?? '' });
     logger.debug('CatchAllRoute: loader starting', { pathname: url.pathname, strippedPath });
     const handler = getLoaderHandler(strippedPath, args.context);
 
@@ -131,7 +131,7 @@ export async function action(args: Route.ActionArgs) {
     const logger = getLogger(args.context);
     const config = getConfig<AppConfig>(args.context);
     const url = new URL(args.request.url);
-    const strippedPath = stripPathPrefix(url.pathname, config.url?.prefix ?? '');
+    const strippedPath = stripPathPrefix({ pathname: url.pathname, prefix: config.url?.prefix ?? '' });
     logger.debug('CatchAllRoute: action starting', { pathname: url.pathname, strippedPath });
     const handler = getActionHandler(strippedPath, args.context);
 

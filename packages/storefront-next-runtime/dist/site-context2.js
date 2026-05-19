@@ -77,9 +77,12 @@ function decomposeUrl(url) {
 }
 /**
 * Resolves a prefix template by replacing parameter placeholders with values.
-* ('/:siteId/:localeId', { siteId: 'global', localeId: 'en-GB' }) → '/global/en-GB'
+*
+* @example
+* resolvePrefix({ prefix: '/:siteId/:localeId', params: { siteId: 'global', localeId: 'en-GB' } })
+* // → '/global/en-GB'
 */
-function resolvePrefix(prefix, params) {
+function resolvePrefix({ prefix, params }) {
 	let resolved = prefix;
 	for (const paramName of extractPrefixParams(prefix)) {
 		const value = params[paramName];
@@ -88,37 +91,38 @@ function resolvePrefix(prefix, params) {
 	return resolved;
 }
 /**
-* Strips the URL prefix segments from a pathname based on a prefix pattern.
-* Since all routes are configured with the prefix baked in, segment counting is sufficient.
+* Strips a URL prefix from a pathname.
 *
-* @param pathname - Full pathname (e.g. '/global/en-GB/checkout')
-* @param prefixPattern - URL prefix pattern from config (e.g. '/:siteId/:localeId')
-* @returns Pathname with prefix stripped (e.g. '/checkout'), or original if
-*          the pathname has fewer segments than the prefix
+* Accepts either a resolved prefix or a prefix pattern — segments may be
+* literal strings (must match the pathname exactly) or `:param` placeholders
+* (match any segment value). Mixed prefixes are supported.
+*
+* Returns `''` when the pathname matches the prefix exactly with no remainder
+* (so concatenating `prefix + result` round-trips the input), `pathname`
+* unchanged when literal segments don't match or the path is shorter than the
+* prefix, or the bare remainder otherwise. Callers that need the homepage to
+* be `'/'` should coerce: `stripPathPrefix(...) || '/'`.
 *
 * @example
-* stripPathPrefix('/global/en-GB/checkout', '/:siteId/:localeId') // → '/checkout'
-* stripPathPrefix('/checkout', '/:siteId/:localeId')              // → '/checkout' (fewer segments → unchanged)
-* stripPathPrefix('/checkout', '')                                 // → '/checkout' (no prefix configured)
-* stripPathPrefix('/', '/:siteId/:localeId')                      // → '/'
+* stripPathPrefix({ pathname: '/global/en-GB/checkout', prefix: '/:siteId/:localeId' })   // → '/checkout'
+* stripPathPrefix({ pathname: '/global/en-GB/checkout', prefix: '/global/en-GB' })        // → '/checkout'
+* stripPathPrefix({ pathname: '/shop/en-GB/x',          prefix: '/shop/:localeId' })      // → '/x'
+* stripPathPrefix({ pathname: '/global/en-GB',          prefix: '/:siteId/:localeId' })   // → ''
+* stripPathPrefix({ pathname: '/checkout',              prefix: '/:siteId/:localeId' })   // → '/checkout'
+* stripPathPrefix({ pathname: '/other/x',               prefix: '/global/en-GB' })        // → '/other/x'
+* stripPathPrefix({ pathname: '/x',                     prefix: '' })                     // → '/x'
 */
-function stripPathPrefix(pathname, prefixPattern) {
-	if (!prefixPattern) return pathname;
-	const prefixSegmentCount = prefixPattern.split("/").filter(Boolean).length;
+function stripPathPrefix({ pathname, prefix }) {
+	if (!prefix || prefix === "/") return pathname;
+	const prefixSegments = prefix.split("/").filter(Boolean);
 	const pathSegments = pathname.split("/").filter(Boolean);
-	if (pathSegments.length <= prefixSegmentCount) return pathSegments.length === prefixSegmentCount ? "/" : pathname;
-	return `/${pathSegments.slice(prefixSegmentCount).join("/")}`;
-}
-/**
-* Sanitize a resolved prefix from a pathname if present.
-* sanitizePrefix('/global/en-GB/product/123', '/global/en-GB') → '/product/123'
-* sanitizePrefix('/product/123', '/global/en-GB') → '/product/123'   (no-op)
-*/
-function sanitizePrefix(pathname, pathPrefix) {
-	if (!pathPrefix) return pathname;
-	if (pathname === pathPrefix) return "";
-	if (pathname.startsWith(`${pathPrefix}/`)) return pathname.slice(pathPrefix.length);
-	return pathname;
+	if (pathSegments.length < prefixSegments.length) return pathname;
+	for (let i = 0; i < prefixSegments.length; i++) {
+		const segment = prefixSegments[i];
+		if (!segment.startsWith(":") && segment !== pathSegments[i]) return pathname;
+	}
+	const remaining = pathSegments.slice(prefixSegments.length);
+	return remaining.length === 0 ? "" : `/${remaining.join("/")}`;
 }
 /**
 * Builds a fully-qualified URL with site context prefix and search params.
@@ -136,8 +140,14 @@ function buildUrl({ to, urlConfig, params }) {
 	if (!urlConfig) return to;
 	if (!to || to === "#" || to.startsWith("http") || to.startsWith("//")) return to;
 	const { pathname, search: existingSearch, hash } = decomposeUrl(to);
-	const pathPrefix = urlConfig.prefix && urlConfig.prefix !== "/" ? resolvePrefix(urlConfig.prefix, params) : "";
-	const path = pathPrefix ? `${pathPrefix}${sanitizePrefix(pathname, pathPrefix)}` : pathname;
+	const pathPrefix = urlConfig.prefix && urlConfig.prefix !== "/" ? resolvePrefix({
+		prefix: urlConfig.prefix,
+		params
+	}) : "";
+	const path = pathPrefix ? `${pathPrefix}${stripPathPrefix({
+		pathname,
+		prefix: pathPrefix
+	})}` : pathname;
 	const searchParams = new URLSearchParams(existingSearch);
 	if (urlConfig.search) {
 		const searchConfig = parseSearchConfig(urlConfig.search);
@@ -509,5 +519,5 @@ function createSiteContextMiddleware(config) {
 }
 
 //#endregion
-export { requestToLocaleMap as a, sanitizePrefix as c, useSite as d, siteContext as i, stripPathPrefix as l, getSiteContextCookies as n, buildUrl as o, resolveSiteContext as r, resolvePrefix as s, createSiteContextMiddleware as t, SiteProvider as u };
+export { requestToLocaleMap as a, stripPathPrefix as c, siteContext as i, SiteProvider as l, getSiteContextCookies as n, buildUrl as o, resolveSiteContext as r, resolvePrefix as s, createSiteContextMiddleware as t, useSite as u };
 //# sourceMappingURL=site-context2.js.map

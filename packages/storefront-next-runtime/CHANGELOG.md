@@ -1,4 +1,5 @@
 ## v1.0.0-dev
+- Unify sanitizePrefix and stripPathPrefix into one helper (@W-22498207) ([#1699](https://github.com/commerce-emu/storefront-next/pull/1699))
 - Make `@react-router/dev` and `@react-router/fs-routes` optional peer dependencies to avoid dependency conflicts for consumers that only use the `/design` exports ([#1708](https://github.com/commerce-emu/storefront-next/pull/1708))
 - Email Verification Feature - Account Details ([#1460](https://github.com/commerce-emu/storefront-next/pull/1460))
 - Add Shopper Availability v1.1.0 SCAPI client (`clients.shopperAvailability`) for retrieving product inventory availability without loading full product details ([#1671](https://github.com/commerce-emu/storefront-next/pull/1671))

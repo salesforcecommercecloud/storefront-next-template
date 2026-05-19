@@ -31,8 +31,8 @@ export default function MainFooter(): ReactElement {
     const { t } = useTranslation('footer');
     const location = useLocation();
     const config = useConfig<AppConfig>();
-    const pathWithoutPrefix = stripPathPrefix(location.pathname, config.url?.prefix || '');
-    const isHomepage = pathWithoutPrefix === '/';
+    const pathWithoutPrefix = stripPathPrefix({ pathname: location.pathname, prefix: config.url?.prefix || '' });
+    const isHomepage = pathWithoutPrefix === '' || pathWithoutPrefix === '/';
 
     return (
         <footer className="mt-auto">

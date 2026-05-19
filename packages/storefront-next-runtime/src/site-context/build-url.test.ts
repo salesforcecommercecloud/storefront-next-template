@@ -20,7 +20,6 @@ import {
     extractPrefixParams,
     decomposeUrl,
     resolvePrefix,
-    sanitizePrefix,
     stripPathPrefix,
 } from './build-url';
 
@@ -111,72 +110,115 @@ describe('decomposeUrl', () => {
 
 describe('resolvePrefix', () => {
     it('resolves a single param', () => {
-        expect(resolvePrefix('/:siteId', { siteId: 'global' })).toBe('/global');
+        expect(resolvePrefix({ prefix: '/:siteId', params: { siteId: 'global' } })).toBe('/global');
     });
 
     it('resolves multiple params', () => {
-        expect(resolvePrefix('/:siteId/:localeId', { siteId: 'global', localeId: 'en-GB' })).toBe('/global/en-GB');
+        expect(resolvePrefix({ prefix: '/:siteId/:localeId', params: { siteId: 'global', localeId: 'en-GB' } })).toBe(
+            '/global/en-GB'
+        );
     });
 
     it('leaves unmatched params as-is', () => {
-        expect(resolvePrefix('/:siteId/:localeId', { siteId: 'global' })).toBe('/global/:localeId');
+        expect(resolvePrefix({ prefix: '/:siteId/:localeId', params: { siteId: 'global' } })).toBe('/global/:localeId');
     });
 
     it('returns prefix unchanged when no params match', () => {
-        expect(resolvePrefix('/:siteId', {})).toBe('/:siteId');
-    });
-});
-
-describe('sanitizePrefix', () => {
-    it('strips a matching prefix', () => {
-        expect(sanitizePrefix('/global/en-GB/product/123', '/global/en-GB')).toBe('/product/123');
-    });
-
-    it('returns empty string when pathname equals prefix exactly', () => {
-        expect(sanitizePrefix('/global/en-GB', '/global/en-GB')).toBe('');
-    });
-
-    it('returns pathname unchanged when prefix does not match', () => {
-        expect(sanitizePrefix('/product/123', '/global/en-GB')).toBe('/product/123');
-    });
-
-    it('does not strip a partial segment match', () => {
-        expect(sanitizePrefix('/global/en-GB-extra/page', '/global/en-GB')).toBe('/global/en-GB-extra/page');
-    });
-
-    it('returns pathname unchanged when resolvedPrefix is empty', () => {
-        expect(sanitizePrefix('/product/123', '')).toBe('/product/123');
+        expect(resolvePrefix({ prefix: '/:siteId', params: {} })).toBe('/:siteId');
     });
 });
 
 describe('stripPathPrefix', () => {
-    it('strips /:siteId/:localeId prefix', () => {
-        expect(stripPathPrefix('/global/en-GB/checkout', '/:siteId/:localeId')).toBe('/checkout');
-        expect(stripPathPrefix('/us/en-US/product/123', '/:siteId/:localeId')).toBe('/product/123');
-        expect(stripPathPrefix('/global/it-IT/category/womens', '/:siteId/:localeId')).toBe('/category/womens');
+    describe('pattern prefix (placeholder segments)', () => {
+        it('strips /:siteId/:localeId', () => {
+            expect(stripPathPrefix({ pathname: '/global/en-GB/checkout', prefix: '/:siteId/:localeId' })).toBe(
+                '/checkout'
+            );
+            expect(stripPathPrefix({ pathname: '/us/en-US/product/123', prefix: '/:siteId/:localeId' })).toBe(
+                '/product/123'
+            );
+            expect(stripPathPrefix({ pathname: '/global/it-IT/category/womens', prefix: '/:siteId/:localeId' })).toBe(
+                '/category/womens'
+            );
+        });
+
+        it('strips /:localeId/:siteId (reversed order)', () => {
+            expect(stripPathPrefix({ pathname: '/en-GB/global/x', prefix: '/:localeId/:siteId' })).toBe('/x');
+        });
+
+        it('strips /:localeId', () => {
+            expect(stripPathPrefix({ pathname: '/en-GB/checkout', prefix: '/:localeId' })).toBe('/checkout');
+            expect(stripPathPrefix({ pathname: '/en-US/product/123', prefix: '/:localeId' })).toBe('/product/123');
+        });
+
+        it('strips /:siteId', () => {
+            expect(stripPathPrefix({ pathname: '/global/checkout', prefix: '/:siteId' })).toBe('/checkout');
+        });
     });
 
-    it('strips /:localeId prefix', () => {
-        expect(stripPathPrefix('/en-GB/checkout', '/:localeId')).toBe('/checkout');
-        expect(stripPathPrefix('/en-US/product/123', '/:localeId')).toBe('/product/123');
+    describe('resolved prefix (literal segments)', () => {
+        it('strips a matching resolved prefix', () => {
+            expect(stripPathPrefix({ pathname: '/global/en-GB/product/123', prefix: '/global/en-GB' })).toBe(
+                '/product/123'
+            );
+        });
+
+        it('returns pathname unchanged when literal prefix does not match', () => {
+            expect(stripPathPrefix({ pathname: '/product/123', prefix: '/global/en-GB' })).toBe('/product/123');
+        });
+
+        it('does not strip a partial segment match', () => {
+            expect(stripPathPrefix({ pathname: '/global/en-GB-extra/page', prefix: '/global/en-GB' })).toBe(
+                '/global/en-GB-extra/page'
+            );
+        });
     });
 
-    it('strips /:siteId prefix', () => {
-        expect(stripPathPrefix('/global/checkout', '/:siteId')).toBe('/checkout');
+    describe('mixed prefix (literals + placeholders)', () => {
+        it('strips a basePath-style prefix (/shop/:localeId)', () => {
+            expect(stripPathPrefix({ pathname: '/shop/en-GB/x', prefix: '/shop/:localeId' })).toBe('/x');
+        });
+
+        it('returns pathname unchanged when literal segment in mixed prefix does not match', () => {
+            expect(stripPathPrefix({ pathname: '/store/en-GB/x', prefix: '/shop/:localeId' })).toBe('/store/en-GB/x');
+        });
+
+        it('strips locale + literal (/:locale/something)', () => {
+            expect(stripPathPrefix({ pathname: '/en-GB/something/product/123', prefix: '/:locale/something' })).toBe(
+                '/product/123'
+            );
+        });
+
+        it('returns pathname unchanged when literal in mixed prefix does not match', () => {
+            expect(stripPathPrefix({ pathname: '/en-GB/other/x', prefix: '/:locale/something' })).toBe(
+                '/en-GB/other/x'
+            );
+        });
     });
 
-    it('returns pathname unchanged when it has fewer segments than the prefix', () => {
-        expect(stripPathPrefix('/checkout', '/:siteId/:localeId')).toBe('/checkout');
-        expect(stripPathPrefix('/', '/:siteId/:localeId')).toBe('/');
-    });
+    describe('edge cases', () => {
+        it('returns "" when pathname equals a pattern prefix exactly', () => {
+            expect(stripPathPrefix({ pathname: '/global/en-GB', prefix: '/:siteId/:localeId' })).toBe('');
+        });
 
-    it('returns pathname unchanged when prefix is empty', () => {
-        expect(stripPathPrefix('/checkout', '')).toBe('/checkout');
-        expect(stripPathPrefix('/global/en-GB/checkout', '')).toBe('/global/en-GB/checkout');
-    });
+        it('returns "" when pathname equals a resolved prefix exactly', () => {
+            expect(stripPathPrefix({ pathname: '/global/en-GB', prefix: '/global/en-GB' })).toBe('');
+        });
 
-    it('returns "/" when pathname equals the prefix exactly', () => {
-        expect(stripPathPrefix('/global/en-GB', '/:siteId/:localeId')).toBe('/');
+        it('returns pathname unchanged when shorter than the prefix', () => {
+            expect(stripPathPrefix({ pathname: '/checkout', prefix: '/:siteId/:localeId' })).toBe('/checkout');
+            expect(stripPathPrefix({ pathname: '/', prefix: '/:siteId/:localeId' })).toBe('/');
+            expect(stripPathPrefix({ pathname: '/global', prefix: '/:siteId/:localeId' })).toBe('/global');
+        });
+
+        it('returns pathname unchanged when prefix is empty', () => {
+            expect(stripPathPrefix({ pathname: '/checkout', prefix: '' })).toBe('/checkout');
+            expect(stripPathPrefix({ pathname: '/global/en-GB/checkout', prefix: '' })).toBe('/global/en-GB/checkout');
+        });
+
+        it('returns pathname unchanged when prefix is "/"', () => {
+            expect(stripPathPrefix({ pathname: '/checkout', prefix: '/' })).toBe('/checkout');
+        });
     });
 });
 

@@ -1,6 +1,6 @@
 import { n as Site$1, r as Url, t as Locale$1 } from "./types.js";
 import { PropsWithChildren } from "react";
-import * as react_jsx_runtime1 from "react/jsx-runtime";
+import * as react_jsx_runtime2 from "react/jsx-runtime";
 import * as react_router8 from "react-router";
 import { Cookie, CookieOptions, MiddlewareFunction, RouterContextProvider } from "react-router";
 import { RouteConfigEntry } from "@react-router/dev/routes";
@@ -102,7 +102,7 @@ declare function SiteProvider({
   language,
   currency,
   children
-}: PropsWithChildren<SiteContextValue>): react_jsx_runtime1.JSX.Element;
+}: PropsWithChildren<SiteContextValue>): react_jsx_runtime2.JSX.Element;
 /**
  * React hook to get the current site context.
  * Returns `{ site, locale, language, currency }`.
@@ -134,31 +134,47 @@ declare function applyUrlConfig(options: {
 //#region src/site-context/build-url.d.ts
 /**
  * Resolves a prefix template by replacing parameter placeholders with values.
- * ('/:siteId/:localeId', { siteId: 'global', localeId: 'en-GB' }) → '/global/en-GB'
- */
-declare function resolvePrefix(prefix: string, params: Record<string, string>): string;
-/**
- * Strips the URL prefix segments from a pathname based on a prefix pattern.
- * Since all routes are configured with the prefix baked in, segment counting is sufficient.
- *
- * @param pathname - Full pathname (e.g. '/global/en-GB/checkout')
- * @param prefixPattern - URL prefix pattern from config (e.g. '/:siteId/:localeId')
- * @returns Pathname with prefix stripped (e.g. '/checkout'), or original if
- *          the pathname has fewer segments than the prefix
  *
  * @example
- * stripPathPrefix('/global/en-GB/checkout', '/:siteId/:localeId') // → '/checkout'
- * stripPathPrefix('/checkout', '/:siteId/:localeId')              // → '/checkout' (fewer segments → unchanged)
- * stripPathPrefix('/checkout', '')                                 // → '/checkout' (no prefix configured)
- * stripPathPrefix('/', '/:siteId/:localeId')                      // → '/'
+ * resolvePrefix({ prefix: '/:siteId/:localeId', params: { siteId: 'global', localeId: 'en-GB' } })
+ * // → '/global/en-GB'
  */
-declare function stripPathPrefix(pathname: string, prefixPattern: string): string;
+declare function resolvePrefix({
+  prefix,
+  params
+}: {
+  prefix: string;
+  params: Record<string, string>;
+}): string;
 /**
- * Sanitize a resolved prefix from a pathname if present.
- * sanitizePrefix('/global/en-GB/product/123', '/global/en-GB') → '/product/123'
- * sanitizePrefix('/product/123', '/global/en-GB') → '/product/123'   (no-op)
+ * Strips a URL prefix from a pathname.
+ *
+ * Accepts either a resolved prefix or a prefix pattern — segments may be
+ * literal strings (must match the pathname exactly) or `:param` placeholders
+ * (match any segment value). Mixed prefixes are supported.
+ *
+ * Returns `''` when the pathname matches the prefix exactly with no remainder
+ * (so concatenating `prefix + result` round-trips the input), `pathname`
+ * unchanged when literal segments don't match or the path is shorter than the
+ * prefix, or the bare remainder otherwise. Callers that need the homepage to
+ * be `'/'` should coerce: `stripPathPrefix(...) || '/'`.
+ *
+ * @example
+ * stripPathPrefix({ pathname: '/global/en-GB/checkout', prefix: '/:siteId/:localeId' })   // → '/checkout'
+ * stripPathPrefix({ pathname: '/global/en-GB/checkout', prefix: '/global/en-GB' })        // → '/checkout'
+ * stripPathPrefix({ pathname: '/shop/en-GB/x',          prefix: '/shop/:localeId' })      // → '/x'
+ * stripPathPrefix({ pathname: '/global/en-GB',          prefix: '/:siteId/:localeId' })   // → ''
+ * stripPathPrefix({ pathname: '/checkout',              prefix: '/:siteId/:localeId' })   // → '/checkout'
+ * stripPathPrefix({ pathname: '/other/x',               prefix: '/global/en-GB' })        // → '/other/x'
+ * stripPathPrefix({ pathname: '/x',                     prefix: '' })                     // → '/x'
  */
-declare function sanitizePrefix(pathname: string, pathPrefix: string): string;
+declare function stripPathPrefix({
+  pathname,
+  prefix
+}: {
+  pathname: string;
+  prefix: string;
+}): string;
 /**
  * Builds a fully-qualified URL with site context prefix and search params.
  *
@@ -251,5 +267,5 @@ declare function createSiteContextMiddleware(config: SiteConfig): MiddlewareFunc
  */
 declare const requestToLocaleMap: WeakMap<Request, string>;
 //#endregion
-export { type DetectionConfig, type Locale, type ResolvedSiteContext, type Site, type SiteConfig, type SiteContext, type SiteContextValue, SiteProvider, type SiteSettings, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, resolveSiteContext, sanitizePrefix, siteContext, stripPathPrefix, useSite };
+export { type DetectionConfig, type Locale, type ResolvedSiteContext, type Site, type SiteConfig, type SiteContext, type SiteContextValue, SiteProvider, type SiteSettings, applyUrlConfig, buildUrl, createSiteContextMiddleware, getSiteContextCookies, requestToLocaleMap, resolvePrefix, resolveSiteContext, siteContext, stripPathPrefix, useSite };
 //# sourceMappingURL=site-context.d.ts.map

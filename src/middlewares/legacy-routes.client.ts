@@ -137,7 +137,7 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
     //   your URL strategy (e.g. '/:siteId/:localeId' → '/:localeId') requires only one
     //   update — the legacyRoutes list stays untouched.
     const urlPrefix = config?.url?.prefix ?? '';
-    const strippedPathname = stripPathPrefix(pathname, urlPrefix);
+    const strippedPathname = stripPathPrefix({ pathname, prefix: urlPrefix }) || '/';
 
     const isLegacyRoute = legacyRoutes.some((legacyRoute) => matchesRoutePattern(strippedPathname, legacyRoute));
 
