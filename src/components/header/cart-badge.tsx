@@ -15,9 +15,8 @@
  */
 import { lazy, type ReactElement, Suspense, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useBasketLoader, useBasketSnapshot, useMiniCart } from '@/providers/basket';
-import { useBasketWithProductsLoader } from '@/hooks/use-basket-with-products';
-import { useBasketWithPromotionsLoader } from '@/hooks/use-basket-with-promotions';
+import { useBasketSnapshot, useMiniCart } from '@/providers/basket';
+import { useMiniCartDataLoader } from '@/hooks/use-mini-cart-data';
 import CartBadgeIcon from './cart-badge-icon';
 import { useTranslation } from 'react-i18next';
 
@@ -35,22 +34,22 @@ export default function CartBadge(): ReactElement {
     const [clicked, setClicked] = useState<boolean>(false);
     const { miniCartOpen, setMiniCartOpen } = useMiniCart();
 
-    // Warm the mini-cart data path on hover/focus/touch so the basket and product images ideally are available by the
-    // time the user clicks. Each loader handles its own dedup; the cart sheet's open state is unchanged — only data
-    // fetching starts sooner. Skip when the cart is empty — there's nothing to enrich and the resource routes would
-    // round-trip for no gain.
-    const loadBasket = useBasketLoader();
-    const loadProducts = useBasketWithProductsLoader();
-    const loadPromotions = useBasketWithPromotionsLoader();
+    // Warm the mini-cart data path on hover/focus/touch so the basket and product details (images, variations,
+    // promotions) are ideally available by the time the user clicks. The loader handles dedup; the cart sheet's open
+    // state is unchanged — only data fetching starts sooner.
+    //
+    // Skip when no basketId is known (no snapshot, no prior basket call) — without an existing basket there's nothing
+    // to enrich, and triggering the resource route would force a network call on a low-engagement hover. Empty baskets
+    // (basketId set, items=0) are also skipped.
+    const loadMiniCartData = useMiniCartDataLoader();
+    const hasBasketId = Boolean(snapshot?.basketId);
     const hasItems = numberOfItems > 0;
     const prefetch = useCallback(() => {
-        if (!hasItems) {
+        if (!hasBasketId || !hasItems) {
             return;
         }
-        loadBasket();
-        loadProducts();
-        loadPromotions();
-    }, [hasItems, loadBasket, loadProducts, loadPromotions]);
+        loadMiniCartData();
+    }, [hasBasketId, hasItems, loadMiniCartData]);
 
     // Ensure CartSheet is lazy-loaded when opened externally (e.g. add-to-cart)
     if (miniCartOpen && !clicked) {

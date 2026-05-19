@@ -40,8 +40,9 @@ import {
     getBonusProductCountsForPromotion,
     calculateMaxQuantityForBonusProduct,
     type BonusPromotionMap,
+    type ProductWithPromotions,
+    type ProductsWithPromotionsMap,
 } from './bonus-product-utils';
-import type { ProductWithPromotions, ProductsWithPromotionsMap } from '@/hooks/use-basket-with-promotions';
 
 // Mock basket data helper
 const createMockBasket = (

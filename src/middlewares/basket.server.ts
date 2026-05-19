@@ -358,7 +358,7 @@ export const createBasketMiddleware = (config: BasketMiddlewareConfig = {}): Mid
  */
 export const getBasket = async (
     context: Readonly<RouterContextProvider>,
-    options: { ensureBasket?: boolean } = { ensureBasket: true }
+    options: { ensureBasket?: boolean | 'read' } = { ensureBasket: true }
 ): Promise<BasketResource> => {
     const basketResource = context.get(basketResourceContext);
     const { ensureBasket = true } = options;
@@ -375,18 +375,38 @@ export const getBasket = async (
         return basketResource;
     }
 
+    // If there's no existing basket ID, but read hydration is requested, skip and return the resource.
     const basketId = basketResource.snapshot?.basketId;
+    if (ensureBasket === 'read' && !basketId) {
+        logger.debug('Basket: hydration skipped, no existing basket ID');
+        return basketResource;
+    }
+
     const metadata = context.get(basketMetadataContext);
     const currency = metadata?.currency ?? context.get(siteContext)?.currency ?? '';
     const calculateBasketSnapshot = metadata?.calculateSnapshot;
     logger.debug('Basket: hydration starting', { hasExistingBasketId: Boolean(basketId) });
 
     try {
+        let basket: Basket | null = null;
         const clients = createApiClients(context);
-        let basket = await clients.basket.getOrCreateBasket({
-            params: { path: { basketId } },
-            body: { currency },
-        });
+        if (ensureBasket === 'read') {
+            ({ data: basket } = await clients.shopperBasketsV2
+                .getBasket({
+                    params: { path: { basketId: basketId as string } },
+                })
+                .catch(async () => ({
+                    data: await clients.basket.getOrCreateBasket({
+                        params: { path: { basketId } },
+                        body: { currency },
+                    }),
+                })));
+        } else {
+            basket = await clients.basket.getOrCreateBasket({
+                params: { path: { basketId } },
+                body: { currency },
+            });
+        }
 
         // If the basket's currency doesn't match the requested currency,
         // update the basket to trigger price recalculation

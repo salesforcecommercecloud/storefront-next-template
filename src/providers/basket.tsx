@@ -420,11 +420,19 @@ export const useBasketUpdater = (): ((basket?: ShopperBasketsV2.schemas['Basket'
     const updater = useContext(BasketUpdaterContext);
     return useCallback(
         (basket?: ShopperBasketsV2.schemas['Basket']) => {
-            updater?.setBasket({
-                current: basket,
-                hydrated: true,
-                snapshot: basket ? defaultCreateSnapshot(basket) : undefined,
-                error: null,
+            updater?.setBasket((prev) => {
+                // Dedup: Skip the update, when called with a defined basket whose SCAPI-set `lastModified` matches
+                // the basket already in context. The undefined-basket path (clear-and-rehydrate) is unaffected —
+                // callers that want to wipe `current` while keeping `hydrated: true` still work.
+                if (basket?.lastModified && prev?.current?.lastModified === basket.lastModified && prev?.hydrated) {
+                    return prev;
+                }
+                return {
+                    current: basket,
+                    hydrated: true,
+                    snapshot: basket ? defaultCreateSnapshot(basket) : undefined,
+                    error: null,
+                };
             });
         },
         [updater]

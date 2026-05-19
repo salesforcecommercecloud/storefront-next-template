@@ -111,6 +111,12 @@ vi.mock('@/providers/basket', () => ({
         }
         return mockBasketValue;
     },
+    useBasketSnapshot: () => {
+        if (mockBasketValue && typeof mockBasketValue === 'object' && 'snapshot' in mockBasketValue) {
+            return (mockBasketValue as { snapshot?: unknown }).snapshot;
+        }
+        return undefined;
+    },
     useMiniCart: () => ({ miniCartOpen: true, setMiniCartOpen: vi.fn() }),
     useBasketUpdater: () => vi.fn(),
 }));

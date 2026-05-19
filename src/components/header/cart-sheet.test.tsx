@@ -48,26 +48,23 @@ vi.mock('react-router', async (importOriginal) => {
 });
 
 vi.mock('@/providers/basket', () => ({
-    useBasket: () => ({
-        basketId: 'basket-1',
-        productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1, productName: 'Test Product' }],
-        orderTotal: 12.5,
-        productTotal: 12.5,
-    }),
     useMiniCart: () => ({ miniCartOpen: true, setMiniCartOpen: vi.fn() }),
     useBasketUpdater: () => mockUpdateBasket,
 }));
 
-vi.mock('@/hooks/use-basket-with-products', () => ({
-    useBasketWithProducts: () => ({
+vi.mock('@/hooks/use-mini-cart-data', () => ({
+    useMiniCartData: () => ({
+        basket: {
+            basketId: 'basket-1',
+            productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1, productName: 'Test Product' }],
+            orderTotal: 12.5,
+            productTotal: 12.5,
+        },
         productItems: [{ itemId: 'item-1', productId: 'prod-1', quantity: 1, productName: 'Test Product' }],
+        productsById: {},
         isLoading: false,
         error: null,
     }),
-}));
-
-vi.mock('@/hooks/use-basket-with-promotions', () => ({
-    useBasketWithPromotions: () => ({ productsWithPromotions: {} }),
 }));
 
 vi.mock('@/lib/cart/bonus-product-utils', () => ({

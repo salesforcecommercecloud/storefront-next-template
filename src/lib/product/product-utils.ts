@@ -480,7 +480,7 @@ export function getPrimaryProductImageUrl(
 /**
  * Converts a product map keyed by itemId to a product map keyed by productId.
  * Useful for converting checkout loader product maps to the format expected by hooks
- * like useBasketWithProducts.
+ * like useMiniCartData.
  *
  * @param productsByItemId - Map of itemId to Product data (keyed by basket item ID)
  * @returns Map of productId to Product data (keyed by product catalog ID)

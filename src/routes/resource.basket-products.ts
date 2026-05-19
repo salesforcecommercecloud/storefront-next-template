@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 /**
- * Resource route to fetch full product details for basket items
- * Called by the mini cart to enrich basket items with images and variation data
+ * Resource route to fetch the basket and full product details for its items in a single round-trip.
+ * Called by the mini cart to populate basket data, product images/variations, and promotion callouts.
  */
 
+import type { ShouldRevalidateFunction } from 'react-router';
 import type { Route } from './+types/resource.basket-products';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
@@ -29,21 +30,37 @@ import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { getLogger } from '@/lib/logger.server';
+import type { ProductWithPromotions, ProductsWithPromotionsMap } from '@/lib/cart/bonus-product-utils';
+
+export type BasketProductsLoaderData = {
+    basket: ShopperBasketsV2.schemas['Basket'] | null;
+    productsById: ProductsWithPromotionsMap;
+};
+
+export const shouldRevalidate: ShouldRevalidateFunction = ({ formAction, actionResult, defaultShouldRevalidate }) => {
+    // Action submissions: opt in only when the action returned a basket payload. Basket-mutating actions follow the
+    // BasketActionResponse shape ({ success, basket, ... }); non-basket actions (wishlist, locale, OTP, ...) return
+    // responses without `basket`, so we skip the SCAPI round-trip per unrelated submission.
+    if (formAction) {
+        return Boolean((actionResult as { basket?: { basketId?: string } } | undefined)?.basket?.basketId);
+    }
+    // Navigation or imperative useRevalidator().revalidate() (e.g. post-login basket merge): defer to React Router's
+    // default, which only revalidates when params/URL actually changed.
+    return defaultShouldRevalidate;
+};
 
 /**
- * Fetches full product details for all items in the basket
- * Returns a mapping of productId to full product data
+ * Fetches the basket and full product details for all items in it.
+ * Returns the basket and a mapping of productId to full product data (with promotions expanded by default).
  */
-export async function loader({
-    context,
-}: Route.LoaderArgs): Promise<Record<string, ShopperProducts.schemas['Product']>> {
+export async function loader({ context }: Route.LoaderArgs): Promise<BasketProductsLoaderData> {
     const logger = getLogger(context);
     logger.debug('BasketProducts: loader starting');
-    const basket = (await getBasket(context)).current;
+    const basket = (await getBasket(context, { ensureBasket: 'read' })).current ?? null;
 
     if (!basket?.productItems?.length) {
         logger.debug('BasketProducts: no product items in basket');
-        return {};
+        return { basket, productsById: {} };
     }
 
     // Collect all product IDs from basket items
@@ -51,7 +68,7 @@ export async function loader({
 
     if (productIds.length === 0) {
         logger.debug('BasketProducts: no valid product IDs found');
-        return {};
+        return { basket, productsById: {} };
     }
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -69,7 +86,8 @@ export async function loader({
         }
         const { site, currency } = siteCtx;
 
-        // Fetch product details
+        // getProducts returns all expand fields by default (except page_meta_tags), including
+        // productPromotions — relied on by the cart sheet's bonus-product callout logic.
         const { data: productsData } = await clients.shopperProducts.getProducts({
             params: {
                 path: {
@@ -90,20 +108,18 @@ export async function loader({
         });
 
         if (!productsData?.data) {
-            return {};
+            return { basket, productsById: {} };
         }
 
-        // Create a map of productId to full product data
-        return productsData.data.reduce(
-            (acc, product) => {
-                acc[product.id] = product;
-                return acc;
-            },
-            {} as Record<string, ShopperProducts.schemas['Product']>
-        );
+        const productsById = productsData.data.reduce((acc, product) => {
+            acc[product.id] = product as ProductWithPromotions;
+            return acc;
+        }, {} as ProductsWithPromotionsMap);
+
+        return { basket, productsById };
     } catch (error) {
         logger.error('BasketProducts: failed to fetch product details', { error });
-        // Return empty object on error - mini cart will show basic data
-        return {};
+        // Return basket on error - mini cart can still display basic basket data
+        return { basket, productsById: {} };
     }
 }

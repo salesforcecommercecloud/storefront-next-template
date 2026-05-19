@@ -878,6 +878,167 @@ describe('BasketProvider hooks', () => {
             expect(typeof result.current).toBe('function');
             expect(() => result.current(mockBasket)).not.toThrow();
         });
+
+        it('dedups consecutive writes of a basket with the same lastModified', () => {
+            // After a basket-mutating action, the action caller pushes the response basket via
+            // useBasketUpdater AND auto-revalidation's publisher effect later pushes the same
+            // payload. Without dedup, that's two context updates and a render fan-out across all
+            // useBasket consumers per mutation. SCAPI's lastModified is server-bumped on every
+            // mutation so equal timestamps mean equal content.
+            const basketA: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                lastModified: '2026-05-17T12:00:00.000Z',
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            };
+            const basketADup: ShopperBasketsV2.schemas['Basket'] = {
+                ...basketA,
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            };
+
+            let renderCount = 0;
+            const Consumer = () => {
+                renderCount += 1;
+                useBasket();
+                return useBasketUpdater();
+            };
+            const { result } = renderHook(() => Consumer(), { wrapper: wrapperWithProps({}) });
+
+            act(() => {
+                result.current(basketA);
+            });
+            const rendersAfterFirstWrite = renderCount;
+
+            act(() => {
+                result.current(basketADup);
+            });
+
+            // Same lastModified → setBasket is a no-op → no extra render.
+            expect(renderCount).toBe(rendersAfterFirstWrite);
+        });
+
+        it('does write when lastModified changes', () => {
+            const basketA: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                lastModified: '2026-05-17T12:00:00.000Z',
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            };
+            const basketB: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                lastModified: '2026-05-17T12:00:01.000Z',
+                productItems: [{ productId: 'p1', quantity: 2 }],
+            };
+
+            const Consumer = () => ({ basket: useBasket(), update: useBasketUpdater() });
+            const { result } = renderHook(() => Consumer(), { wrapper: wrapperWithProps({}) });
+
+            act(() => {
+                result.current.update(basketA);
+            });
+            expect(result.current.basket).toBe(basketA);
+
+            act(() => {
+                result.current.update(basketB);
+            });
+            expect(result.current.basket).toBe(basketB);
+        });
+
+        it('does not dedup when called with undefined (clear-and-rehydrate path)', () => {
+            // Cart-sheet's success-without-basket-payload flow calls update(undefined) to keep
+            // hydrated=true while clearing current. The dedup guard must not break that path.
+            const Consumer = () => ({ basket: useBasket(), update: useBasketUpdater() });
+            const { result } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ basket: mockBasket }),
+            });
+
+            act(() => {
+                result.current.update(undefined);
+            });
+            expect(result.current.basket).toBeUndefined();
+        });
+
+        it('writes through when the incoming basket has no lastModified', () => {
+            // Defense against a hypothetical SCAPI extension or custom hook that returns a basket
+            // without lastModified. Equality on an undefined field would erroneously match the
+            // existing state and silently drop the write. The guard's `basket?.lastModified &&` short
+            // forces the write to proceed, so the next basket reaches consumers.
+            const basketWithModified: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                lastModified: '2026-05-17T12:00:00.000Z',
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            };
+            const basketWithoutModified: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                productItems: [{ productId: 'p1', quantity: 5 }],
+            };
+
+            const Consumer = () => ({ basket: useBasket(), update: useBasketUpdater() });
+            const { result } = renderHook(() => Consumer(), { wrapper: wrapperWithProps({}) });
+
+            act(() => {
+                result.current.update(basketWithModified);
+            });
+            expect(result.current.basket).toBe(basketWithModified);
+
+            act(() => {
+                result.current.update(basketWithoutModified);
+            });
+            expect(result.current.basket).toBe(basketWithoutModified);
+        });
+
+        it('writes through two consecutive updates that both lack lastModified', () => {
+            // Negative test for a future "optimization" that switches dedup to basketId equality:
+            // two distinct baskets without lastModified must produce two writes, otherwise the
+            // second update would be silently dropped and consumers would observe stale content.
+            const basketA: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            };
+            const basketB: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                productItems: [{ productId: 'p1', quantity: 2 }],
+            };
+
+            const Consumer = () => ({ basket: useBasket(), update: useBasketUpdater() });
+            const { result } = renderHook(() => Consumer(), { wrapper: wrapperWithProps({}) });
+
+            act(() => {
+                result.current.update(basketA);
+            });
+            expect(result.current.basket).toBe(basketA);
+
+            act(() => {
+                result.current.update(basketB);
+            });
+            expect(result.current.basket).toBe(basketB);
+        });
+
+        it('writes through when the previous basket has no lastModified but the new one does', () => {
+            // Mixed-precision path: a basket initially loaded from a source without lastModified
+            // (e.g. SSR snapshot, cached cookie payload) must not block the first SCAPI-fetched
+            // basket — the dedup must require *both* sides to carry lastModified before matching.
+            const basketWithoutModified: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            };
+            const basketWithModified: ShopperBasketsV2.schemas['Basket'] = {
+                basketId: 'basket-123',
+                lastModified: '2026-05-17T12:00:00.000Z',
+                productItems: [{ productId: 'p1', quantity: 1 }],
+            };
+
+            const Consumer = () => ({ basket: useBasket(), update: useBasketUpdater() });
+            const { result } = renderHook(() => Consumer(), { wrapper: wrapperWithProps({}) });
+
+            act(() => {
+                result.current.update(basketWithoutModified);
+            });
+            expect(result.current.basket).toBe(basketWithoutModified);
+
+            act(() => {
+                result.current.update(basketWithModified);
+            });
+            expect(result.current.basket).toBe(basketWithModified);
+        });
     });
 
     describe('useBasketReset', () => {

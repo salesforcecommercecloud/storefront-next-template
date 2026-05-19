@@ -12,17 +12,19 @@ import AuthProvider from '../src/providers/auth';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig } from '../src/test-utils/config';
-import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
+import { basketWithOneItem, inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
 
 // Transform array of products into Record<productId, product> format
-// expected by useBasketWithProducts hook
-const mockProductsData = inBasketProductDetails.data.reduce(
+// expected by useMiniCartData hook
+const mockProductsById = inBasketProductDetails.data.reduce(
     (acc: Record<string, (typeof inBasketProductDetails.data)[0]>, product: (typeof inBasketProductDetails.data)[0]) => {
         acc[product.id] = product;
         return acc;
     },
     {} as Record<string, (typeof inBasketProductDetails.data)[0]>
 );
+
+const mockBasketProductsData = { basket: basketWithOneItem, productsById: mockProductsById };
 
 export function StoryTestWrapper({ children }: { children: ReactNode }): ReactElement {
     const inRouter = useInRouterContext();
@@ -56,12 +58,12 @@ export function StoryTestWrapper({ children }: { children: ReactNode }): ReactEl
     }
 
     // Create a memory router for components that need React Router context
-    // Includes resource routes needed by hooks like useBasketWithProducts
+    // Includes resource routes needed by hooks like useMiniCartData
     const router = createMemoryRouter(
         [
             {
                 path: '/resource/basket-products',
-                loader: () => mockProductsData,
+                loader: () => mockBasketProductsData,
             },
             {
                 path: '*',

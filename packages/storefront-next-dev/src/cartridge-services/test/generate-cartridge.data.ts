@@ -30,11 +30,6 @@ export const testRoutes = [
                 file: './extensions/store-locator/routes/store-locator.tsx',
             },
             {
-                id: 'routes/resource.basket-products-promotions',
-                path: 'resource/basket-products-promotions',
-                file: 'routes/resource.basket-products-promotions.ts',
-            },
-            {
                 id: 'routes/action.cart-pickup-store-update',
                 path: 'action/cart-pickup-store-update',
                 file: 'routes/action.cart-pickup-store-update.tsx',

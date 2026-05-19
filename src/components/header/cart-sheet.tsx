@@ -27,7 +27,7 @@ import {
 import { useFetcher, useLocation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
-import { useBasket, useBasketUpdater, useMiniCart } from '@/providers/basket';
+import { useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import {
@@ -45,8 +45,7 @@ import { Separator } from '@/components/ui/separator';
 import MiniCartItem from '@/components/cart/mini-cart-item';
 import SelectBonusProductsCard from '@/components/cart/select-bonus-products-card';
 import { formatCurrency } from '@/lib/currency';
-import { useBasketWithProducts, type BasketItemWithProduct } from '@/hooks/use-basket-with-products';
-import { useBasketWithPromotions } from '@/hooks/use-basket-with-promotions';
+import { useMiniCartData, type BasketItemWithProduct } from '@/hooks/use-mini-cart-data';
 import { buildBonusPromotionMap, getAttachedBonusPromotions } from '@/lib/cart/bonus-product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
@@ -137,7 +136,6 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
 const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => void }): ReactElement {
     const { t, i18n } = useTranslation('header');
     const { t: tMiniCart } = useTranslation('miniCart');
-    const basket = useBasket();
     const config = useConfig<AppConfig>();
     const navigate = useNavigate();
     const { currency } = useSite();
@@ -145,11 +143,11 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
     const [pendingRemoveItemIds, setPendingRemoveItemIds] = useState<Set<string>>(new Set());
     const [optimisticallyRemovedItemIds, setOptimisticallyRemovedItemIds] = useState<Set<string>>(new Set());
 
-    // Fetch full product details (images, variations, etc.) for basket items
-    const { productItems: enrichedProductItems, isLoading } = useBasketWithProducts(basket);
-
-    // Fetch promotion data for basket products
-    const { productsWithPromotions } = useBasketWithPromotions(basket);
+    // Fetch the basket together with full product details (images, variations, promotions) for its items.
+    // Intentionally NOT reading basket from useBasket() (BasketContext) — the cart sheet needs basket and productsById
+    // from the SAME SCAPI call, which the consolidated /resource/basket-products loader provides in one round-trip.
+    // See use-mini-cart-data.ts header for the full rationale.
+    const { basket, productItems: enrichedProductItems, productsById, isLoading } = useMiniCartData();
 
     // Build bonus promotion map with remaining capacity
     const promotionMap = useMemo(() => {
@@ -164,8 +162,8 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
         if (!basket) {
             return new Map();
         }
-        return getAttachedBonusPromotions(basket, productsWithPromotions, promotionMap);
-    }, [basket, productsWithPromotions, promotionMap]);
+        return getAttachedBonusPromotions(basket, productsById, promotionMap);
+    }, [basket, productsById, promotionMap]);
 
     /**
      * Handle bonus product selection button click
@@ -248,7 +246,11 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-                {basket && basket.productItems && basket.productItems.length > 0 ? (
+                {!basket && isLoading ? (
+                    <div className="flex items-center justify-center py-8 px-6">
+                        <p className="text-sm text-muted-foreground">{tMiniCart('loading')}</p>
+                    </div>
+                ) : basket && basket.productItems && basket.productItems.length > 0 ? (
                     <>
                         {/* Top Divider */}
                         <Separator className="bg-muted-foreground/10" />

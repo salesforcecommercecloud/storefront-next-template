@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 import { describe, beforeEach, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { PropsWithChildren } from 'react';
 import CartBadge from './cart-badge';
-import { useBasketLoader, useBasketSnapshot } from '@/providers/basket';
-import { useBasketWithProductsLoader } from '@/hooks/use-basket-with-products';
-import { useBasketWithPromotionsLoader } from '@/hooks/use-basket-with-promotions';
+import { useBasketSnapshot } from '@/providers/basket';
+import { useMiniCartDataLoader } from '@/hooks/use-mini-cart-data';
 
 vi.mock('@/providers/basket', () => ({
     useBasketSnapshot: vi.fn(),
-    useBasketLoader: vi.fn(),
     useMiniCart: () => ({ miniCartOpen: false, setMiniCartOpen: vi.fn() }),
 }));
 
-vi.mock('@/hooks/use-basket-with-products', () => ({
-    useBasketWithProductsLoader: vi.fn(),
-}));
-
-vi.mock('@/hooks/use-basket-with-promotions', () => ({
-    useBasketWithPromotionsLoader: vi.fn(),
+vi.mock('@/hooks/use-mini-cart-data', () => ({
+    useMiniCartDataLoader: vi.fn(),
 }));
 
 vi.mock('react-i18next', () => ({
@@ -48,21 +42,13 @@ vi.mock('./cart-sheet', () => ({
 
 describe('CartBadge', () => {
     const mockUseBasketSnapshot = vi.mocked(useBasketSnapshot);
-    const mockUseBasketLoader = vi.mocked(useBasketLoader);
-    const mockUseBasketWithProductsLoader = vi.mocked(useBasketWithProductsLoader);
-    const mockUseBasketWithPromotionsLoader = vi.mocked(useBasketWithPromotionsLoader);
-    const loadBasket = vi.fn();
-    const loadProducts = vi.fn();
-    const loadPromotions = vi.fn();
+    const mockUseMiniCartDataLoader = vi.mocked(useMiniCartDataLoader);
+    const loadMiniCartData = vi.fn();
 
     beforeEach(() => {
         mockUseBasketSnapshot.mockReset();
-        loadBasket.mockReset();
-        loadProducts.mockReset();
-        loadPromotions.mockReset();
-        mockUseBasketLoader.mockReturnValue(loadBasket);
-        mockUseBasketWithProductsLoader.mockReturnValue(loadProducts);
-        mockUseBasketWithPromotionsLoader.mockReturnValue(loadPromotions);
+        loadMiniCartData.mockReset();
+        mockUseMiniCartDataLoader.mockReturnValue(loadMiniCartData);
     });
 
     it('renders a badge with the snapshot count', () => {
@@ -115,9 +101,7 @@ describe('CartBadge', () => {
         const user = userEvent.setup();
         await user.hover(screen.getByRole('button', { name: 'My Cart (1)' }));
 
-        expect(loadBasket).toHaveBeenCalledTimes(1);
-        expect(loadProducts).toHaveBeenCalledTimes(1);
-        expect(loadPromotions).toHaveBeenCalledTimes(1);
+        expect(loadMiniCartData).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('cart-sheet')).not.toBeInTheDocument();
     });
 
@@ -134,9 +118,7 @@ describe('CartBadge', () => {
         await user.tab();
 
         expect(screen.getByRole('button', { name: 'My Cart (1)' })).toHaveFocus();
-        expect(loadBasket).toHaveBeenCalled();
-        expect(loadProducts).toHaveBeenCalled();
-        expect(loadPromotions).toHaveBeenCalled();
+        expect(loadMiniCartData).toHaveBeenCalled();
         expect(screen.queryByTestId('cart-sheet')).not.toBeInTheDocument();
     });
 
@@ -152,9 +134,20 @@ describe('CartBadge', () => {
         const user = userEvent.setup();
         await user.hover(screen.getByRole('button', { name: 'My Cart (0)' }));
 
-        expect(loadBasket).not.toHaveBeenCalled();
-        expect(loadProducts).not.toHaveBeenCalled();
-        expect(loadPromotions).not.toHaveBeenCalled();
+        expect(loadMiniCartData).not.toHaveBeenCalled();
+    });
+
+    it('does not prefetch when no basketId is known', async () => {
+        // Regression guard: visitors with no snapshot (e.g. fresh session, no __sfdc_basket cookie) must not trigger
+        // a network call on hover. Skipping here avoids the network call entirely on low-engagement traffic.
+        mockUseBasketSnapshot.mockReturnValue(undefined);
+
+        render(<CartBadge />);
+
+        const user = userEvent.setup();
+        await user.hover(screen.getByRole('button', { name: 'My Cart (0)' }));
+
+        expect(loadMiniCartData).not.toHaveBeenCalled();
     });
 
     it('keeps prefetch handlers wired after the sheet has been mounted', async () => {
@@ -171,13 +164,31 @@ describe('CartBadge', () => {
         await user.click(button);
 
         // Sheet is now mounted; second hover on the post-click button should still prefetch.
-        loadBasket.mockClear();
-        loadProducts.mockClear();
-        loadPromotions.mockClear();
+        loadMiniCartData.mockClear();
         await user.hover(screen.getByRole('button', { name: 'My Cart (1)' }));
 
-        expect(loadBasket).toHaveBeenCalled();
-        expect(loadProducts).toHaveBeenCalled();
-        expect(loadPromotions).toHaveBeenCalled();
+        expect(loadMiniCartData).toHaveBeenCalled();
+    });
+
+    it('triggers prefetch on focus after the sheet has been mounted', async () => {
+        // Regression guard: focus-triggered prefetch must keep working after the lazy CartSheet
+        // mounts so keyboard-only users still benefit from the same loading-flicker mitigation
+        // as pointer users.
+        mockUseBasketSnapshot.mockReturnValue({
+            basketId: 'basket-123',
+            totalItemCount: 1,
+            uniqueProductCount: 1,
+        });
+
+        render(<CartBadge />);
+
+        const user = userEvent.setup();
+        const button = screen.getByRole('button', { name: 'My Cart (1)' });
+        await user.click(button);
+
+        loadMiniCartData.mockClear();
+        fireEvent.focus(screen.getByRole('button', { name: 'My Cart (1)' }));
+
+        expect(loadMiniCartData).toHaveBeenCalled();
     });
 });

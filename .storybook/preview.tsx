@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { createMemoryRouter, Outlet, RouterProvider, type RouteObject } from 'react-router';
 import { applyProviders } from '../src/lib/provider-utils';
 import { storybookProviders } from './storybook-providers';
-import { inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
+import { basketWithOneItem, inBasketProductDetails } from '@/components/__mocks__/basket-with-dress';
 import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import '../src/theme/index.css'; // Import global CSS
 import { UITargetProviders } from '@/targets/ui-target-providers';
@@ -39,6 +39,13 @@ const RouterWrapper = ({
     // returned by the `/resource/api/client/:resource` route. Used by components whose
     // play functions assert against story-specific product data (e.g. BonusProductModal)
     const scapiMock = context.parameters?.scapiMock as { data?: unknown } | undefined;
+
+    // When a story provides `parameters.miniCartData`, override what the
+    // /resource/basket-products mock returns. Required by stories that need a different
+    // basket shape than the populated default (e.g. CartSheet "Empty" story).
+    const miniCartData = context.parameters?.miniCartData as
+        | { basket: unknown; productsById: Record<string, unknown> }
+        | undefined;
 
     const WrappedStory = (
         <StorybookWrapper>
@@ -83,38 +90,24 @@ const RouterWrapper = ({
                 [
                     storyRoute,
                     {
-                        // Resource route for basket product enrichment
-                        // Used by useBasketWithProducts hook to fetch full product details
+                        // Resource route for basket + product enrichment. Returns the basket
+                        // alongside products keyed by id. Stories can override the default fixture
+                        // via `parameters.miniCartData` — required for empty-cart stories where
+                        // the populated default would contradict the story's intent.
+                        // Note: bonus-product code paths are no-ops on products without
+                        // `productPromotions`, so the fixture leaves it unset.
                         path: '/resource/basket-products',
                         loader: () => {
-                            // Pre-populate product data from mock
-                            // This simulates what would be fetched from the backend
+                            if (miniCartData) {
+                                return miniCartData;
+                            }
                             const productsById: Record<string, unknown> = {};
-                            inBasketProductDetails.data.forEach((product: { id?: string }) => {
+                            (inBasketProductDetails as { data: Array<{ id?: string }> }).data.forEach((product) => {
                                 if (product.id) {
                                     productsById[product.id] = product;
                                 }
                             });
-                            return productsById;
-                        },
-                    },
-                    {
-                        // Resource route for basket product promotions
-                        // Used by useBasketWithPromotions hook to fetch product promotion data
-                        path: '/resource/basket-products-promotions',
-                        loader: () => {
-                            // Return products with empty productPromotions array
-                            // This prevents bonus product logic from being triggered in stories
-                            const productsWithPromotions: Record<string, unknown> = {};
-                            inBasketProductDetails.data.forEach((product: { id?: string }) => {
-                                if (product.id) {
-                                    productsWithPromotions[product.id] = {
-                                        ...product,
-                                        productPromotions: [],
-                                    };
-                                }
-                            });
-                            return productsWithPromotions;
+                            return { basket: basketWithOneItem, productsById };
                         },
                     },
                     {
@@ -242,7 +235,7 @@ const RouterWrapper = ({
                 }
             ),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [WrappedStory, routeLoaderData, scapiMock]
+        [WrappedStory, routeLoaderData, scapiMock, miniCartData]
     );
 
     return <RouterProvider router={router} />;

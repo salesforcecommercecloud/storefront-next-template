@@ -19,9 +19,28 @@
  * Based on PWA Kit patterns from template-retail-react-app/app/utils/bonus-product/
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
-import type { ProductWithPromotions, ProductsWithPromotionsMap } from '@/hooks/use-basket-with-promotions';
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { isBonusProduct, getBonusProductType } from '@/lib/product/product-utils';
+
+/**
+ * Product promotion data from SCAPI Products API
+ */
+export interface ProductPromotion {
+    promotionId?: string;
+    calloutMsg?: string;
+}
+
+/**
+ * Product with promotion data
+ */
+export type ProductWithPromotions = ShopperProducts.schemas['Product'] & {
+    productPromotions?: ProductPromotion[];
+};
+
+/**
+ * Map of product ID to product data with promotions
+ */
+export type ProductsWithPromotionsMap = Record<string, ProductWithPromotions>;
 
 /**
  * Bonus promotion information with capacity and metadata

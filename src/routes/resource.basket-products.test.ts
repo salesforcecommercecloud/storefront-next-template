@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { loader } from './resource.basket-products';
+import { loader, shouldRevalidate } from './resource.basket-products';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
 import config from '@/config/server';
 
@@ -95,53 +95,117 @@ describe('resource.basket-products', () => {
             unstable_pattern: '/resource/basket-products',
         });
 
-    it('should return empty object when basket is undefined', async () => {
+    describe('shouldRevalidate', () => {
+        const baseArgs = {
+            currentUrl: new URL('http://localhost/'),
+            currentParams: {},
+            nextUrl: new URL('http://localhost/'),
+            nextParams: {},
+            defaultShouldRevalidate: true,
+        };
+
+        it('revalidates when an action returns a basket payload', () => {
+            // Basket-mutating actions (cart-item-add/update/remove, cart-bundle-update,
+            // bonus-product-add, place-order) follow the BasketActionResponse shape
+            // `{ success, basket, ... }`. The mini-cart resource fetcher must reload to pick up
+            // the latest products for the new basket items.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    formAction: '/action/cart-item-add',
+                    actionResult: { success: true, basket: { basketId: 'basket-123' } },
+                })
+            ).toBe(true);
+        });
+
+        it('skips when an action returns a response without a basket field', () => {
+            // Non-basket actions (wishlist, locale, OTP, set-site-context, ...) return responses
+            // without `basket`, so we avoid a SCAPI round-trip per unrelated submission.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    formAction: '/action/wishlist-add',
+                    actionResult: { success: true },
+                })
+            ).toBe(false);
+        });
+
+        it('skips when actionResult.basket has no basketId', () => {
+            // Defensive: an action that returns a malformed/empty basket object should not
+            // trigger a reload — there's nothing actionable for the mini-cart to refresh against.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    formAction: '/action/cart-item-add',
+                    actionResult: { success: false, basket: {} },
+                })
+            ).toBe(false);
+        });
+
+        it('defers to defaultShouldRevalidate for navigation triggers', () => {
+            // Imperative useRevalidator().revalidate() (root.tsx, contact-info post-login) and
+            // navigation triggers don't carry a formAction. Returning false unconditionally here
+            // would pin the mini-cart to a stale guest basket after a guest→registered handoff,
+            // since post-login revalidation is how that flow refreshes per-customer data.
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    defaultShouldRevalidate: true,
+                })
+            ).toBe(true);
+            expect(
+                shouldRevalidate({
+                    ...baseArgs,
+                    defaultShouldRevalidate: false,
+                })
+            ).toBe(false);
+        });
+    });
+
+    it('should return null basket and empty productsById when basket is undefined', async () => {
         vi.mocked(getBasket).mockResolvedValue({ current: undefined } as any);
 
         const result = await loader(getLoaderArgs());
 
-        expect(result).toEqual({});
+        expect(result).toEqual({ basket: null, productsById: {} });
         expect(mockGetProducts).not.toHaveBeenCalled();
     });
 
-    it('should return empty object when basket has no product items', async () => {
-        vi.mocked(getBasket).mockResolvedValue({
-            current: { basketId: 'basket-123', productItems: [] },
-        } as any);
+    it('should return basket and empty productsById when basket has no product items', async () => {
+        const basket = { basketId: 'basket-123', productItems: [] };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
 
         const result = await loader(getLoaderArgs());
 
-        expect(result).toEqual({});
+        expect(result).toEqual({ basket, productsById: {} });
         expect(mockGetProducts).not.toHaveBeenCalled();
     });
 
-    it('should return empty object when basket has product items without productId', async () => {
-        vi.mocked(getBasket).mockResolvedValue({
-            current: {
-                basketId: 'basket-123',
-                productItems: [
-                    { itemId: 'item-1', quantity: 1 },
-                    { itemId: 'item-2', quantity: 2 },
-                ],
-            },
-        } as any);
+    it('should return basket and empty productsById when items have no productId', async () => {
+        const basket = {
+            basketId: 'basket-123',
+            productItems: [
+                { itemId: 'item-1', quantity: 1 },
+                { itemId: 'item-2', quantity: 2 },
+            ],
+        };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
 
         const result = await loader(getLoaderArgs());
 
-        expect(result).toEqual({});
+        expect(result).toEqual({ basket, productsById: {} });
         expect(mockGetProducts).not.toHaveBeenCalled();
     });
 
-    it('should fetch and return products by ID', async () => {
-        vi.mocked(getBasket).mockResolvedValue({
-            current: {
-                basketId: 'basket-123',
-                productItems: [
-                    { itemId: 'item-1', productId: 'product-1', quantity: 1 },
-                    { itemId: 'item-2', productId: 'product-2', quantity: 2 },
-                ],
-            },
-        } as any);
+    it('should fetch and return basket plus products keyed by ID', async () => {
+        const basket = {
+            basketId: 'basket-123',
+            productItems: [
+                { itemId: 'item-1', productId: 'product-1', quantity: 1 },
+                { itemId: 'item-2', productId: 'product-2', quantity: 2 },
+            ],
+        };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
 
         mockGetProducts.mockResolvedValue({
             data: {
@@ -152,8 +216,11 @@ describe('resource.basket-products', () => {
         const result = await loader(getLoaderArgs());
 
         expect(result).toEqual({
-            'product-1': mockProduct1,
-            'product-2': mockProduct2,
+            basket,
+            productsById: {
+                'product-1': mockProduct1,
+                'product-2': mockProduct2,
+            },
         });
 
         expect(mockGetProducts).toHaveBeenCalledWith({
@@ -172,28 +239,42 @@ describe('resource.basket-products', () => {
         });
     });
 
+    it('should not pass an explicit expand param so productPromotions is included by default', async () => {
+        // Regression guard: cart-sheet bonus-product callouts depend on productPromotions, which
+        // SCAPI returns by default when no explicit expand is set.
+        const basket = {
+            basketId: 'basket-123',
+            productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
+        };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
+        mockGetProducts.mockResolvedValue({ data: { data: [mockProduct1] } });
+
+        await loader(getLoaderArgs());
+
+        const callQuery = mockGetProducts.mock.calls[0][0].params.query;
+        expect(callQuery).not.toHaveProperty('expand');
+    });
+
     it('should handle API errors gracefully', async () => {
-        vi.mocked(getBasket).mockResolvedValue({
-            current: {
-                basketId: 'basket-123',
-                productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
-            },
-        } as any);
+        const basket = {
+            basketId: 'basket-123',
+            productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
+        };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
 
         mockGetProducts.mockRejectedValue(new Error('API Error'));
 
         const result = await loader(getLoaderArgs());
 
-        expect(result).toEqual({});
+        expect(result).toEqual({ basket, productsById: {} });
     });
 
-    it('should return empty object when API returns no data', async () => {
-        vi.mocked(getBasket).mockResolvedValue({
-            current: {
-                basketId: 'basket-123',
-                productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
-            },
-        } as any);
+    it('should return basket and empty productsById when API returns no data', async () => {
+        const basket = {
+            basketId: 'basket-123',
+            productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
+        };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
 
         mockGetProducts.mockResolvedValue({
             data: { data: null },
@@ -201,7 +282,7 @@ describe('resource.basket-products', () => {
 
         const result = await loader(getLoaderArgs());
 
-        expect(result).toEqual({});
+        expect(result).toEqual({ basket, productsById: {} });
     });
 
     it('should filter out items without productId', async () => {
@@ -238,26 +319,25 @@ describe('resource.basket-products', () => {
 
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
     it('should include inventoryIds when basket has pickup shipments', async () => {
-        vi.mocked(getBasket).mockResolvedValue({
-            current: {
-                basketId: 'basket-123',
-                productItems: [
-                    {
-                        itemId: 'item-1',
-                        productId: 'product-1',
-                        quantity: 3,
-                        shipmentId: 'pickup-shipment-1',
-                        inventoryId: 'store-inventory-001',
-                    },
-                ],
-                shipments: [
-                    {
-                        shipmentId: 'pickup-shipment-1',
-                        c_fromStoreId: 'store-burlington',
-                    },
-                ],
-            },
-        } as any);
+        const basket = {
+            basketId: 'basket-123',
+            productItems: [
+                {
+                    itemId: 'item-1',
+                    productId: 'product-1',
+                    quantity: 3,
+                    shipmentId: 'pickup-shipment-1',
+                    inventoryId: 'store-inventory-001',
+                },
+            ],
+            shipments: [
+                {
+                    shipmentId: 'pickup-shipment-1',
+                    c_fromStoreId: 'store-burlington',
+                },
+            ],
+        };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
 
         mockGetProducts.mockResolvedValue({
             data: { data: [mockProduct1] },
@@ -278,15 +358,12 @@ describe('resource.basket-products', () => {
     });
 
     it('should not include inventoryIds when basket has no pickup shipments', async () => {
-        vi.mocked(getBasket).mockResolvedValue({
-            current: {
-                basketId: 'basket-123',
-                productItems: [
-                    { itemId: 'item-1', productId: 'product-1', quantity: 1, shipmentId: 'delivery-shipment' },
-                ],
-                shipments: [{ shipmentId: 'delivery-shipment' }],
-            },
-        } as any);
+        const basket = {
+            basketId: 'basket-123',
+            productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1, shipmentId: 'delivery-shipment' }],
+            shipments: [{ shipmentId: 'delivery-shipment' }],
+        };
+        vi.mocked(getBasket).mockResolvedValue({ current: basket } as any);
 
         mockGetProducts.mockResolvedValue({
             data: { data: [mockProduct1] },

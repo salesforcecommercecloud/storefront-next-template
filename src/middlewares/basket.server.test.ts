@@ -327,6 +327,192 @@ describe('basket.server middleware', () => {
         expect((basketResource?.error as NormalizedApiError | undefined)?.cause).toBe(loadError);
     });
 
+    describe("getBasket with ensureBasket: 'read'", () => {
+        // The 'read' mode is used by the mini-cart resource route to avoid creating a fresh
+        // basket for shoppers who don't have one yet (a `getOrCreateBasket` call would mint
+        // a server-side basket on first cart-sheet open, even if the shopper never adds an
+        // item — bloating SCAPI traffic and the cart-sheet badge with empty baskets).
+
+        test('skips hydration and returns the unhydrated resource when no basket id is present', async () => {
+            // No cookie snapshot, no current basket — the read path must short-circuit and never
+            // call SCAPI.
+            const middleware = createBasketMiddleware({ mode: 'lazy' });
+            await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+            const getOrCreateBasket = vi.fn();
+            const getBasketRead = vi.fn();
+            vi.mocked(createApiClients).mockReturnValue({
+                basket: { getOrCreateBasket },
+                shopperBasketsV2: { getBasket: getBasketRead },
+            } as any);
+
+            const result = await getBasket(mockContext, { ensureBasket: 'read' });
+
+            expect(result.current).toBeNull();
+            expect(result.hydrated).toBe(false);
+            expect(createApiClients).not.toHaveBeenCalled();
+            expect(getOrCreateBasket).not.toHaveBeenCalled();
+            expect(getBasketRead).not.toHaveBeenCalled();
+            expect(mockLogger.debug).toHaveBeenCalledWith('Basket: hydration skipped, no existing basket ID');
+        });
+
+        test('reads the existing basket via shopperBasketsV2.getBasket when a cookie snapshot exists', async () => {
+            // Read mode must prefer the read-only `shopperBasketsV2.getBasket` endpoint over
+            // `getOrCreateBasket` — the latter would mutate SCAPI state by minting a basket
+            // when called against a stale id. The handler also unwraps the SCAPI client's
+            // `{ data }` envelope, so a regression that drops the destructure would store
+            // the wrapper object as the basket.
+            const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+            const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+            const snapshot: BasketSnapshot = {
+                basketId: 'basket-existing',
+                totalItemCount: 1,
+                uniqueProductCount: 1,
+            };
+            const cookieHeader = await basketCookie.serialize(snapshot);
+            mockRequest = new Request('https://example.com', {
+                headers: { Cookie: cookieHeader },
+            });
+
+            const fetchedBasket = {
+                basketId: 'basket-existing',
+                currency: 'GBP',
+                productItems: [{ productId: 'sku-1', quantity: 1 }],
+            };
+            const getBasketRead = vi.fn().mockResolvedValue({ data: fetchedBasket });
+            const getOrCreateBasket = vi.fn();
+            vi.mocked(createApiClients).mockReturnValue({
+                basket: { getOrCreateBasket },
+                shopperBasketsV2: { getBasket: getBasketRead },
+            } as any);
+
+            const middleware = createBasketMiddleware({ mode: 'lazy' });
+            await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+            const result = await getBasket(mockContext, { ensureBasket: 'read' });
+
+            expect(getBasketRead).toHaveBeenCalledWith({
+                params: { path: { basketId: 'basket-existing' } },
+            });
+            expect(getOrCreateBasket).not.toHaveBeenCalled();
+            expect(result.current).toEqual(fetchedBasket);
+            expect(result.hydrated).toBe(true);
+        });
+
+        test('returns the cached basket without re-fetching when already loaded', async () => {
+            // Same invariant as the default path: a basket already in the resource short-circuits
+            // before any SCAPI call. Pinning this here as well so 'read' mode inherits the cache
+            // behavior — otherwise multiple readers in the same request (cart-sheet panel +
+            // basket-products loader) would each issue an extra getBasket call.
+            const basket = {
+                basketId: 'basket-cached',
+                currency: 'GBP',
+                productItems: [{ productId: 'sku-1', quantity: 1 }],
+            };
+            vi.mocked(createApiClients).mockReturnValue({
+                basket: {
+                    getOrCreateBasket: vi.fn().mockResolvedValue(basket),
+                },
+            } as any);
+
+            const middleware = createBasketMiddleware({ mode: 'eager' });
+            await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+            const getBasketRead = vi.fn();
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperBasketsV2: { getBasket: getBasketRead },
+            } as any);
+
+            const result = await getBasket(mockContext, { ensureBasket: 'read' });
+
+            expect(result.current).toEqual(basket);
+            expect(getBasketRead).not.toHaveBeenCalled();
+        });
+
+        test('falls back to getOrCreateBasket when the read fetch fails (e.g. stale snapshot id)', async () => {
+            // A snapshot cookie can outlive its server-side basket — guest baskets expire after
+            // their TTL. In that case `shopperBasketsV2.getBasket` returns 404; the middleware
+            // must mint a fresh basket via `getOrCreateBasket` rather than surfacing the read
+            // error, so the mini-cart resource route degrades to "fresh basket" instead of
+            // throwing a NormalizedApiError into the panel.
+            const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+            const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+            const snapshot: BasketSnapshot = {
+                basketId: 'basket-stale',
+                totalItemCount: 1,
+                uniqueProductCount: 1,
+            };
+            const cookieHeader = await basketCookie.serialize(snapshot);
+            mockRequest = new Request('https://example.com', {
+                headers: { Cookie: cookieHeader },
+            });
+
+            const freshBasket = {
+                basketId: 'basket-fresh',
+                currency: 'GBP',
+                productItems: [],
+            };
+            const getOrCreateBasket = vi.fn().mockResolvedValue(freshBasket);
+            vi.mocked(createApiClients).mockReturnValue({
+                basket: { getOrCreateBasket },
+                shopperBasketsV2: {
+                    getBasket: vi.fn().mockRejectedValue(new Error('not found')),
+                },
+            } as any);
+
+            const middleware = createBasketMiddleware({ mode: 'lazy' });
+            await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+            const result = await getBasket(mockContext, { ensureBasket: 'read' });
+
+            expect(getOrCreateBasket).toHaveBeenCalledWith({
+                params: { path: { basketId: 'basket-stale' } },
+                body: { currency: 'GBP' },
+            });
+            expect(result.current).toEqual(freshBasket);
+            expect(result.hydrated).toBe(true);
+            expect(result.error).toBeNull();
+        });
+
+        test('wraps and rethrows errors as NormalizedApiError when both read and fallback fail', async () => {
+            // The fallback exists to recover from a stale snapshot, not to swallow real outages.
+            // When `getOrCreateBasket` also fails, the caller must see a NormalizedApiError so the
+            // resource route's catch can degrade the mini-cart instead of leaking a raw SCAPI error.
+            const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+            const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+            const snapshot: BasketSnapshot = {
+                basketId: 'basket-stale',
+                totalItemCount: 1,
+                uniqueProductCount: 1,
+            };
+            const cookieHeader = await basketCookie.serialize(snapshot);
+            mockRequest = new Request('https://example.com', {
+                headers: { Cookie: cookieHeader },
+            });
+
+            const fallbackError = new Error('scapi outage');
+            vi.mocked(createApiClients).mockReturnValue({
+                basket: {
+                    getOrCreateBasket: vi.fn().mockRejectedValue(fallbackError),
+                },
+                shopperBasketsV2: {
+                    getBasket: vi.fn().mockRejectedValue(new Error('not found')),
+                },
+            } as any);
+
+            const middleware = createBasketMiddleware({ mode: 'lazy' });
+            await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+            const rejection = await getBasket(mockContext, { ensureBasket: 'read' }).catch((e: unknown) => e);
+            expect(rejection).toBeInstanceOf(NormalizedApiError);
+            expect((rejection as NormalizedApiError).cause).toBe(fallbackError);
+
+            const basketResource = mockContext.get(basketResourceContext);
+            expect(basketResource?.hydrated).toBe(true);
+            expect(basketResource?.error).toBeInstanceOf(NormalizedApiError);
+        });
+    });
+
     test('marks basket for deletion and expires cookie', async () => {
         const middleware = createBasketMiddleware({ mode: 'lazy' });
         const next = vi.fn().mockImplementation(async () => {

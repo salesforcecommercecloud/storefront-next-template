@@ -127,8 +127,8 @@ Cart Sheet component that displays a mini cart flyout with cart contents.
 - Opens automatically when loaded
 - Matches Storefront Next Design System specifications
 
-**Note**: This component uses \`useBasketWithProducts\` which loads product details via \`/resource/basket-products\`.
-In Storybook, this route returns mock product data for demonstration purposes.
+**Note**: This component uses \`useMiniCartData\` which loads the basket and product details via \`/resource/basket-products\`.
+In Storybook, this route returns a mock basket and product data for demonstration purposes.
                 `,
             },
         },
@@ -170,6 +170,10 @@ export const Empty: Story = {
     ),
     parameters: {
         snapshot: false, // Skip snapshot test - Radix UI Sheet with empty state causes infinite loop in test environment
+        // Override the default populated /resource/basket-products fixture so the cart sheet sees
+        // an empty basket — the cart-sheet panel reads basket through the resource route's
+        // fetcher, not through the BasketProvider decorator wrapping this story.
+        miniCartData: { basket: emptyBasket, productsById: {} },
         docs: {
             story: `
 Cart sheet with empty cart.
