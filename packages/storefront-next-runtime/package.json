@@ -194,6 +194,12 @@
     "remix-i18next": ">=7.0.0"
   },
   "peerDependenciesMeta": {
+    "@react-router/dev": {
+      "optional": true
+    },
+    "@react-router/fs-routes": {
+      "optional": true
+    },
     "i18next": {
       "optional": true
     },
