@@ -24,6 +24,7 @@ import type { AppConfig } from '@/types/config';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
+import { WishlistMergeToast } from '@/components/wishlist/wishlist-merge-toast';
 
 type LoaderData = {
     root: Promise<ShopperProducts.schemas['Category']>;
@@ -114,6 +115,7 @@ export default function DefaultLayout({ loaderData: { root, subs } }: { loaderDa
                 <ResponsiveNavigationMenu resolve={refRoot.current} defer={refSubs.current} />
             </Header>
             <main className="grow pt-8">
+                <WishlistMergeToast />
                 <Outlet />
             </main>
             <Footer />

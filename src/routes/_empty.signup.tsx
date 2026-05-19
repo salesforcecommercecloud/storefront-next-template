@@ -21,6 +21,12 @@ import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
 // services
 import { registerCustomer } from '@/lib/api/auth/register.server';
+import {
+    appendWishlistMergeFlag,
+    captureGuestWishlistSnapshot,
+    mergeWishlist,
+    type WishlistMergeResult,
+} from '@/lib/api/wishlist.server';
 
 // components
 import { SignupForm } from '@/components/signup-form';
@@ -154,6 +160,10 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Si
         return { error: t('signup:passwordNotSecure') };
     }
 
+    // Snapshot the guest wishlist BEFORE the SLAS swap. registerCustomer auto-logs the user in,
+    // and the registered token cannot authorize a read against the guest customerId.
+    const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
+
     // Register the customer
     const result = await registerCustomer(context, {
         customer: {
@@ -176,7 +186,15 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Si
     const isEmailVerificationEnabled = Boolean(emailVerificationEnabled);
 
     if (!isEmailVerificationEnabled) {
-        return redirect(returnUrl);
+        let wishlistMergeResult: WishlistMergeResult | null = null;
+        if (guestWishlistSnapshot) {
+            try {
+                wishlistMergeResult = await mergeWishlist(context, guestWishlistSnapshot);
+            } catch (error) {
+                logger.error('Signup: wishlist merge failed', { error });
+            }
+        }
+        return redirect(wishlistMergeResult ? appendWishlistMergeFlag(returnUrl, wishlistMergeResult) : returnUrl);
     }
 
     // Request OTP for email verification if feature is enabled

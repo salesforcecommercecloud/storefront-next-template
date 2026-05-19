@@ -22,6 +22,12 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { mergeBasket } from '@/lib/api/basket.server';
+import {
+    appendWishlistMergeFlag,
+    captureGuestWishlistSnapshot,
+    mergeWishlist,
+    type WishlistMergeResult,
+} from '@/lib/api/wishlist.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getLogger } from '@/lib/logger.server';
@@ -191,6 +197,9 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
                 ? callbackUri
                 : `${getAppOrigin()}${buildUrlFromContext(callbackUri, context)}`;
 
+            // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
+            const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
+
             const result = await loginIDPUser(context, {
                 code,
                 usid: usid || undefined,
@@ -206,9 +215,20 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
                     logger.error('SocialLogin: basket merge failed', { error: err });
                 }
 
+                let wishlistMergeResult: WishlistMergeResult | null = null;
+                if (guestWishlistSnapshot) {
+                    try {
+                        wishlistMergeResult = await mergeWishlist(context, guestWishlistSnapshot);
+                    } catch (err) {
+                        logger.error('SocialLogin: wishlist merge failed', { error: err });
+                    }
+                }
+
                 // Redirect to redirectURL if provided, otherwise redirect to home
                 const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/';
-                return redirect(redirectTo);
+                return redirect(
+                    wishlistMergeResult ? appendWishlistMergeFlag(redirectTo, wishlistMergeResult) : redirectTo
+                );
             } else {
                 logger.error('SocialLogin: login failed', { error: result.error });
                 const errorMessage = t('errors:genericTryAgain');

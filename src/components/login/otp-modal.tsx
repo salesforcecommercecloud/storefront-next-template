@@ -33,7 +33,10 @@ interface OtpModalProps {
     isOpen: boolean;
     onClose: () => void;
     email: string;
-    onSuccess: (tokenResponse?: ShopperLogin.schemas['TokenResponse']) => void;
+    onSuccess: (
+        tokenResponse?: ShopperLogin.schemas['TokenResponse'],
+        meta?: { wishlistMerge?: 'success' | 'partial' }
+    ) => void;
     onCheckoutAsGuest?: () => void;
     onResendCode?: () => Promise<void>;
     otpLength?: number;
@@ -178,7 +181,10 @@ export default function OtpModal({
             form.reset();
             setError(null);
             setIsVerifying(false);
-            onSuccess(fetcher.data.tokenResponse);
+            onSuccess(
+                fetcher.data.tokenResponse,
+                fetcher.data.wishlistMerge ? { wishlistMerge: fetcher.data.wishlistMerge } : undefined
+            );
         }
         // Failure
         else if (fetcher.state === 'idle' && fetcher.data?.success === false && fetcher.data?.error) {

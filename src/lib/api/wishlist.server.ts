@@ -279,6 +279,198 @@ export type WishlistPageData = {
 };
 
 /**
+ * Snapshot of a guest's wishlist captured pre-swap, used as input to `mergeWishlist`.
+ * The auth-success route must read this BEFORE the SLAS token swap because SCAPI
+ * authorizes by `URL customerId === token UUID` and the guest token is gone after
+ * the swap.
+ */
+export type GuestWishlistSnapshot = {
+    guestCustomerId: string;
+    guestListId: string;
+    items: CustomerProductListItem[];
+};
+
+/** Outcome of `mergeWishlist`. `failed` includes per-item create errors and a non-204 delete. */
+export type WishlistMergeResult = {
+    merged: number;
+    skipped: number;
+    failed: number;
+};
+
+/**
+ * Read the guest wishlist items so they can be merged into the registered customer's
+ * wishlist after sign-in. Must be called BEFORE the SLAS token swap — once the
+ * session holds the registered token, SCAPI will reject reads against the guest
+ * customerId.
+ *
+ * Returns `null` if the session has no usable shopper token, the customer is already
+ * registered, the guest has no wishlist, or the read fails. Failures are logged and
+ * swallowed: a missing snapshot must not block sign-in.
+ */
+export async function captureGuestWishlistSnapshot(
+    context: LoaderFunctionArgs['context']
+): Promise<GuestWishlistSnapshot | null> {
+    const logger = getLogger(context);
+    const session = getAuth(context);
+
+    if (!hasUsableShopperSession(session) || session.userType !== 'guest') {
+        return null;
+    }
+
+    const guestCustomerId = session.customerId;
+
+    try {
+        const { items, id: guestListId } = await getWishlist(context, guestCustomerId);
+        if (!guestListId || items.length === 0) {
+            return null;
+        }
+        return { guestCustomerId, guestListId, items };
+    } catch (error) {
+        logger.warn('Wishlist: captureGuestWishlistSnapshot failed, skipping merge', { error });
+        return null;
+    }
+}
+
+/**
+ * Merge a captured guest wishlist into the now-registered customer's wishlist.
+ * Must be called AFTER the SLAS token swap so the registered token authorizes
+ * the writes against `registeredCustomerId`.
+ *
+ * Mirrors `mergeBasket`: failure does not throw. Partial counts come back in
+ * the result and the caller decides whether to surface a toast. Per-item
+ * 4xx/5xx are logged and counted as `failed` without aborting the rest.
+ * Duplicates (same `productId` already on the registered list, or repeated
+ * within the snapshot itself) are counted as `skipped`.
+ *
+ * Items are created in parallel chunks of CHUNK_SIZE so the redirect doesn't
+ * scale linearly with wishlist size. The guest list is intentionally not
+ * deleted: SCAPI rejects `deleteCustomerProductList` against the guest
+ * customerId once the registered token is active (token UUID mismatch), so the
+ * call only ever succeeded in non-production contexts. Orphan-list cleanup, if
+ * needed, belongs on the SCAPI side.
+ */
+const MERGE_CHUNK_SIZE = 5;
+
+export async function mergeWishlist(
+    context: LoaderFunctionArgs['context'],
+    snapshot: GuestWishlistSnapshot
+): Promise<WishlistMergeResult> {
+    const logger = getLogger(context);
+    const session = getAuth(context);
+    const result: WishlistMergeResult = { merged: 0, skipped: 0, failed: 0 };
+
+    if (!hasUsableShopperSession(session) || session.userType !== 'registered') {
+        logger.warn('Wishlist: mergeWishlist called without a registered session, skipping', {
+            userType: session?.userType,
+        });
+        return result;
+    }
+
+    const registeredCustomerId = session.customerId;
+    if (!registeredCustomerId || registeredCustomerId === snapshot.guestCustomerId) {
+        return result;
+    }
+
+    if (snapshot.items.length === 0) {
+        return result;
+    }
+
+    const clients = createApiClients(context);
+
+    let registeredList: CustomerProductList;
+    try {
+        registeredList = await getOrCreateWishlist(context, registeredCustomerId);
+    } catch (error) {
+        logger.error('Wishlist: mergeWishlist could not get or create registered list', { error });
+        result.failed = snapshot.items.length;
+        return result;
+    }
+
+    const registeredListId = registeredList.id;
+    if (!registeredListId) {
+        logger.error('Wishlist: mergeWishlist registered list has no listId');
+        result.failed = snapshot.items.length;
+        return result;
+    }
+
+    const existingProductIds = new Set(
+        (registeredList.customerProductListItems ?? [])
+            .map((item) => item.productId)
+            .filter((id): id is string => typeof id === 'string' && id.length > 0)
+    );
+
+    // Pre-filter once so the parallel chunks below only contain items we still need
+    // to create. Within-snapshot duplicates are tallied here too (the previous
+    // sequential loop relied on existingProductIds.add to dedup as it went).
+    const seen = new Set<string>();
+    const toMerge: GuestWishlistSnapshot['items'] = [];
+    for (const item of snapshot.items) {
+        const productId = item.productId;
+        if (!productId) {
+            result.failed += 1;
+            continue;
+        }
+        if (existingProductIds.has(productId) || seen.has(productId)) {
+            result.skipped += 1;
+            continue;
+        }
+        seen.add(productId);
+        toMerge.push(item);
+    }
+
+    for (let i = 0; i < toMerge.length; i += MERGE_CHUNK_SIZE) {
+        const chunk = toMerge.slice(i, i + MERGE_CHUNK_SIZE);
+        const settled = await Promise.allSettled(
+            chunk.map((item) =>
+                clients.shopperCustomers.createCustomerProductListItem({
+                    params: { path: { customerId: registeredCustomerId, listId: registeredListId } },
+                    body: {
+                        productId: item.productId as string,
+                        quantity: item.quantity ?? 1,
+                        type: 'product',
+                        public: false,
+                        priority: 1,
+                    },
+                })
+            )
+        );
+        for (let j = 0; j < settled.length; j += 1) {
+            const outcome = settled[j];
+            if (outcome.status === 'fulfilled') {
+                result.merged += 1;
+            } else {
+                logger.warn('Wishlist: mergeWishlist failed to create item, skipping', {
+                    productId: chunk[j].productId,
+                    error: outcome.reason,
+                });
+                result.failed += 1;
+            }
+        }
+    }
+
+    logger.info('Wishlist: mergeWishlist completed', {
+        merged: result.merged,
+        skipped: result.skipped,
+        failed: result.failed,
+    });
+
+    return result;
+}
+
+/**
+ * Append the merge-result flag to a redirect URL so the destination route can render
+ * a toast. Returns the input untouched when no toast should fire (zero merges).
+ */
+export function appendWishlistMergeFlag(redirectTarget: string, result: WishlistMergeResult): string {
+    if (result.merged === 0 && result.failed === 0) {
+        return redirectTarget;
+    }
+    const flag = result.failed > 0 ? 'partial' : 'success';
+    const separator = redirectTarget.includes('?') ? '&' : '?';
+    return `${redirectTarget}${separator}wishlistMerge=${flag}`;
+}
+
+/**
  * Shared loader-side helper that powers both the registered (`/account/wishlist`)
  * and guest (`/wishlist`) routes. Reads `customerId` from the session and pulls
  * the wishlist + product details. Returns an empty payload when the session has

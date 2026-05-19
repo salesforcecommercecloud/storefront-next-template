@@ -46,6 +46,12 @@ import {
 import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
 import { authorizeIDP } from '@/lib/api/auth/social-login.server';
 import { mergeBasket } from '@/lib/api/basket.server';
+import {
+    appendWishlistMergeFlag,
+    captureGuestWishlistSnapshot,
+    mergeWishlist,
+    type WishlistMergeResult,
+} from '@/lib/api/wishlist.server';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
 import { getLogger } from '@/lib/logger.server';
 import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
@@ -112,6 +118,9 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
     // Auto-verify OTP token if both email and token are provided in URL
     if (email && token) {
+        // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
+        const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
+
         try {
             const tokenResponse = await getPasswordLessAccessToken(context, token);
 
@@ -129,8 +138,18 @@ export async function loader({ request, context }: Route.LoaderArgs) {
                 logger.error('Login: basket merge failed during passwordless login', { error: basketError });
             }
 
+            let wishlistMergeResult: WishlistMergeResult | null = null;
+            if (guestWishlistSnapshot) {
+                try {
+                    wishlistMergeResult = await mergeWishlist(context, guestWishlistSnapshot);
+                } catch (wishlistError) {
+                    logger.error('Login: wishlist merge failed during passwordless login', { error: wishlistError });
+                }
+            }
+
             logger.info('Login: passwordless verification succeeded');
-            return redirect(buildUrlFromContext(returnUrl || '/', context));
+            const target = buildUrlFromContext(returnUrl || '/', context);
+            return redirect(wishlistMergeResult ? appendWishlistMergeFlag(target, wishlistMergeResult) : target);
         } catch (verifyError) {
             // Auto-verification failed - show error with OTP form
             logger.warn('Login: passwordless auto-verification failed');
@@ -286,6 +305,8 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
             if (!email || !password) {
                 return { success: false, error: genericError };
             }
+            // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
+            const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
             const result = await loginRegisteredUser(context, { email, password }, { skipUsid });
             if (!result.success) {
                 logger.warn('Login: standard login failed');
@@ -302,6 +323,17 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
             } catch (error) {
                 logger.error('Login: basket merge failed', { error });
             }
+
+            let wishlistMergeResult: WishlistMergeResult | null = null;
+            if (guestWishlistSnapshot) {
+                try {
+                    wishlistMergeResult = await mergeWishlist(context, guestWishlistSnapshot);
+                } catch (wishlistError) {
+                    logger.error('Login: wishlist merge failed', { error: wishlistError });
+                }
+            }
+            const flagRedirect = (target: string) =>
+                wishlistMergeResult ? appendWishlistMergeFlag(target, wishlistMergeResult) : target;
 
             // Login successful - redirect to returnUrl if provided, otherwise home
             // Try to get returnUrl from formData first (in case it was submitted as hidden input)
@@ -328,12 +360,14 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
                     if (actionParams) {
                         returnUrlObj.searchParams.set('actionParams', actionParams);
                     }
-                    return redirect(buildUrlFromContext(returnUrlObj.pathname + returnUrlObj.search, context));
+                    return redirect(
+                        flagRedirect(buildUrlFromContext(returnUrlObj.pathname + returnUrlObj.search, context))
+                    );
                 }
-                return redirect(buildUrlFromContext(returnUrl, context));
+                return redirect(flagRedirect(buildUrlFromContext(returnUrl, context)));
             }
 
-            return redirect('/');
+            return redirect(flagRedirect(buildUrlFromContext('/', context)));
         }
     } catch {
         return { success: false, error: genericError };
@@ -487,9 +521,16 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                     window.location.reload();
                 }}
                 email={otpEmail || ''}
-                onSuccess={() => {
-                    // Redirect to return URL or home after successful login
-                    void navigate(returnUrl || '/');
+                onSuccess={(_tokenResponse, meta) => {
+                    // Redirect to return URL or home after successful login.
+                    // Forward the wishlist merge flag so the destination route can render a toast.
+                    const target = returnUrl || '/';
+                    if (meta?.wishlistMerge) {
+                        const separator = target.includes('?') ? '&' : '?';
+                        void navigate(`${target}${separator}wishlistMerge=${meta.wishlistMerge}`);
+                    } else {
+                        void navigate(target);
+                    }
                 }}
                 onResendCode={async () => {
                     const formData = new FormData();

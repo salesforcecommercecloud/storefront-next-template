@@ -19,6 +19,7 @@ import { data } from 'react-router';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
+import { captureGuestWishlistSnapshot, mergeWishlist } from '@/lib/api/wishlist.server';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
@@ -33,6 +34,8 @@ export type VerifyPasswordlessOtpResponse = {
     error?: ActionError;
     message?: string;
     tokenResponse?: ShopperLogin.schemas['TokenResponse'];
+    /** `'success'` when items merged with no failures, `'partial'` when some items failed, otherwise omitted. */
+    wishlistMerge?: 'success' | 'partial';
 };
 
 /**
@@ -73,6 +76,9 @@ export async function action({
         const clients = createApiClients(context);
         const session = getAuth(context);
         const usid = session.usid;
+
+        // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
+        const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
 
         let dnt: boolean | undefined;
         if (isTrackingConsentEnabled(context) && session.trackingConsent) {
@@ -125,11 +131,24 @@ export async function action({
             logger.error('VerifyPasswordlessOtp: basket recalculation after authentication failed', { error });
         }
 
+        let wishlistMerge: 'success' | 'partial' | undefined;
+        if (guestWishlistSnapshot) {
+            try {
+                const merge = await mergeWishlist(context, guestWishlistSnapshot);
+                if (merge.merged > 0 || merge.failed > 0) {
+                    wishlistMerge = merge.failed > 0 ? 'partial' : 'success';
+                }
+            } catch (error) {
+                logger.error('VerifyPasswordlessOtp: wishlist merge failed', { error });
+            }
+        }
+
         logger.info('VerifyPasswordlessOtp: succeeded');
         return data({
             success: true,
             message: 'Login successful',
             tokenResponse,
+            ...(wishlistMerge ? { wishlistMerge } : {}),
         });
     } catch (error: unknown) {
         logger.error('VerifyPasswordlessOtp: failed', { error });

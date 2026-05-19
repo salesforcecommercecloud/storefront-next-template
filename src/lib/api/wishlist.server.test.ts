@@ -16,12 +16,23 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { NormalizedApiError } from './normalized-api-error';
-import { getWishlist, loadWishlistPageData } from './wishlist.server';
+import {
+    appendWishlistMergeFlag,
+    captureGuestWishlistSnapshot,
+    getWishlist,
+    loadWishlistPageData,
+    mergeWishlist,
+    type GuestWishlistSnapshot,
+} from './wishlist.server';
 
 const mockGetCustomerProductList = vi.fn();
 const mockGetCustomerProductLists = vi.fn();
+const mockCreateCustomerProductList = vi.fn();
+const mockCreateCustomerProductListItem = vi.fn();
+const mockDeleteCustomerProductList = vi.fn();
 const mockLoggerError = vi.fn();
 const mockLoggerWarn = vi.fn();
+const mockLoggerInfo = vi.fn();
 const mockGetAuth = vi.fn();
 
 vi.mock('@/lib/api-clients.server', () => ({
@@ -29,6 +40,9 @@ vi.mock('@/lib/api-clients.server', () => ({
         shopperCustomers: {
             getCustomerProductList: mockGetCustomerProductList,
             getCustomerProductLists: mockGetCustomerProductLists,
+            createCustomerProductList: mockCreateCustomerProductList,
+            createCustomerProductListItem: mockCreateCustomerProductListItem,
+            deleteCustomerProductList: mockDeleteCustomerProductList,
         },
     })),
 }));
@@ -37,7 +51,7 @@ vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({
         error: mockLoggerError,
         warn: mockLoggerWarn,
-        info: vi.fn(),
+        info: mockLoggerInfo,
         debug: vi.fn(),
     })),
 }));
@@ -268,6 +282,279 @@ describe('loadWishlistPageData', () => {
         expect(mockLoggerError).toHaveBeenCalledWith(
             'Wishlist: failed to load wishlist',
             expect.objectContaining({ error: expect.any(NormalizedApiError) })
+        );
+    });
+});
+
+describe('captureGuestWishlistSnapshot', () => {
+    const mockContext = {} as any;
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    test('returns null when session has no usable token', async () => {
+        mockGetAuth.mockReturnValue({ userType: 'guest', customerId: 'guest-1' });
+
+        const snapshot = await captureGuestWishlistSnapshot(mockContext);
+
+        expect(snapshot).toBeNull();
+        expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
+    });
+
+    test('returns null for a registered session', async () => {
+        mockGetAuth.mockReturnValue({ ...usableSession, userType: 'registered', customerId: 'reg-1' });
+
+        const snapshot = await captureGuestWishlistSnapshot(mockContext);
+
+        expect(snapshot).toBeNull();
+    });
+
+    test('returns null when the guest has no wishlist', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        mockGetCustomerProductLists.mockResolvedValue({ data: { data: [] } });
+
+        const snapshot = await captureGuestWishlistSnapshot(mockContext);
+
+        expect(snapshot).toBeNull();
+    });
+
+    test('returns null when the guest wishlist is empty', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        mockGetCustomerProductLists.mockResolvedValue({
+            data: { data: [{ id: 'list-g', type: 'wish_list', customerProductListItems: [] }] },
+        });
+
+        const snapshot = await captureGuestWishlistSnapshot(mockContext);
+
+        expect(snapshot).toBeNull();
+    });
+
+    test('returns the snapshot when the guest wishlist has items', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        const items = [
+            { productId: 'sku-1', id: 'item-1' },
+            { productId: 'sku-2', id: 'item-2' },
+        ];
+        mockGetCustomerProductLists.mockResolvedValue({
+            data: { data: [{ id: 'list-g', type: 'wish_list', customerProductListItems: items }] },
+        });
+
+        const snapshot = await captureGuestWishlistSnapshot(mockContext);
+
+        expect(snapshot).toEqual({ guestCustomerId: 'cust-1', guestListId: 'list-g', items });
+    });
+
+    test('returns null when the read fails (does not throw)', async () => {
+        mockGetAuth.mockReturnValue(usableSession);
+        mockGetCustomerProductLists.mockRejectedValue(new Error('boom'));
+
+        const snapshot = await captureGuestWishlistSnapshot(mockContext);
+
+        expect(snapshot).toBeNull();
+        expect(mockLoggerWarn).toHaveBeenCalledWith(
+            'Wishlist: captureGuestWishlistSnapshot failed, skipping merge',
+            expect.objectContaining({ error: expect.any(Error) })
+        );
+    });
+});
+
+describe('mergeWishlist', () => {
+    const mockContext = {} as any;
+    const registeredSession = {
+        userType: 'registered' as const,
+        customerId: 'reg-1',
+        accessToken: 'tok',
+        accessTokenExpiry: Date.now() + 60_000,
+    };
+
+    function snapshot(items: { productId?: string }[]): GuestWishlistSnapshot {
+        return {
+            guestCustomerId: 'guest-1',
+            guestListId: 'list-g',
+            items: items as GuestWishlistSnapshot['items'],
+        };
+    }
+
+    function mockRegisteredList(items: { productId: string }[] = []) {
+        const list = { id: 'list-r', type: 'wish_list', customerProductListItems: items };
+        // getOrCreateWishlist calls getWishlist (no listId) which calls getCustomerProductLists
+        mockGetCustomerProductLists.mockResolvedValue({ data: { data: [list] } });
+        return list;
+    }
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    test('skips when called without a registered session', async () => {
+        mockGetAuth.mockReturnValue({
+            userType: 'guest',
+            customerId: 'guest-1',
+            accessToken: 'tok',
+            accessTokenExpiry: Date.now() + 60_000,
+        });
+
+        const result = await mergeWishlist(mockContext, snapshot([{ productId: 'sku-1' }]));
+
+        expect(result).toEqual({ merged: 0, skipped: 0, failed: 0 });
+        expect(mockCreateCustomerProductListItem).not.toHaveBeenCalled();
+    });
+
+    test('skips when guest and registered customerIds match (defensive guard)', async () => {
+        mockGetAuth.mockReturnValue({ ...registeredSession, customerId: 'guest-1' });
+
+        const result = await mergeWishlist(mockContext, snapshot([{ productId: 'sku-1' }]));
+
+        expect(result).toEqual({ merged: 0, skipped: 0, failed: 0 });
+        expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
+    });
+
+    test('happy path: 3 items, no dupes, all merged', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+        mockRegisteredList([]);
+        mockCreateCustomerProductListItem.mockResolvedValue({});
+
+        const result = await mergeWishlist(
+            mockContext,
+            snapshot([{ productId: 'sku-1' }, { productId: 'sku-2' }, { productId: 'sku-3' }])
+        );
+
+        expect(result).toEqual({ merged: 3, skipped: 0, failed: 0 });
+        expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(3);
+        expect(mockDeleteCustomerProductList).not.toHaveBeenCalled();
+    });
+
+    test('dedup: skips items already in the registered list', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+        mockRegisteredList([{ productId: 'sku-1' }]);
+        mockCreateCustomerProductListItem.mockResolvedValue({});
+
+        const result = await mergeWishlist(mockContext, snapshot([{ productId: 'sku-1' }, { productId: 'sku-2' }]));
+
+        expect(result).toEqual({ merged: 1, skipped: 1, failed: 0 });
+        expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(1);
+    });
+
+    test('within-snapshot duplicates are skipped (not double-merged)', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+        mockRegisteredList([]);
+        mockCreateCustomerProductListItem.mockResolvedValue({});
+
+        const result = await mergeWishlist(
+            mockContext,
+            snapshot([{ productId: 'sku-1' }, { productId: 'sku-1' }, { productId: 'sku-2' }])
+        );
+
+        expect(result).toEqual({ merged: 2, skipped: 1, failed: 0 });
+        expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(2);
+    });
+
+    test('per-item failure: logs and counts as failed without aborting', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+        mockRegisteredList([]);
+        mockCreateCustomerProductListItem
+            .mockResolvedValueOnce({})
+            .mockRejectedValueOnce(new Error('400 invalid product'))
+            .mockResolvedValueOnce({});
+
+        const result = await mergeWishlist(
+            mockContext,
+            snapshot([{ productId: 'sku-1' }, { productId: 'sku-bad' }, { productId: 'sku-3' }])
+        );
+
+        expect(result).toEqual({ merged: 2, skipped: 0, failed: 1 });
+        expect(mockLoggerWarn).toHaveBeenCalledWith(
+            'Wishlist: mergeWishlist failed to create item, skipping',
+            expect.objectContaining({ productId: 'sku-bad' })
+        );
+    });
+
+    test('merges in parallel chunks of 5 (chunk boundary respected)', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+        mockRegisteredList([]);
+
+        // Track in-flight count to confirm at most 5 calls run concurrently.
+        let inFlight = 0;
+        let maxInFlight = 0;
+        mockCreateCustomerProductListItem.mockImplementation(async () => {
+            inFlight += 1;
+            maxInFlight = Math.max(maxInFlight, inFlight);
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            inFlight -= 1;
+            return {};
+        });
+
+        const items = Array.from({ length: 7 }, (_, i) => ({ productId: `sku-${i}` }));
+        const result = await mergeWishlist(mockContext, snapshot(items));
+
+        expect(result).toEqual({ merged: 7, skipped: 0, failed: 0 });
+        expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(7);
+        expect(maxInFlight).toBeLessThanOrEqual(5);
+        expect(maxInFlight).toBeGreaterThan(1); // Confirms parallelism actually happened.
+    });
+
+    test('empty snapshot is a noop, no SCAPI writes', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+
+        const result = await mergeWishlist(mockContext, snapshot([]));
+
+        expect(result).toEqual({ merged: 0, skipped: 0, failed: 0 });
+        expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
+        expect(mockCreateCustomerProductListItem).not.toHaveBeenCalled();
+    });
+
+    test('items without productId are counted as failed', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+        mockRegisteredList([]);
+
+        const result = await mergeWishlist(mockContext, snapshot([{ productId: undefined as unknown as string }]));
+
+        expect(result).toEqual({ merged: 0, skipped: 0, failed: 1 });
+        expect(mockCreateCustomerProductListItem).not.toHaveBeenCalled();
+    });
+
+    test('does not attempt to delete the guest list', async () => {
+        mockGetAuth.mockReturnValue(registeredSession);
+        mockRegisteredList([]);
+        mockCreateCustomerProductListItem.mockResolvedValue({});
+
+        await mergeWishlist(mockContext, snapshot([{ productId: 'sku-1' }, { productId: 'sku-2' }]));
+
+        expect(mockDeleteCustomerProductList).not.toHaveBeenCalled();
+        expect(mockLoggerWarn).not.toHaveBeenCalledWith(
+            expect.stringContaining('could not delete guest list'),
+            expect.anything()
+        );
+    });
+});
+
+describe('appendWishlistMergeFlag', () => {
+    test('returns the input unchanged when nothing was merged or failed', () => {
+        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 0, skipped: 0, failed: 0 })).toBe(
+            '/account/wishlist'
+        );
+        expect(appendWishlistMergeFlag('/foo?x=1', { merged: 0, skipped: 5, failed: 0 })).toBe('/foo?x=1');
+    });
+
+    test('appends ?wishlistMerge=success on a clean merge', () => {
+        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 3, skipped: 0, failed: 0 })).toBe(
+            '/account/wishlist?wishlistMerge=success'
+        );
+    });
+
+    test('appends &wishlistMerge=success when the URL already has a query string', () => {
+        expect(appendWishlistMergeFlag('/foo?x=1', { merged: 1, skipped: 0, failed: 0 })).toBe(
+            '/foo?x=1&wishlistMerge=success'
+        );
+    });
+
+    test('appends ?wishlistMerge=partial when any item failed', () => {
+        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 2, skipped: 0, failed: 1 })).toBe(
+            '/account/wishlist?wishlistMerge=partial'
+        );
+        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 0, skipped: 0, failed: 1 })).toBe(
+            '/account/wishlist?wishlistMerge=partial'
         );
     });
 });
