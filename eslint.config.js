@@ -324,6 +324,26 @@ const baseConfig = defineConfig([
         },
     },
     {
+        // Server-only modules must not import the browser-only i18n client entry,
+        // which pulls in i18next-browser-languagedetector and has no Node support.
+        // Use `@salesforce/storefront-next-runtime/i18n` for server-capable APIs.
+        files: ['**/*.server.{ts,tsx}'],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    paths: [
+                        {
+                            name: '@salesforce/storefront-next-runtime/i18n/client',
+                            message:
+                                'The /i18n/client entry is browser-only. Import server-capable i18n APIs from "@salesforce/storefront-next-runtime/i18n".',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+    {
         // Disable color linting for migration script
         files: ['scripts/migrate-colors.js'],
         rules: {

@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// Browser-only entry. Imports `i18next-browser-languagedetector`, which has no Node
+// support — keep this file out of server code and only consume via the
+// `@salesforce/storefront-next-runtime/i18n/client` subpath in client modules
+// (e.g. `root.tsx` `useEffect`). Server-capable APIs live in the sibling
+// `@salesforce/storefront-next-runtime/i18n` subpath.
 import i18next, { type i18n, type BackendModule, type ReadCallback } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';

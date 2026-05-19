@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// Server-capable i18n entry. Browser-only client init lives in the sibling
+// `@salesforce/storefront-next-runtime/i18n/client` subpath so that SSR bundles
+// don't drag in i18next-browser-languagedetector.
 export { getTranslation, getLocale, mockI18nContext } from './context.js';
 export { createI18nMiddleware } from './middleware.js';
+// `defaultInterpolation` is exported so customers layering custom formatters
+// (e.g. `{{ value, currency }}`) can delegate the unhandled cases to our
+// number formatter without copy-pasting it.
 export { defaultInterpolation } from './defaults.js';
-export type { I18nMiddlewareConfig, LocaleLoader, Resource, ResourceLanguage } from './types.js';
+// `I18nMiddlewareConfig` and `LocaleLoader` are exported for customers who
+// factor i18n config out of the inline `createI18nMiddleware`/`initI18next`
+// call site (helpers, factories, shared loaders) and need a named type.
+export type { I18nMiddlewareConfig, LocaleLoader } from './types.js';

@@ -27,7 +27,6 @@ declare function mockI18nContext(contextProvider: RouterContextProvider, options
 }): void;
 //#endregion
 //#region src/i18n/types.d.ts
-
 /** Config passed to `createI18nMiddleware`. All values come from the template — the SDK never reads config values directly. */
 interface I18nMiddlewareConfig {
   resources: Resource;
@@ -59,5 +58,5 @@ declare function createI18nMiddleware(config: I18nMiddlewareConfig): MiddlewareF
 /** Shared i18next interpolation config. Disables HTML escaping (React handles that) and adds `{{ value, number }}` formatting via `toLocaleString`. */
 declare const defaultInterpolation: InterpolationOptions;
 //#endregion
-export { type I18nMiddlewareConfig, type LocaleLoader, type Resource, type ResourceLanguage, createI18nMiddleware, defaultInterpolation, getLocale, getTranslation, mockI18nContext };
+export { type I18nMiddlewareConfig, type LocaleLoader, createI18nMiddleware, defaultInterpolation, getLocale, getTranslation, mockI18nContext };
 //# sourceMappingURL=i18n.d.ts.map

@@ -15,8 +15,6 @@
  */
 import type { InterpolationOptions, Resource, ResourceLanguage, ThirdPartyModule } from 'i18next';
 
-export type { Resource, ResourceLanguage };
-
 /** Config passed to `createI18nMiddleware`. All values come from the template — the SDK never reads config values directly. */
 export interface I18nMiddlewareConfig {
     resources: Resource;

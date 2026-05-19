@@ -293,7 +293,12 @@ src/routes/
 └── action.set-locale.ts    # Server action to persist locale preference
 ```
 
-The i18n utilities (`getTranslation`, `i18nextContext`, `initI18next`, `createI18nMiddleware`) are provided by `@salesforce/storefront-next-runtime/i18n` and `@salesforce/storefront-next-runtime/i18n/client`. They do not live in `src/lib/` anymore.
+The i18n utilities (`getTranslation`, `getLocale`, `mockI18nContext`, `createI18nMiddleware`, `initI18next`) are provided by the SDK and split across two subpaths:
+
+- `@salesforce/storefront-next-runtime/i18n` — server-capable APIs (`getTranslation`, `getLocale`, `mockI18nContext`, `createI18nMiddleware`). Safe to import from server modules, route modules, and components.
+- `@salesforce/storefront-next-runtime/i18n/client` — **browser-only** APIs (`initI18next`). This entry pulls in `i18next-browser-languagedetector`, which has no Node support, so it must only be imported from client-side code (e.g. inside `useEffect` in `root.tsx`). Importing it from a `*.server.ts` file will fail to bundle and is blocked by ESLint.
+
+They do not live in `src/lib/` anymore.
 
 ## Usage Examples
 
