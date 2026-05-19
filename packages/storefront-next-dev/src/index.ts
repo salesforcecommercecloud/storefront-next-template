@@ -19,28 +19,11 @@ export { storefrontNextTargets as default, type StorefrontNextTargetsConfig } fr
 // Named export: Transform target placeholder components (UITarget & UITargetProviders)
 export { transformTargetPlaceholderPlugin } from './plugins/transformTargets';
 
-// Named export: Action hooks virtual module plugin (server action extension points)
-export { actionHooksPlugin } from './plugins/actionHooks';
-
 // Named export: Target dev mode plugin for visual debugging of UITargets (dev only)
 export { uiTargetDevModePlugin, type UITargetDevModeConfig } from './plugins/uiTargetDevMode';
 
 // Named export: Hybrid proxy plugin for local development against legacy SFRA
 export { hybridProxyPlugin, type HybridProxyPluginOptions } from './plugins/hybridProxy';
 
-// Named export: eCDN routing rule matcher (used by hybrid proxy and MRT hybrid middleware)
-export { shouldRouteToNext, extractPatterns, testPatterns, clearCache } from './plugins/ecdnMatcher';
-
-// Server factory for production use
-export { createServer, loadProjectConfig, loadConfigFromEnv } from './server/index';
-
-// Named export: Trim extensions function
-import trimExtensions from './extensibility/trim-extensions';
-export { trimExtensions };
-
-// Named export: Generate cartridge metadata for programmatic usage
-export {
-    generateMetadata,
-    type GenerateMetadataOptions,
-    type GenerateMetadataResult,
-} from './cartridge-services/generate-cartridge';
+// Named export: eCDN routing rule matcher (injected into hybridProxyPlugin as routeMatcher)
+export { shouldRouteToNext } from './plugins/ecdnMatcher';
