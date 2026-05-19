@@ -139,7 +139,7 @@ export default function CartContent({
 
     // Check if cart is empty using the basket prop from loader data
     if (!basket?.productItems?.length) {
-        return <CartEmpty isRegistered={false} />;
+        return <CartEmpty />;
     }
 
     let deliveryItems = basket?.productItems || [];

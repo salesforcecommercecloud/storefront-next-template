@@ -161,13 +161,7 @@ export default function Cart(): ReactElement {
                 })}
                 openGraph={{ type: 'website', url: pageData.pageUrl }}
             />
-            <Suspense
-                fallback={
-                    <CartSkeleton
-                        isRegistered={false}
-                        productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
-                    />
-                }>
+            <Suspense fallback={<CartSkeleton productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0} />}>
                 <Await resolve={pageData.basketDataPromise} errorElement={<CartLoadError />}>
                     {(basketData) => (
                         <Suspense fallback={<CartBody basketData={basketData} wishlistProductIds={[]} />}>

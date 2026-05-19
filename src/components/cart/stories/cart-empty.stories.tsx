@@ -146,28 +146,14 @@ The EmptyCart component displays when the shopping cart has no items. It provide
 - **Responsive Padding**: p-8 on mobile, md:p-16 on larger screens
 - **Accessibility**: aria-hidden icon, semantic heading, proper link markup
 
-## Props
-
-- \`isRegistered\` (boolean, default: false) — Controls subtitle text. Both states show "Start shopping to add items to your cart" and the same single button.
-
 ## Layout
 
-- **Outer Container**: Full-width muted background with max-w-7xl centered content
-- **Card**: \`bg-background rounded-none shadow-md\` with generous responsive padding
+- **Outer Container**: Full-width muted background with section-container max width
+- **Card**: \`bg-background rounded-none\` with generous responsive padding
 - **Icon**: 96×96px inline SVG shopping bag with \`text-muted-foreground/30\`
 - **Typography**: h2 heading (text-2xl font-semibold) with mb-2, subtitle (text-sm) with mb-8
 - **Button**: Centered "Start Shopping" button (not full-width)
                 `,
-            },
-        },
-    },
-    argTypes: {
-        isRegistered: {
-            control: 'boolean',
-            description: 'Whether the user is registered/logged in',
-            table: {
-                type: { summary: 'boolean' },
-                defaultValue: { summary: 'false' },
             },
         },
     },
@@ -201,94 +187,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    args: {
-        isRegistered: false,
-    },
     parameters: {
         docs: {
             description: {
                 story: `
-Default empty cart state for guest users. Shows:
+Default empty cart state. Shows:
 
 - Shopping bag icon with muted styling
-- Empty cart title and guest-specific message
+- Empty cart title and message
 - Start Shopping button (primary action)
-
-This is the most common empty cart state for new or anonymous users.
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const GuestUser: Story = {
-    args: {
-        isRegistered: false,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Empty cart state specifically for guest users. This story demonstrates:
-
-- Guest-specific messaging
-- Start Shopping button
-- Clean, simple empty state for anonymous users
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        const buttons = canvas.queryAllByRole('button');
-        const inputs = canvas.queryAllByRole('textbox');
-
-        if (buttons.length > 0) {
-            await userEvent.click(buttons[0]);
-        }
-        if (inputs.length > 0) {
-            await userEvent.click(inputs[0]);
-        }
-
-        void expect(canvasElement.firstChild).toBeInTheDocument();
-    },
-};
-
-export const RegisteredUser: Story = {
-    args: {
-        isRegistered: true,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Empty cart state for registered/logged-in users. This story shows:
-
-- Registered user-specific messaging
-- Start Shopping button
-- Same clean interface for authenticated users
-
-This state is shown when a logged-in user has an empty cart.
                 `,
             },
         },
