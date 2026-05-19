@@ -6,7 +6,6 @@
 - Exclude OTP endpoints from auth token invalidation — 401 responses from `/oauth2/otp/` now surface as normal API errors instead of triggering `AuthTokenInvalidError` ([#1409](https://github.com/commerce-emu/storefront-next/pull/1409))
 - Update shopper-customers OAS from v1.3.2 to v1.8.0 and replace shopper-login OAS v1.42.2 with auth OAS v1.47.0 (@W-21451728) ([#1475](https://github.com/commerce-emu/storefront-next/pull/1475))
 - Exclude OTP endpoints from auth token invalidation — 401 responses from `/oauth2/otp/` now surface as normal API errors instead of triggering `AuthTokenInvalidError` ([#1409](https://github.com/commerce-emu/storefront-next/pull/1409))
-- 
 
 ## v0.4.0 (May 5, 2026)
 

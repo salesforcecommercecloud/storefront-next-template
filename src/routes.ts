@@ -16,4 +16,25 @@
 import { type RouteConfig } from '@react-router/dev/routes';
 import { flatRoutes } from '@salesforce/storefront-next-runtime/routing';
 
+/**
+ * Enhanced `flatRoutes` from `@salesforce/storefront-next-runtime/routing`.
+ *
+ * This is a drop-in wrapper around React Router's stock `flatRoutes` (from
+ * `@react-router/fs-routes`) — it accepts the same options (`ignoredRouteFiles`,
+ * `rootDirectory`) and returns the same `RouteConfigEntry[]` shape. Internally it
+ * delegates to the upstream `flatRoutes` and then layers on three SDK-level behaviors
+ * that every storefront depends on:
+ *
+ * 1. **File-based route discovery** — scans `src/routes/` for route modules, same as the
+ *    upstream `flatRoutes`.
+ * 2. **Extension route merging** — additionally scans `src/extensions/<name>/routes/` for
+ *    routes contributed by optional feature extensions and merges them into the base route
+ *    tree. This is what allows extensions to ship their own routes without the template
+ *    having to import them explicitly.
+ * 3. **Multi-site URL prefixing** — if `app.url.prefix` is configured in `config.server.ts`
+ *    (e.g. `/:siteId/:localeId`), wraps every route under that prefix using `app-wrapper.tsx`
+ *    so that site- and locale-aware URLs work out of the box. See `docs/README-MULTI-SITE.md`.
+ *
+ * Test files (`*.test.ts`, `*.test.tsx`) are ignored by default.
+ */
 export default flatRoutes() satisfies RouteConfig;

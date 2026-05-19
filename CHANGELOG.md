@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Add comment on how enhanced flatRoutes from runtime works [#1701](https://github.com/commerce-emu/storefront-next/pull/1701)
 - Consolidate mini-cart data fetching: `useBasketWithProducts` and `useBasketWithPromotions` are merged into `useMiniCartData`; `/resource/basket-products-promotions` is removed and `/resource/basket-products` now returns `{ basket, productsById }` ([#1716](https://github.com/commerce-emu/storefront-next/pull/1716))
 - Remove dark mode tokens entirely (Phase 1 follow-up to the CSS color token audit).(@W-22497061)
 - Prefetch basket data when hovering over cart badge ([#1704](https://github.com/commerce-emu/storefront-next/pull/1704))
