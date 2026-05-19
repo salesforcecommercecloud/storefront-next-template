@@ -236,7 +236,6 @@ The docs below are where architectural detail lives — consult them for tasks i
 - [docs/README-TURNSTILE.md](./docs/README-TURNSTILE.md) — Cloudflare Turnstile bot protection (BFF verification, three-tier health, fail-open)
 - [docs/README-I18N.md](./docs/README-I18N.md) — Internationalization
 - [docs/README-MULTI-SITE.md](./docs/README-MULTI-SITE.md) — Site context and locale URL routing
-- [docs/README-ENGAGEMENT-ANALYTICS.md](./docs/README-ENGAGEMENT-ANALYTICS.md) — Einstein / Active Data event mapping
 - [docs/README-PAGE-DESIGNER.md](./docs/README-PAGE-DESIGNER.md) — Page Designer component development (decorators, metadata)
 
 **UI & frontend:**

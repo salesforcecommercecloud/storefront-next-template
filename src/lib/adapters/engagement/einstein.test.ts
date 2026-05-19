@@ -80,7 +80,6 @@ const mockConfig: EinsteinConfig = {
         checkout_step: true,
         view_search_suggestion: true,
         click_search_suggestion: true,
-        commerce_agent_engagement: true,
     },
 };
 
@@ -336,29 +335,6 @@ describe('Einstein Adapter', () => {
             const payload = await getBeaconPayload();
 
             expect(payload.cookieId).toBe('');
-        });
-
-        it('should send commerce_agent_engagement as viewPage with synthetic currentLocation', async () => {
-            const commerceAgentEvent: AnalyticsEvent = {
-                eventType: 'commerce_agent_engagement',
-                surface: 'search',
-                payload: mockUser,
-            } as AnalyticsEvent;
-            const adapter = createEinsteinAdapter(mockConfig) as EinsteinAdapter;
-            await adapter.sendEvent(commerceAgentEvent, undefined, defaultConsent);
-
-            expect(mockSendBeacon).toHaveBeenCalledWith(
-                'https://api.cquotient.com/v3/activities/realm-siteId/viewPage?clientId=test-einstein-id',
-                expect.any(Blob)
-            );
-            const payload = await getBeaconPayload();
-            expect(payload).toEqual({
-                userId: 'test-enc-user-id',
-                cookieId: 'test-usid',
-                instanceType: 'sbx',
-                realm: 'realm',
-                currentLocation: '/__sfnext/commerce-agent/search',
-            });
         });
 
         it('should throw error for unsupported event types', async () => {

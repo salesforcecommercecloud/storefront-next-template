@@ -29,7 +29,6 @@ import { getSessionJSONItem, setSessionJSONItem, clearSessionJSONItem } from '@/
 import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
-import { useAnalytics } from '@/hooks/use-analytics';
 
 const RECENT_SEARCH_LIMIT = 5;
 const RECENT_SEARCH_KEY = 'recent-search-key';
@@ -39,7 +38,6 @@ export default function SearchBar(): ReactElement {
     const { t } = useTranslation('header');
     const navigate = useNavigate();
     const config = useConfig<AppConfig>();
-    const { trackCommerceAgentEngagement } = useAnalytics();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [query, setQuery] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -158,14 +156,13 @@ export default function SearchBar(): ReactElement {
 
     const onShopperAgentClick = useCallback(() => {
         const searchText = inputRef.current?.value?.trim() ?? query.trim();
-        void trackCommerceAgentEngagement({ surface: 'search' });
         setShowSuggestions(false);
         setQuery('');
         if (inputRef.current) {
             inputRef.current.value = '';
         }
         openShopperAgentAndSendMessage(searchText);
-    }, [query, trackCommerceAgentEngagement]);
+    }, [query]);
 
     useEffect(() => {
         shouldOpenPopover();

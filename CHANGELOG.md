@@ -76,7 +76,6 @@
 - Add support for optional `sh` parameter to dynamic images ([#1503](https://github.com/commerce-emu/storefront-next/pull/1503))
 - [UX Fix] Fix broken radius overriding system, and minor UX changes according to design ([#1495](https://github.com/commerce-emu/storefront-next/pull/1495))
 - Prefix all checkout UITarget targetIds with `sfcc.` (@W-21550346) ([#1500](https://github.com/commerce-emu/storefront-next/pull/1500))
-- Analytics: emit `commerce_agent_engagement` when shoppers open agentic commerce from the header or search assistant; add `useAnalytics().trackCommerceAgentEngagement`, Einstein (`viewPage` + synthetic `currentLocation`) and Active Data (`sfn-cagent-surface`) adapter handling, default `eventToggles` keys, and config docs
 - Flatten default `Card` styling (drop default radius/shadow) ([#1489](https://github.com/commerce-emu/storefront-next/pull/1489))
 - Multiship Guest Add Address now supports different addresseses with same name (@W-22187309)
 - Standardize layout with `section-container` utility: consolidate responsive padding, max-width, and centering into a single reusable class ([#1483](https://github.com/commerce-emu/storefront-next/pull/1483))

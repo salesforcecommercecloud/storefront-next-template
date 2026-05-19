@@ -25,7 +25,6 @@
 - Add `/i18n` and `/i18n/client` subpath exports: `createI18nMiddleware`, `getTranslation`, `getLocale`, `mockI18nContext`, `initI18next`, and shared `defaultInterpolation`
 - Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
 - Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Add `CommerceAgentEngagementEvent` (`commerce_agent_engagement`) to the `AnalyticsEvent` union for agentic commerce usage tracking (`surface`: `header` | `search`)
 - Add login preferences middleware and context to data store (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
 - Extend `SiteProvider` to accept `site`, `language`, `locale`, `currency` props and `useSite()` to return `SiteContextValue` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))
 - Add support to MRT Data Layer access [#1215](https://github.com/commerce-emu/storefront-next/pull/1215)

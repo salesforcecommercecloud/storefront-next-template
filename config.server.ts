@@ -407,7 +407,6 @@ export default defineConfig<Config>(
                             checkout_step: true,
                             view_search_suggestion: true,
                             click_search_suggestion: true,
-                            commerce_agent_engagement: true,
                         },
                     },
                     dataCloud: {
@@ -429,7 +428,6 @@ export default defineConfig<Config>(
                             checkout_step: true,
                             view_search_suggestion: true,
                             click_search_suggestion: true,
-                            commerce_agent_engagement: true,
                         },
                     },
                     activeData: {
@@ -450,7 +448,6 @@ export default defineConfig<Config>(
                             checkout_step: false,
                             view_search_suggestion: false,
                             click_search_suggestion: false,
-                            commerce_agent_engagement: true,
                         },
                     },
                 },

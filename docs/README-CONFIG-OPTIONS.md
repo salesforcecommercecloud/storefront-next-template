@@ -20,7 +20,6 @@ This reference provides detailed documentation for all configuration options ava
   - [search](#search) - Search-specific settings
   - [performance](#performance) - Performance optimization settings
   - [engagement](#engagement) - Analytics and engagement adapters
-  - [Engagement analytics](./README-ENGAGEMENT-ANALYTICS.md) - Einstein / Active Data event mapping
   - [commerceAgent](#commerceagent) - Shopper Agent (Embedded Messaging / Agentforce)
   - [development](#development) - Development tools and features
 
@@ -1226,8 +1225,6 @@ When enabled, collects client-side performance metrics using the Performance API
 
 Analytics and engagement adapter configuration.
 
-For how storefront analytics events (including **`commerce_agent_engagement`**) map to **Einstein** and **Active Data** APIs and reporting fields, see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md).
-
 Note: Engagement settings can't be overridden via `PUBLIC__` environment variables. To change these values, update `config.server.ts` directly. This restriction exists because engagement configuration affects build-time validation for analytics instrumentation.
 
 ### engagement.adapters
@@ -1309,7 +1306,6 @@ Individual toggles for each Einstein event type. Available events:
 - `checkout_step` - Checkout step progression
 - `view_search_suggestion` - Search suggestion panel views
 - `click_search_suggestion` - Clicks on search suggestions
-- `commerce_agent_engagement` - Opens agentic commerce from the header or search assistant (see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement))
 
 Example:
 ```bash
@@ -1402,13 +1398,7 @@ The unique site identifier for Active Data.
 
 Type: `Record<string, boolean>`
 
-Individual toggles for each Active Data event type. Uses the same event types as Einstein (including `commerce_agent_engagement`; see [README-ENGAGEMENT-ANALYTICS.md](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement)).
-
----
-
-### Commerce agent engagement (`commerce_agent_engagement`)
-
-Behavior, Einstein **`viewPage`** / **`currentLocation`** mapping, Active Data **`sfn-cagent-surface`**, default toggles, and reporting notes: **[README-ENGAGEMENT-ANALYTICS.md — Commerce agent engagement](./README-ENGAGEMENT-ANALYTICS.md#commerce-agent-engagement)**.
+Individual toggles for each Active Data event type. Uses the same event types as Einstein.
 
 ---
 

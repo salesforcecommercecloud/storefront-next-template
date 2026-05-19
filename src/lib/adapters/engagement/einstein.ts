@@ -67,8 +67,6 @@ export type EinsteinRecommenderName = (typeof EINSTEIN_RECOMMENDERS)[keyof typeo
 
 const einteinEventToEndpointMap: Record<AnalyticsEvent['eventType'], string> = {
     view_page: 'viewPage',
-    /** Einstein has no dedicated commerce-agent activity; use viewPage so the event reaches the same pipeline. */
-    commerce_agent_engagement: 'viewPage',
     view_product: 'viewProduct',
     view_search: 'viewSearch',
     view_category: 'viewCategory',
@@ -305,13 +303,6 @@ function convertEventToEinsteinActivity(event: AnalyticsEvent, realm: string, is
             return {
                 ...baseActivity,
                 currentLocation: event.path,
-            };
-
-        case 'commerce_agent_engagement':
-            return {
-                ...baseActivity,
-                currentLocation:
-                    event.surface === 'header' ? '/__sfnext/commerce-agent/header' : '/__sfnext/commerce-agent/search',
             };
 
         case 'view_search_suggestion':
