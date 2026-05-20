@@ -77,7 +77,10 @@ export async function fetchProductsInBasket(
         allImages: true,
         perPricebook: true,
         currency,
-        // getProducts returns all expand fields by default (except page_meta_tags). No explicit expand needed.
+        // Scope expansions to only what cart UI consumes. Without an explicit expand, the SCAPI default
+        // returns extra blocks (set_products, recommendations, links, options, custom_properties, validation)
+        // that the cart never reads.
+        expand: ['availability', 'bundled_products', 'images', 'prices', 'promotions', 'variations'],
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
         // @sfdc-extension-block-end SFDC_EXT_BOPIS

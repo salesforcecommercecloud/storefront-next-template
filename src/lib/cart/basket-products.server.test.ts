@@ -84,7 +84,12 @@ describe('fetchProductsInBasket', () => {
         expect(fetchProductsByIds).toHaveBeenCalledWith(
             context,
             ['sku-1', 'sku-2'],
-            expect.objectContaining({ allImages: true, perPricebook: true, currency: 'USD' })
+            expect.objectContaining({
+                allImages: true,
+                perPricebook: true,
+                currency: 'USD',
+                expand: ['availability', 'bundled_products', 'images', 'prices', 'promotions', 'variations'],
+            })
         );
     });
 
@@ -161,7 +166,10 @@ describe('fetchProductsInBasket', () => {
         expect(fetchProductsByIds).toHaveBeenCalledWith(
             context,
             ['sku-1'],
-            expect.objectContaining({ inventoryIds: ['inv-1'] })
+            expect.objectContaining({
+                inventoryIds: ['inv-1'],
+                expand: ['availability', 'bundled_products', 'images', 'prices', 'promotions', 'variations'],
+            })
         );
     });
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
