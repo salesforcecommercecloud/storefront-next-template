@@ -46,6 +46,7 @@ import { getPickupShipment } from '@/extensions/bopis/lib/basket-utils';
 import { setAddressAndMethodForPickup } from '@/extensions/bopis/lib/api/shipment.server';
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
 import { isPickupAddressSet } from '@/extensions/bopis/lib/store-utils';
+import { isPickupShippingMethod } from '@/extensions/bopis/lib/pickup-shipping-method-utils';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 import { isAddressEmpty, isOrderBillingAddressIncomplete } from '@/lib/address/address-utils';
 
@@ -496,11 +497,13 @@ export async function initializeBasketForReturningCustomer(
                     updatedBasket.basketId as string,
                     shipmentId
                 );
-                if (
-                    Array.isArray(shippingMethods?.applicableShippingMethods) &&
-                    shippingMethods?.applicableShippingMethods?.length > 0
-                ) {
-                    const defaultMethod = shippingMethods.applicableShippingMethods[0];
+                let candidateMethods = shippingMethods?.applicableShippingMethods;
+                // @sfdc-extension-block-start SFDC_EXT_BOPIS
+                // Pickup is BOPIS-only (assigned via c_fromStoreId) — never use it as the auto-default.
+                candidateMethods = candidateMethods?.filter((method) => !isPickupShippingMethod(method));
+                // @sfdc-extension-block-end SFDC_EXT_BOPIS
+                if (Array.isArray(candidateMethods) && candidateMethods.length > 0) {
+                    const defaultMethod = candidateMethods[0];
                     const { data } = await clients.shopperBasketsV2.updateShippingMethodForShipment({
                         params: {
                             path: {

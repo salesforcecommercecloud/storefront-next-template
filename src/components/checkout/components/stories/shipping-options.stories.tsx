@@ -438,6 +438,16 @@ export const SummaryViewWithFreeShipping: Story = {
         ...baseArgs,
         isCompleted: true,
         isEditing: false,
+        shippingMethods: {
+            applicableShippingMethods: [
+                {
+                    id: 'free-ground',
+                    name: 'Ground',
+                    description: 'Order received within 7-10 business days',
+                    price: 0,
+                },
+            ],
+        },
     },
     decorators: [withFreeShippingSelected],
     parameters: {
@@ -464,6 +474,17 @@ export const SummaryViewWithDiscountedShipping: Story = {
         ...baseArgs,
         isCompleted: true,
         isEditing: false,
+        shippingMethods: {
+            applicableShippingMethods: [
+                {
+                    id: 'ground',
+                    name: 'Ground',
+                    description: 'Order received within 7-10 business days',
+                    price: 15.99,
+                    shippingPromotions: [{ promotionId: 'promo-50off', promotionName: '50% off shipping' }],
+                },
+            ],
+        },
     },
     decorators: [withDiscountedShippingSelected],
     parameters: {

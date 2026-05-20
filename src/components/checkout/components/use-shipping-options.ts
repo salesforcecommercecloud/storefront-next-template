@@ -117,17 +117,11 @@ export function useShippingOptions({
 
     const selectedMethod = cart?.shipments?.[0]?.shippingMethod;
 
+    // Only show a summary when the basket's selected method is actually offerable for the current
+    // address.
     const summaryMethod: ShippingMethod | undefined = useMemo(() => {
         if (!selectedMethod?.id) return undefined;
-        const fromList = availableShippingMethods.find((m) => m.id === selectedMethod.id);
-        if (fromList) return fromList;
-        return {
-            id: selectedMethod.id,
-            name: selectedMethod.name ?? selectedMethod.id,
-            description: selectedMethod.description,
-            price: typeof selectedMethod.price === 'number' ? selectedMethod.price : 0,
-            shippingPromotions: selectedMethod.shippingPromotions,
-        };
+        return availableShippingMethods.find((m) => m.id === selectedMethod.id);
     }, [selectedMethod, availableShippingMethods]);
 
     const isGuest = !customerProfile?.customer?.customerId;

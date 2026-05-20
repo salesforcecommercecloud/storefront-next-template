@@ -135,7 +135,7 @@ describe('useShippingOptions', () => {
         });
     });
 
-    test('falls back to raw basket data for summaryMethod when method is not in available list', () => {
+    test('returns undefined summaryMethod when basket method is not in available list', () => {
         useBasket.mockReturnValue(
             createMockBasket({
                 shipments: [
@@ -147,36 +147,7 @@ describe('useShippingOptions', () => {
             })
         );
         const { result } = renderShippingHook();
-        expect(result.current.summaryMethod).toEqual({
-            id: 'unlisted',
-            name: 'Custom',
-            description: 'desc',
-            price: 7.5,
-        });
-    });
-
-    test('uses method id as name fallback when name is undefined', () => {
-        useBasket.mockReturnValue(
-            createMockBasket({ shipments: [{ shipmentId: 's1', shippingMethod: { id: 'no-name', price: 3 } }] })
-        );
-        const { result } = renderShippingHook();
-        expect(result.current.summaryMethod?.name).toBe('no-name');
-    });
-
-    test('preserves shippingPromotions in summaryMethod fallback', () => {
-        const promos = [{ promotionId: 'p1', calloutMsg: '50% off!' }];
-        useBasket.mockReturnValue(
-            createMockBasket({
-                shipments: [
-                    {
-                        shipmentId: 's1',
-                        shippingMethod: { id: 'unlisted', name: 'Promo', price: 10, shippingPromotions: promos },
-                    },
-                ],
-            })
-        );
-        const { result } = renderShippingHook();
-        expect(result.current.summaryMethod?.shippingPromotions).toEqual(promos);
+        expect(result.current.summaryMethod).toBeUndefined();
     });
 
     describe('getDiscountedPrice', () => {

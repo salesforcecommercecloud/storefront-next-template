@@ -611,5 +611,68 @@ describe('Checkout Loaders', () => {
             const result = await initializeBasketForReturningCustomer({} as any, mockCustomerProfile);
             expect(result).toBeNull();
         });
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        describe('default shipping method auto-select (BOPIS-aware)', () => {
+            const baseProfile = {
+                customer: { login: 'test@example.com', email: 'test@example.com', customerId: 'cust-123' },
+                addresses: [{ addressId: 'addr-1', countryCode: 'US', lastName: 'Doe' }],
+                paymentInstruments: [],
+            } as CustomerProfile;
+
+            const basketWithAddressNoMethod = {
+                basketId: 'test-basket',
+                customerInfo: { email: 'test@example.com', customerId: 'cust-123' },
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { firstName: 'John', lastName: 'Doe', address1: '123 Main St' },
+                        // no shippingMethod — triggers auto-select branch
+                    },
+                ],
+            };
+
+            it('skips pickup methods when picking the default for a delivery shopper', async () => {
+                const { getBasket, updateBasketResource } = await import('@/middlewares/basket.server');
+                const { getShippingMethodsForShipment } = await import('@/lib/api/shipping-methods.server');
+
+                vi.mocked(getBasket).mockResolvedValue({ current: basketWithAddressNoMethod } as any);
+                vi.mocked(updateBasketResource).mockImplementation(() => {});
+                vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
+                    applicableShippingMethods: [
+                        { id: '005', name: 'Pickup in store', price: 0, c_storePickupEnabled: true },
+                    ],
+                } as any);
+
+                await initializeBasketForReturningCustomer({} as any, baseProfile);
+
+                expect(mockShopperBasketsClient.updateShippingMethodForShipment).not.toHaveBeenCalled();
+            });
+
+            it('selects the first non-pickup method when both pickup and delivery are applicable', async () => {
+                const { getBasket, updateBasketResource } = await import('@/middlewares/basket.server');
+                const { getShippingMethodsForShipment } = await import('@/lib/api/shipping-methods.server');
+
+                vi.mocked(getBasket).mockResolvedValue({ current: basketWithAddressNoMethod } as any);
+                vi.mocked(updateBasketResource).mockImplementation(() => {});
+                vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
+                    applicableShippingMethods: [
+                        { id: '005', name: 'Pickup in store', price: 0, c_storePickupEnabled: true },
+                        { id: 'standard', name: 'Standard', price: 5.99 },
+                        { id: 'express', name: 'Express', price: 12.99 },
+                    ],
+                } as any);
+                mockShopperBasketsClient.updateShippingMethodForShipment.mockResolvedValue({
+                    data: basketWithAddressNoMethod,
+                });
+
+                await initializeBasketForReturningCustomer({} as any, baseProfile);
+
+                expect(mockShopperBasketsClient.updateShippingMethodForShipment).toHaveBeenCalledWith(
+                    expect.objectContaining({ body: { id: 'standard' } })
+                );
+            });
+        });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
 });
