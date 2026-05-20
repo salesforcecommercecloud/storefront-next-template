@@ -220,7 +220,7 @@ export default defineConfig<Config>(
             // Authentication configuration shared across all auth features
             // See CONFIG-OPTIONS.md#auth for detailed documentation
             auth: {
-                otpLength: 8,
+                otpLength: 6,
             },
             // Feature flags for enabling/disabling functionality
             // See CONFIG-OPTIONS.md#features for detailed documentation
