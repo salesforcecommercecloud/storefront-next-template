@@ -1017,5 +1017,48 @@ describe('Compression Streaming', () => {
                 expect(metadata.headers['content-encoding']).toBeUndefined();
             });
         });
+
+        describe('Caller-set Content-Encoding', () => {
+            it('should not re-compress when the route already set Content-Encoding: identity', async () => {
+                const stream = createCollectingStream();
+                const event = createMockEvent({ headers: { 'Accept-Encoding': 'br, gzip' } });
+                const context = createMockContext();
+                const request = createExpressRequest(event, context);
+                const response = createExpressResponse(stream, event, context, request);
+
+                response.setHeader('Content-Type', 'text/html');
+                response.setHeader('Content-Encoding', 'identity');
+                const payload = 'plain html '.repeat(100);
+                response.end(payload);
+
+                await stream.waitForEnd();
+
+                const metadata = stream.getMetadata();
+                expect(metadata.headers['content-encoding']).toBe('identity');
+                // Bytes on the wire must be the original payload (no Brotli/gzip framing).
+                expect(stream.getData().toString('utf-8')).toBe(payload);
+            });
+
+            it('should preserve a caller-set Content-Encoding other than identity', async () => {
+                const stream = createCollectingStream();
+                const event = createMockEvent({ headers: { 'Accept-Encoding': 'br, gzip' } });
+                const context = createMockContext();
+                const request = createExpressRequest(event, context);
+                const response = createExpressResponse(stream, event, context, request);
+
+                // Simulate a route serving a pre-gzipped asset.
+                const preGzipped = zlib.gzipSync(Buffer.from('pre-compressed payload'));
+                response.setHeader('Content-Type', 'text/html');
+                response.setHeader('Content-Encoding', 'gzip');
+                response.end(preGzipped);
+
+                await stream.waitForEnd();
+
+                const metadata = stream.getMetadata();
+                expect(metadata.headers['content-encoding']).toBe('gzip');
+                // Bytes on the wire must be the caller's pre-compressed buffer, not re-encoded.
+                expect(stream.getData().equals(preGzipped)).toBe(true);
+            });
+        });
     });
 });

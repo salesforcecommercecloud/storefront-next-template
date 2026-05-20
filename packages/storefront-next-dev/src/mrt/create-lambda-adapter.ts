@@ -509,8 +509,12 @@ export function createExpressResponse(
         }
     };
 
-    const isCompressionEnabled = (contentTypeStr: string | undefined): boolean => {
+    const isCompressionEnabled = (contentTypeStr: string | undefined, contentEncoding?: string): boolean => {
         const enabled = compressionConfig?.enabled ?? true;
+        // If the route already declared its own Content-Encoding (e.g. `identity` to opt
+        // out of runtime compression, or a pre-compressed asset like `gzip`), don't
+        // re-encode — that would double-compress or break the negotiated semantics.
+        if (contentEncoding) return false;
         return !!(selectedEncoding && selectedEncoding !== 'identity' && isCompressible(contentTypeStr) && enabled);
     };
 
@@ -522,6 +526,13 @@ export function createExpressResponse(
             return String(contentType);
         }
         return contentType;
+    };
+
+    const getContentEncoding = (response: ExpressResponse): string | undefined => {
+        const value = response.getHeader('content-encoding');
+        if (Array.isArray(value)) return value.join(',');
+        if (typeof value === 'number') return String(value);
+        return value;
     };
 
     /**
@@ -557,8 +568,9 @@ export function createExpressResponse(
         }
 
         const contentType = getContentType(response);
+        const existingContentEncoding = getContentEncoding(response);
 
-        if (isCompressionEnabled(contentType)) {
+        if (isCompressionEnabled(contentType, existingContentEncoding)) {
             headers['content-encoding'] = selectedEncoding;
             response.setHeader('Content-Encoding', selectedEncoding);
         }
@@ -585,7 +597,7 @@ export function createExpressResponse(
         // Set up compression stream if compression is enabled
         // The compression stream pipes to httpResponseStream, which pipes to responseStream
         // 'identity' means no encoding, so we should not initialize compression for it
-        if (isCompressionEnabled(contentType)) {
+        if (isCompressionEnabled(contentType, existingContentEncoding)) {
             initializeCompression();
         }
 
