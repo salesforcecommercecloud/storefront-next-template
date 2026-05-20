@@ -262,17 +262,11 @@ describe('root.tsx', () => {
         });
 
         it('should render preconnect links from config', async () => {
-            // Mock useMatches to return appConfig in the root route data
+            // Mock useRouteLoaderData to return appConfig in the root route data
             const reactRouter = await import('react-router');
-            const useMatchesSpy = vi.spyOn(reactRouter, 'useMatches').mockReturnValue([
-                {
-                    id: 'root',
-                    pathname: '/',
-                    params: {},
-                    data: { appConfig: mockConfig },
-                    handle: undefined,
-                },
-            ] as any);
+            const useRouteLoaderDataSpy = vi.spyOn(reactRouter, 'useRouteLoaderData').mockReturnValue({
+                appConfig: mockConfig,
+            } as any);
 
             const Stub = createRoutesStub([
                 {
@@ -290,7 +284,7 @@ describe('root.tsx', () => {
                 expect(preconnectLinks[0]).toHaveAttribute('href', 'https://edge.disstg.commercecloud.salesforce.com');
             });
 
-            useMatchesSpy.mockRestore();
+            useRouteLoaderDataSpy.mockRestore();
         });
     });
 

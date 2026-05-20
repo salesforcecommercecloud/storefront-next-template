@@ -20,9 +20,33 @@ import { getBasePath } from '../utils/paths';
  * Storefront Next preset for React Router configuration.
  * This preset enforces standard configuration for SFCC Storefront Next applications.
  * Users cannot override these values - they will be validated and an error will be thrown if modified.
+ *
+ * Environment variables:
+ * - `SFW_FALCON_INSTANCE` — (Optional) The Falcon instance identifier (e.g., `aws-dev2-uswest2`).
+ *   When set together with `SFW_FUNCTIONAL_DOMAIN`, adds workspace proxy domains to
+ *   `allowedActionOrigins` for CSRF protection on form actions.
+ * - `SFW_FUNCTIONAL_DOMAIN` — (Optional) The functional domain name (e.g., `cvw-dataplane-test`).
+ *   Required alongside `SFW_FALCON_INSTANCE` to construct workspace origin patterns.
  */
 export function storefrontNextPreset(): Preset {
     const sfwFalconInstance = process.env.SFW_FALCON_INSTANCE;
+    const sfwFunctionalDomain = process.env.SFW_FUNCTIONAL_DOMAIN;
+
+    if (sfwFalconInstance && !sfwFunctionalDomain) {
+        console.warn(
+            '[storefront-next] SFW_FALCON_INSTANCE is set but SFW_FUNCTIONAL_DOMAIN is not. ' +
+                'allowedActionOrigins will not include workspace domains. ' +
+                'Set both env vars to enable CSRF protection for workspace proxy origins.'
+        );
+    }
+
+    if (sfwFunctionalDomain && !sfwFalconInstance) {
+        console.warn(
+            '[storefront-next] SFW_FUNCTIONAL_DOMAIN is set but SFW_FALCON_INSTANCE is not. ' +
+                'allowedActionOrigins will not include workspace domains. ' +
+                'Set both env vars to enable CSRF protection for workspace proxy origins.'
+        );
+    }
 
     // Read base path from env var for basename configuration
     // This sets the base path for all React Router routes (e.g., '/site-a')
@@ -45,10 +69,15 @@ export function storefrontNextPreset(): Preset {
         // When set, all routes are served under this base path (e.g., /site-a/category/womens)
         // React Router automatically handles Link, navigate, .data requests, and redirects
         basename: basePath || '/',
-        // Allow workspace proxy domain for CSRF protection on form actions
-        ...(sfwFalconInstance && {
-            allowedActionOrigins: [`*.dataplane.cvw-dataplane-test.${sfwFalconInstance}.aws.sfdc.cl`],
-        }),
+        // Allow workspace proxy domains for CSRF protection on form actions
+        // Both the legacy port-based dataplane format and the Pomerium reverse proxy format are supported
+        ...(sfwFalconInstance &&
+            sfwFunctionalDomain && {
+                allowedActionOrigins: [
+                    `*.dataplane.${sfwFunctionalDomain}.${sfwFalconInstance}.aws.sfdc.cl`,
+                    `*.platform.a.${sfwFunctionalDomain}.${sfwFalconInstance}.aws.sfdc.cl`,
+                ],
+            }),
     };
 
     return {
@@ -90,6 +119,18 @@ export function storefrontNextPreset(): Preset {
 
             if (reactRouterConfig.basename !== presetConfig.basename) {
                 errors.push(`basename: expected ${presetConfig.basename}, got ${reactRouterConfig.basename}`);
+            }
+
+            // Only validate allowedActionOrigins when the preset sets it (workspace env).
+            // In prod builds (no workspace env vars), customers are free to configure their own origins.
+            if (
+                presetConfig.allowedActionOrigins &&
+                JSON.stringify(reactRouterConfig.allowedActionOrigins) !==
+                    JSON.stringify(presetConfig.allowedActionOrigins)
+            ) {
+                errors.push(
+                    `allowedActionOrigins: expected ${JSON.stringify(presetConfig.allowedActionOrigins)}, got ${JSON.stringify(reactRouterConfig.allowedActionOrigins)}`
+                );
             }
 
             if (errors.length > 0) {

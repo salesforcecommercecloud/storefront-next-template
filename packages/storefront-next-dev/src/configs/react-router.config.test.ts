@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { afterEach, beforeEach, describe, it, expect } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import { storefrontNextPreset } from './react-router.config';
 
 // Helper to create a mock resolved config with all required properties
@@ -45,18 +45,26 @@ const createMockResolvedConfig = (overrides: Record<string, any> = {}) => {
 describe('react-router.config', () => {
     describe('storefrontNextPreset', () => {
         const originalSfwFalconInstance = process.env.SFW_FALCON_INSTANCE;
+        const originalSfwFunctionalDomain = process.env.SFW_FUNCTIONAL_DOMAIN;
 
         beforeEach(() => {
-            // Clear workspace env var so tests get deterministic config
+            // Clear workspace env vars so tests get deterministic config
             delete process.env.SFW_FALCON_INSTANCE;
+            delete process.env.SFW_FUNCTIONAL_DOMAIN;
         });
 
         afterEach(() => {
-            // Restore original value
+            vi.restoreAllMocks();
+            // Restore original values
             if (originalSfwFalconInstance !== undefined) {
                 process.env.SFW_FALCON_INSTANCE = originalSfwFalconInstance;
             } else {
                 delete process.env.SFW_FALCON_INSTANCE;
+            }
+            if (originalSfwFunctionalDomain !== undefined) {
+                process.env.SFW_FUNCTIONAL_DOMAIN = originalSfwFunctionalDomain;
+            } else {
+                delete process.env.SFW_FUNCTIONAL_DOMAIN;
             }
         });
 
@@ -110,14 +118,18 @@ describe('react-router.config', () => {
                 expect(config1).toEqual(config2);
             });
 
-            it('should include allowedActionOrigins when SFW_FALCON_INSTANCE is set', () => {
+            it('should include allowedActionOrigins when SFW_FALCON_INSTANCE and SFW_FUNCTIONAL_DOMAIN are set', () => {
                 process.env.SFW_FALCON_INSTANCE = 'aws-dev2-uswest2';
+                process.env.SFW_FUNCTIONAL_DOMAIN = 'cvw-dataplane-test';
                 const preset = storefrontNextPreset();
                 const config = preset.reactRouterConfig?.({ reactRouterUserConfig: {} });
 
                 expect(config).toEqual(
                     expect.objectContaining({
-                        allowedActionOrigins: ['*.dataplane.cvw-dataplane-test.aws-dev2-uswest2.aws.sfdc.cl'],
+                        allowedActionOrigins: [
+                            '*.dataplane.cvw-dataplane-test.aws-dev2-uswest2.aws.sfdc.cl',
+                            '*.platform.a.cvw-dataplane-test.aws-dev2-uswest2.aws.sfdc.cl',
+                        ],
                     })
                 );
             });
@@ -127,6 +139,58 @@ describe('react-router.config', () => {
                 const config = preset.reactRouterConfig?.({ reactRouterUserConfig: {} });
 
                 expect(config).not.toHaveProperty('allowedActionOrigins');
+            });
+
+            it('should not include allowedActionOrigins when SFW_FUNCTIONAL_DOMAIN is not set', () => {
+                process.env.SFW_FALCON_INSTANCE = 'aws-dev2-uswest2';
+                const preset = storefrontNextPreset();
+                const config = preset.reactRouterConfig?.({ reactRouterUserConfig: {} });
+
+                expect(config).not.toHaveProperty('allowedActionOrigins');
+            });
+
+            it('should not include allowedActionOrigins when only SFW_FUNCTIONAL_DOMAIN is set', () => {
+                process.env.SFW_FUNCTIONAL_DOMAIN = 'cvw-dataplane-test';
+                const preset = storefrontNextPreset();
+                const config = preset.reactRouterConfig?.({ reactRouterUserConfig: {} });
+
+                expect(config).not.toHaveProperty('allowedActionOrigins');
+            });
+
+            it('should warn when SFW_FALCON_INSTANCE is set without SFW_FUNCTIONAL_DOMAIN', () => {
+                vi.spyOn(console, 'warn').mockImplementation(() => {});
+                process.env.SFW_FALCON_INSTANCE = 'aws-dev2-uswest2';
+                storefrontNextPreset();
+
+                expect(console.warn).toHaveBeenCalledWith(
+                    expect.stringContaining('SFW_FALCON_INSTANCE is set but SFW_FUNCTIONAL_DOMAIN is not')
+                );
+            });
+
+            it('should warn when SFW_FUNCTIONAL_DOMAIN is set without SFW_FALCON_INSTANCE', () => {
+                vi.spyOn(console, 'warn').mockImplementation(() => {});
+                process.env.SFW_FUNCTIONAL_DOMAIN = 'cvw-dataplane-test';
+                storefrontNextPreset();
+
+                expect(console.warn).toHaveBeenCalledWith(
+                    expect.stringContaining('SFW_FUNCTIONAL_DOMAIN is set but SFW_FALCON_INSTANCE is not')
+                );
+            });
+
+            it('should not warn when both env vars are set', () => {
+                vi.spyOn(console, 'warn').mockImplementation(() => {});
+                process.env.SFW_FALCON_INSTANCE = 'aws-dev2-uswest2';
+                process.env.SFW_FUNCTIONAL_DOMAIN = 'cvw-dataplane-test';
+                storefrontNextPreset();
+
+                expect(console.warn).not.toHaveBeenCalled();
+            });
+
+            it('should not warn when neither env var is set', () => {
+                vi.spyOn(console, 'warn').mockImplementation(() => {});
+                storefrontNextPreset();
+
+                expect(console.warn).not.toHaveBeenCalled();
             });
         });
 
@@ -304,6 +368,51 @@ describe('react-router.config', () => {
                 expect(() => {
                     void preset.reactRouterConfigResolved?.({ reactRouterConfig: invalidConfig });
                 }).toThrow('basename: expected /, got /custom-path');
+            });
+
+            it('should throw error when allowedActionOrigins is overridden', () => {
+                process.env.SFW_FALCON_INSTANCE = 'aws-dev2-uswest2';
+                process.env.SFW_FUNCTIONAL_DOMAIN = 'cvw-dataplane-test';
+                const preset = storefrontNextPreset();
+                const invalidConfig = createMockResolvedConfig({
+                    allowedActionOrigins: ['https://evil.example.com'],
+                });
+
+                expect(() => {
+                    void preset.reactRouterConfigResolved?.({ reactRouterConfig: invalidConfig });
+                }).toThrow('Storefront Next preset configuration was overridden');
+
+                expect(() => {
+                    void preset.reactRouterConfigResolved?.({ reactRouterConfig: invalidConfig });
+                }).toThrow('allowedActionOrigins');
+            });
+
+            it('should not throw when allowedActionOrigins matches preset (workspace env)', () => {
+                process.env.SFW_FALCON_INSTANCE = 'aws-dev2-uswest2';
+                process.env.SFW_FUNCTIONAL_DOMAIN = 'cvw-dataplane-test';
+                const preset = storefrontNextPreset();
+                const validConfig = createMockResolvedConfig({
+                    allowedActionOrigins: [
+                        '*.dataplane.cvw-dataplane-test.aws-dev2-uswest2.aws.sfdc.cl',
+                        '*.platform.a.cvw-dataplane-test.aws-dev2-uswest2.aws.sfdc.cl',
+                    ],
+                });
+
+                expect(() => {
+                    void preset.reactRouterConfigResolved?.({ reactRouterConfig: validConfig });
+                }).not.toThrow();
+            });
+
+            it('should not validate allowedActionOrigins when workspace env vars are not set', () => {
+                const preset = storefrontNextPreset();
+                const configWithCustomOrigins = createMockResolvedConfig({
+                    allowedActionOrigins: ['https://custom.example.com'],
+                });
+
+                // Customers are free to set their own allowedActionOrigins in prod
+                expect(() => {
+                    void preset.reactRouterConfigResolved?.({ reactRouterConfig: configWithCustomOrigins });
+                }).not.toThrow();
             });
 
             it('should not validate appDirectory and buildDirectory', () => {

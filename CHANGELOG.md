@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Replace `useMatches` with typed `useRouteLoaderData` in root Layout (@W-22457611)
 - Simplify .env.default and decouple E2E baseline overrides (@W-22220887)
 - Storybook infra: extract memory-router setup into `.storybook/decorators/`, slim `preview.tsx`, and standardize per-component story mocks (@W-22451538)
 - Unify sanitizePrefix and stripPathPrefix into one helper (@W-22498207) ([#1699](https://github.com/commerce-emu/storefront-next/pull/1699))

@@ -37,9 +37,19 @@ function getBasePath() {
 * Storefront Next preset for React Router configuration.
 * This preset enforces standard configuration for SFCC Storefront Next applications.
 * Users cannot override these values - they will be validated and an error will be thrown if modified.
+*
+* Environment variables:
+* - `SFW_FALCON_INSTANCE` — (Optional) The Falcon instance identifier (e.g., `aws-dev2-uswest2`).
+*   When set together with `SFW_FUNCTIONAL_DOMAIN`, adds workspace proxy domains to
+*   `allowedActionOrigins` for CSRF protection on form actions.
+* - `SFW_FUNCTIONAL_DOMAIN` — (Optional) The functional domain name (e.g., `cvw-dataplane-test`).
+*   Required alongside `SFW_FALCON_INSTANCE` to construct workspace origin patterns.
 */
 function storefrontNextPreset() {
 	const sfwFalconInstance = process.env.SFW_FALCON_INSTANCE;
+	const sfwFunctionalDomain = process.env.SFW_FUNCTIONAL_DOMAIN;
+	if (sfwFalconInstance && !sfwFunctionalDomain) console.warn("[storefront-next] SFW_FALCON_INSTANCE is set but SFW_FUNCTIONAL_DOMAIN is not. allowedActionOrigins will not include workspace domains. Set both env vars to enable CSRF protection for workspace proxy origins.");
+	if (sfwFunctionalDomain && !sfwFalconInstance) console.warn("[storefront-next] SFW_FUNCTIONAL_DOMAIN is set but SFW_FALCON_INSTANCE is not. allowedActionOrigins will not include workspace domains. Set both env vars to enable CSRF protection for workspace proxy origins.");
 	const presetConfig = {
 		appDirectory: "./src",
 		buildDirectory: "build",
@@ -52,7 +62,7 @@ function storefrontNextPreset() {
 			unstable_optimizeDeps: true
 		},
 		basename: getBasePath() || "/",
-		...sfwFalconInstance && { allowedActionOrigins: [`*.dataplane.cvw-dataplane-test.${sfwFalconInstance}.aws.sfdc.cl`] }
+		...sfwFalconInstance && sfwFunctionalDomain && { allowedActionOrigins: [`*.dataplane.${sfwFunctionalDomain}.${sfwFalconInstance}.aws.sfdc.cl`, `*.platform.a.${sfwFunctionalDomain}.${sfwFalconInstance}.aws.sfdc.cl`] }
 	};
 	return {
 		name: "storefront-next-preset",
@@ -65,6 +75,7 @@ function storefrontNextPreset() {
 			if (reactRouterConfig.future?.v8_middleware !== presetConfig.future.v8_middleware) errors.push(`future.v8_middleware: expected ${presetConfig.future.v8_middleware}, got ${reactRouterConfig.future?.v8_middleware}`);
 			if (reactRouterConfig.future?.v8_viteEnvironmentApi !== presetConfig.future.v8_viteEnvironmentApi) errors.push(`future.v8_viteEnvironmentApi: expected ${presetConfig.future.v8_viteEnvironmentApi}, got ${reactRouterConfig.future?.v8_viteEnvironmentApi}`);
 			if (reactRouterConfig.basename !== presetConfig.basename) errors.push(`basename: expected ${presetConfig.basename}, got ${reactRouterConfig.basename}`);
+			if (presetConfig.allowedActionOrigins && JSON.stringify(reactRouterConfig.allowedActionOrigins) !== JSON.stringify(presetConfig.allowedActionOrigins)) errors.push(`allowedActionOrigins: expected ${JSON.stringify(presetConfig.allowedActionOrigins)}, got ${JSON.stringify(reactRouterConfig.allowedActionOrigins)}`);
 			if (errors.length > 0) throw new Error(`Storefront Next preset configuration was overridden. The following values must not be modified:\n${errors.map((e) => `  - ${e}`).join("\n")}`);
 		}
 	};

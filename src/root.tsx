@@ -27,7 +27,6 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
-    useMatches,
     useRevalidator,
     useRouteLoaderData,
 } from 'react-router';
@@ -265,12 +264,10 @@ type ServerLoaderData = ReturnType<typeof loader>;
 type LoaderData = ServerLoaderData;
 
 export function Layout({ children }: PropsWithChildren) {
-    const matches = useMatches();
-    const rootMatch = matches.find((m) => m.id === 'root');
-    const appConfig = (rootMatch?.data as { appConfig?: AppConfig })?.appConfig;
+    const data = useRouteLoaderData<LoaderData>('root');
+    const appConfig = data?.appConfig;
     const appConfigScript = appConfig ? `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` : '';
 
-    const data = useRouteLoaderData<LoaderData>('root');
     const i18next = typeof window === 'undefined' ? data?.getI18next?.() : i18nextOnClient;
     const lang = i18next?.language ?? 'en';
     const dir = i18next?.dir(lang) ?? 'ltr';

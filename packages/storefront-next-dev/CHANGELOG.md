@@ -1,5 +1,7 @@
 ## v1.0.0-dev
 
+- Make `allowedActionOrigins` generic: read `SFW_FUNCTIONAL_DOMAIN` env var instead of hardcoding the functional domain, and add Pomerium reverse proxy origin pattern (@W-22457611)
+- Validate `allowedActionOrigins` in `reactRouterConfigResolved` to prevent overrides in workspace environments (@W-22457611)
 - Remove internal exports from the main package entry point (`actionHooksPlugin`, `extractPatterns`, `testPatterns`, `clearCache`, `createServer`, `loadProjectConfig`, `loadConfigFromEnv`, `trimExtensions`, `generateMetadata`) to reduce the public API surface for GA; these are either composed internally by `storefrontNextTargets` or available via dedicated subpath exports
 - Drop stale `SFDC_EXT_THEME_SWITCHER` references after the theme-switcher extension was removed from the template: replace fixtures in `extensibility/dependency-utils.test.ts` and `extensibility/target-utils.test.ts` with `SFDC_EXT_MULTISHIP`/`multiship`, and refresh CLI examples in `extensions install`, `extensions remove`, and the package README to use `SFDC_EXT_BOPIS` (@W-22497061)
 - Rename the configuration labels that the `sfnext create-storefront` command asks for when run against the bundled retail template, to align with Commerce Cloud documentation: `SLAS Client ID` (formerly `API Client ID`), `Organization ID` (formerly `API Organization ID`), `Short Code` (formerly `API Short Code`), `Site ID` (formerly `Default Site ID`). Labels are sourced from the template's `config-meta.json`.
