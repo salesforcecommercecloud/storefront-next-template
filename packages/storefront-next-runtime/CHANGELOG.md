@@ -1,5 +1,5 @@
 ## v1.0.0-dev
-
+- Remove internal config utilities from public exports (`pathToObject`, `parseEnvValue`, `extractValidPaths`, `mergeEnvConfig`, `MergeEnvConfigOptions`, `createAppConfigMiddleware`, `deepMerge`) — these are internal plumbing and should not be part of the V1 GA public surface ([#1741](https://github.com/commerce-emu/storefront-next/pull/1741))
 - Unify sanitizePrefix and stripPathPrefix into one helper (@W-22498207) ([#1699](https://github.com/commerce-emu/storefront-next/pull/1699))
 - Email Verification Feature - Account Details ([#1460](https://github.com/commerce-emu/storefront-next/pull/1460))
 - Add Shopper Availability v1.1.0 SCAPI client (`clients.shopperAvailability`) for retrieving product inventory availability without loading full product details ([#1671](https://github.com/commerce-emu/storefront-next/pull/1671))

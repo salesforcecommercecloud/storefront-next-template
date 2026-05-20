@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Replace `deepMerge` import from `@salesforce/storefront-next-runtime/config` with a local `test-utils/deep-merge` utility — the SDK no longer exports `deepMerge` as public API ([#1741](https://github.com/commerce-emu/storefront-next/pull/1741))
 - Remove the redundant `customerId` auth cookie. `customerId` is now derived per-request from the SLAS access token JWT `isb` claim (via `gcid`/`rcid`) and continues to flow through `getAuth(context)` server-side and `useAuth()` client-side. The middleware no longer reads, writes, or actively clears the cookie — any value left in existing browsers is ignored and expires on its own. The `usid` cookie is **kept** — sf-next reads `usid` from the JWT `sub` claim, but the cookie is retained so hybrid storefronts can forward it to ECOM (which does not parse the access token for `usid`); the cookie value is also used as a cold-start fallback to preserve SLAS session continuity when no access token is present.
 - GA-clean cleanup: remove internal work-item IDs, unresolved development TODOs, and "(internal use)" labels from the template package (@W-21922914)
 - Show a sign-in nudge above the login form when a guest has saved wishlist items waiting to merge (@W-22491529)

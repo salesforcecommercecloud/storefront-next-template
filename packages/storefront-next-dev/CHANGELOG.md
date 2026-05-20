@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Mark `Scripts` component (`./react-router/Scripts`) as private internal API — it is automatically applied via the `patchReactRouter` Vite plugin and should not be imported directly ([#1741](https://github.com/commerce-emu/storefront-next/pull/1741))
 - Make `allowedActionOrigins` generic: read `SFW_FUNCTIONAL_DOMAIN` env var instead of hardcoding the functional domain, and add Pomerium reverse proxy origin pattern (@W-22457611)
 - Validate `allowedActionOrigins` in `reactRouterConfigResolved` to prevent overrides in workspace environments (@W-22457611)
 - Remove internal exports from the main package entry point (`actionHooksPlugin`, `extractPatterns`, `testPatterns`, `clearCache`, `createServer`, `loadProjectConfig`, `loadConfigFromEnv`, `trimExtensions`, `generateMetadata`) to reduce the public API surface for GA; these are either composed internally by `storefrontNextTargets` or available via dedicated subpath exports

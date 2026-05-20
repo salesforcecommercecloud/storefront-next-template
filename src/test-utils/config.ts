@@ -22,7 +22,8 @@
  */
 
 import { createElement, type ReactNode } from 'react';
-import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefront-next-runtime/config';
+import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
+import { deepMerge } from '@/test-utils/deep-merge';
 import type { Config } from '@/types/config';
 import { TrackingConsent } from '@/types/tracking-consent';
 

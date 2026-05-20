@@ -75,22 +75,10 @@ const InternalServerScripts = () => {
 * bundle configuration scripts during server-side rendering. It ensures that bundle metadata
 * (ID and path) are available on the client before any other scripts execute.
 *
-* Usage:
-* ```tsx
-* import { Outlet, Scripts } from 'react-router';
-*
-* export default function Root() {
-*   return (
-*     <html>
-*       <head>...</head>
-*       <body>
-*         <Outlet />
-*         <Scripts />
-*       </body>
-*     </html>
-*   );
-* }
-* ```
+* @private This is an internal SDK component — do not import directly.
+* It is automatically applied via the `patchReactRouter` Vite plugin at build time.
+* Customers should use `Scripts` from `react-router` as normal; the plugin transparently
+* substitutes this enhanced version in production builds.
 *
 * @param props - Props passed through to the underlying React Router Scripts component
 * @returns A fragment containing internal bundle scripts and React Router scripts

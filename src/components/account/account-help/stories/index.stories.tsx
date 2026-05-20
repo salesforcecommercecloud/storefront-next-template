@@ -20,7 +20,8 @@ import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { ConfigProvider, createAppConfig, deepMerge } from '@salesforce/storefront-next-runtime/config';
+import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
+import { deepMerge } from '@/test-utils/deep-merge';
 import { mockBuildConfig, mockSiteObject } from '@/test-utils/config';
 
 /** Account Need Help card always mounts; Ask a question only when agent config is valid and context UI is enabled (Storybook preview sets the global flag). */
