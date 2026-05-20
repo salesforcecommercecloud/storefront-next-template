@@ -40,6 +40,16 @@ class ApiCartSetupFlow {
      * Set up a cart and navigate to checkout.
      * Tries the fast API path for guest sessions, falls back to UI flow for
      * registered shoppers (API creates a guest session that would clobber auth cookies).
+     *
+     * TODO: drop the registered-shopper UI fallback. With apiLoginFlow available
+     * (src/flows/api-login.flow.ts), registered carts can use the API path by passing the
+     * registered tokens to createBasket() instead of creating a fresh guest session.
+     * Bundle with the loginFlow → apiLoginFlow migration TODO in login.flow.ts.
+     *
+     * TODO: extract buildCookieDefaults() to api-login-utils.ts so the inline cookie
+     * construction at injectSessionCookies() below shares the domain/path/secure/sameSite
+     * logic with buildRegisteredSessionCookies(). Same shape, different cookie names
+     * (cc-nx-g_ for guest vs cc-nx_ for registered).
      */
     async executeAndNavigateToCheckout(
         categoryUrl: string,

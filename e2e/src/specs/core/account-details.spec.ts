@@ -482,9 +482,7 @@ Scenario('Interests & Preferences section renders for authenticated user', () =>
 
     I.seeElement(accountDetailsPage.locators.interestsPreferencesCard);
     I.seeElement(accountDetailsPage.locators.interestsPreferencesEditButton);
-})
-    .tag('@interests-preferences')
-    .tag('@smoke');
+}).tag('@interests-preferences');
 
 /**
  * Edit mode toggle — cancel restores view mode

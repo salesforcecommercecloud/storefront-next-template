@@ -69,7 +69,8 @@ Scenario('Guest shopper login transitions cookies from guest to authenticated', 
     .tag('@login')
     .tag('@authentication')
     .tag('@cookies')
-    .tag('@authentication-state');
+    .tag('@authentication-state')
+    .tag('@smoke');
 
 /**
  * Login with Invalid Credentials
@@ -109,4 +110,5 @@ Scenario('Login with invalid credentials fails with error message', async () => 
     .tag('@login')
     .tag('@authentication')
     .tag('@negative')
-    .tag('@validation');
+    .tag('@validation')
+    .tag('@smoke');

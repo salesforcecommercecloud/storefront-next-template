@@ -318,6 +318,22 @@ src/specs/
 
 Tests can be tagged for easy filtering and organization:
 
+#### Test Tiers (`@smoke` vs `@core`)
+
+Three tiers gate different stages of CI:
+
+| Tier | Tag | Where it runs | What it covers |
+|---|---|---|---|
+| Smoke | `@smoke` | Every PR (sequential, ~5–6 min budget) | Critical revenue/auth paths only — must pass to merge because every merge auto-deploys to a production demo site |
+| Core | `@core` | Post-merge on `push` to `main` / `release-*` (queued, never cancelled), and nightly | OOTB regression set; failure here triggers a Slack notification with PR + author attribution |
+| Full | (no tag filter) | Manual / on demand | Everything, including non-`@core` specs (e.g., multi-site, performance) |
+
+**Rules for tagging:**
+
+- **Add `@smoke` sparingly.** A scenario earns `@smoke` only if it gates revenue or auth — homepage load, PLP→PDP→cart, login, checkout place-order. Anything else stays in `@core`. The smoke set should fit a ~5–6 min budget at `workers: 1`.
+- **`@smoke` scenarios must also stay in `@core`.** All `@smoke` scenarios live inside `@core` Features, so they automatically pick up `@core` from the Feature-level tag. Don't drop the Feature tag.
+- **If a `@smoke` scenario flakes**, treat it as P0 — either fix it or downgrade it to `@core`. Don't ship a flaky smoke gate.
+
 #### Basic Tag Usage
 
 ```typescript
@@ -516,6 +532,19 @@ locate('#component-123').as('Dynamic ID'); // Brittle
 ---
 
 ## Commerce-Specific Test Patterns
+
+### Authentication setup: API vs UI login
+
+Two flows are available for logging in a registered shopper:
+
+| Flow | When to use | What it does |
+|---|---|---|
+| `loginFlow.execute()` | Tests that **assert on login behavior** — the UI form, cookie expiry, token rotation, the storefront's auth-middleware contract | Fills the `/login` form and submits; the storefront sets cookies via `Set-Cookie` headers with their real production attributes (expiry, etc.). |
+| `apiLoginFlow.execute(credentials)` | Tests where **login is just setup** — checkout, account, wishlist, profile-edit, etc. | Calls SCAPI SLAS directly and injects session cookies into the Playwright browser context. Faster (skips the form + redirect), but cookies are session-scoped (no `expires`) and the storefront's auth middleware never runs. |
+
+**Rule of thumb:** if your scenario's assertions don't care *how* the user got logged in — just that they're logged in — use `apiLoginFlow`. If your assertions inspect cookie attributes, the auth-middleware's cookie transitions, or anything that depends on real `Set-Cookie` semantics, use `loginFlow`.
+
+The 3 specs tagged `@login` always use `loginFlow` because they verify the UI form itself.
 
 ### SFCC Cookie Validation
 

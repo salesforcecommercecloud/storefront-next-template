@@ -34,6 +34,12 @@ import type { LoginData, LoginFlowOptions } from '../types/auth.types';
  *
  * This ensures login tests always have valid credentials without
  * manually managing test accounts across test specs.
+ *
+ * TODO: migrate non-UI-testing callers to apiLoginFlow (src/flows/api-login.flow.ts) to skip
+ * the UI form-fill on every test. Bigger runtime win on post-merge @core. Caveats: the
+ * 3 specs that test the login UI itself must keep using this flow; the storefront's auth
+ * middleware clears cc-nx-g on UI form submit but not on direct cookie injection, so any
+ * spec that depends on that behavior needs to opt out. Track separately from infra changes.
  */
 class LoginFlow {
     /**

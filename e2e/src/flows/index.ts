@@ -29,6 +29,7 @@ export const flows = {
     addToWishlistFlow: './src/flows/add-to-wishlist.flow.ts',
     signupFlow: './src/flows/signup.flow.ts',
     loginFlow: './src/flows/login.flow.ts',
+    apiLoginFlow: './src/flows/api-login.flow.ts',
     registeredShopperSetupFlow: './src/flows/registered-shopper-setup.flow.ts',
     beaconCaptureFlow: './src/flows/beacon-capture.flow.ts',
 };

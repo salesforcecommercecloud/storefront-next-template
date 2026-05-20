@@ -49,7 +49,8 @@ Scenario('Guest shopper should complete checkout and place order', async () => {
     expect(orderNumber).to.match(/^\d+$/);
 })
     .tag('@guest-checkout')
-    .tag('@place-order');
+    .tag('@place-order')
+    .tag('@smoke');
 
 Scenario('Registered shopper should complete checkout', async () => {
     await loginFlow.execute();
@@ -72,7 +73,8 @@ Scenario('Registered shopper should complete checkout', async () => {
     expect(orderNumber).to.match(/^\d+$/);
 })
     .tag('@registered-shopper')
-    .tag('@place-order');
+    .tag('@place-order')
+    .tag('@smoke');
 
 Scenario('Registered shopper with full profile should place order with prefilled checkout', async () => {
     await registeredShopperSetupFlow.execute();

@@ -19,6 +19,7 @@ import type { SignupData } from '../types/auth.types';
 import { TEST_PAYMENT } from '../test-data/checkout.data';
 import { credentialStore } from '../utils/credential-store';
 import { getScapiConfig, createRegisteredShopperViaApi, type RegisteredShopperApiResult } from '../utils/scapi-helper';
+import { buildRegisteredSessionCookieOps } from '../utils/api-login-utils';
 import { getStorefrontOrigin } from '../utils/cookie-utils';
 
 interface RegisteredShopperSetupResult {
@@ -112,44 +113,13 @@ class RegisteredShopperSetupFlow {
     }
 
     private async injectRegisteredSessionCookies(siteId: string, result: RegisteredShopperApiResult): Promise<void> {
-        const origin = getStorefrontOrigin();
-        const url = new URL(origin);
-        const domain = url.hostname;
-
-        const cookieDefaults = {
-            domain,
-            path: '/',
-            secure: url.protocol === 'https:',
-            sameSite: 'Lax' as const,
-        };
+        const ops = buildRegisteredSessionCookieOps(siteId, result.tokens, getStorefrontOrigin());
 
         await (I.usePlaywrightTo('inject registered session cookies', async ({ page }) => {
-            await page.context().addCookies([
-                {
-                    ...cookieDefaults,
-                    name: `cc-at_${siteId}`,
-                    value: result.tokens.accessToken,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: `cc-nx_${siteId}`,
-                    value: result.tokens.refreshToken,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: `usid_${siteId}`,
-                    value: result.tokens.usid,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: `customerId_${siteId}`,
-                    value: result.tokens.customerId,
-                    httpOnly: true,
-                },
-            ]);
+            for (const name of ops.clear) {
+                await page.context().clearCookies({ name });
+            }
+            await page.context().addCookies(ops.add);
         }) as unknown as Promise<void>);
 
         const siteAlias = process.env.SITE_ALIAS || 'us';
