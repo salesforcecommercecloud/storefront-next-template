@@ -1,6 +1,6 @@
 {
     "name": "template-retail-rsc-app",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "description": "Production-ready React storefront template for Salesforce Commerce Cloud.",
     "private": true,
     "type": "module",
@@ -82,8 +82,8 @@
         "@radix-ui/react-switch": "1.2.2",
         "@radix-ui/react-tooltip": "1.2.8",
         "@react-router/node": "7.12.0",
-        "@salesforce/storefront-next-dev": "0.4.1",
-        "@salesforce/storefront-next-runtime": "0.4.1",
+        "@salesforce/storefront-next-dev": "0.4.2",
+        "@salesforce/storefront-next-runtime": "0.4.2",
         "@vis.gl/react-google-maps": "1.7.1",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
