@@ -24,7 +24,7 @@ import { expect } from 'chai';
  *
  * Test Flow:
  * 1. Navigate to homepage to establish guest session
- * 2. Capture initial guest cookies (cc-at, cc-nx-g, usid, customerId)
+ * 2. Capture initial guest cookies (cc-at, cc-nx-g, usid)
  * 3. Execute signup flow with randomly generated valid data
  * 4. Validate signup success
  * 5. Validate authentication cookie transition:
@@ -32,9 +32,9 @@ import { expect } from 'chai';
  *    - cc-nx-g_{SiteId} deleted (guest refresh token removed)
  *    - cc-nx_{SiteId} set (authenticated refresh token created)
  *    - usid_{SiteId} updated (guest → authenticated session)
- *    - customerId_{SiteId} updated (guest → registered customer)
  *
- * Note: SDK automatically calls login on successful signup, triggering
+ * Note: customerId is derived per-request from the access token JWT `isb` claim and is
+ * not persisted as a cookie. SDK automatically calls login on successful signup, triggering
  * the authentication state transition from guest to authenticated user.
  */
 Scenario('Guest shopper signup transitions cookies from guest to authenticated', async () => {
@@ -62,10 +62,7 @@ Scenario('Guest shopper signup transitions cookies from guest to authenticated',
         .be.undefined;
 
     // Validate user session ID exists
-    expect(authCookies.usid, `User session ID usid_${siteId} should exist after signup`).to.not.be.undefined;
-
-    // Validate customer ID exists
-    expect(authCookies.customerId, `Customer ID customerId_${siteId} should exist after signup`).to.not.be.undefined;
+    expect(authCookies.usid, `User session ID usid_${siteId} should exist after signup`).to.not.be.null;
 })
     .tag('@signup')
     .tag('@authentication')

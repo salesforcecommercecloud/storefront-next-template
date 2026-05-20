@@ -202,7 +202,6 @@ class LoginFlow {
         I.clearCookie(`cc-at_${siteId}`); // Access token
         I.clearCookie(`cc-nx_${siteId}`); // Authenticated refresh token
         I.clearCookie(`usid_${siteId}`); // User session ID
-        I.clearCookie(`customerId_${siteId}`); // Customer ID
 
         // Reload the page so the storefront's auth middleware runs and issues a new guest session
         I.refreshPage();

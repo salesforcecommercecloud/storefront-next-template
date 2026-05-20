@@ -69,8 +69,6 @@ Scenario('Account details page loads successfully for authenticated user', async
 
     expect(sessionCookies.authRefreshToken, 'Auth refresh token should exist').to.not.be.undefined;
 
-    expect(sessionCookies.customerId, 'Customer ID should exist').to.not.be.null;
-
     // Uncomment to try interactive AI features:
     // pause();
 })

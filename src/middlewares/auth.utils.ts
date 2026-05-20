@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, type RouterContextProvider } from 'react-router';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { AuthTokenInvalidError, type ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
 import type { SessionData as AuthData, PublicSessionData } from '@/lib/api/types';
 import {
     clearStorage,
@@ -37,7 +37,7 @@ export const COOKIE_REFRESH_TOKEN_GUEST = 'cc-nx-g'; // Guest user refresh token
 export const COOKIE_REFRESH_TOKEN_REGISTERED = 'cc-nx'; // Registered user refresh token
 export const COOKIE_ACCESS_TOKEN = 'cc-at'; // Access token
 export const COOKIE_USID = 'usid'; // User session ID
-export const COOKIE_CUSTOMER_ID = 'customerId'; // Customer ID
+export const COOKIE_CUSTOMER_ID = 'customerId'; // Legacy customer ID — only used for destroy-path cookie deletion
 export const COOKIE_ENC_USER_ID = 'encUserId'; // Encoded user ID
 export const COOKIE_IDP_ACCESS_TOKEN = 'cc-idp-at'; // IDP access token (for social login)
 export const COOKIE_CODE_VERIFIER = 'cc-cv'; // OAuth2 PKCE code verifier (server-only, short-lived)
@@ -205,11 +205,17 @@ export const updateAuthStorageDataByTokenResponse = (
     const refreshTokenExpirySeconds = getRefreshTokenExpiry(apiResponseExpirySeconds, userType, appConfig);
     storage.set('refreshTokenExpiry', now + refreshTokenExpirySeconds * 1_000);
 
-    // Extract customer ID from access token isb claim (source of truth for hybrid storefronts)
-    const customerId = claims ? getCustomerIdFromClaims(claims, userType ?? 'guest') : null;
-    if (customerId) {
+    // Extract customer ID from access token isb claim (source of truth). SLAS guarantees
+    // gcid/rcid in the isb claim — if the JWT was decodable but lacks them, the token is
+    // structurally broken; throw rather than silently fall back to stale state.
+    if (claims) {
+        const customerId = getCustomerIdFromClaims(claims, userType ?? 'guest');
+        if (!customerId) {
+            throw new AuthTokenInvalidError('SLAS access token isb claim is missing the customer ID (gcid/rcid)');
+        }
         storage.set('customerId', customerId);
     } else if (tokenResponse?.customer_id) {
+        // Reached only when the access token couldn't be decoded at all.
         storage.set('customerId', tokenResponse.customer_id);
     }
 
@@ -218,8 +224,14 @@ export const updateAuthStorageDataByTokenResponse = (
         storage.set('encUserId', tokenResponse.enc_user_id);
     }
 
-    // Store user session identifier if available
-    if (tokenResponse?.usid) {
+    // Extract usid from access token sub claim (source of truth). Missing usid is a
+    // critical token-integrity failure — throw.
+    if (claims) {
+        if (!claims.usid) {
+            throw new AuthTokenInvalidError('SLAS access token sub claim is missing the usid segment');
+        }
+        storage.set('usid', claims.usid);
+    } else if (tokenResponse?.usid) {
         storage.set('usid', tokenResponse.usid);
     }
 
@@ -313,6 +325,12 @@ export const updateStorageAndCache = async (
 /**
  * Shared utility to make sure that in case the current auth promise reference gets updated while running, the latest
  * promise reference is always resolved/returned.
+ *
+ * If `authContext` has not been set on the provider (i.e. createAuthPromise was called
+ * outside the auth middleware), the supersedence check is skipped and the resolved data
+ * is returned directly. This is a test-harness affordance — production code paths must
+ * always run inside the middleware, so reaching this branch outside tests indicates a bug.
+ * In dev, a warning is logged so the path can't be silently hit.
  */
 export const createAuthPromise = (
     context: Readonly<RouterContextProvider>,
@@ -320,9 +338,20 @@ export const createAuthPromise = (
 ): Promise<AuthData | undefined> => {
     const promise = Promise.resolve(data).then(
         (result: AuthData | undefined): AuthData | undefined | Promise<AuthData | undefined> => {
-            const currentPromise = context.get(authContext).ref;
-            if (promise !== currentPromise) {
-                return currentPromise;
+            const promiseRef = context.get(authContext);
+            if (promiseRef === undefined) {
+                if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        'createAuthPromise: authContext is not set on the provider. ' +
+                            'This is expected in test harnesses; in production code it indicates createAuthPromise ' +
+                            'was called outside the auth middleware.'
+                    );
+                }
+                return result;
+            }
+            if (promise !== promiseRef.ref) {
+                return promiseRef.ref;
             }
             return result;
         }
@@ -403,6 +432,8 @@ export interface SLASAccessTokenClaims {
     gcid: string | null;
     /** Registered customer ID extracted from the isb claim, or null if not present */
     rcid: string | null;
+    /** User session ID extracted from the sub claim, or null if not present */
+    usid: string | null;
 }
 
 /**
@@ -436,11 +467,37 @@ function parseIsbClaim(isb: unknown): { gcid: string | null; rcid: string | null
 }
 
 /**
+ * Parse the `sub` claim from a SLAS access token payload to extract the `usid` segment.
+ * The sub claim is a `::` delimited string of key:value pairs.
+ *
+ * Example: `cc-slas::zzrf_001::scid:<id>::usid:<id>`
+ *
+ * SLAS emits at most one `usid:` segment per token, so the first match is returned.
+ *
+ * @param sub - Raw sub claim string from the token payload
+ * @returns Object with usid value, or null if not found
+ */
+function parseSubClaim(sub: unknown): { usid: string | null } {
+    if (typeof sub !== 'string' || !sub) {
+        return { usid: null };
+    }
+
+    const parts = sub.split('::');
+    for (const part of parts) {
+        if (part.startsWith('usid:')) {
+            return { usid: part.slice(5) };
+        }
+    }
+
+    return { usid: null };
+}
+
+/**
  * Extract claims from a SLAS access token payload.
  * Decodes the token once and returns multiple claims for efficiency.
  *
  * @param token - SLAS access token string
- * @returns Object containing extracted claims (expiry, trackingConsent, gcid, rcid)
+ * @returns Object containing extracted claims (expiry, trackingConsent, gcid, rcid, usid)
  */
 export function getSLASAccessTokenClaims(token: string): SLASAccessTokenClaims {
     try {
@@ -457,10 +514,11 @@ export function getSLASAccessTokenClaims(token: string): SLASAccessTokenClaims {
         }
 
         const { gcid, rcid } = parseIsbClaim(payload.isb);
+        const { usid } = parseSubClaim(payload.sub);
 
-        return { expiry, trackingConsent, gcid, rcid };
+        return { expiry, trackingConsent, gcid, rcid, usid };
     } catch {
-        return { expiry: null, trackingConsent: null, gcid: null, rcid: null };
+        return { expiry: null, trackingConsent: null, gcid: null, rcid: null, usid: null };
     }
 }
 

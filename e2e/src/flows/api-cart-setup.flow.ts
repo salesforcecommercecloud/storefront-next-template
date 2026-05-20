@@ -132,6 +132,9 @@ class ApiCartSetupFlow {
         };
 
         await (I.usePlaywrightTo('inject SCAPI session cookies', async ({ page }) => {
+            // customerId is derived per-request from the SLAS access token JWT `isb` claim, so
+            // it is not injected. `usid` IS injected because hybrid storefronts forward it to
+            // ECOM (and the storefront's auth middleware writes it on the response anyway).
             await page.context().addCookies([
                 {
                     ...cookieDefaults,
@@ -149,12 +152,6 @@ class ApiCartSetupFlow {
                     ...cookieDefaults,
                     name: `usid_${siteId}`,
                     value: result.tokens.usid,
-                    httpOnly: true,
-                },
-                {
-                    ...cookieDefaults,
-                    name: `customerId_${siteId}`,
-                    value: result.tokens.customerId,
                     httpOnly: true,
                 },
                 {

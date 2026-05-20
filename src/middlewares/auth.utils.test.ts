@@ -306,8 +306,8 @@ describe('auth.utils', () => {
                 const claims1 = getSLASAccessTokenClaims('invalid.token');
                 const claims2 = getSLASAccessTokenClaims('');
 
-                expect(claims1).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null });
-                expect(claims2).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null });
+                expect(claims1).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null, usid: null });
+                expect(claims2).toEqual({ expiry: null, trackingConsent: null, gcid: null, rcid: null, usid: null });
             });
 
             it('should handle exp as 0', () => {
@@ -417,6 +417,36 @@ describe('auth.utils', () => {
                 expect(claims.gcid).toBeNull();
                 expect(claims.rcid).toBeNull();
             });
+
+            it.each([
+                {
+                    desc: 'sub with usid segment',
+                    sub: 'cc-slas::zzrf_001::scid:083859f2-5d93-4209-b999-a112266d63a0::usid:e8664844-e00e-4850-a56a-9dc44c04df1c',
+                    expectedUsid: 'e8664844-e00e-4850-a56a-9dc44c04df1c',
+                },
+                {
+                    desc: 'sub with usid as last segment',
+                    sub: 'cc-slas::zzrf_001::usid:plain-usid',
+                    expectedUsid: 'plain-usid',
+                },
+            ])('should extract usid from $desc', ({ sub, expectedUsid }) => {
+                const token = createTestToken({ exp: 1234567890, sub });
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.usid).toBe(expectedUsid);
+            });
+
+            it.each([
+                { desc: 'missing', payload: { exp: 1234567890 } },
+                { desc: 'not a string', payload: { exp: 1234567890, sub: 12345 } },
+                { desc: 'empty string', payload: { exp: 1234567890, sub: '' } },
+                { desc: 'no usid segment', payload: { exp: 1234567890, sub: 'cc-slas::zzrf_001::scid:abc' } },
+            ])('should return null usid when sub claim is $desc', ({ payload }) => {
+                const token = createTestToken(payload);
+                const claims = getSLASAccessTokenClaims(token);
+
+                expect(claims.usid).toBeNull();
+            });
         });
 
         describe('getCustomerIdFromClaims', () => {
@@ -457,7 +487,7 @@ describe('auth.utils', () => {
                     expected: null,
                 },
             ])('should return $desc', ({ userType, gcid, rcid, expected }) => {
-                const claims = { expiry: 1234567890000, trackingConsent: null, gcid, rcid };
+                const claims = { expiry: 1234567890000, trackingConsent: null, gcid, rcid, usid: null };
                 expect(getCustomerIdFromClaims(claims, userType)).toBe(expected);
             });
         });

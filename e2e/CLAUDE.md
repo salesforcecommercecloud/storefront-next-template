@@ -41,7 +41,7 @@ This is E2E testing for **Salesforce Commerce Cloud storefront** built with Reac
 - Add to cart buttons
 - Checkout flow
 - User account/login
-- SFCC cookies (cc-at*, cc-nx-g*, customerId*, usid*)
+- SFCC cookies (cc-at*, cc-nx-g*, cc-nx*, usid*)
 
 ---
 

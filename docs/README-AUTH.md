@@ -31,11 +31,21 @@ Authentication data is stored in **separate cookies**, each with specific purpos
 | `cc-nx-g`    | Guest refresh token                                                                            | Guest only      | 30 days (max)         | No       |
 | `cc-nx`      | Registered refresh token                                                                       | Registered only | 90 days (max)         | No       |
 | `cc-at`      | Access token                                                                                   | Both            | 30 minutes            | No       |
-| `usid`       | User session ID                                                                                | Both            | Matches refresh token | No       |
-| `customerId` | Customer ID                                                                                    | Registered only | Matches refresh token | No       |
+| `usid`       | User session ID (mirrors the JWT `sub` claim's `usid` segment)                                 | Both            | Matches refresh token | No       |
 | `cc-idp-at`  | IDP access token (social login)                                                                | Both            | Matches access token  | No       |
 | `cc-cv`      | OAuth2 PKCE code verifier (Temporary cookie deleted after successful token call via PKCE flow) | Both            | 5 minutes             | **Yes**  |
 | `cc-auth-recover` | Auth recovery guard (prevents redirect loops after 401)                                    | Both            | 30 seconds            | No       |
+
+> **Note on `usid`:** sf-next reads `usid` from the access token JWT `sub` claim, **not** from
+> this cookie. The cookie is kept so hybrid storefronts can forward `usid` to ECOM, which does
+> not parse the access token. The cookie value also serves as a cold-start fallback for the
+> guest-login path (passed to SLAS for session continuity when no access token is present).
+>
+> **Note on `customerId`:** `customerId` is **not** persisted as a cookie. It is derived
+> per-request from the SLAS access token JWT `isb` claim (via `gcid`/`rcid`) and exposed to
+> loaders/actions via `getAuth(context)` and to client components via `useAuth()`. Existing
+> browsers from older versions may still hold a `customerId_<siteId>` cookie; sf-next ignores
+> it on the hot path, clears it on logout/error, and otherwise lets it expire on its own.
 
 **Key Design Decisions:**
 
@@ -93,6 +103,25 @@ To prevent infinite loops, the middleware sets a short-lived guard cookie:
 The recovery redirect response also includes `x-sfnext-auth-recovery: 1`. When the guard cookie is present on a follow-up request, responses include `x-sfnext-auth-recovery-guard: 1` for log visibility.
 
 Before running the recovery flow, any stale `error` state from earlier middleware auth attempts is cleared to avoid false negatives.
+
+### JWT integrity validation
+
+The auth middleware also validates the SLAS access token's structure on every request. SLAS
+guarantees the following claims:
+
+- `isb`: contains `gcid:<id>` (guest) and/or `rcid:<id>` (registered) for the customer ID
+- `sub`: contains `usid:<id>` for the SLAS session ID
+
+If the JWT decodes successfully but is missing either claim, the middleware throws
+`AuthTokenInvalidError`, which routes through the same recovery flow as a 401: cookies are
+cleared, a fresh refresh / guest login runs, and a 307 redirect is emitted. The same recovery
+applies if SLAS itself returns a structurally invalid token during a refresh or guest login —
+the middleware detects the `AuthTokenInvalidError` thrown by `updateAuthStorageDataByTokenResponse`
+and writes the recovery sentinel into auth storage so the post-handler check picks it up.
+
+Reaching this path indicates a critical token-integrity failure (e.g. a bug in token issuance)
+rather than a normal auth lifecycle event. The defensive log fires at error level so the case
+is observable in production.
 
 ## Configuration
 
@@ -326,7 +355,7 @@ await resetPasswordWithToken(context, {
 2. Server action calls `loginRegisteredUser()`
 3. SLAS returns registered user tokens with `customer_id`
 4. Server calls `updateAuth()` with token response
-5. Server middleware writes `cc-nx`, `cc-at`, `usid`, `customerId` cookies
+5. Server middleware writes `cc-nx`, `cc-at`, `usid` cookies
 6. Server middleware **deletes** old `cc-nx-g` cookie (mutual exclusivity)
 7. On next request, server detects `cc-nx` cookie → `userType = 'registered'`
 

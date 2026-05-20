@@ -21,6 +21,7 @@ import { performanceTimerContext } from '@/middlewares/performance-metrics';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { mockAltSiteObject, mockConfig, mockSiteObject } from '@/test-utils/config';
+import { buildMockAccessToken, buildMockTokenResponse } from '@/test-utils/auth';
 import { TrackingConsent } from '@/types/tracking-consent';
 import authMiddleware, {
     refreshAccessToken,
@@ -133,19 +134,11 @@ vi.mock('@/lib/utils', () => ({
     stringToBase64: vi.fn((str: string) => Buffer.from(str).toString('base64')),
 }));
 
+// Use the shared `buildMockTokenResponse` helper so fixtures stay in sync with the
+// middleware's JWT-validation expectations. Wrapped here as a zero-arg function for
+// test ergonomics (matches the previous local helper signature).
 function getMockTokenResponse(): ShopperLogin.schemas['TokenResponse'] {
-    return {
-        access_token: 'access-token-123',
-        id_token: 'id-token-123',
-        refresh_token: 'refresh-token-456',
-        expires_in: 1800,
-        refresh_token_expires_in: 3600,
-        token_type: 'Bearer',
-        usid: 'usid-abc',
-        customer_id: 'customer-789',
-        enc_user_id: 'enc-user-id-123',
-        idp_access_token: 'idp-access-token-123',
-    };
+    return buildMockTokenResponse();
 }
 
 /**
@@ -282,9 +275,10 @@ describe('auth middleware (server)', () => {
             const data = getMockAuthData();
             const { provider, storage } = mockContext(data);
 
-            updateAuth(provider, getMockTokenResponse());
+            const tokenResponse = getMockTokenResponse();
+            updateAuth(provider, tokenResponse);
 
-            expect(storage.get('accessToken')).toBe('access-token-123');
+            expect(storage.get('accessToken')).toBe(tokenResponse.access_token);
             expect(storage.get('isUpdated')).toBe(true);
         });
     });
@@ -1477,19 +1471,17 @@ describe('auth middleware (server)', () => {
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800; // 30 min from now
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const mockAccessToken = buildMockAccessToken({ exp });
 
             // Mock parseAllCookies to return split cookies
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
                 'cc-at': mockAccessToken,
-                usid: 'test-usid',
-                customerId: 'test-customer-id',
             });
 
             const request = new Request('https://example.com/test', {
                 headers: {
-                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; usid=test-usid; customerId=test-customer-id',
+                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token',
                 },
             });
 
@@ -1507,9 +1499,7 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
             // Verify parseAllCookies was called
-            expect(mockParseAllCookies).toHaveBeenCalledWith(
-                'cc-nx-g=guest-refresh-token; cc-at=access-token; usid=test-usid; customerId=test-customer-id'
-            );
+            expect(mockParseAllCookies).toHaveBeenCalledWith('cc-nx-g=guest-refresh-token; cc-at=access-token');
 
             // Verify next was called
             expect(next).toHaveBeenCalled();
@@ -1563,7 +1553,7 @@ describe('auth middleware (server)', () => {
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const mockAccessToken = buildMockAccessToken({ exp });
 
             // Mock registered refresh token cookie only
             mockParseAllCookies.mockReturnValue({
@@ -1605,9 +1595,7 @@ describe('auth middleware (server)', () => {
             // Create JWT with specific expiry
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800; // 30 min from now
-            const payload = JSON.stringify({ exp });
-            const base64Payload = btoa(payload);
-            const mockAccessToken = `header.${base64Payload}.signature`;
+            const mockAccessToken = buildMockAccessToken({ exp });
 
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
@@ -1668,9 +1656,13 @@ describe('auth middleware (server)', () => {
                 return storage;
             });
 
+            // Bidirectional sync: copy authStorage entries to test storage AND copy test
+            // storage entries (e.g. preset `isDestroyed`) back into authStorage so the
+            // middleware's destroy-block check (`authStorage.has('isDestroyed')`) sees it.
             vi.spyOn(context, 'set').mockImplementation((_key, value) => {
                 if (typeof value === 'object' && value instanceof Map) {
                     value.forEach((v, k) => storage.set(k, v));
+                    storage.forEach((v, k) => value.set(k, v));
                 }
             });
 
@@ -1685,8 +1677,8 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
             // Verify all 12 cookies were deleted:
-            // cc-nx-g, cc-nx, cc-at, usid, customerId, encUserId, cc-idp-at, dwsid, cc-cv, tc,
-            // storefront-next-context_*, dwsourcecode_*
+            // cc-nx-g, cc-nx, cc-at, usid, customerId (legacy cleanup), encUserId, cc-idp-at,
+            // dwsid, cc-cv, tc, storefront-next-context_*, dwsourcecode_*
             expect(mockSerialize).toHaveBeenCalledTimes(12);
             expect(mockSerialize).toHaveBeenCalledWith(
                 '',
@@ -1701,7 +1693,7 @@ describe('auth middleware (server)', () => {
             // Create expired JWT to trigger refresh flow
             const now = Math.floor(Date.now() / 1000);
             const exp = now - 100; // Expired token
-            const expiredAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const expiredAccessToken = buildMockAccessToken({ exp });
 
             // Mock cookies with expired access token but valid refresh token
             mockParseAllCookies.mockReturnValue({
@@ -1735,7 +1727,7 @@ describe('auth middleware (server)', () => {
             expect(mockSerialize).toHaveBeenCalled();
             expect(mockSerialize.mock.calls.length).toBeGreaterThanOrEqual(4);
 
-            expect(mockSerialize).toHaveBeenCalledWith('access-token-123', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith(mockTokenResponse.access_token, expect.any(Object));
             expect(mockSerialize).toHaveBeenCalledWith('idp-access-token-123', expect.any(Object));
             expect(mockSerialize).toHaveBeenCalledWith('refresh-dwsid', expect.any(Object));
         });
@@ -1810,9 +1802,12 @@ describe('auth middleware (server)', () => {
                 return storage;
             });
 
+            // Bidirectional sync so the preset `error` key is visible to the middleware's
+            // local authStorage (which the destroy-block check reads).
             vi.spyOn(context, 'set').mockImplementation((_key, value) => {
                 if (typeof value === 'object' && value instanceof Map) {
                     value.forEach((v, k) => storage.set(k, v));
+                    storage.forEach((v, k) => value.set(k, v));
                 }
             });
 
@@ -1827,8 +1822,8 @@ describe('auth middleware (server)', () => {
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
             // Verify all 12 cookies were deleted due to error
-            // cc-nx-g, cc-nx, cc-at, usid, customerId, encUserId, cc-idp-at, dwsid, cc-cv, tc,
-            // storefront-next-context_*, dwsourcecode_*
+            // cc-nx-g, cc-nx, cc-at, usid, customerId (legacy cleanup), encUserId, cc-idp-at,
+            // dwsid, cc-cv, tc, storefront-next-context_*, dwsourcecode_*
             expect(mockSerialize).toHaveBeenCalledTimes(12);
         });
 
@@ -1858,12 +1853,14 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            // Verify getCookieNameWithSiteId was called for each cookie
+            // Verify getCookieNameWithSiteId was called for each cookie that the middleware
+            // reads from the request. `customerId` is intentionally absent: the middleware
+            // no longer reads it; its namespacing only happens inside the (mocked here)
+            // createCookie call for the destroy-path deletion-only instance.
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-nx-g', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-nx', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-at', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('usid', context);
-            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('customerId', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('encUserId', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-idp-at', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-cv', context);
@@ -1943,7 +1940,7 @@ describe('auth middleware (server)', () => {
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const mockAccessToken = buildMockAccessToken({ exp });
 
             // Mock cookies including IDP access token
             mockParseAllCookies.mockReturnValue({
@@ -1989,7 +1986,7 @@ describe('auth middleware (server)', () => {
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const mockAccessToken = buildMockAccessToken({ exp });
 
             // Mock cookies including code verifier
             mockParseAllCookies.mockReturnValue({
@@ -2085,7 +2082,7 @@ describe('auth middleware (server)', () => {
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const mockAccessToken = buildMockAccessToken({ exp });
 
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
@@ -2137,7 +2134,7 @@ describe('auth middleware (server)', () => {
             // Create valid JWT with expiry
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const mockAccessToken = buildMockAccessToken({ exp });
 
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
@@ -2292,25 +2289,28 @@ describe('auth middleware (server)', () => {
                 userType: 'guest' as const,
                 refreshTokenCookie: 'cc-nx-g',
                 isb: `uido:slas::upn:Guest::uidn:Guest User::gcid:token-guest-id::chid:${mockSiteObject.id}`,
+                sub: 'cc-slas::zzrf_001::scid:scid-123::usid:token-usid-guest',
                 expectedCustomerId: 'token-guest-id',
+                expectedUsid: 'token-usid-guest',
             },
             {
                 userType: 'registered' as const,
                 refreshTokenCookie: 'cc-nx',
                 isb: `uido:ecom::upn:user@example.com::uidn:Test User::gcid:guest-id::rcid:registered-id::chid:${mockSiteObject.id}`,
+                sub: 'cc-slas::zzrf_001::scid:scid-456::usid:token-usid-registered',
                 expectedCustomerId: 'registered-id',
+                expectedUsid: 'token-usid-registered',
             },
         ])(
-            'should derive customerId from isb claim for $userType user and trigger cookie update on mismatch',
-            async ({ refreshTokenCookie, isb, expectedCustomerId }) => {
+            'should derive customerId and usid from JWT claims for $userType user without any usid/customerId cookies',
+            async ({ refreshTokenCookie, isb, sub, expectedCustomerId, expectedUsid }) => {
                 const now = Math.floor(Date.now() / 1000);
                 const exp = now + 1800;
-                const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
+                const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb, sub }))}.signature`;
 
                 mockParseAllCookies.mockReturnValue({
                     [refreshTokenCookie]: 'refresh-token',
                     'cc-at': mockAccessToken,
-                    customerId: 'stale-cookie-customer-id',
                 });
 
                 const request = new Request('https://example.com/test');
@@ -2338,20 +2338,25 @@ describe('auth middleware (server)', () => {
                 await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
                 expect(storage.get('customerId')).toBe(expectedCustomerId);
-                expect(mockSerialize).toHaveBeenCalled();
+                expect(storage.get('usid')).toBe(expectedUsid);
             }
         );
 
-        it('should not trigger cookie update when token customerId matches cookie', async () => {
+        it('should ignore an existing customerId cookie and not emit a deletion for it', async () => {
+            // The customerId cookie is no longer set or actively cleared by the middleware.
+            // Browsers that still hold one will let it expire naturally. The middleware must
+            // not be triggered into the response-write path solely because the cookie is present.
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const isb = `uido:slas::upn:Guest::uidn:Guest User::gcid:same-customer-id::chid:${mockSiteObject.id}`;
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
+            const isb = `uido:slas::upn:Guest::uidn:Guest User::gcid:fresh-id::chid:${mockSiteObject.id}`;
+            const sub = 'cc-slas::zzrf_001::scid:scid-x::usid:fresh-usid';
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb, sub }))}.signature`;
 
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
                 'cc-at': mockAccessToken,
-                customerId: 'same-customer-id',
+                usid: 'fresh-usid',
+                customerId: 'stale-customer-id',
             });
 
             const request = new Request('https://example.com/test');
@@ -2378,20 +2383,270 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            expect(storage.get('customerId')).toBe('same-customer-id');
+            // JWT-derived values still land in storage; cookie value is ignored
+            expect(storage.get('customerId')).toBe('fresh-id');
+            expect(storage.get('usid')).toBe('fresh-usid');
+
+            // No Set-Cookie should be emitted in this hot path: storage was not marked updated
+            // (no token refresh, no tracking-consent mismatch, usid cookie already present).
             expect(mockSerialize).not.toHaveBeenCalled();
         });
 
-        it('should fall back to cookie customerId when isb claim is missing from token', async () => {
+        it('should refresh the usid cookie when its value drifts from the JWT', async () => {
+            // Defensive: if a browser somehow ends up with a stale `usid` cookie that no
+            // longer matches the JWT-derived value, the response section must run and
+            // overwrite the cookie so the value forwarded to ECOM stays in sync.
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const mockAccessToken = `header.${btoa(JSON.stringify({ exp }))}.signature`;
+            const isb = `uido:slas::upn:Guest::uidn:Guest User::gcid:gcid-x::chid:${mockSiteObject.id}`;
+            const sub = 'cc-slas::zzrf_001::scid:scid-x::usid:fresh-usid';
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb, sub }))}.signature`;
 
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
                 'cc-at': mockAccessToken,
-                customerId: 'cookie-customer-id',
+                usid: 'stale-usid',
             });
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            // JWT value wins, and the cookie is rewritten to match
+            expect(storage.get('usid')).toBe('fresh-usid');
+            expect(mockSerialize).toHaveBeenCalledWith('fresh-usid', expect.any(Object));
+        });
+
+        it('should write the usid cookie with refresh-token expiry when storage is updated', async () => {
+            // Cold-start guest login → updateStorageAndCache sets isUpdated. The middleware must
+            // emit a Set-Cookie for `usid` so hybrid storefronts can forward it to ECOM.
+            mockParseAllCookies.mockReturnValue({});
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            // The middleware should have asked the cookie helper to namespace `usid`
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('usid', context);
+            // And serialize the JWT-derived usid value
+            expect(mockSerialize).toHaveBeenCalledWith(mockTokenResponse.usid, expect.any(Object));
+        });
+
+        it('should route through recovery when JWT isb claim is missing the customer ID', async () => {
+            // SLAS guarantees gcid/rcid in the isb claim. A decoded-but-missing-claim token
+            // is a critical token-integrity failure: the middleware must route through
+            // handleAuthTokenInvalidation so the user gets a clean redirect with fresh
+            // cookies rather than being trapped in a 500 loop on the malformed cookie.
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const sub = 'cc-slas::zzrf_001::scid:scid-x::usid:fresh-usid';
+            // Token is valid but missing the `isb` claim.
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp, sub }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+            });
+
+            // Recovery path needs a working refresh+login flow. Both return a valid token.
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            // Use originalGet as fallback so handleAuthTokenInvalidation can read the
+            // contexts the middleware sets via context.set(authContext, ...).
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+            const next = vi.fn().mockResolvedValue(new Response('OK'));
+
+            const response = (await authMiddleware(
+                { request, context, params: {}, unstable_pattern: '/' },
+                next
+            )) as Response;
+
+            // Recovery emits a 307 redirect with the recovery marker header
+            expect(response.status).toBe(307);
+            expect(response.headers.get('Location')).toBe('https://example.com/test');
+            expect(response.headers.get('x-sfnext-auth-recovery')).toBe('1');
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Auth: SLAS access token isb claim is missing the customer ID (gcid/rcid)'
+            );
+        });
+
+        it('should route through recovery when JWT sub claim is missing usid', async () => {
+            // Same recovery semantics as the missing-isb case — the user must not be trapped.
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const isb = `uido:slas::upn:Guest::uidn:Guest User::gcid:gcid-x::chid:${mockSiteObject.id}`;
+            // Token is valid but missing the `sub` claim entirely.
+            const mockAccessToken = `header.${btoa(JSON.stringify({ exp, isb }))}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+            });
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const originalGet = context.get.bind(context);
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return originalGet(key);
+            });
+
+            const mockSerialize = vi.fn().mockResolvedValue('Set-Cookie: mock=value');
+            mockCreateCookie.mockReturnValue({ serialize: mockSerialize });
+
+            const next = vi.fn().mockResolvedValue(new Response('OK'));
+
+            const response = (await authMiddleware(
+                { request, context, params: {}, unstable_pattern: '/' },
+                next
+            )) as Response;
+
+            expect(response.status).toBe(307);
+            expect(response.headers.get('Location')).toBe('https://example.com/test');
+            expect(response.headers.get('x-sfnext-auth-recovery')).toBe('1');
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Auth: SLAS access token sub claim is missing the usid segment'
+            );
+        });
+
+        it('should skip the JWT integrity check when the access token was refreshed', async () => {
+            // The original cc-at is BOTH expired (so retrieveAuthStorageData runs the
+            // refresh path) AND malformed (no usid in `sub`). After refresh, the local
+            // `claims` variable still points at the old malformed token, but the integrity
+            // check must be gated on `authAction === 'tokenValid'` — refreshed tokens were
+            // already validated inside updateAuthStorageDataByTokenResponse. Without the
+            // gate, we'd trigger a redundant recovery cycle every request despite a fresh
+            // valid session.
+            const now = Math.floor(Date.now() / 1000);
+            const expiredExp = now - 100;
+            // Token is expired AND missing the usid segment in `sub`.
+            const malformedExpiredAccessToken = `header.${btoa(
+                JSON.stringify({
+                    exp: expiredExp,
+                    isb: `uido:slas::upn:Guest::uidn:Guest User::gcid:gcid-old::chid:${mockSiteObject.id}`,
+                    sub: 'cc-slas::zzrf_001::scid:scid-x',
+                })
+            )}.signature`;
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': malformedExpiredAccessToken,
+            });
+
+            // Refresh returns a fresh, structurally valid token.
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const request = new Request('https://example.com/test');
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                    storage.forEach((v, k) => value.set(k, v));
+                }
+            });
+
+            const next = vi.fn().mockResolvedValue(new Response('OK'));
+
+            const response = (await authMiddleware(
+                { request, context, params: {}, unstable_pattern: '/' },
+                next
+            )) as Response;
+
+            // Normal flow: next() ran, no recovery redirect emitted.
+            expect(next).toHaveBeenCalled();
+            expect(response.status).toBe(200);
+            expect(response.headers.get('x-sfnext-auth-recovery')).toBeNull();
+            // Refresh path was exercised; integrity-check error log must NOT have fired.
+            expect(mockAuth.refreshToken).toHaveBeenCalled();
+            expect(mockLogger.error).not.toHaveBeenCalledWith(
+                expect.stringContaining('SLAS access token sub claim is missing')
+            );
+            expect(mockLogger.error).not.toHaveBeenCalledWith(
+                expect.stringContaining('SLAS access token isb claim is missing')
+            );
+        });
+
+        it('should fall back to the usid cookie value when no access token is present', async () => {
+            // Cold-start safety net: when there is no access token (so no JWT to derive usid
+            // from), the existing `usid` cookie value is forwarded to SLAS via loginGuestUser
+            // to preserve session continuity. Distinct from the JWT-malformed throw paths
+            // above — those decode the token successfully but find missing claims.
+            mockParseAllCookies.mockReturnValue({
+                usid: 'usid-continuity-value',
+            });
+
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test');
             const context = new RouterContextProvider();
@@ -2414,7 +2669,10 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            expect(storage.get('customerId')).toBe('cookie-customer-id');
+            // The middleware must have invoked guest login with the preserved usid for continuity
+            expect(mockAuth.loginAsGuest).toHaveBeenCalledWith(
+                expect.objectContaining({ usid: 'usid-continuity-value' })
+            );
         });
     });
 

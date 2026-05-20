@@ -100,11 +100,13 @@ class StorefrontPage {
         const actualSiteId = siteId || process.env.SITE_ID || 'RefArchGlobal';
         const storefrontCookies = await getStorefrontScopedCookies();
 
-        // Expected SFCC cookies (namespaced with siteId)
+        // Expected SFCC cookies (namespaced with siteId).
+        // Note: customerId is NOT a cookie — it is derived per-request from the SLAS access
+        // token (cc-at) JWT `isb` claim and exposed via useAuth(). `usid` IS a cookie because
+        // hybrid storefronts forward it to ECOM, which does not parse the access token.
         const expectedCookies = [
             `cc-at_${actualSiteId}`, // Access token
             `cc-nx-g_${actualSiteId}`, // Next generation guest token
-            `customerId_${actualSiteId}`, // Customer ID
             `usid_${actualSiteId}`, // User session ID
         ];
 
@@ -134,7 +136,6 @@ class StorefrontPage {
         guestRefreshToken: string | null;
         authRefreshToken: string | null;
         usid: string | null;
-        customerId: string | null;
     }> {
         const actualSiteId = siteId || process.env.SITE_ID || 'RefArchGlobal';
         const refreshTokenName = userType === 'guest' ? `cc-nx-g_${actualSiteId}` : `cc-nx_${actualSiteId}`;
@@ -154,11 +155,10 @@ class StorefrontPage {
                 const guestRefreshToken = cookieMap.get(`cc-nx-g_${actualSiteId}`) ?? null;
                 const authRefreshToken = cookieMap.get(`cc-nx_${actualSiteId}`) ?? null;
                 const usid = cookieMap.get(`usid_${actualSiteId}`) ?? null;
-                const customerId = cookieMap.get(`customerId_${actualSiteId}`) ?? null;
                 const refreshToken = userType === 'guest' ? guestRefreshToken : authRefreshToken;
 
-                if (accessToken && refreshToken && usid && customerId) {
-                    return { accessToken, guestRefreshToken, authRefreshToken, usid, customerId };
+                if (accessToken && refreshToken && usid) {
+                    return { accessToken, guestRefreshToken, authRefreshToken, usid };
                 }
 
                 await page.waitForTimeout(250);
@@ -172,7 +172,6 @@ class StorefrontPage {
             guestRefreshToken: string | null;
             authRefreshToken: string | null;
             usid: string | null;
-            customerId: string | null;
         }>);
 
         return result;
@@ -300,7 +299,6 @@ class StorefrontPage {
         I.clearCookie(`cc-at_${actualSiteId}`); // Access token
         I.clearCookie(`cc-nx_${actualSiteId}`); // Authenticated refresh token
         I.clearCookie(`usid_${actualSiteId}`); // User session ID
-        I.clearCookie(`customerId_${actualSiteId}`); // Customer ID
 
         // Reload the page so the storefront's auth middleware runs and issues a new guest session
         I.refreshPage();
