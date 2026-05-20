@@ -178,6 +178,15 @@ function ProductCard({ product }) {
                 defaultValue: { summary: 'undefined' },
             },
         },
+        surface: {
+            control: 'select',
+            options: ['pdp', 'plp', 'cart', 'wishlist-page'],
+            description: 'UI surface where the button is rendered (for analytics)',
+            table: {
+                type: { summary: "'pdp' | 'plp' | 'cart' | 'wishlist-page'" },
+                defaultValue: { summary: "'plp'" },
+            },
+        },
         size: {
             control: 'select',
             options: ['sm', 'md', 'lg'],
@@ -199,6 +208,7 @@ function ProductCard({ product }) {
     args: {
         product: mockProductSearchItem,
         size: 'md',
+        surface: 'plp',
         className: 'static top-auto right-auto',
     },
     decorators: [
@@ -510,7 +520,7 @@ export const DifferentProducts: Story = {
                 <p className="text-sm text-muted-foreground mb-2">Basic product item</p>
                 <p className="text-sm font-bold">$29.99</p>
                 <div className="absolute top-2 right-2">
-                    <WishlistButton product={mockProductSearchItem} size="sm" />
+                    <WishlistButton product={mockProductSearchItem} surface="plp" size="sm" />
                 </div>
             </div>
 
@@ -525,6 +535,7 @@ export const DifferentProducts: Story = {
                             productId: 'featured-product',
                             name: 'Featured Product',
                         }}
+                        surface="plp"
                         size="sm"
                     />
                 </div>

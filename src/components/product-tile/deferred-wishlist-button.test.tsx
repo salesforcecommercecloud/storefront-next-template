@@ -49,6 +49,7 @@ const defaultProps: WishlistButtonProps = {
         productId: 'test-product',
         productName: 'Test Product',
     },
+    surface: 'plp',
     size: 'md',
     className: 'custom-class',
     tabIndex: -1,
@@ -138,6 +139,7 @@ describe('DeferredWishlistButton', () => {
         test('works without optional props', () => {
             const minimalProps: WishlistButtonProps = {
                 product: { productId: 'minimal-product' },
+                surface: 'plp',
             };
             expect(() => render(<DeferredWishlistButton {...minimalProps} />)).not.toThrow();
         });

@@ -78,7 +78,7 @@ describe('WishlistButton — replaceState cleanup', () => {
     test('calls replaceState after pending action completes (isLoading true→false)', () => {
         setLocationUrl('http://localhost/category/shoes?sort=price&action=addToWishlist&actionParams=%7B%7D');
 
-        const { rerender } = render(<WishlistButton product={baseProduct} />);
+        const { rerender } = render(<WishlistButton product={baseProduct} surface="pdp" />);
 
         // Simulate onMatch firing (sets pendingActionRef)
         expect(capturedOnMatch).toBeTruthy();
@@ -86,11 +86,11 @@ describe('WishlistButton — replaceState cleanup', () => {
 
         // Transition isLoading to true
         mockIsLoading = true;
-        rerender(<WishlistButton product={baseProduct} />);
+        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
         // Transition isLoading to false — should trigger replaceState
         mockIsLoading = false;
-        rerender(<WishlistButton product={baseProduct} />);
+        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
         expect(replaceStateSpy).toHaveBeenCalledTimes(1);
         const replacedUrl = replaceStateSpy.mock.calls[0][2] as string;
@@ -102,16 +102,16 @@ describe('WishlistButton — replaceState cleanup', () => {
     test('does not call replaceState for normal user clicks', async () => {
         setLocationUrl('http://localhost/category/shoes?action=addToWishlist&actionParams=%7B%7D');
 
-        const { rerender } = render(<WishlistButton product={baseProduct} />);
+        const { rerender } = render(<WishlistButton product={baseProduct} surface="pdp" />);
 
         // User clicks the heart (not via pending action)
         await userEvent.click(screen.getByRole('button'));
 
         // Transition isLoading true→false
         mockIsLoading = true;
-        rerender(<WishlistButton product={baseProduct} />);
+        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
         mockIsLoading = false;
-        rerender(<WishlistButton product={baseProduct} />);
+        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
         expect(replaceStateSpy).not.toHaveBeenCalled();
     });
@@ -121,14 +121,14 @@ describe('WishlistButton — replaceState cleanup', () => {
             'http://localhost/category/shoes?sort=price-asc&refine=color%3Ablue&action=addToWishlist&actionParams=%7B%22productId%22%3A%22prod-123%22%7D'
         );
 
-        const { rerender } = render(<WishlistButton product={baseProduct} />);
+        const { rerender } = render(<WishlistButton product={baseProduct} surface="pdp" />);
 
         act(() => capturedOnMatch?.({}));
 
         mockIsLoading = true;
-        rerender(<WishlistButton product={baseProduct} />);
+        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
         mockIsLoading = false;
-        rerender(<WishlistButton product={baseProduct} />);
+        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
         expect(replaceStateSpy).toHaveBeenCalledTimes(1);
         const replacedUrl = replaceStateSpy.mock.calls[0][2] as string;

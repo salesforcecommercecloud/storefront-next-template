@@ -79,6 +79,11 @@ const einteinEventToEndpointMap: Record<AnalyticsEvent['eventType'], string> = {
     checkout_step: 'checkoutStep',
     view_search_suggestion: 'viewSearchSuggestion',
     click_search_suggestion: 'clickSearchSuggestion',
+    wishlist_item_added: 'wishlistItemAdded',
+    wishlist_item_removed: 'wishlistItemRemoved',
+    wishlist_viewed: 'wishlistViewed',
+    wishlist_item_merged: 'wishlistItemMerged',
+    wishlist_merged: 'wishlistMerged',
 };
 
 export type EinsteinActivity = {
@@ -317,6 +322,42 @@ function convertEventToEinsteinActivity(event: AnalyticsEvent, realm: string, is
                 ...baseActivity,
                 searchText: event.searchInputText,
                 suggestion: event.suggestion,
+            };
+
+        case 'wishlist_item_added':
+            return {
+                ...baseActivity,
+                productId: event.productId,
+                surface: event.surface,
+            };
+
+        case 'wishlist_item_removed':
+            return {
+                ...baseActivity,
+                productId: event.productId,
+                surface: event.surface,
+            };
+
+        case 'wishlist_viewed':
+            return {
+                ...baseActivity,
+            };
+
+        case 'wishlist_item_merged':
+            return {
+                ...baseActivity,
+                productId: event.productId,
+            };
+
+        case 'wishlist_merged':
+            return {
+                ...baseActivity,
+                merged: event.merged,
+                skipped: event.skipped,
+                failed: event.failed,
+                mergedProductIds: event.mergedProductIds,
+                skippedProductIds: event.skippedProductIds,
+                failedProductIds: event.failedProductIds,
             };
 
         default:

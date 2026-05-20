@@ -265,6 +265,7 @@ export default function ProductInfo({
                             price: product.price,
                             image: product.imageGroups?.[0]?.images?.[0],
                         }}
+                        surface="pdp"
                         size="sm"
                         className="!static border border-border bg-background/90 shadow-none hover:border-muted-foreground/50 hover:bg-background"
                     />

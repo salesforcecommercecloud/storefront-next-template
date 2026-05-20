@@ -351,8 +351,15 @@ vi.mock('@/lib/api/basket.server', () => ({
 
 vi.mock('@/lib/api/wishlist.server', () => ({
     captureGuestWishlistSnapshot: vi.fn().mockResolvedValue(null),
-    mergeWishlist: vi.fn().mockResolvedValue({ merged: 0, skipped: 0, failed: 0 }),
-    appendWishlistMergeFlag: vi.fn((url: string) => url),
+    mergeWishlist: vi.fn().mockResolvedValue({
+        merged: 0,
+        skipped: 0,
+        failed: 0,
+        mergedProductIds: [],
+        skippedProductIds: [],
+        failedProductIds: [],
+    }),
+    appendWishlistMergeFlag: vi.fn((_context: any, url: string) => ({ url, setCookie: '' })),
 }));
 
 const mockMergeBasket = vi.mocked(mergeBasket);

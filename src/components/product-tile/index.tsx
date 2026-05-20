@@ -470,6 +470,7 @@ const ProductTile = forwardRef<HTMLDivElement, ProductTileProps>(
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <DeferredWishlistButton
                                     product={product}
+                                    surface="plp"
                                     size="sm"
                                     tabIndex={-1}
                                     className="relative top-auto right-auto z-20 bg-muted hover:bg-background shadow-sm !border-0"

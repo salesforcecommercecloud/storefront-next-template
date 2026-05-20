@@ -157,6 +157,42 @@ export interface ClickSearchSuggestionEvent extends BaseEvent {
     suggestion: string;
 }
 
+/** Wishlist item added by shopper */
+export interface WishlistItemAddedEvent extends BaseEvent {
+    eventType: 'wishlist_item_added';
+    surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+    productId: string;
+}
+
+/** Wishlist item removed by shopper */
+export interface WishlistItemRemovedEvent extends BaseEvent {
+    eventType: 'wishlist_item_removed';
+    surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+    productId: string;
+}
+
+/** Wishlist page viewed */
+export interface WishlistViewedEvent extends BaseEvent {
+    eventType: 'wishlist_viewed';
+}
+
+/** Individual product merged from guest to registered wishlist */
+export interface WishlistItemMergedEvent extends BaseEvent {
+    eventType: 'wishlist_item_merged';
+    productId: string;
+}
+
+/** Summary of guest wishlist merge operation on login */
+export interface WishlistMergedEvent extends BaseEvent {
+    eventType: 'wishlist_merged';
+    merged: number;
+    skipped: number;
+    failed: number;
+    mergedProductIds: string[];
+    skippedProductIds: string[];
+    failedProductIds: string[];
+}
+
 /**
  * Interface for custom analytics events.
  * Extend this interface via module augmentation.
@@ -194,6 +230,11 @@ export type AnalyticsEvent =
     | CheckoutStepEvent
     | ViewSearchSuggestionEvent
     | ClickSearchSuggestionEvent
+    | WishlistItemAddedEvent
+    | WishlistItemRemovedEvent
+    | WishlistViewedEvent
+    | WishlistItemMergedEvent
+    | WishlistMergedEvent
     | AnalyticsEventExtensions[keyof AnalyticsEventExtensions];
 
 /**

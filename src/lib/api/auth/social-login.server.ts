@@ -226,9 +226,15 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
 
                 // Redirect to redirectURL if provided, otherwise redirect to home
                 const redirectTo = redirectUrl ? decodeURIComponent(redirectUrl) : '/';
-                return redirect(
-                    wishlistMergeResult ? appendWishlistMergeFlag(redirectTo, wishlistMergeResult) : redirectTo
-                );
+                if (wishlistMergeResult) {
+                    const { url: finalUrl, setCookie } = appendWishlistMergeFlag(
+                        context,
+                        redirectTo,
+                        wishlistMergeResult
+                    );
+                    return redirect(finalUrl, { headers: { 'Set-Cookie': setCookie } });
+                }
+                return redirect(redirectTo);
             } else {
                 logger.error('SocialLogin: login failed', { error: result.error });
                 const errorMessage = t('errors:genericTryAgain');

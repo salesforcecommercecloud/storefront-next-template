@@ -25,6 +25,7 @@ import { getAuth } from '@/middlewares/auth.server';
 import { hasUsableShopperSession } from '@/middlewares/auth.utils';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { useTranslation } from 'react-i18next';
+import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
 
 /**
  * Public guest wishlist route. Registered shoppers with a usable session are
@@ -81,6 +82,7 @@ export default function GuestWishlist({
     const { t } = useTranslation('account');
     return (
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <WishlistPageAnalytics />
             <SeoMeta title={t('meta.wishlistTitle', { defaultValue: 'Wishlist' })} />
             <Suspense fallback={<WishlistSkeleton />}>
                 <Await resolve={loaderData.productsByProductId}>

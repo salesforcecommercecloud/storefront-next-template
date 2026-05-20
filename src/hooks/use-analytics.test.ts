@@ -23,6 +23,9 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+
+// Unmock useAnalytics for this specific test file (overrides global mock)
+vi.unmock('@/hooks/use-analytics');
 import { useAnalytics } from './use-analytics';
 import type { SessionData } from '@/lib/api/types';
 import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';

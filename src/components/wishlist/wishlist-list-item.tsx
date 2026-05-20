@@ -26,6 +26,7 @@ import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 import { createProductUrl, getDisplayVariationValues, requiresVariantSelection } from '@/lib/product/product-utils';
 import { useToast } from '@/components/toast';
+import { useAnalytics } from '@/hooks/use-analytics';
 import InventoryMessage from '@/components/inventory-message';
 import ProductPrice from '@/components/product-price';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,7 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
     const config = useConfig<AppConfig>();
     const { currency } = useSite();
     const { addToast } = useToast();
+    const { trackWishlistItemRemoved } = useAnalytics();
     const removeFetcher = useFetcher<typeof wishlistRemoveAction>();
     const hasHandledRemoveResponse = useRef(false);
 
@@ -135,6 +137,16 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
             if (result?.success) {
                 hasHandledRemoveResponse.current = true;
                 addToast(t('removedFromWishlist'), 'success');
+
+                // Emit analytics event on successful remove
+                const productId = wishlistItem.productId;
+                if (productId) {
+                    void trackWishlistItemRemoved({
+                        surface: 'wishlist-page',
+                        productId,
+                    });
+                }
+
                 if (wishlistItem.id) {
                     onRemove(wishlistItem.id);
                 }
@@ -146,7 +158,16 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
         if (removeFetcher.state === 'submitting') {
             hasHandledRemoveResponse.current = false;
         }
-    }, [removeFetcher.state, removeFetcher.data, addToast, onRemove, wishlistItem.id, t]);
+    }, [
+        removeFetcher.state,
+        removeFetcher.data,
+        addToast,
+        onRemove,
+        wishlistItem.id,
+        wishlistItem.productId,
+        t,
+        trackWishlistItemRemoved,
+    ]);
 
     const handleRemove = () => {
         if (removeFetcher.state !== 'idle' || !wishlistItem.id) return;

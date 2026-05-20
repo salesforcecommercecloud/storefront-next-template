@@ -127,6 +127,37 @@ beforeAll(() => {
     }
 });
 
+// Mock useAnalytics hook globally for all tests
+// Individual tests can override this if they need specific behavior
+//
+// TRADE-OFF: This global mock means components that should call tracking functions but don't
+// will pass tests silently. Missing track calls are only caught via:
+// 1. Storybook interaction tests (if the story exercises the analytics path)
+// 2. Production telemetry (if monitoring alerts on missing events)
+//
+// Tests that need to assert on specific track-function calls must use vi.unmock('@/hooks/use-analytics')
+// in a beforeEach block, then provide their own mock implementation that can be spied on.
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({
+        trackViewPage: vi.fn(),
+        trackViewProduct: vi.fn(),
+        trackCartItemAdd: vi.fn(),
+        trackCheckoutStart: vi.fn(),
+        trackCheckoutStep: vi.fn(),
+        trackViewSearch: vi.fn(),
+        trackViewCategory: vi.fn(),
+        trackClickProductInCategory: vi.fn(),
+        trackClickProductInSearch: vi.fn(),
+        trackViewSearchSuggestions: vi.fn(),
+        trackClickSearchSuggestion: vi.fn(),
+        trackWishlistItemAdded: vi.fn(),
+        trackWishlistItemRemoved: vi.fn(),
+        trackWishlistViewed: vi.fn(),
+        trackWishlistItemMerged: vi.fn(),
+        trackWishlistMerged: vi.fn(),
+    }),
+}));
+
 // Mock getI18nextInstance to return an i18next instance for server actions
 // Individual tests can override this if needed
 vi.mock('@/middlewares/i18next', async () => {

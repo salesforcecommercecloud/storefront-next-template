@@ -89,6 +89,11 @@ const mockConfig: ActiveDataConfig = {
         checkout_step: false,
         view_search_suggestion: false,
         click_search_suggestion: false,
+        wishlist_item_added: false,
+        wishlist_item_removed: false,
+        wishlist_viewed: false,
+        wishlist_item_merged: false,
+        wishlist_merged: false,
     },
 };
 

@@ -149,6 +149,11 @@ export const useAnalytics = () => {
             trackClickProductInSearch: () => {},
             trackViewSearchSuggestions: () => {},
             trackClickSearchSuggestion: () => {},
+            trackWishlistItemAdded: () => {},
+            trackWishlistItemRemoved: () => {},
+            trackWishlistViewed: () => {},
+            trackWishlistItemMerged: () => {},
+            trackWishlistMerged: () => {},
         };
         /* eslint-enable @typescript-eslint/no-empty-function */
     }
@@ -294,6 +299,62 @@ export const useAnalytics = () => {
         });
     };
 
+    /**
+     * Track wishlist item added
+     */
+    const trackWishlistItemAdded = async (data: {
+        surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+        productId: string;
+    }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_item_added', {
+            surface: data.surface,
+            productId: data.productId,
+        });
+    };
+
+    /**
+     * Track wishlist item removed
+     */
+    const trackWishlistItemRemoved = async (data: {
+        surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+        productId: string;
+    }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_item_removed', {
+            surface: data.surface,
+            productId: data.productId,
+        });
+    };
+
+    /**
+     * Track wishlist page view
+     */
+    const trackWishlistViewed = async () => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_viewed', {});
+    };
+
+    /**
+     * Track individual product merged from guest to registered wishlist
+     */
+    const trackWishlistItemMerged = async (data: { productId: string }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_item_merged', {
+            productId: data.productId,
+        });
+    };
+
+    /**
+     * Track wishlist merge operation summary on login
+     */
+    const trackWishlistMerged = async (data: {
+        merged: number;
+        skipped: number;
+        failed: number;
+        mergedProductIds: string[];
+        skippedProductIds: string[];
+        failedProductIds: string[];
+    }) => {
+        return trackEvent(authPromiseRef.current, appConfig, consentPreferences, siteInfo, 'wishlist_merged', data);
+    };
+
     return {
         trackViewPage,
         trackViewProduct,
@@ -306,5 +367,10 @@ export const useAnalytics = () => {
         trackClickProductInSearch,
         trackViewSearchSuggestions,
         trackClickSearchSuggestion,
+        trackWishlistItemAdded,
+        trackWishlistItemRemoved,
+        trackWishlistViewed,
+        trackWishlistItemMerged,
+        trackWishlistMerged,
     };
 };

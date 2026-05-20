@@ -60,6 +60,14 @@ vi.mock('@/components/toast', () => ({
     }),
 }));
 
+// Mock analytics
+const mockTrackWishlistItemRemoved = vi.fn();
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({
+        trackWishlistItemRemoved: mockTrackWishlistItemRemoved,
+    }),
+}));
+
 // Mock config
 const mockGetConfig = vi.fn();
 vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {

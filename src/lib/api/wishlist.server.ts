@@ -25,6 +25,8 @@ import { hasUsableShopperSession } from '@/middlewares/auth.utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { ActionError } from '@/lib/error-codes';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
+import { setWishlistMergeCookie } from '@/lib/wishlist/merge-result-cookie.server';
+import { TrackingConsent } from '@/types/tracking-consent';
 
 type CustomerProductList = ShopperCustomers.schemas['CustomerProductList'];
 type CustomerProductListItem = ShopperCustomers.schemas['CustomerProductListItem'];
@@ -295,6 +297,9 @@ export type WishlistMergeResult = {
     merged: number;
     skipped: number;
     failed: number;
+    mergedProductIds: string[];
+    skippedProductIds: string[];
+    failedProductIds: string[];
 };
 
 /**
@@ -357,7 +362,14 @@ export async function mergeWishlist(
 ): Promise<WishlistMergeResult> {
     const logger = getLogger(context);
     const session = getAuth(context);
-    const result: WishlistMergeResult = { merged: 0, skipped: 0, failed: 0 };
+    const result: WishlistMergeResult = {
+        merged: 0,
+        skipped: 0,
+        failed: 0,
+        mergedProductIds: [],
+        skippedProductIds: [],
+        failedProductIds: [],
+    };
 
     if (!hasUsableShopperSession(session) || session.userType !== 'registered') {
         logger.warn('Wishlist: mergeWishlist called without a registered session, skipping', {
@@ -383,6 +395,7 @@ export async function mergeWishlist(
     } catch (error) {
         logger.error('Wishlist: mergeWishlist could not get or create registered list', { error });
         result.failed = snapshot.items.length;
+        result.failedProductIds = snapshot.items.map((item) => item.productId).filter(Boolean) as string[];
         return result;
     }
 
@@ -390,6 +403,7 @@ export async function mergeWishlist(
     if (!registeredListId) {
         logger.error('Wishlist: mergeWishlist registered list has no listId');
         result.failed = snapshot.items.length;
+        result.failedProductIds = snapshot.items.map((item) => item.productId).filter(Boolean) as string[];
         return result;
     }
 
@@ -408,10 +422,12 @@ export async function mergeWishlist(
         const productId = item.productId;
         if (!productId) {
             result.failed += 1;
+            // Don't add empty string to array - no productId to track
             continue;
         }
         if (existingProductIds.has(productId) || seen.has(productId)) {
             result.skipped += 1;
+            result.skippedProductIds.push(productId);
             continue;
         }
         seen.add(productId);
@@ -436,14 +452,17 @@ export async function mergeWishlist(
         );
         for (let j = 0; j < settled.length; j += 1) {
             const outcome = settled[j];
+            const productId = chunk[j].productId as string;
             if (outcome.status === 'fulfilled') {
                 result.merged += 1;
+                result.mergedProductIds.push(productId);
             } else {
                 logger.warn('Wishlist: mergeWishlist failed to create item, skipping', {
-                    productId: chunk[j].productId,
+                    productId,
                     error: outcome.reason,
                 });
                 result.failed += 1;
+                result.failedProductIds.push(productId);
             }
         }
     }
@@ -458,16 +477,49 @@ export async function mergeWishlist(
 }
 
 /**
- * Append the merge-result flag to a redirect URL so the destination route can render
- * a toast. Returns the input untouched when no toast should fire (zero merges).
+ * Prepare redirect with wishlist merge result. Sets a short-lived cookie containing
+ * the merge result for client-side analytics and toast display.
+ *
+ * Returns URL with flag for backward compatibility (toast component checks URL),
+ * and Set-Cookie header containing the full merge result (counts + product ID arrays).
+ *
+ * The cookie is only set if tracking consent has been granted (checked via getAuth).
+ * If consent is not granted, only the URL flag is returned (for toast display).
+ *
+ * @param context - Router context for cookie generation
+ * @param redirectTarget - Target URL for redirect
+ * @param result - Wishlist merge result
+ * @returns Object with url (with flag) and setCookie header
  */
-export function appendWishlistMergeFlag(redirectTarget: string, result: WishlistMergeResult): string {
+export function appendWishlistMergeFlag(
+    context: LoaderFunctionArgs['context'],
+    redirectTarget: string,
+    result: WishlistMergeResult
+): { url: string; setCookie: string } {
     if (result.merged === 0 && result.failed === 0) {
-        return redirectTarget;
+        return { url: redirectTarget, setCookie: '' };
     }
+
+    // Add flag to URL for toast component detection
     const flag = result.failed > 0 ? 'partial' : 'success';
     const separator = redirectTarget.includes('?') ? '&' : '?';
-    return `${redirectTarget}${separator}wishlistMerge=${flag}`;
+    const url = `${redirectTarget}${separator}wishlistMerge=${flag}`;
+
+    // Store full result (with productIds) in cookie for analytics, but only if tracking consent granted
+    // The cookie contains productIds which should respect consent boundaries even though
+    // the analytics emission itself is also gated client-side by useAnalytics
+    let setCookie = '';
+    try {
+        const auth = getAuth(context);
+        // Only set cookie if tracking consent has been granted (Accepted = '0')
+        if (auth.trackingConsent === TrackingConsent.Accepted) {
+            setCookie = setWishlistMergeCookie(context, result);
+        }
+    } catch {
+        // If getAuth fails (e.g., middleware not initialized), don't set cookie
+    }
+
+    return { url, setCookie };
 }
 
 /**

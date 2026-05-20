@@ -22,6 +22,7 @@ import { WishlistLoadError } from '@/components/wishlist/wishlist-load-error';
 import { SeoMeta } from '@/components/seo-meta';
 import { getLogger } from '@/lib/logger.server';
 import { useTranslation } from 'react-i18next';
+import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
 
 /**
  * Server-side loader. Delegates to `loadWishlistPageData` (shared with the
@@ -65,6 +66,7 @@ export default function AccountWishlist({
     const { t } = useTranslation('account');
     return (
         <>
+            <WishlistPageAnalytics />
             <SeoMeta title={t('meta.wishlistTitle', { defaultValue: 'Wishlist' })} noIndex />
             <Suspense fallback={<WishlistSkeleton />}>
                 <Await resolve={loaderData.productsByProductId}>

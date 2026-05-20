@@ -78,7 +78,9 @@ describe('CartItemAddToWishlistButton', () => {
         renderButton(baseProduct);
         fireEvent.click(screen.getByRole('button', { name: t('product:addToWishlist') }));
         expect(mockToggleWishlist).toHaveBeenCalledWith(
-            expect.objectContaining({ productId: 'sku-1', productName: 'Test Product' })
+            expect.objectContaining({ productId: 'sku-1', productName: 'Test Product' }),
+            undefined,
+            'cart'
         );
     });
 

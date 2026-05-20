@@ -17,6 +17,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router';
 import { WishlistMergeToast } from './wishlist-merge-toast';
+import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
 const mockAddToast = vi.fn();
 const mockNavigate = vi.fn();
@@ -36,10 +37,12 @@ vi.mock('react-i18next', () => ({
 
 function renderAt(path: string) {
     return render(
-        <MemoryRouter initialEntries={[path]}>
-            <WishlistMergeToast />
-            <CurrentUrl />
-        </MemoryRouter>
+        <AllProvidersWrapper>
+            <MemoryRouter initialEntries={[path]}>
+                <WishlistMergeToast />
+                <CurrentUrl />
+            </MemoryRouter>
+        </AllProvidersWrapper>
     );
 }
 

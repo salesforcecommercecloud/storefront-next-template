@@ -80,6 +80,11 @@ const mockConfig: EinsteinConfig = {
         checkout_step: true,
         view_search_suggestion: true,
         click_search_suggestion: true,
+        wishlist_item_added: true,
+        wishlist_item_removed: true,
+        wishlist_viewed: true,
+        wishlist_item_merged: true,
+        wishlist_merged: true,
     },
 };
 

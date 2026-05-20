@@ -16,6 +16,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { NormalizedApiError } from './normalized-api-error';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import { TrackingConsent } from '@/types/tracking-consent';
 import {
     appendWishlistMergeFlag,
     captureGuestWishlistSnapshot,
@@ -397,7 +399,14 @@ describe('mergeWishlist', () => {
 
         const result = await mergeWishlist(mockContext, snapshot([{ productId: 'sku-1' }]));
 
-        expect(result).toEqual({ merged: 0, skipped: 0, failed: 0 });
+        expect(result).toEqual({
+            merged: 0,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: [],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
         expect(mockCreateCustomerProductListItem).not.toHaveBeenCalled();
     });
 
@@ -406,7 +415,14 @@ describe('mergeWishlist', () => {
 
         const result = await mergeWishlist(mockContext, snapshot([{ productId: 'sku-1' }]));
 
-        expect(result).toEqual({ merged: 0, skipped: 0, failed: 0 });
+        expect(result).toEqual({
+            merged: 0,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: [],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
         expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
     });
 
@@ -420,7 +436,14 @@ describe('mergeWishlist', () => {
             snapshot([{ productId: 'sku-1' }, { productId: 'sku-2' }, { productId: 'sku-3' }])
         );
 
-        expect(result).toEqual({ merged: 3, skipped: 0, failed: 0 });
+        expect(result).toEqual({
+            merged: 3,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: ['sku-1', 'sku-2', 'sku-3'],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
         expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(3);
         expect(mockDeleteCustomerProductList).not.toHaveBeenCalled();
     });
@@ -432,7 +455,14 @@ describe('mergeWishlist', () => {
 
         const result = await mergeWishlist(mockContext, snapshot([{ productId: 'sku-1' }, { productId: 'sku-2' }]));
 
-        expect(result).toEqual({ merged: 1, skipped: 1, failed: 0 });
+        expect(result).toEqual({
+            merged: 1,
+            skipped: 1,
+            failed: 0,
+            mergedProductIds: ['sku-2'],
+            skippedProductIds: ['sku-1'],
+            failedProductIds: [],
+        });
         expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(1);
     });
 
@@ -446,7 +476,14 @@ describe('mergeWishlist', () => {
             snapshot([{ productId: 'sku-1' }, { productId: 'sku-1' }, { productId: 'sku-2' }])
         );
 
-        expect(result).toEqual({ merged: 2, skipped: 1, failed: 0 });
+        expect(result).toEqual({
+            merged: 2,
+            skipped: 1,
+            failed: 0,
+            mergedProductIds: ['sku-1', 'sku-2'],
+            skippedProductIds: ['sku-1'],
+            failedProductIds: [],
+        });
         expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(2);
     });
 
@@ -463,7 +500,14 @@ describe('mergeWishlist', () => {
             snapshot([{ productId: 'sku-1' }, { productId: 'sku-bad' }, { productId: 'sku-3' }])
         );
 
-        expect(result).toEqual({ merged: 2, skipped: 0, failed: 1 });
+        expect(result).toEqual({
+            merged: 2,
+            skipped: 0,
+            failed: 1,
+            mergedProductIds: ['sku-1', 'sku-3'],
+            skippedProductIds: [],
+            failedProductIds: ['sku-bad'],
+        });
         expect(mockLoggerWarn).toHaveBeenCalledWith(
             'Wishlist: mergeWishlist failed to create item, skipping',
             expect.objectContaining({ productId: 'sku-bad' })
@@ -488,7 +532,14 @@ describe('mergeWishlist', () => {
         const items = Array.from({ length: 7 }, (_, i) => ({ productId: `sku-${i}` }));
         const result = await mergeWishlist(mockContext, snapshot(items));
 
-        expect(result).toEqual({ merged: 7, skipped: 0, failed: 0 });
+        expect(result).toEqual({
+            merged: 7,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: ['sku-0', 'sku-1', 'sku-2', 'sku-3', 'sku-4', 'sku-5', 'sku-6'],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
         expect(mockCreateCustomerProductListItem).toHaveBeenCalledTimes(7);
         expect(maxInFlight).toBeLessThanOrEqual(5);
         expect(maxInFlight).toBeGreaterThan(1); // Confirms parallelism actually happened.
@@ -499,7 +550,14 @@ describe('mergeWishlist', () => {
 
         const result = await mergeWishlist(mockContext, snapshot([]));
 
-        expect(result).toEqual({ merged: 0, skipped: 0, failed: 0 });
+        expect(result).toEqual({
+            merged: 0,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: [],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
         expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
         expect(mockCreateCustomerProductListItem).not.toHaveBeenCalled();
     });
@@ -510,7 +568,14 @@ describe('mergeWishlist', () => {
 
         const result = await mergeWishlist(mockContext, snapshot([{ productId: undefined as unknown as string }]));
 
-        expect(result).toEqual({ merged: 0, skipped: 0, failed: 1 });
+        expect(result).toEqual({
+            merged: 0,
+            skipped: 0,
+            failed: 1,
+            mergedProductIds: [],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
         expect(mockCreateCustomerProductListItem).not.toHaveBeenCalled();
     });
 
@@ -530,31 +595,95 @@ describe('mergeWishlist', () => {
 });
 
 describe('appendWishlistMergeFlag', () => {
-    test('returns the input unchanged when nothing was merged or failed', () => {
-        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 0, skipped: 0, failed: 0 })).toBe(
-            '/account/wishlist'
-        );
-        expect(appendWishlistMergeFlag('/foo?x=1', { merged: 0, skipped: 5, failed: 0 })).toBe('/foo?x=1');
+    const mockContext = {
+        get: (key: any) => {
+            if (key === siteContext) {
+                return { site: { id: 'RefArch' } };
+            }
+            return undefined;
+        },
+    } as any;
+
+    beforeEach(() => {
+        // Set up tracking consent to allow cookie generation
+        mockGetAuth.mockReturnValue({
+            trackingConsent: TrackingConsent.Accepted,
+            userType: 'registered',
+        });
     });
 
-    test('appends ?wishlistMerge=success on a clean merge', () => {
-        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 3, skipped: 0, failed: 0 })).toBe(
-            '/account/wishlist?wishlistMerge=success'
-        );
+    test('returns url unchanged and no cookie when nothing was merged or failed', () => {
+        const result1 = appendWishlistMergeFlag(mockContext, '/account/wishlist', {
+            merged: 0,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: [],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
+        expect(result1.url).toBe('/account/wishlist');
+        expect(result1.setCookie).toBe('');
+
+        const result2 = appendWishlistMergeFlag(mockContext, '/foo?x=1', {
+            merged: 0,
+            skipped: 5,
+            failed: 0,
+            mergedProductIds: [],
+            skippedProductIds: ['p1', 'p2', 'p3', 'p4', 'p5'],
+            failedProductIds: [],
+        });
+        expect(result2.url).toBe('/foo?x=1');
+        expect(result2.setCookie).toBe('');
+    });
+
+    test('appends ?wishlistMerge=success and sets cookie on a clean merge', () => {
+        const result = appendWishlistMergeFlag(mockContext, '/account/wishlist', {
+            merged: 3,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: ['p1', 'p2', 'p3'],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
+        expect(result.url).toBe('/account/wishlist?wishlistMerge=success');
+        expect(result.setCookie).toContain('wishlist_merge');
+        expect(result.setCookie).toContain('Max-Age=60');
     });
 
     test('appends &wishlistMerge=success when the URL already has a query string', () => {
-        expect(appendWishlistMergeFlag('/foo?x=1', { merged: 1, skipped: 0, failed: 0 })).toBe(
-            '/foo?x=1&wishlistMerge=success'
-        );
+        const result = appendWishlistMergeFlag(mockContext, '/foo?x=1', {
+            merged: 1,
+            skipped: 0,
+            failed: 0,
+            mergedProductIds: ['p1'],
+            skippedProductIds: [],
+            failedProductIds: [],
+        });
+        expect(result.url).toBe('/foo?x=1&wishlistMerge=success');
+        expect(result.setCookie).toContain('wishlist_merge');
     });
 
     test('appends ?wishlistMerge=partial when any item failed', () => {
-        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 2, skipped: 0, failed: 1 })).toBe(
-            '/account/wishlist?wishlistMerge=partial'
-        );
-        expect(appendWishlistMergeFlag('/account/wishlist', { merged: 0, skipped: 0, failed: 1 })).toBe(
-            '/account/wishlist?wishlistMerge=partial'
-        );
+        const result1 = appendWishlistMergeFlag(mockContext, '/account/wishlist', {
+            merged: 2,
+            skipped: 0,
+            failed: 1,
+            mergedProductIds: ['p1', 'p2'],
+            skippedProductIds: [],
+            failedProductIds: ['p3'],
+        });
+        expect(result1.url).toBe('/account/wishlist?wishlistMerge=partial');
+        expect(result1.setCookie).toContain('wishlist_merge');
+
+        const result2 = appendWishlistMergeFlag(mockContext, '/account/wishlist', {
+            merged: 0,
+            skipped: 0,
+            failed: 1,
+            mergedProductIds: [],
+            skippedProductIds: [],
+            failedProductIds: ['p1'],
+        });
+        expect(result2.url).toBe('/account/wishlist?wishlistMerge=partial');
+        expect(result2.setCookie).toContain('wishlist_merge');
     });
 });

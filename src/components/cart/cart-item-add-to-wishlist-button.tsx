@@ -72,7 +72,7 @@ export function CartItemAddToWishlistButton({
                 aria-label={t('removeFromWishlist')}
                 aria-busy={isLoading}
                 onClick={() => {
-                    void toggleWishlist(hit);
+                    void toggleWishlist(hit, undefined, 'cart');
                 }}>
                 {isLoading && pendingOperation === 'remove' ? t('removingFromWishlist') : t('removeFromWishlist')}
             </Button>
@@ -90,7 +90,7 @@ export function CartItemAddToWishlistButton({
             aria-label={t('addToWishlist')}
             aria-busy={isLoading}
             onClick={() => {
-                void toggleWishlist(hit);
+                void toggleWishlist(hit, undefined, 'cart');
             }}>
             {isLoading && pendingOperation === 'add' ? t('addingToWishlist') : t('addToWishlist')}
         </Button>

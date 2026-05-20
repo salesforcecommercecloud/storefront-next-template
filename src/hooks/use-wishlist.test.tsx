@@ -27,6 +27,8 @@ import { useWishlist } from './use-wishlist';
 
 // Mock dependencies
 const mockAddToast = vi.fn();
+const mockTrackWishlistItemAdded = vi.fn();
+const mockTrackWishlistItemRemoved = vi.fn();
 
 const mockAddFetcher = {
     data: null as any,
@@ -44,6 +46,13 @@ let fetcherCallCount = 0;
 vi.mock('@/components/toast', () => ({
     useToast: () => ({
         addToast: mockAddToast,
+    }),
+}));
+
+vi.mock('@/hooks/use-analytics', () => ({
+    useAnalytics: () => ({
+        trackWishlistItemAdded: mockTrackWishlistItemAdded,
+        trackWishlistItemRemoved: mockTrackWishlistItemRemoved,
     }),
 }));
 

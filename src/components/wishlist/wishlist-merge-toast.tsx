@@ -18,13 +18,54 @@ import { useLocation, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
 import { useToast } from '@/components/toast';
+import { useAnalytics } from '@/hooks/use-analytics';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { WISHLIST_MERGE_COOKIE_NAME } from '@/lib/wishlist/constants';
 
 const PARAM = 'wishlistMerge';
 
 /**
+ * Subset of WishlistMergeResult stored in the cookie.
+ * Matches the structure created by setWishlistMergeCookie on the server.
+ */
+type WishlistMergeCookieData = {
+    merged: number;
+    skipped: number;
+    failed: number;
+    mergedProductIds: string[];
+};
+
+/**
+ * Helper to read cookie value from document.cookie
+ */
+function getCookie(name: string): string | undefined {
+    if (typeof document === 'undefined') return undefined;
+    const cookies = document.cookie.split(';').map((c) => c.trim());
+    const targetCookie = cookies.find((c) => c.startsWith(`${name}=`));
+    return targetCookie ? targetCookie.slice(name.length + 1) : undefined;
+}
+
+/**
+ * Helper to delete a cookie by setting Max-Age=0.
+ * Must match the Domain attribute that was used when setting the cookie (RFC 6265).
+ *
+ * @param name - Cookie name
+ * @param domain - Optional domain (must match the domain used when setting the cookie)
+ */
+function deleteCookie(name: string, domain?: string): void {
+    if (typeof document === 'undefined') return;
+    const domainAttr = domain ? `; Domain=${domain}` : '';
+    document.cookie = `${name}=; Max-Age=0; Path=/${domainAttr}`;
+}
+
+/**
  * Mounts inside the authenticated app shell. When the URL carries `?wishlistMerge=success`
  * or `?wishlistMerge=partial` (set by an auth-success route after merging the guest
- * wishlist), surface a toast and strip the param so a refresh does not re-fire the toast.
+ * wishlist), surface a toast, emit analytics events, and strip the param so a refresh
+ * does not re-fire.
+ *
+ * Analytics data (counts + product IDs) is read from a short-lived cookie, not URL params,
+ * to avoid URL length limits with large wishlists.
  *
  * Renders nothing.
  */
@@ -34,6 +75,8 @@ export function WishlistMergeToast(): null {
     const navigate = useNavigate();
     const { addToast } = useToast();
     const { t } = useTranslation('account');
+    const { trackWishlistItemMerged, trackWishlistMerged } = useAnalytics();
+    const { site } = useSite();
     const firedFor = useRef<string | null>(null);
 
     useEffect(() => {
@@ -49,11 +92,55 @@ export function WishlistMergeToast(): null {
 
         addToast(t(flag === 'partial' ? 'wishlist.mergePartial' : 'wishlist.mergeSuccess'), 'success');
 
+        // Read merge data from cookie (namespaced with site ID)
+        const cookieName = `${WISHLIST_MERGE_COOKIE_NAME}_${site.id}`;
+        const cookieValue = getCookie(cookieName);
+
+        if (cookieValue) {
+            try {
+                const cookieData = JSON.parse(decodeURIComponent(cookieValue)) as WishlistMergeCookieData;
+
+                // Emit individual events for each merged product (capped at 50 by server)
+                for (const productId of cookieData.mergedProductIds) {
+                    void trackWishlistItemMerged({ productId });
+                }
+
+                // Emit summary event with counts + available productIds
+                // Note: mergedProductIds may be capped at 50, but counts are always accurate
+                if (cookieData.merged > 0 || cookieData.skipped > 0 || cookieData.failed > 0) {
+                    void trackWishlistMerged({
+                        merged: cookieData.merged,
+                        skipped: cookieData.skipped,
+                        failed: cookieData.failed,
+                        mergedProductIds: cookieData.mergedProductIds,
+                        skippedProductIds: [], // Omitted from cookie to prevent overflow
+                        failedProductIds: [], // Omitted from cookie to prevent overflow
+                    });
+                }
+
+                // Delete cookie after reading (one-time use)
+                // Must pass domain to match the Domain attribute used when setting the cookie (RFC 6265)
+                deleteCookie(cookieName, site.cookies?.domain);
+            } catch {
+                // Silently ignore parse errors — merge already succeeded, analytics failure shouldn't break UX
+            }
+        }
+
         const nextParams = new URLSearchParams(searchParams);
         nextParams.delete(PARAM);
         const search = nextParams.toString();
         void navigate(`${location.pathname}${search ? `?${search}` : ''}`, { replace: true });
-    }, [searchParams, location.pathname, addToast, navigate, t]);
+    }, [
+        searchParams,
+        location.pathname,
+        addToast,
+        navigate,
+        t,
+        trackWishlistItemMerged,
+        trackWishlistMerged,
+        site.id,
+        site.cookies?.domain,
+    ]);
 
     return null;
 }

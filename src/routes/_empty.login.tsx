@@ -149,7 +149,11 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
             logger.info('Login: passwordless verification succeeded');
             const target = buildUrlFromContext(returnUrl || '/', context);
-            return redirect(wishlistMergeResult ? appendWishlistMergeFlag(target, wishlistMergeResult) : target);
+            if (wishlistMergeResult) {
+                const { url: redirectUrl, setCookie } = appendWishlistMergeFlag(context, target, wishlistMergeResult);
+                return redirect(redirectUrl, { headers: { 'Set-Cookie': setCookie } });
+            }
+            return redirect(target);
         } catch (verifyError) {
             // Auto-verification failed - show error with OTP form
             logger.warn('Login: passwordless auto-verification failed');
@@ -332,8 +336,15 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
                     logger.error('Login: wishlist merge failed', { error: wishlistError });
                 }
             }
-            const flagRedirect = (target: string) =>
-                wishlistMergeResult ? appendWishlistMergeFlag(target, wishlistMergeResult) : target;
+
+            // Helper to prepare redirect with wishlist merge cookie
+            const prepareRedirect = (target: string) => {
+                if (wishlistMergeResult) {
+                    const { url, setCookie } = appendWishlistMergeFlag(context, target, wishlistMergeResult);
+                    return redirect(url, { headers: { 'Set-Cookie': setCookie } });
+                }
+                return redirect(target);
+            };
 
             // Login successful - redirect to returnUrl if provided, otherwise home
             // Try to get returnUrl from formData first (in case it was submitted as hidden input)
@@ -360,14 +371,12 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
                     if (actionParams) {
                         returnUrlObj.searchParams.set('actionParams', actionParams);
                     }
-                    return redirect(
-                        flagRedirect(buildUrlFromContext(returnUrlObj.pathname + returnUrlObj.search, context))
-                    );
+                    return prepareRedirect(buildUrlFromContext(returnUrlObj.pathname + returnUrlObj.search, context));
                 }
-                return redirect(flagRedirect(buildUrlFromContext(returnUrl, context)));
+                return prepareRedirect(buildUrlFromContext(returnUrl, context));
             }
 
-            return redirect(flagRedirect(buildUrlFromContext('/', context)));
+            return prepareRedirect(buildUrlFromContext('/', context));
         }
     } catch {
         return { success: false, error: genericError };

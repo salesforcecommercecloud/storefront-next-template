@@ -114,6 +114,37 @@ interface ClickSearchSuggestionEvent extends BaseEvent {
   searchInputText: string;
   suggestion: string;
 }
+/** Wishlist item added by shopper */
+interface WishlistItemAddedEvent extends BaseEvent {
+  eventType: 'wishlist_item_added';
+  surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+  productId: string;
+}
+/** Wishlist item removed by shopper */
+interface WishlistItemRemovedEvent extends BaseEvent {
+  eventType: 'wishlist_item_removed';
+  surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
+  productId: string;
+}
+/** Wishlist page viewed */
+interface WishlistViewedEvent extends BaseEvent {
+  eventType: 'wishlist_viewed';
+}
+/** Individual product merged from guest to registered wishlist */
+interface WishlistItemMergedEvent extends BaseEvent {
+  eventType: 'wishlist_item_merged';
+  productId: string;
+}
+/** Summary of guest wishlist merge operation on login */
+interface WishlistMergedEvent extends BaseEvent {
+  eventType: 'wishlist_merged';
+  merged: number;
+  skipped: number;
+  failed: number;
+  mergedProductIds: string[];
+  skippedProductIds: string[];
+  failedProductIds: string[];
+}
 /**
  * Interface for custom analytics events.
  * Extend this interface via module augmentation.
@@ -133,7 +164,7 @@ interface AnalyticsEventExtensions {}
  *
  * Custom types can be added by extending the AnalyticsEventExtensions interface.
  */
-type AnalyticsEvent = ViewPageEvent | ViewProductEvent | ViewSearchEvent | ViewCategoryEvent | ViewRecommenderEvent | ClickProductInCategoryEvent | ClickProductInSearchEvent | ClickProductInRecommenderEvent | CartItemAddEvent | CheckoutStartEvent | CheckoutStepEvent | ViewSearchSuggestionEvent | ClickSearchSuggestionEvent | AnalyticsEventExtensions[keyof AnalyticsEventExtensions];
+type AnalyticsEvent = ViewPageEvent | ViewProductEvent | ViewSearchEvent | ViewCategoryEvent | ViewRecommenderEvent | ClickProductInCategoryEvent | ClickProductInSearchEvent | ClickProductInRecommenderEvent | CartItemAddEvent | CheckoutStartEvent | CheckoutStepEvent | ViewSearchSuggestionEvent | ClickSearchSuggestionEvent | WishlistItemAddedEvent | WishlistItemRemovedEvent | WishlistViewedEvent | WishlistItemMergedEvent | WishlistMergedEvent | AnalyticsEventExtensions[keyof AnalyticsEventExtensions];
 /**
  * Helper type for mapping event_type to the corresponding event type.
  */
@@ -232,5 +263,5 @@ declare function getEventMediator(getAdapters: () => EventAdapter[]): EventMedia
  */
 declare function resetEventMediator(): void;
 //#endregion
-export { AnalyticsEvent, AnalyticsEventExtensions, AnalyticsPayload, AnalyticsUser, BaseEvent, CartItemAddEvent, CheckoutStartEvent, CheckoutStepEvent, ClickProductInCategoryEvent, ClickProductInRecommenderEvent, ClickProductInSearchEvent, ClickSearchSuggestionEvent, ConsentCategory, ConsentPreferences, EventAdapter, EventMediator, EventPayload, EventSiteInfo, EventTypeMap, PayloadTbd, ViewCategoryEvent, ViewPageEvent, ViewProductEvent, ViewRecommenderEvent, ViewSearchEvent, ViewSearchSuggestionEvent, createEvent, getEventMediator, resetEventMediator, sendViewPageEvent };
+export { AnalyticsEvent, AnalyticsEventExtensions, AnalyticsPayload, AnalyticsUser, BaseEvent, CartItemAddEvent, CheckoutStartEvent, CheckoutStepEvent, ClickProductInCategoryEvent, ClickProductInRecommenderEvent, ClickProductInSearchEvent, ClickSearchSuggestionEvent, ConsentCategory, ConsentPreferences, EventAdapter, EventMediator, EventPayload, EventSiteInfo, EventTypeMap, PayloadTbd, ViewCategoryEvent, ViewPageEvent, ViewProductEvent, ViewRecommenderEvent, ViewSearchEvent, ViewSearchSuggestionEvent, WishlistItemAddedEvent, WishlistItemMergedEvent, WishlistItemRemovedEvent, WishlistMergedEvent, WishlistViewedEvent, createEvent, getEventMediator, resetEventMediator, sendViewPageEvent };
 //# sourceMappingURL=events.d.ts.map

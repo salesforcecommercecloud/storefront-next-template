@@ -194,7 +194,12 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Si
                 logger.error('Signup: wishlist merge failed', { error });
             }
         }
-        return redirect(wishlistMergeResult ? appendWishlistMergeFlag(returnUrl, wishlistMergeResult) : returnUrl);
+
+        if (wishlistMergeResult) {
+            const { url: redirectUrl, setCookie } = appendWishlistMergeFlag(context, returnUrl, wishlistMergeResult);
+            return redirect(redirectUrl, { headers: { 'Set-Cookie': setCookie } });
+        }
+        return redirect(returnUrl);
     }
 
     // Request OTP for email verification if feature is enabled

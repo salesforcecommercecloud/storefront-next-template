@@ -26,16 +26,17 @@ interface WishlistButtonProps {
     size?: 'sm' | 'md' | 'lg';
     className?: string;
     tabIndex?: number;
+    surface: 'pdp' | 'plp' | 'cart' | 'wishlist-page';
 }
 
-const WishlistButton = ({ product, variant, size = 'md', className, tabIndex }: WishlistButtonProps) => {
+const WishlistButton = ({ product, variant, size = 'md', className, tabIndex, surface }: WishlistButtonProps) => {
     const { isItemInWishlist, toggleWishlist, isLoading } = useWishlist();
 
     const isInWishlist = useMemo(() => isItemInWishlist(product, variant), [isItemInWishlist, product, variant]);
 
     const handleWishlistToggle = useCallback(() => {
-        void toggleWishlist(product, variant);
-    }, [product, variant, toggleWishlist]);
+        void toggleWishlist(product, variant, surface);
+    }, [product, variant, surface, toggleWishlist]);
 
     const pendingActionRef = useRef(false);
     const wasLoadingRef = useRef(false);
@@ -48,7 +49,7 @@ const WishlistButton = ({ product, variant, size = 'md', className, tabIndex }: 
         },
         onMatch: () => {
             pendingActionRef.current = true;
-            void toggleWishlist(product, variant);
+            void toggleWishlist(product, variant, surface);
         },
     });
 
