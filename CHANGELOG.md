@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Show a sign-in nudge above the login form when a guest has saved wishlist items waiting to merge (@W-22491529)
 - Added wishlist analytics events for add, remove, view, merge. (@W-22491452) ([#1743](https://github.com/commerce-emu/storefront-next/pull/1743))
 - Replace `useMatches` with typed `useRouteLoaderData` in root Layout (@W-22457611)
 - Simplify .env.default and decouple E2E baseline overrides (@W-22220887)

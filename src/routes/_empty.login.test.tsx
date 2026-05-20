@@ -48,6 +48,12 @@ vi.mock('@/lib/api/basket.server', () => ({
     mergeBasket: vi.fn(),
 }));
 
+vi.mock('@/lib/api/wishlist.server', () => ({
+    captureGuestWishlistSnapshot: vi.fn(),
+    mergeWishlist: vi.fn(),
+    appendWishlistMergeFlag: vi.fn((target: string) => target),
+}));
+
 vi.mock('@/middlewares/basket.server', () => ({
     updateBasketResource: vi.fn(),
 }));
@@ -487,6 +493,67 @@ describe('Login Route', () => {
 
                 if (!(result instanceof Response) && 'redirectTo' in result) {
                     expect(result.redirectTo).toBe('/account');
+                }
+            });
+        });
+
+        describe('guestWishlistCount', () => {
+            it('returns the snapshot item count for a guest with saved items', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                const { captureGuestWishlistSnapshot } = await import('@/lib/api/wishlist.server');
+                vi.mocked(captureGuestWishlistSnapshot).mockResolvedValue({
+                    guestCustomerId: 'gcid-1',
+                    guestListId: 'list-1',
+                    items: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] as any,
+                });
+
+                const mockRequest = new Request('http://localhost:5173/login');
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+                );
+
+                if (!(result instanceof Response)) {
+                    expect(result.guestWishlistCount).toBe(3);
+                }
+            });
+
+            it('returns 0 when the snapshot is null (no list / empty list / non-guest)', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                const { captureGuestWishlistSnapshot } = await import('@/lib/api/wishlist.server');
+                vi.mocked(captureGuestWishlistSnapshot).mockResolvedValue(null);
+
+                const mockRequest = new Request('http://localhost:5173/login');
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+                );
+
+                if (!(result instanceof Response)) {
+                    expect(result.guestWishlistCount).toBe(0);
+                }
+            });
+
+            it('returns 0 on the auto-verify error path even when snapshot has items', async () => {
+                mockGetAuth.mockReturnValue({ userType: 'guest' });
+                const { captureGuestWishlistSnapshot } = await import('@/lib/api/wishlist.server');
+                vi.mocked(captureGuestWishlistSnapshot).mockResolvedValue({
+                    guestCustomerId: 'gcid-1',
+                    guestListId: 'list-1',
+                    items: [{ id: 'a' }, { id: 'b' }] as any,
+                });
+                // Auto-verify path throws → loader falls into the error-return branch.
+                mockGetPasswordLessAccessToken.mockRejectedValue(new Error('verify failed'));
+
+                const mockRequest = new Request('http://localhost:5173/login?email=foo@example.com&token=abc');
+                const mockContext = { get: vi.fn(), set: vi.fn() };
+                const result = await loader(
+                    createLoaderArgs<Route.LoaderArgs>(mockRequest, mockContext, { unstable_pattern: '/login' })
+                );
+
+                // The error-return path includes the guest wishlist count from the pre-swap snapshot.
+                if (!(result instanceof Response)) {
+                    expect(result.guestWishlistCount).toBe(2);
                 }
             });
         });
@@ -1099,6 +1166,7 @@ describe('Login Route', () => {
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
                 pageUrl: 'http://localhost/login',
+                guestWishlistCount: 0,
             });
 
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -1120,6 +1188,7 @@ describe('Login Route', () => {
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
                 pageUrl: 'http://localhost/login',
+                guestWishlistCount: 0,
             });
 
             await user.type(screen.getByLabelText(/email/i), 'test@example.com');
@@ -1141,6 +1210,7 @@ describe('Login Route', () => {
                 isPasswordlessLoginEnabled: true,
                 isSocialLoginEnabled: true,
                 pageUrl: 'http://localhost/login',
+                guestWishlistCount: 0,
             });
 
             expect(screen.getByTestId('passwordless-form')).toBeInTheDocument();
@@ -1155,6 +1225,7 @@ describe('Login Route', () => {
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: false,
                 pageUrl: 'http://localhost/login',
+                guestWishlistCount: 0,
             });
 
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -1169,6 +1240,7 @@ describe('Login Route', () => {
                 isPasswordlessLoginEnabled: false,
                 isSocialLoginEnabled: true,
                 pageUrl: 'http://localhost/login',
+                guestWishlistCount: 0,
             });
 
             expect(screen.queryByText('An error occurred. Please try again.')).not.toBeInTheDocument();

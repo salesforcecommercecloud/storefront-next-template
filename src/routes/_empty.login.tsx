@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import StandardLoginForm from '@/components/login/standard-login-form';
 import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
+import { LoginGuestWishlistBanner } from '@/components/login/login-guest-wishlist-banner';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
 import { getAppOrigin, isAbsoluteURL, getSafeReturnUrl } from '@/lib/utils';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
@@ -76,6 +77,8 @@ type LoginLoaderData = {
     showOTPForm?: boolean;
     otpLength?: number;
     pageUrl: string;
+    /** Number of items in the guest wishlist (0 if guest has none, no list, or SCAPI failed). */
+    guestWishlistCount: number;
 };
 
 export async function loader({ request, context }: Route.LoaderArgs) {
@@ -173,9 +176,14 @@ export async function loader({ request, context }: Route.LoaderArgs) {
                 actionParams,
                 otpLength: config.auth.otpLength,
                 pageUrl,
+                guestWishlistCount: guestWishlistSnapshot?.items.length ?? 0,
             };
         }
     }
+
+    // Drives the guest-saved-items banner above the form. Helper gates on guest userType
+    // and swallows SCAPI errors — a missing snapshot must not block sign-in.
+    const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
 
     return {
         error,
@@ -190,6 +198,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         actionParams,
         otpLength: config.auth.otpLength,
         pageUrl,
+        guestWishlistCount: guestWishlistSnapshot?.items.length ?? 0,
     };
 }
 
@@ -402,6 +411,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
         showOTPForm,
         otpLength,
         pageUrl,
+        guestWishlistCount,
     } = loaderData;
 
     const [resendTurnstileToken, setResendTurnstileToken] = useState<string | null>(null);
@@ -493,6 +503,8 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                         <h2 className="mt-6 text-center text-3xl font-bold text-foreground">{t('title')}</h2>
                         <p className="mt-2 text-center text-sm text-muted-foreground">{t('subtitle')}</p>
                     </div>
+
+                    <LoginGuestWishlistBanner count={guestWishlistCount} />
 
                     <Card className="p-8 rounded-none shadow-none">
                         {renderForm()}
