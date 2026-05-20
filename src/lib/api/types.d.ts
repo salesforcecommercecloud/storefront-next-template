@@ -15,7 +15,6 @@
  */
 import type { TrackingConsent } from '@/types/tracking-consent';
 
-// TODO: (Re)move
 export type SessionData = {
     accessToken?: string;
     accessTokenExpiry?: number;

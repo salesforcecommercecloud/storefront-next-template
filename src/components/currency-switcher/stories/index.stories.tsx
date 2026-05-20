@@ -80,11 +80,6 @@ export const WithCurrencyChange: Story = {
         // server action sets the cookie and the page reloads — neither happens in Storybook. So
         // selecting EUR cannot change the displayed value, and `toHaveValue('GBP')` below is only
         // a steady-state check; it does NOT prove `handleCurrencyChange` actually fired.
-        //
-        // TODO (W-22451538): once the storybook infra exposes `parameters.mockRoutes`, upgrade
-        // this story to assert that selecting EUR posted `type=currency` and
-        // `payload.currency='EUR'` to the mocked `/action/set-site-context` route. That's the
-        // real handler-ran verification.
         await userEvent.selectOptions(select, 'EUR');
         await expect(select).toHaveValue('GBP');
     },

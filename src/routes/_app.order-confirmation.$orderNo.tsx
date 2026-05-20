@@ -217,7 +217,7 @@ function OrderConfirmationContent({
         order.customerInfo?.firstName || order.billingAddress?.firstName || t('confirmation.hero.defaultName');
     const customerEmail = order.customerInfo?.email || t('confirmation.hero.emailFallback');
 
-    // NOTE/TODO: Integrators should replace placeholder URLs with actual FAQ, contact, and return policy links once available.
+    // Integrators should replace placeholder URLs with actual FAQ, contact, and return policy links.
     const helpActions = [
         { label: t('confirmation.helpLinks.faq'), href: '#' },
         { label: t('confirmation.helpLinks.contact'), href: '#' },
@@ -554,7 +554,7 @@ function OrderConfirmationContent({
                             <p className="font-medium text-foreground">{t('confirmation.newsletter.title')}</p>
                             <p className="text-sm text-muted-foreground">{t('confirmation.newsletter.subtitle')}</p>
                         </div>
-                        {/* NOTE/TODO: This is a static placeholder form. Integrators should handle submit events here
+                        {/* This is a static placeholder form. Integrators should handle submit events here
                            (e.g., call their marketing/newsletter API or hook into an existing newsletter service). */}
                         <form className="flex flex-col gap-3 sm:flex-row">
                             <Input

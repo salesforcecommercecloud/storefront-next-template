@@ -126,8 +126,8 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
  * Cart route component.
  *
  * Two `<Await>` boundaries, both at the route level (no Suspense/Await embedded inside cart
- * components — that pattern bit us in PR #1654 / W-22434224, where deep Awaits re-suspended on
- * loader revalidation and orphaned in-flight `useFetcher` submissions).
+ * components — embedding Suspense/Await deeper can cause re-suspension on loader revalidation
+ * and orphan in-flight `useFetcher` submissions).
  *
  *   - Outer: `basketDataPromise`. On rejection, `<CartLoadError/>` renders an in-page error
  *     with retry. HTTP status stays 200.

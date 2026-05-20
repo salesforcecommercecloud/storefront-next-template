@@ -114,7 +114,7 @@ class ResetPasswordPage {
     }
 
     /**
-     * Set up request listener for reset-password.data POST (internal use).
+     * Set up request listener for reset-password.data POST (test-internal helper).
      */
     async setupRequestInterception(): Promise<void> {
         await (I.usePlaywrightTo('setup request interception', async ({ page }) => {
@@ -134,7 +134,7 @@ class ResetPasswordPage {
     }
 
     /**
-     * Get captured reset-password.data requests (internal use).
+     * Get captured reset-password.data requests (test-internal helper).
      */
     async getCapturedRequests(): Promise<CapturedResetPasswordRequest[]> {
         const result = await (I.usePlaywrightTo('get captured requests', async ({ page }) => {

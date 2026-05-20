@@ -141,7 +141,7 @@ This component handles the payment step of the checkout process, collecting card
             },
         },
         paymentSubmissionRef: {
-            description: 'Ref object used to access form data and set errors from parent checkout flow (internal use)',
+            description: 'Ref object exposed by the parent checkout flow to access form data and surface field errors.',
             table: {
                 type: { summary: 'MutableRefObject<PaymentSubmissionRef> | undefined' },
             },

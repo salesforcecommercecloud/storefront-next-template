@@ -19,7 +19,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const typographyVariants = cva('', {
-    //TODO: get the correct styling for headings from UX
     variants: {
         variant: {
             h1: 'text-4xl font-bold tracking-tight',

@@ -39,6 +39,15 @@ vi.mock('@/hooks/use-scapi-fetcher-effect', () => ({
     useScapiFetcherEffect: vi.fn(),
 }));
 
+const mockToastError = vi.fn();
+vi.mock('sonner', () => ({
+    toast: {
+        error: (...args: unknown[]) => mockToastError(...args),
+        success: vi.fn(),
+        dismiss: vi.fn(),
+    },
+}));
+
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
     currency: 'USD',
@@ -441,6 +450,25 @@ describe('ShippingAddress Integration Tests', () => {
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();
             expect(screen.getByRole('heading', { name: 'Add New Address' })).toBeInTheDocument();
+        });
+
+        test('shows an error toast when the address update fetcher errors', async () => {
+            useCustomerProfile.mockReturnValue(savedAddressProfile);
+
+            const useScapiFetcherEffectModule = await import('@/hooks/use-scapi-fetcher-effect');
+            const useScapiFetcherEffectMock = vi.mocked(useScapiFetcherEffectModule.useScapiFetcherEffect);
+
+            render(<ShippingAddress {...createDefaultProps()} />);
+
+            const callArgs = useScapiFetcherEffectMock.mock.calls.at(-1);
+            expect(callArgs).toBeDefined();
+            const handlers = callArgs?.[1];
+            expect(handlers?.onError).toBeTypeOf('function');
+
+            handlers?.onError?.({} as never);
+
+            expect(mockToastError).toHaveBeenCalledTimes(1);
+            expect(mockToastError).toHaveBeenCalledWith(expect.any(String));
         });
     });
 

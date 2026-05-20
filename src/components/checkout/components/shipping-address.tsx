@@ -16,6 +16,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '@/components/toggle-card';
 import { Button } from '@/components/ui/button';
@@ -73,6 +74,7 @@ export default function ShippingAddress({
     const auth = useAuth();
     const customerId = auth?.customerId;
     const { t } = useTranslation('checkout');
+    const { t: tErrors } = useTranslation('errors');
     // @sfdc-extension-line SFDC_EXT_MULTISHIP
     const { t: tMultiship } = useTranslation('extMultiship');
 
@@ -179,10 +181,10 @@ export default function ShippingAddress({
     };
 
     const handleUpdateError = () => {
+        // Clear the in-flight marker so subsequent close/save calls aren't blocked, but
+        // keep `editingAddress` so the modal stays in edit mode and the user can retry.
         pendingEditAddressRef.current = null;
-        setEditingAddress(null);
-        // Keep modal open on error so user can retry
-        // TODO: Add error alert to the user
+        toast.error(tErrors('checkout.addressValidationFailed'));
     };
 
     useScapiFetcherEffect(updateAddressFetcher, {

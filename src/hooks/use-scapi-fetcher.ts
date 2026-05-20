@@ -80,7 +80,6 @@ export type ScapiFetcher<TData = unknown, TSubmitPayload = unknown> = Omit<
      * Payload is the method body shape (JSON-serializable); it will be wrapped in FormData.
      */
     submit: (payload?: TSubmitPayload, opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>) => Promise<void>;
-    // TODO: Fix the data getter, typescript didn't like resolving its type properly, and I removed it for now.
     /** Convenience property to access the actual data when success is true */
     data: UnwrapApiResponse<TData> | undefined;
     /** Convenience property to access error messages when success is false */
@@ -111,9 +110,7 @@ export type ScapiFetcher<TData = unknown, TSubmitPayload = unknown> = Omit<
  * - `onSuccess`: Called when a request completes successfully
  * - `onError`: Called when a request fails
  *
- * TODO: Actively monitor the React Router issue {@link https://github.com/remix-run/react-router/issues/14207} which
- *   is about adding a manual reset/abort functionality to fetchers. Once this issue is resolved, we should make the
- *   functionality available in this hook as well.
+ * Tracking upstream: {@link https://github.com/remix-run/react-router/issues/14207} — manual reset/abort for fetchers.
  * @see {@link import('react-router').useFetcher}
  * @see {@link import('@/routes/resource.api.client.$resource.ts').loader}
  * @see {@link import('@/routes/resource.api.client.$resource.ts').clientLoader}

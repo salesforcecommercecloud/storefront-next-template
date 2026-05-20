@@ -139,7 +139,6 @@ export async function action({
         originalStoreId = pickupShipment.c_fromStoreId as string;
         pickupShipmentId = pickupShipment.shipmentId;
 
-        // TODO: Need to verify inventory check for bundle support W-20159731
         // Get pickup items from the current basket that belong to the original store
         // Since a basket has a single store pickup shipment, get items for that store
         const currentPickupItems = getPickupProductItemsForStore(basket, originalStoreId);
@@ -170,8 +169,7 @@ export async function action({
             if (productsArray.length > 0) {
                 const productsMap = new Map(productsArray.map((product) => [product.id, product]));
 
-                // TODO: Need to verify inventory check for bundle support W-20159731
-                // Validate each pickup item's inventory
+                // Validate each pickup item's inventory.
                 // isStoreOutOfStock handles all product types:
                 // - Regular items: checks product's own inventory
                 // - Product sets: automatically checks all setProducts

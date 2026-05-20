@@ -294,13 +294,13 @@
             },
             {
                 "name": "assets/\\(components\\)-\\(checkout\\)-*.js",
-                "limit": "590 kB",
-                "comment": "Checkout components with dependencies (incl. express-payments lazy chunk). Lazy on /checkout. @see W-21553426"
+                "limit": "625 kB",
+                "comment": "Checkout components with dependencies (incl. express-payments lazy chunk and sonner toast). Lazy on /checkout."
             },
             {
                 "name": "assets/\\(package\\)-\\(fast-deep-equal\\)-*.js",
                 "limit": "480 kB",
-                "comment": "Route entry chunk that includes fast-deep-equal and route deps (e.g. react-hook-form). @see W-21553426"
+                "comment": "Route entry chunk that includes fast-deep-equal and route deps (e.g. react-hook-form)."
             },
             {
                 "name": "assets/\\(package\\)-\\(i18next-browser-languagedetector\\)-*.js",

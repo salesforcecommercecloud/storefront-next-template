@@ -34,7 +34,8 @@ const textAreaClassName = cn('min-h-48 resize-none text-sm leading-5');
 export default function Contact(): ReactElement {
     const { t } = useTranslation('aboutUs');
 
-    //TODO: Support submit function, currently it only shows a mock success toast.
+    // Integrators should wire this submit handler to a contact endpoint. The current
+    // implementation is a UI scaffold that displays a success toast.
     const handleSubmit = useCallback(
         (event: React.FormEvent<HTMLFormElement>) => {
             // Unstyled + semantic surface colors: Sonner richColors success fails WCAG AA (4.5:1) on light backgrounds.

@@ -243,8 +243,6 @@ export const updateAuthStorageDataByTokenResponse = (
 
 /**
  * Shared utility to update the internal auth storage.
- * TODO: Once we got rid of `SessionData` type in favor of using the `TokenResponse` directly, this method could
- *  mostly be replaced by `updateStorage` directly.
  */
 export const updateAuthStorageData = (
     storage: Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>,

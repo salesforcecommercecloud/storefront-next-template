@@ -44,7 +44,6 @@ const WISHLIST_CREATION_DELAY_MS = 1500;
 /** Time to wait before retrying to fetch a wishlist's listId after a stale read. */
 const WISHLIST_RETRY_DELAY_MS = 2000;
 
-// TODO: for later refactoring, there are similar product-fetch functions for Cart and Checkout.
 /**
  * Fetch product details for wishlist items
  * The API has a limit based on search config, so we batch requests if needed

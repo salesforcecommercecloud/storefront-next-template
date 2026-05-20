@@ -98,9 +98,6 @@ export const extractResponseError = async (
         const json = (await (error.response as Response).json()) ?? {};
         const { type, status_code, ...rest } = json;
 
-        // TODO: This sort of anticipation of how the user might want the API response to be interpreted
-        //  as error message, isn't necessarily a good idea. It's better to pass all properties to the user
-        //  let the user decide how to format the error.
         // Extract error message from various possible fields in the API response
         // Salesforce Commerce Cloud API can return error details in different fields
         const responseMessage = (json.message || json.detail || json.title || error.message) as string;
@@ -162,8 +159,6 @@ export function extractStatusCode(error: unknown): string | undefined {
 }
 
 /**
-
- * TODO: This method replaces the extractResponseError for the new scapi client. We may want to rename this once we remove extractResponseError
  * Extracts error message from different error types
  * @param error - The error to extract message from
  * @returns A user-friendly error message

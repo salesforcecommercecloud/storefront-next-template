@@ -170,7 +170,6 @@ export function getDefaultShippingMethod(
     }
 
     // Early return if no shipping methods available for this address
-    // TODO: Decide UX on how to handle this.
     if (!availableShippingMethods || availableShippingMethods.length === 0) {
         return undefined;
     }

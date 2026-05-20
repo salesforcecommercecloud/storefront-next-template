@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- GA-clean cleanup: remove internal work-item IDs, unresolved development TODOs, and "(internal use)" labels from the template package (@W-21922914)
 - Show a sign-in nudge above the login form when a guest has saved wishlist items waiting to merge (@W-22491529)
 - Added wishlist analytics events for add, remove, view, merge. (@W-22491452) ([#1743](https://github.com/commerce-emu/storefront-next/pull/1743))
 - Replace `useMatches` with typed `useRouteLoaderData` in root Layout (@W-22457611)
