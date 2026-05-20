@@ -21,7 +21,6 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { expect, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import CategoryNavigationMenu from '../impl';
-// @ts-expect-error Mock data file is JavaScript
 import { mockCategories } from '@/components/__mocks__/mock-data';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {

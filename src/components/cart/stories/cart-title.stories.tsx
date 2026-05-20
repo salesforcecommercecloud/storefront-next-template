@@ -307,7 +307,7 @@ export const LargeItemCount: Story = {
             ...basketWithOneItem,
             productItems: [
                 {
-                    ...basketWithOneItem.productItems[0],
+                    ...basketWithOneItem.productItems![0],
                     quantity: 99,
                 },
             ],

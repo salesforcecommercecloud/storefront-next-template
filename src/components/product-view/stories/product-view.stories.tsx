@@ -15,7 +15,6 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductView from '../product-view';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
@@ -117,7 +116,7 @@ type Story = StoryObj<typeof ProductView>;
 
 export const Default: Story = {
     args: {
-        product: mockStandardProductOrderable.product as any,
+        product: mockStandardProductOrderable.product,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

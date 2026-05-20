@@ -13,6 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+
+interface CheckoutFixture {
+    cart: ShopperBasketsV2.schemas['Basket'];
+    shippingMethods: ShopperBasketsV2.schemas['ShippingMethodResult'];
+    checkoutState: {
+        step: number;
+        isSubmitting: boolean;
+        fetchers: Record<string, unknown>;
+    };
+}
+
 const checkoutWithMultipleItems = {
     cart: {
         adjustedMerchandizeTotalTax: 19.72,
@@ -530,4 +542,7 @@ const checkoutWithOneItem = {
     },
 };
 
-export { checkoutWithMultipleItems, checkoutWithOneItem };
+const _checkoutWithMultipleItems = checkoutWithMultipleItems as unknown as CheckoutFixture;
+const _checkoutWithOneItem = checkoutWithOneItem as unknown as CheckoutFixture;
+
+export { _checkoutWithMultipleItems as checkoutWithMultipleItems, _checkoutWithOneItem as checkoutWithOneItem };

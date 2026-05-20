@@ -20,7 +20,6 @@ import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'r
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-// @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
 import type { FilterValue } from '../../types';
 import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';

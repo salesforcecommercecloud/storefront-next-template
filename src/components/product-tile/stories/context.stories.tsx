@@ -17,7 +17,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ProductTileProvider } from '../context';
 import ProductTile from '../index';
-// @ts-expect-error mock file is JS
 import { mockProductSearchItem } from '../../__mocks__/product-search-hit-data';
 import DynamicImageProvider from '@/providers/dynamic-image';
 

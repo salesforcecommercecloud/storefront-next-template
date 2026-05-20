@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export default {
+import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+
+// Loose-cast at the export boundary. The ShopperBaskets schema has tightened
+// over time; this snapshot predates the current shape but is still valid
+// fixture data for stories. Casting via unknown preserves the loose contract
+// the original `.d.ts` shim provided.
+
+const emptyBasket = {
     adjustedMerchandizeTotalTax: 0.0,
     adjustedShippingTotalTax: 0.0,
     agentBasket: false,
@@ -67,3 +74,5 @@ export default {
     taxation: 'gross',
     taxTotal: 0.0,
 };
+
+export default emptyBasket as unknown as ShopperBasketsV2.schemas['Basket'];

@@ -25,7 +25,6 @@ import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
 const mockSite = mockSiteObject;
 import CategoryRefinements from '../index';
-// @ts-expect-error Mock data file is JavaScript
 import searchResults from '@/components/__mocks__/search-results';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {

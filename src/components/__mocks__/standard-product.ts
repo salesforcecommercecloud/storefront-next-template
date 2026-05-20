@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 
-export const mockStandardProductOrderable = {
+interface OrderableProductFixture {
+    product: ShopperProducts.schemas['Product'];
+    inventory: ShopperProducts.schemas['Inventory'];
+}
+
+const mockStandardProductOrderableData = {
     product: {
         currency: 'USD',
         id: '061492183589M',
@@ -213,8 +219,8 @@ export const mockStandardProductOrderable = {
     },
 };
 
-export const mockStandardProductNotOrderable = {
-    ...mockStandardProductOrderable,
+const mockStandardProductNotOrderableData = {
+    ...mockStandardProductOrderableData,
     id: '061492183589M-not-orderable',
     inventory: {
         ats: 0,
@@ -225,3 +231,7 @@ export const mockStandardProductNotOrderable = {
         stockLevel: 0,
     },
 };
+
+export const mockStandardProductOrderable = mockStandardProductOrderableData as unknown as OrderableProductFixture;
+export const mockStandardProductNotOrderable =
+    mockStandardProductNotOrderableData as unknown as OrderableProductFixture;

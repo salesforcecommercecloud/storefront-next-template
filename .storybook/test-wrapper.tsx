@@ -1,7 +1,16 @@
 /**
- * Global test wrapper component that provides necessary context providers
- * for story tests. This ensures all stories have access to Router, StoreLocatorProvider,
- * and CheckoutProvider without needing to add decorators to every story.
+ * Snapshot-only wrapper used by `*-snapshot.tsx` stories generated via
+ * `scripts/generate-story-tests.js`. Lives outside the global decorator stack
+ * because portable-stories snapshot tests render their content stand-alone —
+ * without `preview.tsx`'s decorators — and need the providers/router applied
+ * directly here.
+ *
+ * Active consumers (do NOT delete without checking these):
+ *   - src/extensions/store-locator/components/store-locator/stories/*-snapshot.tsx (8+ files)
+ *   - scripts/generate-story-tests.js (codegen target)
+ *
+ * For interactive Storybook stories use the global decorator stack in
+ * `.storybook/decorators/` instead.
  */
 import type { ReactElement, ReactNode } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';

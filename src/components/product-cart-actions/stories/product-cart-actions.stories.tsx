@@ -16,7 +16,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
 import ProductCartActions from '../index';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import ProductViewProvider from '@/providers/product-view';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
@@ -104,7 +103,7 @@ type Story = StoryObj<typeof ProductCartActions>;
 
 export const Default: Story = {
     args: {
-        product: mockStandardProductOrderable.product as any,
+        product: mockStandardProductOrderable.product,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -121,7 +120,7 @@ export const Default: Story = {
 
 export const EditMode: Story = {
     args: {
-        product: mockStandardProductOrderable.product as any,
+        product: mockStandardProductOrderable.product,
     },
     decorators: [
         (Story: React.ComponentType, context) => (

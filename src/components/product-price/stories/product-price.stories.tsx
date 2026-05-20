@@ -15,9 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductPrice from '../index';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
-// @ts-expect-error mock file is JS
 import { mockMasterProductHitWithOneVariant } from '../../__mocks__/product-search-hit-data';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
@@ -82,7 +80,7 @@ type Story = StoryObj<typeof ProductPrice>;
 
 export const Default: Story = {
     args: {
-        product: mockStandardProductOrderable.product as any,
+        product: mockStandardProductOrderable.product,
         currency: 'USD',
     },
     play: async ({ canvasElement }) => {
@@ -97,7 +95,7 @@ export const Default: Story = {
 
 export const WithQuantity: Story = {
     args: {
-        product: mockStandardProductOrderable.product as any,
+        product: mockStandardProductOrderable.product,
         currency: 'USD',
         quantity: 3,
         type: 'total',
@@ -162,6 +160,7 @@ export const WithPromoCallout: Story = {
             ],
             productPromotions: [
                 {
+                    promotionId: 'storybook-20-off',
                     promotionalPrice: 79.99,
                     calloutMsg: 'Get 20% off of this item.',
                 },
@@ -192,6 +191,7 @@ export const WithCustomPromoCalloutStyling: Story = {
             ],
             productPromotions: [
                 {
+                    promotionId: 'storybook-20-off',
                     promotionalPrice: 79.99,
                     calloutMsg: 'Get 20% off of this item.',
                 },

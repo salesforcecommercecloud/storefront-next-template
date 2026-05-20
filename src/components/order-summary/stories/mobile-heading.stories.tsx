@@ -19,21 +19,24 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
-import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__mocks__/basket-with-multiple-items';
+import {
+    basketWithMultipleItems,
+    inBasketMultipleItemDetails,
+} from '@/components/__mocks__/basket-with-multiple-items';
 import OrderSummary from '../index';
 import { OrderSummaryMobileAccordion } from '../mobile-heading';
 
 const mockSite = mockSiteObject;
-const mockBasket = basketWithMultipleItems as ShopperBasketsV2.schemas['Basket'];
+const mockBasket = basketWithMultipleItems;
 const mockProductMap: Record<string, ShopperProducts.schemas['Product']> = {};
 
-if (inBasketProductDetails?.data && basketWithMultipleItems?.productItems) {
+if (inBasketMultipleItemDetails.data && basketWithMultipleItems.productItems) {
     basketWithMultipleItems.productItems.forEach((item: ShopperBasketsV2.schemas['ProductItem']) => {
-        const productData = inBasketProductDetails.data.find(
+        const productData = inBasketMultipleItemDetails.data?.find(
             (product: ShopperProducts.schemas['Product']) => product.id === item.productId
         );
         if (productData && item.itemId) {
-            mockProductMap[item.itemId] = productData as ShopperProducts.schemas['Product'];
+            mockProductMap[item.itemId] = productData;
         }
     });
 }

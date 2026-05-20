@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+
 export const exampleTokenReponse = {
     access_token:
         'eyJ2ZXIiOiIxLjAiLCJraWQiOiI4ZWM1YWZjOC03MjczLTQxYmYtOWU2MS00MWRkMTAyODU2ZmMiLCJ0eXAiOiJqd3QiLCJjbHYiOiJKMi4xLjAiLCJhbGciOiJFUzI1NiJ9.eyJhdXQiOiJHVUlEIiwic2NwIjoic2ZjYy5zaG9wcGVyLWNhdGVnb3JpZXMgc2ZjYy5zaG9wcGVyLWN1c3RvbWVycy5yZWdpc3RlciBzZmNjLnNob3BwZXItY3VzdG9tZXJzLmxvZ2luIHNmY2Muc2hvcHBlci1teWFjY291bnQgc2ZjYy5zaG9wcGVyLW15YWNjb3VudC5ydyBzZmNjLnNob3BwZXItbXlhY2NvdW50LmFkZHJlc3Nlcy5ydyBzZmNjLnNob3BwZXItbXlhY2NvdW50LmFkZHJlc3NlcyBzZmNjLnNob3BwZXItbXlhY2NvdW50LmJhc2tldHMgc2ZjYy5zaG9wcGVyLW15YWNjb3VudC5vcmRlcnMgc2ZjYy5zaG9wcGVyLW15YWNjb3VudC5wYXltZW50aW5zdHJ1bWVudHMucncgc2ZjYy5zaG9wcGVyLW15YWNjb3VudC5wYXltZW50aW5zdHJ1bWVudHMgc2ZjYy5zaG9wcGVyLW15YWNjb3VudC5wcm9kdWN0bGlzdHMgc2ZjYy5zaG9wcGVyLW15YWNjb3VudC5wcm9kdWN0bGlzdHMucncgc2ZjYy5zaG9wcGVyLXByb2R1Y3RsaXN0cyBzZmNjLnNob3BwZXItcHJvbW90aW9ucyBzZmNjLnNob3BwZXItZ2lmdC1jZXJ0aWZpY2F0ZXMgc2ZjYy5zaG9wcGVyLXByb2R1Y3Qtc2VhcmNoIHNmY2Muc2hvcHBlci1iYXNrZXRzLW9yZGVycy5ydyBzZmNjLnNob3BwZXItYmFza2V0cy1vcmRlcnMgc2ZjYy5zaG9wcGVyLXByb2R1Y3RzIiwic3ViIjoiY2Mtc2xhczo6enpyZl8wMDE6OnNjaWQ6YzljNDViZmQtMGVkMy00YWEyLTk5NzEtNDBmODg5NjJiODM2Ojp1c2lkOmY1MWZkNDkxLWViYTEtNDU4Mi04MWY5LTRhMDE0YTQ3MmEyMCIsImN0eCI6InNsYXMiLCJpc3MiOiJzbGFzL3Byb2QvenpyZl8wMDEiLCJpc3QiOjEsImF1ZCI6ImNvbW1lcmNlY2xvdWQvcHJvZC96enJmXzAwMSIsIm5iZiI6MTYxNTU2NTY2NCwic3R5IjoiVXNlciIsImlzYiI6InVpZG86ZWNvbTo6dXBuOnJlZnRlc3RANjRsYWJzLmNvbTo6dWlkbjpEYXJlayBSb3NzbWFuIiwiZXhwIjoxNjE1NTY3NDk0LCJpYXQiOjE2MTU1NjU2OTQsImp0aSI6IkMyQzQ4NTYyMDE4NjAtMTg5MDY3ODkwMzY1MzAyMTAyODM3OTUyOCJ9.a6hXCRArmoqZOnoiUW9Ed9id2hY_Q2ZsKL2MMpJuiv65aIlFmi1S5gAXHLNFnL-OSd8oRyOIb-W9YnsCb2ISzQ',
@@ -2532,7 +2534,7 @@ export const mockedCustomerProductListsDetails = {
     total: 1,
 };
 
-export const mockCategories = {
+const _mockCategoriesData = {
     root: {
         categories: [
             {
@@ -2579,6 +2581,10 @@ export const mockCategories = {
         id: 'root',
         name: 'Storefront Catalog - Non-EN',
     },
+};
+
+export const mockCategories = _mockCategoriesData as unknown as {
+    root: ShopperProducts.schemas['Category'] & { categories: ShopperProducts.schemas['Category'][] };
 };
 
 export const mockProductSearch = {
@@ -5206,7 +5212,7 @@ export const mockProductSearch = {
     total: 43,
 };
 
-export const mockCategory = {
+const _mockCategoryData = {
     id: 'mens-accessories-ties',
     image: 'https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-storefront-catalog-m-non-en/default/dwd2ff3ec8/images/slot/sub_banners/cat-banner-mens-ties.jpg',
     name: 'Ties',
@@ -5230,6 +5236,8 @@ export const mockCategory = {
     c_enableCompare: false,
     c_showInMenu: true,
 };
+
+export const mockCategory = _mockCategoryData as unknown as ShopperProducts.schemas['Category'];
 
 export const mockEmptyBasket = {
     total: 1,

@@ -22,7 +22,6 @@ import Header from '../index';
 import AuthProvider from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
-// @ts-expect-error Mock data file is JavaScript
 import { mockCategories } from '@/components/__mocks__/mock-data';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
@@ -463,9 +462,7 @@ export const MobileMenuInteraction: Story = {
                 <Header>
                     <ResponsiveNavigationMenu
                         resolve={Promise.resolve(rootCategory)}
-                        defer={Promise.resolve(
-                            categoriesList.flatMap((cat: { categories?: unknown[] }) => cat.categories || [])
-                        )}
+                        defer={Promise.resolve(categoriesList.flatMap((cat) => cat.categories || []))}
                     />
                 </Header>
             </AuthProvider>

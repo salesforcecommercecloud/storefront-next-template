@@ -20,7 +20,10 @@ import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-n
 import OrderSummary from '../index';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import emptyBasket from '@/components/__mocks__/empty-basket';
-import { basketWithMultipleItems, inBasketProductDetails } from '@/components/__mocks__/basket-with-multiple-items';
+import {
+    basketWithMultipleItems,
+    inBasketMultipleItemDetails,
+} from '@/components/__mocks__/basket-with-multiple-items';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
@@ -180,7 +183,7 @@ export default meta;
 type Story = StoryObj<typeof OrderSummary>;
 
 // Use real mock data from @mocks directory
-const mockBasket = basketWithMultipleItems as ShopperBasketsV2.schemas['Basket'];
+const mockBasket = basketWithMultipleItems;
 
 const mockBasketWithPromos = {
     ...basketWithMultipleItems,
@@ -204,12 +207,12 @@ const mockBasketWithItemPromos = {
     ...basketWithMultipleItems,
     productItems: [
         {
-            ...basketWithMultipleItems.productItems[0],
+            ...basketWithMultipleItems.productItems![0],
             priceAdjustments: [{ priceAdjustmentId: 'item-adj-1', itemText: '$10 Off Ties', price: -10.0 }],
             priceAfterItemDiscount: 28.38,
         },
         {
-            ...basketWithMultipleItems.productItems[1],
+            ...basketWithMultipleItems.productItems![1],
             priceAdjustments: [{ priceAdjustmentId: 'item-adj-2', itemText: '15% Off Tops', price: -5.28 }],
             priceAfterItemDiscount: 29.91,
         },
@@ -220,13 +223,13 @@ const mockBasketWithItemPromos = {
 
 const mockProductMap: Record<string, ShopperProducts.schemas['Product']> = {};
 
-if (inBasketProductDetails?.data && basketWithMultipleItems?.productItems) {
+if (inBasketMultipleItemDetails.data && basketWithMultipleItems.productItems) {
     basketWithMultipleItems.productItems.forEach((item: ShopperBasketsV2.schemas['ProductItem']) => {
-        const productData = inBasketProductDetails.data.find(
+        const productData = inBasketMultipleItemDetails.data?.find(
             (product: ShopperProducts.schemas['Product']) => product.id === item.productId
         );
         if (productData && item.itemId) {
-            mockProductMap[item.itemId] = productData as ShopperProducts.schemas['Product'];
+            mockProductMap[item.itemId] = productData;
         }
     });
 }
@@ -436,7 +439,7 @@ export const Minimal: Story = {
 
 export const EmptyBasket: Story = {
     args: {
-        basket: emptyBasket as ShopperBasketsV2.schemas['Basket'],
+        basket: emptyBasket,
         showPromoCodeForm: false,
         showCartItems: true,
         showHeading: true,

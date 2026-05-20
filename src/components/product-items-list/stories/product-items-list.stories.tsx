@@ -15,7 +15,6 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductItemsList from '../index';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';

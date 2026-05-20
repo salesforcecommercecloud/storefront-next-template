@@ -2,6 +2,58 @@
 
 This project uses Storybook for component development, testing, and documentation. Storybook provides an isolated environment to develop and test UI components in isolation.
 
+## Story-writing principles
+
+Stories should be the *minimum* setup needed to render a component in a particular state. The four rules below keep stories cheap to write and resilient to internal refactors:
+
+1. **Props-first.** Pass data via component props whenever the component accepts them. Reach for the global provider/router stack only when the component genuinely reads from global context (auth, basket, site, locale).
+2. **Mock at the boundary, not at the internals.** Prefer `parameters.routeLoaderData` / `parameters.scapiMock` / `parameters.mockRoutes` (router-level) over `vi.mock(...)` of individual hooks. Hook mocks couple stories to internal refactors; route-level mocks survive them.
+3. **Args are JSON-serializable; non-serializable data goes in `parameters`.** Storybook's args UI cannot render Promises, class instances, functions returning Promises, or circular structures — passing those as args breaks the controls panel and snapshot serialization. Use `parameters.routeLoaderData` for Promise-returning loader data.
+4. **One reason to update a mock.** If changing a component's internals (a hook signature, a context shape) forces a story update, the story is mocking too deeply — push the mock down to the route or fixture layer.
+
+
+## Decorator registry
+
+Every story is wrapped, top-down, in:
+
+```
+withRouter(StoryShell)
+  └── createMemoryRouter (in-memory, with default mock routes)
+        └── StoryShell
+              └── StorybookWrapper (config + site + i18n + auth + basket + storeLocator + checkoutOneClick)
+                    └── UITargetProviders
+                          └── <Story />
+```
+
+The pieces live in [`./decorators/`](./decorators/):
+
+| File | Exports | Role |
+|------|---------|------|
+| `with-router.tsx` | `withRouter(Wrapper)` | Mounts the in-memory React Router and reads `parameters.routeLoaderData` / `scapiMock` / `mockRoutes`. |
+| `with-providers.tsx` | `StorybookWrapper` | Provider stack (config/site/i18n/auth/basket/storeLocator/checkoutOneClick) on a `min-h-screen bg-background` shell. |
+| `with-ui-targets.tsx` | `StoryShell` | `StorybookWrapper` + `UITargetProviders`. |
+| `mock-routes.ts` | `buildDefaultMockRoutes(scapiMock, miniCartData)` | The default `/resource/*` and `/action/*` route table consumed by `withRouter`. |
+| `index.ts` | barrel | `export { StorybookWrapper, StoryShell, withRouter, buildDefaultMockRoutes }`. |
+
+Treat the providers as an **escape hatch**, not the default. Stories whose component takes the data via props should not require the global provider stack to render.
+
+## Mock routes & data
+
+Shared fixtures live in [`../src/components/__mocks__/`](../src/components/__mocks__/) (consumed by both stories and unit tests). Curated fixtures are re-exported from the [`index.ts` barrel](../src/components/__mocks__/index.ts) — import via `@/components/__mocks__` for the curated set, or via `@/components/__mocks__/<file>` for fixtures that aren't re-exported.
+
+### Story-level overrides
+
+The router decorator reads four story-level `parameters`:
+
+- `routeLoaderData: Record<string, unknown>` — wrap the story in ancestor routes that resolve `useRouteLoaderData(routeId)` for the given ids. Use this for components like `CategoryBanner` that read loader data from a parent route.
+- `scapiMock: { data?: unknown }` — override the default `/resource/api/client/:resource` loader response. Required when a play function asserts against story-specific product data (e.g. `BonusProductModal`'s tie fixture).
+- `miniCartData: { basket, productsById }` — override what the `/resource/basket-products` mock returns. Required by stories that need a different basket shape than the populated default (e.g. CartSheet "Empty" story).
+- `mockRoutes: RouteObject[]` — append story-specific mock routes (extra `/resource/*` or `/action/*` paths) without forking the decorator. Story-supplied paths must not shadow `/`, `*`, or any default mock-route path — `withRouter` throws on conflicts.
+
+### Default mock routes
+
+`buildDefaultMockRoutes(scapiMock, miniCartData)` provides a loader for basket-product enrichment and actions for cart updates, wishlist mutations, OTP verification, product/bundle/set adds, site-context (currency/locale) updates, tracking-consent, and place-order. See [`./decorators/mock-routes.ts`](./decorators/mock-routes.ts) for the full list.
+
 ## Quick Start
 
 ```bash
@@ -48,7 +100,6 @@ pnpm storybook:test --type=a11y --static
 | `pnpm storybook:test --type=interaction --static` | Run interaction tests against static Storybook build |
 | `pnpm storybook:test --type=a11y` | Run a11y tests against live Storybook server |
 | `pnpm storybook:test --type=a11y --static` | Run a11y tests against static Storybook build |
-| `--agent` flag (any of the above) | Condensed output for AI agents |
 
 ## Features & Addons
 
@@ -67,20 +118,23 @@ This Storybook setup includes the following addons:
 ```
 src/
 ├── components/
+│   ├── __mocks__/                        # Shared fixtures (stories + unit tests)
+│   │   └── index.ts                      # Curated barrel
 │   ├── buttons/
 │   │   ├── login-submit-button.tsx
-│   │   ├── login-submit-button.stories.tsx
-│   │   ├── ...
+│   │   └── login-submit-button.stories.tsx
 │   └── ui/
 │       ├── button.tsx
-│   │   ├── button.stories.tsx
-│       └── ...
+│       └── button.stories.tsx
 └── .storybook/
     ├── main.ts
     ├── vite.config.ts
-    ├── shims/
-    │   └── shopper-agent-context-ui.ts   # Storybook-only (see below)
-    └── preview.tsx
+    ├── preview.tsx                       # Imports + parameters + decorator wiring
+    ├── decorators/                       # withRouter, StorybookWrapper, StoryShell, mock-routes
+    ├── storybook-providers.tsx           # The provider stack (config/site/i18n/auth/...)
+    ├── test-wrapper.tsx                  # Snapshot-only wrapper (codegen — see header comment)
+    └── shims/
+        └── shopper-agent-context-ui.ts   # Storybook-only (see below)
 ```
 
 ### Production vs Storybook: `shopper-agent-context-ui` shim
@@ -192,6 +246,7 @@ export const Basic: Story = {
 
 ### Story Best Practices
 
+**Do:**
 1. **Naming Convention**: Use PascalCase for story names (e.g., `Default`, `Loading`, `Error`)
 2. **Organization**: Group related stories under logical categories
 3. **Documentation**: Include component descriptions and prop documentation
@@ -200,28 +255,10 @@ export const Basic: Story = {
 6. **Accessibility**: Test with the a11y addon
 7. **Viewport Testing**: Use Storybook's built-in viewport toolbar instead of creating separate Mobile/Tablet/Desktop stories
 
-### Mock Components for Storybook
-
-When components depend on external services or complex context, create mock versions:
-
-```typescript
-// Mock wrapper component for Storybook
-const MockMyComponent = ({ 
-  isLoading = false,
-  error = null 
-}: { 
-  isLoading?: boolean;
-  error?: string | null;
-}) => {
-  // Mock implementation that doesn't depend on external services
-  return (
-    <div>
-      {isLoading ? 'Loading...' : 'Component content'}
-      {error && <div className="error">{error}</div>}
-    </div>
-  );
-};
-```
+**Don't (anti-patterns):**
+- **Massive mock equivalents of the component.** Recreating the component's data shape inside the story (huge nested literals) instead of passing props.
+- **Promises through `args`.** They don't serialize; the controls panel breaks. Move them to `parameters` (e.g. `parameters.routeLoaderData`).
+- **`vi.mock(...)` of hooks inside a story.** Should be route-level (a mock loader/action) or replaced with a prop.
 
 ## ESLint Integration
 
@@ -231,10 +268,6 @@ This project includes `eslint-plugin-storybook` for Storybook-specific linting:
 - Catches common mistakes in story files
 - Ensures consistent story structure
 - Validates story naming conventions
-
-## Configuration
-
-Storybook configuration is located in `.storybook/main.ts`:
 
 ## Troubleshooting
 

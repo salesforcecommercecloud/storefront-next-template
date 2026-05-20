@@ -15,7 +15,6 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductCarousel, { ProductCarouselWithSuspense } from '../carousel';
-// @ts-expect-error mock file is JS
 import { mockStandardProductHit } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';

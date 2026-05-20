@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+
 const basketWithMultipleItems = {
     adjustedMerchandizeTotalTax: 3.51,
     adjustedShippingTotalTax: null,
@@ -108,7 +110,7 @@ const basketWithMultipleItems = {
     taxTotal: null,
 };
 
-const inBasketProductDetails = {
+const inBasketMultipleItemDetails = {
     limit: 2,
     data: [
         {
@@ -1005,4 +1007,10 @@ const inBasketProductDetails = {
     total: 2,
 };
 
-export { basketWithMultipleItems, inBasketProductDetails };
+const _basketWithMultipleItems = basketWithMultipleItems as unknown as ShopperBasketsV2.schemas['Basket'];
+const _inBasketMultipleItemDetails = inBasketMultipleItemDetails as unknown as ShopperProducts.schemas['ProductResult'];
+
+export {
+    _basketWithMultipleItems as basketWithMultipleItems,
+    _inBasketMultipleItemDetails as inBasketMultipleItemDetails,
+};

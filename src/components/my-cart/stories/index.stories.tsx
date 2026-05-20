@@ -81,7 +81,7 @@ const discountedBasket = {
     ...checkoutWithMultipleItems.cart,
     productItems: [
         {
-            ...checkoutWithMultipleItems.cart.productItems[0],
+            ...(checkoutWithMultipleItems.cart.productItems?.[0] ?? {}),
             basePrice: 49.99,
             price: 34.99,
             priceAfterItemDiscount: 34.99,

@@ -18,7 +18,6 @@ import { ProductImageContainer } from '../index';
 import {
     mockStandardProductHit,
     mockMasterProductHitWithMultipleVariants,
-    // @ts-expect-error mock file is JS
 } from '../../__mocks__/product-search-hit-data';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';

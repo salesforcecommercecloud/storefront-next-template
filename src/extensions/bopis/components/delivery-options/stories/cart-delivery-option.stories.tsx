@@ -23,7 +23,6 @@ import CartDeliveryOption from '../cart-delivery-option';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import BasketProvider from '@/providers/basket';
 import type { EnrichedProductItem } from '@/lib/product/product-utils';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../../../../components/__mocks__/standard-product';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {

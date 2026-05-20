@@ -15,7 +15,6 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductItem from '../index';
-// @ts-expect-error mock file is JS
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
@@ -132,7 +131,7 @@ const mockProductItem = {
     quantity: 1,
     price: 99.99,
     priceAfterItemDiscount: 99.99,
-    productName: mockStandardProductOrderable.product.name,
+    productName: mockStandardProductOrderable.product.name ?? '',
     shortDescription: mockStandardProductOrderable.product.shortDescription,
 };
 

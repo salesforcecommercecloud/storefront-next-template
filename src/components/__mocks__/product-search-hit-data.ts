@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 
+type ProductSearchHit = ShopperSearch.schemas['ProductSearchHit'];
+
+// Mock fixtures intentionally typed as `unknown` and re-cast at the export
+// boundary. The ShopperSearch.schemas['ProductSearchHit'] schema has tightened
+// over time (e.g. promotionalPrice, image.link, ProductRef custom fields) but
+// these snapshots predate those changes. Casting at the boundary preserves the
+// loose contract stories rely on without rewriting decade-old fixture data.
 const mockProductSearchItem = {
     currency: 'USD',
     hitType: 'master',
@@ -1386,10 +1394,17 @@ const mockMasterProductHitWithMultipleVariants = {
         },
     ],
 };
+const _mockProductSetHit = mockProductSetHit as unknown as ProductSearchHit;
+const _mockStandardProductHit = mockStandardProductHit as unknown as ProductSearchHit;
+const _mockMasterProductHitWithOneVariant = mockMasterProductHitWithOneVariant as unknown as ProductSearchHit;
+const _mockProductSearchItem = mockProductSearchItem as unknown as ProductSearchHit;
+const _mockMasterProductHitWithMultipleVariants =
+    mockMasterProductHitWithMultipleVariants as unknown as ProductSearchHit;
+
 export {
-    mockProductSetHit,
-    mockStandardProductHit,
-    mockMasterProductHitWithOneVariant,
-    mockProductSearchItem,
-    mockMasterProductHitWithMultipleVariants,
+    _mockProductSetHit as mockProductSetHit,
+    _mockStandardProductHit as mockStandardProductHit,
+    _mockMasterProductHitWithOneVariant as mockMasterProductHitWithOneVariant,
+    _mockProductSearchItem as mockProductSearchItem,
+    _mockMasterProductHitWithMultipleVariants as mockMasterProductHitWithMultipleVariants,
 };

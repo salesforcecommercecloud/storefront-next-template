@@ -20,7 +20,6 @@ import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
-// @ts-expect-error Mock data file is JavaScript
 import { mockCategories, mockCategory as mockCategoryTies } from '@/components/__mocks__/mock-data';
 
 /**
@@ -76,8 +75,8 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 }
 
 // Use mock data from __mocks__
-const mockCategory = mockCategories.root.categories[0] as ShopperProducts.schemas['Category'];
-const mockCategoryWomens = mockCategoryTies as ShopperProducts.schemas['Category'];
+const mockCategory = mockCategories.root.categories[0];
+const mockCategoryWomens = mockCategoryTies;
 const mockCategoryNoImage: ShopperProducts.schemas['Category'] = {
     ...mockCategory,
     image: undefined,

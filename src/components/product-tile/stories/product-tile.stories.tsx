@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import ProductTile from '../index';
 import {
     mockProductSearchItem,
     mockMasterProductHitWithMultipleVariants,
-    // @ts-expect-error mock file is JS
 } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
@@ -68,7 +68,7 @@ export const Default: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        await expect(canvas.getByText(mockProductSearchItem.productName ?? '')).toBeInTheDocument();
         const image = canvas.getByRole('img');
         await expect(image).toBeInTheDocument();
     },
@@ -82,7 +82,7 @@ export const WithBadges: Story = {
                 ...mockProductSearchItem.representedProduct,
                 c_isSale: true,
                 c_isNew: true,
-            },
+            } as ShopperSearch.schemas['ProductRef'],
             promotions: [
                 {
                     promotionId: 'promo-sale',
@@ -94,7 +94,7 @@ export const WithBadges: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        await expect(canvas.getByText(mockProductSearchItem.productName ?? '')).toBeInTheDocument();
         await expect(canvas.getByText('Sale')).toBeInTheDocument();
     },
 };
@@ -106,7 +106,7 @@ export const WithSwatches: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockMasterProductHitWithMultipleVariants.productName)).toBeInTheDocument();
+        await expect(canvas.getByText(mockMasterProductHitWithMultipleVariants.productName ?? '')).toBeInTheDocument();
 
         // Swatches are decorative/visual-only (aria-hidden) — verify via DOM queries
         let swatchContainer: Element | null = null;
@@ -162,7 +162,7 @@ export const WithPickupAvailable: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        await expect(canvas.getByText(mockProductSearchItem.productName ?? '')).toBeInTheDocument();
         // Pickup indicator is visual-only (aria-hidden) — verify via DOM
         const pickupIndicator = canvasElement.querySelector('[data-testid="pickup-available-indicator"]');
         await expect(pickupIndicator).not.toBeNull();
@@ -189,7 +189,7 @@ export const WithQuickAdd: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockProductSearchItem.productName)).toBeInTheDocument();
+        await expect(canvas.getByText(mockProductSearchItem.productName ?? '')).toBeInTheDocument();
         await expect(canvas.getByText('Quick Add')).toBeInTheDocument();
     },
 };
@@ -226,7 +226,7 @@ export const FullFeatured: Story = {
             representedProduct: {
                 ...mockMasterProductHitWithMultipleVariants?.representedProduct,
                 c_isNew: true,
-            },
+            } as ShopperSearch.schemas['ProductRef'],
         },
         showPickupAvailable: true,
         quickAddLabel: 'Quick Add',
@@ -235,7 +235,7 @@ export const FullFeatured: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        await expect(canvas.getByText(mockMasterProductHitWithMultipleVariants.productName)).toBeInTheDocument();
+        await expect(canvas.getByText(mockMasterProductHitWithMultipleVariants.productName ?? '')).toBeInTheDocument();
         // Pickup indicator is inside aria-hidden="true" — query via testid
         const pickupIndicator = canvasElement.querySelector('[data-testid="pickup-available-indicator"]');
         await expect(pickupIndicator).not.toBeNull();
