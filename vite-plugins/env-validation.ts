@@ -39,7 +39,7 @@ export function envValidation(env: Record<string, string>, mode: string): Plugin
                     'Missing required Commerce API short code.\n\n' +
                         'Set PUBLIC__app__commerce__api__shortCode in your .env file:\n' +
                         '  PUBLIC__app__commerce__api__shortCode=your-short-code\n\n' +
-                        'See .env.default for a complete example.'
+                        'See .env.default for the required vars and docs/README-CONFIG.md for the full reference.'
                 );
             }
         },

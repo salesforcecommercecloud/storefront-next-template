@@ -36,6 +36,71 @@ export function MyComponent() {
   return <div>Showing {config.search.products.hits.limit} products</div>;
 }
 ```
+
+## Required vs Optional Variables
+
+Every variable the storefront recognizes is listed here. Set the **Required** rows only in `.env`. Everything else has a working default in `config.server.ts`.
+
+### Required for the app to start
+
+| Variable | Default | Notes |
+|---|---|---|
+| `PUBLIC__app__commerce__api__clientId` | — | SLAS client ID |
+| `PUBLIC__app__commerce__api__organizationId` | — | B2C Commerce org/realm |
+| `PUBLIC__app__commerce__api__shortCode` | — | SCAPI short code |
+
+### Required for `pnpm push` (Managed Runtime deploy)
+
+| Variable | Default | Notes |
+|---|---|---|
+| `MRT_PROJECT` | falls back to `package.json#name` | MRT project slug. Owned by the MRT/Fast Setup team. |
+| `MRT_TARGET` | — | MRT deploy target (e.g. `development`, `production`). |
+
+### Server-only secrets (never prefix with `PUBLIC__`)
+
+| Variable | Used by | Notes |
+|---|---|---|
+| `COMMERCE_API_SLAS_SECRET` | `src/lib/api-clients.server.ts`, `e2e/src/utils/scapi-helper.ts` | Required only with private-client SCAPI auth. |
+| `MARKETING_CLOUD_CLIENT_ID`, `MARKETING_CLOUD_CLIENT_SECRET`, `MARKETING_CLOUD_AUTH_BASE_URL`, `MARKETING_CLOUD_REST_BASE_URL` | Passwordless login email delivery | Required only when `passwordlessLogin.mode = 'email'` and you ship your own MC tenant. |
+| `SCAPI_PROXY_HOST` | `vite-plugins/env-validation.ts`, `src/middlewares/app-config.server.ts` | Internal-developer-only override (workspace proxy). |
+
+### Optional `PUBLIC__*` overrides (defaults in `config.server.ts`)
+
+| Variable | Default | Effect |
+|---|---|---|
+| `PUBLIC__app__commerce__api__proxy` | `/mobify/proxy/api` | SCAPI proxy path |
+| `PUBLIC__app__commerce__api__callback` | `/callback` | OAuth callback path |
+| `PUBLIC__app__commerce__api__privateKeyEnabled` | `false` | Use private SLAS client |
+| `PUBLIC__app__hybrid__enabled` | `false` | Hybrid PWA mode |
+| `PUBLIC__app__auth__otpLength` | `6` | OTP length (6 or 8) |
+| `PUBLIC__app__features__passwordlessLogin__mode` | `email` | `email` \| `callback` |
+| `PUBLIC__app__features__otpRequest__mode` | `email` | `email` \| `callback` |
+| `PUBLIC__app__features__resetPassword__mode` | `email` | `email` \| `callback` |
+| `PUBLIC__app__features__mrtBasedPageDesignerResolution` | `false` | Resolve PD pages via MRT Data Store |
+| `PUBLIC__app__features__socialLogin__enabled` | `true` | Apple/Google login button |
+| `PUBLIC__app__features__socialLogin__callbackUri` | `/social-callback` | Social login callback path |
+| `PUBLIC__app__features__socialLogin__providers` | `["Apple","Google"]` | Provider list |
+| `PUBLIC__app__features__shopperContext__enabled` | `false` | Shopper context API |
+| `PUBLIC__app__defaultSiteId` | (single-site default) | Override default site |
+| `PUBLIC__app__commerce__sites` | (single-site default) | Multi-site JSON config |
+| `PUBLIC__app__site__cookies__domain` | browser default | Cookie domain (e.g. `.example.com`) |
+| `PUBLIC__app__commerce__api__guestRefreshTokenExpirySeconds` | from API response | Override guest refresh-token TTL |
+| `PUBLIC__app__commerce__api__registeredRefreshTokenExpirySeconds` | from API response | Override registered refresh-token TTL |
+| `PUBLIC__app__features__googleCloudAPI__apiKey` | — | Google Address Autocomplete |
+| `PUBLIC__security__turnstile__enabled` | `false` | Turnstile bot protection |
+| `PUBLIC__security__turnstile__sites` | — | Turnstile per-site configuration |
+| `PUBLIC__app__commerceAgent__*` | disabled | Embedded Agentforce config (see appendix) |
+
+### Optional non-`PUBLIC__` runtime/deploy variables
+
+| Variable | Default | Effect |
+|---|---|---|
+| `HYBRID_PROXY_ENABLED` | `false` | Enable Vite hybrid proxy |
+| `HYBRID_ROUTING_RULES` | — | Cloudflare-style routing expression for hybrid proxy |
+| `HYBRID_PROXY_LOCALE` | falls back to `i18n.fallbackLng` | Locale for SFRA path transformation |
+| `SFCC_ORIGIN` | — | SFCC origin URL (required when hybrid proxy enabled) |
+| `SFCC_LOG_LEVEL` | `warn` (prod) / `info` (dev) | Log verbosity (`error` \| `warn` \| `info` \| `debug`) |
+
 ## Environment Variables
 
 Override any configuration value using environment variables with the `PUBLIC__` prefix, no need to modify `config.server.ts`.
@@ -405,3 +470,160 @@ MARKETING_CLOUD_RESET_PASSWORD_TEMPLATE=your-reset-password-template-id
 - ❌ These variables do NOT have the `PUBLIC__` prefix - they are **server-only**
 - ❌ They are NOT included in `config.server.ts` or exposed to the client
 - ✅ Read them directly from `process.env` in server-side code
+
+## Enabling Optional Features
+
+Each block in this section is a copy-pasteable env snippet. Drop it into your `.env` and uncomment to enable the feature.
+
+### Multi-site / `commerce.sites`
+
+Single-site is the default. To enable multiple sites, define them as a JSON array. The quote wrapping the array value is needed because it is multi-line — for MRT environment variables, convert to a single line and remove the surrounding quotes.
+
+```bash
+# Single-site override
+# PUBLIC__app__defaultSiteId=RefArchGlobal
+
+# Multi-site (single-line — works for MRT and local .env)
+# PUBLIC__app__commerce__sites=[{"id":"RefArch","defaultLocale":"en-US","defaultCurrency":"USD","supportedLocales":[{"id":"en-US","preferredCurrency":"USD"}],"supportedCurrencies":["USD"]}]
+
+# Multi-site (multi-line — local .env only)
+# PUBLIC__app__commerce__sites='[
+#  {
+#    "id": "RefArchGlobal",
+#    "defaultLocale": "en-GB",
+#    "defaultCurrency": "GBP",
+#    "supportedLocales": [
+#      {"id": "en-US", "preferredCurrency": "USD"},
+#      {"id": "da-DK", "preferredCurrency": "EUR"},
+#      {"id": "de-DE", "preferredCurrency": "EUR"},
+#      {"id": "en-GB", "preferredCurrency": "GBP"},
+#      {"id": "es-MX", "preferredCurrency": "USD"},
+#      {"id": "fi-FI", "preferredCurrency": "EUR"},
+#      {"id": "fr-FR", "preferredCurrency": "EUR"},
+#      {"id": "it-IT", "preferredCurrency": "EUR"},
+#      {"id": "ja-JP", "preferredCurrency": "JPY"},
+#      {"id": "ko-KR", "preferredCurrency": "KRW"},
+#      {"id": "nl-NL", "preferredCurrency": "EUR"},
+#      {"id": "no-NO", "preferredCurrency": "EUR"},
+#      {"id": "pl-PL", "preferredCurrency": "EUR"},
+#      {"id": "pt-BR", "preferredCurrency": "BRL"},
+#      {"id": "sv-SE", "preferredCurrency": "EUR"},
+#      {"id": "zh-CN", "preferredCurrency": "CNY"},
+#      {"id": "zh-TW", "preferredCurrency": "TWD"}
+#    ],
+#    "supportedCurrencies": ["EUR", "GBP"]
+#  }
+# ]'
+```
+
+See [README-MULTI-SITE.md](./README-MULTI-SITE.md) for site-context routing details.
+
+### Hybrid Proxy (local development only)
+
+Silent HTTP proxying with cookie rewriting for a unified storefront experience. Local-dev only — production routing should use Cloudflare eCDN. Requires `SFCC_ORIGIN` and `PUBLIC__app__defaultSiteId`.
+
+```bash
+# HYBRID_PROXY_ENABLED=true
+# HYBRID_PROXY_LOCALE=en-GB
+# HYBRID_ROUTING_RULES='(http.request.uri.path matches "^/$" or http.request.uri.path matches "^/product.*" or http.request.uri.path matches "^/category.*" or http.request.uri.path matches "^/search.*" or http.request.uri.path matches "^/account.*" or http.request.uri.path matches "^/resource/.*")'
+# SFCC_ORIGIN=https://zzrf-001.dx.commercecloud.salesforce.com
+```
+
+See [README-HYBRID-PROXY.md](./README-HYBRID-PROXY.md).
+
+### Passwordless Login (Marketing Cloud)
+
+```bash
+# PUBLIC__app__features__passwordlessLogin__mode=email
+# PUBLIC__app__features__passwordlessLogin__callbackUri='/passwordless-login-callback'
+# PUBLIC__app__features__passwordlessLogin__landingUri='/login'
+# PUBLIC__app__features__otpRequest__mode=email
+# PUBLIC__app__features__otpRequest__callbackUri='https://example.com/otp-callback'
+# PUBLIC__app__features__resetPassword__mode=email
+# PUBLIC__app__features__resetPassword__callbackUri='/reset-password-callback'
+# PUBLIC__app__features__resetPassword__landingUri='/reset-password'
+```
+
+When using `mode=email`, also set the server-only Marketing Cloud secrets (`MARKETING_CLOUD_*`) listed in the Server-only Secrets table above. See [README-AUTH.md](./README-AUTH.md).
+
+### Turnstile bot protection
+
+Cloudflare Turnstile is disabled by default. The test site key below always passes — production sites must set their own keys via MRT env vars.
+
+```bash
+# PUBLIC__security__turnstile__enabled=true
+# PUBLIC__security__turnstile__sites={"local-dev":[{"siteKey":"1x00000000000000000000BB","domains":["localhost","127.0.0.1"]}]}
+```
+
+See [README-TURNSTILE.md](./README-TURNSTILE.md) and `e2e/feature-specs/checkout/turnstile-protection.spec.md`.
+
+### Commerce Agent (Embedded Messaging / Agentforce)
+
+```bash
+# PUBLIC__app__commerceAgent__enabled=true
+# PUBLIC__app__commerceAgent__embeddedServiceName=
+# PUBLIC__app__commerceAgent__embeddedServiceEndpoint=
+# PUBLIC__app__commerceAgent__scriptSourceUrl=
+# PUBLIC__app__commerceAgent__scrt2Url=
+# PUBLIC__app__commerceAgent__salesforceOrgId=
+# PUBLIC__app__commerceAgent__siteId=
+# PUBLIC__app__commerceAgent__enableConversationContext=false
+# PUBLIC__app__commerceAgent__conversationContext=[]
+```
+
+See `src/components/shopper-agent/README.md` for environment-specific setup.
+
+### Cookie domain
+
+```bash
+# PUBLIC__app__site__cookies__domain=.example.com
+```
+
+### Refresh-token expiry overrides
+
+If unset, the storefront uses the expiry returned by SCAPI.
+
+```bash
+# PUBLIC__app__commerce__api__guestRefreshTokenExpirySeconds=2592000        # ~30 days
+# PUBLIC__app__commerce__api__registeredRefreshTokenExpirySeconds=7776000   # ~90 days
+```
+
+### Google Cloud API key (Address Autocomplete)
+
+```bash
+# PUBLIC__app__features__googleCloudAPI__apiKey=
+```
+
+### Logging
+
+```bash
+# SFCC_LOG_LEVEL=info   # error | warn | info | debug
+```
+
+Shared with the SDK logger (`storefront-next-dev`) for unified control.
+
+### Managed Runtime deployment vars
+
+Already in `.env.default` — listed here for completeness.
+
+```bash
+MRT_PROJECT=my-project-slug
+MRT_TARGET=development
+```
+
+### Server-only SLAS secret (never prefix with `PUBLIC__`)
+
+```bash
+# COMMERCE_API_SLAS_SECRET=your-secret-here
+```
+
+Read directly from `process.env` in server-side code (loaders, actions, middleware).
+
+### JSON configuration pattern
+
+Complex values can be encoded as JSON strings — the merge mechanism parses any value that looks like JSON.
+
+```bash
+# Override multiple cart configuration values at once
+# PUBLIC__app__pages__cart='{"quantityUpdateDebounce":1000,"maxQuantityPerItem":500,"enableSaveForLater":true}'
+```

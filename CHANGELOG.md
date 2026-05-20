@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Simplify .env.default and decouple E2E baseline overrides (@W-22220887)
 - Storybook infra: extract memory-router setup into `.storybook/decorators/`, slim `preview.tsx`, and standardize per-component story mocks (@W-22451538)
 - Unify sanitizePrefix and stripPathPrefix into one helper (@W-22498207) ([#1699](https://github.com/commerce-emu/storefront-next/pull/1699))
 - Add comment on how enhanced flatRoutes from runtime works [#1701](https://github.com/commerce-emu/storefront-next/pull/1701)

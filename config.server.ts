@@ -241,7 +241,7 @@ export default defineConfig<Config>(
                     landingUri: '/reset-password',
                 },
                 socialLogin: {
-                    enabled: false,
+                    enabled: true,
                     callbackUri: '/social-callback',
                     providers: ['Apple', 'Google'],
                 },

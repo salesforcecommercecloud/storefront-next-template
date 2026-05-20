@@ -155,6 +155,12 @@ These rules take priority when designing routes, components, and state. Apply th
 
 ## Code Conventions
 
+### `.env.default` is required-only — do not add optional vars
+
+`.env.default` lists the variables a contributor must set to boot the app or run `pnpm push`. Optional config (feature toggles, callback URIs, log levels, hybrid proxy, Marketing Cloud, Turnstile, etc.) lives in `config.server.ts` defaults and is documented in [docs/README-CONFIG.md](./docs/README-CONFIG.md) — not duplicated here.
+
+**Rule:** Do not add a new variable to `.env.default` unless the app cannot start (or `pnpm push` cannot deploy) without it. If a user asks you to add an optional variable, push back: confirm explicitly that they understand it's optional and still want it inline. Default to declining and pointing them at `config.server.ts` + README-CONFIG.md instead.
+
 ### Copyright Header (required)
 
 All TypeScript/JavaScript files must include this Apache 2.0 header. Enforced by ESLint via `eslint-plugin-header`.
