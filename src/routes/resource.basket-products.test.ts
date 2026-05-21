@@ -234,14 +234,18 @@ describe('resource.basket-products', () => {
                     allImages: true,
                     perPricebook: true,
                     currency: 'GBP',
+                    expand: ['availability', 'images', 'prices', 'promotions', 'variations'],
                 },
             },
         });
     });
 
-    it('should not pass an explicit expand param so productPromotions is included by default', async () => {
-        // Regression guard: cart-sheet bonus-product callouts depend on productPromotions, which
-        // SCAPI returns by default when no explicit expand is set.
+    it('passes an explicit expand list scoped to mini-cart consumers', async () => {
+        // Regression guard: cart-sheet bonus-product callouts depend on productPromotions
+        // (`promotions` expand). The mini cart also reads `availability` (stock badge,
+        // BOPIS inventories), `images` (imageGroups), `prices` (list/sale), and `variations`
+        // (attribute chips). Asserting the full set with deep equality prevents silent drift
+        // that would either re-introduce SCAPI over-fetching or drop a field a consumer relies on.
         const basket = {
             basketId: 'basket-123',
             productItems: [{ itemId: 'item-1', productId: 'product-1', quantity: 1 }],
@@ -252,7 +256,7 @@ describe('resource.basket-products', () => {
         await loader(getLoaderArgs());
 
         const callQuery = mockGetProducts.mock.calls[0][0].params.query;
-        expect(callQuery).not.toHaveProperty('expand');
+        expect(callQuery.expand).toEqual(['availability', 'images', 'prices', 'promotions', 'variations']);
     });
 
     it('should handle API errors gracefully', async () => {
@@ -351,6 +355,9 @@ describe('resource.basket-products', () => {
                     query: expect.objectContaining({
                         ids: ['product-1'],
                         inventoryIds: expect.arrayContaining(['store-inventory-001']),
+                        // SCAPI honors `inventoryIds` only when `availability` is in expand —
+                        // dropping `availability` would silently break BOPIS pickup stock resolution.
+                        expand: expect.arrayContaining(['availability']),
                     }),
                 }),
             })

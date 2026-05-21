@@ -51,7 +51,8 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({ formAction, actionR
 
 /**
  * Fetches the basket and full product details for all items in it.
- * Returns the basket and a mapping of productId to full product data (with promotions expanded by default).
+ * Returns the basket and a mapping of productId to full product data with an explicit, minimal
+ * expand list scoped to fields the mini cart UI consumes.
  */
 export async function loader({ context }: Route.LoaderArgs): Promise<BasketProductsLoaderData> {
     const logger = getLogger(context);
@@ -86,8 +87,9 @@ export async function loader({ context }: Route.LoaderArgs): Promise<BasketProdu
         }
         const { site, currency } = siteCtx;
 
-        // getProducts returns all expand fields by default (except page_meta_tags), including
-        // productPromotions — relied on by the cart sheet's bonus-product callout logic.
+        // Scope expansions to only what the mini cart UI consumes. Without an explicit expand,
+        // the SCAPI default returns extra blocks (set_products, recommendations, links, options,
+        // custom_properties, validation, bundled_products) that the mini cart never reads.
         const { data: productsData } = await clients.shopperProducts.getProducts({
             params: {
                 path: {
@@ -99,6 +101,7 @@ export async function loader({ context }: Route.LoaderArgs): Promise<BasketProdu
                     allImages: true,
                     perPricebook: true,
                     ...(currency ? { currency } : {}),
+                    expand: ['availability', 'images', 'prices', 'promotions', 'variations'],
                     // @sfdc-extension-block-start SFDC_EXT_BOPIS
                     // Include store inventory IDs for pickup items
                     ...(inventoryIds.length > 0 ? { inventoryIds } : {}),
