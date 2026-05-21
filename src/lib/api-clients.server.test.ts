@@ -21,7 +21,7 @@ import type { SessionData } from '@/lib/api/types';
 import type { Logger } from '@/lib/logger';
 import { loggerContext } from '@/lib/logger.server';
 import { scapiMiddlewareContext } from './scapi-middleware';
-import { createApiClients, createDedupedFetch } from './api-clients.server';
+import { createApiClients, createDedupedFetch, createTimeoutFetch } from './api-clients.server';
 
 const scapiMocks = vi.hoisted(() => {
     const mockUse = vi.fn();
@@ -563,6 +563,8 @@ describe('createApiClients', () => {
 
 type MockLogger = {
     info: ReturnType<typeof vi.fn>;
+    warn: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
 };
 
 function makeContext(): RouterContextProvider & { logger: MockLogger } {
@@ -574,6 +576,8 @@ function makeContext(): RouterContextProvider & { logger: MockLogger } {
     const store = new Map<unknown, unknown>();
     const logger: MockLogger = {
         info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
     };
     store.set(loggerContext, logger as unknown as Logger);
     const ctx = {
@@ -613,7 +617,7 @@ describe('createDedupedFetch', () => {
         expect(baseFetch).toHaveBeenCalledTimes(1);
         // The second caller hit the cache and emits an info log.
         expect(ctx.logger.info).toHaveBeenCalledTimes(1);
-        expect(ctx.logger.info).toHaveBeenCalledWith('fetch cache hit GET /x');
+        expect(ctx.logger.info).toHaveBeenCalledWith('[ApiClients] fetch cache hit GET /x');
         // Both callers must be able to consume the body independently (responses are cloned).
         await expect(r1.json()).resolves.toEqual({ id: 1 });
         await expect(r2.json()).resolves.toEqual({ id: 1 });
@@ -629,7 +633,7 @@ describe('createDedupedFetch', () => {
         expect(baseFetch).toHaveBeenCalledTimes(1);
         expect(ctx.logger.info).toHaveBeenCalledTimes(1);
         // Query keys are sorted and values are masked, so reordered params produce a stable log line.
-        expect(ctx.logger.info).toHaveBeenCalledWith('fetch cache hit GET /x?a=*&b=*');
+        expect(ctx.logger.info).toHaveBeenCalledWith('[ApiClients] fetch cache hit GET /x?a=*&b=*');
     });
 
     it('does not dedupe POST requests', async () => {
@@ -689,7 +693,7 @@ describe('createDedupedFetch', () => {
         expect(baseFetch).toHaveBeenCalledTimes(1);
         // Second GET was a cache hit.
         expect(ctx.logger.info).toHaveBeenCalledTimes(1);
-        expect(ctx.logger.info).toHaveBeenLastCalledWith('fetch cache hit GET /x');
+        expect(ctx.logger.info).toHaveBeenLastCalledWith('[ApiClients] fetch cache hit GET /x');
 
         await fetch('https://api.example.com/x', { method: 'POST', body: 'a' });
 
@@ -802,7 +806,7 @@ describe('createDedupedFetch', () => {
         expect(baseFetch).toHaveBeenCalledTimes(1);
         // The HEAD cache hit is logged with the matching method.
         expect(ctx.logger.info).toHaveBeenCalledTimes(1);
-        expect(ctx.logger.info).toHaveBeenCalledWith('fetch cache hit HEAD /x');
+        expect(ctx.logger.info).toHaveBeenCalledWith('[ApiClients] fetch cache hit HEAD /x');
         // Each cache hit returns its own clone — both callers can read independently.
         expect(r1).toBeInstanceOf(Response);
         expect(r2).toBeInstanceOf(Response);
@@ -814,18 +818,19 @@ describe('createDedupedFetch', () => {
         const fetch = createDedupedFetch(ctx, baseFetch as unknown as typeof globalThis.fetch);
 
         await Promise.all([
-            fetch('https://api.example.com/baskets/abc?siteId=site&token=secret&customerId=12345'),
-            fetch('https://api.example.com/baskets/abc?siteId=site&token=secret&customerId=12345'),
+            fetch('https://api.example.com/baskets/abc?siteId=site&locale=en-US&token=secret&customerId=12345'),
+            fetch('https://api.example.com/baskets/abc?siteId=site&locale=en-US&token=secret&customerId=12345'),
         ]);
 
         expect(ctx.logger.info).toHaveBeenCalledTimes(1);
         const message = ctx.logger.info.mock.calls[0][0] as string;
-        // Pathname + sorted query keys with values masked. Keys are observable for diagnostics, values
-        // (which can carry tokens, basket IDs, customer IDs, or other PII) are not.
-        expect(message).toBe('fetch cache hit GET /baskets/abc?customerId=*&siteId=*&token=*');
+        // Pathname + sorted query keys; values for sensitive keys are masked, but `locale` and `siteId` are
+        // global SCAPI routing parameters and kept verbatim for diagnostics.
+        expect(message).toBe(
+            '[ApiClients] fetch cache hit GET /baskets/abc?customerId=*&locale=en-US&siteId=site&token=*'
+        );
         expect(message).not.toContain('api.example.com');
         expect(message).not.toContain('secret');
-        expect(message).not.toContain('=site');
         expect(message).not.toContain('12345');
     });
 
@@ -1011,6 +1016,387 @@ describe('createDedupedFetch', () => {
 
             resolve(new Response('shared'));
             await expect((await b).text()).resolves.toBe('shared');
+        });
+    });
+});
+
+// ===========================================================================
+// Hard timeout — tests for `createTimeoutFetch`, the wrapper that brackets
+// outgoing fetches with an AbortController-driven hard timeout. Composed with
+// `createDedupedFetch` in `createApiClients` so one timer governs each real
+// network call.
+// ===========================================================================
+
+describe('createTimeoutFetch', () => {
+    function makeControllableFetch() {
+        let resolveCurrent: ((response: Response) => void) | undefined;
+        let rejectCurrent: ((reason: unknown) => void) | undefined;
+        let lastSignal: AbortSignal | undefined;
+        const baseFetch = vi.fn((_input: RequestInfo | URL, init?: RequestInit) => {
+            const signal = init?.signal ?? undefined;
+            lastSignal = signal;
+            // Mirror `globalThis.fetch`: when the signal aborts, the fetch promise rejects with the signal's reason.
+            return new Promise<Response>((resolve, reject) => {
+                resolveCurrent = resolve;
+                rejectCurrent = reject;
+                if (signal) {
+                    if (signal.aborted) {
+                        reject(signal.reason);
+                        return;
+                    }
+                    signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+                }
+            });
+        });
+        return {
+            baseFetch,
+            resolve: (response = new Response('ok')) => {
+                resolveCurrent?.(response);
+                resolveCurrent = undefined;
+                rejectCurrent = undefined;
+            },
+            reject: (reason: unknown) => {
+                rejectCurrent?.(reason);
+                resolveCurrent = undefined;
+                rejectCurrent = undefined;
+            },
+            getSignal: () => lastSignal,
+        };
+    }
+
+    beforeEach(() => {
+        vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it('returns baseFetch unchanged when timeoutMs is null (no wrapping overhead)', () => {
+        const ctx = makeContext();
+        const baseFetch = vi.fn();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, null);
+        // Identity check: a null timeout yields the very same function.
+        expect(wrapped).toBe(baseFetch);
+        expect(ctx.logger.warn).not.toHaveBeenCalled();
+    });
+
+    describe('input validation (fail-open with warning)', () => {
+        // Misconfiguration at the system boundary (e.g. PUBLIC__ env var typo) must not brick SCAPI.
+        // Invalid values become a no-op + one warn log so ops can see what happened.
+        it.each([
+            ['zero', 0],
+            ['negative', -1],
+            ['NaN', Number.NaN],
+            ['Infinity', Number.POSITIVE_INFINITY],
+            ['fractional', 1.5],
+        ])('returns baseFetch unchanged for %s and emits one warn log', (_label, value) => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn();
+            const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, value);
+            expect(wrapped).toBe(baseFetch);
+            expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
+            const [message, metadata] = ctx.logger.warn.mock.calls[0];
+            expect(message).toBe(
+                '[ApiClients] ignoring invalid timeoutMs; expected a positive integer, no timeout will be applied'
+            );
+            expect(metadata).toEqual({ timeoutMs: value });
+        });
+
+        it('warns at most once per request context across repeated invalid calls', () => {
+            const ctx = makeContext();
+            const baseFetch = vi.fn();
+            createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 0);
+            createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, -1);
+            createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, Number.NaN);
+            // Single shared context → one warn line, not three.
+            expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
+        });
+
+        it('warns separately per request context (no cross-request bleed)', () => {
+            const ctxA = makeContext();
+            const ctxB = makeContext();
+            const baseFetch = vi.fn();
+            createTimeoutFetch(ctxA, baseFetch as unknown as typeof globalThis.fetch, 0);
+            createTimeoutFetch(ctxB, baseFetch as unknown as typeof globalThis.fetch, 0);
+            // Each context is its own observability scope and gets its own warn line.
+            expect(ctxA.logger.warn).toHaveBeenCalledTimes(1);
+            expect(ctxB.logger.warn).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    it('aborts the underlying fetch when the timer fires and rejects with a TimeoutError', async () => {
+        const ctx = makeContext();
+        const { baseFetch, getSignal } = makeControllableFetch();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 1000);
+
+        const promise = wrapped('https://api.example.com/x');
+
+        // Underlying fetch was invoked with a signal that has not yet aborted.
+        expect(baseFetch).toHaveBeenCalledTimes(1);
+        const passedInit = baseFetch.mock.calls[0]?.[1];
+        expect(passedInit?.signal).toBeDefined();
+        expect(passedInit?.signal?.aborted).toBe(false);
+
+        // `expect(...).rejects` attaches its handler synchronously, so we pair it with the timer
+        // advancement to avoid an unhandled-rejection warning during the fake-timer drain.
+        await Promise.all([
+            expect(promise).rejects.toMatchObject({ name: 'TimeoutError' }),
+            vi.advanceTimersByTimeAsync(1000),
+        ]);
+
+        // The signal forwarded to baseFetch is now aborted with a TimeoutError.
+        const signal = getSignal();
+        expect(signal?.aborted).toBe(true);
+        expect((signal?.reason as Error)?.name).toBe('TimeoutError');
+    });
+
+    describe('rejection shape (mirrors AbortSignal.timeout)', () => {
+        // The wrapper rejects with `new DOMException('fetch timed out after Nms', 'TimeoutError')`,
+        // matching the standard `AbortSignal.timeout()` reason shape so callers can use the
+        // standard `err.name === 'TimeoutError'` idiom. These tests pin that contract.
+
+        async function runTimeout(timeoutMs: number) {
+            const ctx = makeContext();
+            const { baseFetch, getSignal } = makeControllableFetch();
+            const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, timeoutMs);
+            const promise = wrapped('https://api.example.com/x').catch((e: unknown) => e);
+            await vi.advanceTimersByTimeAsync(timeoutMs);
+            const error = (await promise) as Error;
+            return { error, signal: getSignal() };
+        }
+
+        it('rejects with name === "TimeoutError"', async () => {
+            const { error } = await runTimeout(1000);
+            expect(error.name).toBe('TimeoutError');
+        });
+
+        it('error message includes the configured timeoutMs', async () => {
+            const { error } = await runTimeout(2500);
+            expect(error.message).toBe('fetch timed out after 2500ms');
+        });
+
+        it("aborted signal's reason is the same DOMException the caller observes", async () => {
+            const { error, signal } = await runTimeout(1000);
+            // The reason set on the controller is what propagates: same object identity from the abort
+            // listener through to the rejected promise.
+            expect(signal?.reason).toBe(error);
+            expect(signal?.reason).toBeInstanceOf(DOMException);
+            expect((signal?.reason as DOMException).name).toBe('TimeoutError');
+        });
+    });
+
+    it('does not abort or log when the underlying fetch resolves before the timer', async () => {
+        const ctx = makeContext();
+        const { baseFetch, resolve, getSignal } = makeControllableFetch();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 1000);
+
+        const promise = wrapped('https://api.example.com/x');
+        resolve(new Response('hello'));
+        const response = await promise;
+
+        await expect(response.text()).resolves.toBe('hello');
+
+        // Advancing past the deadline must not retroactively abort or log — the timer was cleared.
+        await vi.advanceTimersByTimeAsync(2000);
+        expect(getSignal()?.aborted).toBe(false);
+        expect(ctx.logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('does not abort or log when the underlying fetch rejects before the timer', async () => {
+        const ctx = makeContext();
+        const { baseFetch, reject, getSignal } = makeControllableFetch();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 1000);
+
+        const promise = wrapped('https://api.example.com/x');
+        reject(new Error('network'));
+        await expect(promise).rejects.toThrow('network');
+
+        await vi.advanceTimersByTimeAsync(2000);
+        expect(getSignal()?.aborted).toBe(false);
+        expect(ctx.logger.warn).not.toHaveBeenCalled();
+    });
+
+    it("merges the caller's init.signal with the timeout signal (standalone use)", async () => {
+        const ctx = makeContext();
+        const { baseFetch, getSignal } = makeControllableFetch();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 5000);
+
+        const controller = new AbortController();
+        const promise = wrapped('https://api.example.com/x', { signal: controller.signal });
+
+        // Caller's abort happens long before the timeout deadline; it must reach the underlying fetch.
+        const rejection = expect(promise).rejects.toThrow('caller aborted');
+        controller.abort(new Error('caller aborted'));
+        await rejection;
+
+        const signal = getSignal();
+        expect(signal?.aborted).toBe(true);
+        // Without the timer firing, the wrapper must not log a timeout.
+        expect(ctx.logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('merges a Request-borne caller signal with the timeout signal (standalone use)', async () => {
+        const ctx = makeContext();
+        const { baseFetch, getSignal } = makeControllableFetch();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 5000);
+
+        const controller = new AbortController();
+        const req = new Request('https://api.example.com/x', { signal: controller.signal });
+        const promise = wrapped(req);
+
+        const rejection = expect(promise).rejects.toThrow('caller aborted via Request');
+        controller.abort(new Error('caller aborted via Request'));
+        await rejection;
+
+        expect(getSignal()?.aborted).toBe(true);
+        expect(ctx.logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('rejects synchronously when the caller signal is already aborted', async () => {
+        // Distinct AbortSignal.any code path: when one of the merged signals is *already* aborted at the time
+        // of merge, the result is an already-aborted signal, baseFetch rejects synchronously with the caller's
+        // reason, the timer never fires, and `finally` clears the freshly-armed timer.
+        const ctx = makeContext();
+        const { baseFetch } = makeControllableFetch();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 5000);
+
+        const controller = new AbortController();
+        controller.abort(new Error('already gone'));
+
+        await expect(wrapped('https://api.example.com/x', { signal: controller.signal })).rejects.toThrow(
+            'already gone'
+        );
+        // The timer was armed and cleared without ever firing — no timeout log, no spurious abort log.
+        expect(ctx.logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('emits exactly one warn log per timeout, with method, masked URL, and timeoutMs metadata', async () => {
+        const ctx = makeContext();
+        const { baseFetch } = makeControllableFetch();
+        const wrapped = createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 1000);
+
+        const promise = wrapped('https://api.example.com/baskets/abc?siteId=site&locale=en-US&token=secret', {
+            method: 'POST',
+            body: 'a',
+        });
+
+        await Promise.all([
+            expect(promise).rejects.toMatchObject({ name: 'TimeoutError' }),
+            vi.advanceTimersByTimeAsync(1000),
+        ]);
+
+        expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
+        const [message, metadata] = ctx.logger.warn.mock.calls[0];
+        // Pathname + sorted query keys; values for sensitive keys are masked, but `locale` and `siteId` are
+        // kept verbatim for diagnostics. Mirrors the dedupe wrapper's `maskUrl()` behavior.
+        expect(message).toBe('[ApiClients] fetch timeout POST /baskets/abc?locale=en-US&siteId=site&token=*');
+        expect(metadata).toEqual({ timeoutMs: 1000 });
+        // Sanity — sensitive values must not leak.
+        expect(message).not.toContain('secret');
+        expect(message).not.toContain('api.example.com');
+    });
+
+    describe('composition with createDedupedFetch', () => {
+        it('one timeout rejects all concurrent callers awaiting the same dedupe key', async () => {
+            const ctx = makeContext();
+            const { baseFetch } = makeControllableFetch();
+            const fetch = createDedupedFetch(
+                ctx,
+                createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 1000)
+            );
+
+            const a = fetch('https://api.example.com/x');
+            const b = fetch('https://api.example.com/x');
+
+            // Both callers collided on the dedupe key — only one underlying fetch was issued.
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+
+            await Promise.all([
+                expect(a).rejects.toMatchObject({ name: 'TimeoutError' }),
+                expect(b).rejects.toMatchObject({ name: 'TimeoutError' }),
+                vi.advanceTimersByTimeAsync(1000),
+            ]);
+            // One real fetch, one timer, one warn log line.
+            expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
+        });
+
+        it('evicts the dedupe registry on timeout so the next call retries fresh', async () => {
+            const ctx = makeContext();
+            const { baseFetch, resolve } = makeControllableFetch();
+            const fetch = createDedupedFetch(
+                ctx,
+                createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 1000)
+            );
+
+            // First call times out — the rejected stored promise is evicted from the dedupe registry.
+            const a = fetch('https://api.example.com/x');
+            await Promise.all([
+                expect(a).rejects.toMatchObject({ name: 'TimeoutError' }),
+                vi.advanceTimersByTimeAsync(1000),
+            ]);
+            expect(baseFetch).toHaveBeenCalledTimes(1);
+
+            // After timeout, the dedupe entry is evicted — a subsequent call to the same URL hits the
+            // network again instead of being served from the cached (rejected) promise.
+            const b = fetch('https://api.example.com/x');
+            expect(baseFetch).toHaveBeenCalledTimes(2);
+
+            // Resolve the second underlying fetch in time so the test's deadline doesn't fire.
+            resolve(new Response('fresh'));
+            await expect((await b).text()).resolves.toBe('fresh');
+        });
+
+        it("caller's own AbortSignal still rejects only that caller's await; underlying fetch keeps running for siblings", async () => {
+            const ctx = makeContext();
+            const { baseFetch, resolve } = makeControllableFetch();
+            const fetch = createDedupedFetch(
+                ctx,
+                createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 5000)
+            );
+
+            const controllerA = new AbortController();
+            const a = fetch('https://api.example.com/x', { signal: controllerA.signal });
+            const b = fetch('https://api.example.com/x'); // no signal
+
+            // Attach the rejection assertion synchronously, then trigger the abort. This avoids any
+            // unhandled-rejection window between abort and the assertion attaching.
+            const aRejection = expect(a).rejects.toThrow('A only');
+            // Caller A aborts long before the timeout deadline.
+            await vi.advanceTimersByTimeAsync(100);
+            controllerA.abort(new Error('A only'));
+            await aRejection;
+
+            // Underlying fetch was not aborted — it is still alive for B. The timeout is still armed.
+            // Resolve before the deadline.
+            resolve(new Response('shared'));
+            await expect((await b).text()).resolves.toBe('shared');
+
+            // The deadline never fires because the underlying fetch resolved first; clearTimeout cleans up.
+            await vi.advanceTimersByTimeAsync(10000);
+            expect(ctx.logger.warn).not.toHaveBeenCalled();
+        });
+
+        it('timeout-before-caller-abort rejects all callers with TimeoutError', async () => {
+            const ctx = makeContext();
+            const { baseFetch } = makeControllableFetch();
+            const fetch = createDedupedFetch(
+                ctx,
+                createTimeoutFetch(ctx, baseFetch as unknown as typeof globalThis.fetch, 1000)
+            );
+
+            const controllerA = new AbortController();
+            const a = fetch('https://api.example.com/x', { signal: controllerA.signal });
+            const b = fetch('https://api.example.com/x'); // no signal
+
+            await Promise.all([
+                expect(a).rejects.toMatchObject({ name: 'TimeoutError' }),
+                expect(b).rejects.toMatchObject({ name: 'TimeoutError' }),
+                vi.advanceTimersByTimeAsync(1000),
+            ]);
+            // Caller A's later abort is a no-op; the timeout already won.
+            controllerA.abort(new Error('too late'));
+            expect(ctx.logger.warn).toHaveBeenCalledTimes(1);
         });
     });
 });

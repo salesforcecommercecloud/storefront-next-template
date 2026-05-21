@@ -43,13 +43,29 @@ type CustomClientConfigEntry = {
     orgPrefix: boolean;
 };
 
+type ContextLike = RouterContextProvider | Readonly<RouterContextProvider>;
+
 /** Header name for SFCC Session ID */
 const DWSID_HEADER = 'sfdc_dwsid';
 
 /** Module-local registry. See `createApiClients` for lifetime/TTL semantics. */
-const REGISTRIES = new WeakMap<object, Map<string, Promise<Response>>>();
+const REGISTRIES = new WeakMap<ContextLike, Map<string, Promise<Response>>>();
 
-type ContextLike = RouterContextProvider | Readonly<RouterContextProvider>;
+/**
+ * Query keys whose values are global SCAPI request parameters (site/locale routing). They are not PII or secrets and
+ * are highly useful in logs for diagnosing per-site / per-locale behavior, so `maskUrl` preserves their values verbatim
+ * instead of replacing them with `*`.
+ */
+const UNMASKED_QUERY_KEYS = new Set(['locale', 'siteId']);
+
+const LOGGER_PREFIX = '[ApiClients]';
+
+/**
+ * Per-request marker for "we've already warned about an invalid `MRT_REQUEST_TIMEOUT` in this request", so multiple
+ * `createApiClients` calls within a single request produce at most one warn line. Keyed by the request context, same
+ * lifetime model as `REGISTRIES`.
+ */
+const MRT_TIMEOUT_WARNED = new WeakSet<ContextLike>();
 
 function getRegistry(context: ContextLike): Map<string, Promise<Response>> {
     let map = REGISTRIES.get(context);
@@ -106,8 +122,11 @@ async function abortable<T>(promise: Promise<T>, signal: AbortSignal | null | un
  * structure to diagnose cache behavior (which endpoint, which params were sent) without leaking values that
  * may include access tokens, basket IDs, customer IDs, or other PII/secrets.
  *
+ * Values for keys in `UNMASKED_QUERY_KEYS` (`locale`, `siteId`) are kept verbatim — they are global SCAPI
+ * routing parameters, never sensitive, and useful for diagnostics.
+ *
  * @example
- * `/baskets/abc?token=xyz&siteId=site` → `/baskets/abc?siteId=*&token=*`
+ * `/baskets/abc?token=xyz&siteId=site&locale=en-US` → `/baskets/abc?locale=en-US&siteId=site&token=*`
  */
 function maskUrl(url: string): string {
     const parsed = new URL(url);
@@ -115,8 +134,26 @@ function maskUrl(url: string): string {
     if (!keys.length) {
         return parsed.pathname;
     }
-    const masked = [...new Set(keys)].map((k) => `${k}=*`).join('&');
+    const masked = [...new Set(keys)]
+        .map((k) => (UNMASKED_QUERY_KEYS.has(k) ? `${k}=${parsed.searchParams.get(k) ?? ''}` : `${k}=*`))
+        .join('&');
     return `${parsed.pathname}?${masked}`;
+}
+
+/**
+ * Resolve the hard-timeout for outgoing SCAPI fetches from the platform-provided environment variable.
+ *
+ * @env {string} [MRT_REQUEST_TIMEOUT] - Optional. Per-request budget in milliseconds, set by Managed Runtime
+ *   to communicate the platform's request window. Example: `"15000"`. Unset or non-positive → no timeout.
+ *   Misconfiguration (set but unparseable to a finite number) → no timeout.
+ */
+function getMrtRequestTimeoutMs(): number | null {
+    const raw = process.env.MRT_REQUEST_TIMEOUT;
+    if (!raw) {
+        return null;
+    }
+    const n = Number.parseInt(raw, 10);
+    return Number.isFinite(n) ? n : null;
 }
 
 /**
@@ -145,7 +182,7 @@ function maskUrl(url: string): string {
  * The key is `METHOD URL` with sorted query params. It does **not** include request headers or request body.
  * That is safe for this template because every header that varies between callers is derived from per-request context
  * inside `openapi-fetch` middleware, not from per-call state. Two concurrent calls under the same context produce
- * identical headers, and collapsing them into one network call does not change semantics.
+ * identical headers, and collapsing them into one network call doesn't change semantics.
  *
  * Customer extensions that add headers via custom middleware MUST follow the same discipline: derive header
  * values from `context`, not from per-call arguments. A header derived from per-call state (e.g. a multi-tenant
@@ -238,7 +275,7 @@ export function createDedupedFetch(context: ContextLike, baseFetch: typeof fetch
 
         const cached = map.get(key);
         if (cached) {
-            getLogger(context).info(`fetch cache hit ${method} ${maskUrl(url)}`);
+            getLogger(context).info(`${LOGGER_PREFIX} fetch cache hit ${method} ${maskUrl(url)}`);
             return (await abortable(cached, callerSignal)).clone();
         }
 
@@ -248,6 +285,97 @@ export function createDedupedFetch(context: ContextLike, baseFetch: typeof fetch
         // awaiting this same promise still observe the rejection; only *new* calls after rejection retry.
         promise.catch(() => map.delete(key));
         return (await abortable(promise, callerSignal)).clone();
+    };
+}
+
+/**
+ * Wrap a base `fetch` with a hard timeout. When `timeoutMs` is `null`, returns `baseFetch` unchanged so the
+ * wrapper has zero overhead and zero behavior change for environments that don't opt in. When `timeoutMs` is a
+ * positive number, every call gets a fresh `AbortController` whose signal is forwarded to `baseFetch`; if the
+ * timer fires before the fetch settles, the controller aborts the underlying network request with a
+ * `DOMException('fetch timed out after Nms', 'TimeoutError')`.
+ *
+ * # Why "hard"
+ *
+ * Aborting the underlying fetch — not just the caller's `await` — is deliberate. With this layered *under* the
+ * dedupe wrapper (see `createApiClients`), the abort propagates: the shared promise stored in the dedupe registry
+ * rejects, the registry entry is evicted, and every caller awaiting that same promise (via `abortable(...)`)
+ * rejects with the same `TimeoutError`. No orphaned in-flight fetch survives the timeout, and a subsequent call
+ * to the same URL starts fresh.
+ *
+ * # Composition with `createDedupedFetch`
+ *
+ * Wrap `globalThis.fetch` with this helper, then pass the result into `createDedupedFetch`. That ordering means
+ * **one timer per real network call**, not per caller — N concurrent callers colliding on the same dedupe key
+ * share one timeout, and on expiry all N reject together. Reversing the order (dedupe inside, timeout outside)
+ * would arm a fresh timer for every caller of a deduped fetch, which is wasteful and produces N log lines per
+ * underlying timeout event.
+ *
+ * # Logging
+ *
+ * On timeout, emits exactly one `warn`-level log via the request-scoped logger:
+ *
+ *     [ApiClients] fetch timeout {METHOD} {maskedUrl}
+ *         timeoutMs: 15000
+ *
+ * The URL is masked via `maskUrl()` so query values are not leaked. The existing `loggingMiddleware.onResponse`
+ * inside `createApiClients` doesn't fire on timeout (no `Response` object), so this log line is the only
+ * record of the timeout event at the fetch layer. Per-caller errors propagate through openapi-fetch's middleware
+ * chain and surface to loaders/actions as the rejected `TimeoutError`.
+ *
+ * # Signal handling
+ *
+ * The caller's `AbortSignal` (from `init.signal`, or carried on a `Request` input per the fetch spec) is merged
+ * with the timeout controller's signal via `AbortSignal.any`, so an abort from either source aborts the
+ * underlying fetch. Whichever fires first wins; the rejection carries that source's reason
+ * (`TimeoutError` for the timer, the caller's reason for an external abort).
+ *
+ * When this wrapper is composed *under* `createDedupedFetch` (the wired-in case for `createApiClients`), the
+ * dedupe wrapper has already stripped the caller's signal from `init` and reconstructed any `Request` input with
+ * a no-op signal. So the merge is functionally just the controller's signal, and caller aborts are still raced
+ * against each caller's `await` separately by the dedupe wrapper. This means caller aborts never tear down the
+ * underlying fetch in the dedupe-composed case, which is intentional: shared fetches must outlive any single
+ * caller's abort. In standalone use (no dedupe), the merge ensures caller aborts reach the network.
+ *
+ * @param context - Used for the request-scoped logger. Not used as a cache or registry key.
+ * @param baseFetch - The underlying `fetch` to invoke and time out.
+ * @param timeoutMs - Hard timeout in milliseconds. Pass `null` (or any non-positive / non-Integer value) to
+ * disable (returns `baseFetch` unchanged).
+ */
+export function createTimeoutFetch(
+    context: ContextLike,
+    baseFetch: typeof fetch,
+    timeoutMs: number | null
+): typeof fetch {
+    if (timeoutMs == null) {
+        return baseFetch;
+    }
+    if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) {
+        if (!MRT_TIMEOUT_WARNED.has(context)) {
+            MRT_TIMEOUT_WARNED.add(context);
+            getLogger(context).warn(
+                `${LOGGER_PREFIX} ignoring invalid timeoutMs; expected a positive integer, no timeout will be applied`,
+                { timeoutMs }
+            );
+        }
+        return baseFetch;
+    }
+    return async (input, init) => {
+        const controller = new AbortController();
+        const method = (init?.method ?? (input instanceof Request ? input.method : 'GET')).toString().toUpperCase();
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        // `init.signal` takes precedence over a Request-borne signal, mirroring the Fetch spec.
+        const callerSignal = init?.signal ?? (input instanceof Request ? input.signal : null);
+        const signal = callerSignal ? AbortSignal.any([callerSignal, controller.signal]) : controller.signal;
+        const timer = setTimeout(() => {
+            controller.abort(new DOMException(`fetch timed out after ${timeoutMs}ms`, 'TimeoutError'));
+            getLogger(context).warn(`${LOGGER_PREFIX} fetch timeout ${method} ${maskUrl(url)}`, { timeoutMs });
+        }, timeoutMs);
+        try {
+            return await baseFetch(input, { ...init, signal });
+        } finally {
+            clearTimeout(timer);
+        }
     };
 }
 
@@ -281,6 +409,15 @@ const getSlasClientSecret = (): string | undefined => {
  * Because the wrapper sits at the `fetch` layer, it covers every SCAPI request — including those issued via the
  * SDK's `clients.auth.*` and `clients.basket.*` helpers. See `createDedupedFetch` for the full behavior, including
  * caveats around middleware on cache hits.
+ *
+ * # Hard timeout (opt-in)
+ *
+ * When the `MRT_REQUEST_TIMEOUT` environment variable is set (Managed Runtime provides this to communicate the
+ * platform's per-request budget), every outgoing SCAPI fetch is bracketed with a hard timeout sourced from
+ * that value. The timeout layer sits *under* the dedupe layer, so one timer governs each real network call: on
+ * expiry the underlying fetch aborts, the dedupe registry evicts the entry, and every caller awaiting the same
+ * deduped promise rejects with a `TimeoutError`. When the env var is unset (or invalid) the wrapper is a no-op.
+ * See `createTimeoutFetch`.
  *
  * ## Lifetime
  *
@@ -339,8 +476,13 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
     };
 
     // Wrap the base fetch so every SCAPI request participates in request-scoped GET/HEAD deduplication and
-    // mutation invalidation. See `createDedupedFetch`.
-    const dedupedFetch = createDedupedFetch(context, globalThis.fetch);
+    // mutation invalidation. The timeout layer sits *under* the dedupe layer so that one timer governs EACH
+    // real network call (not each deduped caller). The deadline comes from the MRT-provided
+    // `MRT_REQUEST_TIMEOUT` env var. See `createTimeoutFetch` and `createDedupedFetch`.
+    const dedupedFetch = createDedupedFetch(
+        context,
+        createTimeoutFetch(context, globalThis.fetch, getMrtRequestTimeoutMs())
+    );
 
     // Note: Currency is NOT passed as a global parameter because not all Shopper* APIs support it.
     // Each caller should read currency from context and pass it in their specific API calls.
@@ -486,7 +628,7 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
                 status: response.status,
                 ...(duration != null && { duration }),
             };
-            const message = `fetch ${request.method} ${url.pathname}`;
+            const message = `${LOGGER_PREFIX} fetch ${request.method} ${url.pathname}`;
             if (response.status >= 400) {
                 logger.error(message, metadata);
             } else {

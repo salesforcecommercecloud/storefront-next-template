@@ -2,8 +2,8 @@ import { n as Site, r as Url, t as Locale } from "./types.js";
 import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./schema.js";
 import * as react0 from "react";
 import { ReactNode } from "react";
-import * as react_jsx_runtime0 from "react/jsx-runtime";
-import * as react_router6 from "react-router";
+import * as react_jsx_runtime1 from "react/jsx-runtime";
+import * as react_router11 from "react-router";
 import { RouterContextProvider } from "react-router";
 
 //#region src/config/get-config.d.ts
@@ -39,7 +39,7 @@ declare function useConfig<T extends Record<string, unknown> = Record<string, un
  * Populated by `createAppConfigMiddleware` with the `app` section of config.
  * Accessible in loaders, actions, and middleware via `context.get(appConfigContext)`.
  */
-declare const appConfigContext: react_router6.RouterContext<Record<string, unknown>>;
+declare const appConfigContext: react_router11.RouterContext<Record<string, unknown>>;
 /**
  * React context for application configuration.
  *
@@ -67,7 +67,7 @@ interface ConfigProviderProps {
 declare function ConfigProvider({
   config,
   children
-}: ConfigProviderProps): react_jsx_runtime0.JSX.Element;
+}: ConfigProviderProps): react_jsx_runtime1.JSX.Element;
 //#endregion
 export { type BaseConfig, ConfigContext, ConfigProvider, type DefineConfigOptions, type Locale, type Site, type Url, appConfigContext, createAppConfig, defineConfig, getConfig, useConfig };
 //# sourceMappingURL=config.d.ts.map
