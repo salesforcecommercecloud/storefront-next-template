@@ -364,6 +364,60 @@ function shouldPrefillBasket(
 }
 
 /**
+ * Ensures the first shipment carries a valid delivery shipping method, filtering out BOPIS.
+ *
+ * @param applicableShippingMethods Optional pre-fetched list.
+ */
+export async function applyDefaultShippingMethod(
+    context: LoaderFunctionArgs['context'],
+    basket: ShopperBasketsV2.schemas['Basket'],
+    applicableShippingMethods?: ShopperBasketsV2.schemas['ShippingMethod'][]
+): Promise<ShopperBasketsV2.schemas['Basket']> {
+    const logger = getLogger(context);
+    const shipment = basket.shipments?.[0];
+    if (!shipment?.shippingAddress || isAddressEmpty(shipment.shippingAddress) || !basket.basketId) {
+        return basket;
+    }
+
+    const shipmentId = shipment.shipmentId ?? 'me';
+    const basketId = basket.basketId;
+
+    try {
+        const methods =
+            applicableShippingMethods ??
+            (await getShippingMethodsForShipment(context, basketId, shipmentId))?.applicableShippingMethods ??
+            [];
+
+        let candidateMethods = methods;
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        // Don't use pickup methods as the auto-default.
+        candidateMethods = candidateMethods.filter((method) => !isPickupShippingMethod(method));
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+        if (candidateMethods.length === 0) {
+            return basket;
+        }
+
+        const currentMethodId = shipment.shippingMethod?.id;
+        const stillValid = currentMethodId && candidateMethods.some((m) => m.id === currentMethodId);
+        if (stillValid) {
+            return basket;
+        }
+
+        const clients = createApiClients(context);
+        const { data } = await clients.shopperBasketsV2.updateShippingMethodForShipment({
+            params: { path: { basketId, shipmentId } },
+            body: { id: candidateMethods[0].id },
+        });
+        updateBasketResource(context, data);
+        return data;
+    } catch (err) {
+        logger.error('Checkout: could not set default shipping method on basket', { basketId, error: err });
+        return basket;
+    }
+}
+
+/**
  * Initializes basket for returning customer with saved data
  */
 export async function initializeBasketForReturningCustomer(
@@ -490,38 +544,7 @@ export async function initializeBasketForReturningCustomer(
 
         // Set default shipping method when shipment has address but no method (e.g. after prefill or address-only update)
         if (updatedBasket.shipments?.[0]?.shippingAddress && !updatedBasket.shipments?.[0]?.shippingMethod) {
-            try {
-                const shipmentId = updatedBasket.shipments[0].shipmentId ?? 'me';
-                const shippingMethods = await getShippingMethodsForShipment(
-                    context,
-                    updatedBasket.basketId as string,
-                    shipmentId
-                );
-                let candidateMethods = shippingMethods?.applicableShippingMethods;
-                // @sfdc-extension-block-start SFDC_EXT_BOPIS
-                // Pickup is BOPIS-only (assigned via c_fromStoreId) — never use it as the auto-default.
-                candidateMethods = candidateMethods?.filter((method) => !isPickupShippingMethod(method));
-                // @sfdc-extension-block-end SFDC_EXT_BOPIS
-                if (Array.isArray(candidateMethods) && candidateMethods.length > 0) {
-                    const defaultMethod = candidateMethods[0];
-                    const { data } = await clients.shopperBasketsV2.updateShippingMethodForShipment({
-                        params: {
-                            path: {
-                                basketId,
-                                shipmentId: updatedBasket.shipments[0].shipmentId || 'me',
-                            },
-                        },
-                        body: { id: defaultMethod.id },
-                    });
-                    updatedBasket = data;
-                    updateBasketResource(context, updatedBasket);
-                }
-            } catch (err) {
-                logger.error('Checkout: could not set default shipping method on basket', {
-                    basketId,
-                    error: err,
-                });
-            }
+            updatedBasket = await applyDefaultShippingMethod(context, updatedBasket);
         }
 
         // Add saved payment instrument if available

@@ -59,6 +59,7 @@ import {
     getServerShippingMethodsMapData,
     fetchShippingMethodsMapForBasket,
     initializeBasketForReturningCustomer,
+    applyDefaultShippingMethod,
 } from './loaders.server';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 
@@ -674,5 +675,140 @@ describe('Checkout Loaders', () => {
             });
         });
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    });
+
+    describe('applyDefaultShippingMethod', () => {
+        const mockShopperBasketsClient = {
+            updateShippingMethodForShipment: vi.fn(),
+        };
+
+        beforeEach(async () => {
+            vi.clearAllMocks();
+            const { createApiClients } = await import('@/lib/api-clients.server');
+            vi.mocked(createApiClients).mockReturnValue({
+                shopperBasketsV2: mockShopperBasketsClient,
+            } as any);
+        });
+
+        it('keeps the basket method unchanged when the current selection is still applicable', async () => {
+            const basket = {
+                basketId: 'b1',
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { address1: '123 Main St' },
+                        shippingMethod: { id: 'standard' },
+                    },
+                ],
+            } as any;
+
+            const result = await applyDefaultShippingMethod({} as any, basket, [
+                { id: 'standard', name: 'Standard', price: 5.99 },
+                { id: 'express', name: 'Express', price: 12.99 },
+            ] as any);
+
+            expect(result).toBe(basket);
+            expect(mockShopperBasketsClient.updateShippingMethodForShipment).not.toHaveBeenCalled();
+        });
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        it('replaces a stale pickup selection with the first non-pickup applicable method on address change', async () => {
+            const { updateBasketResource } = await import('@/middlewares/basket.server');
+            vi.mocked(updateBasketResource).mockImplementation(() => {});
+
+            const basket = {
+                basketId: 'b1',
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { address1: '123 Main St' },
+                        shippingMethod: { id: '005' }, // stale pickup
+                    },
+                ],
+            } as any;
+            const updatedBasket = {
+                ...basket,
+                shipments: [{ ...basket.shipments[0], shippingMethod: { id: 'standard' } }],
+            };
+            mockShopperBasketsClient.updateShippingMethodForShipment.mockResolvedValue({ data: updatedBasket });
+
+            const result = await applyDefaultShippingMethod({} as any, basket, [
+                { id: '005', name: 'Pickup', price: 0, c_storePickupEnabled: true },
+                { id: 'standard', name: 'Standard', price: 5.99 },
+                { id: 'express', name: 'Express', price: 12.99 },
+            ] as any);
+
+            expect(mockShopperBasketsClient.updateShippingMethodForShipment).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    params: { path: { basketId: 'b1', shipmentId: 'me' } },
+                    body: { id: 'standard' },
+                })
+            );
+            expect(result).toBe(updatedBasket);
+        });
+
+        it('leaves the stale method untouched when only pickup is applicable for the new address', async () => {
+            const basket = {
+                basketId: 'b1',
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { address1: '123 Main St' },
+                        shippingMethod: { id: 'standard' },
+                    },
+                ],
+            } as any;
+
+            const result = await applyDefaultShippingMethod({} as any, basket, [
+                { id: '005', name: 'Pickup', price: 0, c_storePickupEnabled: true },
+            ] as any);
+
+            expect(result).toBe(basket);
+            expect(mockShopperBasketsClient.updateShippingMethodForShipment).not.toHaveBeenCalled();
+        });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
+
+        it('skips when shipment has no address', async () => {
+            const basket = {
+                basketId: 'b1',
+                shipments: [{ shipmentId: 'me', shippingAddress: undefined }],
+            } as any;
+
+            const result = await applyDefaultShippingMethod({} as any, basket, [
+                { id: 'standard', name: 'Standard', price: 5.99 },
+            ] as any);
+
+            expect(result).toBe(basket);
+            expect(mockShopperBasketsClient.updateShippingMethodForShipment).not.toHaveBeenCalled();
+        });
+
+        it('falls back to fetching applicable methods when none are passed in', async () => {
+            const { updateBasketResource } = await import('@/middlewares/basket.server');
+            const { getShippingMethodsForShipment } = await import('@/lib/api/shipping-methods.server');
+            vi.mocked(updateBasketResource).mockImplementation(() => {});
+            vi.mocked(getShippingMethodsForShipment).mockResolvedValue({
+                applicableShippingMethods: [{ id: 'standard', name: 'Standard', price: 5.99 }],
+            } as any);
+
+            const basket = {
+                basketId: 'b1',
+                shipments: [
+                    {
+                        shipmentId: 'me',
+                        shippingAddress: { address1: '123 Main St' },
+                    },
+                ],
+            } as any;
+            mockShopperBasketsClient.updateShippingMethodForShipment.mockResolvedValue({
+                data: { ...basket, shipments: [{ ...basket.shipments[0], shippingMethod: { id: 'standard' } }] },
+            });
+
+            await applyDefaultShippingMethod({} as any, basket);
+
+            expect(getShippingMethodsForShipment).toHaveBeenCalledWith({}, 'b1', 'me');
+            expect(mockShopperBasketsClient.updateShippingMethodForShipment).toHaveBeenCalledWith(
+                expect.objectContaining({ body: { id: 'standard' } })
+            );
+        });
     });
 });
