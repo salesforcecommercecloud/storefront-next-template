@@ -364,6 +364,13 @@ const baseConfig = defineConfig([
         extends: [tseslint.configs.disableTypeChecked],
     },
     {
+        // devcontainer.json is JSONC by spec — comments are allowed.
+        files: ['**/.devcontainer/devcontainer.json', '**/.devcontainer.json'],
+        rules: {
+            'jsonc/no-comments': 'off',
+        },
+    },
+    {
         // Apache License 2.0 file headers
         files: ['**/*.{ts,tsx,js,jsx}'],
         plugins: {

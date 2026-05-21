@@ -1,0 +1,58 @@
+// Dev container for the SFCC Storefront retail template.
+// Used by GitHub Codespaces and any IDE that supports the dev container spec
+// (VS Code Dev Containers, JetBrains Gateway, etc.).
+{
+    "name": "SFCC Storefront Retail Template",
+
+    // Pinned Node 24 image. The package.json `engines` field requires Node >=24.
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
+
+    // Activate the pnpm version this project is built against, then install.
+    // Corepack ships with Node, so no separate install step is needed.
+    "postCreateCommand": "sudo corepack enable && corepack prepare pnpm@10.28.0 --activate && pnpm install",
+
+    // Download the VSIX and install it here: `/tmp` is cleared on container
+    // restart, and the `code` CLI is only on PATH once the editor attaches.
+    // The URL points at a versioned GitHub Release asset and the artifact is
+    // verified against a sha256 checksum so the installed extension cannot
+    // drift if the upstream tag is moved or the asset replaced. To ship a new
+    // version, cut a new release and bump both the tag and the checksum here.
+    "postAttachCommand": "curl -fL -o /tmp/commerce-vibes.vsix https://github.com/storefront-setup-test/commerce-vibes-public/releases/download/v0.0.1/commerce-vibes.vsix && echo '0cbbb586bfff3e4e556a4fcbab01adab6a457fe6da6c5dc1c2bfc4cf2679a400  /tmp/commerce-vibes.vsix' | sha256sum -c - && code --install-extension /tmp/commerce-vibes.vsix --force",
+
+    "forwardPorts": [5173, 6006],
+    "portsAttributes": {
+        "5173": {
+            "label": "Dev Server",
+            "onAutoForward": "openPreview"
+        },
+        "6006": {
+            "label": "Storybook",
+            "onAutoForward": "silent"
+        }
+    },
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "bradlc.vscode-tailwindcss",
+                "ms-playwright.playwright",
+                "vitest.explorer",
+                "salesforce.salesforcedx-vscode"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+                "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+                "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+                "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+                "eslint.useFlatConfig": true,
+                "typescript.tsdk": "node_modules/typescript/lib"
+            }
+        }
+    },
+
+    "remoteUser": "node"
+}
