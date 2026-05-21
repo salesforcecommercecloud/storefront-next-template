@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_CUSTOMER_PREFERENCES */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { allModes } from '../../../../../.storybook/modes';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { action } from 'storybook/actions';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import { action } from 'storybook/actions';
+import { allModes } from '../../../../../../.storybook/modes';
 import { InterestsPreferencesSection, InterestsPreferencesSectionSkeleton } from '../index';
-import CustomerPreferencesProvider from '@/providers/customer-preferences';
+import type { CustomerPreferencesData } from '@/extensions/customer-preferences/lib/api/customer-preferences.server';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -54,8 +55,92 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     return <div ref={containerRef}>{children}</div>;
 }
 
+const initialData: CustomerPreferencesData = {
+    availableInterests: [
+        { id: 'minimalist', name: 'Minimalist', category: 'design_styles' },
+        { id: 'geometric', name: 'Geometric', category: 'design_styles' },
+        { id: 'living_room', name: 'Living Room', category: 'room_types' },
+        { id: 'wood', name: 'Wood', category: 'materials' },
+        { id: 'modern', name: 'Modern', category: 'aesthetics' },
+    ],
+    interestCategories: [
+        {
+            id: 'design_styles',
+            name: 'Design Styles',
+            options: [
+                { id: 'minimalist', name: 'Minimalist', category: 'design_styles' },
+                { id: 'geometric', name: 'Geometric', category: 'design_styles' },
+            ],
+        },
+        {
+            id: 'room_types',
+            name: 'Room Types',
+            options: [{ id: 'living_room', name: 'Living Room', category: 'room_types' }],
+        },
+        {
+            id: 'materials',
+            name: 'Materials',
+            options: [{ id: 'wood', name: 'Wood', category: 'materials' }],
+        },
+        {
+            id: 'aesthetics',
+            name: 'Aesthetics',
+            options: [{ id: 'modern', name: 'Modern', category: 'aesthetics' }],
+        },
+    ],
+    customerInterests: { selectedInterestIds: ['minimalist', 'wood'] },
+    availablePreferences: [
+        {
+            id: 'product_categories',
+            name: 'Product Categories',
+            type: 'multi-select',
+            options: [
+                { value: 'minimalist', label: 'Minimalist' },
+                { value: 'modern', label: 'Modern' },
+            ],
+        },
+        {
+            id: 'shopping_preferences',
+            name: 'Shopping Preferences',
+            type: 'button-group',
+            options: [
+                { value: 'womens', label: "Women's" },
+                { value: 'mens', label: "Men's" },
+                { value: 'unisex', label: 'Unisex' },
+            ],
+        },
+        {
+            id: 'measures',
+            name: 'Measures',
+            type: 'text-group',
+            fields: [
+                { id: 'room_width', label: 'Room Width (inches)', placeholder: 'e.g., 120', width: 'half' },
+                { id: 'room_length', label: 'Room Length (inches)', placeholder: 'e.g., 180', width: 'half' },
+            ],
+        },
+        {
+            id: 'size_preference',
+            name: 'Preferred Product Size',
+            type: 'select',
+            options: [
+                { value: 'no_preference', label: 'No preference' },
+                { value: 'small', label: 'Small (S)' },
+                { value: 'medium', label: 'Medium (M)' },
+            ],
+        },
+    ],
+    customerPreferences: {
+        preferences: {
+            product_categories: [],
+            shopping_preferences: '',
+            measures: { room_width: '', room_length: '' },
+            size_preference: 'no_preference',
+        },
+    },
+};
+
 const meta: Meta<typeof InterestsPreferencesSection> = {
-    title: 'ACCOUNT/Interests & Preferences',
+    title: 'Extensions/Customer Preferences/Interests & Preferences',
     component: InterestsPreferencesSection,
     parameters: {
         chromatic: { modes: { desktop: allModes.desktop } },
@@ -63,31 +148,15 @@ const meta: Meta<typeof InterestsPreferencesSection> = {
         docs: {
             description: {
                 component:
-                    'A combined component for managing customer interests and shopping preferences. Includes design interests, product categories, shopping preferences, room measures, and size preferences.',
+                    'Combined Interests & Preferences section rendered on the account details page. Reads its initial state from the route loader and submits updates via a `useFetcher`. This story passes `initialData` directly — no provider wiring required.',
             },
         },
     },
     tags: ['autodocs', 'interaction'],
-    argTypes: {
-        customerId: {
-            description: 'Customer ID for fetching/updating preferences',
-            control: 'text',
-        },
-        onSuccess: {
-            description: 'Callback when data is successfully updated',
-            action: 'success',
-        },
-        onError: {
-            description: 'Callback when an error occurs',
-            action: 'error',
-        },
-    },
     decorators: [
         (Story) => (
             <ActionLogger>
-                <CustomerPreferencesProvider>
-                    <Story />
-                </CustomerPreferencesProvider>
+                <Story />
             </ActionLogger>
         ),
     ],
@@ -97,135 +166,76 @@ export default meta;
 type Story = StoryObj<typeof InterestsPreferencesSection>;
 
 export const Default: Story = {
-    args: {
-        customerId: 'story-customer-123',
-        onSuccess: action('success'),
-        onError: action('error'),
-    },
+    args: { initialData },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for loading to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Check title is rendered
         await expect(canvas.getByText('Interests & Preferences')).toBeInTheDocument();
-
-        // Check description is rendered
         await expect(
             canvas.getByText('Add your design interests and manage your shopping preferences')
         ).toBeInTheDocument();
-
-        // Check Edit button exists
         await expect(canvas.getByRole('button', { name: /edit/i })).toBeInTheDocument();
     },
 };
 
 export const EditMode: Story = {
-    args: {
-        customerId: 'story-customer-edit',
-        onSuccess: action('success'),
-        onError: action('error'),
-    },
+    args: { initialData },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for loading to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Click Edit button
         const editButton = canvas.getByRole('button', { name: /edit/i });
         await userEvent.click(editButton);
 
-        // Check Save and Cancel buttons appear
         await expect(canvas.getByRole('button', { name: /save/i })).toBeInTheDocument();
         await expect(canvas.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-
-        // Check Add more buttons appear (multiple - one for interests, one for categories)
-        const addMoreButtons = canvas.getAllByText(/\+ Add more/i);
-        await expect(addMoreButtons.length).toBeGreaterThanOrEqual(1);
     },
 };
 
 export const CancelEdit: Story = {
-    args: {
-        customerId: 'story-customer-cancel',
-        onSuccess: action('success'),
-        onError: action('error'),
-    },
+    args: { initialData },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for loading to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Click Edit button
         const editButton = canvas.getByRole('button', { name: /edit/i });
         await userEvent.click(editButton);
 
-        // Click Cancel button
         const cancelButton = canvas.getByRole('button', { name: /cancel/i });
         await userEvent.click(cancelButton);
 
-        // Check Edit button is back
         await expect(canvas.getByRole('button', { name: /edit/i })).toBeInTheDocument();
     },
 };
 
 export const SelectShoppingPreference: Story = {
-    args: {
-        customerId: 'story-customer-shopping',
-        onSuccess: action('success'),
-        onError: action('error'),
-    },
+    args: { initialData },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for loading to complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Click Edit button
         const editButton = canvas.getByRole('button', { name: /edit/i });
         await userEvent.click(editButton);
 
-        // Click Women's button
         const womensButton = canvas.getByRole('button', { name: /women's/i });
         await userEvent.click(womensButton);
-
-        // Verify Women's is now selected (has foreground bg class in edit mode)
         await expect(womensButton).toHaveClass('bg-foreground');
     },
 };
 
 export const OpenInterestsDialog: Story = {
-    args: {
-        customerId: 'story-customer-dialog',
-        onSuccess: action('success'),
-        onError: action('error'),
-    },
+    args: { initialData },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Wait for loading to complete (adapter init + data fetch)
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // Click Edit button
         const editButton = canvas.getByRole('button', { name: /edit/i });
         await userEvent.click(editButton);
 
-        // Verify Edit button worked - now we should see Save button
-        await expect(canvas.getByRole('button', { name: /save/i })).toBeInTheDocument();
-
-        // Click "+ Add more" for interests to open the dialog (use testid for reliability)
         const addMoreButton = await canvas.findByTestId('interests-add-more-button', {}, { timeout: 5000 });
         await userEvent.click(addMoreButton);
 
-        // Dialog renders in a portal (document.body) - search there
         const documentBody = within(document.body);
         const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
         await expect(dialog).toBeInTheDocument();
@@ -237,7 +247,6 @@ export const Skeleton: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
 
-        // Check skeleton is rendered by looking for skeleton elements
         const skeletons = canvasElement.querySelectorAll('.animate-pulse');
         await expect(skeletons.length).toBeGreaterThan(0);
     },

@@ -1,0 +1,26 @@
+{
+    "interestsPreferences": {
+        "title": "Intressen och inställningar",
+        "description": "Lägg till dina designintressen och hantera dina shoppinginställningar",
+        "successMessage": "Dina intressen och inställningar uppdaterades.",
+        "errorMessage": "Det gick inte att uppdatera. Försök igen."
+    },
+    "interests": {
+        "title": "Dina intressen",
+        "noneSelected": "Inga intressen valda",
+        "addMore": "Lägg till fler",
+        "addInterestsTitle": "Lägg till dina intressen"
+    },
+    "preferences": {
+        "noneSelected": "Inget har valts",
+        "addMore": "Lägg till fler",
+        "dialogTitle": "Välj alternativ",
+        "selectCategory": "Välj {{category}}"
+    },
+    "common": {
+        "save": "Spara",
+        "saving": "Sparar ...",
+        "cancel": "Avbryt",
+        "edit": "Redigera"
+    }
+}

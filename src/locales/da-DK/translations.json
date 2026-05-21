@@ -1026,38 +1026,6 @@
                 "hasSpecial": "Mindst ét specialtegn"
             }
         },
-        "interests": {
-            "title": "Dine interesser",
-            "description": "Tilføj dine designinteresser for at få indhold, anbefalinger og tilbud tilpasset til dig",
-            "selectedLabel": "Dine valgte interesser",
-            "noneSelected": "Ingen valgte interesser",
-            "noneInCategory": "Ingen valgt",
-            "addMore": "Tilføj mere",
-            "addInterestsTitle": "Tilføj dine interesser",
-            "dialogTitle": "Vælg dine interesser",
-            "dialogDescription": "Vælg mellem kategorierne nedenfor for at tilpasse din oplevelse",
-            "selectCategory": "Vælg {{category}}",
-            "selectCategoryDescription": "Vælg de muligheder, der interesserer dig",
-            "successMessage": "Dine interesser blev opdateret.",
-            "errorMessage": "Kunne ikke opdatere interesser. Prøv igen"
-        },
-        "interestsPreferences": {
-            "title": "Interesser og præferencer",
-            "description": "Tilføj dine designinteresser, og administrer dine indkøbspræferencer",
-            "successMessage": "Dine interesser og præferencer blev opdateret.",
-            "errorMessage": "Kunne ikke opdatere. Prøv igen"
-        },
-        "preferences": {
-            "title": "Dine præferencer",
-            "description": "Administrer dine indkøbspræferencer og tilmelding til nyhedsbrev",
-            "noneSelected": "Ingen valgt",
-            "addMore": "Tilføj mere",
-            "dialogTitle": "Vælg indstillinger",
-            "selectCategory": "Vælg {{category}}",
-            "selectCategoryDescription": "Vælg de muligheder, der gælder for dig",
-            "successMessage": "Dine præferencer blev opdateret.",
-            "errorMessage": "Kunne ikke opdatere præferencer. Prøv igen"
-        },
         "common": {
             "save": "Gem",
             "saving": "Gemmer ...",

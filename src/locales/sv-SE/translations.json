@@ -1029,38 +1029,6 @@
                 "hasSpecial": "Minst ett specialtecken"
             }
         },
-        "interests": {
-            "title": "Dina intressen",
-            "description": "Lägg till dina designintressen för att få personligt anpassat innehåll, rekommendationer och erbjudanden",
-            "selectedLabel": "Dina valda intressen",
-            "noneSelected": "Inga intressen valda",
-            "noneInCategory": "Inget har valts",
-            "addMore": "Lägg till fler",
-            "addInterestsTitle": "Lägg till dina intressen",
-            "dialogTitle": "Välj dina intressen",
-            "dialogDescription": "Välj bland kategorierna nedan för att anpassa din upplevelse",
-            "selectCategory": "Välj {{category}}",
-            "selectCategoryDescription": "Välj de alternativ som intresserar dig",
-            "successMessage": "Dina intressen har uppdaterats.",
-            "errorMessage": "Det gick inte att uppdatera intressen. Försök igen."
-        },
-        "interestsPreferences": {
-            "title": "Intressen och inställningar",
-            "description": "Lägg till dina designintressen och hantera dina shoppinginställningar",
-            "successMessage": "Dina intressen och inställningar uppdaterades.",
-            "errorMessage": "Det gick inte att uppdatera. Försök igen."
-        },
-        "preferences": {
-            "title": "Dina preferenser",
-            "description": "Hantera dina shoppinginställningar och prenumerationer på nyhetsbrev",
-            "noneSelected": "Inget har valts",
-            "addMore": "Lägg till fler",
-            "dialogTitle": "Välj alternativ",
-            "selectCategory": "Välj {{category}}",
-            "selectCategoryDescription": "Välj de alternativ som gäller för dig",
-            "successMessage": "Dina inställningar har uppdaterats.",
-            "errorMessage": "Det gick inte att uppdatera inställningar. Försök igen."
-        },
         "common": {
             "save": "Spara",
             "saving": "Sparar ...",

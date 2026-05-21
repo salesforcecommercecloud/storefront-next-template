@@ -1029,38 +1029,6 @@
                 "hasSpecial": "Vähintään yksi erikoismerkki"
             }
         },
-        "interests": {
-            "title": "Kiinnostuksenkohteesi",
-            "description": "Lisää muotoilun kiinnostuksen kohteesi saadaksesi henkilökohtaista sisältöä, suosituksia ja tarjouksia",
-            "selectedLabel": "Valitsemasi kiinnostuksen kohteet",
-            "noneSelected": "Ei valittuja etuja",
-            "noneInCategory": "Ei valittua",
-            "addMore": "Lisää muita",
-            "addInterestsTitle": "Lisää kiinnostuksenkohteesi",
-            "dialogTitle": "Valitse kiinnostuksen kohteesi",
-            "dialogDescription": "Valitse alla olevista kategorioista ja muokkaa kokemustasi yksilöllisesti",
-            "selectCategory": "Valitse {{category}}",
-            "selectCategoryDescription": "Valitse sinua kiinnostavat vaihtoehdot",
-            "successMessage": "Kiinnostuksenkohteesi päivitettiin.",
-            "errorMessage": "Etujen päivittäminen epäonnistui. Yritä uudelleen."
-        },
-        "interestsPreferences": {
-            "title": "Kiinnostuksenkohteet ja asetukset",
-            "description": "Lisää sinua kiinnostavat designit ja hallitse ostosasetuksiasi",
-            "successMessage": "Kiinnostuksenkohteesi ja mieltymyksesi päivitettiin.",
-            "errorMessage": "Päivitys epäonnistui. Yritä uudelleen."
-        },
-        "preferences": {
-            "title": "Asetuksesi",
-            "description": "Hallitse ostosasetuksiasi ja uutiskirjeen tilausta",
-            "noneSelected": "Ei valittua",
-            "addMore": "Lisää muita",
-            "dialogTitle": "Valitse vaihtoehdot",
-            "selectCategory": "Valitse {{category}}",
-            "selectCategoryDescription": "Valitse sinua koskevat vaihtoehdot",
-            "successMessage": "Asetuksesi päivitettiin.",
-            "errorMessage": "Asetusten päivittäminen epäonnistui. Yritä uudelleen."
-        },
         "common": {
             "save": "Tallenna",
             "saving": "Tallennetaan...",

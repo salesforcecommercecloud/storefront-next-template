@@ -1025,38 +1025,6 @@
                 "hasSpecial": "Minst ett spesialtegn"
             }
         },
-        "interests": {
-            "title": "Dine interesser",
-            "description": "Legg til designinteressene dine for å få individuelt tilpasset innhold, anbefalinger & tilbud",
-            "selectedLabel": "Dine valgte interesser",
-            "noneSelected": "Ingen interesser valgt",
-            "noneInCategory": "Ingen valgt",
-            "addMore": "Legg til mer",
-            "addInterestsTitle": "Legg til dine interesser",
-            "dialogTitle": "Velg dine interesser",
-            "dialogDescription": "Velg blant kategoriene nedenfor for å tilpasse opplevelsen din individuelt",
-            "selectCategory": "Velg {{category}}",
-            "selectCategoryDescription": "Velg de alternativene som interesserer deg",
-            "successMessage": "Dine interesser ble oppdatert.",
-            "errorMessage": "Kunne ikke oppdatere interesser. Prøv igjen."
-        },
-        "interestsPreferences": {
-            "title": "Interesser og preferanser",
-            "description": "Legg til designinteresser og administrer handlepreferansene dine",
-            "successMessage": "Interessene og preferansene er oppdatert.",
-            "errorMessage": "Kunne ikke oppdatere. Prøv igjen."
-        },
-        "preferences": {
-            "title": "Dine preferanser",
-            "description": "Administrer handlepreferansene og abonnementet ditt på nyhetsbrev",
-            "noneSelected": "Ingen valgt",
-            "addMore": "Legg til mer",
-            "dialogTitle": "Velg alternativer",
-            "selectCategory": "Velg {{category}}",
-            "selectCategoryDescription": "Velg de alternativene som gjelder for deg",
-            "successMessage": "Innstillingene dine ble oppdatert.",
-            "errorMessage": "Kunne ikke oppdatere innstillinger. Prøv igjen."
-        },
         "common": {
             "save": "Lagre",
             "saving": "Lagrer ...",

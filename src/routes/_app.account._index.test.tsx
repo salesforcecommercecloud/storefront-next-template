@@ -120,16 +120,8 @@ vi.mock('@/components/account-detail-skeleton', () => ({
     AccountDetailSkeleton: () => <div data-testid="account-detail-skeleton" />,
 }));
 
-vi.mock('@/components/account/interests-preferences-section', () => ({
-    InterestsPreferencesSection: () => <div data-testid="interests-preferences" />,
-}));
-
 vi.mock('@/components/account/marketing-consent', () => ({
     MarketingConsent: () => <div data-testid="marketing-consent" />,
-}));
-
-vi.mock('@/providers/customer-preferences', () => ({
-    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 vi.mock('@salesforce/storefront-next-runtime/config', () => ({

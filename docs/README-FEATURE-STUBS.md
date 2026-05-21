@@ -84,4 +84,34 @@ Translation keys to remove (`expressPayments` objects):
 
 ---
 
+### Customer interests & preferences
+
+| Field | Details |
+|-------|---------|
+| **Status** | Stub — no backend integration |
+| **Location** | `src/extensions/customer-preferences/` |
+| **Surfaces** | Account details page (`/account`) |
+| **Extension** | `SFDC_EXT_CUSTOMER_PREFERENCES` (named "(Demo) Customer Preferences" in `src/extensions/config.json`) |
+
+**Current behavior:**
+The Interests & Preferences section on the account page is fully functional, but is backed by mock fixtures and an in-memory store in `lib/api/customer-preferences.server.ts`. Reads return canned catalogs (design styles, room types, materials, aesthetics, product categories, shopping preferences, room measurements, size preference); writes persist only for the lifetime of the server process and are not shared across multi-process or serverless deployments.
+
+**To productionize:**
+Replace the bodies of `getCustomerPreferencesData`, `updateCustomerInterests`, and `updateCustomerPreferences` in `src/extensions/customer-preferences/lib/api/customer-preferences.server.ts` with calls to your real customer profile / personalization backend. The loader (`src/routes/_app.account._index.tsx`) and the action route (`src/extensions/customer-preferences/routes/action.customer-preferences-update.tsx`) do not need to change. Drop the `(Demo)` prefix from the extension name in `src/extensions/config.json` once a real backend is wired up.
+
+**To remove:**
+Uninstall the extension by stripping the `@sfdc-extension-*` markers from core files and deleting the extension folder.
+
+Files to delete:
+- `src/extensions/customer-preferences/` (entire folder)
+
+Parent components to update (remove the marker block):
+- `src/routes/_app.account._index.tsx` — the `<UITarget targetId="sfcc.myAccount.preferences" />` block and its loader Promise
+
+Config updates:
+- Remove `SFDC_EXT_CUSTOMER_PREFERENCES` from `src/extensions/config.json`
+- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+
+---
+
 <!-- Add new stubs below using the same format -->

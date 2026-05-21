@@ -1024,38 +1024,6 @@
                 "hasSpecial": "Minstens één speciaal teken"
             }
         },
-        "interests": {
-            "title": "Jouw interesses",
-            "description": "Voeg toe in welke ontwerpen je interesse hebt zodat we je gepersonaliseerde content, aanbevelingen en aanbiedingen kunnen laten zien",
-            "selectedLabel": "Je geselecteerde interesses",
-            "noneSelected": "Geen interesses geselecteerd",
-            "noneInCategory": "Niets geselecteerd",
-            "addMore": "Meer toevoegen",
-            "addInterestsTitle": "Voeg je interesses toe",
-            "dialogTitle": "Selecteer je interesses",
-            "dialogDescription": "Kies uit de onderstaande categorieën om je ervaring te personaliseren",
-            "selectCategory": "{{category}} selecteren",
-            "selectCategoryDescription": "Kies de opties die je interesseren",
-            "successMessage": "Je interesses zijn bijgewerkt.",
-            "errorMessage": "Bijwerken van interesses is mislukt. Probeer het opnieuw."
-        },
-        "interestsPreferences": {
-            "title": "Interesses en Voorkeuren",
-            "description": "Voeg toe in welke ontwerpen je interesse hebt en beheer je voorkeuren bij het shoppen",
-            "successMessage": "Je interesses en voorkeuren zijn bijgewerkt.",
-            "errorMessage": "Bijwerken is mislukt. Probeer het opnieuw."
-        },
-        "preferences": {
-            "title": "Je voorkeuren",
-            "description": "Beheer je voorkeuren bij het shoppen en je abonnementen op nieuwsbrieven",
-            "noneSelected": "Niets geselecteerd",
-            "addMore": "Meer toevoegen",
-            "dialogTitle": "Opties selecteren",
-            "selectCategory": "{{category}} selecteren",
-            "selectCategoryDescription": "Kies de opties die op jou van toepassing zijn",
-            "successMessage": "Je voorkeuren zijn bijgewerkt.",
-            "errorMessage": "Bijwerken van voorkeuren is mislukt. Probeer het opnieuw."
-        },
         "common": {
             "save": "Opslaan",
             "saving": "Opslaan...",

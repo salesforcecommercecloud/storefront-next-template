@@ -1027,38 +1027,6 @@
                 "hasSpecial": "Al menos un carácter especial"
             }
         },
-        "interests": {
-            "title": "Sus intereses",
-            "description": "Agrega tus intereses de diseño para obtener contenido personalizado, recomendaciones y ofertas",
-            "selectedLabel": "Sus intereses seleccionados",
-            "noneSelected": "No hay intereses seleccionados",
-            "noneInCategory": "No hay ninguna opción seleccionada",
-            "addMore": "Agrega más",
-            "addInterestsTitle": "Agrega tus intereses",
-            "dialogTitle": "Seleccione sus intereses",
-            "dialogDescription": "Elige entre las siguientes categorías para personalizar tu experiencia",
-            "selectCategory": "Seleccionar {{category}}",
-            "selectCategoryDescription": "Elige las opciones que te interesen",
-            "successMessage": "Sus intereses fueron actualizados.",
-            "errorMessage": "No se actualizaron los intereses. Intenta de nuevo."
-        },
-        "interestsPreferences": {
-            "title": "Preferencias de intereses &",
-            "description": "Agrega  tus intereses de diseño y gestiona tus preferencias de compra",
-            "successMessage": "Sus intereses y preferencias fueron actualizados.",
-            "errorMessage": "No se pudo actualizar. Intenta de nuevo."
-        },
-        "preferences": {
-            "title": "Sus preferencias",
-            "description": "Gestione sus preferencias de compra y suscripción a boletines informativos",
-            "noneSelected": "No hay ninguna opción seleccionada",
-            "addMore": "Agrega más",
-            "dialogTitle": "Seleccionar opciones",
-            "selectCategory": "Seleccionar {{category}}",
-            "selectCategoryDescription": "Elige las opciones que se aplican a ti",
-            "successMessage": "Se actualizaron sus preferencias.",
-            "errorMessage": "No se pudieron actualizar las preferencias. Intenta de nuevo."
-        },
         "common": {
             "save": "Guardar",
             "saving": "Guardando...",

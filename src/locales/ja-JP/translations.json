@@ -1030,38 +1030,6 @@
                 "hasSpecial": "記号を 1 文字以上含む"
             }
         },
-        "interests": {
-            "title": "興味",
-            "description": "興味のあるデザインを追加して、パーソナライズされたコンテンツ、おすすめ情報、特典を受け取りましょう",
-            "selectedLabel": "選択中の興味",
-            "noneSelected": "興味が選択されていません",
-            "noneInCategory": "選択されていません",
-            "addMore": "さらに追加",
-            "addInterestsTitle": "興味を追加",
-            "dialogTitle": "興味を選択",
-            "dialogDescription": "以下のカテゴリから選択して、体験をパーソナライズしましょう",
-            "selectCategory": "{{category}}の選択",
-            "selectCategoryDescription": "興味のある項目を選択してください",
-            "successMessage": "興味を更新しました。",
-            "errorMessage": "興味を更新できませんでした。もう一度お試しください。"
-        },
-        "interestsPreferences": {
-            "title": "興味と設定",
-            "description": "興味のあるデザインを追加し、ショッピング設定を管理します",
-            "successMessage": "興味と設定を更新しました。",
-            "errorMessage": "更新できませんでした。もう一度お試しください。"
-        },
-        "preferences": {
-            "title": "設定",
-            "description": "ショッピング設定とニュースレター購読を管理します",
-            "noneSelected": "選択されていません",
-            "addMore": "さらに追加",
-            "dialogTitle": "オプションの選択",
-            "selectCategory": "{{category}}の選択",
-            "selectCategoryDescription": "該当する項目を選択してください",
-            "successMessage": "設定を更新しました。",
-            "errorMessage": "設定を更新できませんでした。もう一度お試しください。"
-        },
         "common": {
             "save": "保存",
             "saving": "保存しています...",

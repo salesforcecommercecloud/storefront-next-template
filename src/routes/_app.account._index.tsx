@@ -15,6 +15,8 @@
  */
 import { useEffect, useMemo, type ReactElement, Suspense, useState, lazy } from 'react';
 import { useOutletContext, Await, useFetcher, useRevalidator } from 'react-router';
+/** @sfdc-extension-line SFDC_EXT_CUSTOMER_PREFERENCES */
+import type { Route } from './+types/_app.account._index';
 import { ToggleCard, ToggleCardSummary, ToggleCardEdit } from '@/components/toggle-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +25,6 @@ import { AccountDetailSkeleton } from '@/components/account-detail-skeleton';
 import { PasswordUpdateForm } from '@/components/password-update-form';
 import { CustomerProfileForm } from '@/components/customer-profile-form';
 import { EmailUpdateForm } from '@/components/email-update-form';
-import { InterestsPreferencesSection } from '@/components/account/interests-preferences-section';
 import { MarketingConsent } from '@/components/account/marketing-consent';
 import { useToast } from '@/components/toast';
 import type { ShopperConsents, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
@@ -31,8 +32,11 @@ import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { SeoMeta } from '@/components/seo-meta';
 import { useAuth } from '@/providers/auth';
-import CustomerPreferencesProvider from '@/providers/customer-preferences';
 import { useTranslation } from 'react-i18next';
+/** @sfdc-extension-block-start SFDC_EXT_CUSTOMER_PREFERENCES */
+import { getCustomerPreferencesData } from '@/extensions/customer-preferences/lib/api/customer-preferences.server';
+import { getAuth as getAuthServer } from '@/middlewares/auth.server';
+/** @sfdc-extension-block-end SFDC_EXT_CUSTOMER_PREFERENCES */
 import { formatDateForLocale } from '@/lib/date-utils';
 import { FETCHER_STATES } from '@/lib/fetcher-states';
 import { getPasswordlessErrorMessageKey } from '@/lib/auth/error-handler';
@@ -51,6 +55,29 @@ type AccountLayoutContext = {
     customer: Promise<Customer | null>;
     subscriptions: Promise<ShopperConsents.schemas['ConsentSubscriptionResponse'] | null>;
 };
+
+/** @sfdc-extension-block-start SFDC_EXT_CUSTOMER_PREFERENCES */
+/**
+ * Loader for the account details page.
+ *
+ * Returns deferred Promises only — no above-the-fold awaits — so the page
+ * shell renders immediately and below-the-fold sections stream in via
+ * `<Suspense>` + `<Await>`.
+ *
+ * This loader exists solely to feed the customer-preferences extension; the
+ * surrounding marker block strips the entire export when the extension is
+ * uninstalled, so the route falls back to no-loader behavior on main.
+ */
+export function loader(args: Route.LoaderArgs) {
+    const session = getAuthServer(args.context);
+    const customerPreferencesPromise =
+        session.userType === 'registered' && session.customerId ? getCustomerPreferencesData(session.customerId) : null;
+
+    return {
+        customerPreferencesPromise,
+    };
+}
+/** @sfdc-extension-block-end SFDC_EXT_CUSTOMER_PREFERENCES */
 
 /**
  * Account details content component that renders when customer data is loaded.
@@ -534,20 +561,6 @@ function AccountDetailsContent({
         }
     };
 
-    /**
-     * Handles successful interests & preferences update.
-     */
-    const handleInterestsPreferencesSuccess = () => {
-        addToast(t('interestsPreferences.successMessage'), 'success');
-    };
-
-    /**
-     * Handles interests & preferences update errors.
-     */
-    const handleInterestsPreferencesError = (error: string) => {
-        addToast(error, 'error');
-    };
-
     return (
         <div className="space-y-5">
             {/* Page Header Card */}
@@ -749,15 +762,9 @@ function AccountDetailsContent({
             </ToggleCard>
 
             {/* Interests & Preferences Section */}
-            {customerId && (
-                <CustomerPreferencesProvider>
-                    <InterestsPreferencesSection
-                        customerId={customerId}
-                        onSuccess={handleInterestsPreferencesSuccess}
-                        onError={handleInterestsPreferencesError}
-                    />
-                </CustomerPreferencesProvider>
-            )}
+            {/** @sfdc-extension-block-start SFDC_EXT_CUSTOMER_PREFERENCES */}
+            <UITarget targetId="sfcc.myAccount.preferences" />
+            {/** @sfdc-extension-block-end SFDC_EXT_CUSTOMER_PREFERENCES */}
 
             {/* Password & Security Toggle Card */}
             <ToggleCard

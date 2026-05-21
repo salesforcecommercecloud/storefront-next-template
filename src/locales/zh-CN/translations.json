@@ -1032,38 +1032,6 @@
                 "hasSpecial": "至少一个特殊字符"
             }
         },
-        "interests": {
-            "title": "您的兴趣",
-            "description": "添加您的设计兴趣以获得个性化内容、推荐和优惠等",
-            "selectedLabel": "您选择的兴趣",
-            "noneSelected": "未选择兴趣",
-            "noneInCategory": "未选择",
-            "addMore": "添加更多",
-            "addInterestsTitle": "添加您的兴趣",
-            "dialogTitle": "选择您的兴趣",
-            "dialogDescription": "从以下类别中进行选择，以个性化您的体验",
-            "selectCategory": "选择 {{category}}",
-            "selectCategoryDescription": "选择您感兴趣的选项",
-            "successMessage": "您的兴趣已更新。",
-            "errorMessage": "无法更新兴趣。重试"
-        },
-        "interestsPreferences": {
-            "title": "兴趣与偏好",
-            "description": "添加您的设计兴趣并管理您的购物偏好",
-            "successMessage": "您的兴趣和偏好已更新。",
-            "errorMessage": "更新失败。重试"
-        },
-        "preferences": {
-            "title": "您的偏好",
-            "description": "管理您的购物偏好和时事通讯订阅",
-            "noneSelected": "未选择",
-            "addMore": "添加更多",
-            "dialogTitle": "选择选项",
-            "selectCategory": "选择 {{category}}",
-            "selectCategoryDescription": "选择适用于您的选项",
-            "successMessage": "您的偏好已更新。",
-            "errorMessage": "无法更新偏好。重试"
-        },
         "common": {
             "save": "保存",
             "saving": "正在保存...",

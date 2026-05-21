@@ -1,0 +1,26 @@
+{
+    "interestsPreferences": {
+        "title": "Preferencias de intereses &",
+        "description": "Agrega  tus intereses de diseño y gestiona tus preferencias de compra",
+        "successMessage": "Sus intereses y preferencias fueron actualizados.",
+        "errorMessage": "No se pudo actualizar. Intenta de nuevo."
+    },
+    "interests": {
+        "title": "Sus intereses",
+        "noneSelected": "No hay intereses seleccionados",
+        "addMore": "Agrega más",
+        "addInterestsTitle": "Agrega tus intereses"
+    },
+    "preferences": {
+        "noneSelected": "No hay ninguna opción seleccionada",
+        "addMore": "Agrega más",
+        "dialogTitle": "Seleccionar opciones",
+        "selectCategory": "Seleccionar {{category}}"
+    },
+    "common": {
+        "save": "Guardar",
+        "saving": "Guardando...",
+        "cancel": "Cancelar",
+        "edit": "Editar"
+    }
+}

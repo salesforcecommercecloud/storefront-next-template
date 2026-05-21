@@ -1152,38 +1152,6 @@
                 "hasSpecial": "Almeno un carattere speciale"
             }
         },
-        "interests": {
-            "title": "I tuoi interessi",
-            "description": "Aggiungi i tuoi interessi per ottenere contenuti personalizzati, consigli e offerte",
-            "selectedLabel": "I tuoi interessi selezionati",
-            "noneSelected": "Nessun interesse selezionato",
-            "noneInCategory": "Nessuna selezione",
-            "addMore": "Aggiungi altri",
-            "addInterestsTitle": "Aggiungi i tuoi interessi",
-            "dialogTitle": "Seleziona i tuoi interessi",
-            "dialogDescription": "Scegli tra le categorie qui sotto per personalizzare la tua esperienza",
-            "selectCategory": "Seleziona {{category}}",
-            "selectCategoryDescription": "Scegli le opzioni che ti interessano",
-            "successMessage": "I tuoi interessi sono stati aggiornati.",
-            "errorMessage": "Impossibile aggiornare gli interessi. Riprova."
-        },
-        "interestsPreferences": {
-            "title": "Interessi e preferenze",
-            "description": "Aggiungi i tuoi interessi e gestisci le tue preferenze di acquisto",
-            "successMessage": "I tuoi interessi e le tue preferenze sono stati aggiornati.",
-            "errorMessage": "Impossibile eseguire l'aggiornamento. Riprova."
-        },
-        "preferences": {
-            "title": "Le tue preferenze",
-            "description": "Gestisci le tue preferenze di acquisto e l'iscrizione alla newsletter",
-            "noneSelected": "Nessuna selezione",
-            "addMore": "Aggiungi altri",
-            "dialogTitle": "Seleziona opzioni",
-            "selectCategory": "Seleziona {{category}}",
-            "selectCategoryDescription": "Scegli le opzioni che si applicano a te",
-            "successMessage": "Le tue preferenze sono state aggiornate.",
-            "errorMessage": "Impossibile aggiornare le preferenze. Riprova."
-        },
         "common": {
             "save": "Salva",
             "saving": "Salvataggio in corso...",

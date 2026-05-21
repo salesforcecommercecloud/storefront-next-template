@@ -18,12 +18,14 @@
 // Run 'pnpm locales:aggregate-extensions' to regenerate this file.
 
 import bopisTranslations from '@/extensions/bopis/locales/sv-SE/translations.json';
+import customerPreferencesTranslations from '@/extensions/customer-preferences/locales/sv-SE/translations.json';
 import multishipTranslations from '@/extensions/multiship/locales/sv-SE/translations.json';
 import storeLocatorTranslations from '@/extensions/store-locator/locales/sv-SE/translations.json';
 
 // Namespace is based on the following convention: extPascalCase, and it's the pascal case of the folder name (e.g. store-locator -> extStoreLocator)
 export default {
     extBopis: bopisTranslations,
+    extCustomerPreferences: customerPreferencesTranslations,
     extMultiship: multishipTranslations,
     extStoreLocator: storeLocatorTranslations,
 };

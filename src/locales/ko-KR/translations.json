@@ -1026,38 +1026,6 @@
                 "hasSpecial": "1개 이상의 특수 문자"
             }
         },
-        "interests": {
-            "title": "관심사",
-            "description": "디자인 관심사를 추가하여 개인화된 콘텐츠, 추천, 오퍼를 받으세요.",
-            "selectedLabel": "선택한 관심사",
-            "noneSelected": "선택한 관심사가 없습니다.",
-            "noneInCategory": "선택되지 않음",
-            "addMore": "더 추가",
-            "addInterestsTitle": "관심사 추가",
-            "dialogTitle": "관심사 선택",
-            "dialogDescription": "아래 카테고리 중에서 선택하여 경험을 개인화하세요.",
-            "selectCategory": "{{category}} 선택",
-            "selectCategoryDescription": "관심 있는 옵션 선택",
-            "successMessage": "관심사가 업데이트되었습니다.",
-            "errorMessage": "관심사를 업데이트하지 못했습니다. 다시 시도하십시오."
-        },
-        "interestsPreferences": {
-            "title": "관심사 및 기본 설정",
-            "description": "디자인 관심사를 추가하고 쇼핑 기호를 관리하세요.",
-            "successMessage": "관심사와 기호가 업데이트되었습니다.",
-            "errorMessage": "업데이트하지 못했습니다. 다시 시도하십시오."
-        },
-        "preferences": {
-            "title": "기호",
-            "description": "쇼핑 기본 설정 및 뉴스레터 구독 관리",
-            "noneSelected": "선택되지 않음",
-            "addMore": "더 추가",
-            "dialogTitle": "옵션 선택",
-            "selectCategory": "{{category}} 선택",
-            "selectCategoryDescription": "나에게 적용되는 옵션 선택",
-            "successMessage": "기본 설정이 업데이트되었습니다.",
-            "errorMessage": "기본 설정을 업데이트하지 못했습니다. 다시 시도하십시오."
-        },
         "common": {
             "save": "저장",
             "saving": "저장 중...",

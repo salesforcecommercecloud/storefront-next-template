@@ -1,0 +1,26 @@
+{
+    "interestsPreferences": {
+        "title": "Interesser og preferanser",
+        "description": "Legg til designinteresser og administrer handlepreferansene dine",
+        "successMessage": "Interessene og preferansene er oppdatert.",
+        "errorMessage": "Kunne ikke oppdatere. Prøv igjen."
+    },
+    "interests": {
+        "title": "Dine interesser",
+        "noneSelected": "Ingen interesser valgt",
+        "addMore": "Legg til mer",
+        "addInterestsTitle": "Legg til dine interesser"
+    },
+    "preferences": {
+        "noneSelected": "Ingen valgt",
+        "addMore": "Legg til mer",
+        "dialogTitle": "Velg alternativer",
+        "selectCategory": "Velg {{category}}"
+    },
+    "common": {
+        "save": "Lagre",
+        "saving": "Lagrer ...",
+        "cancel": "Avbryt",
+        "edit": "Rediger"
+    }
+}

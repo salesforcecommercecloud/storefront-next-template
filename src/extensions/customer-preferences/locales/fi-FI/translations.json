@@ -1,0 +1,26 @@
+{
+    "interestsPreferences": {
+        "title": "Kiinnostuksenkohteet ja asetukset",
+        "description": "Lisää sinua kiinnostavat designit ja hallitse ostosasetuksiasi",
+        "successMessage": "Kiinnostuksenkohteesi ja mieltymyksesi päivitettiin.",
+        "errorMessage": "Päivitys epäonnistui. Yritä uudelleen."
+    },
+    "interests": {
+        "title": "Kiinnostuksenkohteesi",
+        "noneSelected": "Ei valittuja etuja",
+        "addMore": "Lisää muita",
+        "addInterestsTitle": "Lisää kiinnostuksenkohteesi"
+    },
+    "preferences": {
+        "noneSelected": "Ei valittua",
+        "addMore": "Lisää muita",
+        "dialogTitle": "Valitse vaihtoehdot",
+        "selectCategory": "Valitse {{category}}"
+    },
+    "common": {
+        "save": "Tallenna",
+        "saving": "Tallennetaan...",
+        "cancel": "Peruuta",
+        "edit": "Muokkaa"
+    }
+}

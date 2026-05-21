@@ -1031,38 +1031,6 @@
                 "hasSpecial": "Au moins un caractère spécial"
             }
         },
-        "interests": {
-            "title": "Vos centres d’intérêt",
-            "description": "Ajoutez vos centres d’intérêt en matière de design pour obtenir du contenu personnalisé, des recommandations et des offres",
-            "selectedLabel": "Vos centres d’intérêt sélectionnés",
-            "noneSelected": "Aucun centre d’intérêt sélectionné",
-            "noneInCategory": "Aucune sélection",
-            "addMore": "En ajouter plus",
-            "addInterestsTitle": "Ajouter vos centres d’intérêt",
-            "dialogTitle": "Sélectionner vos centres d’intérêt",
-            "dialogDescription": "Choisissez parmi les catégories ci-dessous pour personnaliser votre expérience",
-            "selectCategory": "Sélectionner {{category}}",
-            "selectCategoryDescription": "Choisissez les options qui vous intéressent",
-            "successMessage": "Vos centres d’intérêt ont été mis à jour.",
-            "errorMessage": "Impossible de mettre à jour les centres d’intérêt. Veuillez réessayer."
-        },
-        "interestsPreferences": {
-            "title": "Centres d’intérêt et préférences",
-            "description": "Ajoutez vos centres d’intérêt en matière de design et gérez vos préférences d’achat",
-            "successMessage": "Vos centres d’intérêt et vos préférences ont été mis à jour.",
-            "errorMessage": "Échec de la mise à jour. Veuillez réessayer."
-        },
-        "preferences": {
-            "title": "Vos préférences",
-            "description": "Gérez vos préférences d’achat et votre abonnement à la newsletter",
-            "noneSelected": "Aucune sélection",
-            "addMore": "En ajouter plus",
-            "dialogTitle": "Sélectionner des options",
-            "selectCategory": "Sélectionner {{category}}",
-            "selectCategoryDescription": "Choisissez les options qui s’appliquent à vous",
-            "successMessage": "Vos préférences ont été mises à jour.",
-            "errorMessage": "Échec de la mise à jour des préférences. Veuillez réessayer."
-        },
         "common": {
             "save": "Enregistrer",
             "saving": "Enregistrement en cours...",

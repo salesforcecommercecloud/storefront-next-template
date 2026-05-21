@@ -1,0 +1,26 @@
+{
+    "interestsPreferences": {
+        "title": "Interesser og præferencer",
+        "description": "Tilføj dine designinteresser, og administrer dine indkøbspræferencer",
+        "successMessage": "Dine interesser og præferencer blev opdateret.",
+        "errorMessage": "Kunne ikke opdatere. Prøv igen"
+    },
+    "interests": {
+        "title": "Dine interesser",
+        "noneSelected": "Ingen valgte interesser",
+        "addMore": "Tilføj mere",
+        "addInterestsTitle": "Tilføj dine interesser"
+    },
+    "preferences": {
+        "noneSelected": "Ingen valgt",
+        "addMore": "Tilføj mere",
+        "dialogTitle": "Vælg indstillinger",
+        "selectCategory": "Vælg {{category}}"
+    },
+    "common": {
+        "save": "Gem",
+        "saving": "Gemmer ...",
+        "cancel": "Annuller",
+        "edit": "Rediger"
+    }
+}

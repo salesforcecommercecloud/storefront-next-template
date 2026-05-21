@@ -1030,38 +1030,6 @@
                 "hasSpecial": "Pelo menos um caractere especial"
             }
         },
-        "interests": {
-            "title": "Seus interesses",
-            "description": "Adicione seus interesses de design para obter conteúdo personalizado, recomendações e ofertas",
-            "selectedLabel": "Seus interesses selecionados",
-            "noneSelected": "Nenhum interesse selecionado",
-            "noneInCategory": "Nenhum selecionado",
-            "addMore": "Adicionar mais",
-            "addInterestsTitle": "Adicione seus interesses",
-            "dialogTitle": "Selecionar seus interesses",
-            "dialogDescription": "Escolha entre as categorias abaixo para personalizar sua experiência",
-            "selectCategory": "Selecionar {{category}}",
-            "selectCategoryDescription": "Escolha as opções que lhe interessam",
-            "successMessage": "Seus interesses foram atualizados.",
-            "errorMessage": "Falha ao atualizar interesses. Tente novamente."
-        },
-        "interestsPreferences": {
-            "title": "Interesses e preferências",
-            "description": "Adicione seus interesses de design e gerencie suas preferências de compra",
-            "successMessage": "Seus interesses e preferências foram atualizados.",
-            "errorMessage": "Falha ao atualizar. Tente novamente."
-        },
-        "preferences": {
-            "title": "Suas preferências",
-            "description": "Gerencie suas preferências de compra e assinatura de newsletter",
-            "noneSelected": "Nenhum selecionado",
-            "addMore": "Adicionar mais",
-            "dialogTitle": "Selecionar Opções",
-            "selectCategory": "Selecionar {{category}}",
-            "selectCategoryDescription": "Escolha as opções que se aplicam a você",
-            "successMessage": "Suas preferências foram atualizadas.",
-            "errorMessage": "Falha ao atualizar preferências. Tente novamente."
-        },
         "common": {
             "save": "Salvar",
             "saving": "Salvando...",

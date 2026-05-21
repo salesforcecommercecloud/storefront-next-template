@@ -1176,38 +1176,6 @@
                 "hasSpecial": "At least one special character"
             }
         },
-        "interests": {
-            "title": "Your Interests",
-            "description": "Add your design interests to get personalized content, recommendations & offers",
-            "selectedLabel": "Your selected interests",
-            "noneSelected": "No interests selected",
-            "noneInCategory": "None selected",
-            "addMore": "Add more",
-            "addInterestsTitle": "Add Your Interests",
-            "dialogTitle": "Select Your Interests",
-            "dialogDescription": "Choose from the categories below to personalize your experience",
-            "selectCategory": "Select {{category}}",
-            "selectCategoryDescription": "Choose the options that interest you",
-            "successMessage": "Your interests were updated.",
-            "errorMessage": "Failed to update interests. Try again."
-        },
-        "interestsPreferences": {
-            "title": "Interests & Preferences",
-            "description": "Add your design interests and manage your shopping preferences",
-            "successMessage": "Your interests and preferences were updated.",
-            "errorMessage": "Failed to update. Try again."
-        },
-        "preferences": {
-            "title": "Your Preferences",
-            "description": "Manage your shopping preferences and newsletter subscription",
-            "noneSelected": "None selected",
-            "addMore": "Add more",
-            "dialogTitle": "Select Options",
-            "selectCategory": "Select {{category}}",
-            "selectCategoryDescription": "Choose the options that apply to you",
-            "successMessage": "Your preferences were updated.",
-            "errorMessage": "Failed to update preferences. Try again."
-        },
         "common": {
             "save": "Save",
             "saving": "Saving...",

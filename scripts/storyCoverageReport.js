@@ -61,6 +61,9 @@ const EXCLUDED_COMPONENTS = new Set([
     // Thin async wrapper (Suspense/Await) and barrel re-export, no visual rendering of their own
     'product-grid/deferred',
     'product-grid/index',
+    // Extension UITarget wrappers — thin Suspense/Await wrappers that pull deferred data
+    // from `useRouteLoaderData`. Underlying section components have their own stories.
+    'customer-preferences/components/target/preferences-target',
     // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these
     'region/component',
     'region/component-data-context',

@@ -22,6 +22,11 @@
             "installationInstructions": "instructions/install-multiship.mdc",
             "uninstallationInstructions": "instructions/uninstall-multiship.mdc",
             "folder": "multiship"
+        },
+        "SFDC_EXT_CUSTOMER_PREFERENCES": {
+            "name": "(Demo) Customer Preferences",
+            "description": "Enables shoppers to manage interests and shopping preferences from their account page.",
+            "folder": "customer-preferences"
         }
     }
 }

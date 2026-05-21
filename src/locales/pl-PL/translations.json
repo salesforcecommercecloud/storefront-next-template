@@ -1040,38 +1040,6 @@
                 "hasSpecial": "Co najmniej jeden znak specjalny"
             }
         },
-        "interests": {
-            "title": "Twoje zainteresowania",
-            "description": "Dodaj swoje zainteresowania projektowe, aby otrzymywać spersonalizowane treści, rekomendacje i oferty",
-            "selectedLabel": "Wybrane zainteresowania",
-            "noneSelected": "Nie wybrano zainteresowań",
-            "noneInCategory": "Nie wybrano",
-            "addMore": "Dodaj więcej",
-            "addInterestsTitle": "Dodaj zainteresowania",
-            "dialogTitle": "Wybierz zainteresowania",
-            "dialogDescription": "Wybierz jedną z poniższych kategorii, aby spersonalizować swoje doświadczenia",
-            "selectCategory": "Wybierz {{category}}",
-            "selectCategoryDescription": "Wybierz opcje, które Cię interesują",
-            "successMessage": "Twoje zainteresowania zostały zaktualizowane.",
-            "errorMessage": "Nie udało się zaktualizować zainteresowań. Spróbuj ponownie."
-        },
-        "interestsPreferences": {
-            "title": "Zainteresowania i preferencje",
-            "description": "Dodaj swoje zainteresowania projektowe i zarządzaj preferencjami zakupowymi",
-            "successMessage": "Twoje zainteresowania i preferencje zostały zaktualizowane.",
-            "errorMessage": "Nie udało się zaktualizować. Spróbuj ponownie."
-        },
-        "preferences": {
-            "title": "Twoje preferencje",
-            "description": "Zarządzaj preferencjami zakupowymi i subskrypcją newslettera",
-            "noneSelected": "Nie wybrano",
-            "addMore": "Dodaj więcej",
-            "dialogTitle": "Wybierz opcje",
-            "selectCategory": "Wybierz {{category}}",
-            "selectCategoryDescription": "Wybierz opcje, które Cię dotyczą",
-            "successMessage": "Twoje preferencje zostały zaktualizowane.",
-            "errorMessage": "Nie udało się zaktualizować preferencji. Spróbuj ponownie."
-        },
         "common": {
             "save": "Zapisz",
             "saving": "Zapisywanie...",
