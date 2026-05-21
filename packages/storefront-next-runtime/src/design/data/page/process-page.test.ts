@@ -15,7 +15,13 @@
  */
 import { describe, test, expect } from 'vitest';
 import { processPage, type PageProcessorContext } from './process-page';
+import type { AttributeDefinition, AttributeResolutionContext } from './attribute-resolution';
 import type { ShopperExperience } from '@/scapi-client/types';
+
+const testAttrCtx: AttributeResolutionContext = {
+    host: 'https://www.shop.example',
+    resolveMediaUrl: ({ libraryDomain, path }) => `https://www.shop.example/${libraryDomain}${path}`,
+};
 
 type Page = ShopperExperience.schemas['Page'];
 type Component = ShopperExperience.schemas['Component'];
@@ -38,10 +44,7 @@ const makePage = (regions: ShopperExperience.schemas['Region'][] = []): Page => 
     regions,
 });
 
-const regionConfig = (maxComponents: number | null) => ({
-    name: '',
-    componentTypeExclusions: null,
-    componentTypeInclusions: null,
+const regionConfig = (maxComponents?: number) => ({
     maxComponents,
 });
 
@@ -50,8 +53,10 @@ describe('processPage', () => {
         test('keeps components without visibility rules', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner')])]);
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -70,8 +75,10 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('public-banner'), makeComponent('vip-offer')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     'public-banner': {
@@ -93,8 +100,10 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('vip-offer')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: { customerGroups: { vip: true }, campaignQualifiers: {} },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     'vip-offer': {
@@ -112,11 +121,13 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('promo')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: {
                     customerGroups: { vip: true },
                     campaignQualifiers: {},
                 },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     promo: {
@@ -141,11 +152,13 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('promo')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: {
                     customerGroups: {},
                     campaignQualifiers: {},
                 },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     promo: {
@@ -177,8 +190,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -214,6 +229,7 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: {
                     customerGroups: {},
                     campaignQualifiers: {},
@@ -222,11 +238,12 @@ describe('processPage', () => {
                     },
                 },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
-                        dataBinding: null,
+                        dataBinding: undefined,
                         regions: {},
                     },
                     'bound-child': {
@@ -255,8 +272,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     'nested-vip': {
@@ -282,8 +301,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -315,6 +336,7 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: {
                     customerGroups: {},
                     campaignQualifiers: {},
@@ -323,6 +345,7 @@ describe('processPage', () => {
                     },
                 },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -351,8 +374,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -379,8 +404,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -404,8 +431,10 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'fr_FR',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -424,7 +453,7 @@ describe('processPage', () => {
             expect(data.heading).toBe('Français');
         });
 
-        test('leaves component unchanged when no content exists for locale or default', () => {
+        test('leaves component unchanged when no content exists for locale or default locale', () => {
             const page = makePage([
                 makeRegion('main', [
                     makeComponent('banner', {
@@ -434,14 +463,16 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'ja_JP',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
                         content: {
-                            en_US: { heading: 'English' },
+                            fr_FR: { heading: 'French' },
                         },
                         regions: {},
                     },
@@ -463,8 +494,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -483,15 +516,16 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'ja_JP',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
                         content: {
-                            default: { heading: 'Default Heading', subtitle: 'Default Subtitle' },
-                            en_US: { heading: 'English' },
+                            en_US: { heading: 'Default Heading', subtitle: 'Default Subtitle' },
                         },
                         regions: {},
                     },
@@ -508,15 +542,17 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
-                locale: 'en_US',
+                locale: 'fr_FR',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
                         content: {
-                            default: { heading: 'Default Heading', subtitle: 'Default Subtitle' },
-                            en_US: { heading: 'English Heading' },
+                            en_US: { heading: 'Default Heading', subtitle: 'Default Subtitle' },
+                            fr_FR: { heading: 'French Heading' },
                         },
                         regions: {},
                     },
@@ -526,7 +562,7 @@ describe('processPage', () => {
             const result = processPage(page, context);
             const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
             // Locale-specific value overrides default
-            expect(data.heading).toBe('English Heading');
+            expect(data.heading).toBe('French Heading');
             // Default value is preserved for attributes not overridden by locale
             expect(data.subtitle).toBe('Default Subtitle');
         });
@@ -541,6 +577,7 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: {
                     customerGroups: {},
                     campaignQualifiers: {},
@@ -549,6 +586,7 @@ describe('processPage', () => {
                     },
                 },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -579,15 +617,17 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
-                locale: 'en_US',
+                locale: 'fr_FR',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
                         content: {
-                            default: { heading: 'Default' },
-                            en_US: { heading: 'English' },
+                            en_US: { heading: 'Default' },
+                            fr_FR: { heading: 'French' },
                         },
                         regions: {},
                     },
@@ -603,14 +643,15 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'ja_JP',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
                         visibilityRules: [],
                         content: {
-                            default: { heading: 'Default' },
                             en_US: { heading: 'English' },
                         },
                         regions: {},
@@ -627,8 +668,10 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: {
@@ -649,8 +692,10 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('banner'), makeComponent('promo')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     banner: { visibilityRules: [], regions: {} },
@@ -674,8 +719,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: { visibilityRules: [], regions: {} },
@@ -702,8 +749,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -727,13 +776,15 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
                         visibilityRules: [],
-                        regions: { inner: regionConfig(null) },
+                        regions: { inner: regionConfig() },
                     },
                 },
             };
@@ -752,8 +803,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -784,8 +837,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -820,8 +875,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -845,8 +902,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -873,8 +932,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -903,8 +964,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -925,8 +988,10 @@ describe('processPage', () => {
             const page = makePage([makeRegion('main', [makeComponent('public'), makeComponent('vip-only')])]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     public: { visibilityRules: [], regions: {} },
@@ -955,8 +1020,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: null,
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -1012,8 +1079,10 @@ describe('processPage', () => {
             ]);
 
             const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
                 qualifiers: { customerGroups: {}, campaignQualifiers: {} },
                 locale: 'en_US',
+                defaultLocale: 'en_US',
                 pageInfo: { regions: {} },
                 componentInfo: {
                     container: {
@@ -1043,8 +1112,10 @@ describe('processPage', () => {
     test('handles page with no regions', () => {
         const page = makePage();
         const context: PageProcessorContext = {
+            attrCtx: testAttrCtx,
             qualifiers: null,
             locale: 'en_US',
+            defaultLocale: 'en_US',
             pageInfo: { regions: {} },
             componentInfo: {},
         };
@@ -1056,14 +1127,268 @@ describe('processPage', () => {
     test('handles components not in componentInfo', () => {
         const page = makePage([makeRegion('main', [makeComponent('unknown')])]);
         const context: PageProcessorContext = {
+            attrCtx: testAttrCtx,
             qualifiers: null,
             locale: 'en_US',
+            defaultLocale: 'en_US',
             pageInfo: { regions: {} },
             componentInfo: {},
         };
 
         const result = processPage(page, context);
         expect(result.regions?.[0].components).toHaveLength(1);
+    });
+
+    describe('definition-driven attribute composition', () => {
+        const componentTypes = (defs: Record<string, AttributeDefinition>) => ({
+            'type.banner': { attributeDefinitions: defs },
+        });
+
+        test('uses active-locale value when present', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'fr_FR',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentTypes: componentTypes({
+                    heading: { id: 'heading', type: 'string', defaultValue: 'Definition Default' },
+                }),
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            en_US: { heading: 'English Heading' },
+                            fr_FR: { heading: 'Titre Français' },
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.heading).toBe('Titre Français');
+        });
+
+        test('falls back to fallback-locale value when active locale has no value', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'fr_FR',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentTypes: componentTypes({
+                    heading: { id: 'heading', type: 'string', defaultValue: 'Definition Default' },
+                    subtitle: { id: 'subtitle', type: 'string' },
+                }),
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            en_US: { heading: 'English Heading', subtitle: 'English Subtitle' },
+                            fr_FR: { heading: 'Titre Français' },
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.heading).toBe('Titre Français');
+            expect(data.subtitle).toBe('English Subtitle');
+        });
+
+        test('falls back to attrDef.defaultValue when neither locale has a value', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'fr_FR',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentTypes: componentTypes({
+                    heading: { id: 'heading', type: 'string', defaultValue: 'Definition Default' },
+                }),
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: { en_US: {}, fr_FR: {} },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.heading).toBe('Definition Default');
+        });
+
+        test('omits the key when no value at any priority', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'fr_FR',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentTypes: componentTypes({
+                    heading: { id: 'heading', type: 'string' },
+                }),
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: { en_US: {}, fr_FR: {} },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data).not.toHaveProperty('heading');
+        });
+
+        test('drops attributes not declared in the type definitions', () => {
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('banner', {
+                        data: { strayKey: 'should-be-dropped' } as unknown as Component['data'],
+                    }),
+                ]),
+            ]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'en_US',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentTypes: componentTypes({
+                    heading: { id: 'heading', type: 'string', defaultValue: 'h' },
+                }),
+                componentInfo: {
+                    banner: { visibilityRules: [], regions: {} },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data).toEqual({ heading: 'h' });
+            expect(data).not.toHaveProperty('strayKey');
+        });
+
+        test('preserves explicit null/empty-string overrides over defaultValue', () => {
+            // An attribute set to `null` or `""` in locale content is an
+            // intentional value, not "missing". It must win over the
+            // attribute-definition's defaultValue.
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'en_US',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentTypes: componentTypes({
+                    a: { id: 'a', type: 'string', defaultValue: 'def-a' },
+                    b: { id: 'b', type: 'string', defaultValue: 'def-b' },
+                }),
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            en_US: { a: null, b: '' },
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.a).toBeNull();
+            expect(data.b).toBe('');
+        });
+
+        test('data binding still overrides composed attribute values', () => {
+            const page = makePage([makeRegion('main', [makeComponent('banner')])]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: {
+                    customerGroups: {},
+                    campaignQualifiers: {},
+                    dataBindings: {
+                        content_asset: { 'asset-1': { title: 'Bound Title' } },
+                    },
+                },
+                locale: 'en_US',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentTypes: componentTypes({
+                    heading: { id: 'heading', type: 'string', defaultValue: 'Definition Default' },
+                }),
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: { en_US: { heading: 'Locale Heading' } },
+                        dataBinding: {
+                            expressions: { heading: 'content_asset.title' },
+                            contexts: [{ type: 'content_asset', id: 'asset-1' }],
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.heading).toBe('Bound Title');
+        });
+
+        test('falls back to legacy merge when no componentTypes are supplied', () => {
+            // No `componentTypes` map present. The processor should still
+            // produce something sensible — the legacy merge of node.data +
+            // defaultContent + localeContent.
+            const page = makePage([
+                makeRegion('main', [
+                    makeComponent('banner', {
+                        data: { fromNode: 'n', heading: 'Fallback' } as unknown as Component['data'],
+                    }),
+                ]),
+            ]);
+
+            const context: PageProcessorContext = {
+                attrCtx: testAttrCtx,
+                qualifiers: null,
+                locale: 'fr_FR',
+                defaultLocale: 'en_US',
+                pageInfo: { regions: {} },
+                componentInfo: {
+                    banner: {
+                        visibilityRules: [],
+                        content: {
+                            en_US: { heading: 'English Heading' },
+                            fr_FR: { heading: 'Titre Français' },
+                        },
+                        regions: {},
+                    },
+                },
+            };
+
+            const result = processPage(page, context);
+            const data = result.regions?.[0].components?.[0].data as Record<string, unknown>;
+            expect(data.fromNode).toBe('n');
+            expect(data.heading).toBe('Titre Français');
+        });
     });
 
     test('does not mutate the original page object', () => {
@@ -1074,8 +1399,10 @@ describe('processPage', () => {
         const page = makePage([mainRegion]);
 
         const context: PageProcessorContext = {
+            attrCtx: testAttrCtx,
             qualifiers: { customerGroups: {}, campaignQualifiers: {} },
             locale: 'en_US',
+            defaultLocale: 'en_US',
             pageInfo: { regions: {} },
             componentInfo: {
                 container: {

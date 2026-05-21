@@ -15,17 +15,17 @@
  */
 
 /**
- * Image type with metadata and focal point information
- * Used by components that display images with advanced positioning
+ * Image type with metadata and focal point information.
+ * Used by components that display images with advanced positioning.
  */
 export type Image = {
     url: string;
-    meta_data?: {
-        height?: string;
-        width?: string;
+    metaData?: {
+        height?: number | string;
+        width?: number | string;
     };
-    focal_point?: {
-        x?: string;
-        y?: string;
+    focalPoint?: {
+        x?: number | string;
+        y?: number | string;
     };
 };

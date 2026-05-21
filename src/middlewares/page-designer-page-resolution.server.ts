@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// eslint-disable no-console
 import type { MiddlewareFunction, RouterContextProvider } from 'react-router';
 import {
     resolvePage,
+    RequiredError,
     type ManifestStorage,
     type PageManifest,
     type IdentifierType,
     type ContextResolver,
     type SiteManifest,
+    type QualifierContext,
 } from '@salesforce/storefront-next-runtime/design/data';
 import {
     DataStore,
@@ -33,27 +36,52 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import type { AppConfig } from '@/types/config';
-import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
+import { getScapiMiddlewareRegistry } from '@/lib/scapi-middleware';
 import { getLogger } from '@/lib/logger.server';
 import type { Logger } from '@/lib/logger';
+import { createAttributeResolutionContext } from '@/lib/page-designer/attribute-resolution-context';
+import { getSiteUrlConfig } from '@/middlewares/site-url-config.server';
 import { createInflate } from 'node:zlib';
-import { Readable } from 'node:stream';
-import { json } from 'node:stream/consumers';
+import { Readable, Transform } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 /**
  * URL path pattern matching shopperExperience `getPage` requests.
  *
- * Anchored to the end of the pathname (`$`) so it only matches
- * `/pages/{pageId}` as the final path segment. This avoids false positives
- * from other shopper-experience endpoints (e.g. `/pages` without a page ID)
- * or from organization IDs that happen to contain the word "pages".
+ * Matches both `/pages` and `/pages/{pageId}` at the end of the pathname (`$`).
+ * The page-ID capture group is optional — when absent (bare `/pages` path),
+ * `match[1]` is `undefined` and the resolved `pageId` is an empty string.
+ * Anchoring to `$` avoids false positives from organization IDs that happen
+ * to contain the word "pages".
  */
-const GET_PAGE_PATH_RE = /\/pages\/([^/?]+)$/;
+const GET_PAGE_PATH_RE = /\/pages(?:\/([^/?]+))?$/;
+
+/**
+ * Presence-only response header set when a Page Designer `getPage`
+ * response was synthesized from the MRT manifest cache by
+ * {@code resolveGetPageRequest}. Absent when the request fell through to
+ * SCAPI and the response came from ECOM. Mirrors the cache-status header
+ * convention (`X-Cache-Hit`, `Cf-Cache-Status`) so observability tooling
+ * can tell at a glance which path served the response.
+ */
+const PAGE_MANIFEST_HIT_HEADER = 'x-page-manifest-hit';
+
+/**
+ * When `SFCC_PD_PAGE_RESOLUTION_DEBUG=true` is set, the middleware emits
+ * additional debug logs containing the full resolved page response and
+ * the raw page/site manifests retrieved from KVS. These payloads can be
+ * very large — far too noisy for the standard debug log — so they're
+ * gated behind an explicit env var that's only flipped on during
+ * troubleshooting.
+ *
+ * Resolved once at module load: env vars don't change per-request and
+ * re-reading `process.env` on every page is wasteful.
+ */
+const PAGE_RESOLUTION_DEBUG = process.env.SFCC_PD_PAGE_RESOLUTION_DEBUG === 'true';
 
 type ManifestType = 'page' | 'site';
-type ManifestWrapperKey<TType extends ManifestType> = TType extends 'page' ? 'compressedData' : 'data';
-type ManifestValue<TType extends ManifestType> = {
-    [K in ManifestWrapperKey<TType>]: string;
+type ManifestValue = {
+    compressedData: string;
 };
 type DataStoreClient = Pick<DataStore, 'getEntry'>;
 
@@ -98,16 +126,95 @@ class QualifierResolveError extends Error {
 export const pageDesignerResolutionMiddleware: MiddlewareFunction<Response> = async ({ context }, next) => {
     const config = getConfig<AppConfig>(context);
 
+    const registry = getScapiMiddlewareRegistry(context);
+
     if (config.features.mrtBasedPageDesignerResolution) {
-        const scapiMiddlewares = context.get(scapiMiddlewareContext);
-        scapiMiddlewares.push({
+        registry.register('page-designer-page-resolution', {
             clients: ['shopperExperience'],
             factory: createPageResolutionMiddleware,
+        });
+    } else if (PAGE_RESOLUTION_DEBUG) {
+        // Feature flag off but debug telemetry on: register a passthrough
+        // SCAPI middleware that times the upstream getPage call and logs
+        // the response body. Used to compare ECOM-resolved output against
+        // MRT-resolved output during parity troubleshooting.
+        registry.register('page-designer-page-resolution-debug', {
+            clients: ['shopperExperience'],
+            factory: createGetPageDebugMiddleware,
         });
     }
 
     return next();
 };
+
+/**
+ * SCAPI middleware factory that times {@code shopperExperience.getPage}
+ * round trips and logs the parsed response body. Only registered when the
+ * feature flag is off and `SFCC_PD_PAGE_RESOLUTION_DEBUG=true` — keeps the
+ * payload off the standard debug log unless explicitly opted in.
+ *
+ * Concurrent in-flight requests are kept separate via a WeakMap keyed by
+ * the request object, so interleaved page resolutions don't clobber each
+ * other's start-time markers.
+ */
+function createGetPageDebugMiddleware(
+    context: RouterContextProvider | Readonly<RouterContextProvider>
+): Middleware | null {
+    const logger = getLogger(context);
+    const startTimes = new WeakMap<Request, number>();
+
+    return {
+        onRequest: ({ request }) => {
+            if (processGetPageRequest(request) != null) {
+                startTimes.set(request, performance.now());
+            }
+        },
+        onResponse: async ({ request, response }) => {
+            if (processGetPageRequest(request) == null) {
+                return response;
+            }
+
+            const startTime = startTimes.get(request);
+            const duration = startTime != null ? performance.now() - startTime : undefined;
+            // Clone before reading — the consumer downstream still needs
+            // the original response body.
+            const cloned = response.clone();
+            let body: unknown;
+            try {
+                body = await cloned.json();
+            } catch (error) {
+                logger.warn('[PageResolutionMiddleware] ECOM page resolution: failed to parse response body', {
+                    error,
+                });
+                return response;
+            }
+
+            logger.debug('[PageResolutionMiddleware] ECOM page resolution', {
+                duration,
+                response: body,
+            });
+
+            return response;
+        },
+    };
+}
+
+function processGetPageRequest(request: Request): { url: URL; pageId?: string } | undefined {
+    if (request.method !== 'GET') return;
+
+    const url = new URL(request.url);
+    const match = url.pathname.match(GET_PAGE_PATH_RE);
+
+    if (!match) return;
+
+    // Design/preview mode requests must always reach SCAPI for live content
+    if (url.searchParams.has('mode') || url.searchParams.has('pdToken')) return;
+
+    return {
+        pageId: match[1] ? decodeURIComponent(match[1]) : '',
+        url,
+    };
+}
 
 /**
  * SCAPI middleware factory for Page Designer page resolution.
@@ -124,7 +231,8 @@ function createPageResolutionMiddleware(
     const siteCtx = context.get(siteContext);
     const { i18next } = getTranslation(context);
     const siteId = siteCtx?.site.id ?? config.defaultSiteId;
-    const locale = i18next.language ?? config.i18n.fallbackLng;
+    const locale = toManifestLocale(i18next.language ?? config.i18n.fallbackLng);
+    const defaultLocale = toManifestLocale(config.i18n.fallbackLng);
     const logger = getLogger(context);
     const onError = getErrorHandler(logger);
     const dataStore = DataStore.getDataStore();
@@ -133,21 +241,29 @@ function createPageResolutionMiddleware(
         async onRequest({ request }) {
             const metrics: Metrics = {};
 
-            const response = await resolveGetPageRequest({
-                metrics,
-                request,
-                context,
-                dataStore,
-                siteId,
-                locale,
-                onError,
-                clients,
-                logger,
-            });
+            try {
+                const response = await resolveGetPageRequest({
+                    metrics,
+                    request,
+                    context,
+                    dataStore,
+                    siteId,
+                    locale,
+                    defaultLocale,
+                    onError,
+                    clients,
+                    logger,
+                });
 
-            logMetrics(logger, metrics);
-
-            return response;
+                return response;
+            } catch (error: unknown) {
+                // Any error here was not expected and was not already handled.
+                // Log it and then throw it to be handled by the error boundary.
+                logger.error('[PageResolutionMiddleware] Unexpected error during page resolution', { error });
+                throw error;
+            } finally {
+                logMetrics(logger, metrics);
+            }
         },
     };
 }
@@ -175,31 +291,91 @@ interface Metrics {
     siteManifestRetrievalEnd?: number;
     siteManifestUnpackStart?: number;
     siteManifestUnpackEnd?: number;
+    parameters?: {
+        mediaHostPrefix?: string;
+        locale: string;
+        defaultLocale: string;
+        pageId?: string;
+        aspectType?: string;
+        categoryId?: string;
+        productId?: string;
+        path: string;
+        search: string;
+    };
+    /**
+     * Compressed byte size of the page manifest as stored in the Data Store
+     * (length of the base64-decoded `compressedData` blob). O(1) to compute.
+     */
+    pageManifestCompressedBytes?: number;
+    /**
+     * Uncompressed byte size of the page manifest, accumulated by tapping
+     * the inflate stream with a pass-through counter. Avoids the
+     * `JSON.stringify(parsed).length` anti-pattern, which would walk the
+     * full object graph after parse.
+     */
+    pageManifestUncompressedBytes?: number;
+    /** Compressed byte size of the site manifest. See {@link pageManifestCompressedBytes}. */
+    siteManifestCompressedBytes?: number;
+    /** Uncompressed byte size of the site manifest. See {@link pageManifestUncompressedBytes}. */
+    siteManifestUncompressedBytes?: number;
+    /**
+     * Data Store key the page manifest was looked up under. Captured for
+     * troubleshooting — pairs with the corresponding compressed/uncompressed
+     * byte counts so it's clear which key produced the observed payload.
+     */
+    pageManifestKey?: string;
+    /** Data Store key the site manifest was looked up under. See {@link pageManifestKey}. */
+    siteManifestKey?: string;
     resolutionParameters?: { id: string; identifierType: IdentifierType; aspectType?: string; locale: string };
     resolutionResult?: ShopperExperience.schemas['Page'] | null;
+    resolvedContext?: QualifierContext | null;
 }
 
 /**
- * Computes a duration from a sequence of values using left-to-right subtraction.
+ * Computes a duration from a sequence of values using left-to-right subtraction,
+ * skipping any `null` or `undefined` entries.
  *
  * For two arguments `(end, start)` this returns `end - start`.
  * For more arguments this returns `first - second - third - ...`, which is
  * used to derive the runtime processing overhead by subtracting sub-operation
  * durations from the total.
  *
- * Returns `undefined` if any value is missing, preventing `NaN` from
- * propagating into logs.
+ * Returns `undefined` if fewer than two valid numbers remain after filtering,
+ * since a single value cannot form a meaningful duration.
  */
 function getDuration(...values: (number | undefined)[]): number | undefined {
-    if (values.length === 0 || values[0] == null) return undefined;
+    const defined = values.filter((v): v is number => v != null);
 
-    let result = values[0];
-    for (let i = 1; i < values.length; i++) {
-        if (values[i] == null) return undefined;
+    if (defined.length < 2) return undefined;
 
-        result -= values[i] as number;
-    }
-    return result;
+    return defined.reduce((result, v) => result - v);
+}
+
+/**
+ * Returns a log-safe copy of the resolved qualifier context.
+ *
+ * `campaignQualifiers` and `customerGroups` are small scalar maps and are
+ * included as-is. `dataBindings` can contain arbitrary page-content payloads
+ * that may be very large, so each {@link ResolvedDataBinding} is replaced with
+ * just its field names — preserving the `type → id` structure for
+ * observability without emitting content values.
+ */
+function sanitizeResolvedContext(
+    context: QualifierContext
+): Omit<QualifierContext, 'dataBindings'> & { dataBindings?: Record<string, Record<string, string[]>> } {
+    const { dataBindings, ...rest } = context;
+
+    if (!dataBindings) return rest;
+
+    return {
+        ...rest,
+        dataBindings: Object.fromEntries(
+            Object.entries(dataBindings).map(([type, bindingsById]) => [
+                type,
+                Object.fromEntries(Object.entries(bindingsById).map(([id, binding]) => [id, Object.keys(binding)])),
+            ])
+        ),
+    };
 }
 
 /**
@@ -207,10 +383,12 @@ function getDuration(...values: (number | undefined)[]): number | undefined {
  * structured debug log entry.
  *
  * No-ops when resolution was never attempted (i.e. the request did not
- * match a `getPage` path or was skipped for design/preview mode).
+ * match a `getPage` path or was skipped for design/preview mode), or when
+ * resolution started but failed before completing (so partial timings
+ * aren't emitted alongside the unexpected-error log).
  */
 function logMetrics(logger: Logger, metrics: Metrics): void {
-    if (metrics.resolutionStart == null) return;
+    if (metrics.resolutionStart == null || metrics.resolutionEnd == null) return;
 
     const resolutionDuration = getDuration(metrics.resolutionEnd, metrics.resolutionStart);
     const contextResolutionDuration = getDuration(metrics.contextResolutionEnd, metrics.contextResolutionStart);
@@ -226,7 +404,10 @@ function logMetrics(logger: Logger, metrics: Metrics): void {
     const siteManifestUnpackDuration = getDuration(metrics.siteManifestUnpackEnd, metrics.siteManifestUnpackStart);
 
     // Runtime processing = total resolution minus time spent in sub-operations.
-    // Only defined when all component durations are available.
+    // Missing sub-operation durations (e.g. site manifest never fetched) are
+    // filtered out by getDuration, which is correct: an operation that didn't
+    // happen contributes zero time. Defined whenever resolutionDuration plus
+    // at least one sub-operation duration are available.
     const runtimeProcessingDuration = getDuration(
         resolutionDuration,
         contextResolutionDuration,
@@ -236,10 +417,12 @@ function logMetrics(logger: Logger, metrics: Metrics): void {
         siteManifestUnpackDuration
     );
 
-    logger.debug('[page-resolution-middleware] page resolution', {
+    logger.debug('[PageResolutionMiddleware] page resolution', {
         resolvedPageId: metrics.resolutionResult?.id,
         resolvedPageTypeId: metrics.resolutionResult?.typeId,
-        parameters: metrics.resolutionParameters,
+        resolvedContext: metrics.resolvedContext ? sanitizeResolvedContext(metrics.resolvedContext) : null,
+        resolvedParameters: metrics.resolutionParameters,
+        parameters: metrics.parameters,
         metrics: {
             resolutionDuration,
             contextResolutionDuration,
@@ -248,6 +431,12 @@ function logMetrics(logger: Logger, metrics: Metrics): void {
             pageManifestUnpackDuration,
             siteManifestUnpackDuration,
             runtimeProcessingDuration,
+            pageManifestKey: metrics.pageManifestKey,
+            siteManifestKey: metrics.siteManifestKey,
+            pageManifestCompressedBytes: metrics.pageManifestCompressedBytes,
+            pageManifestUncompressedBytes: metrics.pageManifestUncompressedBytes,
+            siteManifestCompressedBytes: metrics.siteManifestCompressedBytes,
+            siteManifestUncompressedBytes: metrics.siteManifestUncompressedBytes,
         },
     });
 }
@@ -265,10 +454,12 @@ function logMetrics(logger: Logger, metrics: Metrics): void {
  */
 async function resolveGetPageRequest({
     request,
+    context,
     dataStore,
     clients,
     siteId,
     locale,
+    defaultLocale,
     metrics,
     onError,
     logger,
@@ -278,33 +469,66 @@ async function resolveGetPageRequest({
     dataStore: DataStoreClient;
     siteId: string;
     locale: string;
+    defaultLocale: string;
     metrics: Metrics;
     onError: (error: unknown) => void;
     clients: Clients;
     logger: Logger;
 }): Promise<Response | undefined> {
-    if (request.method !== 'GET') return;
+    const { pageId, url } = processGetPageRequest(request) ?? {};
 
-    const url = new URL(request.url);
-    const match = url.pathname.match(GET_PAGE_PATH_RE);
-    if (!match) return;
+    if (!url) return;
 
-    // Design/preview mode requests must always reach SCAPI for live content
-    if (url.searchParams.has('mode') || url.searchParams.has('pdToken')) return;
+    // Lazy lookup — the site URL config Data Store entry is only fetched
+    // here, after we've confirmed this is a page request we'd actually
+    // resolve. Non-page traffic (PDPs, account, search) never pays the
+    // round trip.
+    const mediaHostPrefix = (await getSiteUrlConfig(context))?.mediaHostPrefix;
+
+    // Without the ECOM-synced media host prefix we'd stamp media URLs at the
+    // SCAPI request origin (the API Gateway hostname in MRT), which the
+    // browser can't load. Fall through to SCAPI so it can resolve the page
+    // with correct URLs instead.
+    if (!mediaHostPrefix) {
+        logger.warn('[PageResolutionMiddleware] mediaHostPrefix not available; falling back to SCAPI page resolution', {
+            siteId,
+            pageId,
+            path: url.pathname,
+        });
+        return;
+    }
 
     metrics.resolutionStart = performance.now();
+    metrics.parameters = {
+        locale,
+        defaultLocale,
+        pageId,
+        mediaHostPrefix,
+        path: url.pathname,
+        search: url.search,
+    };
 
-    const pageId = decodeURIComponent(match[1]);
     const aspectAttributes = parseAspectAttributes(url, logger);
+
+    Object.assign(metrics.parameters, {
+        aspectType: aspectAttributes.aspectType,
+        categoryId: aspectAttributes.categoryId,
+        productId: aspectAttributes.productId,
+    });
+
     const parameters = getPageResolutionParams({
         metrics,
         clients,
         dataStore,
         siteId,
         locale,
+        defaultLocale,
         pageId,
         aspectAttributes,
         onError,
+        request,
+        mediaHostPrefix,
+        logger,
     });
 
     metrics.resolutionParameters = {
@@ -321,7 +545,17 @@ async function resolveGetPageRequest({
     if (resolved) {
         metrics.resolutionResult = resolved;
 
-        return Response.json(resolved);
+        // Fully resolved page is large — too noisy for the standard debug
+        // stream. Gated behind SFCC_PD_PAGE_RESOLUTION_DEBUG so it's only
+        // emitted when troubleshooting the manifest-vs-SCAPI parity.
+        if (PAGE_RESOLUTION_DEBUG) {
+            logger.debug('[PageResolutionMiddleware] resolved page response', {
+                pageId: resolved.id,
+                page: resolved,
+            });
+        }
+
+        return Response.json(resolved, { headers: { [PAGE_MANIFEST_HIT_HEADER]: '1' } });
     }
 }
 
@@ -340,7 +574,7 @@ function parseAspectAttributes(
     try {
         return JSON.parse(raw) as { aspectType?: string; categoryId?: string; productId?: string };
     } catch {
-        logger.warn('[Page Designer] Failed to parse aspect attributes', { raw });
+        logger.warn('[PageResolutionMiddleware] Failed to parse aspect attributes', { raw });
         return {};
     }
 }
@@ -356,24 +590,39 @@ function getPageResolutionParams({
     dataStore,
     siteId,
     locale,
+    defaultLocale,
     pageId,
     aspectAttributes,
     metrics,
     onError,
     clients,
+    mediaHostPrefix,
+    logger,
 }: {
     dataStore: DataStoreClient;
     siteId: string;
     locale: string;
-    pageId: string;
+    defaultLocale: string;
+    pageId?: string;
     aspectAttributes: { aspectType?: string; categoryId?: string; productId?: string };
     metrics: Metrics;
     onError: (error: unknown) => void;
     clients: Clients;
+    request: Request;
+    /**
+     * Scheme + host from the ECOM-synced
+     * {@code SiteUrlConfigDalEntryProvider} DAL entry — required. The
+     * caller (`resolveGetPageRequest`) guards on its presence and falls
+     * through to SCAPI when missing, so by the time this runs the value is
+     * guaranteed to be defined.
+     */
+    mediaHostPrefix: string;
+    /** Logger used by the attribute resolver's onWarn handler. */
+    logger: Logger;
 }): Parameters<typeof resolvePage>[0] {
     const { aspectType, categoryId, productId } = aspectAttributes;
     let identifierType: IdentifierType = 'page';
-    let id: string = pageId;
+    let id: string = pageId ?? '';
 
     if (productId) {
         identifierType = 'product';
@@ -383,14 +632,49 @@ function getPageResolutionParams({
         id = categoryId;
     }
 
+    // Build the per-request attribute-resolution context. The host comes
+    // from the ECOM-synced media-host-prefix DAL entry so manifest-resolved
+    // URLs match what `mediaFile.getAbsURL()` would have produced on ECOM.
+    // `onWarn` routes the resolver's recoverable-warning stream through the
+    // request-scoped structured logger so malformed manifest envelopes
+    // surface in observability instead of getting lost on stderr.
+    const attrCtx = createAttributeResolutionContext({
+        host: mediaHostPrefix,
+        siteId,
+        locale,
+        onWarn: (warning) => {
+            logger.warn(`[PageResolutionMiddleware] attribute resolution: ${warning.message}`, {
+                kind: warning.kind,
+                typeId: warning.typeId,
+                attrId: warning.attrId,
+                attrType: warning.attrType,
+            });
+        },
+    });
+
     return {
         id,
         identifierType,
         aspectType,
         locale,
-        manifestStorage: getPageManifestStorage({ dataStore, siteId, onError, metrics }),
+        defaultLocale,
+        attrCtx,
+        manifestStorage: getPageManifestStorage({ dataStore, siteId, onError, metrics, logger }),
         contextResolver: getContextResolver({ onError, metrics, clients }),
     };
+}
+
+/** Returns `true` when an array contains at least one element. */
+function isPopulated(arr: unknown[] | null | undefined): boolean {
+    return Array.isArray(arr) && arr.length > 0;
+}
+
+/**
+ * Converts a BCP 47 locale tag (e.g. `"en-GB"`) to the underscore-separated
+ * format used as keys in Page Designer manifests (e.g. `"en_GB"`).
+ */
+function toManifestLocale(locale: string): string {
+    return locale.replaceAll('-', '_');
 }
 
 /**
@@ -398,9 +682,11 @@ function getPageResolutionParams({
  * Experience `qualifiers/resolve` endpoint.
  *
  * Forwards the resolution context (campaign qualifiers, customer groups,
- * and data bindings) and returns the resolved result. If the call fails,
- * the error is wrapped in a {@link QualifierResolveError} and passed to
- * `onError`; the resolver then returns `null`.
+ * and data bindings) and returns the resolved result. If none of the context
+ * arrays contain any values the resolver returns `null` immediately without
+ * making a network request. If the call fails, the error is wrapped in a
+ * {@link QualifierResolveError} and passed to `onError`; the resolver then
+ * returns `null`.
  */
 function getContextResolver({
     onError,
@@ -412,21 +698,27 @@ function getContextResolver({
     clients: Clients;
 }): ContextResolver {
     return async (resolutionContext) => {
+        const { campaignQualifiers, customerGroups, dataBindings } = resolutionContext;
+
+        if (!isPopulated(campaignQualifiers) && !isPopulated(customerGroups) && !isPopulated(dataBindings)) {
+            return null;
+        }
+
         metrics.contextResolutionStart = performance.now();
 
         try {
             const result = await clients.shopperExperience.resolveQualifiers({
                 params: {},
-                body: {
-                    campaignQualifiers: resolutionContext.campaignQualifiers,
-                    dataBindings: resolutionContext.dataBindings,
-                    customerGroups: resolutionContext.customerGroups,
-                },
+                body: { campaignQualifiers, dataBindings, customerGroups },
             });
+
+            metrics.resolvedContext = result.data;
 
             return result.data;
         } catch (error: unknown) {
             onError(new QualifierResolveError(error));
+
+            metrics.resolvedContext = null;
 
             return null;
         } finally {
@@ -439,22 +731,24 @@ function getContextResolver({
  * Creates a {@link ManifestStorage} backed by the MRT Data Store.
  *
  * Provides methods to retrieve page-level and site-level manifests using
- * Data Store keys in the format `site:{siteId}:page:{pageId}:MANIFEST` and
- * `site:{siteId}:MANIFEST`. Entries are base64-encoded and deflate-compressed;
- * they are decoded and decompressed via {@link getAndUnpackDataStoreEntry}.
- * Data Store errors (not-found, unavailable, service) and unpack errors are
- * caught and forwarded to `onError`, resulting in a `null` return.
+ * Data Store keys derived from {@link getStorageKey}. Both manifest types are
+ * base64-encoded and deflate-compressed; they are decoded and decompressed via
+ * {@link getAndUnpackDataStoreEntry}. Data Store errors (not-found, unavailable,
+ * service) and unpack errors are caught and forwarded to `onError`, resulting in
+ * a `null` return.
  */
 function getPageManifestStorage({
     dataStore,
     siteId,
     onError,
     metrics,
+    logger,
 }: {
     dataStore: DataStoreClient;
     siteId: string;
     onError: (error: unknown) => void;
     metrics: Metrics;
+    logger: Logger;
 }): ManifestStorage {
     async function getManifest(): Promise<SiteManifest | null>;
     async function getManifest(id: string): Promise<PageManifest | null>;
@@ -462,8 +756,24 @@ function getPageManifestStorage({
         const key = getStorageKey(siteId, id);
         const manifestType = id ? 'page' : 'site';
 
+        if (manifestType === 'page') {
+            metrics.pageManifestKey = key;
+        } else {
+            metrics.siteManifestKey = key;
+        }
+
         try {
-            return await getAndUnpackDataStoreEntry(dataStore, key, manifestType, metrics);
+            const result = await getAndUnpackDataStoreEntry(dataStore, key, manifestType, metrics);
+            // Manifests are large structured payloads — too noisy for the
+            // standard debug stream. Gated behind SFCC_PD_PAGE_RESOLUTION_DEBUG
+            // so it's only emitted when troubleshooting.
+            if (PAGE_RESOLUTION_DEBUG) {
+                logger.debug(`[PageResolutionMiddleware] ${manifestType} manifest from KVS`, {
+                    key,
+                    manifest: result,
+                });
+            }
+            return result;
         } catch (error: unknown) {
             onError(error);
 
@@ -491,36 +801,64 @@ async function getAndUnpackDataStoreEntry(
 ): Promise<PageManifest | SiteManifest> {
     metrics[`${manifestType}ManifestRetrievalStart`] = performance.now();
 
-    const entry = (await dataStore.getEntry(key)) as { value?: ManifestValue<typeof manifestType> } | undefined;
-
-    metrics[`${manifestType}ManifestRetrievalEnd`] = performance.now();
+    let entry: { value?: ManifestValue } | undefined;
+    try {
+        entry = (await dataStore.getEntry(key)) as { value?: ManifestValue } | undefined;
+    } finally {
+        metrics[`${manifestType}ManifestRetrievalEnd`] = performance.now();
+    }
 
     if (!entry) {
         throw new DataStoreNotFoundError(`Data store entry not found for key: ${key}`);
     }
 
     try {
-        let stream: Readable;
-
         metrics[`${manifestType}ManifestUnpackStart`] = performance.now();
 
-        if (!entry.value) {
+        if (!entry.value?.compressedData) {
             // This will get caught so the error message doesn't
             // really matter here.
             throw new Error('Data store entry is blank');
         }
 
-        if (manifestType === 'page') {
-            const value = entry.value.compressedData;
+        // Compressed-bytes counter — O(1) byte length of the base64 string.
+        metrics[`${manifestType}ManifestCompressedBytes`] = Buffer.byteLength(entry.value.compressedData, 'base64');
 
-            stream = Readable.from(Buffer.from(value, 'base64')).pipe(createInflate());
-        } else {
-            const value = entry.value.data;
+        // Uncompressed-bytes counter — pass-through Transform that increments
+        // a counter per chunk. This avoids `JSON.stringify(parsed).length`,
+        // which would walk the full object graph after parse and add real
+        // time on large manifests.
+        let inflatedBytes = 0;
+        const counter = new Transform({
+            transform(chunk: Buffer, _enc, cb) {
+                inflatedBytes += chunk.length;
+                cb(null, chunk);
+            },
+        });
 
-            stream = Readable.from(Buffer.from(value, 'utf-8'));
-        }
+        // `pipeline` propagates errors through the chain (inflate emits
+        // 'error' on invalid data; bare `.pipe(...)` chains swallow it,
+        // leaving an uncaught exception). We collect the JSON text into
+        // a buffer so the consumer doesn't need to read a half-broken
+        // stream after an error.
+        const chunks: Buffer[] = [];
+        const collector = new Transform({
+            transform(chunk: Buffer, _enc, cb) {
+                chunks.push(chunk);
+                cb();
+            },
+        });
 
-        return (await json(stream)) as PageManifest | SiteManifest;
+        await pipeline(
+            Readable.from(Buffer.from(entry.value.compressedData, 'base64')),
+            createInflate(),
+            counter,
+            collector
+        );
+
+        metrics[`${manifestType}ManifestUncompressedBytes`] = inflatedBytes;
+
+        return JSON.parse(Buffer.concat(chunks).toString('utf-8')) as PageManifest | SiteManifest;
     } catch (error: unknown) {
         throw new DataStoreEntryUnpackError(key, error);
     } finally {
@@ -573,25 +911,27 @@ function getErrorHandler(logger: Logger): (error: unknown) => void {
     return (error: unknown) => {
         if (error instanceof DataStoreNotFoundError) {
             // Expected when a manifest hasn't been published yet — not necessarily a bug.
-            logger.warn('[PageDesigner] Data store entry not found', { message: error.message });
+            logger.warn('[PageResolutionMiddleware] Data store entry not found', { message: error.message });
         } else if (error instanceof DataStoreUnavailableError) {
-            logger.error('[PageDesigner] Data store unavailable', { message: error.message });
+            logger.error('[PageResolutionMiddleware] Data store unavailable', { message: error.message });
         } else if (error instanceof DataStoreServiceError) {
-            logger.error('[PageDesigner] Data store service error', { message: error.message });
+            logger.error('[PageResolutionMiddleware] Data store service error', { message: error.message });
         } else if (error instanceof DataStoreEntryUnpackError) {
-            logger.error('[PageDesigner] Failed to unpack data store entry', {
+            logger.error('[PageResolutionMiddleware] Failed to unpack data store entry', {
                 message: error.message,
                 cause: error.cause,
             });
         } else if (error instanceof QualifierResolveError) {
-            logger.error('[PageDesigner] Failed to resolve qualifiers', {
+            logger.error('[PageResolutionMiddleware] Failed to resolve qualifiers', {
                 message: error.message,
                 cause: error.cause,
             });
-        } else {
-            logger.error('[PageDesigner] Unexpected error during page resolution', {
-                error: String(error),
+        } else if (error instanceof RequiredError) {
+            logger.error('[PageResolutionMiddleware] Required parameter missing during page resolution', {
+                message: error.message,
             });
+        } else {
+            throw error;
         }
     };
 }

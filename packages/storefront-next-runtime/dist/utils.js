@@ -29,34 +29,102 @@ function createDataStoreMiddleware(options) {
 	const { entryKey, context: contextKey, onUnavailable = "throw", fallbackValue } = options;
 	const transform = options.transform ?? ((value) => value);
 	const dataStoreMiddleware = async ({ context }, next) => {
-		const resolvedEntryKey = typeof entryKey === "function" ? entryKey(context) : entryKey;
-		try {
-			const entry = await getDataStoreEntry(resolvedEntryKey);
-			if (!entry?.value || typeof entry.value !== "object") {
-				console.warn(`Data store entry '${resolvedEntryKey}' not found or invalid.`);
-				return next();
-			}
-			context.set(contextKey, transform(entry.value));
-		} catch (error) {
-			if (error instanceof DataStoreUnavailableError) {
-				if (onUnavailable === "fallback" && typeof fallbackValue !== "undefined") {
-					const resolvedFallbackValue = typeof fallbackValue === "function" ? fallbackValue(context) : fallbackValue;
-					context.set(contextKey, resolvedFallbackValue);
-					console.warn(`Data store unavailable for '${resolvedEntryKey}'. Using configured fallback value.`);
-					return next();
-				}
-				throw new Error("Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.");
-			}
-			if (error instanceof DataStoreNotFoundError) {
-				console.warn(`Data store entry '${resolvedEntryKey}' not found.`);
-				return next();
-			}
-			if (error instanceof DataStoreServiceError) throw new Error(`Data store request failed for '${resolvedEntryKey}'.`);
-			throw error;
-		}
+		const result = await loadDataStoreEntry({
+			entryKey: typeof entryKey === "function" ? entryKey(context) : entryKey,
+			context,
+			transform,
+			onUnavailable,
+			fallbackValue
+		});
+		if (result.state === "value" || result.state === "fallback") context.set(contextKey, result.value);
 		return next();
 	};
 	return dataStoreMiddleware;
+}
+/**
+* Lazy variant of {@link createDataStoreMiddleware}. Instead of fetching the
+* entry up-front during middleware execution, this stores a memoized loader
+* in the router context. Consumers call {@link readLazyDataStoreEntry} to
+* trigger the fetch on demand — pages that never read the value never pay
+* for the data-store call.
+*
+* Repeated reads within the same request share the in-flight promise so
+* the entry is fetched at most once per request.
+*
+* Use this for entries that only a subset of routes consume (e.g. config
+* read by a single feature) rather than entries needed on every request.
+*/
+function createLazyDataStoreMiddleware(options) {
+	const { entryKey, context: contextKey, onUnavailable = "throw", fallbackValue } = options;
+	const transform = options.transform ?? ((value) => value);
+	const lazyMiddleware = async ({ context }, next) => {
+		let pending;
+		const loader = () => {
+			if (!pending) pending = loadDataStoreEntry({
+				entryKey: typeof entryKey === "function" ? entryKey(context) : entryKey,
+				context,
+				transform,
+				onUnavailable,
+				fallbackValue
+			}).then((result) => result.state === "missing" ? null : result.value);
+			return pending;
+		};
+		context.set(contextKey, loader);
+		return next();
+	};
+	return lazyMiddleware;
+}
+/**
+* Reads a value populated by {@link createLazyDataStoreMiddleware}. Triggers
+* the underlying data-store fetch on first call and reuses the cached
+* promise on subsequent calls within the same request.
+*
+* Returns `null` when the lazy middleware did not run (no loader in
+* context) or when the entry is missing/invalid.
+*/
+async function readLazyDataStoreEntry(context, contextKey) {
+	const loader = context.get(contextKey);
+	if (typeof loader !== "function") return null;
+	return loader();
+}
+/**
+* Internal helper shared by the eager and lazy middleware factories.
+* Performs the fetch + transform pipeline and resolves all three error
+* paths (unavailable / not-found / service-error) consistently. Returns a
+* tagged result so callers can decide whether to populate the context
+* synchronously (eager middleware) or hand the value back to a lazy reader.
+*/
+async function loadDataStoreEntry(args) {
+	const { entryKey, context, transform, onUnavailable, fallbackValue } = args;
+	try {
+		const entry = await getDataStoreEntry(entryKey);
+		if (!entry?.value || typeof entry.value !== "object") {
+			console.warn(`Data store entry '${entryKey}' not found or invalid.`);
+			return { state: "missing" };
+		}
+		return {
+			state: "value",
+			value: transform(entry.value)
+		};
+	} catch (error) {
+		if (error instanceof DataStoreUnavailableError) {
+			if (onUnavailable === "fallback" && typeof fallbackValue !== "undefined") {
+				const resolvedFallbackValue = typeof fallbackValue === "function" ? fallbackValue(context) : fallbackValue;
+				console.warn(`Data store unavailable for '${entryKey}'. Using configured fallback value.`);
+				return {
+					state: "fallback",
+					value: resolvedFallbackValue
+				};
+			}
+			throw new Error("Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.");
+		}
+		if (error instanceof DataStoreNotFoundError) {
+			console.warn(`Data store entry '${entryKey}' not found.`);
+			return { state: "missing" };
+		}
+		if (error instanceof DataStoreServiceError) throw new Error(`Data store request failed for '${entryKey}'.`);
+		throw error;
+	}
 }
 /**
 * Read a data-store entry through the singleton MRT utilities API.
@@ -86,5 +154,5 @@ function prefixWithSiteId(suffix) {
 }
 
 //#endregion
-export { prefixWithSiteId as i, createDataStoreMiddleware as n, getDataStoreEntry as r, createDataStoreContext as t };
+export { prefixWithSiteId as a, getDataStoreEntry as i, createDataStoreMiddleware as n, readLazyDataStoreEntry as o, createLazyDataStoreMiddleware as r, createDataStoreContext as t };
 //# sourceMappingURL=utils.js.map

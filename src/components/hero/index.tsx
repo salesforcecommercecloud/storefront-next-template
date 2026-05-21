@@ -299,8 +299,9 @@ export default function Hero({
     const renderImage = () => {
         if (!imageUrl?.url) return <div className="absolute inset-0 bg-muted" />;
 
-        const focalX = imageUrl.focal_point?.x ? `${imageUrl.focal_point.x}%` : '50%';
-        const focalY = imageUrl.focal_point?.y ? `${imageUrl.focal_point.y}%` : '50%';
+        const focalPoint = imageUrl.focalPoint;
+        const focalX = focalPoint?.x != null ? `${focalPoint.x}%` : '50%';
+        const focalY = focalPoint?.y != null ? `${focalPoint.y}%` : '50%';
 
         return (
             <img

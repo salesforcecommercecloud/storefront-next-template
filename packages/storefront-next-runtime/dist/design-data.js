@@ -453,6 +453,286 @@ function resolveComponentDataBindings(component, binding, dataBindings) {
 }
 
 //#endregion
+//#region src/design/data/page/markup-url-rewriter.ts
+const STATICLINK_PATTERN = /\?\$staticlink\$/gi;
+const STATICLINK_DELIMITERS_SINGLE = "\":='(>";
+const STATICLINK_DELIMITERS_DOUBLE = [
+	"\"[",
+	"=[",
+	",[",
+	" [",
+	" ,",
+	", "
+];
+let warnedStaticlink = false;
+function rewriteImages(source, ctx) {
+	const domain = ctx.pageLibraryDomain;
+	if (!domain) {
+		if (!warnedStaticlink) {
+			warnedStaticlink = true;
+			ctx.onWarn?.({
+				kind: "staticlink-rewrite-skipped",
+				message: "?$staticlink$ rewrite skipped: ctx.pageLibraryDomain is not set",
+				typeId: "",
+				attrId: "",
+				attrType: "markup"
+			});
+		}
+		return source;
+	}
+	const resolveStaticUrl = ctx.staticLinkFor ?? ctx.resolveMediaUrl;
+	let result = "";
+	let lastPos = -1;
+	STATICLINK_PATTERN.lastIndex = 0;
+	let match = STATICLINK_PATTERN.exec(source);
+	if (!match) return source;
+	while (match) {
+		const pos = match.index;
+		const newPos = STATICLINK_PATTERN.lastIndex;
+		let startPos = pos - 1;
+		while (true) {
+			if (startPos <= lastPos) break;
+			const ch = source.charAt(startPos);
+			if (STATICLINK_DELIMITERS_SINGLE.indexOf(ch) !== -1) {
+				if (!(ch === "=" && startPos + 1 < source.length && source.charAt(startPos + 1) === ".")) break;
+			}
+			if (startPos > 0) {
+				const doubleChar = source.substring(startPos - 1, startPos + 1);
+				if (STATICLINK_DELIMITERS_DOUBLE.includes(doubleChar)) break;
+			}
+			startPos--;
+		}
+		const leftStart = lastPos === -1 ? 0 : lastPos;
+		result += source.substring(leftStart, startPos + 1);
+		const path = source.substring(startPos + 1, pos);
+		if (path.trim().length !== 0) {
+			let url = resolveStaticUrl({
+				libraryDomain: domain,
+				path: path.trim(),
+				locale: ctx.locale
+			});
+			if (path.startsWith(" ")) url = ` ${url}`;
+			if (path.endsWith(" ")) url += " ";
+			result += url;
+		}
+		lastPos = newPos;
+		match = STATICLINK_PATTERN.exec(source);
+	}
+	const tailStart = lastPos === -1 ? 0 : lastPos;
+	result += source.substring(tailStart);
+	return result;
+}
+/**
+* Rewrites `?$staticlink$` placeholders in markup to fully-qualified
+* static-content URLs. Pipeline-action placeholders pass through unchanged.
+*/
+function rewriteMarkup(source, ctx) {
+	if (!source) return "";
+	return rewriteImages(source, ctx);
+}
+
+//#endregion
+//#region src/design/data/page/attribute-resolution.ts
+/**
+* Module-scoped dedup set for unknown-type / malformed-envelope warnings.
+* Keyed by `${kind}|${typeId}|${attrId}|${attrType}` so two different
+* issues on the same attribute (e.g. malformed-image then later
+* unknown-type) both fire once.
+*/
+const warnedKeys = /* @__PURE__ */ new Set();
+/**
+* Routes a structured warning to the consumer's `onWarn` handler at most
+* once per `(kind, typeId, attrId, attrType)` triple. When no handler is
+* configured the runtime stays silent — production callers are expected to
+* supply a handler.
+*/
+function warnOnce(ctx, kind, typeId, attrId, attrType, message) {
+	if (!ctx.onWarn) return;
+	const key = `${kind}|${typeId}|${attrId}|${attrType}`;
+	if (warnedKeys.has(key)) return;
+	warnedKeys.add(key);
+	ctx.onWarn({
+		kind,
+		message,
+		typeId,
+		attrId,
+		attrType
+	});
+}
+/**
+* Returns true when `value` is shaped like an {@link ImageEnvelope}. Used
+* during structural dispatch (when `componentTypes` is unavailable) to
+* recognize image attributes without `attrDef.type`.
+*/
+function isImageEnvelope(value) {
+	if (!value || typeof value !== "object") return false;
+	const media = value.media;
+	return media != null && typeof media === "object" && typeof media.libraryDomain === "string" && typeof media.path === "string";
+}
+/**
+* Converts an {@link ImageEnvelope} to the resolved SCAPI shape by stamping
+* the URL. Returns the original value untouched if the envelope is
+* malformed (missing `media.libraryDomain` or `media.path`); a warning is
+* logged once per `(typeId, attrId, attrType)` triple so production logs
+* don't drown.
+*/
+function resolveImageAttribute(value, typeId, attrId, attrType, ctx) {
+	if (!isImageEnvelope(value)) {
+		warnOnce(ctx, "malformed-image", typeId, attrId, attrType, "malformed image envelope, passing through unchanged");
+		return value;
+	}
+	const out = { url: ctx.resolveMediaUrl({
+		libraryDomain: value.media.libraryDomain,
+		path: value.media.path,
+		locale: ctx.locale
+	}) };
+	if (value.focalPoint) out.focalPoint = value.focalPoint;
+	if (value.metaData) out.metaData = value.metaData;
+	return out;
+}
+function isFileEnvelope(value) {
+	if (!value || typeof value !== "object") return false;
+	const candidate = value;
+	const media = candidate.media;
+	return media != null && typeof media === "object" && typeof media.libraryDomain === "string" && typeof media.path === "string" && !("focalPoint" in candidate || "metaData" in candidate);
+}
+/**
+* Resolves a file envelope to a URL string. Matches SCAPI's
+* `mediaFile.getAbsURL().toString()` — file attributes emit a plain URL
+* string, not an object envelope.
+*/
+function resolveFileAttribute(value, typeId, attrId, ctx) {
+	if (!isFileEnvelope(value)) {
+		warnOnce(ctx, "malformed-file", typeId, attrId, "file", "malformed file envelope, passing through unchanged");
+		return value;
+	}
+	return ctx.resolveMediaUrl({
+		libraryDomain: value.media.libraryDomain,
+		path: value.media.path,
+		locale: ctx.locale
+	});
+}
+const MAX_CMS_RECORD_DEPTH = 10;
+function isCmsRecordEnvelope(value) {
+	if (!value || typeof value !== "object") return false;
+	const candidate = value;
+	if (typeof candidate.id !== "string") return false;
+	const type = candidate.type;
+	if (!type || typeof type !== "object" || typeof type.id !== "string") return false;
+	if (!Array.isArray(type.attributeDefinitions)) return false;
+	return candidate.attributes != null && typeof candidate.attributes === "object";
+}
+function resolveCmsRecordAttribute(value, typeId, attrId, ctx, depth) {
+	if (value == null) return value;
+	if (!isCmsRecordEnvelope(value)) {
+		warnOnce(ctx, "malformed-cms-record", typeId, attrId, "cms_record", "malformed cms_record envelope, passing through unchanged");
+		return value;
+	}
+	if (depth >= MAX_CMS_RECORD_DEPTH) {
+		warnOnce(ctx, "cms-record-depth-exceeded", typeId, attrId, "cms_record", `cms_record nesting depth exceeded (max ${MAX_CMS_RECORD_DEPTH}), passing through unchanged`);
+		return value;
+	}
+	const innerDefs = value.type.attributeDefinitions;
+	const resolvedAttrs = resolveCmsRecordInnerAttributes(value.attributes, typeId, innerDefs, ctx, depth + 1);
+	return {
+		id: value.id,
+		type: value.type,
+		attributes: resolvedAttrs
+	};
+}
+function resolveCmsRecordInnerAttributes(data, typeId, defs, ctx, depth) {
+	const out = {};
+	const defsById = /* @__PURE__ */ new Map();
+	for (const def of defs) defsById.set(def.id, def);
+	for (const [attrId, value] of Object.entries(data)) {
+		const def = defsById.get(attrId);
+		if (!def) {
+			out[attrId] = value;
+			continue;
+		}
+		out[attrId] = dispatchCmsRecordInner(value, typeId, attrId, def, ctx, depth);
+	}
+	return out;
+}
+function dispatchCmsRecordInner(value, typeId, attrId, attrDef, ctx, depth) {
+	if (attrDef.type === "cms_record") return resolveCmsRecordAttribute(value, typeId, attrId, ctx, depth);
+	return dispatchByType(value, typeId, attrId, attrDef, ctx);
+}
+/**
+* Resolves every attribute on a component's `data` map to the wire shape
+* SCAPI `getPage` would have returned.
+*
+* Dispatch is type-driven when {@code typeAttributeDefinitions} is supplied.
+* Otherwise the resolver inspects each value structurally — it recognizes
+* the image envelope by the presence of `media.libraryDomain` and
+* `media.path` and passes everything else through unchanged.
+*
+* Forward-compatibility (Q9): unknown attribute types pass through. Each
+* `(typeId, attrId, attrType)` triple is logged once per process via a
+* module-scoped dedup set.
+*
+* @param data                      attribute map to resolve, already
+*                                  locale-merged + data-binding-resolved by
+*                                  {@link processPage}.
+* @param typeId                    component type identifier, used as part
+*                                  of the dedup key for warnings. Empty
+*                                  string is acceptable for anonymous
+*                                  callers (page-level data).
+* @param typeAttributeDefinitions  attribute definitions for {@code typeId}
+*                                  from `manifest.componentTypes`. When
+*                                  omitted, falls back to structural
+*                                  detection of the image envelope.
+* @param ctx                       per-request resolution surface.
+* @returns a new map with each attribute's value replaced by the resolved
+*          wire shape; pass-through for any attribute type the resolver
+*          doesn't yet recognize.
+*/
+function resolveAttributeValues(data, typeId, typeAttributeDefinitions, ctx) {
+	if (!data) return {};
+	const out = {};
+	if (typeAttributeDefinitions && Object.keys(typeAttributeDefinitions).length > 0) {
+		for (const [attrId, value] of Object.entries(data)) {
+			const def = typeAttributeDefinitions[attrId];
+			if (!def) {
+				out[attrId] = value;
+				continue;
+			}
+			out[attrId] = dispatchByType(value, typeId, attrId, def, ctx);
+		}
+		return out;
+	}
+	for (const [attrId, value] of Object.entries(data)) if (isImageEnvelope(value)) out[attrId] = resolveImageAttribute(value, typeId, attrId, "image", ctx);
+	else out[attrId] = value;
+	return out;
+}
+/**
+* Type-driven dispatch. Unknown types fall through with a deduped warning
+* (Q9) — the principle is that a runtime older than ECOM should still
+* produce *something* rather than dropping the value.
+*/
+function dispatchByType(value, typeId, attrId, attrDef, ctx) {
+	switch (attrDef.type) {
+		case "image": return resolveImageAttribute(value, typeId, attrId, attrDef.type, ctx);
+		case "markup": return typeof value === "string" ? rewriteMarkup(value, ctx) : value;
+		case "file": return resolveFileAttribute(value, typeId, attrId, ctx);
+		case "cms_record": return resolveCmsRecordAttribute(value, typeId, attrId, ctx, 0);
+		case "string":
+		case "text":
+		case "url":
+		case "boolean":
+		case "integer":
+		case "enum":
+		case "custom":
+		case "product":
+		case "category":
+		case "page": return value;
+		default:
+			warnOnce(ctx, "unknown-attribute-type", typeId, attrId, attrDef.type, "unknown attribute type, passing through unchanged");
+			return value;
+	}
+}
+
+//#endregion
 //#region src/design/data/validate-rule.ts
 /**
 * Evaluates a visibility rule against a shopper's qualifier context.
@@ -498,7 +778,7 @@ function resolveComponentDataBindings(component, binding, dataBindings) {
 * ```
 */
 function validateRule(rule, locale, context) {
-	if (rule.campaignQualifiers) {
+	if (rule.campaignQualifiers?.length) {
 		for (const campaignQualifier of rule.campaignQualifiers) if (!context?.campaignQualifiers?.[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]) return false;
 	} else {
 		if (rule.activeLocales && !rule.activeLocales.includes(locale)) return false;
@@ -573,9 +853,49 @@ function validateRule(rule, locale, context) {
 * // "loyalty-offer" was removed because the shopper isn't a loyalty member
 * ```
 */
+/**
+* Builds a component's `data` map by walking each attribute definition and
+* picking the first non-undefined value in priority order:
+*
+*   active-locale content → fallback-locale content → attrDef.defaultValue
+*
+* If none of those have a value the attribute is omitted from the result.
+*
+* When no `typeDefs` are supplied, we fall back to the legacy behavior:
+* `{ ...nodeData, ...defaultContent, ...localeContent }`. This keeps
+* already-deployed manifests rendering until the manifest builder starts
+* emitting `componentTypes`.
+*/
+function composeComponentData({ nodeData, defaultContent, localeContent, typeDefs }) {
+	if (!typeDefs || Object.keys(typeDefs).length === 0) return {
+		...nodeData ?? {},
+		...defaultContent,
+		...localeContent
+	};
+	const result = {};
+	for (const attrId of Object.keys(typeDefs)) {
+		const def = typeDefs[attrId];
+		if (Object.prototype.hasOwnProperty.call(localeContent, attrId)) result[attrId] = localeContent[attrId];
+		else if (Object.prototype.hasOwnProperty.call(defaultContent, attrId)) result[attrId] = defaultContent[attrId];
+		else if (def.defaultValue !== void 0) result[attrId] = def.defaultValue;
+	}
+	return result;
+}
 function processPage(page, processorContext) {
 	const { pruneInvisible = true } = processorContext;
 	return transformPage(page, {
+		visitPage(ctx) {
+			const pageNode = ctx.node;
+			const result = {
+				...pageNode,
+				regions: ctx.visitRegions(pageNode.regions)
+			};
+			if (pageNode.data !== void 0) {
+				const typeDefs = processorContext.componentTypes?.[pageNode.typeId]?.attributeDefinitions;
+				result.data = resolveAttributeValues(pageNode.data, pageNode.typeId, typeDefs, processorContext.attrCtx);
+			}
+			return result;
+		},
 		visitRegion(ctx) {
 			let regionInfo;
 			if (ctx.parent?.type === "page") regionInfo = processorContext.pageInfo.regions[ctx.node.id];
@@ -610,23 +930,32 @@ function processPage(page, processorContext) {
 					isVisible = false;
 				}
 			}
-			const defaultContent = componentInfo?.content?.default ?? {};
+			const defaultContent = componentInfo?.content?.[processorContext.defaultLocale] ?? {};
 			const localeContent = componentInfo?.content?.[processorContext.locale] ?? {};
-			const content = {
-				...defaultContent,
-				...localeContent
-			};
 			const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
+			const typeDefs = processorContext.componentTypes?.[ctx.node.typeId]?.attributeDefinitions;
+			const composedData = composeComponentData({
+				nodeData: ctx.node.data,
+				defaultContent,
+				localeContent,
+				typeDefs
+			});
+			const name = componentInfo?.name ?? ctx.node.name;
+			const fragment = componentInfo?.fragment ?? ctx.node.fragment ?? false;
 			let node = {
 				...ctx.node,
+				name,
+				fragment,
 				localized: isLocalized,
 				visible: isVisible,
-				data: {
-					...ctx.node.data,
-					...content
-				}
+				data: composedData
 			};
 			node = resolveComponentDataBindings(node, componentInfo?.dataBinding, processorContext.qualifiers?.dataBindings);
+			const resolvedData = resolveAttributeValues(node.data, node.typeId, typeDefs, processorContext.attrCtx);
+			node = {
+				...node,
+				data: resolvedData
+			};
 			return {
 				...node,
 				regions: ctx.visitRegions(ctx.node.regions)
@@ -878,6 +1207,36 @@ async function getPageFromManifest(manifest, { contextResolver, locale }) {
 //#endregion
 //#region src/design/data/page/resolve-page.ts
 /**
+* Page metadata fields the manifest builder may locale-overlay. Used by
+* {@link applyPageMetadataOverlay} to know which keys to copy from the
+* overlay onto the resolved page; structural fields like `id`, `typeId`,
+* and `regions` are intentionally excluded.
+*/
+const PAGE_METADATA_OVERLAY_KEYS = [
+	"name",
+	"aspectTypeId",
+	"description",
+	"pageTitle",
+	"pageDescription",
+	"pageKeywords"
+];
+/**
+* Applies a per-locale page metadata overlay to the variation's default-locale
+* page. The overlay is a **full replacement** for the listed metadata fields
+* — when a key is present in the overlay it wins; when absent we fall through
+* to the default-locale value (Q6 of the design plan).
+*
+* Returns a shallow copy of the page with overlaid fields applied. Structural
+* fields (`id`, `typeId`, `regions`, `data`) are never touched.
+*/
+function applyPageMetadataOverlay(variation, locale) {
+	const overlay = variation.pageContent?.[locale];
+	if (!overlay) return variation.page;
+	const out = { ...variation.page };
+	for (const key of PAGE_METADATA_OVERLAY_KEYS) if (overlay[key] !== void 0) out[key] = overlay[key];
+	return out;
+}
+/**
 * Main entry point for the page resolution pipeline. Orchestrates the full flow:
 *
 * 1. **Resolve dynamic page ID** — For product/category identifiers, looks up
@@ -934,7 +1293,7 @@ async function getPageFromManifest(manifest, { contextResolver, locale }) {
 * }
 * ```
 */
-async function resolvePage({ id, identifierType, aspectType, locale, manifestStorage, contextResolver, pruneInvisible = true }) {
+async function resolvePage({ id, identifierType, aspectType, locale, defaultLocale, manifestStorage, contextResolver, attrCtx, pruneInvisible = true }) {
 	let resolvedId = null;
 	if (ContentAssignmentResolvers.has(identifierType)) {
 		const siteManifest = await manifestStorage.getSiteManifest();
@@ -956,15 +1315,23 @@ async function resolvePage({ id, identifierType, aspectType, locale, manifestSto
 	if (!pageResults) return null;
 	let context = null;
 	if (pageResults.entry.pageRequiresContext) context = pageResults.context ?? await contextResolver?.(pageManifest.context) ?? null;
-	return processPage(pageResults.entry.page, {
+	const localizedPage = applyPageMetadataOverlay(pageResults.entry, locale);
+	const resolvedAttrCtx = pageManifest.pageLibraryDomain && !attrCtx.pageLibraryDomain ? {
+		...attrCtx,
+		pageLibraryDomain: pageManifest.pageLibraryDomain
+	} : attrCtx;
+	return processPage(localizedPage, {
 		qualifiers: context,
 		componentInfo: pageManifest.componentInfo,
 		pageInfo: { regions: pageResults.entry.regions },
 		locale,
+		defaultLocale,
+		attrCtx: resolvedAttrCtx,
+		componentTypes: pageManifest.componentTypes,
 		pruneInvisible
 	});
 }
 
 //#endregion
-export { ContentAssignmentResolvers, RequiredError, getPageFromManifest, parseExpression, processPage, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
+export { ContentAssignmentResolvers, RequiredError, getPageFromManifest, parseExpression, processPage, resolveAttributeValues, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, rewriteMarkup, transformComponent, transformPage, transformRegion, validateRule };
 //# sourceMappingURL=design-data.js.map

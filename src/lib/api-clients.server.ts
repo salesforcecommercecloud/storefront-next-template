@@ -690,19 +690,25 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
 
     const appClients = { ...clients, ...customClientEntries, use: applyToAllClients } as AppClients;
 
-    // Apply context-registered SCAPI middleware factories
-    const scapiMiddlewares = context.get(scapiMiddlewareContext);
+    // Apply context-registered SCAPI middleware factories. The context
+    // default is `null` — only middleware that actually registered
+    // factories for this request will have populated the registry.
+    // Iteration order matches the order keys were first registered so
+    // consumers can control middleware ordering deterministically.
+    const registry = context.get(scapiMiddlewareContext);
 
-    for (const entry of scapiMiddlewares) {
-        const middleware = entry.factory(context, appClients);
-        if (!middleware) continue;
+    if (registry) {
+        for (const entry of registry.entries()) {
+            const middleware = entry.factory(context, appClients);
+            if (!middleware) continue;
 
-        if (entry.clients) {
-            for (const clientName of entry.clients) {
-                clients[clientName].use(middleware);
+            if (entry.clients) {
+                for (const clientName of entry.clients) {
+                    clients[clientName].use(middleware);
+                }
+            } else {
+                applyToAllClients(middleware);
             }
-        } else {
-            applyToAllClients(middleware);
         }
     }
 

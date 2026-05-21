@@ -159,7 +159,9 @@ describe('createApiClients', () => {
             locale: { id: 'en-US', preferredCurrency: 'USD' },
         } as never);
 
-        mockContextProvider.set(scapiMiddlewareContext, []);
+        // Leave the registry unset — the production consumer treats a
+        // null context value as "no factories to apply".
+        mockContextProvider.set(scapiMiddlewareContext, null);
 
         // Get mocked functions
         const configModule = await import('@salesforce/storefront-next-runtime/config');

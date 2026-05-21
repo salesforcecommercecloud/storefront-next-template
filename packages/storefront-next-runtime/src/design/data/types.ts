@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { ShopperExperience } from '@/scapi-client/types';
+import type { AttributeDefinition } from './page/attribute-resolution';
 
 /**
  * A manifest containing all variations of a single Page Designer page for a
@@ -33,6 +34,20 @@ export interface PageManifest {
     /** The variation ID to use when no other variation's rule matches. */
     defaultVariation: string;
     /**
+     * Per-component-type attribute definitions hoisted from the page layout
+     * by the manifest builder, deduped by `typeId`. Used by the MRT
+     * attribute resolver to dispatch by attribute type without round-tripping
+     * to ECOM. Optional — older manifests may not include this field.
+     */
+    componentTypes?: Record<string, { attributeDefinitions: Record<string, AttributeDefinition> }>;
+    /**
+     * Media-file domain name of the page's owning library. Used by the markup
+     * URL rewriter to resolve `?$staticlink$` placeholders at request time.
+     * Set by the manifest builder from `library.getMediaFileDomain().getDomainName()`.
+     * Optional — older manifests may not include this field.
+     */
+    pageLibraryDomain?: string;
+    /**
      * Component visibility rule definitions extracted from the page layout.
      * Maps each component ID to its array of rule objects and a flag indicating
      * if any rules are defined for that component.
@@ -40,7 +55,7 @@ export interface PageManifest {
     componentInfo: {
         [componentId: string]: {
             /** The visibility rules for this component. */
-            visibilityRules: VisibilityRuleDef[];
+            visibilityRules?: VisibilityRuleDef[];
             /**
              * Locale-specific content attributes for this component. Keyed by locale
              * (e.g. `"en_US"`), each entry contains attribute values that are merged
@@ -49,10 +64,16 @@ export interface PageManifest {
             content?: {
                 [locale: string]: Record<string, unknown>;
             };
-            /** Data binding metadata for this component, or `null` if not bound. */
-            dataBinding?: ComponentDataBinding | null;
+            /** Data binding metadata for this component. Omitted when the component has no bindings. */
+            dataBinding?: ComponentDataBinding;
+            /** Whether this component is a fragment (a reusable, externally-managed content asset). */
+            fragment?: boolean;
+            /** Custom component data produced by the type's serialize script. Omitted when the component has no custom data. */
+            custom?: Record<string, unknown>;
+            /** Display name of the component. Omitted when the component has no name. */
+            name?: string;
             /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
-            regions: {
+            regions?: {
                 [regionId: string]: RegionInfo;
             };
         };
@@ -62,13 +83,13 @@ export interface PageManifest {
 /** Region-level configuration extracted from the page manifest, including type filters and component limits. */
 export interface RegionInfo {
     /** The name of the region. */
-    name: string;
+    name?: string;
     /** The component type exclusions for the region. */
-    componentTypeExclusions: string[] | null;
+    componentTypeExclusions?: string[];
     /** The component type inclusions for the region. */
-    componentTypeInclusions: string[] | null;
-    /** Maximum number of visible components to render in this region, or `null` for no limit. */
-    maxComponents: number | null;
+    componentTypeInclusions?: string[];
+    /** Maximum number of visible components to render in this region. Omitted when there is no limit. */
+    maxComponents?: number;
 }
 
 /**
@@ -172,12 +193,52 @@ export interface VariationEntry {
     ruleRequiresContext: boolean;
     /** The visibility rule that must pass for this variation to be selected. Undefined for the default variation. */
     visibilityRule?: VisibilityRuleDef;
-    /** The full page data for this variation. */
+    /**
+     * The full page data for this variation. Includes the SCAPI-shape page
+     * metadata fields (`name`, `aspectTypeId`, `description`, `pageTitle`,
+     * `pageDescription`, `pageKeywords`) populated from the default-locale
+     * `Page` by the manifest builder. Non-default-locale overrides for
+     * these fields live in {@link pageContent}.
+     */
     page: ShopperExperience.schemas['Page'];
+    /**
+     * Per-locale overlay for the variation's page metadata. When the request
+     * locale is not the default and the page metadata differs, the manifest
+     * builder writes the **full set** of locale-specific page metadata fields
+     * here (full replacement, not diff — see Q6 of the design plan).
+     *
+     * Each entry is a partial `Page` carrying only the metadata fields that
+     * may be locale-overridden (`name`, `aspectTypeId`, `description`,
+     * `pageTitle`, `pageDescription`, `pageKeywords`); structural fields
+     * (`id`, `typeId`, `regions`) live on {@link page} and are never
+     * locale-overlaid.
+     *
+     * Absent or missing entries fall back to the default-locale page
+     * metadata. Optional — older manifests may not include this field.
+     */
+    pageContent?: {
+        [locale: string]: PageMetadataOverlay;
+    };
     /** Page-level region configuration for this variation, keyed by region ID. These are top-level regions owned by the page itself, not nested under a component. */
     regions: {
         [regionId: string]: RegionInfo;
     };
+}
+
+/**
+ * Subset of {@link ShopperExperience.schemas#Page} fields that the manifest
+ * builder may locale-overlay. Stored on
+ * {@link VariationEntry.pageContent} keyed by locale ID. Structural fields
+ * (`id`, `typeId`, `regions`) are intentionally excluded — they are not
+ * locale-scoped.
+ */
+export interface PageMetadataOverlay {
+    name?: string;
+    aspectTypeId?: string;
+    description?: string;
+    pageTitle?: string;
+    pageDescription?: string;
+    pageKeywords?: string;
 }
 
 /**

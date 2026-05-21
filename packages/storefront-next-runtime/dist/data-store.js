@@ -1,6 +1,6 @@
 import "./site-context2.js";
 import "./apply-url-config.js";
-import { i as prefixWithSiteId, n as createDataStoreMiddleware, r as getDataStoreEntry, t as createDataStoreContext } from "./utils.js";
+import { a as prefixWithSiteId, i as getDataStoreEntry, n as createDataStoreMiddleware, o as readLazyDataStoreEntry, r as createLazyDataStoreMiddleware, t as createDataStoreContext } from "./utils.js";
 import { i as sitePreferencesContext, n as customSitePreferencesMiddleware, r as getSitePreferences, t as DEFAULT_SITE_PREFERENCES_KEY } from "./custom-site-preferences.js";
 import { i as getCustomGlobalPreferences, n as customGlobalPreferencesContext, r as customGlobalPreferencesMiddleware, t as DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY } from "./custom-global-preferences.js";
 import { a as getGcpPreferences, i as getGcpApiKey, n as gcpPreferencesContext, r as gcpPreferencesMiddleware, t as DEFAULT_GCP_PREFERENCES_KEY } from "./gcp-preferences.js";
@@ -41,5 +41,5 @@ const dataStoreMiddleware = [
 ];
 
 //#endregion
-export { DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, sitePreferencesContext };
+export { DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, readLazyDataStoreEntry, sitePreferencesContext };
 //# sourceMappingURL=data-store.js.map

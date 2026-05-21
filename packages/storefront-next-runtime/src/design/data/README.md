@@ -45,3 +45,47 @@ Output: Page with only visible components, or null
 **Content Assignments** — Mappings in the site manifest that connect product or category identifiers to page IDs. For categories, the lookup traverses the category hierarchy from child to parent until an assignment is found.
 
 **Qualifier Context** — Runtime state representing the current shopper's active campaign qualifiers and customer group memberships. This context is lazily resolved — it's only fetched when a visibility rule actually needs it.
+
+## Attribute Resolution
+
+After locale overlay and data-binding resolution, each component's `data` map is passed through `resolveAttributeValues`. This converts the manifest's host-agnostic envelopes into the same wire shape that SCAPI's `getPage` controller would have returned.
+
+Resolution is type-driven via `componentTypes[typeId].attributeDefinitions` from the manifest. The dispatch table:
+
+| Attribute Type | Manifest Shape | Resolved Shape |
+|---|---|---|
+| `image` | `{ focalPoint?, metaData?, media: { libraryDomain, path } }` | `{ focalPoint?, metaData?, url }` |
+| `file` | `{ media: { libraryDomain, path } }` | URL string |
+| `markup` | Raw string with `?$staticlink$` placeholders | `?$staticlink$` resolved; pipeline-action placeholders pass through |
+| `cms_record` | `{ id, type: { attributeDefinitions }, attributes }` | Same shape with inner attributes recursed |
+| `string`, `text`, `url`, `boolean`, `integer`, `enum`, `custom`, `product`, `category`, `page` | Pass-through | Unchanged |
+| Unknown types | Pass-through | Unchanged (one-time warning logged) |
+
+### Key Design Decisions
+
+**`serialize(context)` is not invoked.** The `custom` field from SCAPI is not part of the manifest pipeline. Components needing dynamic request-time data must use storefront-next React composition instead of Page Designer's `serialize` function.
+
+**`designMetadata` is not emitted.** Editor metadata is not part of the manifest wire format. Page Designer's editor continues to use the SCAPI controller directly for preview.
+
+**`localized` flag derivation.** The `localized` boolean is derived from per-locale content presence: `Boolean(componentInfo?.content?.[locale])`. This matches SCAPI's `contentAttributes.isLocalized()` semantics.
+
+**Unknown attribute types pass through.** When ECOM introduces a new attribute type that the MRT doesn't yet handle, the value is emitted unchanged with a deduped warning logged once per `(typeId, attrId, attrType)` triple. This ensures forward compatibility — an MRT older than ECOM still produces a page rather than dropping fields.
+
+**Pipeline-action placeholders are not rewritten.** `$link-...$`, `$url(...)$`, `$httpUrl(...)$`, `$httpsUrl(...)$`, and `$include(...)$` placeholders in markup and url attributes pass through unchanged. Storefront-next components use React composition for navigation rather than ECOM pipeline routing, so these placeholders are not resolved at the MRT layer.
+
+### Markup Rewriting
+
+The `rewriteMarkup` function handles only `?$staticlink$` — library-relative image paths inside markup attributes:
+
+`path?$staticlink$` → resolved via `ctx.resolveMediaUrl` using `ctx.pageLibraryDomain`
+
+### AttributeResolutionContext
+
+The resolver is platform-neutral — it imports nothing from `template-retail-rsc-app`, React Router, or `site-context/build-url`. All URL-building is injected via `AttributeResolutionContext`:
+
+- `host` — storefront origin (e.g. `https://www.shop.example`)
+- `resolveMediaUrl({ libraryDomain, path, locale? })` — builds static-content URLs
+- `pageLibraryDomain?` — library identifier for `?$staticlink$` rewriting
+- `locale?` — forwarded to `resolveMediaUrl`
+
+Storefront-next and Page Designer each supply their own factory that builds this context from their respective environments.

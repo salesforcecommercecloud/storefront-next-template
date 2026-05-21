@@ -67,13 +67,13 @@ export class HeroCarouselMetadata {
 
 type Image = {
     url: string;
-    meta_data?: {
-        height?: string;
-        width?: string;
+    metaData?: {
+        height?: number | string;
+        width?: number | string;
     };
-    focal_point?: {
-        x?: string;
-        y?: string;
+    focalPoint?: {
+        x?: number | string;
+        y?: number | string;
     };
 };
 

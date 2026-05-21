@@ -17,7 +17,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { MiddlewareFunction, RouterContextProvider } from 'react-router';
 import { DataStore } from '@salesforce/mrt-utilities/middleware';
-import { createDataStoreContext, createDataStoreMiddleware, prefixWithSiteId } from './utils';
+import {
+    createDataStoreContext,
+    createDataStoreMiddleware,
+    createLazyDataStoreMiddleware,
+    prefixWithSiteId,
+    readLazyDataStoreEntry,
+} from './utils';
 import { getSitePreferences, sitePreferencesContext } from './middleware/custom-site-preferences';
 import { siteContext } from '../site-context';
 
@@ -219,6 +225,108 @@ describe('createDataStoreMiddleware', () => {
         } else {
             process.env.CI = originalCi;
         }
+    });
+});
+
+describe('createLazyDataStoreMiddleware', () => {
+    let context: RouterContextProvider;
+    let next: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        process.env.AWS_REGION = 'us-east-1';
+        process.env.MOBIFY_PROPERTY_ID = 'prop-1';
+        process.env.DEPLOY_TARGET = 'production';
+
+        const store = new Map<unknown, unknown>();
+        context = {
+            set: (ctx: unknown, value: unknown) => store.set(ctx, value),
+            get: (ctx: unknown) => store.get(ctx),
+        } as unknown as RouterContextProvider;
+
+        next = vi.fn().mockResolvedValue(new Response('ok'));
+    });
+
+    afterEach(() => {
+        delete process.env.AWS_REGION;
+        delete process.env.MOBIFY_PROPERTY_ID;
+        delete process.env.DEPLOY_TARGET;
+        DataStore._testDocumentClient = null;
+        DataStore._testLogMRTError = null;
+    });
+
+    it('does not fetch the entry until a consumer reads it', async () => {
+        const sendMock = vi.fn().mockResolvedValue({ Item: { value: { enabled: true } } });
+        DataStore._testDocumentClient = {
+            send: sendMock,
+        } as unknown as typeof DataStore._testDocumentClient;
+
+        const middleware = createLazyDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+        });
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(sendMock).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalledOnce();
+
+        const value = await readLazyDataStoreEntry(context, sitePreferencesContext);
+        expect(value).toEqual({ enabled: true });
+        expect(sendMock).toHaveBeenCalledOnce();
+    });
+
+    it('reuses the cached promise across multiple reads in the same request', async () => {
+        const sendMock = vi.fn().mockResolvedValue({ Item: { value: { enabled: true } } });
+        DataStore._testDocumentClient = {
+            send: sendMock,
+        } as unknown as typeof DataStore._testDocumentClient;
+
+        const middleware = createLazyDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+        });
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        await Promise.all([
+            readLazyDataStoreEntry(context, sitePreferencesContext),
+            readLazyDataStoreEntry(context, sitePreferencesContext),
+            readLazyDataStoreEntry(context, sitePreferencesContext),
+        ]);
+
+        expect(sendMock).toHaveBeenCalledOnce();
+    });
+
+    it('returns null on read when the entry is missing', async () => {
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({}),
+        } as unknown as typeof DataStore._testDocumentClient;
+
+        const middleware = createLazyDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+        });
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const value = await readLazyDataStoreEntry(context, sitePreferencesContext);
+        expect(value).toBeNull();
+        warnSpy.mockRestore();
+    });
+
+    it('returns null when no loader has been registered in context', async () => {
+        const value = await readLazyDataStoreEntry(context, sitePreferencesContext);
+        expect(value).toBeNull();
     });
 });
 

@@ -61,7 +61,7 @@ import type { QualifierContext, VisibilityRuleDef } from './types';
 export function validateRule(rule: VisibilityRuleDef, locale: string, context?: QualifierContext | null): boolean {
     // Campaign-based rules and non-campaign rules are mutually exclusive
     // paths, mirroring the server's if/else-if branching.
-    if (rule.campaignQualifiers) {
+    if (rule.campaignQualifiers?.length) {
         for (const campaignQualifier of rule.campaignQualifiers) {
             if (!context?.campaignQualifiers?.[campaignQualifier.campaignId]?.[campaignQualifier.promotionId]) {
                 return false;

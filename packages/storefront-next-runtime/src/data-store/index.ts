@@ -15,6 +15,7 @@
  */
 
 export { createDataStoreMiddleware } from './utils';
+export { createLazyDataStoreMiddleware, readLazyDataStoreEntry } from './utils';
 export { createDataStoreContext } from './utils';
 export { getDataStoreEntry } from './utils';
 export {

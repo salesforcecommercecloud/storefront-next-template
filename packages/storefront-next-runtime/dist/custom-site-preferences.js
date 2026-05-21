@@ -1,4 +1,4 @@
-import { i as prefixWithSiteId, n as createDataStoreMiddleware, t as createDataStoreContext } from "./utils.js";
+import { a as prefixWithSiteId, n as createDataStoreMiddleware, t as createDataStoreContext } from "./utils.js";
 
 //#region src/data-store/middleware/custom-site-preferences.ts
 const DEFAULT_SITE_PREFERENCES_KEY = "site-preferences";

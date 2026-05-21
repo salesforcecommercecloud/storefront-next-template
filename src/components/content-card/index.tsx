@@ -114,13 +114,13 @@ export const ContentCard = forwardRef<HTMLDivElement, ContentCardProps>(
         },
         ref
     ) => {
-        // Normalize imageUrl to handle both string and Image object
-        const imageData = typeof imageUrl === 'string' ? { url: imageUrl } : imageUrl;
-        const imageSrc = imageData?.url;
+        const imageObj = typeof imageUrl === 'string' ? { url: imageUrl } : imageUrl;
+        const imageSrc = imageObj?.url;
+        const focalPoint = imageObj?.focalPoint;
 
-        // Calculate focal point for object-position (defaults to center)
-        const focalX = imageData?.focal_point?.x ? `${imageData.focal_point.x}%` : '50%';
-        const focalY = imageData?.focal_point?.y ? `${imageData.focal_point.y}%` : '50%';
+        // Calculate focal point for object-position (defaults to center).
+        const focalX = focalPoint?.x != null ? `${focalPoint.x}%` : '50%';
+        const focalY = focalPoint?.y != null ? `${focalPoint.y}%` : '50%';
         const objectPosition = `${focalX} ${focalY}`;
 
         return (

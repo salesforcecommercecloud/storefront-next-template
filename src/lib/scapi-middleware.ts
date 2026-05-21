@@ -45,15 +45,73 @@ export interface ScapiMiddlewareEntry {
 }
 
 /**
- * React Router context for SCAPI client middleware registration.
- *
- * React Router middleware can push factory entries into this array during their
- * execution. {@link createApiClients} calls each factory with the router context
- * and applies the returned middleware to the appropriate SCAPI clients.
- *
- * Because factories are invoked at client-creation time (inside loaders/actions),
- * all context values are available — there is no ordering dependency between
- * the middleware that registers the factory and the middleware that populates
- * the context values the factory reads.
+ * Per-request registry of SCAPI middleware factories, keyed by an
+ * application-supplied string. Re-registering the same key replaces the
+ * previous entry in place without changing its registration order — this
+ * makes the registry idempotent across the (rare but possible) cases where
+ * a router middleware fires more than once within a single request, while
+ * still letting consumers control execution order via the order in which
+ * keys are first introduced.
  */
-export const scapiMiddlewareContext = createContext<ScapiMiddlewareEntry[]>([]);
+export class ScapiMiddlewareRegistry {
+    private readonly map = new Map<string, ScapiMiddlewareEntry>();
+
+    /**
+     * Register or replace the entry for `key`. If `key` was previously
+     * registered the new entry takes its slot, preserving the original
+     * registration order. Otherwise the entry is appended to the end.
+     */
+    register(key: string, entry: ScapiMiddlewareEntry): void {
+        // `Map.set` on an existing key updates the value in place without
+        // disturbing iteration order — exactly the semantics we want.
+        this.map.set(key, entry);
+    }
+
+    /**
+     * Iterates entries in registration order. The {@link createApiClients}
+     * loop consumes this to apply each factory's middleware to the right
+     * SCAPI clients.
+     */
+    entries(): IterableIterator<ScapiMiddlewareEntry> {
+        return this.map.values();
+    }
+
+    /** True when an entry has been registered under `key`. */
+    has(key: string): boolean {
+        return this.map.has(key);
+    }
+}
+
+/**
+ * React Router context holding the per-request {@link ScapiMiddlewareRegistry}.
+ *
+ * Default value is `null` so producers cannot accidentally register on the
+ * module-level default — that would let entries accumulate across requests
+ * and middleware to compound. Use {@link getScapiMiddlewareRegistry}
+ * to obtain a request-scoped registry, lazily allocated on first access.
+ */
+export const scapiMiddlewareContext = createContext<ScapiMiddlewareRegistry | null>(null);
+
+/**
+ * Returns the per-request {@link ScapiMiddlewareRegistry}, allocating and
+ * storing one on the first call within a given request. Use this in
+ * preference to `context.get(scapiMiddlewareContext)` when registering
+ * middleware factories.
+ *
+ * Accepts `Readonly<RouterContextProvider>` because that's how
+ * {@code MiddlewareFunction} types its context parameter — the marker is
+ * structural, the underlying class methods are still callable.
+ */
+export function getScapiMiddlewareRegistry(
+    context: RouterContextProvider | Readonly<RouterContextProvider>
+): ScapiMiddlewareRegistry {
+    let registry = context.get(scapiMiddlewareContext);
+    if (!registry) {
+        registry = new ScapiMiddlewareRegistry();
+        // `Readonly<T>` only marks own properties readonly, not class
+        // methods — `.set` is still callable. Cast keeps the API
+        // compatible with router middleware function signatures.
+        (context as RouterContextProvider).set(scapiMiddlewareContext, registry);
+    }
+    return registry;
+}

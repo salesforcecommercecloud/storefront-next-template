@@ -68,46 +68,138 @@ export function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions
 
     const dataStoreMiddleware: MiddlewareFunction<Response> = async ({ context }, next) => {
         const resolvedEntryKey = typeof entryKey === 'function' ? entryKey(context) : entryKey;
-        try {
-            const entry = await getDataStoreEntry(resolvedEntryKey);
+        const result = await loadDataStoreEntry({
+            entryKey: resolvedEntryKey,
+            context,
+            transform,
+            onUnavailable,
+            fallbackValue,
+        });
 
-            if (!entry?.value || typeof entry.value !== 'object') {
-                // eslint-disable-next-line no-console
-                console.warn(`Data store entry '${resolvedEntryKey}' not found or invalid.`);
-                return next();
-            }
-            context.set(contextKey, transform(entry.value as Record<string, unknown>));
-        } catch (error) {
-            if (error instanceof DataStoreUnavailableError) {
-                if (onUnavailable === 'fallback' && typeof fallbackValue !== 'undefined') {
-                    const resolvedFallbackValue =
-                        typeof fallbackValue === 'function'
-                            ? (fallbackValue as (ctx: Readonly<RouterContextProvider>) => T)(context)
-                            : fallbackValue;
-                    context.set(contextKey, resolvedFallbackValue);
-                    // eslint-disable-next-line no-console
-                    console.warn(`Data store unavailable for '${resolvedEntryKey}'. Using configured fallback value.`);
-                    return next();
-                }
-                throw new Error(
-                    'Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.'
-                );
-            }
-            if (error instanceof DataStoreNotFoundError) {
-                // eslint-disable-next-line no-console
-                console.warn(`Data store entry '${resolvedEntryKey}' not found.`);
-                return next();
-            }
-            if (error instanceof DataStoreServiceError) {
-                throw new Error(`Data store request failed for '${resolvedEntryKey}'.`);
-            }
-            throw error;
+        if (result.state === 'value' || result.state === 'fallback') {
+            context.set(contextKey, result.value);
         }
 
         return next();
     };
 
     return dataStoreMiddleware;
+}
+
+/**
+ * Lazy variant of {@link createDataStoreMiddleware}. Instead of fetching the
+ * entry up-front during middleware execution, this stores a memoized loader
+ * in the router context. Consumers call {@link readLazyDataStoreEntry} to
+ * trigger the fetch on demand — pages that never read the value never pay
+ * for the data-store call.
+ *
+ * Repeated reads within the same request share the in-flight promise so
+ * the entry is fetched at most once per request.
+ *
+ * Use this for entries that only a subset of routes consume (e.g. config
+ * read by a single feature) rather than entries needed on every request.
+ */
+export function createLazyDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response> {
+    const { entryKey, context: contextKey, onUnavailable = 'throw', fallbackValue } = options;
+    const transform = options.transform ?? ((value: Record<string, unknown>) => value as T);
+
+    const lazyMiddleware: MiddlewareFunction<Response> = async ({ context }, next) => {
+        let pending: Promise<T | null> | undefined;
+
+        const loader: LazyDataStoreLoader<T> = () => {
+            if (!pending) {
+                const resolvedEntryKey = typeof entryKey === 'function' ? entryKey(context) : entryKey;
+                pending = loadDataStoreEntry({
+                    entryKey: resolvedEntryKey,
+                    context,
+                    transform,
+                    onUnavailable,
+                    fallbackValue,
+                }).then((result) => (result.state === 'missing' ? null : result.value));
+            }
+            return pending;
+        };
+
+        context.set(contextKey as unknown as DataStoreContextKey<LazyDataStoreLoader<T>>, loader);
+
+        return next();
+    };
+
+    return lazyMiddleware;
+}
+
+/**
+ * Reads a value populated by {@link createLazyDataStoreMiddleware}. Triggers
+ * the underlying data-store fetch on first call and reuses the cached
+ * promise on subsequent calls within the same request.
+ *
+ * Returns `null` when the lazy middleware did not run (no loader in
+ * context) or when the entry is missing/invalid.
+ */
+export async function readLazyDataStoreEntry<T>(
+    context: Readonly<RouterContextProvider>,
+    contextKey: DataStoreContextKey<T>
+): Promise<T | null> {
+    const loader = context.get(contextKey as unknown as DataStoreContextKey<LazyDataStoreLoader<T>>);
+    if (typeof loader !== 'function') return null;
+    return loader();
+}
+
+type LazyDataStoreLoader<T> = () => Promise<T | null>;
+
+type LoadResult<T> = { state: 'value'; value: T } | { state: 'fallback'; value: T } | { state: 'missing' };
+
+/**
+ * Internal helper shared by the eager and lazy middleware factories.
+ * Performs the fetch + transform pipeline and resolves all three error
+ * paths (unavailable / not-found / service-error) consistently. Returns a
+ * tagged result so callers can decide whether to populate the context
+ * synchronously (eager middleware) or hand the value back to a lazy reader.
+ */
+async function loadDataStoreEntry<T>(args: {
+    entryKey: string;
+    context: Readonly<RouterContextProvider>;
+    transform: (value: Record<string, unknown>) => T;
+    onUnavailable: 'throw' | 'fallback';
+    fallbackValue: T | ((context: Readonly<RouterContextProvider>) => T) | undefined;
+}): Promise<LoadResult<T>> {
+    const { entryKey, context, transform, onUnavailable, fallbackValue } = args;
+
+    try {
+        const entry = await getDataStoreEntry(entryKey);
+
+        if (!entry?.value || typeof entry.value !== 'object') {
+            // eslint-disable-next-line no-console
+            console.warn(`Data store entry '${entryKey}' not found or invalid.`);
+            return { state: 'missing' };
+        }
+
+        return { state: 'value', value: transform(entry.value as Record<string, unknown>) };
+    } catch (error) {
+        if (error instanceof DataStoreUnavailableError) {
+            if (onUnavailable === 'fallback' && typeof fallbackValue !== 'undefined') {
+                const resolvedFallbackValue =
+                    typeof fallbackValue === 'function'
+                        ? (fallbackValue as (ctx: Readonly<RouterContextProvider>) => T)(context)
+                        : fallbackValue;
+                // eslint-disable-next-line no-console
+                console.warn(`Data store unavailable for '${entryKey}'. Using configured fallback value.`);
+                return { state: 'fallback', value: resolvedFallbackValue };
+            }
+            throw new Error(
+                'Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.'
+            );
+        }
+        if (error instanceof DataStoreNotFoundError) {
+            // eslint-disable-next-line no-console
+            console.warn(`Data store entry '${entryKey}' not found.`);
+            return { state: 'missing' };
+        }
+        if (error instanceof DataStoreServiceError) {
+            throw new Error(`Data store request failed for '${entryKey}'.`);
+        }
+        throw error;
+    }
 }
 
 /**

@@ -72,6 +72,7 @@ import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-
 import { correlationMiddleware } from '@/middlewares/correlation.server';
 import { loggingMiddleware } from '@/middlewares/logging.server';
 import { pageDesignerResolutionMiddleware } from '@/middlewares/page-designer-page-resolution.server';
+import { siteUrlConfigMiddleware } from '@/middlewares/site-url-config.server';
 import { modeDetectionMiddlewareServer, modeDetectionMiddlewareClient } from '@/middlewares/mode-detection';
 import { maintenanceMiddleware } from '@/middlewares/maintenance.server';
 
@@ -142,6 +143,7 @@ export const middleware: MiddlewareFunction<Response>[] = [
     appConfigMiddlewareServer,
     siteContextMiddleware, // Must run after appConfig, before i18next and currency
     ...dataStoreMiddleware,
+    siteUrlConfigMiddleware, // Must run after siteContextMiddleware (entry key uses site id)
     i18nextMiddleware,
     pageDesignerResolutionMiddleware,
     selectedStoreMiddleware /** @sfdc-extension-line SFDC_EXT_STORE_LOCATOR */,

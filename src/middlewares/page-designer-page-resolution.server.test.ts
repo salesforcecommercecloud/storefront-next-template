@@ -16,8 +16,9 @@
 import { deflateSync } from 'node:zlib';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { pageDesignerResolutionMiddleware } from './page-designer-page-resolution.server';
+import { siteUrlConfigContext } from './site-url-config.server';
 import { createTestContext } from '@/lib/test-utils';
-import { scapiMiddlewareContext, type ScapiMiddlewareEntry } from '@/lib/scapi-middleware';
+import { scapiMiddlewareContext, ScapiMiddlewareRegistry } from '@/lib/scapi-middleware';
 import { resolvePage } from '@salesforce/storefront-next-runtime/design/data';
 import {
     DataStore,
@@ -57,9 +58,13 @@ vi.mock('@salesforce/storefront-next-runtime/data-store', async (importOriginal)
     };
 });
 
-vi.mock('@salesforce/storefront-next-runtime/design/data', () => ({
-    resolvePage: vi.fn(),
-}));
+vi.mock('@salesforce/storefront-next-runtime/design/data', async (importOriginal) => {
+    const original = await importOriginal<typeof import('@salesforce/storefront-next-runtime/design/data')>();
+    return {
+        ...original,
+        resolvePage: vi.fn(),
+    };
+});
 
 const mockedResolvePage = vi.mocked(resolvePage);
 
@@ -74,12 +79,13 @@ function packPageEntry(data: Record<string, unknown>) {
 }
 
 /**
- * Helper: creates a mock site Data Store entry with the given object as a
- * UTF-8 JSON string under `data`, matching the format expected by
- * `getAndUnpackDataStoreEntry` for site manifests.
+ * Helper: creates a mock site Data Store entry. As of the unified manifest
+ * unpack path, both page and site manifests share the deflate+base64
+ * `compressedData` envelope — this helper exists for readability at call
+ * sites that semantically work with site manifests.
  */
 function packSiteEntry(data: Record<string, unknown>) {
-    return { value: { data: JSON.stringify(data) } };
+    return packPageEntry(data);
 }
 
 /** Base URL pattern matching SCAPI shopperExperience getPage endpoint */
@@ -112,16 +118,17 @@ function middlewareParams(request: Request, overrides: { schemaPath?: string; id
  * returns null (e.g. feature flag disabled, no data store).
  */
 async function invokeMiddlewareAndGetHandler(context: ReturnType<typeof createTestContext>) {
-    const scapiMiddlewares: ScapiMiddlewareEntry[] = [];
-    context.set(scapiMiddlewareContext, scapiMiddlewares);
+    const registry = new ScapiMiddlewareRegistry();
+    context.set(scapiMiddlewareContext, registry);
 
     const next = vi.fn().mockResolvedValue(new Response());
     await pageDesignerResolutionMiddleware({ context } as any, next);
 
     expect(next).toHaveBeenCalled();
-    expect(scapiMiddlewares).toHaveLength(1);
+    const entries = Array.from(registry.entries());
+    expect(entries).toHaveLength(1);
 
-    const entry = scapiMiddlewares[0];
+    const entry = entries[0];
     expect(entry.clients).toEqual(['shopperExperience']);
 
     const middleware = entry.factory(context, mockClients);
@@ -133,11 +140,19 @@ async function invokeMiddlewareAndGetHandler(context: ReturnType<typeof createTe
 /**
  * Helper: creates a context with the feature flag enabled and data store available,
  * invokes the middleware, and returns the onRequest handler.
+ *
+ * The site URL config context is pre-populated with a lazy loader that
+ * resolves to a media host prefix so `resolveGetPageRequest` does not bail
+ * out at its `mediaHostPrefix` guard — tests that exercise the missing-
+ * prefix path skip this setup so the loader resolves to `null`.
  */
 async function setupHandler() {
     const context = createTestContext({
         appConfig: { features: { mrtBasedPageDesignerResolution: true } } as any,
     });
+    // The lazy middleware stores a loader function rather than a value;
+    // mirror that shape here so `getSiteUrlConfig` resolves correctly.
+    context.set(siteUrlConfigContext, (() => Promise.resolve({ mediaHostPrefix: 'https://www.shop.example' })) as any);
 
     const handler = await invokeMiddlewareAndGetHandler(context);
     if (!handler) throw new Error('Expected factory to return a middleware with onRequest handler');
@@ -155,17 +170,20 @@ describe('pageDesignerResolutionMiddleware', () => {
     });
 
     describe('factory registration', () => {
-        it('should not register a factory entry when feature flag is disabled', async () => {
+        it('should not register any SCAPI factory when the feature flag is disabled', async () => {
+            // With the feature flag off and no debug telemetry, the
+            // middleware is a no-op: no SCAPI factory is registered, so
+            // getPage requests pass through to the SCAPI client unchanged.
             const context = createTestContext({
                 appConfig: { features: { mrtBasedPageDesignerResolution: false } } as any,
             });
-            const scapiMiddlewares: ScapiMiddlewareEntry[] = [];
-            context.set(scapiMiddlewareContext, scapiMiddlewares);
+            const registry = new ScapiMiddlewareRegistry();
+            context.set(scapiMiddlewareContext, registry);
 
             const next = vi.fn().mockResolvedValue(new Response());
             await pageDesignerResolutionMiddleware({ context } as any, next);
 
-            expect(scapiMiddlewares).toHaveLength(0);
+            expect(Array.from(registry.entries())).toHaveLength(0);
             expect(next).toHaveBeenCalled();
         });
 
@@ -173,16 +191,35 @@ describe('pageDesignerResolutionMiddleware', () => {
             const context = createTestContext({
                 appConfig: { features: { mrtBasedPageDesignerResolution: true } } as any,
             });
-            const scapiMiddlewares: ScapiMiddlewareEntry[] = [];
-            context.set(scapiMiddlewareContext, scapiMiddlewares);
+            const registry = new ScapiMiddlewareRegistry();
+            context.set(scapiMiddlewareContext, registry);
 
             const next = vi.fn().mockResolvedValue(new Response());
             await pageDesignerResolutionMiddleware({ context } as any, next);
 
-            expect(scapiMiddlewares).toHaveLength(1);
-            expect(scapiMiddlewares[0].clients).toEqual(['shopperExperience']);
-            expect(typeof scapiMiddlewares[0].factory).toBe('function');
+            const entries = Array.from(registry.entries());
+            expect(entries).toHaveLength(1);
+            expect(entries[0].clients).toEqual(['shopperExperience']);
+            expect(typeof entries[0].factory).toBe('function');
             expect(next).toHaveBeenCalled();
+        });
+
+        it('replaces the existing entry for the same key when run twice on the same request', async () => {
+            // Idempotency check: if the router middleware were to fire
+            // twice within one request the registry must not produce two
+            // factory entries (which would cause duplicate logs / double
+            // SCAPI middleware on the same client).
+            const context = createTestContext({
+                appConfig: { features: { mrtBasedPageDesignerResolution: true } } as any,
+            });
+            const registry = new ScapiMiddlewareRegistry();
+            context.set(scapiMiddlewareContext, registry);
+
+            const next = vi.fn().mockResolvedValue(new Response());
+            await pageDesignerResolutionMiddleware({ context } as any, next);
+            await pageDesignerResolutionMiddleware({ context } as any, next);
+
+            expect(Array.from(registry.entries())).toHaveLength(1);
         });
 
         it('should return an onRequest handler from factory when feature flag is enabled', async () => {
@@ -245,6 +282,53 @@ describe('pageDesignerResolutionMiddleware', () => {
             await handler(middlewareParams(new Request(getPageUrl('homepage'))));
 
             expect(mockedResolvePage).toHaveBeenCalled();
+        });
+    });
+
+    describe('mediaHostPrefix guard', () => {
+        async function setupHandlerWithoutMediaHostPrefix() {
+            const context = createTestContext({
+                appConfig: { features: { mrtBasedPageDesignerResolution: true } } as any,
+            });
+            // Intentionally do NOT set siteUrlConfigContext — this simulates
+            // an environment where the ECOM SiteUrlConfigDalEntryProvider
+            // hasn't synced its entry yet (e.g. local dev).
+            const handler = await invokeMiddlewareAndGetHandler(context);
+            if (!handler) throw new Error('Expected factory to return a middleware');
+            return handler;
+        }
+
+        it('falls through to SCAPI without calling resolvePage when mediaHostPrefix is unavailable', async () => {
+            const handler = await setupHandlerWithoutMediaHostPrefix();
+
+            const result = await handler(middlewareParams(new Request(getPageUrl('homepage'))));
+
+            expect(result).toBeUndefined();
+            expect(mockedResolvePage).not.toHaveBeenCalled();
+        });
+
+        it('logs a warning when mediaHostPrefix is unavailable on a page request', async () => {
+            const handler = await setupHandlerWithoutMediaHostPrefix();
+
+            await handler(middlewareParams(new Request(getPageUrl('homepage'))));
+
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                expect.stringContaining('mediaHostPrefix not available'),
+                expect.objectContaining({ pageId: 'homepage' })
+            );
+        });
+
+        it('does not log when the request is not a page request (no spam on every SCAPI call)', async () => {
+            const handler = await setupHandlerWithoutMediaHostPrefix();
+
+            await handler(
+                middlewareParams(new Request(`${SCAPI_BASE}/other-endpoint`), {
+                    schemaPath: '/other',
+                    id: 'other',
+                })
+            );
+
+            expect(mockLogger.warn).not.toHaveBeenCalled();
         });
     });
 
@@ -386,10 +470,16 @@ describe('pageDesignerResolutionMiddleware', () => {
             mockResolveQualifiers.mockRejectedValue(new Error('qualifier API failed'));
 
             const contextResolver = await captureContextResolver();
-            const result = await contextResolver({} as any);
+            // Populated context — empty input would short-circuit before
+            // resolveQualifiers is called (see "early-return" test below).
+            const result = await contextResolver({
+                campaignQualifiers: [{ id: 'q1' }],
+                customerGroups: [],
+                dataBindings: [],
+            } as any);
 
             expect(result).toBeNull();
-            expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Failed to resolve qualifiers', {
+            expect(mockLogger.error).toHaveBeenCalledWith('[PageResolutionMiddleware] Failed to resolve qualifiers', {
                 message: 'Failed to resolve qualifiers',
                 cause: expect.any(Error),
             });
@@ -400,10 +490,20 @@ describe('pageDesignerResolutionMiddleware', () => {
 
             const contextResolver = await captureContextResolver();
 
-            await expect(contextResolver({} as any)).resolves.toBeNull();
+            await expect(
+                contextResolver({
+                    campaignQualifiers: [{ id: 'q1' }],
+                    customerGroups: [],
+                    dataBindings: [],
+                } as any)
+            ).resolves.toBeNull();
         });
 
-        it('should pass undefined context fields through to resolveQualifiers', async () => {
+        it('should short-circuit and return null when all context fields are empty', async () => {
+            // Empty/undefined context arrays are a no-op — the resolver
+            // returns null without making a network call. This avoids
+            // wasted SCAPI requests for pages that have no qualifier
+            // bindings.
             mockResolveQualifiers.mockResolvedValue({ data: {} });
 
             const contextResolver = await captureContextResolver();
@@ -413,16 +513,10 @@ describe('pageDesignerResolutionMiddleware', () => {
                 dataBindings: undefined,
             };
 
-            await contextResolver(inputContext as any);
+            const result = await contextResolver(inputContext as any);
 
-            expect(mockResolveQualifiers).toHaveBeenCalledWith({
-                params: {},
-                body: {
-                    campaignQualifiers: undefined,
-                    dataBindings: undefined,
-                    customerGroups: undefined,
-                },
-            });
+            expect(result).toBeNull();
+            expect(mockResolveQualifiers).not.toHaveBeenCalled();
         });
     });
 
@@ -469,7 +563,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getPageManifest('missing-page');
 
                 expect(result).toBeNull();
-                expect(mockLogger.warn).toHaveBeenCalledWith('[PageDesigner] Data store entry not found', {
+                expect(mockLogger.warn).toHaveBeenCalledWith('[PageResolutionMiddleware] Data store entry not found', {
                     message: 'not found',
                 });
             });
@@ -481,7 +575,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getPageManifest('some-page');
 
                 expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Data store unavailable', {
+                expect(mockLogger.error).toHaveBeenCalledWith('[PageResolutionMiddleware] Data store unavailable', {
                     message: 'unavailable',
                 });
             });
@@ -493,7 +587,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getPageManifest('some-page');
 
                 expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Data store service error', {
+                expect(mockLogger.error).toHaveBeenCalledWith('[PageResolutionMiddleware] Data store service error', {
                     message: 'service error',
                 });
             });
@@ -505,10 +599,13 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getPageManifest('bad-page');
 
                 expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Failed to unpack data store entry', {
-                    message: expect.stringContaining('Failed to unpack data store entry'),
-                    cause: expect.anything(),
-                });
+                expect(mockLogger.error).toHaveBeenCalledWith(
+                    '[PageResolutionMiddleware] Failed to unpack data store entry',
+                    {
+                        message: expect.stringContaining('Failed to unpack data store entry'),
+                        cause: expect.anything(),
+                    }
+                );
             });
 
             it('should return null and log unpack error when entry has invalid compressed data', async () => {
@@ -520,10 +617,13 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getPageManifest('bad-page');
 
                 expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Failed to unpack data store entry', {
-                    message: expect.stringContaining('Failed to unpack data store entry'),
-                    cause: expect.anything(),
-                });
+                expect(mockLogger.error).toHaveBeenCalledWith(
+                    '[PageResolutionMiddleware] Failed to unpack data store entry',
+                    {
+                        message: expect.stringContaining('Failed to unpack data store entry'),
+                        cause: expect.anything(),
+                    }
+                );
             });
 
             it('should return null and log unpack error when decompressed data is not valid JSON', async () => {
@@ -534,31 +634,33 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getPageManifest('bad-page');
 
                 expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Failed to unpack data store entry', {
-                    message: expect.stringContaining('Failed to unpack data store entry'),
-                    cause: expect.anything(),
-                });
-            });
-
-            it('should return null and log unexpected error for unknown errors from getEntry', async () => {
-                mockGetEntry.mockRejectedValue(new Error('unexpected'));
-
-                const manifestStorage = await captureManifestStorage();
-                const result = await manifestStorage.getPageManifest('some-page');
-
-                expect(result).toBeNull();
                 expect(mockLogger.error).toHaveBeenCalledWith(
-                    '[PageDesigner] Unexpected error during page resolution',
-                    { error: expect.any(String) }
+                    '[PageResolutionMiddleware] Failed to unpack data store entry',
+                    {
+                        message: expect.stringContaining('Failed to unpack data store entry'),
+                        cause: expect.anything(),
+                    }
                 );
             });
 
-            it('should not throw for any error type (errors are forwarded to onError)', async () => {
+            it('should propagate unknown errors from getEntry (forwarded to error boundary)', async () => {
+                // Unknown errors are NOT swallowed at the manifest-storage
+                // layer — the error handler rethrows them so the outer
+                // onRequest wrapper logs them as unexpected and the error
+                // boundary takes over. Known data-store errors (covered by
+                // the cases above) resolve to null.
+                mockGetEntry.mockRejectedValue(new Error('unexpected'));
+
+                const manifestStorage = await captureManifestStorage();
+
+                await expect(manifestStorage.getPageManifest('some-page')).rejects.toThrow('unexpected');
+            });
+
+            it('should resolve null for all known data-store error types (errors are forwarded to onError)', async () => {
                 const errorCases = [
                     new DataStoreNotFoundError('not found'),
                     new DataStoreUnavailableError('unavailable'),
                     new DataStoreServiceError('service error'),
-                    new Error('unknown'),
                 ];
 
                 for (const error of errorCases) {
@@ -590,7 +692,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getSiteManifest();
 
                 expect(result).toBeNull();
-                expect(mockLogger.warn).toHaveBeenCalledWith('[PageDesigner] Data store entry not found', {
+                expect(mockLogger.warn).toHaveBeenCalledWith('[PageResolutionMiddleware] Data store entry not found', {
                     message: 'not found',
                 });
             });
@@ -602,7 +704,7 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getSiteManifest();
 
                 expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Data store unavailable', {
+                expect(mockLogger.error).toHaveBeenCalledWith('[PageResolutionMiddleware] Data store unavailable', {
                     message: 'unavailable',
                 });
             });
@@ -614,43 +716,44 @@ describe('pageDesignerResolutionMiddleware', () => {
                 const result = await manifestStorage.getSiteManifest();
 
                 expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Data store service error', {
+                expect(mockLogger.error).toHaveBeenCalledWith('[PageResolutionMiddleware] Data store service error', {
                     message: 'service error',
                 });
             });
 
             it('should return null and log unpack error when entry has invalid JSON data', async () => {
-                mockGetEntry.mockResolvedValue({ value: { data: 'not valid json' } });
-
-                const manifestStorage = await captureManifestStorage();
-                const result = await manifestStorage.getSiteManifest();
-
-                expect(result).toBeNull();
-                expect(mockLogger.error).toHaveBeenCalledWith('[PageDesigner] Failed to unpack data store entry', {
-                    message: expect.stringContaining('Failed to unpack data store entry'),
-                    cause: expect.anything(),
-                });
-            });
-
-            it('should return null and log unexpected error for unknown errors from getEntry', async () => {
-                mockGetEntry.mockRejectedValue(new Error('unexpected'));
+                const compressed = deflateSync(Buffer.from('not json', 'utf-8'));
+                mockGetEntry.mockResolvedValue({ value: { compressedData: compressed.toString('base64') } });
 
                 const manifestStorage = await captureManifestStorage();
                 const result = await manifestStorage.getSiteManifest();
 
                 expect(result).toBeNull();
                 expect(mockLogger.error).toHaveBeenCalledWith(
-                    '[PageDesigner] Unexpected error during page resolution',
-                    { error: expect.any(String) }
+                    '[PageResolutionMiddleware] Failed to unpack data store entry',
+                    {
+                        message: expect.stringContaining('Failed to unpack data store entry'),
+                        cause: expect.anything(),
+                    }
                 );
             });
 
-            it('should not throw for any error type (errors are forwarded to onError)', async () => {
+            it('should propagate unknown errors from getEntry (forwarded to error boundary)', async () => {
+                // See getPageManifest counterpart — unknown errors bubble
+                // out so the outer onRequest catch can log "Unexpected
+                // error during page resolution" and rethrow.
+                mockGetEntry.mockRejectedValue(new Error('unexpected'));
+
+                const manifestStorage = await captureManifestStorage();
+
+                await expect(manifestStorage.getSiteManifest()).rejects.toThrow('unexpected');
+            });
+
+            it('should resolve null for all known data-store error types (errors are forwarded to onError)', async () => {
                 const errorCases = [
                     new DataStoreNotFoundError('not found'),
                     new DataStoreUnavailableError('unavailable'),
                     new DataStoreServiceError('service error'),
-                    new Error('unknown'),
                 ];
 
                 for (const error of errorCases) {
@@ -780,11 +883,11 @@ describe('pageDesignerResolutionMiddleware', () => {
             await handler(middlewareParams(new Request(getPageUrl('homepage'))));
 
             expect(mockLogger.debug).toHaveBeenCalledWith(
-                '[page-resolution-middleware] page resolution',
+                '[PageResolutionMiddleware] page resolution',
                 expect.objectContaining({
                     resolvedPageId: 'homepage',
                     resolvedPageTypeId: 'storefront',
-                    parameters: expect.objectContaining({
+                    resolvedParameters: expect.objectContaining({
                         id: 'homepage',
                         identifierType: 'page',
                         locale: expect.any(String),
@@ -803,7 +906,7 @@ describe('pageDesignerResolutionMiddleware', () => {
             await handler(middlewareParams(new Request(getPageUrl('nonexistent'))));
 
             expect(mockLogger.debug).toHaveBeenCalledWith(
-                '[page-resolution-middleware] page resolution',
+                '[PageResolutionMiddleware] page resolution',
                 expect.objectContaining({
                     resolvedPageId: undefined,
                     resolvedPageTypeId: undefined,
@@ -822,9 +925,9 @@ describe('pageDesignerResolutionMiddleware', () => {
             await handler(middlewareParams(new Request(getPageUrl('pdp', { aspectAttributes }))));
 
             expect(mockLogger.debug).toHaveBeenCalledWith(
-                '[page-resolution-middleware] page resolution',
+                '[PageResolutionMiddleware] page resolution',
                 expect.objectContaining({
-                    parameters: expect.objectContaining({
+                    resolvedParameters: expect.objectContaining({
                         id: 'shirt-001',
                         identifierType: 'product',
                     }),
@@ -840,9 +943,9 @@ describe('pageDesignerResolutionMiddleware', () => {
             await handler(middlewareParams(new Request(getPageUrl('plp', { aspectAttributes }))));
 
             expect(mockLogger.debug).toHaveBeenCalledWith(
-                '[page-resolution-middleware] page resolution',
+                '[PageResolutionMiddleware] page resolution',
                 expect.objectContaining({
-                    parameters: expect.objectContaining({
+                    resolvedParameters: expect.objectContaining({
                         id: 'mens',
                         identifierType: 'category',
                     }),

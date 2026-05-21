@@ -13,13 +13,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { IdentifierType, ManifestStorage, ContextResolver, QualifierContext } from '../types';
+import type {
+    IdentifierType,
+    ManifestStorage,
+    ContextResolver,
+    QualifierContext,
+    PageMetadataOverlay,
+    VariationEntry,
+} from '../types';
 import type { ShopperExperience } from '@/scapi-client/types';
 import { ContentAssignmentResolvers } from '../manifest/content-assignment-resolvers';
 import { resolveDynamicPageId } from '../manifest/resolve-dynamic-page-id';
 import { getPageFromManifest } from '../manifest/get-page';
 import { processPage } from './process-page';
+import type { AttributeResolutionContext } from './attribute-resolution';
 import { RequiredError } from '../errors/required';
+
+/**
+ * Page metadata fields the manifest builder may locale-overlay. Used by
+ * {@link applyPageMetadataOverlay} to know which keys to copy from the
+ * overlay onto the resolved page; structural fields like `id`, `typeId`,
+ * and `regions` are intentionally excluded.
+ */
+const PAGE_METADATA_OVERLAY_KEYS = [
+    'name',
+    'aspectTypeId',
+    'description',
+    'pageTitle',
+    'pageDescription',
+    'pageKeywords',
+] as const satisfies readonly (keyof PageMetadataOverlay)[];
+
+/**
+ * Applies a per-locale page metadata overlay to the variation's default-locale
+ * page. The overlay is a **full replacement** for the listed metadata fields
+ * — when a key is present in the overlay it wins; when absent we fall through
+ * to the default-locale value (Q6 of the design plan).
+ *
+ * Returns a shallow copy of the page with overlaid fields applied. Structural
+ * fields (`id`, `typeId`, `regions`, `data`) are never touched.
+ */
+function applyPageMetadataOverlay(variation: VariationEntry, locale: string): ShopperExperience.schemas['Page'] {
+    const overlay = variation.pageContent?.[locale];
+
+    if (!overlay) {
+        return variation.page;
+    }
+
+    const out: ShopperExperience.schemas['Page'] = { ...variation.page };
+
+    for (const key of PAGE_METADATA_OVERLAY_KEYS) {
+        if (overlay[key] !== undefined) {
+            out[key] = overlay[key];
+        }
+    }
+
+    return out;
+}
 
 /**
  * Main entry point for the page resolution pipeline. Orchestrates the full flow:
@@ -83,16 +133,27 @@ export async function resolvePage({
     identifierType,
     aspectType,
     locale,
+    defaultLocale,
     manifestStorage,
     contextResolver,
+    attrCtx,
     pruneInvisible = true,
 }: {
     id: string;
     identifierType: IdentifierType;
     aspectType?: string;
     locale: string;
+    defaultLocale: string;
     manifestStorage: ManifestStorage;
     contextResolver?: ContextResolver;
+    /**
+     * Per-request resolution surface for attribute envelope rewriting. Built
+     * once per request by the storefront-next middleware (or Page Designer
+     * preview). The `componentTypes` map travels on the
+     * {@link PageManifest} itself and is read off the manifest below before
+     * being threaded into {@link processPage}.
+     */
+    attrCtx: AttributeResolutionContext;
     pruneInvisible?: boolean;
 }): Promise<ShopperExperience.schemas['Page'] | null> {
     let resolvedId: string | null = null;
@@ -132,13 +193,37 @@ export async function resolvePage({
         context = pageResults.context ?? (await contextResolver?.(pageManifest.context)) ?? null;
     }
 
-    return processPage(pageResults.entry.page, {
+    // Apply per-locale page metadata overlay before processing. The overlay
+    // carries the SCAPI-shape page metadata fields (`name`, `aspectTypeId`,
+    // `description`, `pageTitle`, `pageDescription`, `pageKeywords`) that may
+    // differ per locale. When the request locale isn't in `pageContent`, we
+    // fall back to the default-locale page on `variation.page`. Q6 of the
+    // design plan locks in full-replacement semantics; see
+    // {@link applyPageMetadataOverlay} for the field-by-field policy.
+    const localizedPage = applyPageMetadataOverlay(pageResults.entry, locale);
+
+    // Thread manifest-level pageLibraryDomain onto the resolution context so
+    // the markup rewriter can resolve ?$staticlink$ without the caller having
+    // to know the library domain up-front (B.2 — the manifest is the source
+    // of truth for this value).
+    const resolvedAttrCtx =
+        pageManifest.pageLibraryDomain && !attrCtx.pageLibraryDomain
+            ? { ...attrCtx, pageLibraryDomain: pageManifest.pageLibraryDomain }
+            : attrCtx;
+
+    return processPage(localizedPage, {
         qualifiers: context,
         componentInfo: pageManifest.componentInfo,
         pageInfo: {
             regions: pageResults.entry.regions,
         },
         locale,
+        defaultLocale,
+        attrCtx: resolvedAttrCtx,
+        // `componentTypes` lives on the manifest. May be `undefined` for
+        // older manifests; the optional typing on `PageProcessorContext`
+        // covers that case.
+        componentTypes: pageManifest.componentTypes,
         pruneInvisible,
     });
 }

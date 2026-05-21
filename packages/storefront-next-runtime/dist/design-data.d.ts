@@ -1,5 +1,163 @@
 import { r as ShopperExperience } from "./types2.js";
 
+//#region src/design/data/page/attribute-resolution.d.ts
+
+/**
+ * Per-request resolution surface. Storefront-next builds one of these from
+ * the request URL + site config; Page Designer preview builds one against
+ * the BM origin. Both surfaces inject URL-building utilities so this module
+ * stays platform-neutral.
+ */
+interface AttributeResolutionContext {
+  /**
+   * Storefront origin used to absolutize URLs, e.g.
+   * `"https://www.shop.example"`. Page Designer preview supplies the BM
+   * origin instead.
+   */
+  host: string;
+  /**
+   * Builds a static-content URL for a media-file path inside a library.
+   * Mirrors ECOM's `MediaFile.getAbsURL()` chain, parameterized by the
+   * storefront request rather than a JVM `Request`.
+   *
+   * The {@code locale} hint is optional — when omitted, the resolver
+   * substitutes `"default"` so URLs still resolve.
+   */
+  resolveMediaUrl: (ref: {
+    libraryDomain: string;
+    path: string;
+    locale?: string;
+  }) => string;
+  /**
+   * Resolves a library-relative path inside markup (`?$staticlink$`).
+   * When omitted, falls back to {@link resolveMediaUrl}.
+   */
+  staticLinkFor?: (ref: {
+    libraryDomain: string;
+    path: string;
+    locale?: string;
+  }) => string;
+  /**
+   * Default library media domain used when rewriting `?$staticlink$`
+   * references inside markup attributes. Sourced from
+   * {@code manifest.pageLibraryDomain} and threaded through by the
+   * caller. Optional — when omitted, `?$staticlink$` placeholders inside
+   * markup are left untouched and a one-time warning fires.
+   */
+  pageLibraryDomain?: string;
+  /**
+   * Locale hint forwarded to {@link resolveMediaUrl}. Page Designer
+   * preview may omit this when the editor session has no locale; the
+   * resolver substitutes `"default"` in that case.
+   */
+  locale?: string;
+  /**
+   * Optional handler invoked when the resolver encounters a recoverable
+   * problem — malformed envelopes, unknown attribute types, depth limits
+   * exceeded. Lets the consumer route these into its own logger / metric
+   * pipeline instead of the SDK calling `console.warn` directly.
+   *
+   * The runtime dedupes calls to {@code onWarn} per
+   * `(typeId, attrId, attrType)` triple so a misshapen value processed
+   * many times only fires the handler once per process.
+   *
+   * When omitted the runtime stays silent — fits unit tests and Page
+   * Designer preview where stderr noise is undesirable. Production
+   * callers should supply a handler that forwards to their structured
+   * logger.
+   */
+  onWarn?: (warning: AttributeResolutionWarning) => void;
+}
+/**
+ * Payload passed to {@link AttributeResolutionContext.onWarn}. Keep this
+ * shape stable — consumers may pattern-match on `kind` to decide log
+ * level, attach extra metadata, etc.
+ */
+interface AttributeResolutionWarning {
+  /**
+   * Identifier for the kind of issue, useful for routing or grouping in
+   * downstream logging:
+   *
+   * - `malformed-image` / `malformed-file` / `malformed-cms-record` —
+   *   the manifest envelope didn't match the expected shape and the
+   *   value is being passed through unchanged.
+   * - `unknown-attribute-type` — the runtime saw an attribute type it
+   *   doesn't recognize (forward-compat from a newer ECOM).
+   * - `cms-record-depth-exceeded` — recursive cms_record nesting hit
+   *   the resolver's safety limit.
+   * - `staticlink-rewrite-skipped` — markup contains `?$staticlink$`
+   *   placeholders but `ctx.pageLibraryDomain` was not configured, so
+   *   the placeholder is left in the source. Fires once per process
+   *   regardless of how many markup attributes hit it (tracked via the
+   *   {@code typeId}/{@code attrId} fields, both empty strings, in the
+   *   {@code warnOnce} dedup key).
+   */
+  kind: 'malformed-image' | 'malformed-file' | 'malformed-cms-record' | 'cms-record-depth-exceeded' | 'unknown-attribute-type' | 'staticlink-rewrite-skipped';
+  /** Human-readable message — safe to log directly. */
+  message: string;
+  /** Component type id the offending attribute belongs to. */
+  typeId: string;
+  /** Attribute id within the component. */
+  attrId: string;
+  /** The attribute's declared type, when known. Empty for inner cms_record entries that don't carry a type. */
+  attrType: string;
+}
+/**
+ * Slim attribute definition used by the resolver to dispatch by type.
+ * Mirrors the fields {@code AttributeDefinition} ships in SCAPI's
+ * `componentTypes` map. Defined here so the resolver doesn't take a
+ * dependency on the larger SCAPI generated types.
+ */
+interface AttributeDefinition {
+  /** Attribute identifier as authored by the merchant (e.g. `"hero"`). */
+  id: string;
+  /**
+   * Lower-case attribute type identifier matching ECOM's
+   * {@code AttributeDefinition.Type#getID}. Examples:
+   * `"string"`, `"text"`, `"image"`, `"markup"`, `"file"`, `"cms_record"`.
+   */
+  type: string;
+  /**
+   * Default value declared on the attribute definition. Used by component
+   * data composition as a fallback when neither the active locale nor the
+   * fallback locale has a value for this attribute (see
+   * {@code processPage}'s `visitComponent`). The shape is whatever the
+   * attribute's `type` would normally hold — a string for `string`/`text`,
+   * an envelope for `image`/`file`, etc.
+   */
+  defaultValue?: unknown;
+}
+/**
+ * Resolves every attribute on a component's `data` map to the wire shape
+ * SCAPI `getPage` would have returned.
+ *
+ * Dispatch is type-driven when {@code typeAttributeDefinitions} is supplied.
+ * Otherwise the resolver inspects each value structurally — it recognizes
+ * the image envelope by the presence of `media.libraryDomain` and
+ * `media.path` and passes everything else through unchanged.
+ *
+ * Forward-compatibility (Q9): unknown attribute types pass through. Each
+ * `(typeId, attrId, attrType)` triple is logged once per process via a
+ * module-scoped dedup set.
+ *
+ * @param data                      attribute map to resolve, already
+ *                                  locale-merged + data-binding-resolved by
+ *                                  {@link processPage}.
+ * @param typeId                    component type identifier, used as part
+ *                                  of the dedup key for warnings. Empty
+ *                                  string is acceptable for anonymous
+ *                                  callers (page-level data).
+ * @param typeAttributeDefinitions  attribute definitions for {@code typeId}
+ *                                  from `manifest.componentTypes`. When
+ *                                  omitted, falls back to structural
+ *                                  detection of the image envelope.
+ * @param ctx                       per-request resolution surface.
+ * @returns a new map with each attribute's value replaced by the resolved
+ *          wire shape; pass-through for any attribute type the resolver
+ *          doesn't yet recognize.
+ */
+declare function resolveAttributeValues(data: Record<string, unknown> | undefined | null, typeId: string, typeAttributeDefinitions: Record<string, AttributeDefinition> | undefined, ctx: AttributeResolutionContext): Record<string, unknown>;
+//#endregion
 //#region src/design/data/types.d.ts
 
 /**
@@ -20,6 +178,22 @@ interface PageManifest {
   /** The variation ID to use when no other variation's rule matches. */
   defaultVariation: string;
   /**
+   * Per-component-type attribute definitions hoisted from the page layout
+   * by the manifest builder, deduped by `typeId`. Used by the MRT
+   * attribute resolver to dispatch by attribute type without round-tripping
+   * to ECOM. Optional — older manifests may not include this field.
+   */
+  componentTypes?: Record<string, {
+    attributeDefinitions: Record<string, AttributeDefinition>;
+  }>;
+  /**
+   * Media-file domain name of the page's owning library. Used by the markup
+   * URL rewriter to resolve `?$staticlink$` placeholders at request time.
+   * Set by the manifest builder from `library.getMediaFileDomain().getDomainName()`.
+   * Optional — older manifests may not include this field.
+   */
+  pageLibraryDomain?: string;
+  /**
    * Component visibility rule definitions extracted from the page layout.
    * Maps each component ID to its array of rule objects and a flag indicating
    * if any rules are defined for that component.
@@ -27,7 +201,7 @@ interface PageManifest {
   componentInfo: {
     [componentId: string]: {
       /** The visibility rules for this component. */
-      visibilityRules: VisibilityRuleDef[];
+      visibilityRules?: VisibilityRuleDef[];
       /**
        * Locale-specific content attributes for this component. Keyed by locale
        * (e.g. `"en_US"`), each entry contains attribute values that are merged
@@ -36,10 +210,16 @@ interface PageManifest {
       content?: {
         [locale: string]: Record<string, unknown>;
       };
-      /** Data binding metadata for this component, or `null` if not bound. */
-      dataBinding?: ComponentDataBinding | null;
+      /** Data binding metadata for this component. Omitted when the component has no bindings. */
+      dataBinding?: ComponentDataBinding;
+      /** Whether this component is a fragment (a reusable, externally-managed content asset). */
+      fragment?: boolean;
+      /** Custom component data produced by the type's serialize script. Omitted when the component has no custom data. */
+      custom?: Record<string, unknown>;
+      /** Display name of the component. Omitted when the component has no name. */
+      name?: string;
       /** Region-level configuration (e.g. maxComponents limits), keyed by region ID. */
-      regions: {
+      regions?: {
         [regionId: string]: RegionInfo;
       };
     };
@@ -48,13 +228,13 @@ interface PageManifest {
 /** Region-level configuration extracted from the page manifest, including type filters and component limits. */
 interface RegionInfo {
   /** The name of the region. */
-  name: string;
+  name?: string;
   /** The component type exclusions for the region. */
-  componentTypeExclusions: string[] | null;
+  componentTypeExclusions?: string[];
   /** The component type inclusions for the region. */
-  componentTypeInclusions: string[] | null;
-  /** Maximum number of visible components to render in this region, or `null` for no limit. */
-  maxComponents: number | null;
+  componentTypeInclusions?: string[];
+  /** Maximum number of visible components to render in this region. Omitted when there is no limit. */
+  maxComponents?: number;
 }
 /**
  * Site-wide manifest containing content assignments that map product and category
@@ -152,12 +332,51 @@ interface VariationEntry {
   ruleRequiresContext: boolean;
   /** The visibility rule that must pass for this variation to be selected. Undefined for the default variation. */
   visibilityRule?: VisibilityRuleDef;
-  /** The full page data for this variation. */
+  /**
+   * The full page data for this variation. Includes the SCAPI-shape page
+   * metadata fields (`name`, `aspectTypeId`, `description`, `pageTitle`,
+   * `pageDescription`, `pageKeywords`) populated from the default-locale
+   * `Page` by the manifest builder. Non-default-locale overrides for
+   * these fields live in {@link pageContent}.
+   */
   page: ShopperExperience.schemas['Page'];
+  /**
+   * Per-locale overlay for the variation's page metadata. When the request
+   * locale is not the default and the page metadata differs, the manifest
+   * builder writes the **full set** of locale-specific page metadata fields
+   * here (full replacement, not diff — see Q6 of the design plan).
+   *
+   * Each entry is a partial `Page` carrying only the metadata fields that
+   * may be locale-overridden (`name`, `aspectTypeId`, `description`,
+   * `pageTitle`, `pageDescription`, `pageKeywords`); structural fields
+   * (`id`, `typeId`, `regions`) live on {@link page} and are never
+   * locale-overlaid.
+   *
+   * Absent or missing entries fall back to the default-locale page
+   * metadata. Optional — older manifests may not include this field.
+   */
+  pageContent?: {
+    [locale: string]: PageMetadataOverlay;
+  };
   /** Page-level region configuration for this variation, keyed by region ID. These are top-level regions owned by the page itself, not nested under a component. */
   regions: {
     [regionId: string]: RegionInfo;
   };
+}
+/**
+ * Subset of {@link ShopperExperience.schemas#Page} fields that the manifest
+ * builder may locale-overlay. Stored on
+ * {@link VariationEntry.pageContent} keyed by locale ID. Structural fields
+ * (`id`, `typeId`, `regions`) are intentionally excluded — they are not
+ * locale-scoped.
+ */
+interface PageMetadataOverlay {
+  name?: string;
+  aspectTypeId?: string;
+  description?: string;
+  pageTitle?: string;
+  pageDescription?: string;
+  pageKeywords?: string;
 }
 /**
  * A visibility rule definition that controls when a page variation or component
@@ -231,6 +450,24 @@ interface PageProcessorContext {
   };
   /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
   locale: string;
+  /** The site's default locale, used as a fallback when the current locale has no content entry (e.g. `"en_US"`). */
+  defaultLocale: string;
+  /**
+   * Per-request resolution surface used by {@link resolveAttributeValues} to
+   * convert manifest envelopes into the wire shape SCAPI `getPage` would have
+   * returned. The storefront-next middleware builds it once per request and
+   * Page Designer preview supplies an editor-mode equivalent.
+   */
+  attrCtx: AttributeResolutionContext;
+  /**
+   * Per-component-type attribute definitions hoisted by the manifest builder.
+   * Keyed by `typeId`. Optional — when omitted, the resolver falls back to
+   * structural detection for the image envelope and passes everything else
+   * through.
+   */
+  componentTypes?: Record<string, {
+    attributeDefinitions: Record<string, AttributeDefinition>;
+  }>;
   /**
    * When `true` (default), invisible components are removed from the tree and
    * regions are truncated to their `maxComponents` limit. When `false`, invisible
@@ -239,57 +476,6 @@ interface PageProcessorContext {
    */
   pruneInvisible?: boolean;
 }
-/**
- * Filters a page's components based on their visibility rules and resolves
- * data binding expressions in a single traversal. Traverses the page tree
- * using the visitor pattern and:
- *
- * 1. Removes any component whose visibility rules do not pass against the
- *    shopper's qualifier context.
- * 2. Resolves data binding expressions in each surviving component's `data`
- *    attributes using the resolved data bindings from context resolution.
- *
- * A component is visible if **any** of its visibility rules pass (OR logic).
- * If a component has rules and none of them pass, it is removed. Components
- * without rules are always included.
- *
- * @param page - The page to process.
- * @param context - The processing context with qualifier data, visibility rules, and resolved data bindings.
- * @returns A new page with invisible components filtered out and data binding expressions resolved.
- *
- * @example
- * ```ts
- * import { processPage } from '@salesforce/storefront-next-runtime/design/data';
- *
- * const page = {
- *     id: 'homepage',
- *     typeId: 'storePage',
- *     regions: [{
- *         id: 'main',
- *         components: [
- *             { id: 'public-banner', typeId: 'commerce_assets.heroBanner', regions: [] },
- *             { id: 'loyalty-offer', typeId: 'commerce_assets.promoTile', regions: [] },
- *         ],
- *     }],
- * };
- *
- * // The "loyalty-offer" component requires the shopper to be in "loyalty-members"
- * const componentInfo = {
- *     'public-banner': { visibilityRules: [] },
- *     'loyalty-offer': {
- *         visibilityRules: [{ customerGroups: ['loyalty-members'] }],
- *     },
- * };
- *
- * // Guest shopper — not in any customer group
- * const filtered = processPage(page, {
- *     qualifiers: { customerGroups: {}, campaignQualifiers: {} },
- *     componentInfo,
- * });
- * // filtered.regions[0].components has only "public-banner"
- * // "loyalty-offer" was removed because the shopper isn't a loyalty member
- * ```
- */
 declare function processPage(page: ShopperExperience.schemas['Page'], processorContext: PageProcessorContext): ShopperExperience.schemas['Page'];
 //#endregion
 //#region src/design/data/page/transform.d.ts
@@ -721,16 +907,27 @@ declare function resolvePage({
   identifierType,
   aspectType,
   locale,
+  defaultLocale,
   manifestStorage,
   contextResolver,
+  attrCtx,
   pruneInvisible
 }: {
   id: string;
   identifierType: IdentifierType;
   aspectType?: string;
   locale: string;
+  defaultLocale: string;
   manifestStorage: ManifestStorage;
   contextResolver?: ContextResolver;
+  /**
+   * Per-request resolution surface for attribute envelope rewriting. Built
+   * once per request by the storefront-next middleware (or Page Designer
+   * preview). The `componentTypes` map travels on the
+   * {@link PageManifest} itself and is read off the manifest below before
+   * being threaded into {@link processPage}.
+   */
+  attrCtx: AttributeResolutionContext;
   pruneInvisible?: boolean;
 }): Promise<ShopperExperience.schemas['Page'] | null>;
 //#endregion
@@ -986,5 +1183,12 @@ declare const ContentAssignmentResolvers: Map<string, ContentAssignmentResolver>
  */
 declare function validateRule(rule: VisibilityRuleDef, locale: string, context?: QualifierContext | null): boolean;
 //#endregion
-export { CampaignQualifier, ComponentDataBinding, ContentAssignmentResolvers, ContextResolver, DataBindingRequirement, IdentifierType, InferNodeFromType, ManifestStorage, PageManifest, PageManifestContext, type PageProcessorContext, type PageVisitor, QualifierContext, RegionInfo, RequiredError, ResolvedDataBinding, SiteManifest, VariationEntry, VisibilityRuleDef, type VisitorContext, VisitorContextType, getPageFromManifest, parseExpression, processPage, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
+//#region src/design/data/page/markup-url-rewriter.d.ts
+/**
+ * Rewrites `?$staticlink$` placeholders in markup to fully-qualified
+ * static-content URLs. Pipeline-action placeholders pass through unchanged.
+ */
+declare function rewriteMarkup(source: string, ctx: AttributeResolutionContext): string;
+//#endregion
+export { type AttributeDefinition, type AttributeResolutionContext, type AttributeResolutionWarning, CampaignQualifier, ComponentDataBinding, ContentAssignmentResolvers, ContextResolver, DataBindingRequirement, IdentifierType, InferNodeFromType, ManifestStorage, PageManifest, PageManifestContext, PageMetadataOverlay, type PageProcessorContext, type PageVisitor, QualifierContext, RegionInfo, RequiredError, ResolvedDataBinding, SiteManifest, VariationEntry, VisibilityRuleDef, type VisitorContext, VisitorContextType, getPageFromManifest, parseExpression, processPage, resolveAttributeValues, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, rewriteMarkup, transformComponent, transformPage, transformRegion, validateRule };
 //# sourceMappingURL=design-data.d.ts.map

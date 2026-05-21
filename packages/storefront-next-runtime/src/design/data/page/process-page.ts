@@ -15,6 +15,11 @@
  */
 import { transformPage } from './transform';
 import { resolveComponentDataBindings } from './resolve-data-bindings';
+import {
+    resolveAttributeValues,
+    type AttributeDefinition,
+    type AttributeResolutionContext,
+} from './attribute-resolution';
 import { validateRule } from '../validate-rule';
 import type { QualifierContext, PageManifest, VariationEntry, RegionInfo } from '../types';
 import type { ShopperExperience } from '@/scapi-client/types';
@@ -35,6 +40,22 @@ export interface PageProcessorContext {
     };
     /** The locale to use when resolving locale-specific component content (e.g. `"en_US"`). */
     locale: string;
+    /** The site's default locale, used as a fallback when the current locale has no content entry (e.g. `"en_US"`). */
+    defaultLocale: string;
+    /**
+     * Per-request resolution surface used by {@link resolveAttributeValues} to
+     * convert manifest envelopes into the wire shape SCAPI `getPage` would have
+     * returned. The storefront-next middleware builds it once per request and
+     * Page Designer preview supplies an editor-mode equivalent.
+     */
+    attrCtx: AttributeResolutionContext;
+    /**
+     * Per-component-type attribute definitions hoisted by the manifest builder.
+     * Keyed by `typeId`. Optional — when omitted, the resolver falls back to
+     * structural detection for the image envelope and passes everything else
+     * through.
+     */
+    componentTypes?: Record<string, { attributeDefinitions: Record<string, AttributeDefinition> }>;
     /**
      * When `true` (default), invisible components are removed from the tree and
      * regions are truncated to their `maxComponents` limit. When `false`, invisible
@@ -95,6 +116,55 @@ export interface PageProcessorContext {
  * // "loyalty-offer" was removed because the shopper isn't a loyalty member
  * ```
  */
+/**
+ * Builds a component's `data` map by walking each attribute definition and
+ * picking the first non-undefined value in priority order:
+ *
+ *   active-locale content → fallback-locale content → attrDef.defaultValue
+ *
+ * If none of those have a value the attribute is omitted from the result.
+ *
+ * When no `typeDefs` are supplied, we fall back to the legacy behavior:
+ * `{ ...nodeData, ...defaultContent, ...localeContent }`. This keeps
+ * already-deployed manifests rendering until the manifest builder starts
+ * emitting `componentTypes`.
+ */
+function composeComponentData({
+    nodeData,
+    defaultContent,
+    localeContent,
+    typeDefs,
+}: {
+    nodeData: Record<string, unknown> | undefined;
+    defaultContent: Record<string, unknown>;
+    localeContent: Record<string, unknown>;
+    typeDefs: Record<string, AttributeDefinition> | undefined;
+}): Record<string, unknown> {
+    if (!typeDefs || Object.keys(typeDefs).length === 0) {
+        return {
+            ...(nodeData ?? {}),
+            ...defaultContent,
+            ...localeContent,
+        };
+    }
+
+    const result: Record<string, unknown> = {};
+
+    for (const attrId of Object.keys(typeDefs)) {
+        const def = typeDefs[attrId];
+
+        if (Object.prototype.hasOwnProperty.call(localeContent, attrId)) {
+            result[attrId] = localeContent[attrId];
+        } else if (Object.prototype.hasOwnProperty.call(defaultContent, attrId)) {
+            result[attrId] = defaultContent[attrId];
+        } else if (def.defaultValue !== undefined) {
+            result[attrId] = def.defaultValue;
+        }
+    }
+
+    return result;
+}
+
 export function processPage(
     page: ShopperExperience.schemas['Page'],
     processorContext: PageProcessorContext
@@ -102,6 +172,32 @@ export function processPage(
     const { pruneInvisible = true } = processorContext;
 
     return transformPage(page, {
+        visitPage(ctx) {
+            // Page-level `data` is rare today (most pages carry no top-level
+            // attributes), but the schema permits it and SCAPI passes whatever
+            // is there straight through. Run the resolver so any image-typed
+            // page attribute lights up the same way component attributes do.
+            // We only emit a `data` property when the source page had one, to
+            // match the SCAPI shape (which omits the field for pages without
+            // top-level attributes).
+            const pageNode = ctx.node;
+            const result: ShopperExperience.schemas['Page'] = {
+                ...pageNode,
+                regions: ctx.visitRegions(pageNode.regions),
+            };
+
+            if (pageNode.data !== undefined) {
+                const typeDefs = processorContext.componentTypes?.[pageNode.typeId]?.attributeDefinitions;
+                result.data = resolveAttributeValues(
+                    pageNode.data as Record<string, unknown>,
+                    pageNode.typeId,
+                    typeDefs,
+                    processorContext.attrCtx
+                ) as typeof pageNode.data;
+            }
+
+            return result;
+        },
         visitRegion(ctx) {
             let regionInfo: RegionInfo | undefined;
 
@@ -140,8 +236,6 @@ export function processPage(
 
             return {
                 ...ctx.node,
-                // After visibility filtering, enforce the region's max component
-                // limit by keeping only the first N visible components.
                 components,
             };
         },
@@ -167,21 +261,33 @@ export function processPage(
                 }
             }
 
-            // Apply locale-specific content from the manifest to the component's data.
-            // The "default" locale provides base values; the current locale overrides them.
-            const defaultContent = componentInfo?.content?.default ?? {};
+            // Compose the component's `data` map per attribute definition with
+            // resolution priority: active-locale content → fallback-locale
+            // content → attribute-definition default value → key omitted.
+            // When no type definitions are available, fall back to the legacy
+            // merge so existing manifests still resolve.
+            const defaultContent = componentInfo?.content?.[processorContext.defaultLocale] ?? {};
             const localeContent = componentInfo?.content?.[processorContext.locale] ?? {};
-            const content = { ...defaultContent, ...localeContent };
             const isLocalized = Boolean(componentInfo?.content?.[processorContext.locale]);
+            const typeDefs = processorContext.componentTypes?.[ctx.node.typeId]?.attributeDefinitions;
+
+            const composedData = composeComponentData({
+                nodeData: ctx.node.data as Record<string, unknown> | undefined,
+                defaultContent,
+                localeContent,
+                typeDefs,
+            });
+
+            const name = componentInfo?.name ?? ctx.node.name;
+            const fragment = componentInfo?.fragment ?? ctx.node.fragment ?? false;
 
             let node: ShopperExperience.schemas['Component'] = {
                 ...ctx.node,
+                name,
+                fragment,
                 localized: isLocalized,
                 visible: isVisible,
-                data: {
-                    ...(ctx.node.data as Record<string, unknown>),
-                    ...content,
-                } as typeof ctx.node.data,
+                data: composedData as typeof ctx.node.data,
             };
 
             // Resolve data binding expressions (overrides content for bound attributes).
@@ -190,6 +296,21 @@ export function processPage(
                 componentInfo?.dataBinding,
                 processorContext.qualifiers?.dataBindings
             );
+
+            // Stamp attribute envelopes with the per-request URL/host/route info.
+            // Runs *after* the data-binding overlay so any binding-resolved values
+            // are also passed through the resolver (e.g. markup/url rewriting).
+            const resolvedData = resolveAttributeValues(
+                node.data as Record<string, unknown> | undefined,
+                node.typeId,
+                typeDefs,
+                processorContext.attrCtx
+            );
+
+            node = {
+                ...node,
+                data: resolvedData as typeof node.data,
+            };
 
             return {
                 ...node,

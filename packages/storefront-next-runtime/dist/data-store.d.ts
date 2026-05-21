@@ -1,7 +1,7 @@
 import { a as sitePreferencesContext, i as getSitePreferences, n as SitePreferences, t as DEFAULT_SITE_PREFERENCES_KEY } from "./custom-site-preferences.js";
 import { a as getCustomGlobalPreferences, n as DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, r as customGlobalPreferencesContext, t as CustomGlobalPreferences } from "./custom-global-preferences.js";
 import { a as getGcpApiKey, n as GcpPreferences, o as getGcpPreferences, r as gcpPreferencesContext, t as DEFAULT_GCP_PREFERENCES_KEY } from "./gcp-preferences.js";
-import * as react_router12 from "react-router";
+import * as react_router6 from "react-router";
 import { MiddlewareFunction, RouterContextProvider, createContext } from "react-router";
 import { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities/data-store";
 
@@ -41,6 +41,29 @@ declare function createDataStoreContext<T>(): DataStoreContextKey<T>;
  */
 declare function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response>;
 /**
+ * Lazy variant of {@link createDataStoreMiddleware}. Instead of fetching the
+ * entry up-front during middleware execution, this stores a memoized loader
+ * in the router context. Consumers call {@link readLazyDataStoreEntry} to
+ * trigger the fetch on demand — pages that never read the value never pay
+ * for the data-store call.
+ *
+ * Repeated reads within the same request share the in-flight promise so
+ * the entry is fetched at most once per request.
+ *
+ * Use this for entries that only a subset of routes consume (e.g. config
+ * read by a single feature) rather than entries needed on every request.
+ */
+declare function createLazyDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response>;
+/**
+ * Reads a value populated by {@link createLazyDataStoreMiddleware}. Triggers
+ * the underlying data-store fetch on first call and reuses the cached
+ * promise on subsequent calls within the same request.
+ *
+ * Returns `null` when the lazy middleware did not run (no loader in
+ * context) or when the entry is missing/invalid.
+ */
+declare function readLazyDataStoreEntry<T>(context: Readonly<RouterContextProvider>, contextKey: DataStoreContextKey<T>): Promise<T | null>;
+/**
  * Read a data-store entry through the singleton MRT utilities API.
  * The underlying implementation (production DynamoDB vs development pseudo store)
  * is resolved by `@salesforce/mrt-utilities/data-store` export conditions.
@@ -54,7 +77,7 @@ declare function getDataStoreEntry<TValue = unknown>(key: string): Promise<DataS
 type LoginPreferences = {
   emailVerificationEnabled?: boolean;
 };
-declare const loginPreferencesContext: react_router12.RouterContext<LoginPreferences | null>;
+declare const loginPreferencesContext: react_router6.RouterContext<LoginPreferences | null>;
 /**
  * Read login preferences from router context.
  *
@@ -64,7 +87,7 @@ declare const loginPreferencesContext: react_router12.RouterContext<LoginPrefere
 declare function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences;
 //#endregion
 //#region src/data-store/index.d.ts
-declare const dataStoreMiddleware: react_router12.MiddlewareFunction<Response>[];
+declare const dataStoreMiddleware: react_router6.MiddlewareFunction<Response>[];
 //#endregion
-export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, sitePreferencesContext };
+export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, readLazyDataStoreEntry, sitePreferencesContext };
 //# sourceMappingURL=data-store.d.ts.map
