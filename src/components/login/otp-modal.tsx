@@ -43,6 +43,7 @@ interface OtpModalProps {
     initialError?: string;
     verifyActionUrl?: string; // Custom action endpoint (defaults to /action/verify-passwordless-otp)
     onVerifyCode?: (code: string) => void; // Callback to handle OTP verification externally
+    isRegistration?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,6 +74,7 @@ export default function OtpModal({
     initialError,
     verifyActionUrl = '/action/verify-passwordless-otp',
     onVerifyCode,
+    isRegistration = false,
 }: OtpModalProps): ReactElement {
     // Track if we've already called onSuccess to prevent infinite loops
     const hasCalledOnSuccessRef = useRef(false);
@@ -107,6 +109,9 @@ export default function OtpModal({
         const formData = new FormData();
         formData.append('otpCode', code);
         formData.append('email', email);
+        if (isRegistration) {
+            formData.append('isRegistration', 'true');
+        }
         void fetcher.submit(formData, {
             method: 'POST',
             action: verifyActionUrl,

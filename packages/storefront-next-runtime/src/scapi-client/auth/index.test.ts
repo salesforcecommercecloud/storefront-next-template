@@ -854,32 +854,6 @@ describe('createAuthHelpers', () => {
                 ).rejects.toThrow('Client secret is required for passwordless token exchange');
             });
 
-            it('should include usid when provided', async () => {
-                const config: AuthConfig = {
-                    ...baseConfig,
-                    clientSecret: 'test-secret',
-                };
-
-                mockShopperLoginClient.getPasswordLessAccessToken.mockResolvedValue({
-                    data: mockTokenResponse,
-                    response: new Response(),
-                });
-
-                const auth = createAuthHelpers(config);
-                await auth.passwordless.exchangeToken({
-                    pwdlessLoginToken: 'passwordless-token',
-                    usid: 'session-usid',
-                });
-
-                expect(mockShopperLoginClient.getPasswordLessAccessToken).toHaveBeenCalledWith(
-                    expect.objectContaining({
-                        body: expect.objectContaining({
-                            usid: 'session-usid',
-                        }),
-                    })
-                );
-            });
-
             it('should include dnt when provided', async () => {
                 const config: AuthConfig = {
                     ...baseConfig,

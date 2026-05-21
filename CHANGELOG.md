@@ -1,5 +1,6 @@
 ## v1.0.0-dev
 
+- Fix passwordless registration basket invalidation: skip `mergeBasket` (transferBasket) when verifying OTP for a new registration, since SLAS creates the account under the same guest usid and the basket is already implicitly owned by the new registered customer. Add `isRegistration` form field to `OtpModal` and `action.verify-passwordless-otp` to distinguish registration from login flows (@W-22446572) ([#1703](https://github.com/commerce-emu/storefront-next/pull/1703))
 - Add a heart icon to the header that takes shoppers to their wishlist. Guests land on `/wishlist`; signed-in shoppers land on `/account/wishlist`.
 - Scope the mini cart's `shopperProducts.getProducts` request to an explicit `expand` list covering only the fields the mini cart UI consumes ([#1747](https://github.com/commerce-emu/storefront-next/pull/1747)).
 - Add support for optional hard request timeouts to the SCAPI clients ([#1732](https://github.com/commerce-emu/storefront-next/pull/1732))

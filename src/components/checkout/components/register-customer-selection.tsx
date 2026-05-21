@@ -291,6 +291,7 @@ export default function RegisterCustomerSelection({
                         onCheckoutAsGuest={handleCheckoutAsGuest}
                         onResendCode={handleResendCode}
                         otpLength={(config.auth as { otpLength: number })?.otpLength ?? 6}
+                        isRegistration={true}
                     />
                 </Suspense>
             )}

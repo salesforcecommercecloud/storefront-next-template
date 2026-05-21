@@ -898,7 +898,6 @@ describe('auth middleware (server)', () => {
 
             expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
                 pwdlessLoginToken: token,
-                usid: 'usid',
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: 'pwdless-dwsid' });
             expect(mockLogger.debug).toHaveBeenCalledWith('Auth: getPasswordLessAccessToken starting', {
@@ -932,7 +931,6 @@ describe('auth middleware (server)', () => {
 
             expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
                 pwdlessLoginToken: token,
-                usid: 'usid',
                 dnt: true, // TrackingConsent.Declined converts to true
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
@@ -960,7 +958,6 @@ describe('auth middleware (server)', () => {
 
             expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
                 pwdlessLoginToken: token,
-                usid: 'usid',
                 // No dnt parameter when feature is disabled
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
@@ -991,7 +988,6 @@ describe('auth middleware (server)', () => {
 
             expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
                 pwdlessLoginToken: token,
-                usid: 'usid',
                 // No dnt parameter when trackingConsent is not set
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });
@@ -1022,7 +1018,6 @@ describe('auth middleware (server)', () => {
 
             expect(mockAuth.passwordless.exchangeToken).toHaveBeenCalledWith({
                 pwdlessLoginToken: token,
-                usid: 'usid',
                 dnt: false, // TrackingConsent.Accepted converts to false
             });
             expect(result).toEqual({ ...mockTokenResponse, dwsid: undefined });

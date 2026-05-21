@@ -289,6 +289,7 @@ export default function Signup({ loaderData }: { loaderData: SignupLoaderData })
                         isOpen={showOTPModal}
                         email={email}
                         otpLength={otpLength}
+                        isRegistration={true}
                         verifyActionUrl={
                             // otp-verify: email verification for password registrations
                             // verify-passwordless-otp: passwordless registration verification

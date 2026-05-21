@@ -471,7 +471,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
             },
 
             exchangeToken: async (options: PasswordlessExchangeTokenOptions): Promise<AuthResponse> => {
-                const { pwdlessLoginToken, usid, dnt } = options;
+                const { pwdlessLoginToken, dnt } = options;
 
                 if (!clientSecret) {
                     throw new Error('Client secret is required for passwordless token exchange');
@@ -491,7 +491,6 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                         hint: 'pwdless_login',
                         pwdless_login_token: pwdlessLoginToken,
                         code_verifier: codeVerifier,
-                        ...(usid && { usid }),
                         ...(dnt !== undefined && { dnt: dnt.toString() }),
                     },
                 });

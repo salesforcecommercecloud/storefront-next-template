@@ -52,6 +52,7 @@ export async function action({
         const formData = await request.formData();
         const otpCode = formData.get('otpCode')?.toString();
         const email = formData.get('email')?.toString();
+        const isRegistration = formData.get('isRegistration') === 'true';
 
         if (!otpCode) {
             return data(
@@ -75,7 +76,6 @@ export async function action({
 
         const clients = createApiClients(context);
         const session = getAuth(context);
-        const usid = session.usid;
 
         // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
         const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);
@@ -87,7 +87,6 @@ export async function action({
 
         const tokenResponse = await clients.auth.passwordless.exchangeToken({
             pwdlessLoginToken: otpCode,
-            usid: usid ? String(usid) : undefined,
             ...(dnt !== undefined && { dnt }),
         });
 
@@ -101,31 +100,37 @@ export async function action({
             userType: 'registered',
         }));
 
-        // Merge basket after authentication, then recalculate so registered-only promotions
-        // and totals match the authenticated shopper (avoids checkout vs order mismatch).
-        let mergedBasket: Awaited<ReturnType<typeof mergeBasket>> | undefined;
-        try {
-            mergedBasket = await mergeBasket(context);
-        } catch (error) {
-            mergedBasket = undefined;
-            logger.error('VerifyPasswordlessOtp: basket merge failed', { error });
+        // For registrations, mergeBasket is not needed — SLAS creates the account under the same
+        // guest usid, so the basket is already owned by the new registered customer.
+        if (!isRegistration) {
+            let mergedBasket: Awaited<ReturnType<typeof mergeBasket>> | undefined;
+            try {
+                mergedBasket = await mergeBasket(context);
+            } catch (error) {
+                logger.error('VerifyPasswordlessOtp: basket merge failed', { error });
+            }
+
+            if (mergedBasket) {
+                updateBasketResource(context, mergedBasket);
+            }
         }
 
-        if (mergedBasket) {
-            updateBasketResource(context, mergedBasket);
-        }
-
+        // Fetch and recalculate basket to apply registered-user promotions and update totals.
+        // Even if mergeBasket returned undefined, we fetch here because the guest basket
+        // was transferred to the registered user and we need to retrieve it.
         try {
             const { current } = await getBasket(context);
             if (current?.basketId) {
                 const currency = getBasketCurrency(context, current);
                 const recalculatedBasket = await calculateBasket(context, current.basketId, currency);
                 updateBasketResource(context, recalculatedBasket);
-                logger.info('VerifyOtp: basket recalculated after auth swap', {
+                logger.info('VerifyPasswordlessOtp: basket recalculated after auth swap', {
                     basketId: recalculatedBasket.basketId,
                     itemCount: recalculatedBasket.productItems?.length ?? 0,
                     orderTotal: recalculatedBasket.orderTotal,
                 });
+            } else {
+                logger.warn('VerifyPasswordlessOtp: no basket found after auth swap');
             }
         } catch (error) {
             logger.error('VerifyPasswordlessOtp: basket recalculation after authentication failed', { error });

@@ -383,7 +383,6 @@ export async function getPasswordLessAccessToken(
     try {
         const result = await clients.auth.passwordless.exchangeToken({
             pwdlessLoginToken,
-            usid: usid ? String(usid) : undefined,
             ...(dnt !== undefined && { dnt }),
         });
         logger.debug('Auth: getPasswordLessAccessToken succeeded');

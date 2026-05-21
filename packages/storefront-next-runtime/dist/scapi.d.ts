@@ -29577,8 +29577,6 @@ interface PasswordlessAuthorizeOptions {
 interface PasswordlessExchangeTokenOptions {
   /** The passwordless login token from the magic link */
   pwdlessLoginToken: string;
-  /** Unique Shopper Identifier to link to a previous session */
-  usid?: string;
   /** Enable Do Not Track for the user */
   dnt?: boolean;
 }

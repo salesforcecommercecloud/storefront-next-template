@@ -19,8 +19,8 @@ import type { ActionFunctionArgs } from 'react-router';
 
 import { action } from './action.verify-passwordless-otp';
 import { createApiClients } from '@/lib/api-clients.server';
-import { getAuth, updateAuth } from '@/middlewares/auth.server';
-import { calculateBasket, getBasketCurrency } from '@/lib/api/basket.server';
+import { updateAuth } from '@/middlewares/auth.server';
+import { calculateBasket, getBasketCurrency, mergeBasket } from '@/lib/api/basket.server';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
@@ -37,10 +37,10 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 
 const mockCreateApiClients = vi.mocked(createApiClients);
-const mockGetAuth = vi.mocked(getAuth);
 const mockUpdateAuth = vi.mocked(updateAuth);
 const mockCalculateBasket = vi.mocked(calculateBasket);
 const mockGetBasketCurrency = vi.mocked(getBasketCurrency);
+const mockMergeBasket = vi.mocked(mergeBasket);
 const mockGetBasket = vi.mocked(getBasket);
 const mockUpdateBasketResource = vi.mocked(updateBasketResource);
 const mockGetTranslation = vi.mocked(getTranslation);
@@ -50,13 +50,20 @@ describe('action.verify-passwordless-otp', () => {
     let mockContext: ActionFunctionArgs['context'];
     let mockExchangeToken: ReturnType<typeof vi.fn>;
 
-    const createActionArgs = (otpCode?: string, email?: string): ActionFunctionArgs => {
+    const createActionArgs = ({
+        otpCode,
+        email,
+        isRegistration,
+    }: { otpCode?: string; email?: string; isRegistration?: boolean } = {}): ActionFunctionArgs => {
         const formData = new FormData();
         if (otpCode !== undefined) {
             formData.append('otpCode', otpCode);
         }
         if (email !== undefined) {
             formData.append('email', email);
+        }
+        if (isRegistration) {
+            formData.append('isRegistration', 'true');
         }
 
         return {
@@ -92,7 +99,6 @@ describe('action.verify-passwordless-otp', () => {
         // By default, tracking consent is treated as disabled in tests
         mockIsTrackingConsentEnabled.mockReturnValue(false);
 
-        mockGetAuth.mockReturnValue({ usid: 'test-usid' } as any);
         mockGetBasket.mockResolvedValue({
             current: { basketId: 'basket-1', currency: 'USD' },
         } as any);
@@ -105,7 +111,7 @@ describe('action.verify-passwordless-otp', () => {
     });
 
     it('returns error when otpCode is missing', async () => {
-        const result = await action(createActionArgs(undefined, 'test@example.com'));
+        const result = await action(createActionArgs({ email: 'test@example.com' }));
 
         expect(result.data).toEqual({
             success: false,
@@ -116,7 +122,7 @@ describe('action.verify-passwordless-otp', () => {
     });
 
     it('returns error when email is missing', async () => {
-        const result = await action(createActionArgs('12345678', undefined));
+        const result = await action(createActionArgs({ otpCode: '12345678' }));
 
         expect(result.data).toEqual({
             success: false,
@@ -143,12 +149,11 @@ describe('action.verify-passwordless-otp', () => {
 
         mockExchangeToken.mockResolvedValue(mockTokenResponse);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const result = await action(createActionArgs({ otpCode: '12345678', email: 'test@example.com' }));
 
         expect(mockExchangeToken).toHaveBeenCalledTimes(1);
         expect(mockExchangeToken).toHaveBeenCalledWith({
             pwdlessLoginToken: '12345678',
-            usid: 'test-usid',
         });
 
         expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
@@ -191,7 +196,7 @@ describe('action.verify-passwordless-otp', () => {
         mockGetBasket.mockResolvedValue({ current: basket } as any);
         mockCalculateBasket.mockResolvedValue(recalculated);
 
-        await action(createActionArgs('12345678', 'test@example.com'));
+        await action(createActionArgs({ otpCode: '12345678', email: 'test@example.com' }));
 
         expect(mockUpdateBasketResource).toHaveBeenCalledTimes(1);
         expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, recalculated);
@@ -204,7 +209,7 @@ describe('action.verify-passwordless-otp', () => {
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const result = await action(createActionArgs({ otpCode: '12345678', email: 'test@example.com' }));
 
         expect(result.data.success).toBe(false);
         expect(result.data.error?.message).toBe('Invalid or expired OTP code');
@@ -218,7 +223,7 @@ describe('action.verify-passwordless-otp', () => {
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const result = await action(createActionArgs({ otpCode: '12345678', email: 'test@example.com' }));
 
         expect(result.data.success).toBe(false);
         expect(result.data.error?.message).toBe('Some plain error from backend');
@@ -232,7 +237,7 @@ describe('action.verify-passwordless-otp', () => {
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const result = await action(createActionArgs({ otpCode: '12345678', email: 'test@example.com' }));
 
         expect(result.data.success).toBe(false);
         expect(result.data.error?.message).toBe('Unknown error');
@@ -246,10 +251,62 @@ describe('action.verify-passwordless-otp', () => {
 
         mockExchangeToken.mockRejectedValue(apiError);
 
-        const result = await action(createActionArgs('12345678', 'test@example.com'));
+        const result = await action(createActionArgs({ otpCode: '12345678', email: 'test@example.com' }));
 
         expect(result.data.success).toBe(false);
         expect(result.data.error?.message).toBe('{"message":"OTP service temporarily unavailable"}');
         expectStatus(result, 500);
+    });
+
+    it('calls mergeBasket for returning users (isRegistration not set)', async () => {
+        const mockTokenResponse = {
+            access_token: 'access-token',
+            id_token: 'id-token',
+            refresh_token: 'refresh-token',
+            expires_in: 3600,
+            refresh_token_expires_in: 7200,
+            token_type: 'Bearer' as const,
+            usid: 'test-usid',
+            customer_id: 'customer-id',
+            enc_user_id: 'enc-user-id',
+            idp_access_token: 'idp-token',
+            dwsid: 'dwsid',
+        } as any;
+
+        const mergedBasket = { basketId: 'basket-123', currency: 'USD', productItems: [{ id: 'item-1' }] } as any;
+
+        mockExchangeToken.mockResolvedValue(mockTokenResponse);
+        mockMergeBasket.mockResolvedValue(mergedBasket);
+
+        const result = await action(createActionArgs({ otpCode: '12345678', email: 'test@example.com' }));
+
+        expect(mockMergeBasket).toHaveBeenCalledTimes(1);
+        expect(mockMergeBasket).toHaveBeenCalledWith(mockContext);
+        expect(mockUpdateBasketResource).toHaveBeenCalledWith(mockContext, mergedBasket);
+        expect(result.data.success).toBe(true);
+    });
+
+    it('skips mergeBasket for new registrations (isRegistration=true)', async () => {
+        const mockTokenResponse = {
+            access_token: 'access-token',
+            id_token: 'id-token',
+            refresh_token: 'refresh-token',
+            expires_in: 3600,
+            refresh_token_expires_in: 7200,
+            token_type: 'Bearer' as const,
+            usid: 'test-usid',
+            customer_id: 'customer-id',
+            enc_user_id: 'enc-user-id',
+            idp_access_token: 'idp-token',
+        } as any;
+
+        mockExchangeToken.mockResolvedValue(mockTokenResponse);
+
+        const result = await action(
+            createActionArgs({ otpCode: '12345678', email: 'test@example.com', isRegistration: true })
+        );
+
+        expect(mockMergeBasket).not.toHaveBeenCalled();
+        expect(result.data.success).toBe(true);
     });
 });
