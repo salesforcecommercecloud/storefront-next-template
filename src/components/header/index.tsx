@@ -19,6 +19,7 @@ import { Link } from '@/components/link';
 import Search from './search';
 import CartBadge from './cart-badge';
 import UserActions from './user-actions/user-actions';
+import WishlistIcon from './wishlist-icon';
 import { useTranslation } from 'react-i18next';
 import logo from '/images/logo.svg';
 import { Button } from '@/components/ui/button';
@@ -127,6 +128,7 @@ export default function Header({ children, beforeHeader, variant = 'full' }: Hea
                             </Button>
                         )}
                         <UserActions />
+                        <WishlistIcon />
                         <CartBadge />
                         <div className="lg:hidden">{children}</div>
                     </div>
