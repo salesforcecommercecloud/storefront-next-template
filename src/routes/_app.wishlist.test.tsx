@@ -187,7 +187,7 @@ describe('_app.wishlist loader', () => {
         expect(mockGetProducts).toHaveBeenCalledTimes(1);
     });
 
-    test('returns empty payload when registered shopper has no customerId (no redirect)', async () => {
+    test('redirects to /login?returnUrl=/wishlist when registered shopper has no customerId', async () => {
         mockGetAuthServer.mockReturnValue({
             userType: 'registered',
             customerId: undefined,
@@ -195,21 +195,27 @@ describe('_app.wishlist loader', () => {
             accessTokenExpiry: Date.now() + 3_600_000,
         });
 
-        const result = await loader({
+        const thrown = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
             unstable_pattern: UNSTABLE_PATTERN,
-        });
+        }).then(
+            () => {
+                throw new Error('Loader should have thrown a redirect Response');
+            },
+            (err: unknown) => err
+        );
 
-        expect(result.wishlist).toBeNull();
-        expect(result.items).toEqual([]);
-        await expect(result.productsByProductId).resolves.toEqual({});
+        expect(thrown).toBeInstanceOf(Response);
+        const response = thrown as Response;
+        expect(response.status).toBe(302);
+        expect(response.headers.get('Location')).toBe('/login?returnUrl=/wishlist');
+
+        expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
     });
 
-    test('does not redirect when registered shopper session has expired (no usable token)', async () => {
-        // Without a usable token, the account layout would bounce the shopper to /login. We
-        // intentionally render the empty wishlist here instead to avoid a redirect ping-pong.
+    test('redirects to /login?returnUrl=/wishlist when registered shopper session has expired', async () => {
         mockGetAuthServer.mockReturnValue({
             userType: 'registered',
             customerId: 'registered-customer-id',
@@ -217,15 +223,23 @@ describe('_app.wishlist loader', () => {
             accessTokenExpiry: Date.now() - 1_000,
         });
 
-        const result = await loader({
+        const thrown = await loader({
             context: mockContext,
             request: new Request('http://localhost/wishlist'),
             params: { siteId: 'test-site', localeId: 'en-US' },
             unstable_pattern: UNSTABLE_PATTERN,
-        });
+        }).then(
+            () => {
+                throw new Error('Loader should have thrown a redirect Response');
+            },
+            (err: unknown) => err
+        );
 
-        expect(result.wishlist).toBeNull();
-        expect(result.items).toEqual([]);
+        expect(thrown).toBeInstanceOf(Response);
+        const response = thrown as Response;
+        expect(response.status).toBe(302);
+        expect(response.headers.get('Location')).toBe('/login?returnUrl=/wishlist');
+
         expect(mockGetCustomerProductLists).not.toHaveBeenCalled();
     });
 });

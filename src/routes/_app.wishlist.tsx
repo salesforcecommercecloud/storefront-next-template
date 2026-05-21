@@ -29,12 +29,11 @@ import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
 
 /**
  * Public guest wishlist route. Registered shoppers with a usable session are
- * redirected to `/account/wishlist` so their layout (with the account sidebar)
- * stays consistent. Guests, plus registered shoppers whose session has expired,
- * see the wishlist content rendered inside the regular storefront chrome —
- * `loadWishlistPageData` returns an empty payload for the latter case, which
- * is preferable to bouncing between this route and the account layout's own
- * re-auth redirect.
+ * redirected to `/account/wishlist` so the account layout stays consistent.
+ * Registered shoppers whose access token has expired are redirected to
+ * `/login?returnUrl=/wishlist` so they can recover; on successful sign-in
+ * they land back on `/wishlist` and the registered branch hops them to
+ * `/account/wishlist`. Guests render the wishlist content inline.
  *
  * Delegates to `loadWishlistPageData` (shared with `/account/wishlist`) for
  * the actual data fetch.
@@ -44,7 +43,10 @@ export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPag
     logger.debug('Wishlist (guest): loader starting');
 
     const session = getAuth(context);
-    if (session.userType === 'registered' && hasUsableShopperSession(session)) {
+    if (session.userType === 'registered') {
+        if (!hasUsableShopperSession(session)) {
+            throw redirect(buildUrlFromContext('/login?returnUrl=/wishlist', context));
+        }
         throw redirect(buildUrlFromContext('/account/wishlist', context));
     }
 
