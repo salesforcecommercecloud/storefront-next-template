@@ -432,15 +432,42 @@ export const getBasket = async (
 
         const nextSnapshot = createSnapshot(basket, { calculateSnapshot: calculateBasketSnapshot });
         context.set(basketResourceContext, createBasketResource(nextSnapshot, basket, true, null));
+        // Parallel loaders or in-request retries can recover after an earlier hydration call flipped
+        // basketMarkedForDeletion. Clear it on success so the response phase serializes the fresh
+        // snapshot instead of expiring a cookie for a basket that is now hydrated and valid.
+        const successMetadata = context.get(basketMetadataContext);
+        if (successMetadata?.basketMarkedForDeletion) {
+            context.set(basketMetadataContext, { ...successMetadata, basketMarkedForDeletion: false });
+        }
         logger.debug('Basket: hydration succeeded');
         return context.get(basketResourceContext) as BasketResource;
     } catch (err) {
         const normalizedError = new NormalizedApiError(err);
         logger.error('Basket: hydration failed', { error: err });
+        // getOrCreateBasket already self-heals 404/400 from the read path, so most errors that bubble
+        // here are transient (5xx, network, auth) — those must NOT clear the cookie or the basket is
+        // lost on every blip. Only treat the basket as missing when the status genuinely indicates
+        // it is no longer in SCAPI.
+        const isBasketMissing =
+            normalizedError.status === 400 || normalizedError.status === 404 || normalizedError.status === 410;
         context.set(
             basketResourceContext,
-            createBasketResource(basketResource.snapshot, undefined, true, normalizedError)
+            createBasketResource(isBasketMissing ? null : basketResource.snapshot, undefined, true, normalizedError)
         );
+        if (isBasketMissing) {
+            logger.warn('Basket: snapshot cookie expired due to missing basket id', {
+                status: normalizedError.status,
+                basketId,
+            });
+            // Flip the deletion flag so the middleware response phase serializes an expired Set-Cookie
+            // and the cart badge can't keep displaying a stale count on subsequent requests. Don't call
+            // destroyBasket() — that clobbers the error resource the route-level <Await errorElement>
+            // boundaries surface to the user.
+            const errorMetadata = context.get(basketMetadataContext);
+            if (errorMetadata) {
+                context.set(basketMetadataContext, { ...errorMetadata, basketMarkedForDeletion: true });
+            }
+        }
         throw normalizedError;
     }
 };

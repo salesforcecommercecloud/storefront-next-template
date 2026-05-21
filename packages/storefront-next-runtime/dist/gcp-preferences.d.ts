@@ -1,4 +1,4 @@
-import * as react_router1 from "react-router";
+import * as react_router2 from "react-router";
 import { RouterContextProvider } from "react-router";
 
 //#region src/data-store/middleware/gcp-preferences.d.ts
@@ -15,7 +15,7 @@ type GcpPreferences = {
   apiKey: string;
 };
 declare const DEFAULT_GCP_PREFERENCES_KEY = "gcp";
-declare const gcpPreferencesContext: react_router1.RouterContext<GcpPreferences | null>;
+declare const gcpPreferencesContext: react_router2.RouterContext<GcpPreferences | null>;
 /**
  * Read the GCP (Google Cloud Platform) preferences object from router context.
  *
@@ -46,7 +46,7 @@ declare function getGcpApiKey(context: Readonly<RouterContextProvider>): string;
  * Must run before any loader/middleware that reads `getGcpPreferences(context)`
  * or `getGcpApiKey(context)`.
  */
-declare const gcpPreferencesMiddleware: react_router1.MiddlewareFunction<Response>;
+declare const gcpPreferencesMiddleware: react_router2.MiddlewareFunction<Response>;
 //#endregion
 export { getGcpApiKey as a, gcpPreferencesMiddleware as i, GcpPreferences as n, getGcpPreferences as o, gcpPreferencesContext as r, DEFAULT_GCP_PREFERENCES_KEY as t };
 //# sourceMappingURL=gcp-preferences.d.ts.map

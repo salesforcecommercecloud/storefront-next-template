@@ -16,6 +16,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createCookie, RouterContextProvider, type MiddlewareFunction } from 'react-router';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
+import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { getCookieConfig } from '@/lib/cookie-utils.server';
@@ -29,6 +30,20 @@ import createBasketMiddleware, {
     getBasketSnapshot,
     type BasketSnapshot,
 } from './basket.server';
+
+// SCAPI ApiError fixture for hydration-failure tests. The middleware's missing-basket gate
+// inspects `error.status`, so plain `new Error()` won't trigger the flag flip and lets us cover
+// the transient-error branch.
+const createApiError = (status: number) =>
+    new ApiError({
+        status,
+        statusText: 'Test Error',
+        headers: new Headers(),
+        body: { type: '', title: '', detail: '' },
+        rawBody: '{}',
+        url: 'https://api.example.com/test',
+        method: 'GET',
+    });
 
 const mockLogger = vi.hoisted(() => ({
     error: vi.fn(),
@@ -305,8 +320,10 @@ describe('basket.server middleware', () => {
         expect(basketResource.current?.currency).toBe('GBP');
     });
 
-    test('load rethrows NormalizedApiError and stores wrapped error when hydration fails', async () => {
-        const loadError = new Error('boom');
+    test('rethrows NormalizedApiError and flips deletion flag when hydration fails with a missing-basket status', async () => {
+        // 404 from getOrCreateBasket means the create-fallback ran and SCAPI rejected the request
+        // outright — the snapshot is stale beyond recovery and the cookie must be expired.
+        const loadError = createApiError(404);
         vi.mocked(createApiClients).mockReturnValue({
             basket: {
                 getOrCreateBasket: vi.fn().mockRejectedValue(loadError),
@@ -318,13 +335,59 @@ describe('basket.server middleware', () => {
 
         const rejection = await getBasket(mockContext).catch((e: unknown) => e);
         expect(rejection).toBeInstanceOf(NormalizedApiError);
-        expect((rejection as NormalizedApiError).message).toBe('boom');
         expect((rejection as NormalizedApiError).cause).toBe(loadError);
 
         const basketResource = mockContext.get(basketResourceContext);
         expect(basketResource?.hydrated).toBe(true);
         expect(basketResource?.error).toBeInstanceOf(NormalizedApiError);
-        expect((basketResource?.error as NormalizedApiError | undefined)?.cause).toBe(loadError);
+        // Dead-basket statuses null out the in-memory snapshot so getBasketSnapshot() can't keep
+        // serving a stale id to other loaders in the same request.
+        expect(basketResource?.snapshot).toBeNull();
+        expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(true);
+        expect(mockLogger.warn).toHaveBeenCalledWith(
+            'Basket: snapshot cookie expired due to missing basket id',
+            expect.objectContaining({ status: 404 })
+        );
+    });
+
+    test('rethrows NormalizedApiError but preserves snapshot/cookie when hydration fails with a transient error', async () => {
+        // getOrCreateBasket already self-heals 4xx for stale baskets; a 5xx (or non-ApiError network
+        // failure) bubbling here means the basket is probably still alive in SCAPI. Forcing a fresh
+        // basket on every transient blip would wipe shoppers' carts during a brief outage.
+        const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+        const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+        const snapshot: BasketSnapshot = {
+            basketId: 'basket-existing',
+            totalItemCount: 2,
+            uniqueProductCount: 2,
+        };
+        const cookieHeader = await basketCookie.serialize(snapshot);
+        mockRequest = new Request('https://example.com', {
+            headers: { Cookie: cookieHeader },
+        });
+
+        const loadError = createApiError(500);
+        vi.mocked(createApiClients).mockReturnValue({
+            basket: {
+                getOrCreateBasket: vi.fn().mockRejectedValue(loadError),
+            },
+        } as any);
+
+        const middleware = createBasketMiddleware({ mode: 'lazy' });
+        await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+        const rejection = await getBasket(mockContext).catch((e: unknown) => e);
+        expect(rejection).toBeInstanceOf(NormalizedApiError);
+
+        const basketResource = mockContext.get(basketResourceContext);
+        expect(basketResource?.error).toBeInstanceOf(NormalizedApiError);
+        // Snapshot is preserved so the cart badge keeps rendering and the next request can retry.
+        expect(basketResource?.snapshot).toEqual(snapshot);
+        expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(false);
+        expect(mockLogger.warn).not.toHaveBeenCalledWith(
+            'Basket: snapshot cookie expired due to missing basket id',
+            expect.anything()
+        );
     });
 
     describe("getBasket with ensureBasket: 'read'", () => {
@@ -474,10 +537,11 @@ describe('basket.server middleware', () => {
             expect(result.error).toBeNull();
         });
 
-        test('wraps and rethrows errors as NormalizedApiError when both read and fallback fail', async () => {
+        test('wraps and rethrows as NormalizedApiError; flips deletion flag when fallback returns a missing-basket status', async () => {
             // The fallback exists to recover from a stale snapshot, not to swallow real outages.
-            // When `getOrCreateBasket` also fails, the caller must see a NormalizedApiError so the
-            // resource route's catch can degrade the mini-cart instead of leaking a raw SCAPI error.
+            // When `getOrCreateBasket` returns a missing-basket status (404), the caller must see a
+            // NormalizedApiError so the resource route's catch can degrade the mini-cart, AND the
+            // cookie must be expired so subsequent requests don't keep replaying the stale id.
             const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
             const basketCookie = createCookie('__sfdc_basket', cookieConfig);
             const snapshot: BasketSnapshot = {
@@ -490,7 +554,7 @@ describe('basket.server middleware', () => {
                 headers: { Cookie: cookieHeader },
             });
 
-            const fallbackError = new Error('scapi outage');
+            const fallbackError = createApiError(404);
             vi.mocked(createApiClients).mockReturnValue({
                 basket: {
                     getOrCreateBasket: vi.fn().mockRejectedValue(fallbackError),
@@ -510,6 +574,43 @@ describe('basket.server middleware', () => {
             const basketResource = mockContext.get(basketResourceContext);
             expect(basketResource?.hydrated).toBe(true);
             expect(basketResource?.error).toBeInstanceOf(NormalizedApiError);
+            expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(true);
+        });
+
+        test('preserves snapshot and cookie when both read and fallback fail with a transient error', async () => {
+            // Common outage shape: read fails (cache miss / transient 404 path) and fallback fails
+            // with 5xx. The basket may still be alive in SCAPI — clearing the cookie here would wipe
+            // the cart for every shopper during a brief upstream blip.
+            const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+            const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+            const snapshot: BasketSnapshot = {
+                basketId: 'basket-existing',
+                totalItemCount: 1,
+                uniqueProductCount: 1,
+            };
+            const cookieHeader = await basketCookie.serialize(snapshot);
+            mockRequest = new Request('https://example.com', {
+                headers: { Cookie: cookieHeader },
+            });
+
+            vi.mocked(createApiClients).mockReturnValue({
+                basket: {
+                    getOrCreateBasket: vi.fn().mockRejectedValue(createApiError(503)),
+                },
+                shopperBasketsV2: {
+                    getBasket: vi.fn().mockRejectedValue(new Error('not found')),
+                },
+            } as any);
+
+            const middleware = createBasketMiddleware({ mode: 'lazy' });
+            await middleware(createArgs(mockRequest, mockContext), mockNext);
+
+            const rejection = await getBasket(mockContext, { ensureBasket: 'read' }).catch((e: unknown) => e);
+            expect(rejection).toBeInstanceOf(NormalizedApiError);
+
+            const basketResource = mockContext.get(basketResourceContext);
+            expect(basketResource?.snapshot).toEqual(snapshot);
+            expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(false);
         });
     });
 
@@ -526,5 +627,183 @@ describe('basket.server middleware', () => {
         const metadata = mockContext.get(basketMetadataContext);
         expect(metadata?.basketMarkedForDeletion).toBe(true);
         expect(response.headers.get('Set-Cookie')).toContain('Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+    });
+
+    test('lazy mode: missing-basket failure during a loader expires the cookie via response phase', async () => {
+        // Reproduces the bug from the AC: a route loader (e.g. resource.basket-products.ts) calls
+        // getBasket() while a stale __sfdc_basket cookie is in the request. The fallback returns a
+        // missing-basket status (404), so the catch block flips the deletion flag and the response
+        // phase serializes an expired Set-Cookie. Without the fix, the stale snapshot keeps showing
+        // wrong counts on the badge.
+        const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+        const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+        const snapshot: BasketSnapshot = {
+            basketId: 'basket-stale',
+            totalItemCount: 3,
+            uniqueProductCount: 3,
+        };
+        const cookieHeader = await basketCookie.serialize(snapshot);
+        mockRequest = new Request('https://example.com', {
+            headers: { Cookie: cookieHeader },
+        });
+
+        vi.mocked(createApiClients).mockReturnValue({
+            basket: {
+                getOrCreateBasket: vi.fn().mockRejectedValue(createApiError(404)),
+            },
+            shopperBasketsV2: {
+                getBasket: vi.fn().mockRejectedValue(new Error('not found')),
+            },
+        } as any);
+
+        const middleware = createBasketMiddleware({ mode: 'lazy' });
+        const next = vi.fn().mockImplementation(async () => {
+            // Route loader path: swallow the error (the route's <Await errorElement> renders the
+            // failure UI) so the middleware can still run its response phase.
+            await getBasket(mockContext, { ensureBasket: 'read' }).catch(() => undefined);
+            return new Response('ok');
+        }) as unknown as Parameters<MiddlewareFunction<Response>>[1];
+
+        const response = (await middleware(createArgs(mockRequest, mockContext), next)) as Response;
+
+        expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(true);
+        expect(response.headers.get('Set-Cookie')).toContain('Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+    });
+
+    test('lazy mode: transient hydration failure leaves the cookie intact', async () => {
+        // Counterpart to the missing-basket case above: a 5xx outage must not expire the cookie. The
+        // basket is probably still alive in SCAPI; the next request should retry against the same id.
+        const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+        const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+        const snapshot: BasketSnapshot = {
+            basketId: 'basket-existing',
+            totalItemCount: 2,
+            uniqueProductCount: 2,
+        };
+        const cookieHeader = await basketCookie.serialize(snapshot);
+        mockRequest = new Request('https://example.com', {
+            headers: { Cookie: cookieHeader },
+        });
+
+        vi.mocked(createApiClients).mockReturnValue({
+            basket: {
+                getOrCreateBasket: vi.fn().mockRejectedValue(createApiError(500)),
+            },
+            shopperBasketsV2: {
+                getBasket: vi.fn().mockRejectedValue(new Error('boom')),
+            },
+        } as any);
+
+        const middleware = createBasketMiddleware({ mode: 'lazy' });
+        const next = vi.fn().mockImplementation(async () => {
+            await getBasket(mockContext, { ensureBasket: 'read' }).catch(() => undefined);
+            return new Response('ok');
+        }) as unknown as Parameters<MiddlewareFunction<Response>>[1];
+
+        const response = (await middleware(createArgs(mockRequest, mockContext), next)) as Response;
+
+        expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(false);
+        // No Set-Cookie at all when the basket isn't loaded and the flag isn't flipped — keeps the
+        // existing client-side cookie in place for the retry.
+        expect(response.headers.get('Set-Cookie')).toBeNull();
+        expect(mockLogger.warn).not.toHaveBeenCalledWith(
+            'Basket: snapshot cookie expired due to missing basket id',
+            expect.anything()
+        );
+    });
+
+    test('eager mode: hydration failure surfaces NormalizedApiError to the caller', async () => {
+        // Eager mode awaits getBasket() before next() — when both SCAPI calls fail with a dead
+        // status, the throw propagates out of the middleware and the deletion flag is set as a side
+        // effect of the catch block. (Routes that use eager mode are responsible for catching at
+        // the route level — outside the scope of this fix; tracked as future work.)
+        const cookieConfig = vi.mocked(getCookieConfig).mock.results[0]?.value;
+        const basketCookie = createCookie('__sfdc_basket', cookieConfig);
+        const snapshot: BasketSnapshot = {
+            basketId: 'basket-stale',
+            totalItemCount: 1,
+            uniqueProductCount: 1,
+        };
+        const cookieHeader = await basketCookie.serialize(snapshot);
+        mockRequest = new Request('https://example.com', {
+            headers: { Cookie: cookieHeader },
+        });
+
+        vi.mocked(createApiClients).mockReturnValue({
+            basket: {
+                getOrCreateBasket: vi.fn().mockRejectedValue(createApiError(404)),
+            },
+        } as any);
+
+        const middleware = createBasketMiddleware({ mode: 'eager' });
+        const rejection = await Promise.resolve(middleware(createArgs(mockRequest, mockContext), mockNext)).catch(
+            (e: unknown) => e
+        );
+
+        expect(rejection).toBeInstanceOf(NormalizedApiError);
+        expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(true);
+    });
+
+    test('in-request retry: a later successful hydration clears a flag set by an earlier failure', async () => {
+        // React Router can run multiple loaders against the same request context, and getBasket()
+        // does not memoize a failed hydration (the resource ends with current=null, so subsequent
+        // callers re-enter the try block). If an earlier call fails with a missing-basket status and a
+        // later call succeeds — e.g. a retry, or a follow-up loader hitting a different code path —
+        // the success branch must clear basketMarkedForDeletion. Otherwise the response phase
+        // expires the cookie that was just refreshed and the badge keeps lying.
+        const freshBasket = {
+            basketId: 'basket-fresh',
+            currency: 'USD',
+            productItems: [{ productId: 'sku-1', quantity: 1 }],
+        };
+        const getOrCreateBasket = vi
+            .fn()
+            // First call: fails with a missing-basket status, flips the flag.
+            .mockRejectedValueOnce(createApiError(404))
+            // Second call: succeeds, must clear the flag.
+            .mockResolvedValueOnce(freshBasket);
+        vi.mocked(createApiClients).mockReturnValue({
+            basket: { getOrCreateBasket },
+        } as any);
+
+        const middleware = createBasketMiddleware({ mode: 'lazy' });
+        const next = vi.fn().mockImplementation(async () => {
+            await getBasket(mockContext).catch(() => undefined);
+            expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(true);
+            await getBasket(mockContext);
+            return new Response('ok');
+        }) as unknown as Parameters<MiddlewareFunction<Response>>[1];
+
+        const response = (await middleware(createArgs(mockRequest, mockContext), next)) as Response;
+
+        expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(false);
+        const setCookie = response.headers.get('Set-Cookie');
+        expect(setCookie).toContain('__sfdc_basket=');
+        expect(setCookie).not.toContain('Expires=Thu, 01 Jan 1970');
+    });
+
+    test('hydration success leaves basketMarkedForDeletion false (no over-clearing)', async () => {
+        // Negative test: the success path of getBasket() must not flip the flag. A regression that
+        // unconditionally set basketMarkedForDeletion would erase every shopper's cookie on every
+        // request and tank the SSR cart-badge optimization the cookie exists to support.
+        const basket = {
+            basketId: 'basket-ok',
+            currency: 'GBP',
+            productItems: [{ productId: 'sku-1', quantity: 1 }],
+        };
+        vi.mocked(createApiClients).mockReturnValue({
+            basket: {
+                getOrCreateBasket: vi.fn().mockResolvedValue(basket),
+            },
+        } as any);
+
+        const middleware = createBasketMiddleware({ mode: 'eager' });
+        const response = (await middleware(createArgs(mockRequest, mockContext), mockNext)) as Response;
+
+        expect(mockContext.get(basketMetadataContext)?.basketMarkedForDeletion).toBe(false);
+        // Sanity check: the response phase wrote the fresh basket cookie, not an expired one.
+        const setCookie = response.headers.get('Set-Cookie');
+        expect(setCookie).toContain('__sfdc_basket=');
+        expect(setCookie).not.toContain('Expires=Thu, 01 Jan 1970');
     });
 });

@@ -9,6 +9,7 @@
 - GA-clean cleanup: remove internal work-item IDs, unresolved development TODOs, and "(internal use)" labels from the template package (@W-21922914)
 - Show a sign-in nudge above the login form when a guest has saved wishlist items waiting to merge (@W-22491529)
 - Added wishlist analytics events for add, remove, view, merge. (@W-22491452) ([#1743](https://github.com/commerce-emu/storefront-next/pull/1743))
+- Fix stale cart badge count when the SCAPI-side basket can no longer be loaded. When `getBasket()` exhausts both the read and create-fallback paths (5xx, auth, network), the basket middleware now expires the `__sfdc_basket` snapshot cookie via `Set-Cookie: Expires=…1970…` so the next request renders an accurate (zero) badge instead of the stale count from the dead snapshot.
 - Replace `useMatches` with typed `useRouteLoaderData` in root Layout (@W-22457611)
 - Simplify .env.default and decouple E2E baseline overrides (@W-22220887)
 - Storybook infra: extract memory-router setup into `.storybook/decorators/`, slim `preview.tsx`, and standardize per-component story mocks (@W-22451538)
