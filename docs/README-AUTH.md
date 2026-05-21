@@ -32,7 +32,7 @@ Authentication data is stored in **separate cookies**, each with specific purpos
 | `cc-nx`      | Registered refresh token                                                                       | Registered only | 90 days (max)         | No       |
 | `cc-at`      | Access token                                                                                   | Both            | 30 minutes            | No       |
 | `usid`       | User session ID (mirrors the JWT `sub` claim's `usid` segment)                                 | Both            | Matches refresh token | No       |
-| `cc-idp-at`  | IDP access token (social login)                                                                | Both            | Matches access token  | No       |
+| `idp_access_token` | IDP access token (social login)                                                          | Both            | Matches access token  | No       |
 | `cc-cv`      | OAuth2 PKCE code verifier (Temporary cookie deleted after successful token call via PKCE flow) | Both            | 5 minutes             | **Yes**  |
 | `cc-auth-recover` | Auth recovery guard (prevents redirect loops after 401)                                    | Both            | 30 seconds            | No       |
 
@@ -41,11 +41,12 @@ Authentication data is stored in **separate cookies**, each with specific purpos
 > not parse the access token. The cookie value also serves as a cold-start fallback for the
 > guest-login path (passed to SLAS for session continuity when no access token is present).
 >
-> **Note on `customerId`:** `customerId` is **not** persisted as a cookie. It is derived
+> **Note on `customer_id`:** `customer_id` is **not** persisted as a cookie. It is derived
 > per-request from the SLAS access token JWT `isb` claim (via `gcid`/`rcid`) and exposed to
-> loaders/actions via `getAuth(context)` and to client components via `useAuth()`. Existing
-> browsers from older versions may still hold a `customerId_<siteId>` cookie; sf-next ignores
-> it on the hot path, clears it on logout/error, and otherwise lets it expire on its own.
+> loaders/actions via `getAuth(context)` and to client components via `useAuth()`. The destroy
+> path clears any `customer_id_<siteId>` cookie on logout/error so the value never lingers for
+> a logged-out browser. Browsers upgraded from older versions may also retain a legacy
+> `customerId_<siteId>` cookie; it is ignored and will expire on its own.
 
 **Key Design Decisions:**
 

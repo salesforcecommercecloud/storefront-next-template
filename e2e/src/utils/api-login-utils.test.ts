@@ -33,7 +33,7 @@ describe('buildRegisteredSessionCookieOps', () => {
             'cc-at_RefArchGlobal',
             'cc-nx_RefArchGlobal',
             'usid_RefArchGlobal',
-            'customerId_RefArchGlobal',
+            'customer_id_RefArchGlobal',
         ]);
     });
 
@@ -61,7 +61,7 @@ describe('buildRegisteredSessionCookieOps', () => {
         expect(byName['cc-at_Site']).toBe('AT-test-access');
         expect(byName['cc-nx_Site']).toBe('RT-test-refresh');
         expect(byName.usid_Site).toBe('USID-test');
-        expect(byName.customerId_Site).toBe('CID-test');
+        expect(byName.customer_id_Site).toBe('CID-test');
     });
 
     it('marks all added cookies httpOnly', () => {

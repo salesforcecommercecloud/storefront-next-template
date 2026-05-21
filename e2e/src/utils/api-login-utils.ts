@@ -99,7 +99,7 @@ export function buildRegisteredSessionCookieOps(
             { ...cookieDefaults, name: `cc-at_${siteId}`, value: tokens.accessToken, httpOnly: true },
             { ...cookieDefaults, name: `cc-nx_${siteId}`, value: tokens.refreshToken, httpOnly: true },
             { ...cookieDefaults, name: `usid_${siteId}`, value: tokens.usid, httpOnly: true },
-            { ...cookieDefaults, name: `customerId_${siteId}`, value: tokens.customerId, httpOnly: true },
+            { ...cookieDefaults, name: `customer_id_${siteId}`, value: tokens.customerId, httpOnly: true },
         ],
     };
 }

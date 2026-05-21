@@ -1856,8 +1856,8 @@ describe('auth middleware (server)', () => {
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-nx', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-at', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('usid', context);
-            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('encUserId', context);
-            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-idp-at', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('enc_user_id', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('idp_access_token', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-cv', context);
         });
 
@@ -1941,12 +1941,12 @@ describe('auth middleware (server)', () => {
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
                 'cc-at': mockAccessToken,
-                'cc-idp-at': 'idp-access-token',
+                idp_access_token: 'idp-access-token',
             });
 
             const request = new Request('https://example.com/test', {
                 headers: {
-                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; cc-idp-at=idp-access-token',
+                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; idp_access_token=idp-access-token',
                 },
             });
 
