@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { composeStories } from '@storybook/react-vite';
-
-import * as AppToasterStories from './app-toaster.stories';
 import { expect, test, describe, afterEach } from 'vitest';
+import { composeStories } from '@storybook/react-vite';
 import { render, cleanup } from '@testing-library/react';
-const composed = composeStories(AppToasterStories);
+
+import * as ToastStories from './index.stories';
+
+const composed = composeStories(ToastStories);
 
 afterEach(() => {
     cleanup();
 });
 
-describe('AppToaster stories snapshot', () => {
+describe('Toast stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);

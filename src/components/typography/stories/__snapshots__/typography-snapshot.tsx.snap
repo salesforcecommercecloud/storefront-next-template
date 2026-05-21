@@ -105,6 +105,12 @@ exports[`Typography stories snapshot > AllVariants story renders and matches sna
       >
         Product description text
       </p>
+      <p
+        class="self-stretch text-foreground text-3xl font-bold leading-none tracking-tight text-left"
+        data-typography="recommendation-title"
+      >
+        Recommendation title
+      </p>
     </div>
   </div>
 </div>

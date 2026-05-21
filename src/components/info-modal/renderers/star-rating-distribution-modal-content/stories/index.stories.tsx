@@ -60,7 +60,7 @@ function StarRatingDistributionModalContentWrapper({
 }
 
 const meta: Meta<typeof StarRatingDistributionModalContentWrapper> = {
-    title: 'Components/Product Ratings/Star Rating Distribution Modal Content',
+    title: 'COMMON/Info Modal/Star Rating Distribution Modal Content',
     component: StarRatingDistributionModalContentWrapper,
     parameters: {
         layout: 'centered',

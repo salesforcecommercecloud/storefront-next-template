@@ -108,16 +108,48 @@ export const Small: Story = {
     args: {
         size: 'sm',
     },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const spinner = canvasElement.querySelector('.animate-spin');
+        void expect(spinner).toHaveClass('size-4');
+    },
 };
 
 export const Large: Story = {
     args: {
         size: 'lg',
     },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const spinner = canvasElement.querySelector('.animate-spin');
+        void expect(spinner).toHaveClass('size-8');
+    },
 };
 
 export const ExtraLarge: Story = {
     args: {
         size: 'xl',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const spinner = canvasElement.querySelector('.animate-spin');
+        void expect(spinner).toHaveClass('size-12');
+    },
+};
+
+export const CustomColor: Story = {
+    args: {
+        size: 'lg',
+        className: 'border-t-destructive',
+    },
+    parameters: {
+        docs: {
+            story: 'The `border-t-*` color is overridable via className for status indicators (e.g. error/destructive spinners).',
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const spinner = canvasElement.querySelector('.animate-spin');
+        void expect(spinner).toHaveClass('border-t-destructive');
     },
 };

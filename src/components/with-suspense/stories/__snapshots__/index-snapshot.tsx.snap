@@ -19,6 +19,16 @@ exports[`WithSuspense stories snapshot > Default story renders and matches snaps
 </div>
 `;
 
+exports[`WithSuspense stories snapshot > FallbackVisible story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-6 bg-muted rounded"
+  >
+    Loading slow data…
+  </div>
+</div>
+`;
+
 exports[`WithSuspense stories snapshot > WithCustomFallback story renders and matches snapshot 1`] = `
 <div>
   <div
@@ -43,16 +53,7 @@ exports[`WithSuspense stories snapshot > WithPromise story renders and matches s
   <div
     class="p-6"
   >
-    <h2
-      class="text-2xl font-bold mb-2"
-    >
-      Resolved Data
-    </h2>
-    <p
-      class="text-muted-foreground"
-    >
-      This component was loaded with Suspense.
-    </p>
+    Loading data...
   </div>
 </div>
 `;

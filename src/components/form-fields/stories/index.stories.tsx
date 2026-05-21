@@ -36,10 +36,22 @@ const demoSchema = z.object({
     country: z.string().min(1, 'Country is required'),
 });
 
-function FormFieldsDemo({ triggerValidation = false }: { triggerValidation?: boolean }) {
+interface FormFieldsDemoProps {
+    triggerValidation?: boolean;
+    defaultValues?: Partial<DemoFormData>;
+    disabled?: boolean;
+    readOnly?: boolean;
+}
+
+function FormFieldsDemo({
+    triggerValidation = false,
+    defaultValues,
+    disabled = false,
+    readOnly = false,
+}: FormFieldsDemoProps) {
     const form = useForm<DemoFormData>({
         resolver: zodResolver(demoSchema),
-        defaultValues: { email: '', name: '', country: 'US' },
+        defaultValues: { email: '', name: '', country: 'US', ...defaultValues },
     });
 
     return (
@@ -54,7 +66,13 @@ function FormFieldsDemo({ triggerValidation = false }: { triggerValidation?: boo
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Name*</FormLabel>
-                            <FormInput placeholder="Enter your name" autoComplete="name" {...field} />
+                            <FormInput
+                                placeholder="Enter your name"
+                                autoComplete="name"
+                                disabled={disabled}
+                                readOnly={readOnly}
+                                {...field}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}
@@ -65,7 +83,14 @@ function FormFieldsDemo({ triggerValidation = false }: { triggerValidation?: boo
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Email*</FormLabel>
-                            <FormInput type="email" placeholder="Enter your email" autoComplete="email" {...field} />
+                            <FormInput
+                                type="email"
+                                placeholder="Enter your email"
+                                autoComplete="email"
+                                disabled={disabled}
+                                readOnly={readOnly}
+                                {...field}
+                            />
                             <FormMessage />
                         </FormItem>
                     )}
@@ -76,7 +101,7 @@ function FormFieldsDemo({ triggerValidation = false }: { triggerValidation?: boo
                     render={({ field }) => (
                         <FormItem className="[&_[data-slot=native-select-wrapper]]:w-full">
                             <FormLabel>Country*</FormLabel>
-                            <FormNativeSelect aria-label="Country" {...field}>
+                            <FormNativeSelect aria-label="Country" disabled={disabled} {...field}>
                                 <NativeSelectOption value="US">United States</NativeSelectOption>
                                 <NativeSelectOption value="CA">Canada</NativeSelectOption>
                                 <NativeSelectOption value="GB">United Kingdom</NativeSelectOption>
@@ -96,7 +121,7 @@ function FormFieldsDemo({ triggerValidation = false }: { triggerValidation?: boo
 }
 
 const meta: Meta = {
-    title: 'Components/Form Fields',
+    title: 'FORMS/Form Fields',
     component: FormInput,
     parameters: {
         layout: 'centered',
@@ -157,5 +182,50 @@ export const WithValidationErrors: Story = {
 
         const errors = canvas.getAllByText(/is required/i);
         await expect(errors.length).toBeGreaterThanOrEqual(2);
+    },
+};
+
+/**
+ * Pre-populated form values demonstrating the with-value state for inputs and select.
+ */
+export const WithValue: Story = {
+    render: () => <FormFieldsDemo defaultValues={{ name: 'Ada Lovelace', email: 'ada@example.com', country: 'GB' }} />,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByPlaceholderText('Enter your name')).toHaveValue('Ada Lovelace');
+        await expect(canvas.getByPlaceholderText('Enter your email')).toHaveValue('ada@example.com');
+        await expect(canvas.getByRole('combobox', { name: 'Country' })).toHaveValue('GB');
+    },
+};
+
+/**
+ * Disabled fields — inputs and select are non-interactive.
+ */
+export const Disabled: Story = {
+    render: () => <FormFieldsDemo defaultValues={{ name: 'Ada Lovelace', email: 'ada@example.com' }} disabled />,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByPlaceholderText('Enter your name')).toBeDisabled();
+        await expect(canvas.getByPlaceholderText('Enter your email')).toBeDisabled();
+        await expect(canvas.getByRole('combobox', { name: 'Country' })).toBeDisabled();
+    },
+};
+
+/**
+ * Read-only text inputs. Note: native `<select>` has no `readonly` attribute, so the
+ * country select remains editable.
+ */
+export const ReadOnly: Story = {
+    render: () => <FormFieldsDemo defaultValues={{ name: 'Ada Lovelace', email: 'ada@example.com' }} readOnly />,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByPlaceholderText('Enter your name')).toHaveAttribute('readonly');
+        await expect(canvas.getByPlaceholderText('Enter your email')).toHaveAttribute('readonly');
     },
 };

@@ -14,138 +14,194 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
-import { Toaster, toast } from '../index';
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { AppToaster, toast, useToast } from '../index';
 import { Button } from '../../ui/button';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logShow = action('toast-show');
-        const logHover = action('toast-button-hover');
-        const logDismiss = action('toast-dismiss');
-        const logActionClick = action('toast-action');
-
-        const resolveKind = (text: string): { kind: string; position?: string } => {
-            const t = text.toLowerCase();
-            if (t.includes('promise')) return { kind: 'promise' };
-            if (t.includes('fire 3')) return { kind: 'multiple' };
-            if (t.includes('top-right')) return { kind: 'default', position: 'top-right' };
-            if (t.includes('success')) return { kind: 'success' };
-            if (t.includes('error')) return { kind: 'error' };
-            if (t.includes('default') || t.includes('show toast')) return { kind: 'default' };
-            return { kind: 'unknown' };
-        };
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const btn = target.closest('button');
-            if (!btn) return;
-
-            const label = btn.getAttribute('aria-label') || btn.textContent?.trim() || '';
-            // Toast instances: detect action/dismiss by common labels
-            if (/^retry$/i.test(label)) {
-                logActionClick({ label: 'Retry' });
-                return;
-            }
-            if (/^close$/i.test(label)) {
-                logDismiss({ label: 'Close' });
-                return;
-            }
-
-            // Demo trigger buttons: prevent showing real toasts, just log
-            const { kind, position } = resolveKind(label);
-            if (kind !== 'unknown') {
-                logShow({ kind, position });
-            }
-        };
-
-        const handleMouseOver = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const btn = target.closest('button');
-            if (!btn) return;
-            const label = btn.getAttribute('aria-label') || btn.textContent?.trim() || '';
-            if (label) {
-                logHover({ label });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+/**
+ * Story scaffold that mirrors how toasts work in production — the page
+ * mounts a single `<AppToaster>` at the root (see `src/root.tsx`), and
+ * any component on the page calls `useToast()` (or `toast.*` directly)
+ * to enqueue a notification.
+ */
+function ToastDemo({ triggerLabel, onTrigger }: { triggerLabel: string; onTrigger: () => void }) {
+    return (
+        <div className="flex flex-col items-start gap-4 p-6">
+            <AppToaster />
+            <Button onClick={onTrigger}>{triggerLabel}</Button>
+        </div>
+    );
 }
 
-const meta: Meta<typeof Toaster> = {
+const meta: Meta = {
     title: 'FEEDBACK/Toast',
-    component: Toaster,
     tags: ['autodocs', 'interaction'],
     parameters: {
+        layout: 'fullscreen',
         docs: {
             description: {
                 component: `
-Toast notifications powered by sonner. Includes success, error, and info variants.
+Toast notifications powered by [sonner](https://sonner.emilkowal.ski/).
+
+In production the app mounts a single \`<AppToaster />\` at the route root and components call the imperative \`useToast()\` hook to enqueue messages. Stories below mirror that setup so what you see is what ships.
                 `,
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <div className="min-h-[40vh] bg-background p-6">
-                    <Story />
-                </div>
-            </ActionLogger>
-        ),
-    ],
 };
 
 export default meta;
-type Story = StoryObj<typeof Toaster>;
+type Story = StoryObj;
 
-const ToastTrigger = () => (
-    <Button
-        onClick={() =>
-            toast('Event has been created', {
-                description: 'Sunday, December 03, 2023 at 9:00 AM',
-                action: {
-                    label: 'Undo',
-                    onClick: () => action('undo-clicked')(),
-                },
-            })
-        }>
-        Show Toast
-    </Button>
-);
-
+/**
+ * Default info toast. Mirrors typical app feedback like "Item added to cart".
+ */
 export const Default: Story = {
+    render: () => {
+        function Trigger() {
+            const { addToast } = useToast();
+            return <ToastDemo triggerLabel="Show toast" onTrigger={() => addToast('Event has been created', 'info')} />;
+        }
+        return <Trigger />;
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = await canvas.findByRole('button', { name: /show toast/i });
+
+        await userEvent.click(button);
+
+        // Sonner renders toasts into a portal under document.body.
+        await waitFor(
+            async () => {
+                await expect(within(document.body).findByText(/event has been created/i)).resolves.toBeInTheDocument();
+            },
+            { timeout: 2000 }
+        );
+    },
+};
+
+/**
+ * Success variant — used after successful mutations like saving a profile
+ * or applying a promo code.
+ */
+export const Success: Story = {
+    render: () => {
+        function Trigger() {
+            const { addToast } = useToast();
+            return (
+                <ToastDemo
+                    triggerLabel="Show success toast"
+                    onTrigger={() =>
+                        addToast('Saved successfully', 'success', {
+                            description: 'Your changes have been saved.',
+                        })
+                    }
+                />
+            );
+        }
+        return <Trigger />;
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = await canvas.findByRole('button', { name: /show success toast/i });
+
+        await userEvent.click(button);
+
+        await waitFor(
+            async () => {
+                await expect(within(document.body).findByText(/saved successfully/i)).resolves.toBeInTheDocument();
+            },
+            { timeout: 2000 }
+        );
+    },
+};
+
+/**
+ * Error variant — used for action failures (e.g. payment declined,
+ * validation error).
+ */
+export const Error: Story = {
+    render: () => {
+        function Trigger() {
+            const { addToast } = useToast();
+            return (
+                <ToastDemo
+                    triggerLabel="Show error toast"
+                    onTrigger={() =>
+                        addToast('Save failed', 'error', {
+                            description: 'Could not save your changes. Please try again.',
+                        })
+                    }
+                />
+            );
+        }
+        return <Trigger />;
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = await canvas.findByRole('button', { name: /show error toast/i });
+
+        await userEvent.click(button);
+
+        await waitFor(
+            async () => {
+                await expect(within(document.body).findByText(/save failed/i)).resolves.toBeInTheDocument();
+            },
+            { timeout: 2000 }
+        );
+    },
+};
+
+/**
+ * Promise variant — shows a loading toast that auto-resolves to success
+ * or error when the underlying promise settles. Used for long-running
+ * actions like placing an order.
+ */
+export const Promise_: Story = {
+    name: 'Promise',
     render: () => (
-        <div className="flex flex-col gap-4">
-            <Toaster />
-            <ToastTrigger />
+        <div className="flex flex-col items-start gap-4 p-6">
+            <AppToaster />
+            <Button
+                onClick={() => {
+                    const work = new Promise<{ name: string }>((resolve) =>
+                        setTimeout(() => resolve({ name: 'Order #1234' }), 1500)
+                    );
+                    toast.promise(work, {
+                        loading: 'Placing order…',
+                        success: (data) => `${data.name} placed`,
+                        error: 'Order could not be placed',
+                    });
+                }}>
+                Show promise toast
+            </Button>
         </div>
     ),
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-        const button = await canvas.findByRole('button', { name: /show toast/i });
-        await expect(button).toBeInTheDocument();
-        // We can't easily test the toast appearance in play function because it renders into portal/body
-        // and might be outside the canvas scope or requires specialized setup.
-        // But verifying the trigger exists is a valid basic interaction test.
+        const button = await canvas.findByRole('button', { name: /show promise toast/i });
+
+        await userEvent.click(button);
+
+        // First the loading toast appears.
+        await waitFor(
+            async () => {
+                await expect(within(document.body).findByText(/placing order/i)).resolves.toBeInTheDocument();
+            },
+            { timeout: 1000 }
+        );
+
+        // Then the resolved success toast replaces it (1500ms delay above).
+        await waitFor(
+            async () => {
+                await expect(within(document.body).findByText(/order #1234 placed/i)).resolves.toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
     },
 };

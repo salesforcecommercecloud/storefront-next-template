@@ -19,7 +19,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import CollapsibleHtmlSection from '../collapsible-html-section';
 
 const meta: Meta<typeof CollapsibleHtmlSection> = {
-    title: 'Components/CollapsibleSection/CollapsibleHtmlSection',
+    title: 'COMMON/Collapsible Html Section',
     component: CollapsibleHtmlSection,
     tags: ['autodocs', 'interaction'],
     parameters: {

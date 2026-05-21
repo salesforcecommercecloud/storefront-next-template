@@ -32,7 +32,7 @@ export default function Loading() {
         if (navigation?.state === 'idle') {
             setShowLoader(false);
         } else {
-            timeout.current = setTimeout(() => setShowLoader(false), 150);
+            timeout.current = setTimeout(() => setShowLoader(true), 150);
         }
 
         return () => {

@@ -14,54 +14,33 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { action } from 'storybook/actions';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import Loading from '../../loading';
+// Storybook stories drive the global memory-router via the framework's
+// `useNavigate` so `Loading`'s `useNavigation()` hook can observe a real
+// non-idle transition. The site-aware project wrapper from
+// `@/hooks/use-navigate` requires SiteProvider/ConfigProvider that the
+// Storybook harness doesn't set up for this isolated story.
+// eslint-disable-next-line no-restricted-imports
+import { useNavigate } from 'react-router';
+import { useEffect, type ReactElement } from 'react';
+import Loading from '..';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
+/**
+ * On mount, kick off a programmatic navigation to a route whose loader is
+ * deliberately slow. While the loader resolves React Router's
+ * `useNavigation().state` is `'loading'`, which is exactly the signal
+ * `<Loading />` watches for and opens its overlay 150ms later.
+ */
+function NavigateOnMount({ to }: { to: string }): ReactElement {
+    const navigate = useNavigate();
     useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logOverlayClick = action('loading-overlay-click');
-        const logOverlayHover = action('loading-overlay-hover');
-        const logSpinnerHover = action('loading-spinner-hover');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const overlay = target.closest('[data-testid="loading-overlay"]');
-            if (overlay) {
-                const pos = event as MouseEvent;
-                logOverlayClick({ x: pos.clientX, y: pos.clientY });
-            }
-        };
-
-        const handleMouseOver = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            if (target.closest('[data-testid="loading-overlay"]')) {
-                logOverlayHover({});
-            }
-            if (target.closest('[data-testid="loading-spinner"]')) {
-                logSpinnerHover({});
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+        navigate(to);
+    }, [navigate, to]);
+    return <p className="p-4 text-sm text-muted-foreground">Idle.</p>;
 }
+
+const SLOW_NAV_PATH = '/storybook-loading-target';
 
 const meta: Meta<typeof Loading> = {
     title: 'FEEDBACK/Loading',
@@ -72,117 +51,60 @@ const meta: Meta<typeof Loading> = {
         docs: {
             description: {
                 component: `
-Route-level loading indicator that shows an overlay spinner during client-side navigations.
+Route-level loading indicator that subscribes to React Router's \`useNavigation()\`.
 
-Note: In Storybook the navigation state is not active by default, so the default story renders nothing.
+The overlay opens 150ms after the router transitions to \`'loading'\` (or \`'submitting'\`) and closes as soon as the router returns to \`'idle'\`. It's optimized for streaming SSR — the initial server render never shows the spinner; only client-side follow-up navigations.
                 `,
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <div className="min-h-screen bg-background">
-                    <Story />
-                </div>
-            </ActionLogger>
-        ),
-    ],
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof Loading>;
 
-export const DefaultIdle: Story = {
+/**
+ * Active navigation — `NavigateOnMount` triggers a navigation whose loader
+ * is held for 1500ms. The overlay appears 150ms in and disappears when the
+ * destination loader resolves.
+ */
+export const Loading_: Story = {
+    name: 'Loading',
     parameters: {
-        docs: {
-            description: {
-                story: 'Default state in Storybook (no active navigation) — overlay is not visible.',
+        mockRoutes: [
+            {
+                path: SLOW_NAV_PATH,
+                loader: () => new Promise((resolve) => setTimeout(() => resolve({}), 1500)),
+                element: <p className="p-4 text-sm">Destination loaded.</p>,
             },
-        },
+        ],
     },
-    play: async ({ canvasElement, step }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await step('Verify component renders without errors', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
-
-        await step('Verify all interactive elements are accessible', () => {
-            const buttons = canvas.queryAllByRole('button');
-            const links = canvas.queryAllByRole('link');
-            const inputs = canvas.queryAllByRole('textbox');
-
-            [...buttons, ...links, ...inputs].forEach((el) => {
-                void expect(el).toBeInTheDocument();
-            });
-        });
-
-        await step('Test basic user interactions', async () => {
-            const buttons = canvas.queryAllByRole('button');
-            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
-                await userEvent.hover(buttons[0]);
-                await userEvent.click(buttons[0]);
-            }
-        });
-
-        await step('Verify component state after interaction', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
-    },
-};
-
-function OverlayPreview() {
-    return (
-        <div className="w-full h-full fixed top-0 left-0 bg-background opacity-75 z-50" data-testid="loading-overlay">
-            <div className="flex justify-center items-center mt-[50vh]">
-                <div
-                    className="border-border h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600"
-                    data-testid="loading-spinner"
-                />
-            </div>
+    render: () => (
+        <div className="min-h-screen bg-background">
+            <Loading />
+            <NavigateOnMount to={SLOW_NAV_PATH} />
         </div>
-    );
-}
-
-export const DesignPreview: Story = {
-    render: () => <OverlayPreview />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Design/visual preview of the loading overlay and spinner.',
-            },
-        },
-    },
-    play: async ({ canvasElement, step }) => {
+    ),
+    play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
 
-        await step('Verify component renders without errors', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
+        // The overlay is `position: fixed` and uses `.animate-spin` for the
+        // visual indicator. It mounts ~150ms after the navigation begins.
+        await waitFor(
+            () => {
+                expect(document.querySelector('.animate-spin')).not.toBeNull();
+            },
+            { timeout: 1000 }
+        );
 
-        await step('Verify all interactive elements are accessible', () => {
-            const buttons = canvas.queryAllByRole('button');
-            const links = canvas.queryAllByRole('link');
-            const inputs = canvas.queryAllByRole('textbox');
-
-            [...buttons, ...links, ...inputs].forEach((el) => {
-                void expect(el).toBeInTheDocument();
-            });
-        });
-
-        await step('Test basic user interactions', async () => {
-            const buttons = canvas.queryAllByRole('button');
-            if (buttons.length > 0 && !buttons[0].hasAttribute('disabled')) {
-                await userEvent.hover(buttons[0]);
-                await userEvent.click(buttons[0]);
-            }
-        });
-
-        await step('Verify component state after interaction', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
+        // After the destination loader resolves the overlay is unmounted and
+        // the destination text becomes visible inside the canvas.
+        await waitFor(
+            () => {
+                expect(within(canvasElement).queryByText(/destination loaded/i)).toBeInTheDocument();
+                expect(document.querySelector('.animate-spin')).toBeNull();
+            },
+            { timeout: 3000 }
+        );
     },
 };

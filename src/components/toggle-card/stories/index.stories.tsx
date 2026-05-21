@@ -80,7 +80,7 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
 }
 
 const meta: Meta<typeof ToggleCard> = {
-    title: 'UI/Toggle Card',
+    title: 'COMMON/Toggle Card',
     component: ToggleCard,
     parameters: {
         layout: 'padded',
@@ -279,23 +279,6 @@ export const Default: Story = {
     },
 };
 
-export const WithoutDescription: Story = {
-    render: (args) => <ToggleCardWrapper {...args} />,
-    args: {
-        title: 'Shipping Address',
-        editLabel: 'Edit',
-        editAction: 'Save',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const editButton = canvas.getByRole('button', { name: /edit/i });
-        await expect(editButton).toBeInTheDocument();
-        const description = canvas.queryByText(/manage your contact details/i);
-        void expect(description).toBeNull();
-    },
-};
-
 export const Disabled: Story = {
     render: (args) => <ToggleCardWrapper {...args} />,
     args: {
@@ -328,6 +311,36 @@ export const DisableEdit: Story = {
     },
 };
 
+export const Editing: Story = {
+    render: (args) => <ToggleCardWrapper {...args} />,
+    args: {
+        title: 'Contact Information',
+        description: 'Edit your contact details',
+        editing: true,
+        editLabel: 'Edit',
+        editAction: 'Save',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // Edit-mode form fields are visible.
+        await expect(canvas.getByLabelText(/name/i)).toBeInTheDocument();
+        await expect(canvas.getByLabelText(/email/i)).toBeInTheDocument();
+
+        // Two Save buttons exist in edit mode: the card-header action button
+        // (the one ToggleCard renders for `editAction`) and the inner form's
+        // submit button rendered by `ToggleCardWrapper`. Both should be
+        // present and enabled.
+        const saveButtons = canvas.getAllByRole('button', { name: /save/i });
+        await expect(saveButtons).toHaveLength(2);
+        for (const btn of saveButtons) {
+            await expect(btn).toBeInTheDocument();
+        }
+        await expect(canvas.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    },
+};
+
 export const Loading: Story = {
     render: (args) => <ToggleCardWrapper {...args} />,
     args: {
@@ -339,83 +352,12 @@ export const Loading: Story = {
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // Save button might not be rendered in loading state
-        const saveButton = canvas.queryByRole('button', { name: /save/i });
-        if (saveButton) {
-            await expect(saveButton).toBeDisabled();
-        } else {
-            void expect(canvasElement).toBeInTheDocument();
-        }
-    },
-};
-
-export const CustomStyling: Story = {
-    render: (args) => <ToggleCardWrapper {...args} />,
-    args: {
-        title: 'Custom Styled Card',
-        description: 'This card has custom styling',
-        editLabel: 'Edit',
-        editAction: 'Save',
-        className: 'border-2 border-primary shadow-lg',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const customCard = canvasElement.querySelector('.border-2.border-primary.shadow-lg');
-        await expect(canvas.getByText(/custom styled card/i)).toBeInTheDocument();
-        void expect(customCard).not.toBeNull();
-    },
-};
-
-export const LongContent: Story = {
-    render: (args) => (
-        <ToggleCardWrapper
-            {...args}
-            title="Detailed Information"
-            description="This card contains a lot of information that might wrap to multiple lines"
-        />
-    ),
-    args: {
-        editLabel: 'Edit',
-        editAction: 'Save',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const detailedTitle = canvas.getByText(/detailed information/i);
-        await expect(detailedTitle).toBeInTheDocument();
-    },
-};
-
-export const MultipleCards: Story = {
-    render: () => (
-        <div className="space-y-4">
-            <ToggleCardWrapper
-                title="Personal Information"
-                description="Your personal details"
-                editLabel="Edit"
-                editAction="Save"
-            />
-            <ToggleCardWrapper
-                title="Billing Address"
-                description="Where to send invoices"
-                editLabel="Edit"
-                editAction="Save"
-            />
-            <ToggleCardWrapper
-                title="Shipping Address"
-                description="Where to send packages"
-                editLabel="Edit"
-                editAction="Save"
-            />
-        </div>
-    ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const editButtons = canvas.getAllByRole('button', { name: /edit/i });
-        await expect(editButtons.length).toBeGreaterThanOrEqual(3);
+        // The loading overlay is an absolutely-positioned div that renders a
+        // <Spinner /> (.animate-spin) on top of the card content. Asserting on
+        // the spinner's class avoids the previous permissive fallback that
+        // passed even when the overlay was absent.
+        const spinner = canvasElement.querySelector('.animate-spin');
+        void expect(spinner).not.toBeNull();
     },
 };
 

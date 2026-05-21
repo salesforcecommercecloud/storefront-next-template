@@ -243,22 +243,13 @@ interface RemoveItemConfig {
             },
         },
     },
+    // Only `className` has an immediate visual effect on the trigger button.
+    // `itemId` is opaque (used as a fetcher key, never rendered), and `config`
+    // only affects the dialog content after the user clicks Remove. Those two
+    // props are exposed as required defaults via `args` below but are hidden
+    // from the controls panel because flipping them in Storybook produces no
+    // observable change in the canvas.
     argTypes: {
-        itemId: {
-            control: 'text',
-            description: 'Unique identifier for the item to remove',
-            table: {
-                type: { summary: 'string' },
-            },
-        },
-        config: {
-            control: 'object',
-            description: 'Configuration object for messages and behavior',
-            table: {
-                type: { summary: 'RemoveItemConfig' },
-                defaultValue: { summary: 'From app config' },
-            },
-        },
         className: {
             control: 'text',
             description: 'Additional CSS classes for styling',
@@ -267,6 +258,8 @@ interface RemoveItemConfig {
                 defaultValue: { summary: "''" },
             },
         },
+        itemId: { control: false, table: { disable: true } },
+        config: { control: false, table: { disable: true } },
     },
     args: {
         itemId: 'item-123',
@@ -399,64 +392,6 @@ This story demonstrates a custom configuration for wishlist item removal:
     },
 };
 
-export const WithCustomStyling: Story = {
-    args: {
-        itemId: 'item-789',
-        className: 'text-red-600 hover:text-red-700 font-medium',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the component with custom styling:
-
-### Styling Features:
-- **Custom colors**: Red text color for emphasis
-- **Hover effects**: Darker red on hover
-- **Font weight**: Medium font weight for better visibility
-- **Additional classes**: Demonstrates className prop usage
-
-### Visual Changes:
-- Button text appears in red
-- Hover state shows darker red
-- Font weight is increased
-- Maintains all functionality
-
-### Use Cases:
-- Highlighting destructive actions
-- Brand-specific styling
-- Custom design requirements
-- Enhanced visual emphasis
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test button is present and properly rendered
-        const removeButtons = canvas.getAllByRole('button');
-        await expect(removeButtons.length).toBeGreaterThan(0);
-
-        // Test that each button is properly rendered
-        for (const button of removeButtons) {
-            await expect(button).toBeInTheDocument();
-            // In loading state, button should be disabled
-            if (button.getAttribute('data-testid') === 'remove-item-loading') {
-                await expect(button).toBeDisabled();
-            } else {
-                await expect(button).not.toBeDisabled();
-            }
-        }
-
-        // In test environment, just verify buttons exist - don't try to click
-        // as the confirmation dialogs may not work properly in test environment
-        await expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-// Mock component to demonstrate loading state
 function LoadingStateRemoveButton() {
     return (
         <Button
@@ -497,91 +432,6 @@ This story demonstrates the loading state during item removal:
 - Server-side processing
 - API calls that take time
 - User feedback during operations
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test button is present and properly rendered
-        const removeButtons = canvas.getAllByRole('button');
-        await expect(removeButtons.length).toBeGreaterThan(0);
-
-        // Test that each button is properly rendered
-        for (const button of removeButtons) {
-            await expect(button).toBeInTheDocument();
-            // In loading state, button should be disabled
-            if (button.getAttribute('data-testid') === 'remove-item-loading') {
-                await expect(button).toBeDisabled();
-            } else {
-                await expect(button).not.toBeDisabled();
-            }
-        }
-
-        // In test environment, just verify buttons exist - don't try to click
-        // as the confirmation dialogs may not work properly in test environment
-        await expect(canvasElement).toBeInTheDocument();
-    },
-};
-
-export const DifferentItemTypes: Story = {
-    render: () => (
-        <div className="space-y-4">
-            <div className="p-4 border rounded-none">
-                <h4 className="font-medium mb-2">Cart Item</h4>
-                <p className="text-sm text-muted-foreground mb-2">Product in shopping cart</p>
-                <RemoveItemButtonWithConfirmation itemId="cart-item-1" />
-            </div>
-
-            <div className="p-4 border rounded-none">
-                <h4 className="font-medium mb-2">Wishlist Item</h4>
-                <p className="text-sm text-muted-foreground mb-2">Saved for later</p>
-                <RemoveItemButtonWithConfirmation
-                    itemId="wishlist-item-1"
-                    config={{
-                        action: `${STORYBOOK_REMOVE_BASE}/wishlist`,
-                        confirmDescription: 'Remove this item from your wishlist?',
-                    }}
-                />
-            </div>
-
-            <div className="p-4 border rounded-none">
-                <h4 className="font-medium mb-2">Saved Address</h4>
-                <p className="text-sm text-muted-foreground mb-2">Default shipping address</p>
-                <RemoveItemButtonWithConfirmation
-                    itemId="address-1"
-                    config={{
-                        action: `${STORYBOOK_REMOVE_BASE}/address`,
-                        confirmDescription: 'Permanently delete this address?',
-                    }}
-                />
-            </div>
-        </div>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the component used in different contexts:
-
-### Multiple Use Cases:
-- **Cart Item**: Standard shopping cart removal
-- **Wishlist Item**: Wishlist-specific removal with custom text
-- **Saved Address**: Address deletion with permanent action warning
-
-### Context-Specific Features:
-- **Different actions**: Each context has appropriate endpoint
-- **Custom confirmations**: Context-specific confirmation messages
-- **Appropriate behavior**: Different removal behaviors
-- **Consistent UX**: Same interaction pattern across contexts
-
-### Benefits:
-- Reusable component with different configurations
-- Consistent user experience
-- Context-appropriate messaging
-- Flexible configuration system
                 `,
             },
         },

@@ -104,6 +104,7 @@ const meta: Meta<typeof Typography> = {
                 'product-title',
                 'product-price',
                 'product-description',
+                'recommendation-title',
             ],
         },
         align: {
@@ -196,6 +197,9 @@ export const AllVariants: Story = {
             </Typography>
             <Typography variant="product-description" data-typography="product-description">
                 Product description text
+            </Typography>
+            <Typography variant="recommendation-title" data-typography="recommendation-title">
+                Recommendation title
             </Typography>
         </div>
     ),

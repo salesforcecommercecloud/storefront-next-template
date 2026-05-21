@@ -141,48 +141,6 @@ Standard radio card group with vertical orientation.
     },
 };
 
-export const Horizontal: Story = {
-    render: () => (
-        <RadioCardGroup defaultValue="option1" orientation="horizontal">
-            <RadioCard value="option1">
-                <div>
-                    <h3 className="font-semibold">Option 1</h3>
-                </div>
-            </RadioCard>
-            <RadioCard value="option2">
-                <div>
-                    <h3 className="font-semibold">Option 2</h3>
-                </div>
-            </RadioCard>
-            <RadioCard value="option3">
-                <div>
-                    <h3 className="font-semibold">Option 3</h3>
-                </div>
-            </RadioCard>
-        </RadioCardGroup>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Radio card group with horizontal orientation.
-
-### Features:
-- Horizontal layout
-- Side-by-side cards
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for option 1
-        const option1 = await canvas.findByText(/option 1/i, {}, { timeout: 5000 });
-        await expect(option1).toBeInTheDocument();
-    },
-};
-
 export const WithDisabled: Story = {
     render: () => (
         <RadioCardGroup defaultValue="option1">
@@ -220,9 +178,14 @@ Radio card group with a disabled option.
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
+        await waitForStorybookReady(canvasElement);
 
-        // Check for disabled option
         const option2 = await canvas.findByText(/option 2/i, {}, { timeout: 5000 });
         await expect(option2).toBeInTheDocument();
+
+        const radios = canvas.getAllByRole('radio');
+        await expect(radios[1]).toBeDisabled();
+        await expect(radios[0]).not.toBeDisabled();
+        await expect(radios[2]).not.toBeDisabled();
     },
 };

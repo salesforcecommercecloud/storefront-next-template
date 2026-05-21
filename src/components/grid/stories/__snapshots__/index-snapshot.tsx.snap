@@ -1,319 +1,59 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Grid stories snapshot > Default story renders and matches snapshot 1`] = `
-<div>
+<div
+  class="grid grid-cols-3 grid-flow-row max-w-full mx-0 gap-4 items-stretch"
+  data-slot="grid"
+>
   <div
-    class="grid grid-cols-3 grid-flow-row max-w-full mx-0 items-stretch gap-4"
-    data-slot="grid"
+    class="bg-muted p-4 rounded text-center text-sm"
   >
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 1
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 2
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 3
-    </div>
+    Item 
+    1
+  </div>
+  <div
+    class="bg-muted p-4 rounded text-center text-sm"
+  >
+    Item 
+    2
+  </div>
+  <div
+    class="bg-muted p-4 rounded text-center text-sm"
+  >
+    Item 
+    3
   </div>
 </div>
 `;
 
-exports[`Grid stories snapshot > FullFeatured story renders and matches snapshot 1`] = `
-<div>
+exports[`Grid stories snapshot > Featured story renders and matches snapshot 1`] = `
+<div
+  class="grid grid-cols-4 grid-flow-row max-w-screen-2xl mx-auto gap-6 items-stretch bg-gradient-to-br from-purple-500 to-purple-700 p-8"
+  data-slot="grid"
+>
   <div
-    class="grid grid-cols-4 grid-flow-row max-w-screen-2xl gap-6 items-stretch bg-gradient-to-br from-purple-500 to-purple-700 mx-auto p-8 rounded-none"
-    data-slot="grid"
+    class="bg-white p-4 rounded shadow text-sm"
   >
-    <div
-      class="bg-white p-4 rounded shadow"
-    >
-      Feature 1
-    </div>
-    <div
-      class="bg-white p-4 rounded shadow"
-    >
-      Feature 2
-    </div>
-    <div
-      class="bg-white p-4 rounded shadow"
-    >
-      Feature 3
-    </div>
-    <div
-      class="bg-white p-4 rounded shadow"
-    >
-      Feature 4
-    </div>
+    Item 
+    1
   </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > InlineGrid story renders and matches snapshot 1`] = `
-<div>
   <div
-    class="inline-grid grid-cols-2 grid-flow-row max-w-full mx-0 items-stretch gap-2"
-    data-slot="grid"
+    class="bg-white p-4 rounded shadow text-sm"
   >
-    <div
-      class="bg-muted p-2 rounded"
-    >
-      A
-    </div>
-    <div
-      class="bg-muted p-2 rounded"
-    >
-      B
-    </div>
+    Item 
+    2
   </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > TwoColumns story renders and matches snapshot 1`] = `
-<div>
   <div
-    class="grid grid-cols-2 grid-flow-row max-w-full mx-0 items-stretch gap-4"
-    data-slot="grid"
+    class="bg-white p-4 rounded shadow text-sm"
   >
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 1
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 2
-    </div>
+    Item 
+    3
   </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > WithBackgroundBlur story renders and matches snapshot 1`] = `
-<div>
   <div
-    class="relative"
+    class="bg-white p-4 rounded shadow text-sm"
   >
-    <div
-      class="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-none"
-    />
-    <div
-      class="grid grid-cols-2 grid-flow-row max-w-full mx-0 gap-4 items-stretch backdrop-blur-md relative p-6 rounded-none bg-white/30"
-      data-slot="grid"
-    >
-      <div
-        class="bg-white/80 p-4 rounded"
-      >
-        Blurred Background
-      </div>
-      <div
-        class="bg-white/80 p-4 rounded"
-      >
-        Glassmorphism Effect
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > WithBackgroundGradient story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="grid grid-cols-2 grid-flow-row max-w-full mx-0 gap-6 items-stretch bg-gradient-to-br from-blue-500 to-blue-700 p-8 rounded-none"
-    data-slot="grid"
-  >
-    <div
-      class="bg-white p-4 rounded shadow"
-    >
-      Item 1
-    </div>
-    <div
-      class="bg-white p-4 rounded shadow"
-    >
-      Item 2
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > WithContainerAlignment story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="space-y-8"
-  >
-    <div
-      class="border-2 border-dashed border-gray-300 p-4"
-    >
-      <h3
-        class="text-sm font-semibold mb-2"
-      >
-        Align: Start (Default)
-      </h3>
-      <div
-        class="grid grid-cols-3 grid-flow-row max-w-screen-lg mx-0 gap-4 items-stretch"
-        data-slot="grid"
-      >
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 1
-        </div>
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 2
-        </div>
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 3
-        </div>
-      </div>
-    </div>
-    <div
-      class="border-2 border-dashed border-gray-300 p-4"
-    >
-      <h3
-        class="text-sm font-semibold mb-2"
-      >
-        Align: Center
-      </h3>
-      <div
-        class="grid grid-cols-3 grid-flow-row max-w-screen-lg mx-auto gap-4 items-stretch"
-        data-slot="grid"
-      >
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 1
-        </div>
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 2
-        </div>
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 3
-        </div>
-      </div>
-    </div>
-    <div
-      class="border-2 border-dashed border-gray-300 p-4"
-    >
-      <h3
-        class="text-sm font-semibold mb-2"
-      >
-        Align: End
-      </h3>
-      <div
-        class="grid grid-cols-3 grid-flow-row max-w-screen-lg ml-auto gap-4 items-stretch"
-        data-slot="grid"
-      >
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 1
-        </div>
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 2
-        </div>
-        <div
-          class="bg-muted p-4 rounded"
-        >
-          Item 3
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > WithFlow story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="grid grid-cols-3 grid-flow-dense max-w-full mx-0 items-stretch gap-4"
-    data-slot="grid"
-  >
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 1
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 2
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 3
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 4
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > WithMaxWidth story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="grid grid-cols-3 grid-flow-row max-w-screen-lg gap-4 items-stretch mx-auto"
-    data-slot="grid"
-  >
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 1
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 2
-    </div>
-    <div
-      class="bg-muted p-4 rounded"
-    >
-      Item 3
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Grid stories snapshot > WithVerticalAlignment story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="grid grid-cols-3 grid-flow-row max-w-full mx-0 gap-4 items-center h-64"
-    data-slot="grid"
-  >
-    <div
-      class="bg-muted p-4 rounded h-16"
-    >
-      Short Item
-    </div>
-    <div
-      class="bg-muted p-4 rounded h-32"
-    >
-      Tall Item
-    </div>
-    <div
-      class="bg-muted p-4 rounded h-24"
-    >
-      Medium Item
-    </div>
+    Item 
+    4
   </div>
 </div>
 `;

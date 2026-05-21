@@ -193,12 +193,22 @@ Share providers are configured via \`config.features.socialShare\`:
             },
         },
     },
+    // `product` is hidden from the controls panel because the icon button
+    // doesn't render any product data — the product is only consumed when
+    // the dropdown menu items build share URLs after a click. `size` and
+    // `className` are the only props with an immediate visible effect on
+    // the canvas, so those are the controls we expose.
     argTypes: {
-        product: {
-            control: 'object',
-            description: 'The product data to share',
+        // NOTE: `lg` renders only marginally larger than `md` because the
+        // outer button in share-icon.tsx is fixed at `w-9 h-9` with `p-2`
+        // padding (~20×20 inner space).
+        size: {
+            control: { type: 'radio' },
+            options: ['sm', 'md', 'lg'],
+            description: 'Icon size — drives the inner SVG width/height classes',
             table: {
-                type: { summary: "ShopperProducts.schemas['Product']" },
+                type: { summary: "'sm' | 'md' | 'lg'" },
+                defaultValue: { summary: "'md'" },
             },
         },
         className: {
@@ -209,9 +219,14 @@ Share providers are configured via \`config.features.socialShare\`:
                 defaultValue: { summary: 'undefined' },
             },
         },
+        product: { control: false, table: { disable: true } },
+        // tabIndex is a focus-management hook for the consumer; not relevant
+        // to user-facing visual demonstration in the canvas.
+        tabIndex: { control: false, table: { disable: true } },
     },
     args: {
         product: standardProd,
+        size: 'md',
         className: undefined,
     },
     decorators: [
@@ -269,292 +284,5 @@ The default ShareButton shows all available share options:
         const documentBody = within(document.body);
         const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
         await expect(copyLinkOption).toBeInTheDocument();
-    },
-};
-
-export const WithCustomProduct: Story = {
-    args: {
-        product: {
-            ...standardProd,
-            name: 'Limited Edition Sneakers',
-            shortDescription: 'Exclusive design with premium materials. Only 100 pairs available worldwide.',
-        },
-    },
-    parameters: {
-        shareProviders: ['Twitter', 'Facebook', 'LinkedIn', 'Email'],
-        docs: {
-            description: {
-                story: `
-This story shows the ShareButton with a custom product:
-
-### Custom Product Features:
-- **Custom name**: "Limited Edition Sneakers"
-- **Custom description**: Exclusive product description
-- **Same functionality**: All sharing features work the same
-- **Product-specific**: Shares the specific product URL and details
-
-### Use Cases:
-- Featured products
-- Special promotions
-- Limited edition items
-- Custom product sharing
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test share button is present
-        const shareButton = canvas.getByRole('button', { name: /share/i });
-        await expect(shareButton).toBeInTheDocument();
-        await expect(shareButton).not.toBeDisabled();
-
-        // Test dropdown opens
-        await userEvent.click(shareButton);
-
-        // Wait for dropdown menu to be visible and find the copy link option
-        // Note: Dropdown content may be in a portal, so we query from document
-        const documentBody = within(document.body);
-        const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
-        await expect(copyLinkOption).toBeInTheDocument();
-    },
-};
-
-export const LimitedProviders: Story = {
-    args: {
-        product: standardProd,
-    },
-    parameters: {
-        shareProviders: ['Twitter', 'Email'],
-        docs: {
-            description: {
-                story: `
-This story shows the ShareButton with only Twitter and Email providers:
-
-### Limited Providers:
-- **Twitter**: Social media sharing
-- **Email**: Email sharing
-- **No Facebook/LinkedIn**: Only configured providers shown
-- **Same functionality**: All features work the same
-
-### Use Cases:
-- Simplified sharing options
-- Brand-specific providers
-- Reduced choice for users
-- Focused sharing experience
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test share button is present
-        const shareButton = canvas.getByRole('button', { name: /share/i });
-        await expect(shareButton).toBeInTheDocument();
-        await expect(shareButton).not.toBeDisabled();
-
-        // Test dropdown opens
-        await userEvent.click(shareButton);
-
-        // Wait for dropdown menu to be visible and find the copy link option
-        // Note: Dropdown content may be in a portal, so we query from document
-        const documentBody = within(document.body);
-        const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
-        await expect(copyLinkOption).toBeInTheDocument();
-    },
-};
-
-export const SingleProvider: Story = {
-    args: {
-        product: standardProd,
-    },
-    parameters: {
-        shareProviders: ['Email'],
-        docs: {
-            description: {
-                story: `
-This story shows the ShareButton with only Email provider:
-
-### Single Provider:
-- **Email only**: Only email sharing option
-- **Copy link**: Still available
-- **Native share**: Still available when supported
-- **Simplified menu**: Fewer options in dropdown
-
-### Use Cases:
-- Email-focused sharing
-- Minimal sharing options
-- Simple sharing experience
-- Email marketing focus
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test share button is present
-        const shareButton = canvas.getByRole('button', { name: /share/i });
-        await expect(shareButton).toBeInTheDocument();
-        await expect(shareButton).not.toBeDisabled();
-
-        // Test dropdown opens
-        await userEvent.click(shareButton);
-
-        // Wait for dropdown menu to be visible and find the copy link option
-        // Note: Dropdown content may be in a portal, so we query from document
-        const documentBody = within(document.body);
-        const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
-        await expect(copyLinkOption).toBeInTheDocument();
-    },
-};
-
-export const NoProviders: Story = {
-    args: {
-        product: standardProd,
-    },
-    parameters: {
-        shareProviders: [],
-        docs: {
-            description: {
-                story: `
-This story shows the ShareButton when no providers are configured:
-
-### No Providers:
-- **Copy link**: Still available
-- **Native share**: Still available when supported
-- **No social options**: No Twitter, Facebook, LinkedIn, or Email
-- **Minimal menu**: Only basic sharing options
-
-### Use Cases:
-- Disabled social sharing
-- Basic link copying only
-- Minimal sharing functionality
-- Configuration testing
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test share button is present
-        const shareButton = canvas.getByRole('button', { name: /share/i });
-        await expect(shareButton).toBeInTheDocument();
-        await expect(shareButton).not.toBeDisabled();
-
-        // Test dropdown opens
-        await userEvent.click(shareButton);
-
-        // Wait for dropdown menu to be visible and find the copy link option
-        // Note: Dropdown content may be in a portal, so we query from document
-        const documentBody = within(document.body);
-        const copyLinkOption = await documentBody.findByRole('menuitem', { name: /copy link/i });
-        await expect(copyLinkOption).toBeInTheDocument();
-    },
-};
-
-export const CustomStyling: Story = {
-    args: {
-        product: standardProd,
-        className: 'bg-blue-600 hover:bg-blue-700 text-white',
-    },
-    parameters: {
-        shareProviders: ['Twitter', 'Facebook', 'LinkedIn', 'Email'],
-        docs: {
-            description: {
-                story: `
-This story shows the ShareButton with custom styling:
-
-### Custom Styling Features:
-- **Blue background**: Custom blue color
-- **Hover effect**: Darker blue on hover
-- **White text**: Contrasting text color
-- **Maintains functionality**: All sharing features work the same
-
-### Use Cases:
-- Brand-specific styling
-- Custom color schemes
-- Design system integration
-- Enhanced visual appeal
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test share button is present with custom styling
-        const shareButton = canvas.getByRole('button', { name: /share/i });
-        await expect(shareButton).toBeInTheDocument();
-        await expect(shareButton).not.toBeDisabled();
-    },
-};
-
-export const InProductCard: Story = {
-    render: () => (
-        <div className="w-64 p-4 border rounded-none">
-            <div className="mb-4">
-                <div className="w-full h-48 bg-muted rounded mb-2" />
-                <h3 className="font-semibold text-sm">Premium Cotton T-Shirt</h3>
-                <p className="text-sm text-muted-foreground mb-2">$29.99</p>
-            </div>
-            <div className="flex justify-between items-center">
-                <ShareButton product={standardProd} className="text-sm" />
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded">Add to Cart</button>
-            </div>
-        </div>
-    ),
-    parameters: {
-        shareProviders: ['Twitter', 'Facebook', 'LinkedIn', 'Email'],
-        docs: {
-            description: {
-                story: `
-This story shows the ShareButton integrated into a product card:
-
-### Product Card Structure:
-- **Product image**: Placeholder image area
-- **Product name**: Product title
-- **Price**: Product price display
-- **Share button**: ShareButton component
-- **Add to cart**: Additional action button
-
-### Integration Features:
-- **Compact layout**: Share button fits naturally in card
-- **Visual hierarchy**: Clear product information
-- **Action buttons**: Share and add to cart side by side
-- **Responsive design**: Works on different screen sizes
-
-### Use Cases:
-- Product listings
-- Product grids
-- Search results
-- Category pages
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test share button is present in product card
-        const shareButton = canvas.getByRole('button', { name: /share/i });
-        await expect(shareButton).toBeInTheDocument();
-
-        // Test add to cart button is present
-        const addToCartButton = canvas.getByRole('button', { name: /add to cart/i });
-        await expect(addToCartButton).toBeInTheDocument();
-
-        // Test product name is present
-        const productName = canvas.getByText(/premium cotton t-shirt/i);
-        await expect(productName).toBeInTheDocument();
     },
 };

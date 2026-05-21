@@ -123,7 +123,7 @@ function SocialLoginStoryHarness({ children, providers }: { children: ReactNode;
 }
 
 const meta: Meta<typeof SocialLoginButtons> = {
-    title: 'AUTHENTICATION/Social Login Buttons',
+    title: 'ACTIONS/Social Login Buttons',
     component: SocialLoginButtons,
     tags: ['autodocs', 'interaction'],
     parameters: {

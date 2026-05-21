@@ -36,92 +36,6 @@ exports[`RemoveItemButtonWithConfirmation stories snapshot > Default story rende
 </div>
 `;
 
-exports[`RemoveItemButtonWithConfirmation stories snapshot > DifferentItemTypes story renders and matches snapshot 1`] = `
-<div
-  data-remove-harness="true"
->
-  <div
-    class="space-y-4"
-  >
-    <div
-      class="p-4 border rounded-none"
-    >
-      <h4
-        class="font-medium mb-2"
-      >
-        Cart Item
-      </h4>
-      <p
-        class="text-sm text-muted-foreground mb-2"
-      >
-        Product in shopping cart
-      </p>
-      <button
-        aria-busy="false"
-        class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline"
-        data-size="sm"
-        data-slot="button"
-        data-testid="remove-item-cart-item-1"
-        data-variant="link"
-        title="Remove item"
-      >
-        Remove
-      </button>
-    </div>
-    <div
-      class="p-4 border rounded-none"
-    >
-      <h4
-        class="font-medium mb-2"
-      >
-        Wishlist Item
-      </h4>
-      <p
-        class="text-sm text-muted-foreground mb-2"
-      >
-        Saved for later
-      </p>
-      <button
-        aria-busy="false"
-        class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline"
-        data-size="sm"
-        data-slot="button"
-        data-testid="remove-item-wishlist-item-1"
-        data-variant="link"
-        title="Remove item"
-      >
-        Remove
-      </button>
-    </div>
-    <div
-      class="p-4 border rounded-none"
-    >
-      <h4
-        class="font-medium mb-2"
-      >
-        Saved Address
-      </h4>
-      <p
-        class="text-sm text-muted-foreground mb-2"
-      >
-        Default shipping address
-      </p>
-      <button
-        aria-busy="false"
-        class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-sm font-medium leading-5 text-primary cursor-pointer hover:no-underline"
-        data-size="sm"
-        data-slot="button"
-        data-testid="remove-item-address-1"
-        data-variant="link"
-        title="Remove item"
-      >
-        Remove
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
 exports[`RemoveItemButtonWithConfirmation stories snapshot > LoadingState story renders and matches snapshot 1`] = `
 <div
   data-remove-harness="true"
@@ -137,24 +51,6 @@ exports[`RemoveItemButtonWithConfirmation stories snapshot > LoadingState story 
     title="Remove item"
   >
     Removing...
-  </button>
-</div>
-`;
-
-exports[`RemoveItemButtonWithConfirmation stories snapshot > WithCustomStyling story renders and matches snapshot 1`] = `
-<div
-  data-remove-harness="true"
->
-  <button
-    aria-busy="false"
-    class="inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive underline-offset-4 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 text-sm leading-5 cursor-pointer hover:no-underline text-red-600 hover:text-red-700 font-medium"
-    data-size="sm"
-    data-slot="button"
-    data-testid="remove-item-item-789"
-    data-variant="link"
-    title="Remove item"
-  >
-    Remove
   </button>
 </div>
 `;

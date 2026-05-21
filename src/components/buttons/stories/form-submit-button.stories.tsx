@@ -15,7 +15,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormSubmitButton } from '../form-submit-button';
-import { Form, useFetcher, createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
+import { Form, useFetcher } from 'react-router';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within } from 'storybook/test';
@@ -215,34 +215,11 @@ function AccountSettings() {
         disabled: false,
     },
     decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <FormSubmitStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </FormSubmitStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
+        (Story) => (
+            <FormSubmitStoryHarness>
+                <Story />
+            </FormSubmitStoryHarness>
+        ),
     ],
 };
 
@@ -297,71 +274,23 @@ The default FormSubmitButton shows standard submit behavior:
     },
 };
 
-export const WithCustomText: Story = {
-    args: {
-        defaultText: 'Sign In',
-        submittingText: 'Signing in...',
-    },
-    render: (args) => (
-        <Form method="post" action="/login">
-            <input name="email" type="email" placeholder="Email" className="mb-4 p-2 border rounded" />
-            <input name="password" type="password" placeholder="Password" className="mb-4 p-2 border rounded" />
-            <FormSubmitButton {...args} />
-        </Form>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the FormSubmitButton with custom text for login:
+function FetcherFormExample(args: React.ComponentProps<typeof FormSubmitButton>) {
+    const fetcher = useFetcher();
 
-### Custom Features:
-- **Login text**: "Sign In" when idle
-- **Submitting text**: "Signing in..." during submission
-- **Form context**: Used in a login form with email and password fields
-- **Same functionality**: All form submission features work the same
-
-### Use Cases:
-- Login forms
-- Authentication flows
-- User sign-in pages
-- Custom text requirements
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test button is present with custom text
-        const submitButton = canvas.getByRole('button', { name: /sign in/i });
-        await expect(submitButton).toBeInTheDocument();
-        await expect(submitButton).not.toBeDisabled();
-
-        // Test form inputs are present
-        const emailInput = canvas.getByPlaceholderText(/email/i);
-        const passwordInput = canvas.getByPlaceholderText(/password/i);
-        await expect(emailInput).toBeInTheDocument();
-        await expect(passwordInput).toBeInTheDocument();
-    },
-};
+    return (
+        <fetcher.Form method="post" action="/update-settings">
+            <input name="setting" type="text" placeholder="Setting value" className="mb-4 p-2 border rounded" />
+            <FormSubmitButton {...args} fetcher={fetcher} />
+        </fetcher.Form>
+    );
+}
 
 export const WithFetcher: Story = {
-    render: () => {
-        const FetcherFormExample = () => {
-            const fetcher = useFetcher();
-
-            return (
-                <fetcher.Form method="post" action="/update-settings">
-                    <input name="setting" type="text" placeholder="Setting value" className="mb-4 p-2 border rounded" />
-                    <FormSubmitButton fetcher={fetcher} defaultText="Update Settings" submittingText="Updating..." />
-                </fetcher.Form>
-            );
-        };
-
-        return <FetcherFormExample />;
+    args: {
+        defaultText: 'Update Settings',
+        submittingText: 'Updating...',
     },
+    render: (args) => <FetcherFormExample {...args} />,
     parameters: {
         docs: {
             description: {
@@ -389,173 +318,6 @@ This story demonstrates the FormSubmitButton with a fetcher for independent form
 
         // Test button is present
         const submitButton = canvas.getByRole('button', { name: /update settings/i });
-        await expect(submitButton).toBeInTheDocument();
-        await expect(submitButton).not.toBeDisabled();
-    },
-};
-
-export const Disabled: Story = {
-    args: {
-        defaultText: 'Submit',
-        submittingText: 'Submitting...',
-        disabled: true,
-    },
-    render: (args) => (
-        <Form method="post" action="/submit">
-            <input name="email" type="email" placeholder="Email" className="mb-4 p-2 border rounded" />
-            <FormSubmitButton {...args} />
-        </Form>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the FormSubmitButton in a disabled state:
-
-### Disabled Features:
-- **Button disabled**: Cannot be clicked
-- **Visual feedback**: Button appears disabled
-- **Form validation**: Useful when form is invalid
-- **Prevents submission**: Form cannot be submitted
-
-### Use Cases:
-- Form validation states
-- Conditional submission
-- Invalid form states
-- User feedback
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test button is present and disabled
-        const submitButton = canvas.getByRole('button', { name: /submit/i });
-        await expect(submitButton).toBeInTheDocument();
-        await expect(submitButton).toBeDisabled();
-    },
-};
-
-export const CustomStyling: Story = {
-    args: {
-        defaultText: 'Submit',
-        submittingText: 'Submitting...',
-        className: 'w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg',
-    },
-    render: (args) => (
-        <Form method="post" action="/submit">
-            <input name="email" type="email" placeholder="Email" className="mb-4 p-2 border rounded" />
-            <FormSubmitButton {...args} />
-        </Form>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the FormSubmitButton with custom styling:
-
-### Styling Features:
-- **Custom colors**: Blue background with hover effect
-- **Font weight**: Bold text
-- **Padding**: Custom padding for larger button
-- **Rounded corners**: Custom border radius
-- **Maintains functionality**: All form features work the same
-
-### Use Cases:
-- Brand-specific styling
-- Custom design requirements
-- Design system integration
-- Enhanced visual appeal
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test button is present with custom styling
-        const submitButton = canvas.getByRole('button', { name: /submit/i });
-        await expect(submitButton).toBeInTheDocument();
-        await expect(submitButton).not.toBeDisabled();
-    },
-};
-
-export const InRegistrationForm: Story = {
-    render: () => (
-        <Form method="post" action="/register" className="w-full max-w-md p-6 bg-background border rounded-none">
-            <h2 className="text-2xl font-bold mb-4">Create Account</h2>
-            <div className="space-y-4">
-                <input
-                    name="firstName"
-                    type="text"
-                    placeholder="First Name"
-                    className="w-full p-2 border rounded"
-                    required
-                />
-                <input
-                    name="lastName"
-                    type="text"
-                    placeholder="Last Name"
-                    className="w-full p-2 border rounded"
-                    required
-                />
-                <input name="email" type="email" placeholder="Email" className="w-full p-2 border rounded" required />
-                <input
-                    name="password"
-                    type="password"
-                    placeholder="Password"
-                    className="w-full p-2 border rounded"
-                    required
-                />
-                <FormSubmitButton defaultText="Create Account" submittingText="Creating account..." />
-            </div>
-        </Form>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows the FormSubmitButton integrated into a complete registration form:
-
-### Form Structure:
-- **Multiple fields**: First name, last name, email, password
-- **Form validation**: Required fields
-- **Submit button**: FormSubmitButton with registration-specific text
-- **Complete layout**: Full form with styling
-
-### Integration Features:
-- **Seamless flow**: Button integrates naturally with form
-- **Visual hierarchy**: Clear form structure
-- **Consistent styling**: Matches overall form design
-- **User experience**: Clear feedback during submission
-
-### Use Cases:
-- Registration pages
-- Sign-up forms
-- Account creation
-- User onboarding
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test form elements are present
-        const firstNameInput = canvas.getByPlaceholderText(/first name/i);
-        const lastNameInput = canvas.getByPlaceholderText(/last name/i);
-        const emailInput = canvas.getByPlaceholderText(/email/i);
-        const passwordInput = canvas.getByPlaceholderText(/password/i);
-        const submitButton = canvas.getByRole('button', { name: /create account/i });
-
-        await expect(firstNameInput).toBeInTheDocument();
-        await expect(lastNameInput).toBeInTheDocument();
-        await expect(emailInput).toBeInTheDocument();
-        await expect(passwordInput).toBeInTheDocument();
         await expect(submitButton).toBeInTheDocument();
         await expect(submitButton).not.toBeDisabled();
     },

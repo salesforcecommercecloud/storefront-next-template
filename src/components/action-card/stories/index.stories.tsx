@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, within, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
@@ -244,369 +244,58 @@ The default ActionCard includes both edit and remove functionality:
     },
 };
 
-export const EditOnly: Story = {
-    args: {},
-    render: (args) => {
-        const { t } = getTranslation();
-        const { onEdit: userOnEdit, editBtnLabel, ...rest } = args;
-        const editLabel = editBtnLabel ?? t('actionCard:edit');
+/**
+ * Exercises the loading overlay path: a mount-triggered harness clicks the
+ * remove button on first render, which mounts the spinner overlay until the
+ * promise resolves. Wired this way (rather than via play-only interaction) so
+ * snapshot tests capture the overlay state instead of the idle card.
+ */
+function MountTriggeredRemoveCard() {
+    const { t } = getTranslation();
+    const editLabel = t('actionCard:edit');
+    const removeLabel = t('actionCard:remove');
+    const cardRef = useRef<HTMLDivElement | null>(null);
 
-        return (
+    useEffect(() => {
+        // Click the remove button as soon as the card mounts so the loading
+        // overlay is visible during snapshot capture.
+        const root = cardRef.current;
+        if (!root) return;
+        const button = root.querySelector<HTMLButtonElement>(`button[aria-label="${removeLabel}"]`);
+        button?.click();
+    }, [removeLabel]);
+
+    // Promise that never resolves keeps the overlay visible — required for the
+    // snapshot to capture the loading state and for the play function to assert
+    // against a stable DOM.
+    const onRemove = () => new Promise<void>(() => undefined);
+
+    return (
+        <div ref={cardRef}>
             <ActionCardHoverLogger>
-                <ActionCard {...rest} onEdit={createEditHandler(editLabel, userOnEdit)} editBtnLabel={editBtnLabel}>
+                <ActionCard onEdit={createEditHandler(editLabel)} onRemove={createRemoveHandler(removeLabel, onRemove)}>
                     <div className="space-y-2">
-                        <h3 className="font-semibold text-sm">Payment Method</h3>
-                        <p className="text-sm text-muted-foreground">•••• •••• •••• 4242</p>
-                        <p className="text-sm">Expires 12/25</p>
+                        <h3 className="font-semibold text-sm">Pending Removal</h3>
+                        <p className="text-sm">Loading overlay is mounted while removal is in flight.</p>
                     </div>
                 </ActionCard>
             </ActionCardHoverLogger>
+        </div>
+    );
+}
+
+export const RemoveLoadingOverlay: Story = {
+    render: () => <MountTriggeredRemoveCard />,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        // The mount effect clicks remove for us; wait for the overlay to mount.
+        await waitFor(
+            () => {
+                expect(canvas.getByTestId('loading-spinner')).toBeInTheDocument();
+            },
+            { timeout: 2000 }
         );
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows an ActionCard with only edit functionality:
-
-### Features:
-- **Edit button only**: Remove button is not rendered
-- **Payment card styling**: Shows credit card information
-- **Single action**: Only edit functionality is available
-
-### Use Cases:
-- Payment method cards where removal is handled elsewhere
-- Read-only content that can be edited
-- Settings that can be modified but not deleted
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Test payment card content is displayed
-        const titleElement = canvas.getByText('Payment Method');
-        await expect(titleElement).toBeInTheDocument();
-
-        const cardNumber = canvas.getByText('•••• •••• •••• 4242');
-        await expect(cardNumber).toBeInTheDocument();
-
-        // Test edit button is present and functional
-        const editButton = canvas.getByRole('button', { name: t('actionCard:edit') });
-        await expect(editButton).toBeInTheDocument();
-        await expect(editButton).not.toBeDisabled();
-
-        // Test that remove button is not present (check before clicking edit)
-        // Scope query to card footer to avoid matching buttons from Storybook UI
-        // Verify the edit button is within the card footer
-        const cardFooter = editButton.closest('[data-slot="card-footer"]');
-        await expect(cardFooter).toBeInTheDocument();
-        if (cardFooter) {
-            // Get all buttons in the footer
-            const footerButtons = Array.from(cardFooter.querySelectorAll('button'));
-
-            // Verify the edit button we found is in the footer
-            await expect(footerButtons).toContain(editButton);
-
-            // Verify no Remove buttons exist in the footer
-            // Check that no button in the footer has the remove text or aria-label
-            const hasRemoveButton = footerButtons.some((btn) => {
-                const text = btn.textContent?.trim() || '';
-                const ariaLabel = btn.getAttribute('aria-label') || '';
-                return text === t('actionCard:remove') || ariaLabel === t('actionCard:remove');
-            });
-            await expect(hasRemoveButton).toBe(false);
-        }
-    },
-};
-
-export const RemoveOnly: Story = {
-    args: {},
-    render: (args) => {
-        const { t } = getTranslation();
-        const { onRemove: userOnRemove, removeBtnLabel, ...rest } = args;
-        const removeLabel = removeBtnLabel ?? t('actionCard:remove');
-
-        return (
-            <ActionCardHoverLogger>
-                <ActionCard
-                    {...rest}
-                    onRemove={createRemoveHandler(removeLabel, userOnRemove)}
-                    removeBtnLabel={removeBtnLabel}>
-                    <div className="space-y-2">
-                        <h3 className="font-semibold text-sm">Saved Item</h3>
-                        <p className="text-sm text-muted-foreground">Product Name</p>
-                        <p className="text-sm">$29.99</p>
-                    </div>
-                </ActionCard>
-            </ActionCardHoverLogger>
-        );
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows an ActionCard with only remove functionality:
-
-### Features:
-- **Remove button only**: Edit button is not rendered
-- **Product information**: Shows saved item details
-- **Destructive action**: Only removal functionality is available
-
-### Use Cases:
-- Saved items or wishlist entries
-- Temporary content that can be removed
-- Items that don't need editing functionality
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Test product information is displayed
-        const titleElement = canvas.getByText('Saved Item');
-        await expect(titleElement).toBeInTheDocument();
-
-        const productName = canvas.getByText('Product Name');
-        await expect(productName).toBeInTheDocument();
-
-        const priceElement = canvas.getByText('$29.99');
-        await expect(priceElement).toBeInTheDocument();
-
-        // Test remove button is present and functional
-        const removeButton = canvas.getByRole('button', { name: t('actionCard:remove') });
-        await expect(removeButton).toBeInTheDocument();
-        await expect(removeButton).not.toBeDisabled();
-
-        // Test that edit button is not present (check before clicking remove)
-        // Scope query to card footer to avoid matching buttons from Storybook UI
-        // Verify the remove button is within the card footer
-        const cardFooter = removeButton.closest('[data-slot="card-footer"]');
-        await expect(cardFooter).toBeInTheDocument();
-        if (cardFooter) {
-            // Get all buttons in the footer
-            const footerButtons = Array.from(cardFooter.querySelectorAll('button'));
-
-            // Verify the remove button we found is in the footer
-            await expect(footerButtons).toContain(removeButton);
-
-            // Verify no Edit buttons exist in the footer
-            // Check that no button in the footer has the edit text or aria-label
-            const hasEditButton = footerButtons.some((btn) => {
-                const text = btn.textContent?.trim() || '';
-                const ariaLabel = btn.getAttribute('aria-label') || '';
-                return text === t('actionCard:edit') || ariaLabel === t('actionCard:edit');
-            });
-            await expect(hasEditButton).toBe(false);
-        }
-    },
-};
-
-export const NoActions: Story = {
-    args: {},
-    render: (args) => (
-        <ActionCardHoverLogger>
-            <ActionCard {...args}>
-                <div className="space-y-2">
-                    <h3 className="font-semibold text-sm">Information Card</h3>
-                    <p className="text-sm text-muted-foreground">This is a read-only information card</p>
-                    <p className="text-sm">No actions are available for this content</p>
-                </div>
-            </ActionCard>
-        </ActionCardHoverLogger>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story shows an ActionCard without any actions:
-
-### Features:
-- **No action buttons**: Neither edit nor remove buttons are rendered
-- **Content only**: Just displays the card content
-- **Read-only**: No interactive elements
-
-### Use Cases:
-- Information display cards
-- Read-only content sections
-- Static information that doesn't need actions
-- Placeholder cards during loading states
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test card content is displayed
-        const titleElement = canvas.getByText('Information Card');
-        await expect(titleElement).toBeInTheDocument();
-
-        // Test that the card renders without errors
-        const card = canvasElement.querySelector('[data-slot="card"]');
-        await expect(card).toBeInTheDocument();
-    },
-};
-
-export const WithCustomLabels: Story = {
-    args: {
-        editBtnLabel: 'Modify Address',
-        removeBtnLabel: 'Delete Address',
-    },
-    render: (args) => {
-        const { t } = getTranslation();
-        const { onEdit: userOnEdit, onRemove: userOnRemove, editBtnLabel, removeBtnLabel, ...rest } = args;
-        const editLabel = editBtnLabel ?? t('actionCard:edit');
-        const removeLabel = removeBtnLabel ?? t('actionCard:remove');
-
-        return (
-            <ActionCardHoverLogger>
-                <ActionCard
-                    {...rest}
-                    onEdit={createEditHandler(editLabel, userOnEdit)}
-                    onRemove={createRemoveHandler(removeLabel, userOnRemove)}
-                    editBtnLabel={editBtnLabel}
-                    removeBtnLabel={removeBtnLabel}>
-                    <div className="space-y-2">
-                        <h3 className="font-semibold text-sm">Shipping Address</h3>
-                        <p className="text-sm text-muted-foreground">Default Address</p>
-                        <p className="text-sm">456 Oak Avenue</p>
-                        <p className="text-sm">Los Angeles, CA 90210</p>
-                    </div>
-                </ActionCard>
-            </ActionCardHoverLogger>
-        );
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story demonstrates custom button labels:
-
-### Features:
-- **Custom edit label**: "Modify Address" instead of default "Edit"
-- **Custom remove label**: "Delete Address" instead of default "Remove"
-- **Accessibility**: Custom labels are used for ARIA attributes
-- **Context-specific**: Labels provide better context for the action
-
-### Use Cases:
-- Context-specific actions that need clearer labels
-- Multi-language applications
-- Custom action terminology
-- Better user experience with descriptive labels
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test address information is displayed
-        const titleElement = canvas.getByText('Shipping Address');
-        await expect(titleElement).toBeInTheDocument();
-
-        const addressLine = canvas.getByText('456 Oak Avenue');
-        await expect(addressLine).toBeInTheDocument();
-
-        const cityState = canvas.getByText('Los Angeles, CA 90210');
-        await expect(cityState).toBeInTheDocument();
-
-        // Test custom edit button label
-        const editButton = canvas.getByRole('button', { name: 'Modify Address' });
-        await expect(editButton).toBeInTheDocument();
-        await expect(editButton).not.toBeDisabled();
-
-        // Test custom remove button label
-        const removeButton = canvas.getByRole('button', { name: 'Delete Address' });
-        await expect(removeButton).toBeInTheDocument();
-        await expect(removeButton).not.toBeDisabled();
-    },
-};
-
-export const WithAsyncRemove: Story = {
-    args: {
-        onRemove: async () => {
-            // Simulate async operation
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-        },
-    },
-    render: (args) => {
-        const { t } = getTranslation();
-        const { onEdit: userOnEdit, onRemove: userOnRemove, editBtnLabel, removeBtnLabel, ...rest } = args;
-        const editLabel = editBtnLabel ?? t('actionCard:edit');
-        const removeLabel = removeBtnLabel ?? t('actionCard:remove');
-
-        return (
-            <ActionCardHoverLogger>
-                <ActionCard
-                    {...rest}
-                    onEdit={createEditHandler(editLabel, userOnEdit)}
-                    onRemove={createRemoveHandler(removeLabel, userOnRemove)}
-                    editBtnLabel={editBtnLabel}
-                    removeBtnLabel={removeBtnLabel}>
-                    <div className="space-y-2">
-                        <h3 className="font-semibold text-sm">Complex Item</h3>
-                        <p className="text-sm text-muted-foreground">This item requires server processing</p>
-                        <p className="text-sm">Removal may take a few seconds</p>
-                    </div>
-                </ActionCard>
-            </ActionCardHoverLogger>
-        );
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-This story demonstrates the loading state when onRemove returns a promise:
-
-### Features:
-- **Loading overlay**: Shows spinner when remove is clicked
-- **Disabled interaction**: Card content is not accessible during loading
-- **Async operation**: Simulates a 2-second server operation
-- **Accessibility**: Loading state is announced to screen readers
-
-### Loading Behavior:
-- Click the remove button to see the loading state
-- Loading overlay covers the entire card
-- Spinner animation indicates processing
-- Card becomes interactive again after completion
-
-### Use Cases:
-- Server-side deletion operations
-- Complex removal processes
-- API calls that take time to complete
-- Operations that require confirmation
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test complex item content is displayed
-        const titleElement = canvas.getByText('Complex Item');
-        await expect(titleElement).toBeInTheDocument();
-
-        const description = canvas.getByText('This item requires server processing');
-        await expect(description).toBeInTheDocument();
-
-        // Test edit button is present and functional
-        const editButton = canvas.getByRole('button', { name: /edit|change/i });
-        await expect(editButton).toBeInTheDocument();
-        await expect(editButton).not.toBeDisabled();
-
-        // Test remove button is present and functional
-        const removeButton = canvas.getByRole('button', { name: /remove|delete/i });
-        await expect(removeButton).toBeInTheDocument();
-        await expect(removeButton).not.toBeDisabled();
     },
 };

@@ -49,7 +49,7 @@ const mockData: ReturnsAndWarrantyData = {
 };
 
 const meta: Meta<typeof ReturnsAndWarrantyModalContent> = {
-    title: 'Components/InfoModal/ReturnsAndWarrantyModalContent',
+    title: 'COMMON/Info Modal/Returns And Warranty Modal Content',
     component: ReturnsAndWarrantyModalContent,
     parameters: {
         layout: 'centered',
