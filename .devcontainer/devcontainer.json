@@ -7,19 +7,53 @@
     // Pinned Node 24 image. The package.json `engines` field requires Node >=24.
     "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
 
-    // Activate the pnpm version this project is built against, then install.
-    // Corepack ships with Node, so no separate install step is needed.
-    "postCreateCommand": "sudo corepack enable && corepack prepare pnpm@10.28.0 --activate && pnpm install",
+    // Floor for Codespaces machine size. The monorepo is large enough that
+    // 2-core/4gb instances make `pnpm install` and Vite cold starts painful.
+    "hostRequirements": {
+        "cpus": 4,
+        "memory": "8gb"
+    },
+
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+
+    // Persist pnpm's content-addressable store across container rebuilds.
+    // The store is shared by all projects on the host, so subsequent installs
+    // hard-link from the cache instead of re-downloading from npm.
+    "mounts": ["source=storefront-next-pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume"],
+
+    // One-time setup: activate the pinned pnpm version and ensure the mounted
+    // pnpm store volume is writable by the non-root `node` user. Corepack ships
+    // with Node, so no separate pnpm install step is needed.
+    "onCreateCommand": "sudo corepack enable && corepack prepare pnpm@10.28.0 --activate && sudo chown -R node:node /home/node/.local/share/pnpm",
+
+    // Install dependencies here (not in `onCreateCommand`) so Codespaces
+    // prebuilds cover it and re-run it when `package.json` / `pnpm-lock.yaml`
+    // change — prebuilt codespaces start with `node_modules` already populated.
+    //
+    // `--ignore-scripts` skips all postinstall scripts so pnpm 10's strict
+    // build-script gate doesn't fail in non-interactive mode (no TTY).
+    // If a missing postinstall surfaces later (e.g. a native binding error
+    // during `pnpm dev`/`pnpm test`), run `pnpm rebuild <pkg>` once
+    // interactively in the codespace terminal to compile that package.
+    "updateContentCommand": "pnpm install --ignore-scripts",
 
     // Download the VSIX and install it here: `/tmp` is cleared on container
     // restart, and the `code` CLI is only on PATH once the editor attaches.
-    // The URL points at a versioned GitHub Release asset and the artifact is
-    // verified against a sha256 checksum so the installed extension cannot
-    // drift if the upstream tag is moved or the asset replaced. To ship a new
-    // version, cut a new release and bump both the tag and the checksum here.
-    "postAttachCommand": "curl -fL -o /tmp/commerce-vibes.vsix https://github.com/storefront-setup-test/commerce-vibes-public/releases/download/v0.0.1/commerce-vibes.vsix && echo '0cbbb586bfff3e4e556a4fcbab01adab6a457fe6da6c5dc1c2bfc4cf2679a400  /tmp/commerce-vibes.vsix' | sha256sum -c - && code --install-extension /tmp/commerce-vibes.vsix --force",
+    // Then mark port 65535 public so AM can redirect to the codespace's
+    // app.github.dev URL during browser-based sign-in.
+    "postAttachCommand": "curl -fL -o /tmp/commerce-vibes.vsix https://github.com/storefront-setup-test/commerce-vibes-public/raw/main/commerce-vibes-0.0.1.vsix && code --install-extension /tmp/commerce-vibes.vsix --force; gh codespace ports visibility 65535:public -c $CODESPACE_NAME 2>/dev/null",
 
-    "forwardPorts": [5173, 6006],
+    // Export the public Codespaces URL the extension should use as redirect_uri.
+    // The extension reads SFCC_AM_REDIRECT_URI in place of the hardcoded
+    // http://127.0.0.1:65535/callback when running in a Codespace.
+    "postStartCommand": "echo \"export SFCC_AM_REDIRECT_URI=https://${CODESPACE_NAME}-65535.app.github.dev/callback\" > ~/.sfcc_env && grep -q 'source ~/.sfcc_env' ~/.bashrc || echo 'source ~/.sfcc_env 2>/dev/null' >> ~/.bashrc",
+
+    // Port 65535 is the AM OAuth loopback port the Commerce Vibes extension
+    // binds to. In Codespaces it must be forwarded + public so the browser-side
+    // AM redirect can reach the loopback server inside the container.
+    "forwardPorts": [5173, 6006, 65535],
     "portsAttributes": {
         "5173": {
             "label": "Dev Server",
@@ -28,6 +62,11 @@
         "6006": {
             "label": "Storybook",
             "onAutoForward": "silent"
+        },
+        "65535": {
+            "label": "Commerce Vibes AM OAuth Callback",
+            "onAutoForward": "silent",
+            "visibility": "public"
         }
     },
 
@@ -38,8 +77,7 @@
                 "esbenp.prettier-vscode",
                 "bradlc.vscode-tailwindcss",
                 "ms-playwright.playwright",
-                "vitest.explorer",
-                "salesforce.salesforcedx-vscode"
+                "vitest.explorer"
             ],
             "settings": {
                 "editor.formatOnSave": true,
