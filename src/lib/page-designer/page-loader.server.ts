@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import { fetchPage, type PageDesignerPageParams } from '@/lib/api/page.server';
+import { fetchPage, type PageDesignerPageModeParams, type PageDesignerPageParams } from '@/lib/api/page.server';
 import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
 import { registry } from '@/lib/page-designer/registry';
-import { isDesignModeActive, isPreviewModeActive } from '@salesforce/storefront-next-runtime/design/mode';
+import {
+    isDesignModeActive,
+    isPreviewModeActive,
+    type PageDesignerMode,
+} from '@salesforce/storefront-next-runtime/design/mode';
 import { getLogger } from '@/lib/logger.server';
 
 export type Page = ShopperExperience.schemas['Page'];
@@ -26,10 +30,9 @@ export type PageWithComponentData = Page & {
     componentData?: Record<string, Promise<unknown>>;
 };
 
-type PageParams = Omit<PageDesignerPageParams, 'mode' | 'pdToken'>;
 export async function fetchPageFromLoader(
     { context, request }: LoaderFunctionArgs,
-    params: PageParams
+    params: PageDesignerPageParams & PageDesignerPageModeParams
 ): Promise<ShopperExperience.schemas['Page']> {
     const isPageDesignerActive = isDesignModeActive(request) || isPreviewModeActive(request);
     const url = new URL(request.url);
@@ -38,8 +41,8 @@ export async function fetchPageFromLoader(
         return fetchPage(context, params);
     }
 
-    const pageDesignerParams: Partial<PageDesignerPageParams> = {
-        mode: url.searchParams.get('mode') || undefined,
+    const pageDesignerParams: Partial<PageDesignerPageParams & PageDesignerPageModeParams> = {
+        mode: (url.searchParams.get('mode') as PageDesignerMode) || undefined,
         pdToken: url.searchParams.get('pdToken') || undefined,
         pageId: url.searchParams.get('pageId') || undefined,
     };
@@ -107,7 +110,7 @@ function collectFromRegions(
  */
 export async function fetchPageWithComponentData(
     args: LoaderFunctionArgs,
-    params: PageParams
+    params: PageDesignerPageParams & PageDesignerPageModeParams
 ): Promise<PageWithComponentData | null> {
     let page: ShopperExperience.schemas['Page'];
     try {

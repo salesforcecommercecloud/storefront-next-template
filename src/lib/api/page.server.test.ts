@@ -17,13 +17,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fetchPage } from './page.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { createTestContext } from '@/lib/test-utils';
+import { type PageDesignerMode } from '@salesforce/storefront-next-runtime/design/mode';
 
 const mockGetPage = vi.fn();
+const mockGetPages = vi.fn();
 
 vi.mock('@/lib/api-clients.server', () => ({
     createApiClients: vi.fn(() => ({
         shopperExperience: {
             getPage: mockGetPage,
+            getPages: mockGetPages,
         },
     })),
 }));
@@ -35,6 +38,7 @@ describe('fetchPage', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockGetPage.mockReset();
+        mockGetPages.mockReset();
     });
 
     const basicParameterTestCases = [
@@ -42,7 +46,7 @@ describe('fetchPage', () => {
             description: 'should call getPage with all parameters provided',
             inputParameters: {
                 pageId: 'product-page',
-                mode: 'edit',
+                mode: 'EDIT' as PageDesignerMode,
                 pdToken: 'abc123',
                 aspectType: 'mobile',
                 categoryId: 'electronics',
@@ -51,7 +55,7 @@ describe('fetchPage', () => {
             expectedParams: {
                 path: { pageId: 'product-page' },
                 query: {
-                    mode: 'edit',
+                    mode: 'EDIT',
                     pdToken: 'abc123',
                     aspectAttributes: JSON.stringify({
                         aspectType: 'mobile',
@@ -61,15 +65,6 @@ describe('fetchPage', () => {
                 },
             },
             mockResult: { id: 'product-page', name: 'Product Detail Page', pageType: 'productDetailPage' },
-        },
-        {
-            description: 'should handle empty parameters',
-            inputParameters: { pageId: '' },
-            expectedParams: {
-                path: { pageId: '' },
-                query: {},
-            },
-            mockResult: { id: '', name: 'Default Page', pageType: 'storePage' },
         },
     ];
 
@@ -85,13 +80,95 @@ describe('fetchPage', () => {
         expect(result).toEqual(mockResult);
     });
 
+    describe('falls back to getPages when no pageId is provided', () => {
+        const fallbackTestCases = [
+            {
+                description: 'forwards aspectType, categoryId, and productId as query params',
+                inputParameters: {
+                    aspectType: 'pdpAspect',
+                    categoryId: 'electronics',
+                    productId: 'laptop-001',
+                },
+                expectedParams: {
+                    query: {
+                        aspectTypeId: 'pdpAspect',
+                        categoryId: 'electronics',
+                        productId: 'laptop-001',
+                        aspectAttributes: JSON.stringify({
+                            aspectType: 'pdpAspect',
+                            categoryId: 'electronics',
+                            productId: 'laptop-001',
+                        }),
+                    },
+                },
+            },
+            {
+                description: 'omits unspecified query params',
+                inputParameters: {
+                    aspectType: 'plpAspect',
+                    categoryId: 'mens-clothing',
+                },
+                expectedParams: {
+                    query: {
+                        aspectTypeId: 'plpAspect',
+                        categoryId: 'mens-clothing',
+                        aspectAttributes: JSON.stringify({
+                            aspectType: 'plpAspect',
+                            categoryId: 'mens-clothing',
+                        }),
+                    },
+                },
+            },
+            {
+                description: 'sends only aspectTypeId when no category or product is provided',
+                inputParameters: { aspectType: 'storePageAspect' },
+                expectedParams: {
+                    query: {
+                        aspectTypeId: 'storePageAspect',
+                        aspectAttributes: JSON.stringify({ aspectType: 'storePageAspect' }),
+                    },
+                },
+            },
+        ];
+
+        it.each(fallbackTestCases)('$description', async ({ inputParameters, expectedParams }) => {
+            const firstPage = { id: 'first', name: 'First Page', pageType: 'storePage' };
+            mockGetPages.mockResolvedValue({ data: { data: [firstPage] } });
+
+            const result = await fetchPage(mockContext, inputParameters);
+
+            expect(mockGetPages).toHaveBeenCalledWith({ params: expectedParams });
+            expect(mockGetPage).not.toHaveBeenCalled();
+            expect(result).toEqual(firstPage);
+        });
+
+        it('returns the first page when getPages returns multiple results', async () => {
+            const firstPage = { id: 'first', name: 'First', pageType: 'storePage' };
+            const secondPage = { id: 'second', name: 'Second', pageType: 'storePage' };
+            mockGetPages.mockResolvedValue({ data: { data: [firstPage, secondPage] } });
+
+            const result = await fetchPage(mockContext, { aspectType: 'pdpAspect', productId: 'p1' });
+
+            expect(result).toEqual(firstPage);
+        });
+
+        it('throws a 404 ApiError when getPages returns no results', async () => {
+            mockGetPages.mockResolvedValue({ data: { data: [] } });
+
+            await expect(fetchPage(mockContext, { aspectType: 'pdpAspect', productId: 'p1' })).rejects.toMatchObject({
+                name: 'ApiError',
+                status: 404,
+            });
+        });
+    });
+
     describe('Page Designer design specific parameters', () => {
         const pageDesignerTestCases = [
             {
                 description: 'should handle Page Designer edit mode',
                 parameters: {
                     pageId: 'homepage',
-                    mode: 'edit',
+                    mode: 'EDIT' as PageDesignerMode,
                     pdToken: 'edit-token-123',
                     categoryId: 'mens-clothing',
                     aspectType: 'category',
@@ -99,7 +176,7 @@ describe('fetchPage', () => {
                 expectedParams: {
                     path: { pageId: 'homepage' },
                     query: {
-                        mode: 'edit',
+                        mode: 'EDIT',
                         pdToken: 'edit-token-123',
                         aspectAttributes: JSON.stringify({
                             aspectType: 'category',
@@ -166,7 +243,7 @@ describe('fetchPage', () => {
                 error: new Error('Unauthorized access'),
                 inputParameters: {
                     pageId: 'secure-page',
-                    mode: 'edit',
+                    mode: 'EDIT' as PageDesignerMode,
                     pdToken: 'invalid-token',
                 },
                 expectedErrorMessage: 'Unauthorized access',

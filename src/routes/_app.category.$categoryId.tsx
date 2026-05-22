@@ -210,7 +210,7 @@ export async function loader(args: Route.LoaderArgs): Promise<CategoryPageData> 
         searchResultCritical,
         searchResultNonCritical,
         page: fetchPageWithComponentData(args, {
-            pageId: 'plp',
+            aspectType: 'plp',
             categoryId,
         }),
         categoryId,

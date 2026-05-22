@@ -17,12 +17,13 @@
 /**
  * Utility functions for detecting active design/preview modes
  */
+type PageDesignerMode = 'EDIT' | 'PREVIEW';
 /**
  * Get the mode parameter from URL search params
  * @param url - Optional URL string or Request object for server-side usage. If not provided, uses window.location on client-side
  * @returns The mode parameter value or null if not found
  */
-declare const getUrlMode: (url?: string | URL | Request) => string | null;
+declare const getUrlMode: (url?: string | URL | Request) => PageDesignerMode | null;
 /**
  * Check if design mode is active
  * @param url - Optional URL string or Request object for server-side usage
@@ -36,5 +37,5 @@ declare const isDesignModeActive: (url?: string | URL | Request) => boolean;
  */
 declare const isPreviewModeActive: (url?: string | URL | Request) => boolean;
 //#endregion
-export { getUrlMode, isDesignModeActive, isPreviewModeActive };
+export { PageDesignerMode, getUrlMode, isDesignModeActive, isPreviewModeActive };
 //# sourceMappingURL=design-mode.d.ts.map

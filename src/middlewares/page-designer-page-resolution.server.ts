@@ -46,13 +46,13 @@ import { Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
 /**
- * URL path pattern matching shopperExperience `getPage` requests.
+ * URL path pattern matching shopperExperience `getPage` and `getPages` requests.
  *
- * Matches both `/pages` and `/pages/{pageId}` at the end of the pathname (`$`).
- * The page-ID capture group is optional — when absent (bare `/pages` path),
- * `match[1]` is `undefined` and the resolved `pageId` is an empty string.
- * Anchoring to `$` avoids false positives from organization IDs that happen
- * to contain the word "pages".
+ * Anchored to the end of the pathname (`$`) so it only matches `/pages` or
+ * `/pages/{pageId}` as the final path segment. This avoids false positives
+ * from organization IDs that happen to contain the word "pages". The optional
+ * capture group holds the `pageId` for `getPage` requests, or `undefined`
+ * for `getPages` (page-list lookups by aspect/product/category).
  */
 const GET_PAGE_PATH_RE = /\/pages(?:\/([^/?]+))?$/;
 
@@ -199,7 +199,7 @@ function createGetPageDebugMiddleware(
     };
 }
 
-function processGetPageRequest(request: Request): { url: URL; pageId?: string } | undefined {
+function processGetPageRequest(request: Request): { url: URL; pageId: string } | undefined {
     if (request.method !== 'GET') return;
 
     const url = new URL(request.url);
@@ -210,6 +210,9 @@ function processGetPageRequest(request: Request): { url: URL; pageId?: string } 
     // Design/preview mode requests must always reach SCAPI for live content
     if (url.searchParams.has('mode') || url.searchParams.has('pdToken')) return;
 
+    // `pageId` is the empty string for `/pages` (getPages) requests and a
+    // non-empty string for `/pages/{pageId}` (getPage) — callers can use
+    // `!pageId` to distinguish the two.
     return {
         pageId: match[1] ? decodeURIComponent(match[1]) : '',
         url,
@@ -239,7 +242,9 @@ function createPageResolutionMiddleware(
 
     return {
         async onRequest({ request }) {
-            const metrics: Metrics = {};
+            const metrics: Metrics = {
+                resource: request.url,
+            };
 
             try {
                 const response = await resolveGetPageRequest({
@@ -279,6 +284,7 @@ function createPageResolutionMiddleware(
  * (page vs site) because both may be fetched during a single resolution.
  */
 interface Metrics {
+    resource?: string;
     resolutionStart?: number;
     resolutionEnd?: number;
     contextResolutionStart?: number;
@@ -418,6 +424,7 @@ function logMetrics(logger: Logger, metrics: Metrics): void {
     );
 
     logger.debug('[PageResolutionMiddleware] page resolution', {
+        resource: metrics.resource,
         resolvedPageId: metrics.resolutionResult?.id,
         resolvedPageTypeId: metrics.resolutionResult?.typeId,
         resolvedContext: metrics.resolvedContext ? sanitizeResolvedContext(metrics.resolvedContext) : null,
@@ -475,9 +482,12 @@ async function resolveGetPageRequest({
     clients: Clients;
     logger: Logger;
 }): Promise<Response | undefined> {
-    const { pageId, url } = processGetPageRequest(request) ?? {};
-
-    if (!url) return;
+    const processed = processGetPageRequest(request);
+    if (!processed) return;
+    const { pageId, url } = processed;
+    // `/pages/{pageId}` (getPage) sets a non-empty pageId; `/pages`
+    // (getPages) sets `pageId === ''` per processGetPageRequest's contract.
+    const isGetPages = !pageId;
 
     // Lazy lookup — the site URL config Data Store entry is only fetched
     // here, after we've confirmed this is a page request we'd actually
@@ -508,7 +518,16 @@ async function resolveGetPageRequest({
         search: url.search,
     };
 
-    const aspectAttributes = parseAspectAttributes(url, logger);
+    // `/pages/{pageId}` (getPage) carries aspect data inside the
+    // `aspectAttributes` JSON query param. `/pages` (getPages) uses
+    // top-level query params.
+    const aspectAttributes = isGetPages
+        ? {
+              aspectType: url.searchParams.get('aspectTypeId') ?? undefined,
+              categoryId: url.searchParams.get('categoryId') ?? undefined,
+              productId: url.searchParams.get('productId') ?? undefined,
+          }
+        : parseAspectAttributes(url, logger);
 
     Object.assign(metrics.parameters, {
         aspectType: aspectAttributes.aspectType,
@@ -555,7 +574,11 @@ async function resolveGetPageRequest({
             });
         }
 
-        return Response.json(resolved, { headers: { [PAGE_MANIFEST_HIT_HEADER]: '1' } });
+        // Match the response shape expected by each SCAPI endpoint:
+        // `getPage` returns a single Page; `getPages` returns `{ data: Page[] }`.
+        return Response.json(isGetPages ? { data: [resolved] } : resolved, {
+            headers: { [PAGE_MANIFEST_HIT_HEADER]: '1' },
+        });
     }
 }
 

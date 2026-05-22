@@ -201,7 +201,7 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
          * Handle errors gracefully - return page with empty componentData if fetch failed.
          */
         page: fetchPageWithComponentData(args, {
-            pageId: 'pdp',
+            aspectType: 'pdp',
             productId: productLookupId,
         }),
         pageKey: productId,

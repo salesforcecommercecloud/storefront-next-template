@@ -340,7 +340,7 @@ describe('CategoryPage', () => {
                 currency: 'GBP',
             });
             expect(fetchPageWithComponentData).toHaveBeenCalledWith(args, {
-                pageId: 'plp',
+                aspectType: 'plp',
                 categoryId: 'electronics',
             });
             expect(result.categoryId).toBe('electronics');

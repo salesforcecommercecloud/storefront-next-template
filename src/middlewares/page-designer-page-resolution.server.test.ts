@@ -101,6 +101,16 @@ function getPageUrl(pageId: string, queryParams?: Record<string, string>): strin
     return url.toString();
 }
 
+function getPagesUrl(queryParams?: Record<string, string>): string {
+    const url = new URL(`${SCAPI_BASE}/pages`);
+    if (queryParams) {
+        for (const [key, value] of Object.entries(queryParams)) {
+            url.searchParams.set(key, value);
+        }
+    }
+    return url.toString();
+}
+
 /** Builds a MiddlewareCallbackParams-compatible object for the onRequest handler. */
 function middlewareParams(request: Request, overrides: { schemaPath?: string; id?: string } = {}) {
     return {
@@ -420,6 +430,107 @@ describe('pageDesignerResolutionMiddleware', () => {
             expect(result).toBeInstanceOf(Response);
             const body = await (result as Response).json();
             expect(body).toEqual(mockPage);
+        });
+    });
+
+    describe('getPages interception', () => {
+        it('should match GET requests to /pages (no pageId)', async () => {
+            const handler = await setupHandler();
+            mockedResolvePage.mockResolvedValue(null);
+
+            await handler(
+                middlewareParams(new Request(getPagesUrl({ aspectTypeId: 'pdp', productId: 'shirt-001' })), {
+                    schemaPath: '/pages',
+                    id: 'getPages',
+                })
+            );
+
+            expect(mockedResolvePage).toHaveBeenCalled();
+        });
+
+        it('should read aspect attributes from top-level query params', async () => {
+            const handler = await setupHandler();
+            mockedResolvePage.mockResolvedValue(null);
+
+            await handler(
+                middlewareParams(new Request(getPagesUrl({ aspectTypeId: 'pdp', productId: 'shirt-001' })), {
+                    schemaPath: '/pages',
+                    id: 'getPages',
+                })
+            );
+
+            expect(mockedResolvePage).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    id: 'shirt-001',
+                    identifierType: 'product',
+                    aspectType: 'pdp',
+                })
+            );
+        });
+
+        it('should use category identifierType when categoryId is provided', async () => {
+            const handler = await setupHandler();
+            mockedResolvePage.mockResolvedValue(null);
+
+            await handler(
+                middlewareParams(new Request(getPagesUrl({ aspectTypeId: 'plp', categoryId: 'mens-clothing' })), {
+                    schemaPath: '/pages',
+                    id: 'getPages',
+                })
+            );
+
+            expect(mockedResolvePage).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    id: 'mens-clothing',
+                    identifierType: 'category',
+                    aspectType: 'plp',
+                })
+            );
+        });
+
+        it('should wrap the resolved page as a PageResult-shaped list response', async () => {
+            const handler = await setupHandler();
+            const mockPage = { id: 'resolved-pdp', name: 'PDP', regions: [] };
+            mockedResolvePage.mockResolvedValue(mockPage as any);
+
+            const result = await handler(
+                middlewareParams(new Request(getPagesUrl({ aspectTypeId: 'pdp', productId: 'shirt-001' })), {
+                    schemaPath: '/pages',
+                    id: 'getPages',
+                })
+            );
+
+            expect(result).toBeInstanceOf(Response);
+            const body = await (result as Response).json();
+            expect(body).toEqual({ data: [mockPage] });
+        });
+
+        it('should return undefined when resolvePage returns null (pass through to SCAPI)', async () => {
+            const handler = await setupHandler();
+            mockedResolvePage.mockResolvedValue(null);
+
+            const result = await handler(
+                middlewareParams(new Request(getPagesUrl({ aspectTypeId: 'pdp', productId: 'shirt-001' })), {
+                    schemaPath: '/pages',
+                    id: 'getPages',
+                })
+            );
+
+            expect(result).toBeUndefined();
+        });
+
+        it('should skip design mode requests (mode query param)', async () => {
+            const handler = await setupHandler();
+
+            const result = await handler(
+                middlewareParams(
+                    new Request(getPagesUrl({ aspectTypeId: 'pdp', productId: 'shirt-001', mode: 'EDIT' })),
+                    { schemaPath: '/pages', id: 'getPages' }
+                )
+            );
+
+            expect(result).toBeUndefined();
+            expect(mockedResolvePage).not.toHaveBeenCalled();
         });
     });
 
