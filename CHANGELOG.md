@@ -2,77 +2,77 @@
 
 ## v0.4.0 (May 5, 2026)
 
-- Design layer: Wire `contentLinkUuid` through regions and story fixtures to support content blocks (@W-21609036)
+- Design layer: Wire `contentLinkUuid` through regions and story fixtures to support content blocks
 - **Cart line item:** Restore the edit button for non-standard, non-bonus products alongside the newly added wishlist toggle and remove action.
-- Broke down app.css into a more organized system for readability and discoverability [#1474](https://github.com/commerce-emu/storefront-next/pull/1474)
+- Broke down app.css into a more organized system for readability and discoverability #1474
 - **Cart line item:** Removed the edit action from the line card, added an inline wishlist add/remove toggle, removed the product description block, and removed the delivery pill so the row focuses on image, title, attributes, price, and quantity.
-- Fix promotions always showing as 0 in order summary and order confirmation when only item-level discounts are applied — now includes `productItems[].priceAdjustments` alongside `orderPriceAdjustments` ([#1557](https://github.com/commerce-emu/storefront-next/pull/1557))
-- Remove dead `ssr.noExternal` / `ssr.target` block from `vite.config.ts` — production SSR inlining is handled by the SDK's `managedRuntimeBundlePlugin`, and dev works with Vite's default ESM externalization ([#1540](https://github.com/commerce-emu/storefront-next/pull/1540))
-- Standardize SCAPI requests error handling - Homepage ([#1537](https://github.com/commerce-emu/storefront-next/pull/1537))
-- Add `LoginModal` component with support for password, passwordless, and social login modes ([#1501](https://github.com/commerce-emu/storefront-next/pull/1501))
+- Fix promotions always showing as 0 in order summary and order confirmation when only item-level discounts are applied — now includes `productItems[].priceAdjustments` alongside `orderPriceAdjustments` (#1557)
+- Remove dead `ssr.noExternal` / `ssr.target` block from `vite.config.ts` — production SSR inlining is handled by the SDK's `managedRuntimeBundlePlugin`, and dev works with Vite's default ESM externalization (#1540)
+- Standardize SCAPI requests error handling - Homepage (#1537)
+- Add `LoginModal` component with support for password, passwordless, and social login modes (#1501)
 - Move locale chunking from `vite.config.ts` into SDK `i18nPlugin`; remove TODO comment
-- Add login preferences middleware and context for managing email verification preferences (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
-- Remove manual `contentLinkUuid` type extensions in favor of SCAPI types (@W-21280780)
-    - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
-- Document the use of dynamic images ([#1519](https://github.com/commerce-emu/storefront-next/pull/1519))
-- Update Page Designer middleware and `vite.config.ts` to align with upstream `@salesforce/mrt-utilities` conditional export flow (no local Vite alias requirement) ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Standardize behaviors of API errors in Checkout (@W-22199926) ([#1521](https://github.com/commerce-emu/storefront-next/pull/1521))
+- Add login preferences middleware and context for managing email verification preferences (#1453)
+- Remove manual `contentLinkUuid` type extensions in favor of SCAPI types
+ - `ComponentType` now uses `contentLinkUuid`, `fragment`, `localized`, `visible` from Shopper Experience API v1.3.0
+- Document the use of dynamic images (#1519)
+- Update Page Designer middleware and `vite.config.ts` to align with upstream `@salesforce/mrt-utilities` conditional export flow (no local Vite alias requirement) (#1533)
+- Standardize behaviors of API errors in Checkout (#1521)
 - Migrate i18n infrastructure to SDK: replace `src/lib/i18next.ts`, `src/lib/i18next.client.ts`, and `scripts/aggregate-extension-locales.js` with imports from `@salesforce/storefront-next-runtime/i18n` and `sfnext locales aggregate-extensions`
 - Fix locale bundle bloat, SSR 404 plain-text response, and homepage links ignoring active locale on error pages
-- [UX Fix] Promo code component to match design ([#1525](https://github.com/commerce-emu/storefront-next/pull/1525))
-- Mini cart item UX refresh: update product/price hierarchy, stack quantity controls, and improve long promotion wrapping behavior ([#1510](https://github.com/commerce-emu/storefront-next/pull/1510))
-- Standardize action error handling with semantic error codes: actions return structured `{ code, message }` errors instead of plain strings (@W-21952674) ([#1508](https://github.com/commerce-emu/storefront-next/pull/1508))
-- Extract Vitest config into dedicated `vitest.config.ts`, inline coverage thresholds ([#1518](https://github.com/commerce-emu/storefront-next/pull/1518))
-- Add support for optional `sh` parameter to dynamic images ([#1503](https://github.com/commerce-emu/storefront-next/pull/1503))
-- [UX Fix] Fix broken radius overriding system, and minor UX changes according to design ([#1495](https://github.com/commerce-emu/storefront-next/pull/1495))
-- Prefix all checkout UITarget targetIds with `sfcc.` (@W-21550346) ([#1500](https://github.com/commerce-emu/storefront-next/pull/1500))
-- Flatten default `Card` styling (drop default radius/shadow) ([#1489](https://github.com/commerce-emu/storefront-next/pull/1489))
-- Multiship Guest Add Address now supports different addresseses with same name (@W-22187309)
-- Standardize layout with `section-container` utility: consolidate responsive padding, max-width, and centering into a single reusable class ([#1483](https://github.com/commerce-emu/storefront-next/pull/1483))
-- Update checkout CTA text ([#1480](https://github.com/commerce-emu/storefront-next/pull/1480))
-- Update performance-related documentation ([#1485](https://github.com/commerce-emu/storefront-next/pull/1485), [#1486](https://github.com/commerce-emu/storefront-next/pull/1486), [#1499](https://github.com/commerce-emu/storefront-next/pull/1499))
-- Ensure `<Link/>`, `<NavLink/>`, and `<useNavigate/>` also rewrite index routes ([#1470](https://github.com/commerce-emu/storefront-next/pull/1470))
-- Prevent unnecessary navigation menu re-renders ([#1446](https://github.com/commerce-emu/storefront-next/pull/1446))
-- My Account: overview "rate recent purchases" card (below recent orders) linking to order details; order details per-line Rate & Review using the PDP write-review modal, with "Review submitted" state after submit (@W-20873965)
-- Update style for Deliver to Multiple Addresses button ([#1463](https://github.com/commerce-emu/storefront-next/pull/1463))
-- Fix re-render cycles on PDP due to shared Suspense boundary ([#1434](https://github.com/commerce-emu/storefront-next/pull/1434))
-- User registration verified badge and spinner (@W-22015539)
-- Update order summary UX (@W-22015905)
-- UX changes on checkout page (@W-22015673)
-- Bug fix to allow Canadian saved shipping address (@W-21915532)
-- My Account: Hide auto-generated address IDs and remove Address Title field; show customer name with Default badge instead (@W-21565912)
+- [UX Fix] Promo code component to match design (#1525)
+- Mini cart item UX refresh: update product/price hierarchy, stack quantity controls, and improve long promotion wrapping behavior (#1510)
+- Standardize action error handling with semantic error codes: actions return structured `{ code, message }` errors instead of plain strings (#1508)
+- Extract Vitest config into dedicated `vitest.config.ts`, inline coverage thresholds (#1518)
+- Add support for optional `sh` parameter to dynamic images (#1503)
+- [UX Fix] Fix broken radius overriding system, and minor UX changes according to design (#1495)
+- Prefix all checkout UITarget targetIds with `sfcc.` (#1500)
+- Flatten default `Card` styling (drop default radius/shadow) (#1489)
+- Multiship Guest Add Address now supports different addresseses with same name
+- Standardize layout with `section-container` utility: consolidate responsive padding, max-width, and centering into a single reusable class (#1483)
+- Update checkout CTA text (#1480)
+- Update performance-related documentation (#1485, #1486, #1499)
+- Ensure `<Link/>`, `<NavLink/>`, and `<useNavigate/>` also rewrite index routes (#1470)
+- Prevent unnecessary navigation menu re-renders (#1446)
+- My Account: overview "rate recent purchases" card (below recent orders) linking to order details; order details per-line Rate & Review using the PDP write-review modal, with "Review submitted" state after submit
+- Update style for Deliver to Multiple Addresses button (#1463)
+- Fix re-render cycles on PDP due to shared Suspense boundary (#1434)
+- User registration verified badge and spinner
+- Update order summary UX
+- UX changes on checkout page
+- Bug fix to allow Canadian saved shipping address
+- My Account: Hide auto-generated address IDs and remove Address Title field; show customer name with Default badge instead
 - Add `config:inspect`, `config:push-env`, and `b2c` npm scripts; add `@salesforce/b2c-cli` dev dependency for MRT environment variable management
-- Add support for OOTB API Key for Google Address Autocomplete feature in production instances (@W-22130944) ([#1509](https://github.com/commerce-emu/storefront-next/pull/1509))
+- Add support for OOTB API Key for Google Address Autocomplete feature in production instances (#1509)
 - Remove unused /callback route
-- Remove unused Page Designer dev proxy from vite.config.ts (@W-22154589@)
+- Remove unused Page Designer dev proxy from vite.config.ts (@)
 - Rename server-only source files to `.server.ts` so the React Router build plugin enforces the server/client boundary at compile time
-- Checkout: Shipping method styling as per UX (@W-21512931)
+- Checkout: Shipping method styling as per UX
 - Added SDD (Spec-Driven Development) support with multi-agent code generation
 - ProductCarousel: fix category-driven product fetching in Page Designer — loader now correctly invoked when `categoryId` attribute is set
 - ProductCarousel: hide empty-state placeholder on live storefront; "Select a product" now only shown in Page Designer design mode
 - ProductCarousel: add `categoryId` and `limit` Page Designer attribute definitions; update cartridge metadata
-- Fix social login redirect flow and callback handler ([#1386](https://github.com/commerce-emu/storefront-next/pull/1386))
-- Extend `useSite()` to return `{ site, language, locale, currency }` and remove `CurrencyProvider`/`useCurrency()` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))
+- Fix social login redirect flow and callback handler (#1386)
+- Extend `useSite()` to return `{ site, language, locale, currency }` and remove `CurrencyProvider`/`useCurrency()` (#1384)
 - Add Cloudflare Turnstile bot protection integration for passwordless login with graceful degradation
-- Remove `'use client'` directives from template app source files ([#1375](https://github.com/commerce-emu/storefront-next/pull/1375))
-- Save checkout user info for new user consistently (@W-21918823)
-- Save phone number to `phoneMobile` in addition to `phoneHome` on customer profile update ([#1373](https://github.com/commerce-emu/storefront-next/pull/1373))
-- Calculate basket after OTP verificatiion (@W-21918545)
-- Update accessibility baseline and fix accessibility violations on order list page (@W-21685164)
-- Consolidate `action.set-site`, `action.set-locale`, and `action.set-currency` into a single `action.set-site-context` route (@W-21787262) ([#1342](https://github.com/commerce-emu/storefront-next/pull/1342))
-- Clean up RSC/React Server Components references from documentation, comments, and config ([#1363](https://github.com/commerce-emu/storefront-next/pull/1363))
+- Remove `'use client'` directives from template app source files (#1375)
+- Save checkout user info for new user consistently
+- Save phone number to `phoneMobile` in addition to `phoneHome` on customer profile update (#1373)
+- Calculate basket after OTP verificatiion
+- Update accessibility baseline and fix accessibility violations on order list page
+- Consolidate `action.set-site`, `action.set-locale`, and `action.set-currency` into a single `action.set-site-context` route (#1342)
+- Clean up RSC/React Server Components references from documentation, comments, and config (#1363)
 - Remove internal "odyssey" codename references from codebase
-- Add template support for registering and calling custom APIs through generated SCAPI clients (@W-21549425)
-- Add configurable navigation menu options `rootCategoryId`, `maxDepth`([#1292](https://github.com/commerce-emu/storefront-next/pull/1292))
-- Fix Vite dev server warnings for font loading from public directory ([#1286](https://github.com/commerce-emu/storefront-next/pull/1286))
-- Restored Page Designer aspect definitions for PDP and PLP (@W-21888616)
-- Added fallback functionality for Core Region component and added two regions on AboutUs page region(`headline` and `additionalinformation`) (@W-21527572)
-- Handle all Page Designer API errors gracefully in `pageLoader.ts` to prevent dev server crashes (@W-21582487)
-- Add comprehensive checkout E2E tests for registered shopper flows: saved/new payment methods, View All/View Less pagination, save card to profile, shipping address modal (add/edit), non-default address selection, shipping method change, billing address selection, basket persistence across sessions, and Place Order button visibility (@W-21582487)
-- Add SCAPI helper utilities for API-based registered shopper setup (register, login via PKCE, create address, update profile, add payment instrument) to speed up E2E test setup (@W-21582487)
-- Page Designer: `storefrontnext_base` default `@Component` group, Layout/Content groups, resolved region type refs for inclusions/exclusions; updated cartridge metadata and static registry (@W-21816874)
-- Hero Banner: Page Designer **Overlay Position** (nine placements: top/middle/bottom × left/center/right) and **Overlay Alignment** (text/CTA left, center, right); updated cartridge metadata (@W-21816944)
-- Hero Banner: Page Designer **Title Typography**, **Subtitle Typography**, optional **Title/Subtitle Color** (hex), and **Button Style** (Primary/Secondary/Tertiary) for the CTA; hide CTA when link is empty; derive default CTA label from URL; legacy horizontal overlay values map to the nine-position grid; updated cartridge metadata (@W-21816953)
+- Add template support for registering and calling custom APIs through generated SCAPI clients
+- Add configurable navigation menu options `rootCategoryId`, `maxDepth`(#1292)
+- Fix Vite dev server warnings for font loading from public directory (#1286)
+- Restored Page Designer aspect definitions for PDP and PLP
+- Added fallback functionality for Core Region component and added two regions on AboutUs page region(`headline` and `additionalinformation`)
+- Handle all Page Designer API errors gracefully in `pageLoader.ts` to prevent dev server crashes
+- Add comprehensive checkout E2E tests for registered shopper flows: saved/new payment methods, View All/View Less pagination, save card to profile, shipping address modal (add/edit), non-default address selection, shipping method change, billing address selection, basket persistence across sessions, and Place Order button visibility
+- Add SCAPI helper utilities for API-based registered shopper setup (register, login via PKCE, create address, update profile, add payment instrument) to speed up E2E test setup
+- Page Designer: `storefrontnext_base` default `@Component` group, Layout/Content groups, resolved region type refs for inclusions/exclusions; updated cartridge metadata and static registry
+- Hero Banner: Page Designer **Overlay Position** (nine placements: top/middle/bottom × left/center/right) and **Overlay Alignment** (text/CTA left, center, right); updated cartridge metadata
+- Hero Banner: Page Designer **Title Typography**, **Subtitle Typography**, optional **Title/Subtitle Color** (hex), and **Button Style** (Primary/Secondary/Tertiary) for the CTA; hide CTA when link is empty; derive default CTA label from URL; legacy horizontal overlay values map to the nine-position grid; updated cartridge metadata
 
 ## v0.3.1 (Apr 13, 2026)
 

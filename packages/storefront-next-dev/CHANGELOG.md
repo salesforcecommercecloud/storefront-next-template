@@ -5,21 +5,21 @@
 - Move `pnpm-workspace.yaml.hbs → .yaml` conversion from `create-storefront` CLI into mirror sync scripts; `prepare-standalone-template.js` now pins exact versions in `minimumReleaseAgeExclude` for all exempted packages
 - Extract i18n locale chunking into SDK Vite plugin (`i18nPlugin`): splits translation files into per-language chunks automatically
 - Add `sfnext locales aggregate-extensions` CLI command: generates per-locale barrel files aggregating extension translations under `extPascalCase` namespaces
-- Remove local data-store provider export/build artifacts and rely on `@salesforce/mrt-utilities` data-store behavior ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Update `sfnext dev` to forward Node `--conditions` (from `process.execArgv` and `NODE_OPTIONS`) into Vite client + SSR resolution for conditional exports ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
+- Remove local data-store provider export/build artifacts and rely on `@salesforce/mrt-utilities` data-store behavior (#1533)
+- Update `sfnext dev` to forward Node `--conditions` (from `process.execArgv` and `NODE_OPTIONS`) into Vite client + SSR resolution for conditional exports (#1533)
 - Fix HMR cascade in static registry plugin: skip unnecessary file writes and module reloads when registry content is unchanged
 - Add `dw.json` to `.gitignore` to prevent credentials from being accidentally committed
 - Replace `dotenv` dependency with Node built-in `util.parseEnv` and `process.loadEnvFile`; consolidate `.env` loading into the oclif `init` hook
 - Add `sfnext config inspect` command: shows a `config.server.ts` override summary — which values are overridden by `.env` and MRT `PUBLIC__` vars
 - Remove unused /callback route
 - Enable `future.unstable_optimizeDeps` in React Router preset to fix duplicate React module crash on dev server startup
-- Add local dev support to MRT Data Layer [#1215](https://github.com/commerce-emu/storefront-next/pull/1215)
-- Clean up RSC/React Server Components references from documentation and comments ([#1363](https://github.com/commerce-emu/storefront-next/pull/1363))
-- Fix incorrect SSR sourcemaps for files sharing a basename in local dev debugger (@W-21175764)
+- Add local dev support to MRT Data Layer #1215
+- Clean up RSC/React Server Components references from documentation and comments (#1363)
+- Fix incorrect SSR sourcemaps for files sharing a basename in local dev debugger
 - Remove internal "odyssey" codename references from codebase
-- Add `sfnext scapi` CLI used to support generating and managing custom API clients in template projects (@W-21549425)
-- Fix `generate-cartridge` to scan `config-metadata/` for aspect type definitions (pdp.json, plp.json) after recent move from `src/` (@W-21875428)
-- Align `generate-cartridge` and static registry with template Page Designer defaults: `storefrontnext_base` default group, Layout/Content component folders and type ids (@W-21816874)
+- Add `sfnext scapi` CLI used to support generating and managing custom API clients in template projects
+- Fix `generate-cartridge` to scan `config-metadata/` for aspect type definitions (pdp.json, plp.json) after recent move from `src/`
+- Align `generate-cartridge` and static registry with template Page Designer defaults: `storefrontnext_base` default group, Layout/Content component folders and type ids
 
 ## v0.3.1 (Apr 13, 2026)
 

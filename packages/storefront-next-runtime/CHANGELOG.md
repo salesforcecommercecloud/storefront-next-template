@@ -2,25 +2,25 @@
 
 ## v0.4.0 (May 5, 2026)
 
-- Design layer: Add `contentLinkUuid` support for duplicate component handling (@W-21609036)
-  - Make `contentLinkUuid` required on component interaction events (select, delete, move, hover, focus)
-  - Add `fragmentId` support to drag-and-drop events for content block instances
-  - Design state fields (`selected`, `hovered`, `focused`) now expose `contentLinkUuid` as the primary identifier instead of `componentId`
-  - Regions track `contentLinkUuids` instead of `componentIds`, enabling correct self-drop detection and drag validation for duplicate components
+- Design layer: Add `contentLinkUuid` support for duplicate component handling
+ - Make `contentLinkUuid` required on component interaction events (select, delete, move, hover, focus)
+ - Add `fragmentId` support to drag-and-drop events for content block instances
+ - Design state fields (`selected`, `hovered`, `focused`) now expose `contentLinkUuid` as the primary identifier instead of `componentId`
+ - Regions track `contentLinkUuids` instead of `componentIds`, enabling correct self-drop detection and drag validation for duplicate components
 - Bump `@salesforce/mrt-utilities` to 0.1.6 to fix strict `express@5.1.0` peer dependency (now accepts `^4.0.0 || ^5.0.0`)
-- Update Shopper Experience API spec to v1.3.0 with `contentLinkUuid` field support (@W-21280780)
-  - Add `contentLinkUuid` to Component schema for content link UUID tracking
-  - Add `name`, `fragment`, `localized`, `visible` fields to Component schema
-  - Regenerate TypeScript types for all SCAPI clients
-  - Remove unused `@ts-expect-error` directives from page processor now that schema includes the missing fields
-- Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
+- Update Shopper Experience API spec to v1.3.0 with `contentLinkUuid` field support
+ - Add `contentLinkUuid` to Component schema for content link UUID tracking
+ - Add `name`, `fragment`, `localized`, `visible` fields to Component schema
+ - Regenerate TypeScript types for all SCAPI clients
+ - Remove unused `@ts-expect-error` directives from page processor now that schema includes the missing fields
+- Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests (#1533)
+- Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure (#1533)
 - Add `/i18n` and `/i18n/client` subpath exports: `createI18nMiddleware`, `getTranslation`, `getLocale`, `mockI18nContext`, `initI18next`, and shared `defaultInterpolation`
-- Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure ([#1533](https://github.com/commerce-emu/storefront-next/pull/1533))
-- Add login preferences middleware and context to data store (@W-22051487) ([#1453](https://github.com/commerce-emu/storefront-next/pull/1453))
-- Extend `SiteProvider` to accept `site`, `language`, `locale`, `currency` props and `useSite()` to return `SiteContextValue` (@W-21787278) ([#1384](https://github.com/commerce-emu/storefront-next/pull/1384))
-- Add support to MRT Data Layer access [#1215](https://github.com/commerce-emu/storefront-next/pull/1215)
-- Add currency detection to site-context middleware (@W-21787262) ([#1342](https://github.com/commerce-emu/storefront-next/pull/1342))
-- Add runtime support for custom API client typing and proxy client composition (@W-21549425)
-- Add support for OOTB API Key for Google Address Autocomplete feature from MRT Data Layer (@W-22130944) ([#1509](https://github.com/commerce-emu/storefront-next/pull/1509))
+- Unify data-store access on `DataStore.getDataStore().getEntry()` from `@salesforce/mrt-utilities/data-store`; remove legacy provider abstraction/local fallback paths and related tests (#1533)
+- Re-export `DataStore` and data-store error types from `@salesforce/mrt-utilities/data-store` to align runtime APIs with upstream package structure (#1533)
+- Add login preferences middleware and context to data store (#1453)
+- Extend `SiteProvider` to accept `site`, `language`, `locale`, `currency` props and `useSite()` to return `SiteContextValue` (#1384)
+- Add support to MRT Data Layer access #1215
+- Add currency detection to site-context middleware (#1342)
+- Add runtime support for custom API client typing and proxy client composition
+- Add support for OOTB API Key for Google Address Autocomplete feature from MRT Data Layer (#1509)
