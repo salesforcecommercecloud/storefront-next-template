@@ -53,6 +53,7 @@ vi.mock('react-router', async (importOriginal) => {
         useSearchParams: () => [new URLSearchParams(), vi.fn()],
         useResolvedPath: () => ({ pathname: '/', search: '', hash: '' }),
         useHref: () => '/',
+        useRouteLoaderData: () => undefined,
         Link: ({
             to,
             children,

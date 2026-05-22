@@ -588,29 +588,6 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             >
               Add to Cart
             </button>
-            <div
-              class="text-sm text-muted-foreground"
-            >
-              <span>
-                Pay in 
-                4
-                 interest-free payments of
-                 
-                <span
-                  class="font-bold text-foreground"
-                >
-                  £12.25
-                </span>
-                .
-                 
-              </span>
-              <button
-                class="cursor-pointer font-normal text-primary hover:underline"
-                type="button"
-              >
-                Learn more
-              </button>
-            </div>
           </div>
         </div>
         <div

@@ -22,7 +22,6 @@ import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
 import { useTranslation } from 'react-i18next';
 import { UITarget } from '@/targets/ui-target';
-import BuyNowPayLater from '@/components/buy-now-pay-later';
 
 /** @feature-stub Express checkout buttons — remove this import and its JSX below to strip the stub */
 const ExpressPayments = lazy(() => import('@/components/checkout/components/express-payments'));
@@ -200,12 +199,8 @@ export default function ProductCartActions({
                         </UITarget>
                     )}
 
-                <UITarget targetId="sfcc.pdp.after.addToCart">
-                    {!isCompactAddMode && !isEditMode && currentProductId && (
-                        <BuyNowPayLater productId={String(currentProductId)} />
-                    )}
-                </UITarget>
-                <UITarget targetId="sfcc.pdp.bnpl.message" />
+                <UITarget targetId="sfcc.pdp.after.addToCart" />
+                {!isCompactAddMode && !isEditMode && currentProductId && <UITarget targetId="sfcc.pdp.bnpl.message" />}
             </div>
         </div>
     );

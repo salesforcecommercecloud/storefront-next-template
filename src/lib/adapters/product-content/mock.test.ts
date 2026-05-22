@@ -28,8 +28,6 @@ describe('ProductContentMockAdapter', () => {
         it('should return adapter with all mock methods', () => {
             expect(adapter).toHaveProperty('getSizeGuide');
             expect(adapter).toHaveProperty('getReturnsAndWarranty');
-            expect(adapter).toHaveProperty('getBuyNowPayLaterMessageContent');
-            expect(adapter).toHaveProperty('getBuyNowPayLaterLearnMoreContent');
             expect(adapter).toHaveProperty('getEstimatedDelivery');
             expect(adapter).toHaveProperty('getProductDescription');
             expect(adapter).toHaveProperty('getIngredientsData');
@@ -68,32 +66,6 @@ describe('ProductContentMockAdapter', () => {
             expect(data.warranty.whatsCovered).toHaveLength(4);
             expect(data.exchanges.heading).toBe('Exchanges');
             expect(data.needHelp?.email).toBe('support@marketstreet.com');
-        });
-    });
-
-    describe('getBuyNowPayLaterMessageContent', () => {
-        it('should return BNPL message with providerLabel BNPL (no PayPal)', async () => {
-            const data = await adapter.getBuyNowPayLaterMessageContent?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.paymentCount).toBe(4);
-            expect(data.amountPerPayment).toBe(12.25);
-            expect(data.providerLabel).toBe('BNPL');
-            expect(data.learnMoreLabel).toBe('Learn more');
-        });
-    });
-
-    describe('getBuyNowPayLaterLearnMoreContent', () => {
-        it('should return BNPL learn more with payment schedule and howItWorks', async () => {
-            const data = await adapter.getBuyNowPayLaterLearnMoreContent?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.title).toBe('Pay in 4 interest-free payments');
-            expect(data.paymentSchedule.amountPerPayment).toBe(12.25);
-            expect(data.paymentSchedule.schedule).toEqual(['Today', '2 weeks', '4 weeks', '6 weeks']);
-            expect(data.howItWorks).toHaveLength(3);
-            expect(data.howItWorks[0]).toContain('BNPL');
-            expect(data.disclosureLinks).toHaveLength(2);
         });
     });
 

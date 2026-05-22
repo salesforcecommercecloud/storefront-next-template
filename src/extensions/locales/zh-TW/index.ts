@@ -17,6 +17,7 @@
 // NOTE: This file is auto-generated. Do not edit manually.
 // Run 'pnpm locales:aggregate-extensions' to regenerate this file.
 
+import bnplTranslations from '@/extensions/bnpl/locales/zh-TW/translations.json';
 import bopisTranslations from '@/extensions/bopis/locales/zh-TW/translations.json';
 import customerPreferencesTranslations from '@/extensions/customer-preferences/locales/zh-TW/translations.json';
 import multishipTranslations from '@/extensions/multiship/locales/zh-TW/translations.json';
@@ -24,6 +25,7 @@ import storeLocatorTranslations from '@/extensions/store-locator/locales/zh-TW/t
 
 // Namespace is based on the following convention: extPascalCase, and it's the pascal case of the folder name (e.g. store-locator -> extStoreLocator)
 export default {
+    extBnpl: bnplTranslations,
     extBopis: bopisTranslations,
     extCustomerPreferences: customerPreferencesTranslations,
     extMultiship: multishipTranslations,

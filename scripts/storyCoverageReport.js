@@ -64,6 +64,7 @@ const EXCLUDED_COMPONENTS = new Set([
     // Extension UITarget wrappers — thin Suspense/Await wrappers that pull deferred data
     // from `useRouteLoaderData`. Underlying section components have their own stories.
     'customer-preferences/components/target/preferences-target',
+    'bnpl/components/target/bnpl-target',
     // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these
     'region/component',
     'region/component-data-context',

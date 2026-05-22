@@ -178,6 +178,20 @@ describe('Product Detail Route', () => {
         regions: [],
     });
 
+    const mockExtensionLoaderData = {
+        // @sfdc-extension-block-start SFDC_EXT_BNPL
+        bnplMessage: Promise.resolve({
+            paymentCount: 4,
+            amountPerPayment: 0,
+        }),
+        bnplLearnMore: Promise.resolve({
+            paymentSchedule: { amountPerPayment: 0, totalAmount: 0, schedule: [] },
+            howItWorks: [],
+            disclosures: '',
+        }),
+        // @sfdc-extension-block-end SFDC_EXT_BNPL
+    };
+
     describe('shouldRevalidate function', () => {
         test('should revalidate when pathname changes (different product)', () => {
             const currentUrl = 'https://example.com/product/product-1';
@@ -322,6 +336,7 @@ describe('Product Detail Route', () => {
                 pageKey: 'test-product-123',
                 pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
+                ...mockExtensionLoaderData,
             };
 
             // Render the page component to exercise ProductDetailView
@@ -348,6 +363,7 @@ describe('Product Detail Route', () => {
                 pageKey: 'test-product-123',
                 pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
+                ...mockExtensionLoaderData,
             };
 
             // Render the page component to exercise ProductDetailView
@@ -369,6 +385,7 @@ describe('Product Detail Route', () => {
                 pageKey: 'test-product-123',
                 pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
+                ...mockExtensionLoaderData,
             };
 
             // Render the page component to exercise ProductDetailView with product set
@@ -387,6 +404,7 @@ describe('Product Detail Route', () => {
                 pageKey: 'test-product-123',
                 pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
+                ...mockExtensionLoaderData,
             };
 
             // Render the page component to exercise ProductDetailView with product bundle
@@ -415,6 +433,7 @@ describe('Product Detail Route', () => {
                 pageKey: 'test-product-123',
                 pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
+                ...mockExtensionLoaderData,
             };
 
             // Test that pageKey is correctly passed through
@@ -429,6 +448,7 @@ describe('Product Detail Route', () => {
                 pageKey: 'test-product-123',
                 pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
+                ...mockExtensionLoaderData,
             };
 
             // Test that all required properties are present
@@ -451,6 +471,7 @@ describe('Product Detail Route', () => {
                 pageKey: 'test-product-123',
                 pageUrl: 'http://localhost/product/test',
                 productSchema: Promise.resolve(null),
+                ...mockExtensionLoaderData,
             };
 
             const { queryByTestId, getByTestId } = render(<ProductPage loaderData={mockLoaderData} />);
@@ -477,6 +498,7 @@ describe('Product Detail Route', () => {
                     '@type': 'Product',
                     name: 'Test Product',
                 }),
+                ...mockExtensionLoaderData,
             };
 
             render(<ProductPage loaderData={mockLoaderData} />);

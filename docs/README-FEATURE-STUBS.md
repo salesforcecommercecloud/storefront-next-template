@@ -114,4 +114,35 @@ Config updates:
 
 ---
 
+### Buy Now Pay Later (BNPL)
+
+| Field | Details |
+|-------|---------|
+| **Status** | Stub — no backend integration |
+| **Location** | `src/extensions/bnpl/` |
+| **Surfaces** | Product detail page (PDP), beneath the Add to Cart button |
+| **Extension** | `SFDC_EXT_BNPL` (named "(Demo) Buy Now Pay Later" in `src/extensions/config.json`) |
+
+**Current behavior:**
+The inline installment message ("Pay in 4 interest-free payments of …") and the "Learn more" modal (payment schedule + how-it-works steps + provider disclosures) are fully functional but backed by mock fixtures in `lib/api/bnpl.server.ts`. The fixtures return the same payment schedule for every product — the `productId` argument is accepted but ignored. Currency formatting honors the active site/locale via `useSite()`.
+
+**To productionize:**
+Replace the bodies of `getBuyNowPayLaterMessage` and `getBuyNowPayLaterLearnMore` in `src/extensions/bnpl/lib/api/bnpl.server.ts` with calls into your BNPL provider's API (PayPal, Klarna, Affirm, etc.). The PDP loader (`src/routes/_app.product.$productId.tsx`) and the UITarget wrapper (`components/target/bnpl-target.tsx`) do not need to change. Drop the `(Demo)` prefix from the extension name in `src/extensions/config.json` once a real provider is wired up.
+
+**To remove:**
+Uninstall the extension by stripping the `@sfdc-extension-*` markers from core files and deleting the extension folder.
+
+Files to delete:
+- `src/extensions/bnpl/` (entire folder)
+
+Parent components to update (remove the marker block):
+- `src/routes/_app.product.$productId.tsx` — the `bnplMessage` / `bnplLearnMore` loader Promises and the import
+- `src/components/product-cart-actions/index.tsx` — the `<UITarget targetId="sfcc.pdp.bnpl.message" />` block
+
+Config updates:
+- Remove `SFDC_EXT_BNPL` from `src/extensions/config.json`
+- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+
+---
+
 <!-- Add new stubs below using the same format -->

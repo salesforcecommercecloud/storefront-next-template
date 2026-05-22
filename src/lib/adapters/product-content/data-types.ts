@@ -84,42 +84,6 @@ export interface ReturnsAndWarrantyData {
     };
 }
 
-// --- Buy Now Pay Later (BNPL) ---
-
-/**
- * Short message for BNPL inline display (e.g. "Pay in 4 interest-free payments of $12.25 with BNPL. Learn more")
- */
-export interface BuyNowPayLaterMessageData {
-    /** Number of interest-free payments (e.g. 4) */
-    paymentCount: number;
-    /** Amount per payment in dollars (e.g. 12.25) */
-    amountPerPayment: number;
-    /** Provider label for display (e.g. "BNPL") */
-    providerLabel: string;
-    /** Label for the learn-more link (e.g. "Learn more") */
-    learnMoreLabel: string;
-}
-
-/**
- * Learn more modal content for BNPL (payment schedule, how it works, disclosures)
- */
-export interface BuyNowPayLaterLearnMoreData {
-    title: string;
-    /** Summary line (e.g. split purchase amount, no impact on credit, no late fees) */
-    summary: string;
-    paymentSchedule: {
-        amountPerPayment: number;
-        totalAmount?: number;
-        /** e.g. ["Today", "2 weeks", "4 weeks", "6 weeks"] */
-        schedule: string[];
-    };
-    howItWorks: string[];
-    /** Full terms/disclosures text */
-    disclosures: string;
-    /** Optional disclosure link labels (e.g. "Find more disclosures", "See other ways to pay") */
-    disclosureLinks?: Array<{ label: string; url?: string }>;
-}
-
 // --- Estimated Delivery (Fulfillment & Shipping) ---
 
 /**

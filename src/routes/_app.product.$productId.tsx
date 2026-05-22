@@ -53,6 +53,14 @@ import { UITarget } from '@/targets/ui-target';
 import { selectedStoreContext } from '@/extensions/store-locator/middlewares/selected-store.server';
 import PickupProvider from '@/extensions/bopis/context/pickup-context';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
+// @sfdc-extension-block-start SFDC_EXT_BNPL
+import {
+    getBuyNowPayLaterMessage,
+    getBuyNowPayLaterLearnMore,
+    type BuyNowPayLaterMessageData,
+    type BuyNowPayLaterLearnMoreData,
+} from '@/extensions/bnpl/lib/api/bnpl.server';
+// @sfdc-extension-block-end SFDC_EXT_BNPL
 
 @PageType({
     name: 'Product Detail Page',
@@ -82,6 +90,10 @@ export type ProductPageData = {
     pageKey: string;
     pageUrl: string;
     productSchema: Promise<ReturnType<typeof generateProductSchema> | null>;
+    // @sfdc-extension-block-start SFDC_EXT_BNPL
+    bnplMessage: Promise<BuyNowPayLaterMessageData>;
+    bnplLearnMore: Promise<BuyNowPayLaterLearnMoreData>;
+    // @sfdc-extension-block-end SFDC_EXT_BNPL
 };
 
 /**
@@ -207,6 +219,10 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         pageKey: productId,
         pageUrl,
         productSchema: productSchemaPromise,
+        // @sfdc-extension-block-start SFDC_EXT_BNPL
+        bnplMessage: getBuyNowPayLaterMessage(productLookupId),
+        bnplLearnMore: getBuyNowPayLaterLearnMore(productLookupId),
+        // @sfdc-extension-block-end SFDC_EXT_BNPL
     };
 }
 

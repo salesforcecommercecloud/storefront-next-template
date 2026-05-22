@@ -52,6 +52,7 @@ vi.mock('react-router', async (importOriginal) => {
             location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
         }),
         useSearchParams: () => [new URLSearchParams(), vi.fn()],
+        useRouteLoaderData: () => undefined,
     };
 });
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {

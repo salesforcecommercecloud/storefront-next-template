@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import type {
-    BuyNowPayLaterLearnMoreData,
-    BuyNowPayLaterMessageData,
     CareInstructionsData,
     EstimatedDeliveryData,
     FaqQuestionsData,
@@ -61,16 +59,6 @@ export interface ProductContentAdapter {
      * Get returns and warranty content for PDP modal
      */
     getReturnsAndWarranty?(productId?: string): Promise<ReturnsAndWarrantyData>;
-
-    /**
-     * Get message content for Buy Now Pay Later (BNPL) component
-     */
-    getBuyNowPayLaterMessageContent?(productId?: string): Promise<BuyNowPayLaterMessageData>;
-
-    /**
-     * Get learn more section content for Buy Now Pay Later (BNPL) component
-     */
-    getBuyNowPayLaterLearnMoreContent?(productId?: string): Promise<BuyNowPayLaterLearnMoreData>;
 
     /**
      * Get estimated delivery content for PDP (Fulfillment & Shipping modal)

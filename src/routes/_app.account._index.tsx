@@ -762,9 +762,7 @@ function AccountDetailsContent({
             </ToggleCard>
 
             {/* Interests & Preferences Section */}
-            {/** @sfdc-extension-block-start SFDC_EXT_CUSTOMER_PREFERENCES */}
             <UITarget targetId="sfcc.myAccount.preferences" />
-            {/** @sfdc-extension-block-end SFDC_EXT_CUSTOMER_PREFERENCES */}
 
             {/* Password & Security Toggle Card */}
             <ToggleCard

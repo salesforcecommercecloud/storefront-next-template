@@ -16,8 +16,6 @@
 import i18n from 'i18next';
 import type { ProductContentAdapter } from '@/lib/adapters/product-content/types';
 import type {
-    BuyNowPayLaterLearnMoreData,
-    BuyNowPayLaterMessageData,
     CareInstructionsData,
     EstimatedDeliveryData,
     FaqQuestionsData,
@@ -137,42 +135,6 @@ const MOCK_RETURNS_AND_WARRANTY_DATA: ReturnsAndWarrantyData = {
         email: 'support@marketstreet.com',
         phone: '1-800-123-4567',
     },
-};
-
-/**
- * Mock BNPL message for PDP inline display.
- * Pay in 4 interest-free payments of $12.25 with BNPL (no PayPal branding).
- */
-const MOCK_BNPL_MESSAGE_DATA: BuyNowPayLaterMessageData = {
-    paymentCount: 4,
-    amountPerPayment: 12.25,
-    providerLabel: 'BNPL',
-    learnMoreLabel: 'Learn more',
-};
-
-/**
- * Mock BNPL learn more modal content.
- * Uses BNPL (not PayPal) in copy throughout.
- */
-const MOCK_BNPL_LEARN_MORE_DATA: BuyNowPayLaterLearnMoreData = {
-    title: 'Pay in 4 interest-free payments',
-    summary: 'Split your purchase of $49.00 into 4 with no impact on credit score and no late fees.',
-    paymentSchedule: {
-        amountPerPayment: 12.25,
-        totalAmount: 49,
-        schedule: ['Today', '2 weeks', '4 weeks', '6 weeks'],
-    },
-    howItWorks: [
-        'Choose BNPL at checkout to pay later with Pay in 4.',
-        'Complete your purchase with a 25% down payment.',
-        "Use autopay for the rest of your payments. It's easy!",
-    ],
-    disclosures:
-        'Pay in 4 is available to consumers upon approval for purchases of $30 to $1,500. Pay in 4 is currently not available to residents of MO. Offer availability depends on the merchant and also may not be available for certain recurring, subscription services. When applying, a soft credit check may be needed, but will not affect your credit score. You must be 18 years old or older to apply.',
-    disclosureLinks: [
-        { label: 'Find more disclosures related to Pay in 4' },
-        { label: 'See other ways to pay over time' },
-    ],
 };
 
 /**
@@ -521,14 +483,6 @@ export function createProductContentMockAdapter(config: ProductContentMockAdapte
         getReturnsAndWarranty: async (_productId?: string): Promise<ReturnsAndWarrantyData> => {
             await simulateDelay(mockDelay);
             return MOCK_RETURNS_AND_WARRANTY_DATA;
-        },
-        getBuyNowPayLaterMessageContent: async (_productId?: string): Promise<BuyNowPayLaterMessageData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_BNPL_MESSAGE_DATA;
-        },
-        getBuyNowPayLaterLearnMoreContent: async (_productId?: string): Promise<BuyNowPayLaterLearnMoreData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_BNPL_LEARN_MORE_DATA;
         },
         getEstimatedDelivery: async (_productId?: string): Promise<EstimatedDeliveryData> => {
             await simulateDelay(mockDelay);
