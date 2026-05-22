@@ -1,7 +1,4 @@
-import { a as sitePreferencesContext, i as getSitePreferences, n as SitePreferences, t as DEFAULT_SITE_PREFERENCES_KEY } from "./custom-site-preferences.js";
-import { a as getCustomGlobalPreferences, n as DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, r as customGlobalPreferencesContext, t as CustomGlobalPreferences } from "./custom-global-preferences.js";
-import { a as getGcpApiKey, n as GcpPreferences, o as getGcpPreferences, r as gcpPreferencesContext, t as DEFAULT_GCP_PREFERENCES_KEY } from "./gcp-preferences.js";
-import * as react_router6 from "react-router";
+import * as react_router0 from "react-router";
 import { MiddlewareFunction, RouterContextProvider, createContext } from "react-router";
 import { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities/data-store";
 
@@ -73,11 +70,66 @@ declare function readLazyDataStoreEntry<T>(context: Readonly<RouterContextProvid
  */
 declare function getDataStoreEntry<TValue = unknown>(key: string): Promise<DataStoreEntry<TValue> | null>;
 //#endregion
+//#region src/data-store/middleware/custom-site-preferences.d.ts
+type SitePreferences = Record<string, unknown>;
+/**
+ * Read site preferences from router context.
+ *
+ * @param context - Router context provider
+ * @returns Site preferences data stored by data-store middleware
+ * @throws Error when the data-store context is not available
+ */
+declare function getSitePreferences(context: Readonly<RouterContextProvider>): SitePreferences;
+//#endregion
+//#region src/data-store/middleware/custom-global-preferences.d.ts
+type CustomGlobalPreferences = Record<string, unknown>;
+/**
+ * Read custom global preferences from router context.
+ *
+ * @param context - Router context provider
+ * @returns Custom global preferences data stored by data-store middleware
+ * @throws Error when the data-store context is not available
+ */
+declare function getCustomGlobalPreferences(context: Readonly<RouterContextProvider>): CustomGlobalPreferences;
+//#endregion
+//#region src/data-store/middleware/gcp-preferences.d.ts
+/**
+ * OOTB Google Cloud Platform preferences sourced from the MRT data store.
+ *
+ * Additional fields (e.g. `projectId`, `region`) may be added here as the
+ * ECOM MRT sync job expands the `gcp` entry. Consumers should read the
+ * object as a whole via `getGcpPreferences`, or use a specific convenience
+ * getter like `getGcpApiKey` for a single field.
+ */
+type GcpPreferences = {
+  apiKey: string;
+};
+/**
+ * Read the GCP (Google Cloud Platform) preferences object from router context.
+ *
+ * The preferences are sourced from the MRT data store entry `gcp`, which is
+ * populated only for storefronts connecting to production ECOM instances.
+ * In non-production environments, or when the entry is missing, returns an
+ * object whose fields are all empty/default.
+ *
+ * @param context - Router context provider
+ * @returns GCP preferences object; fields are empty/default when the entry is unavailable
+ */
+declare function getGcpPreferences(context: Readonly<RouterContextProvider>): GcpPreferences;
+/**
+ * Convenience getter for the Google Cloud API key alone.
+ *
+ * Equivalent to `getGcpPreferences(context).apiKey`.
+ *
+ * @param context - Router context provider
+ * @returns The GCP API key, or an empty string when unavailable
+ */
+declare function getGcpApiKey(context: Readonly<RouterContextProvider>): string;
+//#endregion
 //#region src/data-store/middleware/login-preferences.d.ts
 type LoginPreferences = {
   emailVerificationEnabled?: boolean;
 };
-declare const loginPreferencesContext: react_router6.RouterContext<LoginPreferences | null>;
 /**
  * Read login preferences from router context.
  *
@@ -87,7 +139,7 @@ declare const loginPreferencesContext: react_router6.RouterContext<LoginPreferen
 declare function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences;
 //#endregion
 //#region src/data-store/index.d.ts
-declare const dataStoreMiddleware: react_router6.MiddlewareFunction<Response>[];
+declare const dataStoreMiddleware: react_router0.MiddlewareFunction<Response>[];
 //#endregion
-export { type CustomGlobalPreferences, DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY, DEFAULT_GCP_PREFERENCES_KEY, DEFAULT_SITE_PREFERENCES_KEY, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, customGlobalPreferencesContext, dataStoreMiddleware, gcpPreferencesContext, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, loginPreferencesContext, readLazyDataStoreEntry, sitePreferencesContext };
+export { type CustomGlobalPreferences, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, dataStoreMiddleware, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, readLazyDataStoreEntry };
 //# sourceMappingURL=data-store.d.ts.map

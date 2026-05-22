@@ -18,28 +18,15 @@ export { createDataStoreMiddleware } from './utils';
 export { createLazyDataStoreMiddleware, readLazyDataStoreEntry } from './utils';
 export { createDataStoreContext } from './utils';
 export { getDataStoreEntry } from './utils';
-export {
-    DEFAULT_SITE_PREFERENCES_KEY,
-    getSitePreferences,
-    sitePreferencesContext,
-} from './middleware/custom-site-preferences';
-export {
-    customGlobalPreferencesContext,
-    DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY,
-    getCustomGlobalPreferences,
-} from './middleware/custom-global-preferences';
-export {
-    DEFAULT_GCP_PREFERENCES_KEY,
-    gcpPreferencesContext,
-    getGcpApiKey,
-    getGcpPreferences,
-} from './middleware/gcp-preferences';
+export { getSitePreferences } from './middleware/custom-site-preferences';
+export { getCustomGlobalPreferences } from './middleware/custom-global-preferences';
+export { getGcpApiKey, getGcpPreferences } from './middleware/gcp-preferences';
 export type { DataStoreMiddlewareOptions } from './utils';
 export type { SitePreferences } from './middleware/custom-site-preferences';
 export type { DataStoreContextKey, DataStoreEntryKey } from './utils';
 export type { DataStoreEntry } from './utils';
 export type { CustomGlobalPreferences } from './middleware/custom-global-preferences';
-export { getLoginPreferences, loginPreferencesContext } from './middleware/login-preferences';
+export { getLoginPreferences } from './middleware/login-preferences';
 export type { LoginPreferences } from './middleware/login-preferences';
 export type { GcpPreferences } from './middleware/gcp-preferences';
 export { DataStore } from '@salesforce/mrt-utilities/data-store';

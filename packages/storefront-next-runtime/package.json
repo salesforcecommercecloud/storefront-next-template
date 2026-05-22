@@ -68,24 +68,6 @@
         "default": "./dist/data-store.js"
       }
     },
-    "./data-store/custom-site-preferences": {
-      "import": {
-        "types": "./dist/data-store-custom-site-preferences.d.ts",
-        "default": "./dist/data-store-custom-site-preferences.js"
-      }
-    },
-    "./data-store/custom-global-preferences": {
-      "import": {
-        "types": "./dist/data-store-custom-global-preferences.d.ts",
-        "default": "./dist/data-store-custom-global-preferences.js"
-      }
-    },
-    "./data-store/gcp-preferences": {
-      "import": {
-        "types": "./dist/data-store-gcp-preferences.d.ts",
-        "default": "./dist/data-store-gcp-preferences.js"
-      }
-    },
     "./site-context": {
       "import": {
         "types": "./dist/site-context.d.ts",
