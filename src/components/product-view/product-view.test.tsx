@@ -32,6 +32,20 @@ import { mockAltSiteObject, mockBuildConfig } from '@/test-utils/config';
 import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
+// Prop-capture mock for <ImageGallery>. The PDP intentionally does not pass `widths` so the
+// gallery's documented PDP-shaped defaults apply — we assert that absence below. The mock still
+// renders a real <img> with the productName alt so existing assertions like
+// `getAllByRole('img', { name: /<product-name>/i })` keep matching. Uses a 1x1 transparent GIF
+// data URI to avoid the React empty-`src` warning.
+const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const capturedImageGalleryProps: { last: any } = { last: null };
+vi.mock('@/components/image-gallery', () => ({
+    default: (props: any) => {
+        capturedImageGalleryProps.last = props;
+        return <img alt={props.productName ?? ''} src={TRANSPARENT_PIXEL} data-testid="image-gallery" />;
+    },
+}));
+
 // Mock useToast
 const mockAddToast = vi.fn();
 vi.mock('@/components/toast', () => ({
@@ -103,6 +117,7 @@ const renderProductView = (props: React.ComponentProps<typeof ProductView>, init
 describe('ProductView', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        capturedImageGalleryProps.last = null;
         mockWriteText.mockResolvedValue(undefined);
         mockShare.mockResolvedValue(undefined);
         mockWindowOpen.mockClear();
@@ -585,6 +600,19 @@ describe('ProductView', () => {
 
                 unmount();
             });
+        });
+    });
+
+    describe('Gallery widths', () => {
+        // The PDP is the canonical surface the <ImageGallery> defaults are sized for
+        // (`section-container` → `lg:grid-cols-2` → `max-w-screen-2xl`, capped at 680). It
+        // intentionally does NOT pass a `widths` override — the gallery falls back to its
+        // documented PDP-shaped defaults. Guarding the absence of an override prevents someone
+        // from tightening this surface and silently breaking the cache-ladder alignment.
+        test('does not pass a widths override (relies on gallery defaults)', () => {
+            renderProductView({ product: mockProduct });
+
+            expect(capturedImageGalleryProps.last?.widths).toBeUndefined();
         });
     });
 });

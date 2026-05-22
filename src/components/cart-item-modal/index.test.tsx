@@ -32,6 +32,19 @@ import { variantProduct } from '@/components/__mocks__/master-variant-product';
 // Utils
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
+// Prop-capture mock for <ImageGallery>. The cart-item-modal/view.tsx defines a private
+// GALLERY_WIDTHS constant that must reach the gallery unchanged so the cache-ladder snap holds
+// across surfaces (PDP, bonus-modal, child-product-card). The component is otherwise costly to
+// render in this test (real <picture> sources, preload effects), so the mock also keeps the rest
+// of the suite focused on cart-modal behavior.
+const capturedImageGalleryProps: { last: any } = { last: null };
+vi.mock('@/components/image-gallery', () => ({
+    default: (props: any) => {
+        capturedImageGalleryProps.last = props;
+        return <div data-testid="image-gallery" />;
+    },
+}));
+
 // Mock useScapiFetcher to prevent actual API calls
 const mockLoad = vi.fn().mockResolvedValue(undefined);
 const mockUseScapiFetcher = vi.fn(
@@ -76,6 +89,7 @@ const renderCartItemModal = (props: React.ComponentProps<typeof CartItemModal>) 
 describe('CartItemModal', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        capturedImageGalleryProps.last = null;
     });
 
     const defaultProps = {
@@ -131,6 +145,19 @@ describe('CartItemModal', () => {
 
         const title = screen.getByText(t('editItem:title'));
         expect(title).toBeInTheDocument();
+    });
+
+    // The view defines a private GALLERY_WIDTHS = { main: { base: '100vw', md: 420 } } sized for
+    // `DialogContent sm:max-w-4xl` with `md:grid-cols-2` (~412 wide at md+). Thumbnails use the
+    // fixed-CSS horizontal strip, so no thumbnail override is sent. This assertion guards both the
+    // snap to 420 (shared with bonus-modal/child-product-card) and the omission of `widths.thumbnail`.
+    test('passes the documented widths to <ImageGallery> (cache-ladder rungs)', () => {
+        renderCartItemModal(defaultProps);
+
+        expect(capturedImageGalleryProps.last?.widths).toEqual({ main: { base: '100vw', md: 420 } });
+        expect(capturedImageGalleryProps.last?.widths.thumbnail).toBeUndefined();
+        // The cart modal uses the horizontal-strip layout, so this flag must reach the gallery.
+        expect(capturedImageGalleryProps.last?.horizontalThumbnails).toBe(true);
     });
 });
 

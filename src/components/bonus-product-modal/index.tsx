@@ -47,6 +47,17 @@ export interface BonusProductModalProps {
 
 const BONUS_MODAL_CONTENT_MAX_HEIGHT = 600;
 
+/**
+ * `DialogContent w-full lg:max-w-4xl` (~848) with `lg:grid-cols-2 lg:gap-8` → gallery is the full inner column
+ * below `lg` and ~408 wide at `lg+`. Tight fit would be 410/232; we deliberately round `lg` main up to 420
+ * (cart-modal, child-card) and `md` thumb up to 240 (PDP) so a session that hops between surfaces shares DIS
+ * cache entries instead of fetching three near-identical variants. ~3% over-supply, no visible difference.
+ */
+const GALLERY_WIDTHS = {
+    main: { base: '100vw', lg: 420 },
+    thumbnail: { base: 144, sm: 176, md: 240, lg: 96 },
+} as const;
+
 export function BonusProductModal({
     open,
     onOpenChange,
@@ -272,6 +283,7 @@ export function BonusProductModal({
                                         images={galleryImages}
                                         eager={false}
                                         productName={currentProduct.name}
+                                        widths={GALLERY_WIDTHS}
                                     />
                                 </div>
                                 <div className="lg:order-2">

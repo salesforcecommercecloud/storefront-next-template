@@ -22,9 +22,33 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             >
               <picture>
                 <source
-                  media="(min-width: 640px)"
+                  media="(min-width: 1536px)"
                   sizes="680px"
                   srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=680 680w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=1360 1360w"
+                  type="image/webp"
+                />
+                <source
+                  media="(min-width: 1280px)"
+                  sizes="50vw"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=768 768w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=1536 1536w"
+                  type="image/webp"
+                />
+                <source
+                  media="(min-width: 1024px)"
+                  sizes="50vw"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=640 640w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=1280 1280w"
+                  type="image/webp"
+                />
+                <source
+                  media="(min-width: 768px)"
+                  sizes="100vw"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=1024 1024w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=2048 2048w"
+                  type="image/webp"
+                />
+                <source
+                  media="(min-width: 640px)"
+                  sizes="100vw"
+                  srcset="https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=768 768w, https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw5f194ed3/images/large/TG508_206.webp?sfrm=jpg&q=70&sw=1536 1536w"
                   type="image/webp"
                 />
                 <source

@@ -20,12 +20,9 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { cn, isServer } from '@/lib/utils';
 import {
-    defaultImageFormats,
     type DynamicImageDimensions,
-    getResponsivePictureAttributes,
     replaceImageFormat,
-    toDisBaseUrl,
-    toImageUrl,
+    resolveDynamicImageAttributes,
 } from '@/lib/images/dynamic-image';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { Component } from '@/lib/decorators/component';
@@ -337,14 +334,6 @@ const DynamicImage = ({
     ...rest
 }: DynamicImageProps) => {
     const config = useConfig<AppConfig>();
-    const {
-        images: {
-            quality: defaultQuality = 70,
-            formats: configFormats = defaultImageFormats,
-            fallbackFormat: defaultFallbackFormat = 'jpg',
-            enableDis = true,
-        } = {},
-    } = config;
 
     // Page Designer passes image-type attributes as objects — normalize to a plain string.
     // SFCC image objects can use several URL properties depending on source and context.
@@ -361,31 +350,19 @@ const DynamicImage = ({
     const parsedWidths = useMemo(() => parseDimensionsString(widths), [widths]);
     const parsedHeights = useMemo(() => parseDimensionsString(heights), [heights]);
 
-    // Normalize the source URL so downstream format/query generation operates on a DIS base URL.
-    // - enableDis=true:  rewrite host + insert /dw/image/v2/{realm}/ prefix (no format/query changes);
-    //                    `getResponsivePictureAttributes` + `getSrc` handle sfrm/q/sw/sh per breakpoint.
-    // - enableDis=false: rewrite to relative static paths and skip all DIS-dependent behavior.
-    // Non-SFCC URLs fall through as-is.
-    const transformedSrc = useMemo(() => {
-        return (
-            (enableDis ? toDisBaseUrl({ src: resolvedSrc, config }) : toImageUrl({ src: resolvedSrc, config })) ||
-            resolvedSrc
-        );
-    }, [resolvedSrc, config, enableDis]);
-
-    // When DIS is disabled, use empty formats to skip <source> generation and format conversion.
-    // Without DIS, format conversion (webp/avif) and server-side resizing are not available.
-    const effectiveFormats = useMemo(() => (enableDis ? configFormats : []), [enableDis, configFormats]);
-
-    const responsiveImageProps = useMemo(() => {
-        return getResponsivePictureAttributes({
-            src: transformedSrc,
-            widths: parsedWidths,
-            heights: parsedHeights,
-            quality: enableDis ? defaultQuality : undefined,
-            formats: effectiveFormats,
-        });
-    }, [transformedSrc, parsedWidths, parsedHeights, defaultQuality, effectiveFormats, enableDis]);
+    // Funnel through the shared resolver so the render path and the prefetch path always agree on URL math, formats,
+    // and DIS state.
+    const {
+        sources,
+        links,
+        src: responsiveSrc,
+        transformedSrc,
+        enableDis,
+        fallbackFormat,
+    } = useMemo(
+        () => resolveDynamicImageAttributes({ src: resolvedSrc, config, widths: parsedWidths, heights: parsedHeights }),
+        [resolvedSrc, config, parsedWidths, parsedHeights]
+    );
     const imageContext = useDynamicImageContext();
 
     const effectivePriority = priority ?? (imageContext?.hasSource(transformedSrc) ? 'high' : 'auto');
@@ -399,7 +376,7 @@ const DynamicImage = ({
         loading: effectiveLoading,
         fetchPriority: effectivePriority,
         alt,
-        src: enableDis ? replaceImageFormat(responsiveImageProps.src, defaultFallbackFormat) : responsiveImageProps.src,
+        src: enableDis ? replaceImageFormat(responsiveSrc, fallbackFormat) : responsiveSrc,
     };
 
     // Get styling classes from Page Designer props
@@ -412,8 +389,8 @@ const DynamicImage = ({
     });
 
     if (isServer() && effectivePriority === 'high') {
-        responsiveImageProps.links.forEach(({ type, media, sizes, srcSet }) => {
-            preload(srcSet, {
+        links.forEach(({ type, media, sizes, srcSet, href }) => {
+            preload(href, {
                 as: 'image',
                 fetchPriority: 'high',
                 imageSrcSet: srcSet,
@@ -427,9 +404,9 @@ const DynamicImage = ({
     return (
         <>
             <div className={cn(styleClasses, className)} {...rest}>
-                {responsiveImageProps.sources.length > 0 ? (
+                {sources.length > 0 ? (
                     <picture>
-                        {responsiveImageProps.sources.map(({ type, srcSet, sizes, media }, idx) => (
+                        {sources.map(({ type, srcSet, sizes, media }, idx) => (
                             // eslint-disable-next-line react/no-array-index-key
                             <source key={idx} type={type} {...(media && { media })} sizes={sizes} srcSet={srcSet} />
                         ))}

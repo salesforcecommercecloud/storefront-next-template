@@ -22,6 +22,17 @@ import ChildProductCard from './child-product-card';
 import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 
+// Prop-capture mock for <ImageGallery> so tests can assert that the card forwards the documented
+// GALLERY_WIDTHS constant (private to the module, but the only meaningful surface is what reaches
+// the gallery component).
+const capturedImageGalleryProps: { last: any } = { last: null };
+vi.mock('@/components/image-gallery', () => ({
+    default: (props: any) => {
+        capturedImageGalleryProps.last = props;
+        return <div data-testid="image-gallery" />;
+    },
+}));
+
 vi.mock('@/hooks/product/use-current-variant', () => ({
     useCurrentVariant: () => null,
 }));
@@ -121,6 +132,7 @@ describe('ChildProductCard', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        capturedImageGalleryProps.last = null;
 
         // Set up stable mock state
         mockStore.getState.mockReturnValue({
@@ -733,6 +745,28 @@ describe('ChildProductCard', () => {
             // Wait a bit to ensure no additional calls
             await new Promise((resolve) => setTimeout(resolve, 100));
             expect(mockOnSelectionChange).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('gallery widths', () => {
+        // The card cell sits inside `grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`; worst-case cell
+        // width is ~420 at `md` on PDP (lg-3-col and base mobile both stay below 420). Thumbnails are
+        // grid-cols-4 of the cell. The card snaps to the shared pixel ladder (md main 420, md thumb 96)
+        // so the same DIS variants are reused on cart-modal and bonus-modal during a session.
+        test('passes the documented widths to <ImageGallery> (cache-ladder rungs)', () => {
+            const standardProduct = createStandardProduct();
+            const parentProduct = createSetProduct();
+
+            renderChildProductCard({
+                childProduct: standardProduct,
+                parentProduct,
+                onSelectionChange: mockOnSelectionChange,
+            });
+
+            expect(capturedImageGalleryProps.last?.widths).toEqual({
+                main: { base: 360, md: 420 },
+                thumbnail: { base: 80, md: 96 },
+            });
         });
     });
 

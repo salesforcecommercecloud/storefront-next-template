@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 import { test } from 'vitest';
+import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
+import { deepMerge } from '@/test-utils/deep-merge';
+import type { Config } from '@/types/config';
 import {
     getResponsivePictureAttributes,
     getSrc,
+    isDynamicImageSource,
     replaceImageFormat,
+    resolveDynamicImageAttributes,
     toDisBaseUrl,
     toDisImageUrl,
     toImageUrl,
 } from './dynamic-image';
-import { mockConfig } from '@/test-utils/config';
+import { mockBuildConfig, mockConfig } from '@/test-utils/config';
 
 const disImageURL = {
     withOptionalParams:
@@ -138,6 +143,36 @@ describe('replaceImageFormat()', () => {
     });
 });
 
+describe('isDynamicImageSource()', () => {
+    test.each(['avif', 'gif', 'jp2', 'jpg', 'jpeg', 'png', 'tif', 'tiff', 'webp'])(
+        'returns true for DIS-supported extension .%s',
+        (ext) => {
+            expect(isDynamicImageSource(`https://example.com/foo.${ext}`)).toBe(true);
+        }
+    );
+
+    test('matches when a query string follows the extension', () => {
+        expect(isDynamicImageSource('https://example.com/foo.jpg?sw=200')).toBe(true);
+    });
+
+    test('is case-insensitive', () => {
+        expect(isDynamicImageSource('https://example.com/FOO.JPG')).toBe(true);
+    });
+
+    test.each(['mp4', 'webm', 'ogg', 'mov', 'pdf', 'glb', 'usdz'])('returns false for non-DIS extension .%s', (ext) => {
+        expect(isDynamicImageSource(`https://example.com/foo.${ext}`)).toBe(false);
+    });
+
+    test('returns false for paths without an extension', () => {
+        expect(isDynamicImageSource('https://example.com/media/asset')).toBe(false);
+    });
+
+    test('returns false for empty / undefined input', () => {
+        expect(isDynamicImageSource('')).toBe(false);
+        expect(isDynamicImageSource(undefined)).toBe(false);
+    });
+});
+
 describe('getResponsivePictureAttributes()', () => {
     test('vw widths', () => {
         let props = getResponsivePictureAttributes({
@@ -197,30 +232,35 @@ describe('getResponsivePictureAttributes()', () => {
                 {
                     media: '(max-width: 639px)',
                     sizes: '50vw',
+                    href: urlWithWidth(320),
                     srcSet: [320, 640].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 640px) and (max-width: 767px)',
                     sizes: '50vw',
+                    href: urlWithWidth(384),
                     srcSet: [384, 768].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 768px) and (max-width: 1023px)',
                     sizes: '20vw',
+                    href: urlWithWidth(205),
                     srcSet: [205, 410].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1024px) and (max-width: 1279px)',
                     sizes: '20vw',
+                    href: urlWithWidth(256),
                     srcSet: [256, 512].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1280px)',
                     sizes: '25vw',
+                    href: urlWithWidth(384),
                     srcSet: [384, 768].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
@@ -274,30 +314,35 @@ describe('getResponsivePictureAttributes()', () => {
                 {
                     media: '(max-width: 639px)',
                     sizes: '100vw',
+                    href: urlWithWidth(640),
                     srcSet: [640, 1280].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 640px) and (max-width: 767px)',
                     sizes: '100vw',
+                    href: urlWithWidth(768),
                     srcSet: [768, 1536].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 768px) and (max-width: 1023px)',
                     sizes: '50vw',
+                    href: urlWithWidth(512),
                     srcSet: [512, 1024].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1024px) and (max-width: 1279px)',
                     sizes: '50vw',
+                    href: urlWithWidth(640),
                     srcSet: [640, 1280].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1280px)',
                     sizes: '50vw',
+                    href: urlWithWidth(768),
                     srcSet: [768, 1536].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
@@ -363,36 +408,42 @@ describe('getResponsivePictureAttributes()', () => {
                 {
                     media: '(max-width: 639px)',
                     sizes: '100vw',
+                    href: urlWithWidth(640),
                     srcSet: [640, 1280].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 640px) and (max-width: 767px)',
                     sizes: '100vw',
+                    href: urlWithWidth(768),
                     srcSet: [768, 1536].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 768px) and (max-width: 1023px)',
                     sizes: '100vw',
+                    href: urlWithWidth(1024),
                     srcSet: [1024, 2048].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1024px) and (max-width: 1279px)',
                     sizes: '100vw',
+                    href: urlWithWidth(1280),
                     srcSet: [1280, 2560].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1280px) and (max-width: 1535px)',
                     sizes: '100vw',
+                    href: urlWithWidth(1536),
                     srcSet: [1536, 3072].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1536px)',
                     sizes: '50vw',
+                    href: urlWithWidth(768),
                     srcSet: [768, 1536].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
@@ -432,18 +483,21 @@ describe('getResponsivePictureAttributes()', () => {
                 {
                     media: '(max-width: 639px)',
                     sizes: '100px',
+                    href: urlWithWidth(100),
                     srcSet: [100, 200].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 640px) and (max-width: 767px)',
                     sizes: '500px',
+                    href: urlWithWidth(500),
                     srcSet: [500, 1000].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 768px)',
                     sizes: '1000px',
+                    href: urlWithWidth(1000),
                     srcSet: [1000, 2000].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
@@ -491,24 +545,28 @@ describe('getResponsivePictureAttributes()', () => {
                 {
                     media: '(max-width: 639px)',
                     sizes: '100px',
+                    href: urlWithWidth(100),
                     srcSet: [100, 200].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 640px) and (max-width: 767px)',
                     sizes: '500px',
+                    href: urlWithWidth(500),
                     srcSet: [500, 1000].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 768px) and (max-width: 1535px)',
                     sizes: '1000px',
+                    href: urlWithWidth(1000),
                     srcSet: [1000, 2000].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 1536px)',
                     sizes: '500px',
+                    href: urlWithWidth(500),
                     srcSet: [500, 1000].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
@@ -548,18 +606,21 @@ describe('getResponsivePictureAttributes()', () => {
                 {
                     media: '(max-width: 639px)',
                     sizes: '100vw',
+                    href: urlWithWidth(640),
                     srcSet: [640, 1280].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 640px) and (max-width: 767px)',
                     sizes: '720px',
+                    href: urlWithWidth(720),
                     srcSet: [720, 1440].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 768px)',
                     sizes: '500px',
+                    href: urlWithWidth(500),
                     srcSet: [500, 1000].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
@@ -621,12 +682,14 @@ describe('getResponsivePictureAttributes()', () => {
                 {
                     media: '(max-width: 319px)',
                     sizes: '100vw',
+                    href: urlWithWidth(320),
                     srcSet: [320, 640].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
                 {
                     media: '(min-width: 320px)',
                     sizes: '360px',
+                    href: urlWithWidth(360),
                     srcSet: [360, 720].map((width) => `${urlWithWidth(width)} ${width}w`).join(', '),
                     type: 'image/webp',
                 },
@@ -1546,5 +1609,156 @@ describe('toDisBaseUrl()', () => {
 
     test('returns original src for invalid URL', () => {
         expect(toDisBaseUrl({ src: 'not-a-valid-url', config: mockConfig })).toBe('not-a-valid-url');
+    });
+});
+
+describe('resolveDynamicImageAttributes()', () => {
+    const SFCC_RAW_SRC =
+        'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg';
+    const DIS_SRC = disImageURL.withoutOptionalParams;
+
+    const buildConfig = (overrides?: Partial<Config>) =>
+        overrides ? createAppConfig(deepMerge(mockBuildConfig, overrides as Record<string, unknown>)) : mockConfig;
+
+    describe('with DIS enabled (default)', () => {
+        test('rewrites raw SFCC URL to DIS host in transformedSrc and src/srcSets', () => {
+            const result = resolveDynamicImageAttributes({
+                src: SFCC_RAW_SRC,
+                config: buildConfig(),
+                widths: [400],
+            });
+
+            expect(result.enableDis).toBe(true);
+            expect(result.transformedSrc).toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(result.transformedSrc).toMatch(/\/dw\/image\/v\d+\/DEMO_001\//);
+            expect(result.src).toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(result.sources).toHaveLength(1);
+            expect(result.links).toHaveLength(1);
+
+            const srcSet = result.sources[0].srcSet;
+            expect(srcSet).toContain('.webp');
+            expect(srcSet).toContain('sfrm=jpg');
+            expect(srcSet).toMatch(/\bsw=400/);
+            expect(srcSet).toMatch(/\bq=70/); // default quality from mockConfig.images.quality
+            expect(result.sources[0].type).toBe('image/webp');
+        });
+
+        test('exposes fallbackFormat from config (default: jpg)', () => {
+            const result = resolveDynamicImageAttributes({ src: DIS_SRC, config: buildConfig() });
+            expect(result.fallbackFormat).toBe('jpg');
+        });
+
+        test('honors a custom fallbackFormat from config', () => {
+            const config = buildConfig({ app: { images: { fallbackFormat: 'png' } } } as Partial<Config>);
+            const result = resolveDynamicImageAttributes({ src: DIS_SRC, config });
+            expect(result.fallbackFormat).toBe('png');
+        });
+
+        test('returns no sources/links when neither widths nor heights are provided', () => {
+            const result = resolveDynamicImageAttributes({ src: DIS_SRC, config: buildConfig() });
+
+            expect(result.sources).toEqual([]);
+            expect(result.links).toEqual([]);
+            // src has placeholder syntax stripped via getSrcWithoutOptionalParams.
+            expect(result.src).not.toMatch(/\[[^\]]*]/);
+        });
+
+        test('produces one <source>/link per distinct breakpoint when widths are provided', () => {
+            const result = resolveDynamicImageAttributes({
+                src: DIS_SRC,
+                config: buildConfig(),
+                widths: [200, 400, 800],
+            });
+
+            expect(result.sources).toHaveLength(3);
+            expect(result.links).toHaveLength(3);
+            for (const source of result.sources) {
+                expect(source.srcSet).toMatch(/\bsw=\d+/);
+                expect(source.type).toBe('image/webp');
+                expect(typeof source.sizes).toBe('string');
+            }
+        });
+
+        test('emits sh= params when heights are provided alongside widths', () => {
+            const result = resolveDynamicImageAttributes({
+                src: DIS_SRC,
+                config: buildConfig(),
+                widths: [200, 400],
+                heights: [150, 300],
+            });
+
+            const srcSets = result.sources.map((s) => s.srcSet);
+            expect(srcSets.every((s) => /\bsh=\d+/.test(s))).toBe(true);
+        });
+
+        test('produces one <source> and one link per format per breakpoint when multiple formats are configured', () => {
+            const config = buildConfig({ app: { images: { formats: ['avif', 'webp'] } } } as Partial<Config>);
+            const result = resolveDynamicImageAttributes({
+                src: DIS_SRC,
+                config,
+                widths: [400, 800],
+            });
+
+            // 2 breakpoints × 2 formats = 4 entries on each axis.
+            expect(result.sources).toHaveLength(4);
+            expect(result.links).toHaveLength(4);
+
+            const sourceTypes = result.sources.map((s) => s.type);
+            const linkTypes = result.links.map((l) => l.type);
+            expect(sourceTypes).toEqual(expect.arrayContaining(['image/avif', 'image/webp']));
+            expect(linkTypes).toEqual(expect.arrayContaining(['image/avif', 'image/webp']));
+
+            // hrefs are distinct across breakpoints (preserves React's per-resource dedup).
+            const hrefsByBreakpoint = new Set(result.links.map((l) => l.href));
+            expect(hrefsByBreakpoint.size).toBe(2);
+        });
+    });
+
+    describe('with DIS disabled', () => {
+        const disabledConfig = () => buildConfig({ app: { images: { enableDis: false } } } as Partial<Config>);
+
+        test('reports enableDis: false', () => {
+            const result = resolveDynamicImageAttributes({ src: SFCC_RAW_SRC, config: disabledConfig() });
+            expect(result.enableDis).toBe(false);
+        });
+
+        test('keeps raw SFCC URL on a relative static path (no DIS host, no realm prefix)', () => {
+            const result = resolveDynamicImageAttributes({
+                src: SFCC_RAW_SRC,
+                config: disabledConfig(),
+                widths: [400],
+            });
+
+            expect(result.transformedSrc).not.toContain('edge.disstg.commercecloud.salesforce.com');
+            expect(result.transformedSrc).not.toMatch(/\/dw\/image\/v\d+\//);
+            expect(result.transformedSrc).toBe(
+                '/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg'
+            );
+        });
+
+        test('does not emit format-conversion params (no .webp / sfrm=jpg / q=) on srcSets', () => {
+            const result = resolveDynamicImageAttributes({
+                src: SFCC_RAW_SRC,
+                config: disabledConfig(),
+                widths: [400],
+            });
+
+            // formats=[] when DIS disabled → still emits one <source> for the original format with sw=, but
+            // no DIS-only conversion params (sfrm=, q=) and no webp rewrite.
+            for (const source of result.sources) {
+                expect(source.srcSet).not.toContain('.webp');
+                expect(source.srcSet).not.toContain('sfrm=');
+                expect(source.srcSet).not.toMatch(/\bq=\d+/);
+                expect(source.type).toBe('image/jpeg');
+            }
+        });
+    });
+
+    describe('falls back when transform yields no URL', () => {
+        test('uses original src when toDisBaseUrl returns undefined', () => {
+            // toDisBaseUrl returns undefined for empty src; resolver should fall back to the input.
+            const result = resolveDynamicImageAttributes({ src: '', config: mockConfig });
+            expect(result.transformedSrc).toBe('');
+        });
     });
 });

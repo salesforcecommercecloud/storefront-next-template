@@ -390,6 +390,21 @@ const emValue = /^[\d.]+em$/;
 const remValue = /^[\d.]+rem$/;
 const imageExtensions = /\.(avif|gif|jp2|jpe?g|png|tiff?|webp)(?=\?|$)/i;
 
+/**
+ * Returns `true` when `src` ends in a file extension that DIS can ingest as a source image. Use this to filter SCAPI
+ * image-group entries before wrapping them in `<picture>`/`<DynamicImage>` — anything else (videos, 3D assets, unknown
+ * blobs) cannot be transformed by DIS and should not be passed through the responsive image pipeline.
+ *
+ * The accepted extensions match the canonical list of DIS source formats:
+ * avif, gif, jp2, jpg/jpeg, png, tif/tiff, webp.
+ */
+export const isDynamicImageSource = (src: string | undefined): boolean => {
+    if (!src) {
+        return false;
+    }
+    return imageExtensions.test(src);
+};
+
 // Tailwind CSS default breakpoints (converted from rem to px)
 const defaultBreakpoints = {
     base: '0px',
@@ -633,6 +648,12 @@ const convertToPxNumbers = (widths: Array<number | string>): Array<number> =>
 
 type ImageLink = {
     type: string;
+    /**
+     * Canonical 1x URL for this breakpoint. Used as the `href` of `<link rel="preload">`, where it
+     * doubles as React's per-resource dedup key. The browser ignores `href` when `imagesrcset` is
+     * present, so this URL is not what actually gets requested — `srcSet` is.
+     */
+    href: string;
     srcSet: string;
     sizes: string;
     media: { min?: string; max?: string };
@@ -640,6 +661,7 @@ type ImageLink = {
 
 type ConvertedImageLink = {
     type: string;
+    href: string;
     srcSet: string;
     sizes: string;
     media: string;
@@ -743,13 +765,21 @@ const getResponsiveSourcesAndLinks = (
             const { sizes, media, mediaLink } = sizeData;
             const firstSource = acc.sources[0];
             const lastLink = acc.links[acc.links.length - 1];
+            // Canonical 1x URL for this breakpoint, captured separately so `<link rel="preload">` can use it as `href`.
+            // A srcSet is a candidate-list, not a URL, so it isn't a valid `href` and would make React's per-resource
+            // dedup key non-canonical.
+            let href = '';
             const srcSet = [1, 2]
                 .map((factor) => {
                     const effectiveWidth = width != null ? Math.round(width * factor) : undefined;
                     const effectiveHeight = height != null ? Math.round(height * factor) : undefined;
                     const descriptorValue = Math.round(descriptorDimension * factor);
 
-                    return `${getSrc(src, { w: effectiveWidth, h: effectiveHeight, q: quality, f: targetFormat })} ${descriptorValue}w`;
+                    const url = getSrc(src, { w: effectiveWidth, h: effectiveHeight, q: quality, f: targetFormat });
+                    if (factor === 1) {
+                        href = url;
+                    }
+                    return `${url} ${descriptorValue}w`;
                 })
                 .join(', ');
 
@@ -764,7 +794,7 @@ const getResponsiveSourcesAndLinks = (
             if (sizes && (lastLink?.sizes !== sizes || srcSet !== lastLink?.srcSet)) {
                 // Only store new `<link>` if we haven't already stored those values
                 for (const format of formats) {
-                    acc.links.push({ type: toMimeType(format), srcSet, sizes, media: mediaLink || {} });
+                    acc.links.push({ type: toMimeType(format), href, srcSet, sizes, media: mediaLink || {} });
                 }
             } else if (lastLink && mediaLink) {
                 // If we have already stored those values, update the `max` portion of the related `<link>` data
@@ -843,4 +873,44 @@ export const getResponsivePictureAttributes = ({
         links,
         src: getSrcWithoutOptionalParams(src),
     };
+};
+
+/**
+ * Single source of truth for the URL math both `<DynamicImage>` and `preloadDynamicImage()` rely on. Owns the `images`
+ * config destructure with defaults so the render path and the prefetch path can never produce different URLs for the
+ * same input.
+ */
+export const resolveDynamicImageAttributes = ({
+    src,
+    config,
+    widths,
+    heights,
+}: {
+    src: string;
+    config: AppConfig;
+    widths?: DynamicImageDimensions;
+    heights?: DynamicImageDimensions;
+}) => {
+    const {
+        quality = 70,
+        formats = defaultImageFormats,
+        fallbackFormat = 'jpg',
+        enableDis = true,
+    } = config.images ?? {};
+
+    const transformedSrc = (enableDis ? toDisBaseUrl({ src, config }) : toImageUrl({ src, config })) || src;
+    // Empty `formats` is the off-switch for `<source>` format conversion in `getResponsiveSourcesAndLinks`:
+    // `targetFormat` becomes `undefined`, so srcSet URLs keep the original extension and no `sfrm=` is emitted.
+    // Don't replace this with `[fallbackFormat]` — that would re-engage DIS-only rewrites we explicitly disabled.
+    const effectiveFormats = enableDis ? formats : [];
+
+    const responsive = getResponsivePictureAttributes({
+        src: transformedSrc,
+        widths,
+        heights,
+        quality: enableDis ? quality : undefined,
+        formats: effectiveFormats,
+    });
+
+    return { ...responsive, transformedSrc, enableDis, fallbackFormat };
 };

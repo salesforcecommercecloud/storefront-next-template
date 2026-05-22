@@ -64,8 +64,14 @@ vi.mock('@/providers/product-view', () => ({
     }),
 }));
 
+// Capture the props the modal hands to <ImageGallery> so tests can assert that the documented
+// GALLERY_WIDTHS constant (and any other shape-bearing props) actually reach the component.
+const capturedImageGalleryProps: { last: any } = { last: null };
 vi.mock('@/components/image-gallery', () => ({
-    default: () => <div data-testid="image-gallery">Image Gallery</div>,
+    default: (props: any) => {
+        capturedImageGalleryProps.last = props;
+        return <div data-testid="image-gallery">Image Gallery</div>;
+    },
 }));
 
 // Capture the variationValues prop so tests can assert what the modal seeded.
@@ -120,6 +126,7 @@ describe('BonusProductModal', () => {
         mockFetcherSubmit.mockClear();
         mockAddToast.mockClear();
         capturedProductInfoProps.last = null;
+        capturedImageGalleryProps.last = null;
         // Use vi.spyOn to mock useFetcher while keeping real router exports
         vi.spyOn(ReactRouter, 'useFetcher').mockReturnValue({
             submit: mockFetcherSubmit,
@@ -395,6 +402,32 @@ describe('BonusProductModal', () => {
             expect(String(errorCalls[0][0])).toContain('Inventory short');
             // Modal stays open on error
             expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
+        });
+    });
+
+    describe('Gallery widths', () => {
+        // The bonus modal's gallery sits in `lg:max-w-4xl` (~848) with `lg:grid-cols-2`, so the gallery
+        // is the full inner column below `lg` and ~408 wide at `lg+`. We deliberately snap to the shared
+        // pixel ladder (lg:420 main, md:240 thumb) instead of the tight fit so this surface reuses DIS
+        // cache entries with the cart-modal and the child-product-card. The constant is private to the
+        // module — these assertions guard that snap by checking the values that actually reach the
+        // <ImageGallery> component.
+        it('passes the documented widths to <ImageGallery> (cache-ladder rungs)', () => {
+            mockFetcherData = {
+                id: 'variant-123',
+                name: 'Variant Bonus Tie',
+                type: { variant: true },
+                variationValues: { color: 'NAVY' },
+            };
+            mockFetcherSuccess = true;
+            mockFetcherState = 'idle';
+
+            renderWithRouter(<BonusProductModal {...mockProps} />);
+
+            expect(capturedImageGalleryProps.last?.widths).toEqual({
+                main: { base: '100vw', lg: 420 },
+                thumbnail: { base: 144, sm: 176, md: 240, lg: 96 },
+            });
         });
     });
 

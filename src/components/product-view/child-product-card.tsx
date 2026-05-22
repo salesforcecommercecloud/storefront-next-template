@@ -32,6 +32,17 @@ import { isProductSet, isStandardProduct } from '@/lib/product/product-utils';
 import DeliveryOptions from '@/extensions/bopis/components/delivery-options/delivery-options';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * Card cell inside `grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`. The card is rendered on PDP
+ * (`section-container`) and inside `cart-item-modal` (`sm:max-w-4xl`); worst-case cell width is ~420 at `md`
+ * on PDP. The `lg`-3-col case (~292 PDP, ~218 in modal) and the `base` mobile case both stay below 420, so a
+ * single `md` cap covers them all. Thumbnails are `grid-cols-4` of the cell → ~80 at `base`, ~96 at `md+`.
+ */
+const GALLERY_WIDTHS = {
+    main: { base: 360, md: 420 },
+    thumbnail: { base: 80, md: 96 },
+} as const;
+
 interface ProductSelectionValues {
     product: ShopperProducts.schemas['Product'];
     variant?: ShopperProducts.schemas['Variant'];
@@ -255,7 +266,13 @@ export default function ChildProductCard({
             <CardContent className="space-y-4">
                 {/* Product Image */}
                 <div className="aspect-square">
-                    <ImageGallery key={product.id} images={galleryImages} eager={false} productName={product.name} />
+                    <ImageGallery
+                        key={product.id}
+                        images={galleryImages}
+                        eager={false}
+                        productName={product.name}
+                        widths={GALLERY_WIDTHS}
+                    />
                 </div>
 
                 {/* Variant Selection.

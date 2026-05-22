@@ -28,6 +28,13 @@ import { ProductProvider } from '@/providers/product-context';
 import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/providers/product-reviews-context';
 
+/**
+ * `DialogContent sm:max-w-4xl` (~848) with `md:grid-cols-2` → gallery is the full inner column below `md` and
+ * ~412 wide at `md+`. 420 gives DIS a hair of headroom. Thumbnails use the fixed-CSS horizontal strip, so no
+ * thumbnail override is needed.
+ */
+const GALLERY_WIDTHS = { main: { base: '100vw', md: 420 } } as const;
+
 interface CartItemModalViewProps {
     open: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -134,6 +141,7 @@ export function CartItemModalView({
                                                     showNavigationArrows
                                                     horizontalThumbnails
                                                     productName={currentProduct.name}
+                                                    widths={GALLERY_WIDTHS}
                                                 />
                                             </div>
                                             <div className="order-2 flex flex-col self-start">
