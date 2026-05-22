@@ -15,7 +15,7 @@
  */
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { loader } from './_app.cart';
 import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';

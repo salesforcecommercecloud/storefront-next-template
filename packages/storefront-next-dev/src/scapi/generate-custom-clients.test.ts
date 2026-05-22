@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { generateCustomClientsFile } from './generate-custom-clients';
@@ -44,6 +44,91 @@ describe('generateCustomClientsFile', () => {
             "export { type Clients as AppClients } from '@salesforce/storefront-next-runtime/scapi';"
         );
         expect(content).toContain('export const customClients: never[] = [];');
+    });
+
+    it('writes a transparent re-export barrel when no overrides are registered', () => {
+        const scapiDir = createScapiDir();
+
+        generateCustomClientsFile(scapiDir);
+
+        const indexContent = readFileSync(join(scapiDir, 'index.ts'), 'utf-8');
+        expect(indexContent).toContain("export * from '@salesforce/storefront-next-runtime/scapi';");
+        expect(indexContent).toContain("export { customClients, type AppClients } from './custom-clients';");
+    });
+
+    it('writes a barrel that substitutes overridden namespaces and emits a namespace wrapper', () => {
+        const scapiDir = createScapiDir();
+        const schemasDir = join(scapiDir, 'schemas');
+
+        writeFileSync(
+            join(schemasDir, 'shopper-products-v1.meta.json'),
+            JSON.stringify(
+                {
+                    clientKey: 'shopperProducts',
+                    basePath: '/product/shopper-products/v1',
+                    supportsLocale: true,
+                    orgPrefix: false,
+                    kind: 'override',
+                },
+                null,
+                2
+            ),
+            'utf-8'
+        );
+
+        generateCustomClientsFile(scapiDir);
+
+        const indexContent = readFileSync(join(scapiDir, 'index.ts'), 'utf-8');
+        // Wildcard re-exports the entire runtime SCAPI surface so future SDK additions
+        // (new types, helpers, etc.) flow through automatically without re-running codegen.
+        expect(indexContent).toContain("export * from '@salesforce/storefront-next-runtime/scapi';");
+        // The overridden namespace is re-exported explicitly below the wildcard so it
+        // shadows the runtime version of ShopperProducts.
+        expect(indexContent).toContain(
+            "export type { ShopperProducts } from './generated/shopper-products-v1.namespace';"
+        );
+        // Active-overrides note is in the generated header so reviewers can see which
+        // namespaces are shadowed without tracing the file structure.
+        expect(indexContent).toContain('Active overrides: ShopperProducts');
+        // Custom-clients passthrough still present
+        expect(indexContent).toContain("export { customClients, type AppClients } from './custom-clients';");
+
+        // The namespace wrapper exists and matches the runtime namespace shape
+        const namespacePath = join(scapiDir, 'generated', 'shopper-products-v1.namespace.ts');
+        expect(existsSync(namespacePath)).toBe(true);
+        const namespaceContent = readFileSync(namespacePath, 'utf-8');
+        expect(namespaceContent).toContain('export namespace ShopperProducts');
+        expect(namespaceContent).toContain('export type endpoints = Source.paths;');
+        expect(namespaceContent).toContain("export type schemas = Source.components['schemas'];");
+        expect(namespaceContent).toContain('export type operations = Source.operations;');
+    });
+
+    it('infers override kind from a built-in client key when meta.kind is absent', () => {
+        const scapiDir = createScapiDir();
+        const schemasDir = join(scapiDir, 'schemas');
+
+        writeFileSync(
+            join(schemasDir, 'shopper-baskets-v2.meta.json'),
+            JSON.stringify(
+                {
+                    clientKey: 'shopperBasketsV2',
+                    basePath: '/checkout/shopper-baskets/v2',
+                    supportsLocale: true,
+                    orgPrefix: false,
+                },
+                null,
+                2
+            ),
+            'utf-8'
+        );
+
+        generateCustomClientsFile(scapiDir);
+
+        const indexContent = readFileSync(join(scapiDir, 'index.ts'), 'utf-8');
+        expect(indexContent).toContain(
+            "export type { ShopperBasketsV2 } from './generated/shopper-baskets-v2.namespace';"
+        );
+        expect(existsSync(join(scapiDir, 'generated', 'shopper-baskets-v2.namespace.ts'))).toBe(true);
     });
 
     it('writes imports, merged AppClients type, and registry entries for custom clients', () => {

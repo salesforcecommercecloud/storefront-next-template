@@ -23,7 +23,7 @@ import ProductRecommendations from '@/components/product-recommendations';
 import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
 import { OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
 import { User, CreditCard, Receipt, MapPin } from 'lucide-react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
 import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';

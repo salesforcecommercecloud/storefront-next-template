@@ -17,7 +17,7 @@ import { type ReactElement, useCallback, useId, useMemo } from 'react';
 import { useLocation, useNavigation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 
 import { NativeSelect } from '@/components/ui/native-select';
 import { PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';

@@ -17,7 +17,7 @@
 import { describe, test, expect, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useSelectedVariations } from './use-selected-variations';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const mockUseSearchParams = vi.fn();
 vi.mock('react-router', () => ({

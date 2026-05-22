@@ -23,7 +23,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createActiveDataAdapter, type ActiveDataConfig } from './active-data';
 import type { AnalyticsEvent, EventSiteInfo, ConsentPreferences } from '@salesforce/storefront-next-runtime/events';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import Cookies from 'js-cookie';
 import { mockSiteObject } from '@/test-utils/config';
 

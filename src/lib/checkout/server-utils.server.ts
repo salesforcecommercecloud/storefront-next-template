@@ -22,7 +22,7 @@
  */
 
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { SessionData as AuthData } from '@/lib/api/types';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import { createApiClients } from '@/lib/api-clients.server';

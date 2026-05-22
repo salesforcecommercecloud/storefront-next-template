@@ -15,7 +15,7 @@
  */
 
 import type { ActionHookContext } from '@/targets/action-hook.server';
-import type { ShopperBasketsV2, ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders } from '@/scapi';
 
 export type PaymentFlowType = 'inline' | 'redirect' | 'deferred';
 

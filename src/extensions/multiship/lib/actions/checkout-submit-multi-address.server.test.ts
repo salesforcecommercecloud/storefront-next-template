@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { handleMultiShipShippingAddress } from './checkout-submit-multi-address.server';
-import { ApiError, type ShopperBasketsV2, type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperBasketsV2, type ShopperCustomers } from '@/scapi';
 import type { ActionFunctionArgs } from 'react-router';
 import { createApiClients } from '@/lib/api-clients.server';
 import { updateShipmentAddress, createDeliveryShipment } from '@/extensions/multiship/lib/api/basket.server';

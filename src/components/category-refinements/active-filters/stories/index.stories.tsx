@@ -21,7 +21,7 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import searchResults from '@/components/__mocks__/search-results';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 
 const ACTIVE_FILTERS_HARNESS_ATTR = 'data-active-filters-harness';
 

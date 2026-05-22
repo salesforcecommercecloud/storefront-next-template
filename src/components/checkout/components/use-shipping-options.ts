@@ -18,7 +18,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useCallback, type MutableRe
 import { useBasket } from '@/providers/basket';
 import { getDefaultShippingMethod } from '@/lib/customer/profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { CheckoutActionData } from '../types';
 function useLatestRef<T>(value: T): MutableRefObject<T> {
     const ref = useRef(value);

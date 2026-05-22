@@ -17,7 +17,7 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router';
 import { useSelectedVariations } from './use-selected-variations';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const getProductViewSearchParams = (search: string, productId: string) => {
     const allParams = new URLSearchParams(search);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useMemo } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import type { GalleryImage } from '@/components/image-gallery';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 import { isDynamicImageSource, toImageUrl } from '@/lib/images/dynamic-image';

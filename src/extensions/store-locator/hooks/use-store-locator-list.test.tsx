@@ -18,7 +18,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 
 import { useStoreLocatorList, type SearchStoresResult } from './use-store-locator-list';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 
 // Mock react-router useFetcher (called twice: once for store search, once for set-selected-store action)
 const mockSearchFetcher = {

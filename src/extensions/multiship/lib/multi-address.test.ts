@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { consolidateAddresses, initializeItemAddresses, updateItemAddresses } from './multi-address';
-import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperCustomers } from '@/scapi';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 
 describe('multi-address', () => {

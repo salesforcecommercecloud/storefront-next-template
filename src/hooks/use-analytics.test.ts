@@ -28,7 +28,7 @@ import { renderHook, act } from '@testing-library/react';
 vi.unmock('@/hooks/use-analytics');
 import { useAnalytics } from './use-analytics';
 import type { SessionData } from '@/lib/api/types';
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import { TrackingConsent } from '@/types/tracking-consent';
 import { mockSiteObject } from '@/test-utils/config';
 

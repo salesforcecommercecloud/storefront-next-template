@@ -16,7 +16,7 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { act, render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useDeferredRender } from '@/hooks/use-deferred-render';
 import { ConfigWrapper } from '@/test-utils/config';
 import DeferredProductGrid from './deferred';

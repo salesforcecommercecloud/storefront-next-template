@@ -1,5 +1,7 @@
 ## v1.0.0-dev
 
+- Add `BUILT_IN_CLIENT_DEFAULTS` (and `BUILT_IN_CLIENT_KEYS`, `isBuiltInClientKey`) — a single source of truth for per-built-in-client config (basePath, locale-awareness) consumed by both `createCommerceApiClients` and the dev CLI's SCAPI override codegen. `createCommerceApiClients` now drives its baseUrl + globalParams selection from this map so the two never drift ([#1744](https://github.com/commerce-emu/storefront-next/pull/1744))
+- Re-export `createAuthHelpers` from the SCAPI entry point so the template can rebuild `clients.auth` against an overridden `shopperLogin` client ([#1744](https://github.com/commerce-emu/storefront-next/pull/1744))
 - Remove `usid` from `PasswordlessExchangeTokenOptions` and the `exchangeToken` implementation — `usid` is not a valid field in the SLAS `PasswordLessLoginTokenRequest` schema (auth-oas-1.48.0) and was silently ignored by the server (@W-22446572) ([#1703](https://github.com/commerce-emu/storefront-next/pull/1703))
 - Remove internal config utilities from public exports (`pathToObject`, `parseEnvValue`, `extractValidPaths`, `mergeEnvConfig`, `MergeEnvConfigOptions`, `createAppConfigMiddleware`, `deepMerge`) — these are internal plumbing and should not be part of the V1 GA public surface ([#1741](https://github.com/commerce-emu/storefront-next/pull/1741))
 - Unify sanitizePrefix and stripPathPrefix into one helper (@W-22498207) ([#1699](https://github.com/commerce-emu/storefront-next/pull/1699))

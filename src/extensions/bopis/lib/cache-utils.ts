@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 
 /**
  * Simple hash function (djb2 variant) for string hashing.

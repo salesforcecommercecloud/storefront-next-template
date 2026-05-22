@@ -19,7 +19,7 @@ import { action } from './action.cart-bundle-add';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 vi.mock('@/middlewares/basket.server');
 // Hoist dependencies for use in vi.mock (avoids async imports which fail on Windows)

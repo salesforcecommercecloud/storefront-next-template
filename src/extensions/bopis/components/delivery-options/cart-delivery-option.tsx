@@ -15,7 +15,7 @@
  */
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import PickupOrDeliveryDropdown from './pickup-or-delivery-dropdown';
 import { useDeliveryOptions } from '@/extensions/bopis/hooks/use-delivery-options';
 import { DELIVERY_OPTIONS } from '@/extensions/bopis/constants';

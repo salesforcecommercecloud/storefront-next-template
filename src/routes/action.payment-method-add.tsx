@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.payment-method-add';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { data } from 'react-router';
 import { savePaymentMethodToCustomer } from '@/lib/api/customer.server';
 import { getAuth } from '@/middlewares/auth.server';

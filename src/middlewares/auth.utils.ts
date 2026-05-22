@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, type RouterContextProvider } from 'react-router';
-import { AuthTokenInvalidError, type ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import { AuthTokenInvalidError, type ShopperLogin } from '@/scapi';
 import type { SessionData as AuthData, PublicSessionData } from '@/lib/api/types';
 import {
     clearStorage,

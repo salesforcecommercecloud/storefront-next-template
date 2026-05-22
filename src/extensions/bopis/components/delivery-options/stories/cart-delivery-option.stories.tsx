@@ -18,7 +18,7 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import CartDeliveryOption from '../cart-delivery-option';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import BasketProvider from '@/providers/basket';

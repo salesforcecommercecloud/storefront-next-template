@@ -18,7 +18,7 @@ import { Check, Hash, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders } from '@/scapi';
 import OrderItemsList, { type ProductDataById } from '@/components/account/order-details/order-items-list';
 import OrderSummary from '@/components/order-summary';
 import ShippingAddressDisplay from '@/components/checkout/components/shipping-address-display';

@@ -22,7 +22,7 @@ import {
     type EventPayload,
 } from '@salesforce/storefront-next-runtime/design/messaging';
 import { useDesignContext } from '@salesforce/storefront-next-runtime/design/react';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
 
 const logger = createLogger();
 

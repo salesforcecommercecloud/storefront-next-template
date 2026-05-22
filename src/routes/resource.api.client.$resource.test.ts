@@ -18,7 +18,7 @@ import { type RouterContextProvider } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
 import { action, loader, type ApiResponse } from './resource.api.client.$resource';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 
 const apiClientMocks = vi.hoisted(() => ({
     mockShopperCustomersGetCustomer: vi.fn(),

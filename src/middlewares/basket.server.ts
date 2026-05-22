@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, createCookie, type MiddlewareFunction, type RouterContextProvider } from 'react-router';
-import { type ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperBasketsV2 } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { BASKET_COOKIE_NAME, validateBasketSnapshot } from '@/lib/basket/cookie';
 import { getCookieConfig } from '@/lib/cookie-utils.server';

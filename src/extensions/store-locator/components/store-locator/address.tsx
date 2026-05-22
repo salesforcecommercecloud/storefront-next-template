@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useTranslation } from 'react-i18next';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 
 interface StoreAddressProps {
     /** Store object containing address information */

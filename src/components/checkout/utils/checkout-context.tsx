@@ -22,7 +22,7 @@ import {
     type CustomerProfile,
 } from './checkout-context-types';
 import { useBasket } from '@/providers/basket';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { computeFinalStepForReturningCustomer, computeStepFromBasket } from './checkout-utils';
 import { getShipmentDistribution } from './checkout-distribution';
 

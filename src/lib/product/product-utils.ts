@@ -33,7 +33,7 @@
  * // returns { "Colour": "royal" }
  */
 
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 
 /**

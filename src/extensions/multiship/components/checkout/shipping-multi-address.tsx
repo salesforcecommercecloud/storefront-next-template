@@ -34,7 +34,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@/scapi';
 import {
     getDisplayVariationValues,
     getEnrichedProducts,

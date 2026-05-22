@@ -15,7 +15,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders } from '@/scapi';
 
 /**
  * Test suite for Order Confirmation page with multiple delivery shipments.

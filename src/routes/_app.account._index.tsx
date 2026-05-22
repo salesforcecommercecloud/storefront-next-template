@@ -27,7 +27,7 @@ import { CustomerProfileForm } from '@/components/customer-profile-form';
 import { EmailUpdateForm } from '@/components/email-update-form';
 import { MarketingConsent } from '@/components/account/marketing-consent';
 import { useToast } from '@/components/toast';
-import type { ShopperConsents, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperConsents, ShopperCustomers } from '@/scapi';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { SeoMeta } from '@/components/seo-meta';

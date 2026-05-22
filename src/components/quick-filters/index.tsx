@@ -18,7 +18,7 @@ import { useLocation, useNavigation } from 'react-router';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 interface QuickFiltersProps {
     category?: ShopperProducts.schemas['Category'];

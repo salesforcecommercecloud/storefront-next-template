@@ -16,12 +16,7 @@
 
 import { type ComponentProps, type ReactNode, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type {
-    ShopperBasketsV2,
-    ShopperOrders,
-    ShopperProducts,
-    ShopperSearch,
-} from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders, ShopperProducts, ShopperSearch } from '@/scapi';
 import CurrentPrice from './current-price';
 import ListPrice from './list-price';
 import PromoCallout from './promo-callout';

@@ -21,11 +21,23 @@ import { mkdirSync, writeFileSync, existsSync, copyFileSync } from 'node:fs';
 import { join, relative, resolve, extname, basename } from 'node:path';
 import YAML from 'yaml';
 import { generateFromSchema } from '../../scapi/generate-types';
-import { deriveBasePath, deriveClientKey, writeSchemaMetadata } from '../../scapi/schema-utils';
+import {
+    BUILT_IN_CLIENT_DEFAULTS,
+    deriveBasePath,
+    deriveClientKey,
+    isBuiltInClientKey,
+    writeSchemaMetadata,
+} from '../../scapi/schema-utils';
 import { generateCustomClientsFile } from '../../scapi/generate-custom-clients';
 
 /**
- * Add a custom SCAPI client.
+ * Add a SCAPI client — either an override of a built-in SDK client (e.g., shopperProducts
+ * with a richer schema that types `c_*` custom attributes) or a new custom API.
+ *
+ * Override vs custom is detected automatically from the derived `clientKey`: if it matches
+ * a built-in client name (shopperProducts, shopperBaskets*, etc.), the entry overrides the
+ * SDK client; otherwise it's added as a new custom API. Both flows generate the same files
+ * and use the same registry — only the messaging and downstream type substitution differ.
  *
  * Supports two modes:
  * 1. **Local schema**: Provide `--schema` to generate from a local OpenAPI schema file.
@@ -34,7 +46,10 @@ import { generateCustomClientsFile } from '../../scapi/generate-custom-clients';
  *
  * @example
  * ```bash
- * # From a local schema file
+ * # Override the built-in shopperProducts client with a schema that includes c_* attributes
+ * sfnext scapi add --schema ./shopper-products-v1.yaml --name shopperProducts
+ *
+ * # Add a new custom API from a local schema file
  * sfnext scapi add --schema ./my-schemas/loyalty-api.yaml --name loyalty --base-path /custom/loyalty/v1
  *
  * # Pull from the SCAPI Schemas API
@@ -47,9 +62,10 @@ import { generateCustomClientsFile } from '../../scapi/generate-custom-clients';
  * @env SFCC_OAUTH_CLIENT_SECRET - OAuth client secret (for API pull mode)
  */
 export default class Add extends OAuthCommand<typeof Add> {
-    static description = 'Add a custom SCAPI client from a local schema or the SCAPI Schemas API';
+    static description = 'Add a SCAPI client override or a custom API, from a local schema or the SCAPI Schemas API';
 
     static examples = [
+        '<%= config.bin %> <%= command.id %> --schema ./shopper-products-v1.yaml --name shopperProducts',
         '<%= config.bin %> <%= command.id %> --schema ./custom-api.yaml --name myCustomApi --base-path /custom/my-api/v1',
         '<%= config.bin %> <%= command.id %> custom loyalty v1',
         '<%= config.bin %> <%= command.id %> custom loyalty v1 --expand-custom-properties',
@@ -117,7 +133,7 @@ export default class Add extends OAuthCommand<typeof Add> {
                 apiName: string;
                 apiVersion: string;
             };
-            clientKey = flags.name ?? deriveClientKey(apiName);
+            clientKey = flags.name ?? deriveClientKey(apiName, apiVersion);
 
             const { shortCode, tenantId } = this.resolvedConfig.values;
             if (!shortCode) {
@@ -211,12 +227,34 @@ export default class Add extends OAuthCommand<typeof Add> {
             }
         }
 
-        const supportsLocale = flags['supports-locale'] ?? false;
+        const kind = isBuiltInClientKey(clientKey) ? 'override' : 'custom';
 
-        this.log(`Registering custom client: ${clientKey}`);
+        // For overrides, default locale-awareness from the runtime SDK's per-client
+        // config so overriding e.g. shopperProducts doesn't silently lose locale
+        // support. The user can still pass --supports-locale / --no-supports-locale.
+        // Built-in SCAPI schemas embed /organizations/{organizationId} in their path
+        // patterns, so overrides skip the runtime's org-prefix injection (the segment
+        // comes from the ops map at request time). Custom APIs typically need the
+        // injection because their schema paths don't include the org segment.
+        const builtInDefaults = isBuiltInClientKey(clientKey) ? BUILT_IN_CLIENT_DEFAULTS[clientKey] : undefined;
+        const supportsLocale = flags['supports-locale'] ?? builtInDefaults?.supportsLocale ?? false;
+        const orgPrefix = builtInDefaults ? false : true;
+
+        if (kind === 'override') {
+            this.log(`Registering override for built-in client: ${clientKey}`);
+            this.log(`  Inheriting SDK defaults: supportsLocale=${supportsLocale}, orgPrefix=${orgPrefix}`);
+        } else {
+            this.log(`Registering custom client: ${clientKey}`);
+        }
 
         const schemasDir = join(scapiDir, 'schemas');
-        writeSchemaMetadata(schemasDir, schemaName, { clientKey, basePath, supportsLocale, orgPrefix: true });
+        writeSchemaMetadata(schemasDir, schemaName, {
+            clientKey,
+            basePath,
+            supportsLocale,
+            orgPrefix,
+            kind,
+        });
 
         this.log('Generating TypeScript types...');
         const { typesFile, operationsFile } = await generateFromSchema(schemaPath, generatedDir, schemaName);
@@ -225,7 +263,17 @@ export default class Add extends OAuthCommand<typeof Add> {
 
         generateCustomClientsFile(scapiDir);
         this.log(`Updated ${relative(projectDir, join(scapiDir, 'custom-clients.ts'))}`);
+        this.log(`Updated ${relative(projectDir, join(scapiDir, 'index.ts'))}`);
 
-        this.log(`\nDone! Custom client "${clientKey}" is ready.`);
+        if (kind === 'override') {
+            this.log(`\nDone! Override for "${clientKey}" is ready.`);
+            this.log(
+                'Files importing SCAPI types from "@/scapi" will now see your schema. Any file ' +
+                    'still importing from "@salesforce/storefront-next-runtime/scapi" will continue ' +
+                    'to use the SDK schema; update the import to "@/scapi" to pick up the override.'
+            );
+        } else {
+            this.log(`\nDone! Custom client "${clientKey}" is ready.`);
+        }
     }
 }

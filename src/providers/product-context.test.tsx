@@ -17,7 +17,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { ProductProvider, useProduct } from './product-context';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 describe('providers/product-context.tsx', () => {
     describe('ProductProvider', () => {

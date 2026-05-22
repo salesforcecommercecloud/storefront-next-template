@@ -23,7 +23,7 @@
  * happy-path tests blow up on the new validation. This module centralizes that scaffolding.
  */
 
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperLogin } from '@/scapi';
 import { mockSiteObject } from '@/test-utils/config';
 
 /** Default values that flow into the mock JWT and the surrounding token-response shape. */

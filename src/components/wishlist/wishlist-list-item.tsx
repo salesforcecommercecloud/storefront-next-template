@@ -17,7 +17,7 @@ import { lazy, Suspense, type ReactElement, useCallback, useEffect, useRef, useS
 import { useFetcher } from 'react-router';
 import type { action as wishlistRemoveAction } from '@/routes/action.wishlist-remove';
 import { Link } from '@/components/link';
-import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';

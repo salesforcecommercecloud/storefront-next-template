@@ -15,7 +15,7 @@
  */
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';

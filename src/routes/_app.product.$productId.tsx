@@ -16,7 +16,7 @@
 import { useEffect, useRef, Suspense, Fragment, lazy } from 'react';
 import { Await } from 'react-router';
 import type { Route } from './+types/_app.product.$productId';
-import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperProducts } from '@/scapi';
 import { fetchProductById } from '@/lib/api/products.server';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';

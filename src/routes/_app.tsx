@@ -17,7 +17,7 @@ import { useRef } from 'react';
 import { Outlet } from 'react-router';
 import type { Route } from './+types/_app';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import { type ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperProducts } from '@/scapi';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { getLogger } from '@/lib/logger.server';
 import type { AppConfig } from '@/types/config';

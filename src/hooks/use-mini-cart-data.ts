@@ -30,7 +30,7 @@
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFetcher } from 'react-router';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import type { loader as basketProductsLoader } from '@/routes/resource.basket-products';
 import type { ProductsWithPromotionsMap } from '@/lib/cart/bonus-product-utils';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';

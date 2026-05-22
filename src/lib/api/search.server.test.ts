@@ -17,7 +17,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createApiClients } from '@/lib/api-clients.server';
 import { createTestContext } from '@/lib/test-utils';
 import { fetchSearchProducts } from './search.server';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 import { NormalizedApiError } from './normalized-api-error';
 
 vi.mock('@/lib/api-clients.server', () => ({

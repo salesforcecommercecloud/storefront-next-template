@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type LoaderFunctionArgs } from 'react-router';
-import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperExperience } from '@/scapi';
 import { type PageDesignerMode } from '@salesforce/storefront-next-runtime/design/mode';
 import { createApiClients } from '@/lib/api-clients.server';
 

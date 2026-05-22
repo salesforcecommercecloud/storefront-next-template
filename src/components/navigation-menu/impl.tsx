@@ -31,7 +31,7 @@ import {
     navigationMenuTriggerStyle,
     NavigationMenuViewport,
 } from '@/components/ui/navigation-menu';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { NavLink } from '@/components/link';
 import { useSubCategory } from './context';
 

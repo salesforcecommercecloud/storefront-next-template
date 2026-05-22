@@ -19,7 +19,7 @@
  * Based on PWA Kit patterns from template-retail-react-app/app/utils/bonus-product/
  */
 
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { isBonusProduct, getBonusProductType } from '@/lib/product/product-utils';
 
 /**

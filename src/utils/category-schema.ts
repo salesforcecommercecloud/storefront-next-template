@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import type { AppConfig } from '@/types/config';
 import { buildProductSchemaUrl, buildCategorySchemaUrl } from './schema-url';
 

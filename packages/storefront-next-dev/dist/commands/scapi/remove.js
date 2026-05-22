@@ -1,5 +1,5 @@
 import { r as commonFlags } from "../../flags.js";
-import { r as readAllSchemaMetadata } from "../../schema-utils.js";
+import { a as readAllSchemaMetadata } from "../../schema-utils.js";
 import { t as generateCustomClientsFile } from "../../generate-custom-clients.js";
 import { Args, Command } from "@oclif/core";
 import { existsSync, unlinkSync } from "node:fs";
@@ -42,12 +42,18 @@ var Remove = class Remove extends Command {
 		if (existsSync(metaPath)) unlinkSync(metaPath);
 		const typesPath = join(generatedDir, `${schemaName}.ts`);
 		const opsPath = join(generatedDir, `${schemaName}.operations.ts`);
-		for (const filePath of [typesPath, opsPath]) if (existsSync(filePath)) {
+		const namespacePath = join(generatedDir, `${schemaName}.namespace.ts`);
+		for (const filePath of [
+			typesPath,
+			opsPath,
+			namespacePath
+		]) if (existsSync(filePath)) {
 			unlinkSync(filePath);
 			this.log(`Removed ${relative(projectDir, filePath)}`);
 		}
 		generateCustomClientsFile(scapiDir);
 		this.log(`Updated ${relative(projectDir, join(scapiDir, "custom-clients.ts"))}`);
+		this.log(`Updated ${relative(projectDir, join(scapiDir, "index.ts"))}`);
 		this.log(`\nRemoved client "${clientKey}".`);
 	}
 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { RouterContextProvider } from 'react-router';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 
 /**

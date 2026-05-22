@@ -108,6 +108,49 @@ describe('scapi remove command', () => {
         );
     });
 
+    it('removes the override namespace wrapper for built-in client overrides', async () => {
+        const projectDir = createProjectDir();
+        const schemaPath = join(projectDir, 'src', 'scapi', 'schemas', 'shopper-products-v1.yaml');
+        const metaPath = join(projectDir, 'src', 'scapi', 'schemas', 'shopper-products-v1.meta.json');
+        const typesPath = join(projectDir, 'src', 'scapi', 'generated', 'shopper-products-v1.ts');
+        const opsPath = join(projectDir, 'src', 'scapi', 'generated', 'shopper-products-v1.operations.ts');
+        const namespacePath = join(projectDir, 'src', 'scapi', 'generated', 'shopper-products-v1.namespace.ts');
+
+        [schemaPath, metaPath, typesPath, opsPath, namespacePath].forEach((filePath) =>
+            writeFileSync(filePath, 'test', 'utf-8')
+        );
+
+        mockReadAllSchemaMetadata.mockReturnValue([
+            {
+                clientKey: 'shopperProducts',
+                basePath: '/product/shopper-products/v1',
+                supportsLocale: true,
+                orgPrefix: true,
+                kind: 'override',
+                schemaName: 'shopper-products-v1',
+            },
+        ]);
+
+        const cmd = new Remove([], {} as never);
+        const logSpy = vi.spyOn(cmd, 'log').mockImplementation(() => {});
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: { 'project-directory': projectDir },
+            args: { name: 'shopperProducts' },
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+
+        await cmd.run();
+
+        expect(existsSync(namespacePath)).toBe(false);
+        expect(existsSync(typesPath)).toBe(false);
+        expect(existsSync(opsPath)).toBe(false);
+        expect(mockGenerateCustomClientsFile).toHaveBeenCalledWith(join(projectDir, 'src', 'scapi'));
+        const logLines = logSpy.mock.calls.map(([line]) => line);
+        expect(logLines).toContain(`Updated ${join('src', 'scapi', 'index.ts')}`);
+    });
+
     it('regenerates the registry even when generated files are already absent', async () => {
         const projectDir = createProjectDir();
         const schemaPath = join(projectDir, 'src', 'scapi', 'schemas', 'loyalty-v1.yaml');

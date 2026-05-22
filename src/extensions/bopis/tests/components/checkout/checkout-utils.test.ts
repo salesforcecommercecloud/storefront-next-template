@@ -18,7 +18,7 @@ import { CHECKOUT_STEPS } from '@/components/checkout/utils/checkout-context-typ
 import { computeStepFromBasket, getCompletedSteps } from '@/components/checkout/utils/checkout-utils';
 import { createMockBasketWithPickupItems } from '@/extensions/bopis/tests/__mocks__/basket';
 import { isStorePickup } from '@/extensions/bopis/lib/basket-utils';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 // Mock the BOPIS functions
 vi.mock('@/extensions/bopis/lib/basket-utils', () => ({

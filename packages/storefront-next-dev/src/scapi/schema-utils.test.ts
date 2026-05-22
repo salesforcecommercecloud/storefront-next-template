@@ -43,6 +43,26 @@ describe('schema-utils', () => {
         expect(deriveClientKey('store-inventory-api')).toBe('storeInventoryApi');
     });
 
+    it('appends the version suffix for built-in clients that ship multiple versions', () => {
+        // shopper-baskets has both v1 and v2 in the SDK — the derived key must distinguish.
+        expect(deriveClientKey('shopper-baskets', 'v1')).toBe('shopperBasketsV1');
+        expect(deriveClientKey('shopper-baskets', 'v2')).toBe('shopperBasketsV2');
+    });
+
+    it('does not append a version suffix when the bare key is itself a built-in', () => {
+        // Most clients aren't versioned; e.g. shopper-products is just `shopperProducts`,
+        // not `shopperProductsV1`. Returning the bare camelCase form keeps it overridable.
+        expect(deriveClientKey('shopper-products', 'v1')).toBe('shopperProducts');
+        expect(deriveClientKey('shopper-customers', 'v1')).toBe('shopperCustomers');
+    });
+
+    it('falls back to bare camelCase for unknown APIs even when a version is given', () => {
+        // A custom API like `loyalty v1` should not be transformed to `loyaltyV1` —
+        // we only suffix when the versioned key matches a built-in.
+        expect(deriveClientKey('loyalty', 'v1')).toBe('loyalty');
+        expect(deriveClientKey('store-inventory', 'v2')).toBe('storeInventory');
+    });
+
     it('derives a base path from yaml server urls with placeholders', () => {
         const dir = createTempDir();
         const schemaPath = join(dir, 'loyalty.yaml');

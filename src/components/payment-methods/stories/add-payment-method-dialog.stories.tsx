@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { AddPaymentMethodDialog } from '../add-payment-method-dialog';
 
 const meta: Meta<typeof AddPaymentMethodDialog> = {

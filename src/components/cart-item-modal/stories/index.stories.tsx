@@ -20,7 +20,7 @@ import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'r
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { expect, within } from 'storybook/test';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 // Create a product that won't trigger fetches by ensuring all variants have same productId as master
 const createMockProductForModal = (): ShopperProducts.schemas['Product'] => {

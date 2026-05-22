@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, use, useSyncExternalStore } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 /**
  * A lightweight store for enriched subcategory data. The store instance is referentially stable so the context value

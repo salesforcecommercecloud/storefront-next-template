@@ -20,7 +20,7 @@ import {
     createReactRegionDesignDecorator,
 } from '@salesforce/storefront-next-runtime/design/react/core';
 import type { RegionDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
 
 /**
  * Props for the base region renderer

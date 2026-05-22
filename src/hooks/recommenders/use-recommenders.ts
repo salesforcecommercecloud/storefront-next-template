@@ -15,7 +15,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { useRecommendersAdapter } from '@/providers/recommenders';
 import { convertProductToProductSearchHit } from '@/lib/product/product-conversion';
 import { encodeBase64Url } from '@/lib/url';

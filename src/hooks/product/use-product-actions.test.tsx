@@ -25,7 +25,7 @@ import type {
     ShopperBasketsV2,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
-} from '@salesforce/storefront-next-runtime/scapi';
+} from '@/scapi';
 import { useProductActions } from './use-product-actions';
 import BasketProvider from '@/providers/basket';
 // @sfdc-extension-line SFDC_EXT_BOPIS

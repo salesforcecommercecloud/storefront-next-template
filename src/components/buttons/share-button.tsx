@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, useMemo, useState } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { useToast } from '@/components/toast';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';

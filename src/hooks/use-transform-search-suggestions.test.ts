@@ -15,7 +15,7 @@
  */
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useTransformSearchSuggestions } from './use-transform-search-suggestions';
 import { searchUrlBuilder } from '@/lib/url';
 

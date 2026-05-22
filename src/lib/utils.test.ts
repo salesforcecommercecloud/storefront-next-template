@@ -23,7 +23,7 @@ import {
     parseJsonToStringRecord,
     getBasePath,
 } from './utils';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 
 describe('isAbsoluteURL', () => {
     it('should return true for http URLs', () => {

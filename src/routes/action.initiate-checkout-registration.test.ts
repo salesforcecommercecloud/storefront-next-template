@@ -520,7 +520,7 @@ describe('action.initiate-checkout-registration', () => {
     });
 
     it('should return unavailable when SLAS responds with 400 email not verified', async () => {
-        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 400,
             statusText: 'Bad Request',
@@ -551,7 +551,7 @@ describe('action.initiate-checkout-registration', () => {
     });
 
     it('should not return unavailable for 400 with a different error message', async () => {
-        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 400,
             statusText: 'Bad Request',
@@ -580,7 +580,7 @@ describe('action.initiate-checkout-registration', () => {
     });
 
     it('should not return unavailable for non-400 ApiErrors', async () => {
-        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 500,
             statusText: 'Internal Server Error',

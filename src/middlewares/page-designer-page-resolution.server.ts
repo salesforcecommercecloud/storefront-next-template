@@ -31,7 +31,7 @@ import {
     DataStoreUnavailableError,
     DataStoreServiceError,
 } from '@salesforce/storefront-next-runtime/data-store';
-import type { ShopperExperience, Middleware, Clients } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience, Middleware, Clients } from '@/scapi';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';

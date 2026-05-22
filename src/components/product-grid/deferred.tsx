@@ -15,7 +15,7 @@
  */
 import { type ReactElement, Suspense, useState } from 'react';
 import { Await } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useDeferredRender } from '@/hooks/use-deferred-render';
 import ProductGrid from './grid';
 

@@ -33,7 +33,7 @@ import { AddressFormFields } from '@/components/address-form-fields';
 import { FormInput } from '@/components/form-fields';
 import { createShippingAddressSchema } from '@/lib/checkout/schemas';
 import { usPostalCodeRegex, canadianPostalCodeRegex } from '@/components/customer-address-form/constants';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { stripCountryCode, extractCountryCode } from '@/lib/address/phone-utils';
 
 function createAddressModalSchema(

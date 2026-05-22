@@ -17,13 +17,19 @@
 import { Command } from '@oclif/core';
 import { join } from 'node:path';
 import { commonFlags } from '../../flags';
-import { readAllSchemaMetadata } from '../../scapi/schema-utils';
+import { isBuiltInClientKey, readAllSchemaMetadata, type SchemaMetadata } from '../../scapi/schema-utils';
+
+type Entry = SchemaMetadata & { schemaName: string };
+
+function entryKind(entry: Entry): 'override' | 'custom' {
+    return entry.kind ?? (isBuiltInClientKey(entry.clientKey) ? 'override' : 'custom');
+}
 
 /**
- * List registered custom SCAPI clients.
+ * List registered SCAPI client overrides and custom APIs.
  */
 export default class List extends Command {
-    static description = 'List registered custom SCAPI clients';
+    static description = 'List registered SCAPI client overrides and custom APIs';
 
     static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> -d ./my-project'];
 
@@ -39,18 +45,32 @@ export default class List extends Command {
         const entries = readAllSchemaMetadata(schemasDir);
 
         if (entries.length === 0) {
-            this.log('No custom SCAPI clients registered.');
+            this.log('No SCAPI client overrides or custom APIs registered.');
             this.log('Use `sfnext scapi add` to add one.');
             return;
         }
 
-        this.log(`\nRegistered SCAPI clients (${entries.length}):\n`);
-        for (const { clientKey, basePath, supportsLocale, schemaName } of entries) {
-            this.log(`  ${clientKey}`);
-            this.log(`    Schema:  schemas/${schemaName}.yaml`);
-            this.log(`    Base:    ${basePath}`);
-            this.log(`    Locale:  ${supportsLocale ? 'yes' : 'no'}`);
-            this.log('');
+        const overrides = entries.filter((e) => entryKind(e) === 'override');
+        const customs = entries.filter((e) => entryKind(e) === 'custom');
+
+        this.log(`\nRegistered SCAPI clients (${entries.length}):`);
+
+        if (overrides.length > 0) {
+            this.log(`\nOverrides (${overrides.length}):\n`);
+            for (const e of overrides) this.printEntry(e);
         }
+
+        if (customs.length > 0) {
+            this.log(`\nCustom APIs (${customs.length}):\n`);
+            for (const e of customs) this.printEntry(e);
+        }
+    }
+
+    private printEntry({ clientKey, basePath, supportsLocale, schemaName }: Entry): void {
+        this.log(`  ${clientKey}`);
+        this.log(`    Schema:  schemas/${schemaName}.yaml`);
+        this.log(`    Base:    ${basePath}`);
+        this.log(`    Locale:  ${supportsLocale ? 'yes' : 'no'}`);
+        this.log('');
     }
 }

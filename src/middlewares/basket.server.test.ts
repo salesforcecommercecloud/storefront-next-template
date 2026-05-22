@@ -16,7 +16,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createCookie, RouterContextProvider, type MiddlewareFunction } from 'react-router';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { getCookieConfig } from '@/lib/cookie-utils.server';

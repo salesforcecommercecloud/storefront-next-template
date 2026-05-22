@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { getEffectiveStockLevel, isInStock } from '@/lib/product/inventory-utils';
 import { isBonusProduct } from '@/lib/product/product-utils';
 import { useMemo } from 'react';

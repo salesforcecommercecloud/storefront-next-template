@@ -23,7 +23,7 @@ import {
 } from 'react';
 import { NavLink } from '@/components/link';
 import { useNavigate } from '@/hooks/use-navigate';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '@/components/navigation-menu';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown } from 'lucide-react';

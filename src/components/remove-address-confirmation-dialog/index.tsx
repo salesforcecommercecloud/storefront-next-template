@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 // Third-party libraries
 import { AlertTriangle } from 'lucide-react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 // Hooks
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';

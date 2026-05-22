@@ -19,7 +19,7 @@ import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {

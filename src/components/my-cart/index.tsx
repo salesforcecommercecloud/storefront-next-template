@@ -18,7 +18,7 @@ import { Link } from '@/components/link';
 import { Truck } from 'lucide-react';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 
 // Components
 import { UITarget } from '@/targets/ui-target';

@@ -15,7 +15,7 @@
  */
 import type { LoaderFunctionArgs } from 'react-router';
 import { fetchPage, type PageDesignerPageModeParams, type PageDesignerPageParams } from '@/lib/api/page.server';
-import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperExperience } from '@/scapi';
 import { registry } from '@/lib/page-designer/registry';
 import {
     isDesignModeActive,

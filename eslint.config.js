@@ -142,7 +142,12 @@ const baseConfig = defineConfig([
             },
         },
         rules: {
-            // Enforce multi-site-aware navigation imports
+            // Enforce multi-site-aware navigation imports + steer SCAPI imports through @/scapi.
+            // Severity is `warn`, not `error`, by design: a file still importing from
+            // `@salesforce/storefront-next-runtime/scapi` is not broken — it just won't pick up
+            // overrides registered via `sfnext scapi`. Keeping this as a warning lets pilot
+            // upgrades migrate file-by-file. (The monorepo template's eslint.config.js bumps
+            // this rule to `error` for our own CI; mirror customers inherit the warn level.)
             'no-restricted-imports': [
                 'warn',
                 {
@@ -152,6 +157,15 @@ const baseConfig = defineConfig([
                             importNames: ['Link', 'NavLink', 'useNavigate'],
                             message:
                                 'Import Link/NavLink from "@/components/link" and useNavigate from "@/hooks/use-navigate" for multi-site URL prefixing.',
+                        },
+                    ],
+                    patterns: [
+                        {
+                            group: [
+                                '@salesforce/storefront-next-runtime/scapi',
+                                '@salesforce/storefront-next-runtime/scapi/*',
+                            ],
+                            message: 'Import SCAPI types and clients from "@/scapi" so overrides resolve correctly.',
                         },
                     ],
                 },
@@ -265,6 +279,14 @@ const baseConfig = defineConfig([
         },
     },
     {
+        // SCAPI runtime path is legitimate inside the local SCAPI barrel and the file that
+        // wires the runtime SDK to the template — both must import from the runtime directly.
+        files: ['**/src/scapi/**/*.{ts,tsx}', '**/src/lib/api-clients.server.ts'],
+        rules: {
+            'no-restricted-imports': 'off',
+        },
+    },
+    {
         // Logger utility — wraps console.* for centralized logging
         files: ['**/src/lib/logger.ts'],
         rules: {
@@ -284,7 +306,10 @@ const baseConfig = defineConfig([
         },
     },
     {
-        // Test files - relax some rules
+        // Test files - relax some rules. We disable the navigation `no-restricted-imports`
+        // restriction since tests often import the underlying React Router primitives, but
+        // we re-enable just the SCAPI-runtime-path restriction so test files can't silently
+        // bypass the override mechanism.
         files: ['**/*.{test,spec}.{ts,tsx,js,jsx}', '**/__tests__/**/*.{ts,tsx,js,jsx}'],
         languageOptions: {
             globals: {
@@ -297,7 +322,21 @@ const baseConfig = defineConfig([
             '@typescript-eslint/no-explicit-any': 'off',
             'no-console': 'off',
             'max-len': 'off',
-            'no-restricted-imports': 'off',
+            'no-restricted-imports': [
+                'warn',
+                {
+                    patterns: [
+                        {
+                            group: [
+                                '@salesforce/storefront-next-runtime/scapi',
+                                '@salesforce/storefront-next-runtime/scapi/*',
+                            ],
+                            message:
+                                'Import SCAPI types and clients from "@/scapi" so overrides resolve correctly.',
+                        },
+                    ],
+                },
+            ],
         },
     },
     {

@@ -36,7 +36,7 @@ import type {
     ShopperProducts,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
-} from '@salesforce/storefront-next-runtime/scapi';
+} from '@/scapi';
 import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
 import { getDisplayVariationValues } from '@/lib/product/product-utils';
 import OrderSkeleton from '@/components/order-skeleton';

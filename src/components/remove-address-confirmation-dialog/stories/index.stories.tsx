@@ -19,7 +19,7 @@ import { action } from 'storybook/actions';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 const mockAddress: ShopperCustomers.schemas['CustomerAddress'] = {
     addressId: 'home-address',

@@ -17,7 +17,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi } from 'vitest';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { PaymentMethods } from './payment-methods';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 

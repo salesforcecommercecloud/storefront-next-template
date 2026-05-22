@@ -16,7 +16,7 @@
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/components/link';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { ChevronRight } from 'lucide-react';
 
 type PathRecord = Required<ShopperProducts.schemas['Category']>['parentCategoryTree'][0];

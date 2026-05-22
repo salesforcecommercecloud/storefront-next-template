@@ -17,7 +17,7 @@
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useRuleBasedBonusProducts } from './use-rule-based-bonus-products';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 

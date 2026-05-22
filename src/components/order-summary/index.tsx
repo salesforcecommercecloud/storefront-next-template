@@ -20,7 +20,7 @@ import { ShoppingCart } from 'lucide-react';
 import { Link } from '@/components/link';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperOrders, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders, ShopperProducts } from '@/scapi';
 /** Basket or Order – OrderSummary displays totals for both (e.g. cart and order details). */
 export type OrderSummaryBasket = ShopperBasketsV2.schemas['Basket'] | ShopperOrders.schemas['Order'];
 

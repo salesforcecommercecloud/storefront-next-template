@@ -21,7 +21,7 @@ import AddressCard from './index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 // Mock AddressDisplay component
 vi.mock('@/components/address-display', () => ({

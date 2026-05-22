@@ -17,7 +17,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import { variantProduct } from '@/components/__mocks__/master-variant-product';
 

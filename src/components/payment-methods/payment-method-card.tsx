@@ -21,7 +21,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getCardIcon } from '@/lib/payment/card-icon-utils';
 import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 
 export interface PaymentMethod {
     id: string;

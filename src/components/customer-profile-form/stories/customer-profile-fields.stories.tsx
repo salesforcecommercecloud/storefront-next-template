@@ -26,7 +26,7 @@ import { Form } from '@/components/ui/form';
 import { CustomerProfileFields } from '../customer-profile-fields';
 import { createCustomerProfileFormSchema, type CustomerProfileFormData } from '../index';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {

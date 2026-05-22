@@ -15,7 +15,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { assertAllProductItemsPickup } from './product-utils';
 
 type ProductItem = Pick<ShopperBasketsV2.schemas['ProductItem'], 'productId' | 'quantity' | 'inventoryId'> & {

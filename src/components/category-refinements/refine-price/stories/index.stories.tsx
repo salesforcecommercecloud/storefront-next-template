@@ -22,7 +22,7 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import searchResults from '@/components/__mocks__/search-results';
 import type { FilterValue } from '../../types';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 
 const REFINE_PRICE_HARNESS_ATTR = 'data-refine-price-harness';
 

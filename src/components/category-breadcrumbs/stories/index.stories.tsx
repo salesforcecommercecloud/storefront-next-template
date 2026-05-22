@@ -22,7 +22,7 @@ import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-ro
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { mockCategory } from '@/components/__mocks__/mock-data';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const BREADCRUMBS_HARNESS_ATTR = 'data-breadcrumbs-harness';
 

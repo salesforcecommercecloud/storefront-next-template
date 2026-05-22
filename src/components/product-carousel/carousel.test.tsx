@@ -17,7 +17,7 @@
 import type React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import ProductCarousel, { ProductCarouselWithSuspense, ProductCarouselWithData } from './carousel';
 
 let mockIsDesignMode = false;

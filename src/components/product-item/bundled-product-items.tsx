@@ -18,7 +18,7 @@
 import { useMemo, type ReactElement } from 'react';
 
 // Commerce SDK
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 // Utils
 import { getDisplayVariationValues } from '@/lib/product/product-utils';

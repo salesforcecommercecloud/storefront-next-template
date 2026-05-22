@@ -18,7 +18,7 @@
  */
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperConsents } from '@/scapi';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';

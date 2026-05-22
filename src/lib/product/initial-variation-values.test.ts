@@ -16,7 +16,7 @@
 
 import { describe, test, expect } from 'vitest';
 import { computeInitialVariationValues } from './initial-variation-values';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 type Product = ShopperProducts.schemas['Product'];
 

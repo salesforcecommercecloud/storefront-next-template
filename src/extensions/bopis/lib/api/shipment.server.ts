@@ -16,7 +16,7 @@
 
 import type { RouterContextProvider } from 'react-router';
 import { PICKUP_SHIPMENT_ID, PICKUP_SHIPPING_METHOD_ID } from '@/extensions/bopis/constants';
-import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperStores } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getShippingMethodsForShipment } from '@/lib/api/shipping-methods.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';

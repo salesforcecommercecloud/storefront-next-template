@@ -21,7 +21,7 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { CustomerAddressForm } from '../form';
 import type { CustomerAddressFormData } from '../types';
 import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { action } from 'storybook/actions';
 import {
     AlertDialog,

@@ -16,7 +16,7 @@
 import { describe, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import StoreDetails from './details';
 

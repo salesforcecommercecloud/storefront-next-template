@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useMemo } from 'react';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { searchUrlBuilder } from '@/lib/url';
 
 // Simple transformation interface for UI purposes only

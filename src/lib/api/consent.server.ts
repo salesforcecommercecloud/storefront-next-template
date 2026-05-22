@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperConsents } from '@/scapi';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';

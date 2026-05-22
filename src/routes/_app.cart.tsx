@@ -20,12 +20,7 @@ import { Await, useLoaderData } from 'react-router';
 import type { Route } from './+types/_app.cart';
 
 // Commerce SDK
-import {
-    type ShopperBasketsV2,
-    type ShopperProducts,
-    type ShopperPromotions,
-    type ShopperStores,
-} from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperBasketsV2, type ShopperProducts, type ShopperPromotions, type ShopperStores } from '@/scapi';
 
 // Middlewares
 import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares/basket.server';

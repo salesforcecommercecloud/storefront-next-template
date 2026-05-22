@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { useRevalidator, useFetcher } from 'react-router';
 import type { action as paymentMethodAddAction } from '@/routes/action.payment-method-add';
 import type { action as paymentMethodRemoveAction } from '@/routes/action.payment-method-remove';

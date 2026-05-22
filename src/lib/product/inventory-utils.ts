@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 /**
  * Represents a selected child product with its variant and quantity

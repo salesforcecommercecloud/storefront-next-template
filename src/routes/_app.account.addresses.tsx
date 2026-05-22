@@ -18,7 +18,7 @@ import { useOutletContext, Await, useRevalidator } from 'react-router';
 
 // Third-party libraries
 import { Plus } from 'lucide-react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 // UI components
 import { Card, CardContent } from '@/components/ui/card';

@@ -22,7 +22,7 @@ import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider, type useFetchers } from 'react-router';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 
 // Components
 import ProductItem from './index';

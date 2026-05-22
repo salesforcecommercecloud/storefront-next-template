@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { fetchProductsByIds } from '@/lib/api/products.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS

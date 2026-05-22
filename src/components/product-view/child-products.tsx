@@ -17,7 +17,7 @@ import ProductQuantityPicker from '@/components/product-quantity-picker';
 import { Button } from '@/components/ui/button';
 import { useProductSetsBundles } from '@/hooks/product/use-product-sets-bundles';
 import { useProductActions } from '@/hooks/product/use-product-actions';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { type ReactElement } from 'react';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import ChildProductCard from './child-product-card';

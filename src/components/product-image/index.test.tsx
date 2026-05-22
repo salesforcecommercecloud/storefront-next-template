@@ -15,7 +15,7 @@
  */
 import { describe, test, expect, vi, type Mock } from 'vitest';
 import { render } from '@testing-library/react';
-import { type ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperSearch } from '@/scapi';
 import { useDynamicImageContext } from '@/providers/dynamic-image';
 import { ProductImageContainer } from './index';
 

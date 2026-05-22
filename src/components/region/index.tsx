@@ -17,7 +17,7 @@ import { Suspense, type HTMLAttributes, type ReactNode } from 'react';
 import { Await } from 'react-router';
 import { Component } from './component';
 import { RegionWrapper } from './region-wrapper';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
 import {
     PageDesignerPageMetadataProvider,
     useRegionContext,

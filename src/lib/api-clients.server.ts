@@ -18,6 +18,8 @@ import {
     createCommerceApiClients,
     createClient,
     createOpenApiFetchClient,
+    createAuthHelpers,
+    createBasketHelpers,
     defaultQuerySerializer,
     SLAS_AUTH_ENDPOINTS,
     type OperationMap,
@@ -638,23 +640,53 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         },
     };
 
-    // Create custom clients from the declarative registry (see src/scapi/custom-clients.ts)
+    // Build clients from the declarative registry (see src/scapi/custom-clients.ts).
+    // Each entry is either an *override* (key matches a built-in SDK client like
+    // `shopperProducts`) or an *addition* (a new custom API). Overrides replace the SDK
+    // client in place so middleware and helper rewiring stay consistent; additions are
+    // spread onto `clients` afterwards.
     const globalParams = { organizationId, siteId, locale };
     const globalParamsWithoutLocale = { organizationId, siteId };
     const clientOptions = { querySerializer: defaultQuerySerializer, fetch: dedupedFetch };
 
-    // Custom clients have heterogeneous OperationMap shapes. We don't need their specific
-    // method types here — we only call `use(middleware)`, which all proxy clients expose.
+    // Heterogeneous OperationMap shapes — at this layer we only need `use(middleware)`,
+    // which every proxy client exposes.
     type MiddlewareCapable = { use(mw: Middleware): void };
-    const customClientEntries: Record<string, MiddlewareCapable> = {};
-    const customClientList: MiddlewareCapable[] = [];
+    const additionEntries: Record<string, MiddlewareCapable> = {};
+    const allCustomClientList: MiddlewareCapable[] = [];
+    let shopperLoginOverridden = false;
+    let shopperBasketsV2Overridden = false;
+
+    // The set of built-in client keys must stay in sync with the runtime SDK's `Clients`
+    // type. Kept inline (rather than imported) because runtime `Clients` is a type, not a
+    // value; encoding it as a string set keeps this file decoupled from generated code.
+    const BUILT_IN_KEYS = new Set<string>([
+        'shopperAvailability',
+        'shopperBasketsV1',
+        'shopperBasketsV2',
+        'shopperConfigurations',
+        'shopperConsents',
+        'shopperContext',
+        'shopperCustomers',
+        'shopperExperience',
+        'shopperGiftCertificates',
+        'shopperLogin',
+        'shopperOrders',
+        'shopperPayments',
+        'shopperProducts',
+        'shopperPromotions',
+        'shopperSearch',
+        'shopperSeo',
+        'shopperStores',
+    ]);
+
     for (const {
         key,
         basePath,
         ops,
         locale: supportsLocale,
         orgPrefix,
-    } of customClients as CustomClientConfigEntry[]) {
+    } of customClients as readonly CustomClientConfigEntry[]) {
         const orgPath = orgPrefix ? `/organizations/${organizationId}` : '';
         const c = createClient(
             createOpenApiFetchClient({ baseUrl: `${baseUrl}${basePath}${orgPath}`, ...clientOptions }),
@@ -662,14 +694,44 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
             supportsLocale ? globalParams : globalParamsWithoutLocale,
             { onAuthTokenInvalid }
         );
-        customClientEntries[key] = c;
-        customClientList.push(c);
+        allCustomClientList.push(c);
+
+        if (BUILT_IN_KEYS.has(key)) {
+            // Substitute the SDK client in place. `clients.use(mw)` still iterates the
+            // SDK's internal client list (which holds the original instance), so we apply
+            // middleware to the override via `allCustomClientList` below.
+            (clients as unknown as Record<string, MiddlewareCapable>)[key] = c;
+            if (key === 'shopperLogin') shopperLoginOverridden = true;
+            if (key === 'shopperBasketsV2') shopperBasketsV2Overridden = true;
+        } else {
+            additionEntries[key] = c;
+        }
     }
 
-    // Apply middleware to all clients (base SDK clients + custom clients)
+    // Rebuild auth/basket helpers when their underlying clients are overridden so the
+    // helper namespaces talk to the override schema rather than the original SDK client.
+    if (shopperLoginOverridden) {
+        clients.auth = createAuthHelpers({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            shopperLoginClient: clients.shopperLogin as any,
+            clientId,
+            clientSecret: getSlasClientSecret(),
+            redirectUri,
+            organizationId,
+            siteId,
+            baseUrl,
+            ...(scapiProxyHost ? { proxyHost: scapiProxyHost } : {}),
+        });
+    }
+    if (shopperBasketsV2Overridden) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        clients.basket = createBasketHelpers({ shopperBasketsClient: clients.shopperBasketsV2 as any });
+    }
+
+    // Apply middleware to all clients (base SDK clients + override + addition clients)
     const applyToAllClients = (mw: Middleware) => {
         clients.use(mw);
-        customClientList.forEach((c) => c.use(mw));
+        allCustomClientList.forEach((c) => c.use(mw));
     };
 
     // Middleware registration order matters: openapi-fetch runs onRequest in registration
@@ -688,7 +750,7 @@ export function createApiClients(context: RouterContextProvider | Readonly<Route
         applyToAllClients(maintenanceMiddleware);
     }
 
-    const appClients = { ...clients, ...customClientEntries, use: applyToAllClients } as AppClients;
+    const appClients = { ...clients, ...additionEntries, use: applyToAllClients } as AppClients;
 
     // Apply context-registered SCAPI middleware factories. The context
     // default is `null` — only middleware that actually registered

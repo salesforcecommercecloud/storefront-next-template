@@ -16,12 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
-import {
-    ApiError,
-    type ShopperBasketsV2,
-    type ShopperOrders,
-    type ShopperStores,
-} from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperBasketsV2, type ShopperOrders, type ShopperStores } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchStores, fetchStoresForBasket, fetchStoresForOrder } from './stores.server';

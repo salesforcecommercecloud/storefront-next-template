@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, act, waitFor, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider, Outlet } from 'react-router';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import { ConfigWrapper, getSiteRef, mockSiteObject } from '@/test-utils/config';
 
 const mockFetcherSubmit = vi.fn();

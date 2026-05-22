@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperCustomers } from '@/scapi';
 import type { AddressBookItem } from '@/lib/customer/profile-utils';
 
 /**

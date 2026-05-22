@@ -21,7 +21,7 @@ import { getOrderLineReviewKey } from './order-line-review-key';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper, getSitePrefix, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders } from '@/scapi';
 
 type OrderLine = ShopperOrders.schemas['ProductItem'];
 

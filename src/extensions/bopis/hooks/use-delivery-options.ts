@@ -15,7 +15,7 @@
  */
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { DELIVERY_OPTIONS, type DeliveryOption } from '@/extensions/bopis/constants';
 import {
     isStoreOutOfStock as storeOutOfStockFor,

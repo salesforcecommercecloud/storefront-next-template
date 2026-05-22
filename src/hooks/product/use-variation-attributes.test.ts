@@ -27,7 +27,7 @@ import { useVariationAttributes } from './use-variation-attributes';
 import { useSelectedVariations } from './use-selected-variations';
 import { useLocation } from 'react-router';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 vi.mock('react-router', () => ({
     useLocation: vi.fn(),

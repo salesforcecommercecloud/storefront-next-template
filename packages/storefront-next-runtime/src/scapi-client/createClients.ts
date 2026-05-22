@@ -39,6 +39,7 @@ import type { ProxyClient } from './proxy-types';
 import { createAuthHelpers, type AuthNamespace } from './auth';
 import { createBasketHelpers, type BasketHelpersNamespace } from './basket';
 import { SLAS_AUTH_ENDPOINTS } from './constants';
+import { BUILT_IN_CLIENT_DEFAULTS } from './built-in-clients';
 import { getWorkspaceSlasOrgId } from '../workspace';
 
 /**
@@ -173,158 +174,126 @@ export function createCommerceApiClients(config: CommerceApiClientConfig): Clien
         siteId,
     };
 
-    // Create base clients and wrap with proxy for operation methods
+    // Per-client basePath and locale-awareness come from BUILT_IN_CLIENT_DEFAULTS so
+    // that the dev CLI's `sfnext scapi add` can read the same map and produce overrides
+    // that behave identically to the SDK client they replace. Calls are written out
+    // explicitly (rather than via a helper) so each client's ops literal type is
+    // preserved through to the returned proxy — that drives the per-method type-safe
+    // surface on `Clients`.
+    const paramsFor = (key: keyof typeof BUILT_IN_CLIENT_DEFAULTS): GlobalRequestParameters =>
+        BUILT_IN_CLIENT_DEFAULTS[key].supportsLocale ? globalParams : globalParamsWithoutLocale;
+    const baseUrlFor = (key: keyof typeof BUILT_IN_CLIENT_DEFAULTS): string =>
+        `${baseUrl}${BUILT_IN_CLIENT_DEFAULTS[key].basePath}`;
+
     const shopperAvailability = createClient(
         createBaseClient<ShopperAvailability.endpoints>({
-            baseUrl: `${baseUrl}/product/shopper-availability/v1`,
+            baseUrl: baseUrlFor('shopperAvailability'),
             ...clientOptions,
         }),
         shopperAvailabilityOps,
-        globalParamsWithoutLocale, // API does not accept locale parameter
+        paramsFor('shopperAvailability'),
         createClientOptions
     );
     const shopperBasketsV1 = createClient(
-        createBaseClient<ShopperBasketsV1.endpoints>({
-            baseUrl: `${baseUrl}/checkout/shopper-baskets/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperBasketsV1.endpoints>({ baseUrl: baseUrlFor('shopperBasketsV1'), ...clientOptions }),
         shopperBasketsV1Ops,
-        globalParams,
+        paramsFor('shopperBasketsV1'),
         createClientOptions
     );
     const shopperBasketsV2 = createClient(
-        createBaseClient<ShopperBasketsV2.endpoints>({
-            baseUrl: `${baseUrl}/checkout/shopper-baskets/v2`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperBasketsV2.endpoints>({ baseUrl: baseUrlFor('shopperBasketsV2'), ...clientOptions }),
         shopperBasketsV2Ops,
-        globalParams,
+        paramsFor('shopperBasketsV2'),
         createClientOptions
     );
     const shopperConfigurations = createClient(
         createBaseClient<ShopperConfigurations.endpoints>({
-            baseUrl: `${baseUrl}/configuration/shopper-configurations/v1`,
+            baseUrl: baseUrlFor('shopperConfigurations'),
             ...clientOptions,
         }),
         shopperConfigurationsOps,
-        globalParamsWithoutLocale, // API does not accept locale parameter
+        paramsFor('shopperConfigurations'),
         createClientOptions
     );
     const shopperConsents = createClient(
-        createBaseClient<ShopperConsents.endpoints>({
-            baseUrl: `${baseUrl}/shopper/shopper-consents/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperConsents.endpoints>({ baseUrl: baseUrlFor('shopperConsents'), ...clientOptions }),
         shopperConsentsOps,
-        globalParams,
+        paramsFor('shopperConsents'),
         createClientOptions
     );
     const shopperContext = createClient(
-        createBaseClient<ShopperContext.endpoints>({
-            baseUrl: `${baseUrl}/shopper/shopper-context/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperContext.endpoints>({ baseUrl: baseUrlFor('shopperContext'), ...clientOptions }),
         shopperContextOps,
-        globalParamsWithoutLocale, // API does not accept locale parameter
+        paramsFor('shopperContext'),
         createClientOptions
     );
     const shopperCustomers = createClient(
-        createBaseClient<ShopperCustomers.endpoints>({
-            baseUrl: `${baseUrl}/customer/shopper-customers/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperCustomers.endpoints>({ baseUrl: baseUrlFor('shopperCustomers'), ...clientOptions }),
         shopperCustomersOps,
-        globalParamsWithoutLocale, // API does not accept locale parameter
+        paramsFor('shopperCustomers'),
         createClientOptions
     );
     const shopperExperience = createClient(
-        createBaseClient<ShopperExperience.endpoints>({
-            baseUrl: `${baseUrl}/experience/shopper-experience/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperExperience.endpoints>({ baseUrl: baseUrlFor('shopperExperience'), ...clientOptions }),
         shopperExperienceOps,
-        globalParams,
+        paramsFor('shopperExperience'),
         createClientOptions
     );
     const shopperGiftCertificates = createClient(
         createBaseClient<ShopperGiftCertificates.endpoints>({
-            baseUrl: `${baseUrl}/pricing/shopper-gift-certificates/v1`,
+            baseUrl: baseUrlFor('shopperGiftCertificates'),
             ...clientOptions,
         }),
         shopperGiftCertificatesOps,
-        globalParamsWithoutLocale, // API does not accept locale parameter
+        paramsFor('shopperGiftCertificates'),
         createClientOptions
     );
     const shopperLogin = createClient(
-        createBaseClient<ShopperLogin.endpoints>({
-            baseUrl: `${baseUrl}/shopper/auth/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperLogin.endpoints>({ baseUrl: baseUrlFor('shopperLogin'), ...clientOptions }),
         shopperLoginOps,
-        globalParamsWithoutLocale, // API does not accept locale parameter
+        paramsFor('shopperLogin'),
         createClientOptions
     );
     const shopperOrders = createClient(
-        createBaseClient<ShopperOrders.endpoints>({
-            baseUrl: `${baseUrl}/checkout/shopper-orders/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperOrders.endpoints>({ baseUrl: baseUrlFor('shopperOrders'), ...clientOptions }),
         shopperOrdersOps,
-        globalParams,
+        paramsFor('shopperOrders'),
         createClientOptions
     );
     const shopperPayments = createClient(
-        createBaseClient<ShopperPayments.endpoints>({
-            baseUrl: `${baseUrl}/checkout/shopper-payments/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperPayments.endpoints>({ baseUrl: baseUrlFor('shopperPayments'), ...clientOptions }),
         shopperPaymentsOps,
-        globalParamsWithoutLocale, // API does not accept locale parameter
+        paramsFor('shopperPayments'),
         createClientOptions
     );
     const shopperProducts = createClient(
-        createBaseClient<ShopperProducts.endpoints>({
-            baseUrl: `${baseUrl}/product/shopper-products/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperProducts.endpoints>({ baseUrl: baseUrlFor('shopperProducts'), ...clientOptions }),
         shopperProductsOps,
-        globalParams,
+        paramsFor('shopperProducts'),
         createClientOptions
     );
     const shopperPromotions = createClient(
-        createBaseClient<ShopperPromotions.endpoints>({
-            baseUrl: `${baseUrl}/pricing/shopper-promotions/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperPromotions.endpoints>({ baseUrl: baseUrlFor('shopperPromotions'), ...clientOptions }),
         shopperPromotionsOps,
-        globalParams,
+        paramsFor('shopperPromotions'),
         createClientOptions
     );
     const shopperSearch = createClient(
-        createBaseClient<ShopperSearch.endpoints>({
-            baseUrl: `${baseUrl}/search/shopper-search/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperSearch.endpoints>({ baseUrl: baseUrlFor('shopperSearch'), ...clientOptions }),
         shopperSearchOps,
-        globalParams,
+        paramsFor('shopperSearch'),
         createClientOptions
     );
     const shopperSeo = createClient(
-        createBaseClient<ShopperSeo.endpoints>({
-            baseUrl: `${baseUrl}/site/shopper-seo/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperSeo.endpoints>({ baseUrl: baseUrlFor('shopperSeo'), ...clientOptions }),
         shopperSeoOps,
-        globalParams,
+        paramsFor('shopperSeo'),
         createClientOptions
     );
     const shopperStores = createClient(
-        createBaseClient<ShopperStores.endpoints>({
-            baseUrl: `${baseUrl}/store/shopper-stores/v1`,
-            ...clientOptions,
-        }),
+        createBaseClient<ShopperStores.endpoints>({ baseUrl: baseUrlFor('shopperStores'), ...clientOptions }),
         shopperStoresOps,
-        globalParams,
+        paramsFor('shopperStores'),
         createClientOptions
     );
 

@@ -23,7 +23,7 @@ import { getCardTypeDisplay, getLastFourDigits } from '@/lib/payment/payment-uti
 import { getAddressKey, isOrderBillingAddressIncomplete } from '@/lib/address/address-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
 import type { CheckoutActionData } from '../types';
 import { useTranslation } from 'react-i18next';

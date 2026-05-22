@@ -15,7 +15,7 @@
  */
 import { type UseFormReturn } from 'react-hook-form';
 import type { FetcherWithComponents } from 'react-router';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 
 // Type for the form data (inferred from schema in index.tsx)
 export type PromoCodeFormData = {

@@ -18,7 +18,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import AddressDisplay from './index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 
 const { t } = getTranslation();
 

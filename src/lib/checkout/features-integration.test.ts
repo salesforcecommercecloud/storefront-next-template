@@ -15,7 +15,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { getDefaultShippingMethod } from '@/lib/customer/profile-utils';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 
 describe('Checkout Features Integration Tests', () => {
     // Helper to create Commerce Cloud shipping method result

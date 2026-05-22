@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperSearch, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch, ShopperExperience } from '@/scapi';
 import { siteContext, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { fetchSearchProducts } from '@/lib/api/search.server';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { CHECKOUT_STEPS, type CheckoutStep, type CustomerProfile } from './checkout-context-types';
 import type { ShipmentDistribution } from './checkout-distribution';
 

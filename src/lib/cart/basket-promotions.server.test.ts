@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchPromotionsByIds } from '@/lib/api/promotions.server';
 import { createTestContext } from '@/lib/test-utils';

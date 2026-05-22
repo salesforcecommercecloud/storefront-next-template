@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { use } from 'react';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import CheckoutPickup from './checkout-pickup';
 

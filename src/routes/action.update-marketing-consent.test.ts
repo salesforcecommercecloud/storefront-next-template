@@ -16,7 +16,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { action } from './action.update-marketing-consent';
 import { createActionArgs, createTestContext, expectStatus } from '@/lib/test-utils';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 
 const mockUpdateSubscriptionsBulk = vi.fn();
 vi.mock('@/lib/api/consent.server', () => ({

@@ -15,7 +15,7 @@
  */
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { isProductSet, isProductBundle, isStandardProduct } from '@/lib/product/product-utils';
 import {
     type ChildProductSelection,

@@ -33,7 +33,7 @@ import { ProductItemVariantImage } from '@/components/product-item';
 import CurrentPrice from '@/components/product-price/current-price';
 import { getPriceData } from '@/components/product-price/utils';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 /**
  * Props for the CheckoutPickup component.

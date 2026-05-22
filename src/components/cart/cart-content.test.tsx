@@ -136,10 +136,7 @@ describe('CartContent', () => {
         'promo-1': { id: 'promo-1', name: 'Promotion 1' },
     };
 
-    const mockBonusProductsById: Record<
-        string,
-        import('@salesforce/storefront-next-runtime/scapi').ShopperProducts.schemas['Product']
-    > = {};
+    const mockBonusProductsById: Record<string, import('@/scapi').ShopperProducts.schemas['Product']> = {};
 
     test('renders empty cart for 0 product items', () => {
         // Test empty product items array

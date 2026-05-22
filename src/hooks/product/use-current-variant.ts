@@ -15,7 +15,7 @@
  */
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 
 interface UseCurrentVariantProps {

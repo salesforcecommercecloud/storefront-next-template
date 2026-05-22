@@ -17,7 +17,7 @@ import { vi, test, describe, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { mockAltSiteObject } from '@/test-utils/config';
 import RefinePrice from './index';
 

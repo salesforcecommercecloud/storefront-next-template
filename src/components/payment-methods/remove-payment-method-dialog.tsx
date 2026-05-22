@@ -23,7 +23,7 @@ import { Card } from '@/components/ui/card';
 import { accountDestructiveButtonClasses } from '@/lib/account-action-styles';
 import { getCardIcon } from '@/lib/payment/card-icon-utils';
 import { getCardTypeDisplay } from '@/lib/payment/payment-utils';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { PaymentMethod } from './payment-method-card';
 
 export interface RemovePaymentMethodDialogProps {

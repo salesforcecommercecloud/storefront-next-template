@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-    ShopperBasketsV2,
-    ShopperOrders,
-    ShopperProducts,
-    ShopperSearch,
-} from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders, ShopperProducts, ShopperSearch } from '@/scapi';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();

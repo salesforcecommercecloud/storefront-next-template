@@ -16,7 +16,7 @@
 import { useRef, useEffect } from 'react';
 import { useAuth } from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import {
     createEvent,
     getEventMediator,

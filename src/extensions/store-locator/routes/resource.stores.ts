@@ -16,7 +16,7 @@
 /** @sfdc-extension-file SFDC_EXT_STORE_LOCATOR */
 import { data } from 'react-router';
 import type { Route } from './+types/resource.stores';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import { extractResponseError } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getLogger } from '@/lib/logger.server';

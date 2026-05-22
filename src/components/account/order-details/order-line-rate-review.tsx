@@ -23,7 +23,7 @@ import type { ProductContentAdapter } from '@/lib/adapters/product-content/types
 import { ProductProvider, useProduct } from '@/providers/product-context';
 import { ProductReviewsProvider } from '@/providers/product-reviews-context';
 import { useProductContent } from '@/hooks/product-content/use-product-content';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const InfoModal = lazy(() => import('@/components/info-modal'));
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { LoaderFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperPromotions } from '@/scapi';
 import { fetchPromotionsByIds } from '@/lib/api/promotions.server';
 
 /**

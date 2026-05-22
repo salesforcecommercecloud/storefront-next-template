@@ -22,6 +22,7 @@ export { ApiError, type ErrorDetail } from './ApiError';
 export { AuthTokenInvalidError } from './AuthTokenInvalidError';
 export { SLAS_AUTH_ENDPOINTS } from './constants';
 export { createBasketHelpers } from './basket';
+export { createAuthHelpers } from './auth';
 export type {
     Basket,
     BasketHelpersConfig,
@@ -48,3 +49,10 @@ export type {
 } from './auth';
 export type { OperationMethodsOnly, ProxyClient, OperationMap, OperationInfo, MergeClients } from './proxy-types';
 export { defaultQuerySerializer } from './defaultQuerySerializer';
+export {
+    BUILT_IN_CLIENT_DEFAULTS,
+    BUILT_IN_CLIENT_KEYS,
+    isBuiltInClientKey,
+    type BuiltInClientDefault,
+    type BuiltInClientKey,
+} from './built-in-clients';

@@ -25,7 +25,7 @@ import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile/constants';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 
 export type AuthorizePasswordlessEmailResponse = {
     success: boolean;

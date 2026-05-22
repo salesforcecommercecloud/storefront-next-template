@@ -22,7 +22,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createEinsteinAdapter, type EinsteinConfig } from './einstein';
-import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import type { AnalyticsEvent, ConsentPreferences } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapter } from '@/lib/adapters';
 

@@ -166,6 +166,7 @@ export default defineConfig([
             'commands/extensions/create': 'src/commands/extensions/create.ts',
             // SCAPI custom client commands
             'commands/scapi/add': 'src/commands/scapi/add.ts',
+            'commands/scapi/available': 'src/commands/scapi/available.ts',
             'commands/scapi/list': 'src/commands/scapi/list.ts',
             'commands/scapi/remove': 'src/commands/scapi/remove.ts',
             // Locales commands

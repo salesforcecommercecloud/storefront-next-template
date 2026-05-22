@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from 'vitest';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { mockAltSiteObject, mockBuildConfig } from '@/test-utils/config';
 import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import type { Config } from '@/types/config';

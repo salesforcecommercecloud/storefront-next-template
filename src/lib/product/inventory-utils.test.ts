@@ -27,7 +27,7 @@ import {
 import { masterProductWithInventories } from '@/components/__mocks__/master-product-with-inventories';
 import { setProductWithInventories } from '@/components/__mocks__/set-product-with-inventories';
 import { bundleProductWithInventories } from '@/components/__mocks__/bundle-product-with-inventories';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const mockProduct = masterProductWithInventories;
 const mockSetProduct = setProductWithInventories;

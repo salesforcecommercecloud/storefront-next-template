@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.verify-passwordless-otp';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperLogin } from '@/scapi';
 import { data } from 'react-router';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';

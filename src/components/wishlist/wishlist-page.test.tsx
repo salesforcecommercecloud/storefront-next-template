@@ -17,7 +17,7 @@
 import type { ReactNode } from 'react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { WishlistPageContent, WishlistSkeleton } from './wishlist-page';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 

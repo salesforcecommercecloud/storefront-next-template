@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { HeartIcon } from '../icons';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';

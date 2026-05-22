@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { isAddressEmpty } from '@/lib/address/address-utils';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import {

@@ -19,7 +19,7 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import defaultTheme from 'tailwindcss/defaultTheme';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig, BadgeDetail } from '@/types/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';

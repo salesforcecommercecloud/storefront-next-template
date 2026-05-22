@@ -18,7 +18,7 @@ import { decodeBase64Url } from '@/lib/url';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients.server';
 import type { AppClients } from '@/scapi/custom-clients';
-import { ApiError, type OperationMethodsOnly } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type OperationMethodsOnly } from '@/scapi';
 
 import type { Route } from './+types/resource.api.client.$resource';
 import { getLogger } from '@/lib/logger.server';

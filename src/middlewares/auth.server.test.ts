@@ -39,7 +39,7 @@ import authMiddleware, {
     flashAuth,
     clearInvalidSessionAndRestoreGuest,
 } from './auth.server';
-import type { ShopperLogin } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperLogin } from '@/scapi';
 
 const mockLogger = {
     error: vi.fn(),

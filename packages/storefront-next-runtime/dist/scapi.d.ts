@@ -29959,6 +29959,35 @@ interface AuthNamespace {
   otp: OtpNamespace;
 }
 //#endregion
+//#region src/scapi-client/auth/index.d.ts
+/**
+ * Creates the auth helpers namespace.
+ *
+ * This factory function creates an auth namespace with methods for:
+ * - Guest login (public or private SLAS client)
+ * - Registered user login with credentials
+ * - Token refresh
+ * - Logout
+ *
+ * @param config - Configuration containing the ShopperLogin client and auth parameters
+ * @returns The auth namespace with all authentication methods
+ *
+ * @example
+ * ```typescript
+ * const auth = createAuthHelpers({
+ *   shopperLoginClient: clients.shopperLogin,
+ *   clientId: 'your-client-id',
+ *   clientSecret: process.env.SLAS_SECRET, // optional, for private client
+ *   redirectUri: 'https://example.com/callback',
+ *   organizationId: 'f_ecom_xxx',
+ *   siteId: 'RefArch',
+ * });
+ *
+ * const tokens = await auth.loginAsGuest();
+ * ```
+ */
+declare function createAuthHelpers(config: AuthConfig): AuthNamespace;
+//#endregion
 //#region src/scapi-client/generated/shopper-baskets-v2.operations.d.ts
 declare const operations$2: {
   readonly createBasket: {
@@ -31136,5 +31165,115 @@ declare const SLAS_AUTH_ENDPOINTS: readonly ["/oauth2/token", "/oauth2/authorize
  */
 declare function defaultQuerySerializer(queryParams: Record<string, unknown>): string;
 //#endregion
-export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, AuthTokenInvalidError, type Basket, type BasketHelpersConfig, type BasketHelpersNamespace, Clients, CommerceApiClientConfig, CreateClientOptions, type ErrorDetail, type GetOrCreateBasketOptions, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type MergeClients, type OperationInfo, type OperationMap, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type ProxyClient, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperAvailability, ShopperBasketsV1, ShopperBasketsV2, type ShopperBasketsV2Client, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createBasketHelpers, createClient, createCommerceApiClients, createOpenApiFetchClient, defaultQuerySerializer };
+//#region src/scapi-client/built-in-clients.d.ts
+/**
+ * Copyright 2026 Salesforce, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Single source of truth for built-in SCAPI client configuration.
+ *
+ * Both `createCommerceApiClients` (runtime) and `sfnext scapi add` (dev CLI) read from
+ * this map so an override registered via the CLI inherits the same per-client semantics
+ * the SDK uses internally — locale-awareness, base-path — and the two stay in sync by
+ * construction rather than by hand-mirroring.
+ *
+ * Each built-in SCAPI schema includes `/organizations/{organizationId}` in its path
+ * patterns (and thus in the generated ops map's BASE_PATH), so the URL-prefix here is
+ * the part *before* the org segment. Both the runtime and the CLI build the final URL
+ * the same way: `${apiBaseUrl}${client.basePath}` with `/organizations/{organizationId}`
+ * supplied via the ops map at request time.
+ */
+interface BuiltInClientDefault {
+  /** URL prefix for this client's API, joined with the SCAPI baseUrl at request time. */
+  basePath: string;
+  /** Whether this API accepts a `locale` query parameter on its operations. */
+  supportsLocale: boolean;
+}
+declare const BUILT_IN_CLIENT_DEFAULTS: {
+  readonly shopperAvailability: {
+    readonly basePath: "/product/shopper-availability/v1";
+    readonly supportsLocale: false;
+  };
+  readonly shopperBasketsV1: {
+    readonly basePath: "/checkout/shopper-baskets/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperBasketsV2: {
+    readonly basePath: "/checkout/shopper-baskets/v2";
+    readonly supportsLocale: true;
+  };
+  readonly shopperConfigurations: {
+    readonly basePath: "/configuration/shopper-configurations/v1";
+    readonly supportsLocale: false;
+  };
+  readonly shopperConsents: {
+    readonly basePath: "/shopper/shopper-consents/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperContext: {
+    readonly basePath: "/shopper/shopper-context/v1";
+    readonly supportsLocale: false;
+  };
+  readonly shopperCustomers: {
+    readonly basePath: "/customer/shopper-customers/v1";
+    readonly supportsLocale: false;
+  };
+  readonly shopperExperience: {
+    readonly basePath: "/experience/shopper-experience/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperGiftCertificates: {
+    readonly basePath: "/pricing/shopper-gift-certificates/v1";
+    readonly supportsLocale: false;
+  };
+  readonly shopperLogin: {
+    readonly basePath: "/shopper/auth/v1";
+    readonly supportsLocale: false;
+  };
+  readonly shopperOrders: {
+    readonly basePath: "/checkout/shopper-orders/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperPayments: {
+    readonly basePath: "/checkout/shopper-payments/v1";
+    readonly supportsLocale: false;
+  };
+  readonly shopperProducts: {
+    readonly basePath: "/product/shopper-products/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperPromotions: {
+    readonly basePath: "/pricing/shopper-promotions/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperSearch: {
+    readonly basePath: "/search/shopper-search/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperSeo: {
+    readonly basePath: "/site/shopper-seo/v1";
+    readonly supportsLocale: true;
+  };
+  readonly shopperStores: {
+    readonly basePath: "/store/shopper-stores/v1";
+    readonly supportsLocale: true;
+  };
+};
+type BuiltInClientKey = keyof typeof BUILT_IN_CLIENT_DEFAULTS;
+declare const BUILT_IN_CLIENT_KEYS: readonly BuiltInClientKey[];
+declare function isBuiltInClientKey(key: string): key is BuiltInClientKey;
+//#endregion
+export { ApiError, type AuthConfig, type AuthNamespace, type AuthResponse, AuthTokenInvalidError, BUILT_IN_CLIENT_DEFAULTS, BUILT_IN_CLIENT_KEYS, type Basket, type BasketHelpersConfig, type BasketHelpersNamespace, type BuiltInClientDefault, type BuiltInClientKey, Clients, CommerceApiClientConfig, CreateClientOptions, type ErrorDetail, type GetOrCreateBasketOptions, GlobalRequestParameters, type LoginAsGuestOptions, type LoginWithCredentialsOptions, type LogoutOptions, type MergeClients, type OperationInfo, type OperationMap, type OperationMethodsOnly, type PasswordRequestResetOptions, type PasswordResetOptions, type PasswordlessAuthorizeOptions, type PasswordlessExchangeTokenOptions, type ProxyClient, type RefreshTokenOptions, SLAS_AUTH_ENDPOINTS, ShopperAvailability, ShopperBasketsV1, ShopperBasketsV2, type ShopperBasketsV2Client, ShopperConfigurations, ShopperConsents, ShopperContext, ShopperCustomers, ShopperExperience, ShopperGiftCertificates, ShopperLogin, ShopperOrders, ShopperPayments, ShopperProducts, ShopperPromotions, ShopperSearch, ShopperSeo, ShopperStores, type SocialAuthorizationUrlResult, type SocialExchangeCodeOptions, type SocialGetAuthorizationUrlOptions, type TokenResponse, createAuthHelpers, createBasketHelpers, createClient, createCommerceApiClients, createOpenApiFetchClient, defaultQuerySerializer, isBuiltInClientKey };
 //# sourceMappingURL=scapi.d.ts.map

@@ -21,7 +21,7 @@ import { useMemo, type ReactElement, type ReactNode } from 'react';
 import { Link } from '@/components/link';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 
 // Components
 import { Badge } from '@/components/ui/badge';

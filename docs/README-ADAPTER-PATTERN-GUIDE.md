@@ -445,7 +445,7 @@ export interface EngagementAdapter extends EventAdapter {
 }
 
 // src/hooks/recommenders/use-recommenders.ts
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 
 /**
  * Union type for products from either Shopper Products API or Shopper Search API
@@ -1407,7 +1407,7 @@ export interface EngagementAdapter extends EventAdapter {
 }
 
 // src/hooks/recommenders/use-recommenders.ts
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 
 /**
  * Union type for products from either Shopper Products API or Shopper Search API

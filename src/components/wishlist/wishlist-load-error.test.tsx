@@ -16,7 +16,7 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, useRouteError } from 'react-router';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { WishlistLoadError } from './wishlist-load-error';
 

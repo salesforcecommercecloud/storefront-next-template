@@ -17,7 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import { deepMerge } from '@/test-utils/deep-merge';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';

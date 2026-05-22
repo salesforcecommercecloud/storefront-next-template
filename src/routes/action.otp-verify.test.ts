@@ -16,7 +16,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionFunctionArgs } from 'react-router';
-import { ApiError } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError } from '@/scapi';
 
 import { action } from './action.otp-verify';
 import { verifyOtp } from '@/middlewares/auth.server';

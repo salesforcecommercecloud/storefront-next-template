@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperBasketsV2, ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperOrders } from '@/scapi';
 import type { useTranslation } from 'react-i18next';
 
 /** Basket or Order – shared shape for order summary item count and heading. */

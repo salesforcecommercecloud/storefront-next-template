@@ -22,12 +22,26 @@
 import { readFileSync, existsSync, readdirSync, writeFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import YAML from 'yaml';
+import { BUILT_IN_CLIENT_DEFAULTS } from '@salesforce/storefront-next-runtime/scapi';
 
 /**
  * Convert an API name like "shopper-products" to a camelCase client key like "shopperProducts".
+ *
+ * Some SDK clients are versioned (e.g., shopper-baskets v1 → shopperBasketsV1, v2 → shopperBasketsV2).
+ * If `apiVersion` is provided and the version-suffixed key matches a built-in client, we return
+ * that — otherwise we fall back to the bare camelCase name. This means `shopper-products` always
+ * resolves to `shopperProducts`, but `shopper-baskets` correctly resolves to `shopperBasketsV1`
+ * or `shopperBasketsV2` depending on which version the user is registering.
  */
-export function deriveClientKey(apiName: string): string {
-    return apiName.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+export function deriveClientKey(apiName: string, apiVersion?: string): string {
+    const camel = apiName.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+    if (apiVersion) {
+        // apiVersion comes in as e.g. "v2"; produce "V2" for the key suffix.
+        const versionSuffix = apiVersion.charAt(0).toUpperCase() + apiVersion.slice(1);
+        const versioned = `${camel}${versionSuffix}`;
+        if (versioned in BUILT_IN_CLIENT_DEFAULTS) return versioned;
+    }
+    return camel;
 }
 
 /**
@@ -85,7 +99,35 @@ export interface SchemaMetadata {
     /** Whether to inject /organizations/{organizationId} into the base URL.
      *  Custom SCAPI schemas typically don't include the org path segment. */
     orgPrefix: boolean;
+    /**
+     * Whether this entry overrides a built-in SDK client (e.g., shopperProducts) or
+     * adds a new custom API. Determined by whether `clientKey` is in BUILT_IN_CLIENT_KEYS.
+     * Older sidecars without this field are treated as 'custom' for backwards compatibility.
+     */
+    kind?: 'override' | 'custom';
 }
+
+/**
+ * Built-in SCAPI client config is owned by the runtime SDK and re-exported here so the
+ * CLI and the runtime can never disagree about per-client defaults. When `sfnext scapi
+ * add` registers an override it reads the same map the SDK uses to construct its
+ * built-in clients — locale-awareness, basePath, etc.
+ *
+ * Note on org-path injection: built-in SCAPI schemas embed
+ * `/organizations/{organizationId}` in their path patterns (and thus in the generated
+ * ops map's BASE_PATH), not in the server URL. Overrides therefore record
+ * `orgPrefix: false` in their meta sidecar — the org segment comes from the ops map at
+ * request time and must not also be prepended to the baseUrl, or the URL would have a
+ * doubled `/organizations/X` segment. Custom SCAPI APIs typically don't include the org
+ * segment in their schema paths and rely on the runtime to inject it
+ * (`orgPrefix: true`).
+ */
+export { BUILT_IN_CLIENT_DEFAULTS };
+export {
+    BUILT_IN_CLIENT_KEYS,
+    isBuiltInClientKey,
+    type BuiltInClientKey,
+} from '@salesforce/storefront-next-runtime/scapi';
 
 /**
  * Read all .meta.json sidecars from a schemas directory.
@@ -106,5 +148,5 @@ export function readAllSchemaMetadata(schemasDir: string): Array<SchemaMetadata 
  */
 export function writeSchemaMetadata(schemasDir: string, schemaName: string, meta: SchemaMetadata): void {
     const metaPath = join(schemasDir, `${schemaName}.meta.json`);
-    writeFileSync(metaPath, `${JSON.stringify(meta, null, 2)}\n`, 'utf-8');
+    writeFileSync(metaPath, `${JSON.stringify(meta, null, 4)}\n`, 'utf-8');
 }

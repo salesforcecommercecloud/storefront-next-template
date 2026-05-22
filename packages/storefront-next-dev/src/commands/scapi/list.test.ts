@@ -18,9 +18,13 @@ import { join } from 'node:path';
 import List from './list';
 import { readAllSchemaMetadata } from '../../scapi/schema-utils';
 
-vi.mock('../../scapi/schema-utils', () => ({
-    readAllSchemaMetadata: vi.fn(),
-}));
+vi.mock('../../scapi/schema-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('../../scapi/schema-utils')>();
+    return {
+        ...actual,
+        readAllSchemaMetadata: vi.fn(),
+    };
+});
 
 describe('scapi list command', () => {
     const mockReadAllSchemaMetadata = vi.mocked(readAllSchemaMetadata);
@@ -45,7 +49,7 @@ describe('scapi list command', () => {
         await cmd.run();
 
         expect(mockReadAllSchemaMetadata).toHaveBeenCalledWith(join('/project', 'src', 'scapi', 'schemas'));
-        expect(logSpy).toHaveBeenNthCalledWith(1, 'No custom SCAPI clients registered.');
+        expect(logSpy).toHaveBeenNthCalledWith(1, 'No SCAPI client overrides or custom APIs registered.');
         expect(logSpy).toHaveBeenNthCalledWith(2, 'Use `sfnext scapi add` to add one.');
     });
 

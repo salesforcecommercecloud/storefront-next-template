@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders } from '@/scapi';
 
 /**
  * Gets the pickup shipment with store pickup (c_fromStoreId) configured.

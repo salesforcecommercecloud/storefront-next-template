@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, useEffect, useState, useCallback, useMemo } from 'react';
-import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();

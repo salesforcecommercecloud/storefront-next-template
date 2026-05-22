@@ -17,7 +17,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { act, render, renderHook, waitFor } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import type { PropsWithChildren } from 'react';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { BasketSnapshot } from '@/middlewares/basket.server';
 import BasketProvider, {
     useBasket,

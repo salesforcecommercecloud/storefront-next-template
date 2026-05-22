@@ -15,7 +15,7 @@
  */
 
 import { createContext, useContext, type PropsWithChildren } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 

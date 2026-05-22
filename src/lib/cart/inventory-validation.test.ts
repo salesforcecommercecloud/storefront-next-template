@@ -16,7 +16,7 @@
 
 import { describe, test, expect } from 'vitest';
 import { validateCartInventory } from './inventory-validation';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 describe('validateCartInventory', () => {
     describe('Basic validation', () => {

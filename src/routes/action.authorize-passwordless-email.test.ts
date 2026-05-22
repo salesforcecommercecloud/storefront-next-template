@@ -173,7 +173,7 @@ describe('action.authorize-passwordless-email', () => {
     });
 
     it('returns requiresLogin when SLAS responds with 400 email not verified', async () => {
-        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 400,
             statusText: 'Bad Request',
@@ -205,7 +205,7 @@ describe('action.authorize-passwordless-email', () => {
     });
 
     it('does not return requiresLogin for 400 with a different error message', async () => {
-        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 400,
             statusText: 'Bad Request',
@@ -234,7 +234,7 @@ describe('action.authorize-passwordless-email', () => {
     });
 
     it('treats SLAS 404 (unknown user) as a non-error guest path: HTTP 200 with success=false and no error', async () => {
-        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 404,
             statusText: 'Not Found',
@@ -264,7 +264,7 @@ describe('action.authorize-passwordless-email', () => {
     });
 
     it('treats SLAS 5xx upstream unavailability as requires-login fallback: HTTP 200 with requiresLogin=true', async () => {
-        const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 502,
             statusText: 'Bad Gateway',

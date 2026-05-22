@@ -17,7 +17,7 @@ import { type ReactElement, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-line SFDC_EXT_BOPIS
 import { useShowPickupAvailable } from './use-pickup-filter';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import DynamicImageProvider from '@/providers/dynamic-image';
 import { ProductTile, ProductTileProvider } from '@/components/product-tile';
 import { ProductTileSkeleton } from '@/components/category-skeleton';

@@ -27,7 +27,7 @@ import { createElement, type ReactNode } from 'react';
 import { useProductImages } from './use-product-images';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 const wrapper = ({ children }: { children: ReactNode }) =>
     createElement(ConfigProvider, { config: mockConfig, children } as never);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ReactElement } from 'react';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { Truck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/components/typography';

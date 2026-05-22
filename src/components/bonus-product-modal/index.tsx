@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState, useEffect, useMemo, useCallback, type ReactElement } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 

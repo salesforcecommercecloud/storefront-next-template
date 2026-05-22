@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Route } from './+types/action.wishlist-remove';
-import { type ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import { type ShopperCustomers } from '@/scapi';
 import { data } from 'react-router';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';

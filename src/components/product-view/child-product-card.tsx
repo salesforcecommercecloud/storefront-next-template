@@ -25,7 +25,7 @@ import { useProductImages } from '@/hooks/product/use-product-images';
 import { useProductActions } from '@/hooks/product/use-product-actions';
 import ProductPrice from '@/components/product-price';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { isProductSet, isStandardProduct } from '@/lib/product/product-utils';
 // @sfdc-extension-line SFDC_EXT_BOPIS

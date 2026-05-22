@@ -16,7 +16,7 @@
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperExperience } from '@/scapi';
 import type { Route } from './+types/_app.about-us';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import AboutUs, { type AboutUsPageData, loader } from './_app.about-us';

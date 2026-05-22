@@ -22,7 +22,7 @@ import { expect, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import CategoryNavigationMenuMega from '../index';
 import { mockCategories } from '@/components/__mocks__/mock-data';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -227,7 +227,7 @@ export const WithBanners: Story = {
             categories: mockCategoriesList.map((cat: ShopperProducts.schemas['Category']) => ({
                 ...cat,
                 c_headerMenuBanner: '<img src="https://example.com/banner.jpg" alt="Banner" />',
-                c_headerMenuOrientation: 'horizontal',
+                c_headerMenuOrientation: 'Horizontal' as const,
             })),
         }),
         defer: Promise.resolve(

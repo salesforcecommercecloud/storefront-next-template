@@ -15,7 +15,7 @@
  */
 import type { AnalyticsEvent, ConsentPreferences, EventSiteInfo } from '@salesforce/storefront-next-runtime/events';
 import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
-import type { ShopperProducts, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import Cookies from 'js-cookie';
 import { getBasePath } from '@/lib/utils';
 

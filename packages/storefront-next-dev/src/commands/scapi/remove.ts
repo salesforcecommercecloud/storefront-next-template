@@ -78,7 +78,8 @@ export default class Remove extends Command {
 
         const typesPath = join(generatedDir, `${schemaName}.ts`);
         const opsPath = join(generatedDir, `${schemaName}.operations.ts`);
-        for (const filePath of [typesPath, opsPath]) {
+        const namespacePath = join(generatedDir, `${schemaName}.namespace.ts`);
+        for (const filePath of [typesPath, opsPath, namespacePath]) {
             if (existsSync(filePath)) {
                 unlinkSync(filePath);
                 this.log(`Removed ${relative(projectDir, filePath)}`);
@@ -87,6 +88,7 @@ export default class Remove extends Command {
 
         generateCustomClientsFile(scapiDir);
         this.log(`Updated ${relative(projectDir, join(scapiDir, 'custom-clients.ts'))}`);
+        this.log(`Updated ${relative(projectDir, join(scapiDir, 'index.ts'))}`);
 
         this.log(`\nRemoved client "${clientKey}".`);
     }

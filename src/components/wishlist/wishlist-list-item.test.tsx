@@ -19,7 +19,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import type { ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { WishlistListItem } from './wishlist-list-item';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';

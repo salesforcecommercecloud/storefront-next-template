@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState, useMemo, useRef } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { useScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import { useScapiFetcherEffect } from '@/hooks/use-scapi-fetcher-effect';
 import type { ChildProductSelection } from '@/lib/product/inventory-utils';

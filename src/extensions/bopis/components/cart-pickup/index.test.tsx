@@ -17,7 +17,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
-import type { ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperStores } from '@/scapi';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import CartPickup from './index';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';

@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { House, User, Heart, ShoppingBag, MapPin, CreditCard, Building, LogOut } from 'lucide-react';
 
 // Runtime SDK
-import type { ShopperCustomers, ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers, ShopperConsents } from '@/scapi';
 
 // Components
 import { AccountNavList, type AccountNavItemData } from '@/components/account-navigation';

@@ -15,7 +15,7 @@
  */
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { LoaderFunctionArgs } from 'react-router';
-import { ApiError, type ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import { ApiError, type ShopperExperience } from '@/scapi';
 import { fetchPageFromLoader, fetchPageWithComponentData } from './page-loader.server';
 import { fetchPage } from '@/lib/api/page.server';
 import { registry } from '@/lib/page-designer/registry';

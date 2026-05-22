@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { ShopperOrders } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperOrders } from '@/scapi';
 import { getOrderPickupShipment, getOrderDeliveryShipments, getStoreIdsFromOrder } from './order-utils';
 
 describe('getOrderPickupShipment', () => {

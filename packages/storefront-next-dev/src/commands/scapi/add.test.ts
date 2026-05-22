@@ -113,10 +113,153 @@ describe('scapi add command', () => {
                 basePath: '/custom/loyalty/v1',
                 supportsLocale: true,
                 orgPrefix: true,
+                kind: 'custom',
             }
         );
         expect(mockGenerateFromSchema).toHaveBeenCalledWith(copiedSchemaPath, generatedDir, 'loyalty-api');
         expect(mockGenerateCustomClientsFile).toHaveBeenCalledWith(join(projectDir, 'src', 'scapi'));
+    });
+
+    it('records kind=override when the resolved client key matches a built-in client', async () => {
+        const projectDir = createProjectDir();
+        const localSchemaDir = join(projectDir, 'local-schemas');
+        const localSchemaPath = join(localSchemaDir, 'shopper-products-v1.yaml');
+        const generatedDir = join(projectDir, 'src', 'scapi', 'generated');
+        const copiedSchemaPath = join(projectDir, 'src', 'scapi', 'schemas', 'shopper-products-v1.yaml');
+
+        mkdirSync(localSchemaDir, { recursive: true });
+        writeFileSync(localSchemaPath, 'openapi: 3.0.0\nservers:\n  - url: /product/shopper-products/v1\n', 'utf-8');
+
+        mockDeriveBasePath.mockReturnValue('/product/shopper-products/v1');
+        mockGenerateFromSchema.mockResolvedValue({
+            typesFile: join(generatedDir, 'shopper-products-v1.ts'),
+            operationsFile: join(generatedDir, 'shopper-products-v1.operations.ts'),
+        });
+
+        const cmd = new Add([], {} as never);
+        const logSpy = vi.spyOn(cmd, 'log').mockImplementation(() => {});
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: {
+                schema: './local-schemas/shopper-products-v1.yaml',
+                name: 'shopperProducts',
+                'project-directory': projectDir,
+                'base-path': undefined,
+                'supports-locale': true,
+            },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+
+        await cmd.run();
+
+        expect(mockWriteSchemaMetadata).toHaveBeenCalledWith(
+            join(projectDir, 'src', 'scapi', 'schemas'),
+            'shopper-products-v1',
+            expect.objectContaining({
+                clientKey: 'shopperProducts',
+                kind: 'override',
+            })
+        );
+
+        const logCalls = logSpy.mock.calls.map((call) => String(call[0]));
+        expect(
+            logCalls.some((line) => line.includes('Registering override for built-in client: shopperProducts'))
+        ).toBe(true);
+        expect(logCalls.some((line) => line.includes('Override for "shopperProducts" is ready'))).toBe(true);
+        expect(copiedSchemaPath).toBeDefined();
+    });
+
+    it('inherits SDK defaults for an override when --supports-locale is not passed', async () => {
+        const projectDir = createProjectDir();
+        const localSchemaDir = join(projectDir, 'local-schemas');
+        const localSchemaPath = join(localSchemaDir, 'shopper-products-v1.yaml');
+        const generatedDir = join(projectDir, 'src', 'scapi', 'generated');
+
+        mkdirSync(localSchemaDir, { recursive: true });
+        writeFileSync(localSchemaPath, 'openapi: 3.0.0\nservers:\n  - url: /product/shopper-products/v1\n', 'utf-8');
+
+        mockDeriveBasePath.mockReturnValue('/product/shopper-products/v1');
+        mockGenerateFromSchema.mockResolvedValue({
+            typesFile: join(generatedDir, 'shopper-products-v1.ts'),
+            operationsFile: join(generatedDir, 'shopper-products-v1.operations.ts'),
+        });
+
+        const cmd = new Add([], {} as never);
+        vi.spyOn(cmd, 'log').mockImplementation(() => {});
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: {
+                schema: './local-schemas/shopper-products-v1.yaml',
+                name: 'shopperProducts',
+                'project-directory': projectDir,
+                'base-path': undefined,
+                'supports-locale': undefined,
+            },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+
+        await cmd.run();
+
+        // shopperProducts is locale-aware in the SDK — the override must inherit that.
+        expect(mockWriteSchemaMetadata).toHaveBeenCalledWith(
+            join(projectDir, 'src', 'scapi', 'schemas'),
+            'shopper-products-v1',
+            expect.objectContaining({
+                clientKey: 'shopperProducts',
+                supportsLocale: true,
+                orgPrefix: false,
+                kind: 'override',
+            })
+        );
+    });
+
+    it('inherits non-locale-aware default when overriding a non-locale-aware built-in', async () => {
+        const projectDir = createProjectDir();
+        const localSchemaDir = join(projectDir, 'local-schemas');
+        const localSchemaPath = join(localSchemaDir, 'shopper-login-v1.yaml');
+        const generatedDir = join(projectDir, 'src', 'scapi', 'generated');
+
+        mkdirSync(localSchemaDir, { recursive: true });
+        writeFileSync(localSchemaPath, 'openapi: 3.0.0\nservers:\n  - url: /shopper/auth/v1\n', 'utf-8');
+
+        mockDeriveBasePath.mockReturnValue('/shopper/auth/v1');
+        mockGenerateFromSchema.mockResolvedValue({
+            typesFile: join(generatedDir, 'shopper-login-v1.ts'),
+            operationsFile: join(generatedDir, 'shopper-login-v1.operations.ts'),
+        });
+
+        const cmd = new Add([], {} as never);
+        vi.spyOn(cmd, 'log').mockImplementation(() => {});
+        vi.spyOn(cmd as any, 'parse').mockResolvedValue({
+            flags: {
+                schema: './local-schemas/shopper-login-v1.yaml',
+                name: 'shopperLogin',
+                'project-directory': projectDir,
+                'base-path': undefined,
+                'supports-locale': undefined,
+            },
+            args: {},
+            argv: [],
+            raw: [],
+            metadata: {},
+        });
+
+        await cmd.run();
+
+        // shopperLogin does not use locale in the SDK — default must reflect that.
+        expect(mockWriteSchemaMetadata).toHaveBeenCalledWith(
+            join(projectDir, 'src', 'scapi', 'schemas'),
+            'shopper-login-v1',
+            expect.objectContaining({
+                clientKey: 'shopperLogin',
+                supportsLocale: false,
+                kind: 'override',
+            })
+        );
     });
 
     it('requires --name when adding from a local schema file', async () => {
@@ -327,6 +470,7 @@ describe('scapi add command', () => {
                 basePath: '/custom/loyalty/v1',
                 supportsLocale: false,
                 orgPrefix: true,
+                kind: 'custom',
             }
         );
         expect(mockGenerateFromSchema).toHaveBeenCalledWith(schemaPath, generatedDir, 'loyalty-v1');

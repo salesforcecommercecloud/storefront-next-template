@@ -20,7 +20,7 @@
 
 import type { ShouldRevalidateFunction } from 'react-router';
 import type { Route } from './+types/resource.basket-products';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';

@@ -16,7 +16,7 @@
 import { useState, useEffect, lazy, Suspense, type ReactElement } from 'react';
 
 // Commerce SDK
-import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 
 // Components
 import ProductItemsList from '@/components/product-items-list';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ComponentProps } from 'react';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { cn } from '@/lib/utils';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig, BadgeDetail } from '@/types/config';

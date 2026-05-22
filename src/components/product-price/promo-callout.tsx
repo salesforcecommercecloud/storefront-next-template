@@ -15,7 +15,7 @@
  */
 import { useMemo } from 'react';
 import { findLowestPrice } from './utils';
-import type { ShopperBasketsV2, ShopperSearch, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperSearch, ShopperProducts } from '@/scapi';
 import { cn } from '@/lib/utils';
 
 // for different pages

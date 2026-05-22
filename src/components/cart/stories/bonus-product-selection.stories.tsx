@@ -19,7 +19,7 @@ import { action } from 'storybook/actions';
 import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 const BONUS_HARNESS_ATTR = 'data-bonus-product-harness';
 

@@ -21,7 +21,7 @@ import ShippingMultiAddress from './shipping-multi-address';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig, mockAltSiteObject } from '@/test-utils/config';
-import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperCustomers, ShopperProducts } from '@/scapi';
 
 const defaultMockSite = mockAltSiteObject;
 const defaultMockLocale =

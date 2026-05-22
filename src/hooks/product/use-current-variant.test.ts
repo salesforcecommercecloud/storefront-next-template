@@ -17,7 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useCurrentVariant } from './use-current-variant';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 // Mock react-router so we can drive useSearchParams + observe setSearchParams calls.
 let mockSearchParams = new URLSearchParams();

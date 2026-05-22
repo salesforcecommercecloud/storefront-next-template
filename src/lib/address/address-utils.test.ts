@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, expect, it } from 'vitest';
-import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperCustomers } from '@/scapi';
 import {
     getAddressKey,
     isAddressEqual,

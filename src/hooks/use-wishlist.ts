@@ -16,7 +16,7 @@
 import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import type { ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperSearch } from '@/scapi';
 import { useToast } from '@/components/toast';
 import { useAnalytics } from '@/hooks/use-analytics';
 import type { action as wishlistAddAction } from '@/routes/action.wishlist-add';

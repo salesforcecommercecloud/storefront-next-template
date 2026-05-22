@@ -19,7 +19,7 @@ import { action } from 'storybook/actions';
 import { useState, type ReactElement } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 import { BonusProductModal, type BonusDiscountSlot } from '../index';
 import { Button } from '@/components/ui/button';

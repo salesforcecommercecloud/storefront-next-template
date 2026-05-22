@@ -18,7 +18,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { useBulkChildProductInventory } from './use-bulk-child-product-inventory';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import type { ChildProductSelection } from '@/lib/product/inventory-utils';
 
 // Mock useScapiFetcher directly

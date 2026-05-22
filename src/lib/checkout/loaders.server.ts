@@ -29,7 +29,7 @@ import type {
     ShopperPromotions,
     // @sfdc-extension-line SFDC_EXT_BOPIS
     ShopperStores,
-} from '@salesforce/storefront-next-runtime/scapi';
+} from '@/scapi';
 import type { CustomerProfile } from '@/components/checkout/utils/checkout-context-types';
 import type { SessionData } from '@/lib/api/types';
 import { getAuth } from '@/middlewares/auth.server';

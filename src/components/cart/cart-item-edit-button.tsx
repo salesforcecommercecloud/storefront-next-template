@@ -18,7 +18,7 @@
 import { type ReactElement, useState } from 'react';
 
 // Types
-import type { ShopperBasketsV2, ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 
 // Components
 import { CartItemModal } from '@/components/cart-item-modal';

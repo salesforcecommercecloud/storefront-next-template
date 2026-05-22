@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { getSingleShipmentDistribution } from './checkout-distribution';
 
 describe('getSingleShipmentDistribution', () => {

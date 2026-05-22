@@ -39,7 +39,7 @@ import { Typography } from '@/components/typography';
 import { getDefaultShippingMethod } from '@/lib/customer/profile-utils';
 import { useCustomerProfile } from '@/hooks/checkout/use-customer-profile';
 import type { CheckoutActionData } from '@/components/checkout/types';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { formatAddress } from '@/lib/address/address-utils';
 

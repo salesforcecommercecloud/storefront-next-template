@@ -16,7 +16,7 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import type { RouterContextProvider } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { loader } from './_app.product.$productId';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { authContext } from '@/middlewares/auth.utils';
@@ -160,7 +160,7 @@ describe('Product Route Loaders', () => {
 
         test('throws Response with original status when product fetch fails with NormalizedApiError', async () => {
             const { NormalizedApiError } = await import('@/lib/api/normalized-api-error');
-            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const { ApiError } = await import('@/scapi');
 
             const apiError = new ApiError({
                 status: 404,

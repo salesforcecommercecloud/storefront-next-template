@@ -20,7 +20,7 @@ import PopularCategory from './index';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, getSitePrefix, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 // Mock decorators (minimal mocking to avoid testing them)
 vi.mock('@/lib/decorators/component', async (importOriginal) => {

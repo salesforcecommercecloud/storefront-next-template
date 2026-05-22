@@ -17,7 +17,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import type { ShopperConsents } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperConsents } from '@/scapi';
 import { MarketingConsent } from './index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper } from '@/test-utils/config';

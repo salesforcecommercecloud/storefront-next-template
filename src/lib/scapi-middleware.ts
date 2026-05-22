@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, type RouterContextProvider } from 'react-router';
-import type { Clients, Middleware } from '@salesforce/storefront-next-runtime/scapi';
+import type { Clients, Middleware } from '@/scapi';
 
 /**
  * Names of SCAPI clients that support middleware registration.

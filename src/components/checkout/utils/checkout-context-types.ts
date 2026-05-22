@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext } from 'react';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import type { ShipmentDistribution } from './checkout-distribution';
 
 export const CHECKOUT_STEPS = {

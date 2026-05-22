@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { data, type ActionFunctionArgs } from 'react-router';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import type { AppClients } from '@/scapi/custom-clients';
 import type { Logger } from '@/lib/logger';
 import { getBasket, updateBasketResource } from '@/middlewares/basket.server';

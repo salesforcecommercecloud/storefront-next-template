@@ -23,7 +23,7 @@ import {
     useRef,
     type PropsWithChildren,
 } from 'react';
-import type { ShopperBasketsV2, ShopperStores } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperStores } from '@/scapi';
 import { getPickupItemsFromBasket } from '../lib/basket-utils';
 import { getPickupItemsCacheKey, type CachedHashData } from '../lib/cache-utils';
 

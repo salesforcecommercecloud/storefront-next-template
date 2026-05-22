@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import type { HtmlContentAdapterMethod } from '@/lib/adapters/product-content/types';
 import type { ParseKeys } from 'i18next';
 

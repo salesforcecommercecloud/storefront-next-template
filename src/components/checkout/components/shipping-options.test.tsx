@@ -18,7 +18,7 @@ import { render as rtlRender, screen, waitFor, renderHook, type RenderOptions } 
 import userEvent from '@testing-library/user-event';
 import ShippingOptions from './shipping-options';
 import { useShippingOptions } from './use-shipping-options';
-import type { ShopperBasketsV2 } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2 } from '@/scapi';
 import { mockAltSiteObject } from '@/test-utils/config';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 

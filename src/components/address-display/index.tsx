@@ -17,7 +17,7 @@ import { Typography } from '@/components/typography';
 import { Badge } from '@/components/ui/badge';
 import { getCountryName, getStateName } from '@/components/customer-address-form';
 import { useTranslation } from 'react-i18next';
-import type { ShopperBasketsV2, ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperBasketsV2, ShopperCustomers } from '@/scapi';
 
 interface AddressDisplayProps {
     address: ShopperBasketsV2.schemas['OrderAddress'] | ShopperCustomers.schemas['CustomerAddress'];

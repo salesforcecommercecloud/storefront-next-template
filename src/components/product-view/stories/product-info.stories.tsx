@@ -21,7 +21,7 @@ import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import ProductViewProvider from '@/providers/product-view';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {

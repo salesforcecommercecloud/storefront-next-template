@@ -15,7 +15,7 @@
  */
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 
 interface UseSelectedVariationsParams {
     product: ShopperProducts.schemas['Product'];

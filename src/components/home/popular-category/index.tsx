@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ComponentProps } from 'react';
-import type { ShopperProducts, ShopperExperience } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperExperience } from '@/scapi';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import type { ComponentType } from '@/components/region';
 import { Link } from '@/components/link';

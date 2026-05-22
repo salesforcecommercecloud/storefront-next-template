@@ -20,7 +20,7 @@ import type {
     EventSiteInfo,
 } from '@salesforce/storefront-next-runtime/events';
 import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
-import type { ShopperProducts, ShopperBasketsV2, ShopperSearch } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts, ShopperBasketsV2, ShopperSearch } from '@/scapi';
 import type { Recommendation, RecommendersAdapter, Product } from '@/hooks/recommenders/use-recommenders';
 
 export const EINSTEIN_ADAPTER_NAME = 'einstein' as const;

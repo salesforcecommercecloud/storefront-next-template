@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { ActionFunctionArgs } from 'react-router';
-import type { ShopperCustomers } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperCustomers } from '@/scapi';
 import type { CustomQueryParameters } from '@/lib/api/types';
 import { createApiClients } from '@/lib/api-clients.server';
 import { loginRegisteredUser } from './standard-login.server';

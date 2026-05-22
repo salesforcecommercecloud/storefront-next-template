@@ -18,7 +18,7 @@
 import { render, screen } from '@testing-library/react';
 import { vi, test, beforeEach } from 'vitest';
 // Commerce SDK
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 // React Router
 import { createMemoryRouter, RouterProvider } from 'react-router';
 // Components

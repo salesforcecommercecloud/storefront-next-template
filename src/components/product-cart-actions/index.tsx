@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, Suspense, lazy, startTransition, useState, useEffect } from 'react';
-import type { ShopperProducts } from '@salesforce/storefront-next-runtime/scapi';
+import type { ShopperProducts } from '@/scapi';
 import { Button } from '@/components/ui/button';
 import { useProductView } from '@/providers/product-view';
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
