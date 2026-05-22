@@ -101,7 +101,7 @@ function AccountDetailsContent({
     const [otpModalEmail, setOtpModalEmail] = useState<string>('');
     const [otpModalLoaded, setOtpModalLoaded] = useState(false);
     const [otpError, setOtpError] = useState<string | undefined>();
-    const [otpModalMode, setOtpModalMode] = useState<'changeEmail' | 'verifyEmail'>('changeEmail');
+    const [otpModalMode, setOtpModalMode] = useState<'changeEmail' | 'verifyEmail' | 'reauthenticate'>('changeEmail');
 
     // Clear the override when server data arrives (e.g. after navigation or revalidation).
     useEffect(() => {
@@ -113,6 +113,7 @@ function AccountDetailsContent({
     const updateEmailLoginFetcher = useFetcher();
     const passwordResetFetcher = useFetcher<{ success?: boolean; error?: string }>();
     const otpRequestFetcher = useFetcher();
+    const logoutFetcher = useFetcher();
     const revalidator = useRevalidator();
     const auth = useAuth();
     const { t, i18n } = useTranslation('account');
@@ -156,6 +157,12 @@ function AccountDetailsContent({
 
     const accountUrl = buildUrl({
         to: '/account',
+        urlConfig: config.url,
+        params: { siteId: siteRef, localeId: localeRef },
+    });
+
+    const logoutAction = buildUrl({
+        to: '/logout',
         urlConfig: config.url,
         params: { siteId: siteRef, localeId: localeRef },
     });
@@ -372,14 +379,38 @@ function AccountDetailsContent({
      * Handles successful email update.
      * Re-authenticates the user with the new email and current password to keep the session valid,
      * since email also serves as the loginId in SFCC.
+     *
+     * For passwordless shoppers, triggers OTP modal for re-authentication with the new email.
      */
     const handleEmailSuccess = (formData: { email: string; currentPassword: string | undefined }) => {
         addToast(t('email.successMessage'), 'success');
         setIsEditingEmail(false);
         // Show saved email immediately via optimistic override.
         // The override is cleared when the server customer prop refreshes.
-        setProfileOverride({ email: formData.email, login: formData.email });
+        setProfileOverride({ email: formData.email, login: formData.email, emailVerified: false });
 
+        // For passwordless shoppers: trigger OTP modal for re-authentication with new email
+        if (!hasPassword && formData.email) {
+            setOtpModalEmail(formData.email);
+            setOtpError(undefined);
+            setOtpModalMode('reauthenticate');
+
+            // Send OTP to new email address via passwordless login flow
+            const formDataForOtp = new FormData();
+            formDataForOtp.append('email', formData.email);
+
+            void otpRequestFetcher.submit(formDataForOtp, {
+                method: 'POST',
+                action: '/action/authorize-passwordless-email',
+            });
+
+            // Open OTP modal (lazy load if first time)
+            setOtpModalLoaded(true);
+            setIsOtpModalOpen(true);
+            return;
+        }
+
+        // For password-based shoppers: existing password re-authentication flow
         if (formData.email && formData.currentPassword) {
             void updateEmailLoginFetcher.submit(
                 {
@@ -415,42 +446,60 @@ function AccountDetailsContent({
 
     /**
      * Handles successful OTP verification for passwordless email editing.
-     * Closes the OTP modal and opens the email edit form.
+     * Closes the OTP modal and opens the email edit form, or revalidates after re-authentication.
      */
     const handleOtpSuccess = () => {
         setIsOtpModalOpen(false);
         setOtpError(undefined);
-        if (otpModalMode === 'verifyEmail') {
+
+        if (otpModalMode === 'reauthenticate') {
+            // After re-authentication with new email, revalidate to refresh customer data with new JWT
+            void revalidator.revalidate();
+        } else if (otpModalMode === 'verifyEmail') {
+            // After email verification, update badge optimistically
             setProfileOverride((prev) => ({ ...prev, emailVerified: true }));
         } else {
+            // After initial OTP verification, allow email editing
             setIsEditingEmail(true);
         }
     };
 
     /**
      * Handles OTP modal cancellation.
-     * Closes the modal and returns to view mode.
+     * For reauthentication mode: logs out the user since their JWT is now stale after email change.
+     * For other modes: just closes the modal and returns to view mode.
      */
     const handleOtpCancel = () => {
         setIsOtpModalOpen(false);
         setOtpError(undefined);
+
+        // If canceling during reauthentication, the email was already changed on the backend
+        // but the JWT still contains the old email. Log out to prevent a broken session state.
+        if (otpModalMode === 'reauthenticate') {
+            void logoutFetcher.submit(null, {
+                method: 'POST',
+                action: logoutAction,
+            });
+        }
     };
 
     /**
      * Handles OTP resend request.
-     * Sends a new OTP to the user's email.
+     * Sends a new OTP to the user's email using the appropriate flow based on mode.
      */
-    const handleOtpResend = async () => {
+    const handleOtpResend = () => {
         if (otpModalEmail) {
             setOtpError(undefined);
             const formData = new FormData();
             formData.append('email', otpModalEmail);
 
-            await otpRequestFetcher.submit(formData, {
+            void otpRequestFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/otp-request',
+                action:
+                    otpModalMode === 'reauthenticate' ? '/action/authorize-passwordless-email' : '/action/otp-request',
             });
         }
+        return Promise.resolve();
     };
 
     /**
@@ -458,6 +507,9 @@ function AccountDetailsContent({
      * Called when user submits OTP from modal.
      * Uses direct fetch instead of fetcher to avoid overly complex state and lifecycle management for the modal,
      * which would unmount the OTP modal before we can transition to the email edit form.
+     *
+     * For re-authentication mode, uses the passwordless login endpoint to issue a new JWT.
+     * For verification mode, uses the verify-only endpoint.
      */
     const handleVerifyOtp = async (code: string) => {
         setOtpError(undefined);
@@ -466,7 +518,11 @@ function AccountDetailsContent({
             formData.append('otpCode', code);
             formData.append('email', otpModalEmail);
 
-            const response = await fetch('/action/otp-verify', {
+            // Use different endpoint based on mode:
+            // - 'reauthenticate': Full authentication with new JWT (after email change)
+            // - 'changeEmail' or 'verifyEmail': Just verify OTP (before email edit or for verification badge)
+            const action = otpModalMode === 'reauthenticate' ? '/action/verify-passwordless-otp' : '/action/otp-verify';
+            const response = await fetch(action, {
                 method: 'POST',
                 body: formData,
             });

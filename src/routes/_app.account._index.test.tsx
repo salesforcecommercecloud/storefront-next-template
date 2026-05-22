@@ -91,7 +91,7 @@ vi.mock('@/components/password-update-form', () => ({
 // Capture props passed to EmailUpdateForm so we can invoke its callbacks
 let capturedEmailFormProps: {
     updateFetcher: unknown;
-    onSuccess: (data: { email: string; currentPassword: string }) => void;
+    onSuccess: (data: { email: string; currentPassword?: string }) => void;
     onError: (error: string) => void;
     onCancel: () => void;
     requirePassword: boolean;
@@ -158,6 +158,7 @@ const mockCustomer: Customer = {
     gender: 1,
     birthday: '1990-05-15',
     emailVerified: true,
+    hasPassword: true, // Default to password-based user
 };
 
 /**
@@ -672,6 +673,19 @@ describe('AccountDetails', () => {
             expect(submittedData.get('email')).toBe('new@example.com');
         });
 
+        test('shows unverified badge after email update when email verification is enabled', async () => {
+            await renderAccountDetails({ ...mockCustomer, emailVerified: true });
+            const formProps = await enterEmailEditMode();
+            act(() => {
+                formProps.onSuccess({ email: 'new@example.com', currentPassword: 'myPassword' });
+            });
+            // After email update, badge should show "Unverified" optimistically
+            await waitFor(() => {
+                expect(screen.getByTestId('email-unverified-badge')).toBeInTheDocument();
+                expect(screen.queryByTestId('email-verified-badge')).not.toBeInTheDocument();
+            });
+        });
+
         describe('change email button visibility', () => {
             test('shows Change email button when emailVerified is true', async () => {
                 await renderAccountDetails();
@@ -711,6 +725,453 @@ describe('AccountDetails', () => {
                 await renderAccountDetails({ ...mockCustomer, emailVerified: undefined });
                 expect(screen.queryByText('Verified')).not.toBeInTheDocument();
                 expect(screen.queryByText('Unverified')).not.toBeInTheDocument();
+            });
+        });
+
+        describe('passwordless email change flow', () => {
+            test('triggers OTP modal for passwordless shopper after email update success', async () => {
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: false });
+
+                const formProps = await enterEmailEditMode();
+
+                // Clear previous OTP modal calls
+                capturedOtpModalProps = null;
+                mockFetcherSubmit.mockClear();
+
+                // Simulate successful email update
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: undefined });
+                });
+
+                // Should trigger OTP modal in reauthenticate mode
+                await waitFor(() => {
+                    expect(capturedOtpModalProps).not.toBeNull();
+                    expect(capturedOtpModalProps?.isOpen).toBe(true);
+                    expect(capturedOtpModalProps?.email).toBe('newemail@example.com');
+                });
+
+                // Should send OTP to new email address using passwordless login flow
+                const otpRequestCall = mockFetcherSubmit.mock.calls.find(
+                    ([, options]) => options?.action === '/action/authorize-passwordless-email'
+                );
+                expect(otpRequestCall).toBeDefined();
+                const [submittedData] = otpRequestCall as [FormData, { method: string; action: string }];
+                expect(submittedData.get('email')).toBe('newemail@example.com');
+            });
+
+            test('does not trigger OTP modal for password-based shopper after email update', async () => {
+                await renderAccountDetails({ ...mockCustomer, hasPassword: true, emailVerified: true });
+
+                const formProps = await enterEmailEditMode();
+
+                mockFetcherSubmit.mockClear();
+
+                // Simulate successful email update with password
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: 'myPassword' });
+                });
+
+                // Should submit password-based login instead of OTP
+                await waitFor(() => {
+                    expect(mockFetcherSubmit).toHaveBeenCalledWith(
+                        {
+                            email: 'newemail@example.com',
+                            password: 'myPassword',
+                            loginMode: 'password',
+                            returnUrl: '/global/en-GB/account',
+                            skipUsid: 'true',
+                        },
+                        { method: 'POST', action: '/global/en-GB/login' }
+                    );
+                });
+
+                // OTP modal should not have been triggered (no OTP request to new email)
+                const otpRequestToNewEmail = mockFetcherSubmit.mock.calls.find(
+                    ([data, options]) =>
+                        options?.action === '/action/otp-request' &&
+                        data instanceof FormData &&
+                        data.get('email') === 'newemail@example.com' &&
+                        options?.method === 'POST'
+                );
+                expect(otpRequestToNewEmail).toBeUndefined();
+            });
+
+            test('uses verify-passwordless-otp endpoint for reauthenticate mode', async () => {
+                const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
+                    new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                );
+
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: false });
+
+                const formProps = await enterEmailEditMode();
+                capturedOtpModalProps = null;
+
+                // Trigger email update success
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: undefined });
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps).not.toBeNull();
+                    expect(capturedOtpModalProps?.onVerifyCode).toBeDefined();
+                });
+
+                // Simulate OTP code submission
+                await act(async () => {
+                    await capturedOtpModalProps?.onVerifyCode?.('123456');
+                });
+
+                // Should call verify-passwordless-otp endpoint (not otp-verify)
+                await waitFor(() => {
+                    expect(fetchSpy).toHaveBeenCalledWith(
+                        '/action/verify-passwordless-otp',
+                        expect.objectContaining({ method: 'POST' })
+                    );
+                });
+
+                // Verify the form data includes OTP code and email
+                const fetchCall = fetchSpy.mock.calls[0];
+                const formData = fetchCall[1]?.body as FormData;
+                expect(formData.get('otpCode')).toBe('123456');
+                expect(formData.get('email')).toBe('newemail@example.com');
+
+                fetchSpy.mockRestore();
+            });
+
+            test('uses otp-verify endpoint for changeEmail mode', async () => {
+                const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
+                    new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                );
+
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: false });
+
+                const emailCard = screen.getByTestId('sf-toggle-card-email');
+                const editButton = within(emailCard).getByRole('button', { name: 'Change email' });
+
+                // Click "Change Email" to trigger OTP in changeEmail mode
+                act(() => {
+                    editButton.click();
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps).not.toBeNull();
+                    expect(capturedOtpModalProps?.onVerifyCode).toBeDefined();
+                });
+
+                // Simulate OTP code submission
+                await act(async () => {
+                    await capturedOtpModalProps?.onVerifyCode?.('123456');
+                });
+
+                // Should call otp-verify endpoint (not verify-passwordless-otp)
+                await waitFor(() => {
+                    expect(fetchSpy).toHaveBeenCalledWith(
+                        '/action/otp-verify',
+                        expect.objectContaining({ method: 'POST' })
+                    );
+                });
+
+                fetchSpy.mockRestore();
+            });
+
+            test('revalidates after successful OTP in reauthenticate mode', async () => {
+                const mockRevalidate = vi.fn();
+                const useRevalidatorSpy = vi.spyOn(await import('react-router'), 'useRevalidator');
+                useRevalidatorSpy.mockReturnValue({ revalidate: mockRevalidate, state: 'idle' });
+
+                const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
+                    new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                );
+
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: true });
+
+                const formProps = await enterEmailEditMode();
+                capturedOtpModalProps = null;
+
+                // Trigger email update success
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: undefined });
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.onVerifyCode).toBeDefined();
+                });
+
+                // Simulate successful OTP verification
+                await act(async () => {
+                    await capturedOtpModalProps?.onVerifyCode?.('123456');
+                });
+
+                // Should trigger revalidation to refresh customer data
+                await waitFor(() => {
+                    expect(mockRevalidate).toHaveBeenCalled();
+                });
+
+                fetchSpy.mockRestore();
+                useRevalidatorSpy.mockRestore();
+            });
+
+            test('does not revalidate after OTP in changeEmail mode', async () => {
+                const mockRevalidate = vi.fn();
+                const useRevalidatorSpy = vi.spyOn(await import('react-router'), 'useRevalidator');
+                useRevalidatorSpy.mockReturnValue({ revalidate: mockRevalidate, state: 'idle' });
+
+                const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
+                    new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                );
+
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: false });
+
+                const emailCard = screen.getByTestId('sf-toggle-card-email');
+                const editButton = within(emailCard).getByRole('button', { name: 'Change email' });
+
+                act(() => {
+                    editButton.click();
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.onVerifyCode).toBeDefined();
+                });
+
+                // Simulate successful OTP verification in changeEmail mode
+                await act(async () => {
+                    await capturedOtpModalProps?.onVerifyCode?.('123456');
+                });
+
+                // Should NOT trigger revalidation in changeEmail mode
+                expect(mockRevalidate).not.toHaveBeenCalled();
+
+                fetchSpy.mockRestore();
+                useRevalidatorSpy.mockRestore();
+            });
+
+            test('shows error toast when email update but OTP send fails', async () => {
+                // Mock OTP request to fail (for reauthenticate mode, uses authorize-passwordless-email)
+                mockFetcherSubmit.mockImplementation((_data: unknown, options?: { action?: string }) => {
+                    if (options?.action === '/action/authorize-passwordless-email') {
+                        // Simulate error by triggering the error callback
+                        setTimeout(() => {
+                            const errorCallback = capturedFetcherEffectCallbacks.find((cb) => cb.onError)?.onError;
+                            errorCallback?.();
+                        }, 0);
+                    }
+                });
+
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: true });
+
+                const formProps = await enterEmailEditMode();
+                mockAddToast.mockClear();
+
+                // Trigger email update success
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: undefined });
+                });
+
+                // Should show error toast when OTP send fails
+                await waitFor(() => {
+                    expect(mockAddToast).toHaveBeenCalledWith(expect.any(String), 'error');
+                });
+            });
+
+            test('closes OTP modal and updates optimistic state after reauthenticate success', async () => {
+                const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
+                    new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                );
+
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: false });
+
+                const formProps = await enterEmailEditMode();
+                capturedOtpModalProps = null;
+
+                // Trigger email update success
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: undefined });
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.isOpen).toBe(true);
+                });
+
+                // Simulate successful OTP verification
+                await act(async () => {
+                    await capturedOtpModalProps?.onVerifyCode?.('123456');
+                });
+
+                // OTP modal should close
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.isOpen).toBe(false);
+                });
+
+                // Email should be updated optimistically
+                expect(screen.getByTestId('profile-value-email')).toHaveTextContent('newemail@example.com');
+
+                fetchSpy.mockRestore();
+            });
+
+            test('uses authorize-passwordless-email endpoint for OTP resend in reauthenticate mode', async () => {
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: true });
+
+                const formProps = await enterEmailEditMode();
+                capturedOtpModalProps = null;
+
+                // Trigger email update success
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: undefined });
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.onResendCode).toBeDefined();
+                });
+
+                mockFetcherSubmit.mockClear();
+
+                // Trigger OTP resend
+                act(() => {
+                    capturedOtpModalProps?.onResendCode();
+                });
+
+                // Should use authorize-passwordless-email endpoint, not otp-request
+                await waitFor(() => {
+                    const resendCall = mockFetcherSubmit.mock.calls.find(
+                        ([, options]) => options?.action === '/action/authorize-passwordless-email'
+                    );
+                    expect(resendCall).toBeDefined();
+                    const [submittedData] = resendCall as [FormData, { method: string; action: string }];
+                    expect(submittedData.get('email')).toBe('newemail@example.com');
+                });
+            });
+
+            test('uses otp-request endpoint for OTP resend in changeEmail mode', async () => {
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: false });
+
+                const emailCard = screen.getByTestId('sf-toggle-card-email');
+                const editButton = within(emailCard).getByRole('button', { name: 'Change email' });
+
+                // Click "Change Email" to trigger OTP in changeEmail mode
+                act(() => {
+                    editButton.click();
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.onResendCode).toBeDefined();
+                });
+
+                mockFetcherSubmit.mockClear();
+
+                // Trigger OTP resend
+                act(() => {
+                    capturedOtpModalProps?.onResendCode();
+                });
+
+                // Should use otp-request endpoint in changeEmail mode
+                await waitFor(() => {
+                    const resendCall = mockFetcherSubmit.mock.calls.find(
+                        ([, options]) => options?.action === '/action/otp-request'
+                    );
+                    expect(resendCall).toBeDefined();
+                    const [submittedData] = resendCall as [FormData, { method: string; action: string }];
+                    expect(submittedData.get('email')).toBe('john@example.com');
+                });
+            });
+
+            test('logs out user when OTP modal is cancelled in reauthenticate mode', async () => {
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: true });
+
+                const formProps = await enterEmailEditMode();
+                capturedOtpModalProps = null;
+
+                // Trigger email update success
+                act(() => {
+                    formProps.onSuccess({ email: 'newemail@example.com', currentPassword: undefined });
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.isOpen).toBe(true);
+                });
+
+                mockFetcherSubmit.mockClear();
+
+                // Cancel OTP modal
+                act(() => {
+                    capturedOtpModalProps?.onClose();
+                });
+
+                // Should trigger logout to prevent stale JWT session
+                await waitFor(() => {
+                    expect(mockFetcherSubmit).toHaveBeenCalledWith(null, {
+                        method: 'POST',
+                        action: '/global/en-GB/logout',
+                    });
+                });
+            });
+
+            test('does not log out when OTP modal is cancelled in changeEmail mode', async () => {
+                await renderAccountDetails({ ...mockCustomer, hasPassword: false, emailVerified: false });
+
+                const emailCard = screen.getByTestId('sf-toggle-card-email');
+                const editButton = within(emailCard).getByRole('button', { name: 'Change email' });
+
+                // Click "Change Email" to trigger OTP in changeEmail mode
+                act(() => {
+                    editButton.click();
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.isOpen).toBe(true);
+                });
+
+                mockFetcherSubmit.mockClear();
+
+                // Cancel OTP modal
+                act(() => {
+                    capturedOtpModalProps?.onClose();
+                });
+
+                // Should NOT trigger logout in changeEmail mode
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.isOpen).toBe(false);
+                });
+                expect(mockFetcherSubmit).not.toHaveBeenCalled();
+            });
+
+            test('does not log out when OTP modal is cancelled in verifyEmail mode', async () => {
+                await renderAccountDetails({ ...mockCustomer, emailVerified: false });
+
+                act(() => {
+                    screen.getByRole('button', { name: 'Verify Email' }).click();
+                });
+
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.isOpen).toBe(true);
+                });
+
+                mockFetcherSubmit.mockClear();
+
+                // Cancel OTP modal
+                act(() => {
+                    capturedOtpModalProps?.onClose();
+                });
+
+                // Should NOT trigger logout in verifyEmail mode
+                await waitFor(() => {
+                    expect(capturedOtpModalProps?.isOpen).toBe(false);
+                });
+                expect(mockFetcherSubmit).not.toHaveBeenCalled();
             });
         });
     });
