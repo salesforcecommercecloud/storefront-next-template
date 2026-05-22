@@ -33,10 +33,30 @@ describe('InventoryMessage', () => {
         },
     };
 
-    it('renders in-stock message with count when product has stock', () => {
+    it('renders bucketed in-stock message when product has stock', () => {
         render(<InventoryMessage product={baseProduct} />);
 
-        expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
+        expect(screen.getByText('In stock')).toBeInTheDocument();
+        expect(screen.queryByText(/units/)).not.toBeInTheDocument();
+    });
+
+    it('renders bucketed in-stock message for perpetual inventory (ats=999999) without surfacing the count', () => {
+        const perpetualProduct = {
+            ...baseProduct,
+            inventory: {
+                id: 'test-inventory',
+                ats: 999999,
+                orderable: true,
+                backorderable: false,
+                preorderable: false,
+            },
+        };
+
+        render(<InventoryMessage product={perpetualProduct} />);
+
+        expect(screen.getByText('In stock')).toBeInTheDocument();
+        expect(screen.queryByText(/999999/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/units/)).not.toBeInTheDocument();
     });
 
     it('renders generic in stock when status is in-stock but ATS is zero (no "0 units" copy)', () => {
@@ -215,7 +235,7 @@ describe('InventoryMessage', () => {
         expect(screen.getByText('In stock')).toBeInTheDocument();
     });
 
-    it('shows unit count from master ATS when variant has no inventory but master is orderable with ATS', () => {
+    it('falls back to in-stock when variant has no inventory but master is orderable with ATS', () => {
         const master = {
             ...baseProduct,
             inventory: {
@@ -240,9 +260,9 @@ describe('InventoryMessage', () => {
             variationValues: { color: 'RED' },
         } as ShopperProducts.schemas['Variant'];
 
-        render(<InventoryMessage product={master} currentVariant={variant} maxStockDisplay={99} />);
+        render(<InventoryMessage product={master} currentVariant={variant} />);
 
-        expect(screen.getByText('In Stock (24 units) ready to be shipped')).toBeInTheDocument();
+        expect(screen.getByText('In stock')).toBeInTheDocument();
     });
 
     it('shows out-of-stock when variant is orderable false and has no inventory object', () => {
@@ -339,7 +359,7 @@ describe('InventoryMessage', () => {
     });
 
     describe('low stock', () => {
-        it('renders low-stock message when stock is at or below threshold', () => {
+        it('renders "Few items left" when stock is at or below threshold and above 1', () => {
             const lowStockProduct = {
                 ...baseProduct,
                 inventory: {
@@ -353,10 +373,10 @@ describe('InventoryMessage', () => {
 
             render(<InventoryMessage product={lowStockProduct} lowStockThreshold={5} />);
 
-            expect(screen.getByText('Low stock - Only 3 left')).toBeInTheDocument();
+            expect(screen.getByText('Few items left')).toBeInTheDocument();
         });
 
-        it('renders low-stock message at exact threshold', () => {
+        it('renders "Few items left" at the exact threshold', () => {
             const lowStockProduct = {
                 ...baseProduct,
                 inventory: {
@@ -370,13 +390,30 @@ describe('InventoryMessage', () => {
 
             render(<InventoryMessage product={lowStockProduct} lowStockThreshold={5} />);
 
-            expect(screen.getByText('Low stock - Only 5 left')).toBeInTheDocument();
+            expect(screen.getByText('Few items left')).toBeInTheDocument();
+        });
+
+        it('renders "1 item left" when only one unit remains', () => {
+            const oneLeftProduct = {
+                ...baseProduct,
+                inventory: {
+                    id: 'test-inventory',
+                    ats: 1,
+                    orderable: true,
+                    backorderable: false,
+                    preorderable: false,
+                },
+            };
+
+            render(<InventoryMessage product={oneLeftProduct} lowStockThreshold={5} />);
+
+            expect(screen.getByText('1 item left')).toBeInTheDocument();
         });
 
         it('renders in-stock message when stock is above threshold', () => {
             render(<InventoryMessage product={baseProduct} lowStockThreshold={5} />);
 
-            expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
+            expect(screen.getByText('In stock')).toBeInTheDocument();
         });
 
         it('does not show low-stock when threshold is 0 (default)', () => {
@@ -393,7 +430,7 @@ describe('InventoryMessage', () => {
 
             render(<InventoryMessage product={lowStockProduct} />);
 
-            expect(screen.getByText('In Stock (3 units) ready to be shipped')).toBeInTheDocument();
+            expect(screen.getByText('In stock')).toBeInTheDocument();
         });
     });
 
@@ -404,7 +441,7 @@ describe('InventoryMessage', () => {
             render(<InventoryMessage product={baseProduct} getInventoryStatus={customGetInventoryStatus} />);
 
             expect(customGetInventoryStatus).toHaveBeenCalledWith(baseProduct, undefined);
-            expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
+            expect(screen.getByText('In stock')).toBeInTheDocument();
         });
 
         it('uses custom getInventoryStatus function with variant when provided', () => {
@@ -471,7 +508,7 @@ describe('InventoryMessage', () => {
         it('falls back to default getInventoryStatus when custom function is not provided', () => {
             render(<InventoryMessage product={baseProduct} />);
 
-            expect(screen.getByText('In Stock (10 units) ready to be shipped')).toBeInTheDocument();
+            expect(screen.getByText('In stock')).toBeInTheDocument();
         });
     });
 });

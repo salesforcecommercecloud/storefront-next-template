@@ -350,7 +350,6 @@ export default function ProductInfo({
                         product={product}
                         currentVariant={currentVariant}
                         lowStockThreshold={config.global.inventory.lowStockThreshold}
-                        maxStockDisplay={config.global.inventory.maxStockDisplay}
                         getInventoryStatus={inventoryStatusOverride}
                     />
                 </UITarget>

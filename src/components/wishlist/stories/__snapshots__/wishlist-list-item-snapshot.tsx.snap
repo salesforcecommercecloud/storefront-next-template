@@ -65,7 +65,7 @@ exports[`WishlistListItem stories snapshot > Default renders and matches snapsho
           <p
             class="text-sm font-medium text-status-positive"
           >
-            In Stock (99+ units) ready to be shipped
+            In stock
           </p>
         </div>
         <button
@@ -207,7 +207,7 @@ exports[`WishlistListItem stories snapshot > MasterProduct renders and matches s
           <p
             class="text-sm font-medium text-status-positive"
           >
-            In Stock (99+ units) ready to be shipped
+            In stock
           </p>
         </div>
         <button
@@ -323,7 +323,7 @@ exports[`WishlistListItem stories snapshot > MinimalData renders and matches sna
           <p
             class="text-sm font-medium text-status-positive"
           >
-            In Stock (5 units) ready to be shipped
+            In stock
           </p>
         </div>
         <button

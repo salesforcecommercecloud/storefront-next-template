@@ -18,7 +18,7 @@ exports[`InventoryMessage stories snapshot > AllVariants story renders and match
         <p
           class="text-sm font-medium text-status-positive"
         >
-          In Stock (10 units) ready to be shipped
+          In stock
         </p>
       </div>
       <div
@@ -73,6 +73,28 @@ exports[`InventoryMessage stories snapshot > AllVariants story renders and match
           Inventory unavailable
         </p>
       </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`InventoryMessage stories snapshot > Perpetual story renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="p-8"
+  >
+    <div
+      class="flex items-center gap-2"
+    >
+      <span
+        aria-hidden="true"
+        class="h-2 w-2 shrink-0 rounded-none bg-current text-status-positive"
+      />
+      <p
+        class="text-sm font-medium text-status-positive"
+      >
+        In stock
+      </p>
     </div>
   </div>
 </div>

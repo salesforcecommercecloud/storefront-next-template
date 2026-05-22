@@ -329,7 +329,7 @@ exports[`ProductView stories snapshot > Default story renders and matches snapsh
             <p
               class="text-sm font-medium text-status-positive"
             >
-              In Stock (98 units) ready to be shipped
+              In stock
             </p>
           </div>
           <div

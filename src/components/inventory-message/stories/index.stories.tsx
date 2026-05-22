@@ -260,3 +260,33 @@ export const AllVariants: Story = {
         await expect(canvas.getByText(/inventory unavailable/i)).toBeInTheDocument();
     },
 };
+
+/**
+ * Perpetual inventory: SCAPI returns ats=999999 for items the merchant has flagged as
+ * never-out-of-stock. The PDP renders the same bucketed "In stock" message and never
+ * surfaces the underlying count.
+ */
+export const Perpetual: Story = {
+    args: {
+        product: createMockProduct({
+            orderable: true,
+            ats: 999999,
+            backorderable: false,
+            preorderable: false,
+        }),
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'Perpetual inventory variant. Renders "In stock" without leaking the underlying 999999 sentinel.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('In stock')).toBeInTheDocument();
+        await expect(canvas.queryByText(/999999/)).not.toBeInTheDocument();
+        await expect(canvas.queryByText(/units/)).not.toBeInTheDocument();
+    },
+};

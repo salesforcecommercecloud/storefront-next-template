@@ -150,7 +150,7 @@ export const mockBuildConfig: Config = {
             productListing: {
                 defaultProductTileImgAspectRatio: 1,
             },
-            inventory: { lowStockThreshold: 5, maxStockDisplay: 99 },
+            inventory: { lowStockThreshold: 5 },
             carousel: { defaultItemCount: 4 },
             badges: [
                 { propertyName: 'c_isSale', label: 'Sale', color: 'orange', priority: 1 },
