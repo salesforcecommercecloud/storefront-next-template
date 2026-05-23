@@ -225,8 +225,9 @@ async function enterEditMode() {
 
 /**
  * Helper: enter email edit mode and return captured form props.
- * For verified passwordless users, clicking "Change Email" directly shows the form.
- * For unverified users or those with a password, it triggers OTP modal first.
+ * Clicks the "Change email" button on the email toggle card.
+ * - Passwordless shoppers: waits for OTP modal, simulates success, then waits for the form.
+ * - Password-based shoppers: the form appears directly with no OTP step.
  */
 async function enterEmailEditMode() {
     const emailCard = screen.getByTestId('sf-toggle-card-email');
@@ -237,33 +238,19 @@ async function enterEmailEditMode() {
         editButton.click();
     });
 
-    // For verified passwordless users, form appears directly without OTP modal
-    // For others, OTP modal opens first
-    const emailFormAppeared = await waitFor(
-        () => {
-            if (capturedEmailFormProps) {
-                return true;
-            }
-            if (capturedOtpModalProps?.isOpen) {
-                return false;
-            }
-            throw new Error('Neither email form nor OTP modal appeared');
-        },
-        { timeout: 1000 }
-    ).catch(() => false);
+    // Wait for either the OTP modal (passwordless) or the email form (password-based) to appear.
+    await waitFor(() => {
+        const otpOpen = capturedOtpModalProps?.isOpen === true;
+        const formRendered = capturedEmailFormProps !== null;
+        expect(otpOpen || formRendered).toBe(true);
+    });
 
-    if (!emailFormAppeared) {
-        // OTP modal opened - simulate successful verification
-        await waitFor(() => {
-            expect(capturedOtpModalProps).not.toBeNull();
-            expect(capturedOtpModalProps?.isOpen).toBe(true);
-        });
-
+    // If OTP modal opened first, simulate successful verification before continuing.
+    if (capturedOtpModalProps?.isOpen) {
         act(() => {
             capturedOtpModalProps?.onSuccess();
         });
 
-        // Wait for email form to appear after OTP success
         await waitFor(() => {
             expect(capturedEmailFormProps).not.toBeNull();
         });
