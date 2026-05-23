@@ -37,7 +37,7 @@ export default function Signup(): ReactElement {
 
     return (
         <UITarget targetId="sfcc.emailSignUp.consent.marketing">
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+            <form onSubmit={handleSubmit} className="flex flex-row gap-2 sm:gap-3 w-full max-w-md">
                 <Input
                     ref={inputRef}
                     type="email"

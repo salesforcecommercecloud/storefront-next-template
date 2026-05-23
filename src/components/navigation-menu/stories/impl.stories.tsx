@@ -84,7 +84,7 @@ const mockRootCategory = mockCategories.root;
 const mockCategoriesList = mockRootCategory.categories || [];
 
 const meta: Meta<typeof CategoryNavigationMenu> = {
-    title: 'NAVIGATION/Navigation Menu/Impl',
+    title: 'LAYOUT/Navigation Menu/Impl',
     component: CategoryNavigationMenu,
     tags: ['autodocs', 'interaction'],
     parameters: {
@@ -222,6 +222,13 @@ export const WithCustomRenderSlots: Story = {
         await expect(menu || canvasElement).toBeInTheDocument();
     },
 };
+
+// Note: Keyboard accessibility (Enter to open, Escape to close) is covered by the mega menu
+// equivalent (`navigation-menu-mega/stories/index.stories.tsx` → `KeyboardAccessibility`).
+// The impl-level `CategoryNavigationMenu` does not render
+// `[data-slot="navigation-menu-trigger"]` markup in the Storybook test runner without the
+// `WithCategoryNavigationMenu` wrapper, so a story-local equivalent here would have nothing
+// to focus or activate.
 
 export const Interactive: Story = {
     args: {

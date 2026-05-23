@@ -94,7 +94,7 @@ const mockRootCategory = mockCategories.root;
 const mockCategoriesList = mockRootCategory.categories || [];
 
 const meta: Meta<typeof CategoryNavigationMenu> = {
-    title: 'NAVIGATION/Navigation Menu',
+    title: 'LAYOUT/Navigation Menu',
     component: CategoryNavigationMenu,
     tags: ['autodocs', 'interaction'],
     parameters: {
@@ -273,6 +273,13 @@ export const Interactive: Story = {
         }
     },
 };
+
+// Note: Keyboard accessibility (Enter to open, Escape to close) is covered by the mega menu
+// equivalent (`navigation-menu-mega/stories/index.stories.tsx` → `KeyboardAccessibility`).
+// Without the `WithCategoryNavigationMenu` wrapper plus a Suspense-resolved category promise,
+// `CategoryNavigationMenu` does not render `[data-slot="navigation-menu-trigger"]` markup
+// in the Storybook test runner, so a story-local equivalent here would be unable to assert
+// the open/closed transitions.
 
 export const UsingWithCategoryNavigationMenu: Story = {
     args: {},

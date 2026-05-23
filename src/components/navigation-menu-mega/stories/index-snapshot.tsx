@@ -104,6 +104,10 @@ vi.mock('@salesforce/storefront-next-runtime/config', async () => {
     };
 });
 
+vi.mock('@/hooks/use-navigate', () => ({
+    useNavigate: () => vi.fn(),
+}));
+
 import { composeStories } from '@storybook/react-vite';
 
 import * as MegaMenuStories from './index.stories';

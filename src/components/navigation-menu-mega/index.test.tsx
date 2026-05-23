@@ -27,21 +27,30 @@ const mockCategories: ShopperProducts.schemas['Category'] = {
         {
             id: 'cat-1',
             name: 'Category 1',
+            c_showInMenu: true,
             onlineSubCategoriesCount: 2,
             categories: [
-                { id: 'cat-1-1', name: 'Subcategory 1.1' },
-                { id: 'cat-1-2', name: 'Subcategory 1.2' },
+                {
+                    id: 'cat-1-1',
+                    name: 'Subcategory 1.1',
+                    c_showInMenu: true,
+                    onlineSubCategoriesCount: 1,
+                    categories: [{ id: 'cat-1-1-1', name: 'Nested Subcategory 1.1.1', c_showInMenu: true }],
+                },
+                { id: 'cat-1-2', name: 'Subcategory 1.2', c_showInMenu: true },
             ],
         },
         {
             id: 'cat-2',
             name: 'Category 2',
+            c_showInMenu: true,
             onlineSubCategoriesCount: 1,
-            categories: [{ id: 'cat-2-1', name: 'Subcategory 2.1' }],
+            categories: [{ id: 'cat-2-1', name: 'Subcategory 2.1', c_showInMenu: true }],
         },
         {
             id: 'cat-3',
             name: 'Category 3 (Leaf)',
+            c_showInMenu: true,
             onlineSubCategoriesCount: 0,
         },
     ],
@@ -133,6 +142,57 @@ describe('ResponsiveNavigationMenu Component', () => {
                 const mobileNav = container.querySelector('[aria-label="Mobile navigation menu"]');
                 expect(mobileNav).toBeInTheDocument();
             });
+        });
+
+        it('should show all nested mobile menu descendants after expanding a root category', async () => {
+            const rootWithDeferredChildren: ShopperProducts.schemas['Category'] = {
+                id: 'root',
+                name: 'Root Category',
+                categories: [
+                    {
+                        id: 'cat-1',
+                        name: 'Category 1',
+                        c_showInMenu: true,
+                        onlineSubCategoriesCount: 2,
+                    },
+                ],
+            };
+            const enrichedCategory: ShopperProducts.schemas['Category'] = mockCategories.categories?.[0] ?? {
+                id: 'cat-1',
+                name: 'Category 1',
+                c_showInMenu: true,
+                onlineSubCategoriesCount: 0,
+            };
+            const { getByRole } = renderComponent({
+                resolve: Promise.resolve(rootWithDeferredChildren),
+                defer: Promise.resolve([enrichedCategory]),
+            });
+
+            await waitFor(() => {
+                expect(getByRole('button', { name: /open menu/i })).toBeInTheDocument();
+            });
+
+            act(() => {
+                fireEvent.click(getByRole('button', { name: /open menu/i }));
+            });
+
+            await waitFor(() => {
+                expect(getByRole('button', { name: /expand category 1/i })).toBeInTheDocument();
+            });
+
+            act(() => {
+                fireEvent.click(getByRole('button', { name: /expand category 1/i }));
+            });
+
+            await waitFor(() => {
+                expect(getByRole('link', { name: /^subcategory 1\.1$/i })).toBeInTheDocument();
+            });
+
+            await waitFor(() => {
+                expect(getByRole('link', { name: /^nested subcategory 1\.1\.1$/i })).toBeInTheDocument();
+            });
+
+            expect(() => getByRole('button', { name: /expand subcategory 1\.1/i })).toThrow();
         });
     });
 

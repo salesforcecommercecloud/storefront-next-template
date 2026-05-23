@@ -14,357 +14,117 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router';
+import { expect, within } from 'storybook/test';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-
-const mockSite = mockSiteObject;
-
+import { useNavigate } from '@/hooks/use-navigate';
+import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import Footer from '../index';
 
-// Check if we're in test environment
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
+// The footer hides "Join Our Community" on non-homepage routes (see main-footer.tsx).
+// The global Storybook router pins the initial path to '/', so the newsletter always
+// renders by default. This wrapper navigates the existing router so the conditional
+// branch in MainFooter exercises the same `useLocation()` logic production uses,
+// without nesting an extra MemoryRouter (Pattern 4) or mocking `useLocation`.
+function FooterWithNewsletterToggle({ showNewsletter }: { showNewsletter: boolean }) {
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const target = showNewsletter ? '/' : '/cart';
     useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logNav = action('footer-navigate');
-        const logNewsletter = action('footer-newsletter');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            // Links
-            const link = target.closest('a[href], button[role="link"]');
-            if (link) {
-                const href = (link as HTMLAnchorElement).getAttribute('href') || '';
-                const text = (link as HTMLElement).textContent?.trim() || '';
-                event.preventDefault();
-                logNav({ href, text });
-            }
-        };
-
-        const handleSubmit = (event: Event) => {
-            const form = event.target as HTMLFormElement | null;
-            if (!form) return;
-            // Newsletter signup form (email input)
-            const emailInput = form.querySelector<HTMLInputElement>('input[type="email"], input[name*="email" i]');
-            if (emailInput) {
-                event.preventDefault();
-                logNewsletter({ email: emailInput.value || '' });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('submit', handleSubmit, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('submit', handleSubmit, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+        if (pathname !== target) navigate(target, { replace: true });
+    }, [navigate, pathname, target]);
+    return <Footer />;
 }
 
-const meta: Meta<typeof Footer> = {
+interface FooterStoryArgs {
+    showNewsletter: boolean;
+}
+
+const meta: Meta<FooterStoryArgs> = {
     title: 'LAYOUT/Footer',
-    component: Footer,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'fullscreen',
         docs: {
             description: {
-                component: `
-Site footer with support, account, company links, newsletter signup, and social icons.
-                `,
+                component:
+                    'Site footer with policy links, switchers, legal links, social icons, and (homepage-only) newsletter signup.',
             },
         },
+    },
+    argTypes: {
+        showNewsletter: {
+            control: 'boolean',
+            description:
+                'Drives the newsletter "Join Our Community" section. The footer renders it only on the homepage; toggling this navigates the story between `/` and `/cart` so the real `useLocation()` branch is exercised.',
+        },
+    },
+    args: {
+        showNewsletter: true,
     },
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
                 <SiteProvider
-                    site={mockSite}
+                    site={mockSiteObject}
                     locale={mockLocale}
                     language={mockSiteObject.defaultLocale}
                     currency={mockSiteObject.defaultCurrency}>
-                    <ActionLogger>
-                        <div className="min-h-[60vh] flex flex-col">
-                            <div className="flex-1" />
-                            <Story />
-                        </div>
-                    </ActionLogger>
+                    <Story />
                 </SiteProvider>
             </ConfigProvider>
         ),
     ],
+    render: ({ showNewsletter }) => <FooterWithNewsletterToggle showNewsletter={showNewsletter} />,
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<FooterStoryArgs>;
 
 export const Default: Story = {
-    parameters: {
-        docs: {
-            description: {
-                story: 'Standard footer rendering.',
-            },
-        },
-    },
-    play: async ({ canvasElement, step }) => {
+    play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 
-        await step('Verify component renders without errors', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
+        // Policy row contains the four expected links, with About Us before
+        // Accessibility Statement (per W-22495110).
+        await expect(canvas.getAllByRole('link', { name: /about us/i }).length).toBeGreaterThan(0);
+        await expect(canvas.getAllByRole('link', { name: /accessibility/i }).length).toBeGreaterThan(0);
+        await expect(canvas.getAllByRole('link', { name: /privacy policy/i }).length).toBeGreaterThan(0);
+        await expect(canvas.getAllByRole('link', { name: /your privacy choices/i }).length).toBeGreaterThan(0);
 
-        await step('Verify all interactive elements are accessible', () => {
-            const buttons = canvas.queryAllByRole('button');
-            const links = canvas.queryAllByRole('link');
-            const inputs = canvas.queryAllByRole('textbox');
-
-            [...buttons, ...links, ...inputs].forEach((el) => {
-                void expect(el).toBeInTheDocument();
-            });
-        });
-
-        await step('Test button interactions', async () => {
-            const buttons = canvas.queryAllByRole('button');
-            for (const button of buttons) {
-                if (!button.hasAttribute('disabled')) {
-                    await userEvent.click(button);
-                }
-            }
-        });
-
-        await step('Test link interactions', async () => {
-            const links = canvas.queryAllByRole('link');
-            for (const link of links) {
-                await userEvent.click(link);
-            }
-        });
-
-        await step('Test input interactions', async () => {
-            const emailInput = canvas.queryByPlaceholderText('Your email');
-            if (emailInput) {
-                await userEvent.clear(emailInput);
-                await userEvent.type(emailInput, 'test@example.com');
-                await expect(emailInput).toHaveValue('test@example.com');
-            }
-        });
-
-        await step('Verify component state after interaction', () => {
-            // Component should remain functional after interactions
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
+        // Newsletter signup is rendered when showNewsletter is true (default).
+        await expect(canvas.getByPlaceholderText(/your email/i)).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: /subscribe/i })).toBeInTheDocument();
+        await expect(canvas.getByRole('heading', { name: /join our community/i })).toBeInTheDocument();
     },
 };
 
-export const LongPage: Story = {
-    render: () => (
-        <ConfigProvider config={mockConfig}>
-            <div className="min-h-screen flex flex-col">
-                <main className="flex-1 container mx-auto px-4 py-16 space-y-4">
-                    {(() => {
-                        const sections = Array.from({ length: 20 }, (_, idx) => `section-${idx + 1}`);
-                        return sections.map((label) => (
-                            <p key={label}>Sample content section {label.replace('section-', '')}</p>
-                        ));
-                    })()}
-                </main>
-                <Footer />
-            </div>
-        </ConfigProvider>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: 'Footer on a longer page layout to verify spacing and stick-to-bottom behavior.',
-            },
-        },
-    },
-    play: async ({ canvasElement, step }) => {
-        const canvas = within(canvasElement);
-
-        await step('Verify component renders without errors', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
-
-        await step('Verify all interactive elements are accessible', () => {
-            const buttons = canvas.queryAllByRole('button');
-            const links = canvas.queryAllByRole('link');
-            const inputs = canvas.queryAllByRole('textbox');
-
-            [...buttons, ...links, ...inputs].forEach((el) => {
-                void expect(el).toBeInTheDocument();
-            });
-        });
-
-        await step('Test button interactions', async () => {
-            const buttons = canvas.queryAllByRole('button');
-            for (const button of buttons) {
-                if (!button.hasAttribute('disabled')) {
-                    await userEvent.click(button);
-                }
-            }
-        });
-
-        await step('Test link interactions', async () => {
-            const links = canvas.queryAllByRole('link');
-            for (const link of links) {
-                await userEvent.click(link);
-            }
-        });
-
-        await step('Test input interactions', async () => {
-            const emailInput = canvas.queryByPlaceholderText('Your email');
-            if (emailInput) {
-                await userEvent.clear(emailInput);
-                await userEvent.type(emailInput, 'test@example.com');
-                await expect(emailInput).toHaveValue('test@example.com');
-            }
-        });
-
-        await step('Verify component state after interaction', () => {
-            // Component should remain functional after interactions
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
-    },
+const iphoneViewport = {
+    name: 'iPhone',
+    styles: { width: '375px', height: '844px' },
+    type: 'mobile' as const,
 };
 
 export const MobileView: Story = {
     globals: {
-        // Set default viewport to small mobile view
-        viewport: { value: 'mobile1', isRotated: false },
+        viewport: { value: 'iphone', isRotated: false },
     },
     parameters: {
+        viewport: {
+            options: { iphone: iphoneViewport },
+            value: 'iphone',
+            isRotated: false,
+        },
         docs: {
             description: {
-                story: 'Footer layout on small/mobile viewport.',
+                story: 'Footer at mobile breakpoint (375×844) — verifies the stacked switchers + legal links and the wrapped policy row.',
             },
-            viewport: { value: 'mobile1', isRotated: false },
         },
     },
-    play: async ({ canvasElement, step }) => {
+    play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-        await step('Verify mobile viewport rendering', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
-        await step('Verify mobile-optimized layout and spacing', () => {
-            const container = canvasElement.firstChild;
-            void expect(container).toBeVisible();
-        });
-        await step('Test button interactions', async () => {
-            const buttons = canvas.queryAllByRole('button');
-            for (const button of buttons) {
-                if (!button.hasAttribute('disabled')) {
-                    await userEvent.click(button);
-                }
-            }
-        });
-
-        await step('Test link interactions', async () => {
-            const links = canvas.queryAllByRole('link');
-            for (const link of links) {
-                await userEvent.click(link);
-            }
-        });
-
-        await step('Test input interactions', async () => {
-            const emailInput = canvas.queryByPlaceholderText('Your email');
-            if (emailInput) {
-                await userEvent.clear(emailInput);
-                await userEvent.type(emailInput, 'test@example.com');
-                await expect(emailInput).toHaveValue('test@example.com');
-            }
-        });
-
-        await step('Verify component state after interaction', () => {
-            // Component should remain functional after interactions
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
-    },
-};
-
-export const NonHomepage: Story = {
-    parameters: {
-        docs: {
-            description: {
-                story: 'Footer on non-homepage routes (product, cart, category pages). Newsletter section should be hidden on actual routes, but Storybook always renders in homepage context. See unit tests in footer.test.tsx for non-homepage behavior verification.',
-            },
-        },
-        snapshot: false, // Skip snapshot test - not representative of actual non-homepage behavior
-    },
-    tags: [], // Remove 'interaction' tag to skip interaction tests in CI
-};
-
-export const DarkBackground: Story = {
-    render: () => (
-        <ConfigProvider config={mockConfig}>
-            <div className="min-h-[50vh] bg-foreground text-background flex flex-col">
-                <div className="flex-1 min-h-[20vh]" />
-                <Footer />
-            </div>
-        </ConfigProvider>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: 'Footer against a dark page background (checks inverse styling).',
-            },
-        },
-    },
-    play: async ({ canvasElement, step }) => {
-        const canvas = within(canvasElement);
-
-        await step('Verify component renders without errors', () => {
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
-
-        await step('Verify all interactive elements are accessible', () => {
-            const buttons = canvas.queryAllByRole('button');
-            const links = canvas.queryAllByRole('link');
-            const inputs = canvas.queryAllByRole('textbox');
-
-            [...buttons, ...links, ...inputs].forEach((el) => {
-                void expect(el).toBeInTheDocument();
-            });
-        });
-
-        await step('Test button interactions', async () => {
-            const buttons = canvas.queryAllByRole('button');
-            for (const button of buttons) {
-                if (!button.hasAttribute('disabled')) {
-                    await userEvent.click(button);
-                }
-            }
-        });
-
-        await step('Test link interactions', async () => {
-            const links = canvas.queryAllByRole('link');
-            for (const link of links) {
-                await userEvent.click(link);
-            }
-        });
-
-        await step('Test input interactions', async () => {
-            const emailInput = canvas.queryByPlaceholderText('Your email');
-            if (emailInput) {
-                await userEvent.clear(emailInput);
-                await userEvent.type(emailInput, 'test@example.com');
-                await expect(emailInput).toHaveValue('test@example.com');
-            }
-        });
-
-        await step('Verify component state after interaction', () => {
-            // Component should remain functional after interactions
-            void expect(canvasElement.firstChild).toBeInTheDocument();
-        });
+        await expect(canvas.getAllByRole('link', { name: /about us/i }).length).toBeGreaterThan(0);
     },
 };

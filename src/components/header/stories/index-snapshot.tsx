@@ -132,11 +132,21 @@ afterEach(() => {
 });
 
 describe('Header stories snapshot', () => {
-    for (const [storyName, Story] of Object.entries(composed)) {
-        // Skip MobileMenuInteraction - it uses React Router's Await which isn't properly mocked in snapshot tests
-        if (storyName === 'MobileMenuInteraction') {
-            continue;
-        }
+    const snapshotStories = Object.entries(composed).filter(
+        ([, Story]) => Story?.parameters?.snapshot !== false
+    );
+
+    if (snapshotStories.length === 0) {
+        // Every story opted out (e.g., they mount a Suspense/Await tree the harness's
+        // vi.mock can't pass through). Vitest fails an empty suite, so register one
+        // no-op assertion. Interaction + a11y suites cover these stories.
+        test('all stories opt out of snapshot (covered by interaction/a11y)', () => {
+            expect(snapshotStories).toEqual([]);
+        });
+        return;
+    }
+
+    for (const [storyName, Story] of snapshotStories) {
         test(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(
                 <ConfigProvider config={mockConfig}>

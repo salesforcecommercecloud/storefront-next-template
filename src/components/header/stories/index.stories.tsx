@@ -14,485 +14,140 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady, SITE_PREFIX } from '@storybook/test-utils';
+import { type ReactElement } from 'react';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { waitForStorybookReady } from '@storybook/test-utils';
 import Header from '../index';
 import AuthProvider from '@/providers/auth';
 import type { SessionData } from '@/lib/api/types';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
-import { mockCategories } from '@/components/__mocks__/mock-data';
+import {
+    mockMegaMenuRootCategory,
+    mockMegaMenuSubCategories,
+} from '@/components/navigation-menu-mega/stories/mock-menu-data';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+const guestSession: SessionData = { userType: 'guest' };
+const registeredSession: SessionData = { userType: 'registered', customerId: 'test-customer-1' };
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logNavigate = action('header-navigate');
-        const logSearchFocus = action('header-search-focus');
-        const logSearchInput = action('header-search-input');
-        const logUserAction = action('header-user-action');
-
-        const disableSearchInputs = () => {
-            const inputs = root.querySelectorAll<HTMLInputElement>(
-                'input[type="search"], input[type="text"][placeholder="Search"], input[aria-label*="search" i]'
-            );
-            inputs.forEach((input) => {
-                input.disabled = true;
-                input.setAttribute('aria-disabled', 'true');
-                input.classList.add('cursor-not-allowed', 'opacity-60', 'pointer-events-none');
-                input.value = '';
-            });
-        };
-        disableSearchInputs();
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const navLink = target.closest('a[href], button[role="link"]');
-            if (navLink) {
-                const href = (navLink as HTMLAnchorElement).getAttribute('href') || '';
-                const text = (navLink as HTMLElement).textContent?.trim() || '';
-                event.preventDefault();
-                (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                logNavigate({ href, text });
-                return;
-            }
-
-            const userBtn = target.closest('button, a');
-            const label = userBtn?.getAttribute('aria-label') || userBtn?.textContent?.trim() || '';
-            if (userBtn && /(sign in|sign out|logout|account|cart|wishlist|store|locator|location|find)/i.test(label)) {
-                event.preventDefault();
-                (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                logUserAction({ label });
-                return;
-            }
-
-            if (userBtn && userBtn.tagName === 'BUTTON') {
-                event.preventDefault();
-                (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                const fallbackLabel = label || 'button';
-                logUserAction({ label: fallbackLabel });
-            }
-        };
-
-        const handleInput = (event: Event) => {
-            const input = event.target as HTMLInputElement | null;
-            if (!input) return;
-            if (input.type === 'search' || /search/i.test(input.getAttribute('aria-label') || '')) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                logSearchInput({ value: input.value });
-            }
-        };
-
-        const handleKeyDown = (event: Event) => {
-            const e = event as unknown as KeyboardEvent;
-            const input = e.target as HTMLInputElement | null;
-            if (!input) return;
-            if ((input.type === 'search' || /search/i.test(input.placeholder)) && e.key === 'Enter') {
-                e.preventDefault();
-                (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                logSearchInput({ value: input.value });
-            }
-        };
-
-        const handleSubmit = (event: Event) => {
-            const form = event.target as HTMLFormElement | null;
-            if (!form) return;
-            if (form.querySelector('input[type="search"], input[aria-label*="search" i]')) {
-                event.preventDefault();
-                const input = form.querySelector<HTMLInputElement>(
-                    'input[type="search"], input[aria-label*="search" i]'
-                );
-                logSearchInput({ value: input?.value || '' });
-            }
-        };
-
-        const handleFocus = (event: Event) => {
-            const el = event.target as HTMLElement | null;
-            if (!el) return;
-            if (el instanceof HTMLInputElement && (el.type === 'search' || /search/i.test(el.placeholder))) {
-                logSearchFocus({ placeholder: el.placeholder });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('input', handleInput, true);
-        root.addEventListener('keydown', handleKeyDown, true);
-        root.addEventListener('submit', handleSubmit, true);
-        root.addEventListener('focus', handleFocus, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('input', handleInput, true);
-            root.removeEventListener('keydown', handleKeyDown, true);
-            root.removeEventListener('submit', handleSubmit, true);
-            root.removeEventListener('focus', handleFocus, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+interface HeaderStoryArgs {
+    authenticated: boolean;
 }
 
-const meta: Meta<typeof Header> = {
+function HeaderHarness({ authenticated }: HeaderStoryArgs): ReactElement {
+    return (
+        <AuthProvider value={authenticated ? registeredSession : guestSession}>
+            <Header>
+                <ResponsiveNavigationMenu
+                    resolve={Promise.resolve(mockMegaMenuRootCategory)}
+                    defer={Promise.resolve(mockMegaMenuSubCategories)}
+                />
+            </Header>
+        </AuthProvider>
+    );
+}
+
+const meta: Meta<HeaderStoryArgs> = {
     title: 'LAYOUT/Header',
-    component: Header,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'fullscreen',
         docs: {
             description: {
-                component: `
-Top application header with brand, search, user actions, store locator, and cart.
-
-Scenarios cover guest vs. authenticated user states.
-                `,
+                component:
+                    'Top application header with brand, search, user actions, store locator, and cart, plus the responsive mega-menu navigation. Toggle **authenticated** in the controls panel to switch between guest (Sign In link) and registered (My Account link) states.',
             },
         },
+    },
+    argTypes: {
+        authenticated: {
+            control: 'boolean',
+            description: 'Off → guest session (Sign In link). On → registered session (My Account link).',
+        },
+    },
+    args: {
+        authenticated: false,
     },
     decorators: [
         (Story) => (
-            <ActionLogger>
-                <div className="min-h-screen bg-background">
-                    <Story />
-                </div>
-            </ActionLogger>
+            <div className="min-h-screen bg-background">
+                <Story />
+            </div>
         ),
     ],
+    render: (args) => <HeaderHarness {...args} />,
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<HeaderStoryArgs>;
 
-const guestSession: SessionData = {
-    userType: 'guest',
-};
-
-const registeredSession: SessionData = {
-    userType: 'registered',
-    customerId: 'test-customer-1',
-};
-
-export const Guest: Story = {
-    render: () => (
-        <AuthProvider value={guestSession}>
-            <Header />
-        </AuthProvider>
-    ),
+export const Default: Story = {
     parameters: {
-        docs: {
-            description: {
-                story: 'Guest user sees Sign In button.',
-            },
-        },
+        // Skip vitest snapshot — `<ResponsiveNavigationMenu>` mounts a Suspense/Await
+        // boundary that the snapshot harness's `vi.mock('react-router')` doesn't pass
+        // through, causing the renderer to suspend and crash. Interaction + a11y
+        // suites cover this story end-to-end via the dev server.
+        snapshot: false,
     },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const logo = canvas.queryByTestId('header-logo');
-        if (logo) {
-            await expect(logo).toBeInTheDocument();
+        await expect(canvas.getByTestId('header-logo')).toBeInTheDocument();
+
+        if (args.authenticated) {
+            await expect(canvas.getByRole('link', { name: /my account/i })).toBeInTheDocument();
+        } else {
+            await expect(canvas.getByRole('link', { name: 'Sign In' })).toBeInTheDocument();
         }
-        const signInButton = canvas.queryByRole('link', { name: 'Sign In' });
-        if (signInButton) {
-            await expect(signInButton).toBeInTheDocument();
-        }
-        const searchDesktop = canvas.queryByTestId('header-search-desktop');
-        if (searchDesktop) {
-            await expect(searchDesktop).toBeInTheDocument();
-        }
-        const accountButton = canvas.queryByRole('button', { name: /account|profile/i });
-        void expect(accountButton).toBeNull();
     },
 };
 
-export const Authenticated: Story = {
-    render: () => (
-        <AuthProvider value={registeredSession}>
-            <Header />
-        </AuthProvider>
-    ),
-    parameters: {
-        docs: {
-            description: {
-                story: 'Authenticated user sees account icon button.',
-            },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const logo = canvas.queryByTestId('header-logo');
-        if (logo) {
-            await expect(logo).toBeInTheDocument();
-        }
-        const accountLink = canvas.queryByRole('link', { name: /my account/i });
-        if (accountLink) {
-            await expect(accountLink).toBeInTheDocument();
-            await expect(accountLink).toHaveAttribute('href', `${SITE_PREFIX}/account/overview`);
-        }
-        const searchDesktop = canvas.queryByTestId('header-search-desktop');
-        if (searchDesktop) {
-            await expect(searchDesktop).toBeInTheDocument();
-        }
-    },
+const mobileViewport = {
+    name: 'iPhone',
+    styles: { width: '375px', height: '844px' },
+    type: 'mobile' as const,
 };
 
 export const MobileView: Story = {
-    render: () => (
-        <AuthProvider value={guestSession}>
-            <Header />
-        </AuthProvider>
+    render: (args) => (
+        <div className="header-mobile-story">
+            <style>{`
+                .header-mobile-story button.lg\\:hidden {
+                    display: inline-flex !important;
+                }
+                .header-mobile-story div.lg\\:hidden:not([aria-hidden]) {
+                    display: block !important;
+                }
+                .header-mobile-story [aria-hidden="true"].lg\\:hidden,
+                .header-mobile-story .hidden.lg\\:flex,
+                .header-mobile-story .hidden.lg\\:block {
+                    display: none !important;
+                }
+                .header-mobile-story [aria-hidden="false"].lg\\:hidden {
+                    display: block !important;
+                }
+            `}</style>
+            <HeaderHarness {...args} />
+        </div>
     ),
     parameters: {
-        docs: {
-            description: { story: 'Header layout on a mobile viewport.' },
-        },
+        // See Default — same Suspense/Await crash in the snapshot harness.
+        snapshot: false,
+        viewport: { options: { iphone: mobileViewport }, value: 'iphone', isRotated: false },
+        docs: { description: { story: 'Header at mobile breakpoint — collapsed actions and hamburger.' } },
     },
-    globals: {
-        viewport: 'mobile2',
-    },
+    globals: { viewport: { value: 'iphone', isRotated: false } },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        const logo = canvas.queryByTestId('header-logo');
-        if (logo) {
-            await expect(logo).toBeInTheDocument();
-        }
-        const signInLink = canvas.queryByRole('link', { name: 'Sign In' });
-        if (signInLink) {
-            await expect(signInLink).toBeInTheDocument();
-        }
-        const searchMobile = canvas.queryByTestId('header-search-mobile');
-        if (searchMobile) {
-            await expect(searchMobile).toBeInTheDocument();
-        }
-        const cartButton = canvas.queryByRole('button', { name: /cart|shopping/i });
-        if (cartButton) {
-            await expect(cartButton).toBeInTheDocument();
-        }
-    },
-};
+        await expect(canvas.getByTestId('header-logo')).toBeInTheDocument();
 
-const mockRootCategory = {
-    id: 'root',
-    name: 'Root',
-    c_showInMenu: true,
-    categories: [
-        { id: 'women', name: 'Women', c_showInMenu: true, categories: [], onlineSubCategoriesCount: 0 },
-        { id: 'men', name: 'Men', c_showInMenu: true, categories: [], onlineSubCategoriesCount: 0 },
-        { id: 'accessories', name: 'Accessories', c_showInMenu: true, categories: [], onlineSubCategoriesCount: 0 },
-    ],
-};
-
-function NavigationDesktop({ root }: { root?: Promise<typeof mockRootCategory> }): ReactElement {
-    void root;
-    return (
-        <nav className="hidden lg:block">
-            <ul className="flex gap-4">
-                {mockRootCategory.categories.map((category) => (
-                    <li key={category.id} className="text-sm font-medium text-foreground">
-                        {category.name}
-                    </li>
-                ))}
-            </ul>
-        </nav>
-    );
-}
-
-export const WithNavigation: Story = {
-    render: () => (
-        <AuthProvider value={guestSession}>
-            <Header>
-                <NavigationDesktop root={Promise.resolve(mockRootCategory)} />
-            </Header>
-        </AuthProvider>
-    ),
-    parameters: {
-        docs: {
-            description: { story: 'Header with desktop navigation (guest).' },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const logo = canvas.queryByTestId('header-logo');
-        if (logo) {
-            await expect(logo).toBeInTheDocument();
-        }
-        const navigationLinks = canvas.queryAllByRole('link');
-        if (navigationLinks.length > 0) {
-            await expect(navigationLinks.length).toBeGreaterThan(0);
-        }
-        const signInLink = canvas.queryByRole('link', { name: 'Sign In' });
-        if (signInLink) {
-            await expect(signInLink).toBeInTheDocument();
-        }
-        const searchDesktop = canvas.queryByTestId('header-search-desktop');
-        if (searchDesktop) {
-            await expect(searchDesktop).toBeInTheDocument();
-        }
-        const cartButton = canvas.queryByRole('button', { name: /cart|shopping/i });
-        if (cartButton) {
-            await expect(cartButton).toBeInTheDocument();
-        }
-    },
-};
-
-export const WithNavigationAuthenticated: Story = {
-    render: () => (
-        <AuthProvider value={registeredSession}>
-            <Header>
-                <NavigationDesktop root={Promise.resolve(mockRootCategory)} />
-            </Header>
-        </AuthProvider>
-    ),
-    parameters: {
-        docs: {
-            description: { story: 'Header with desktop navigation (authenticated).' },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const logo = canvas.queryByTestId('header-logo');
-        if (logo) {
-            await expect(logo).toBeInTheDocument();
-        }
-        const navigationLinks = canvas.queryAllByRole('link');
-        if (navigationLinks.length > 0) {
-            await expect(navigationLinks.length).toBeGreaterThan(0);
-        }
-        const accountLink = canvas.queryByRole('link', { name: /my account/i });
-        if (accountLink) {
-            await expect(accountLink).toBeInTheDocument();
-            await expect(accountLink).toHaveAttribute('href', `${SITE_PREFIX}/account/overview`);
-        }
-        const searchDesktop = canvas.queryByTestId('header-search-desktop');
-        if (searchDesktop) {
-            await expect(searchDesktop).toBeInTheDocument();
-        }
-        const cartButton = canvas.queryByRole('button', { name: /cart|shopping/i });
-        if (cartButton) {
-            await expect(cartButton).toBeInTheDocument();
-        }
-    },
-};
-
-export const StickyWithContent: Story = {
-    render: () => (
-        <AuthProvider value={guestSession}>
-            <div className="min-h-screen">
-                <Header>
-                    <NavigationDesktop root={Promise.resolve(mockRootCategory)} />
-                </Header>
-                <main className="container mx-auto px-4 py-8 space-y-4">
-                    {(() => {
-                        const labels = Array.from({ length: 40 }, (_, idx) => `scroll-${idx + 1}`);
-                        return labels.map((label) => <p key={label}>Scroll section {label.replace('scroll-', '')}</p>);
-                    })()}
-                </main>
-            </div>
-        </AuthProvider>
-    ),
-    parameters: {
-        docs: {
-            description: { story: 'Sticky header behavior with scrollable page content.' },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const header = canvas.queryByRole('banner') || canvasElement.querySelector('header');
-        if (header) {
-            await expect(header).toBeInTheDocument();
-            await expect(header).toHaveClass('sticky');
-        }
-        const scrollSections = canvas.queryAllByText(/scroll section/i);
-        if (scrollSections.length > 0) {
-            await expect(scrollSections.length).toBeGreaterThan(30);
-        }
-
-        const logo = canvas.queryByTestId('header-logo');
-        if (logo) {
-            await expect(logo).toBeInTheDocument();
-        }
-        const signInLink = canvas.queryByRole('link', { name: 'Sign In' });
-        if (signInLink) {
-            await expect(signInLink).toBeInTheDocument();
-        }
-        const searchDesktop = canvas.queryByTestId('header-search-desktop');
-        if (searchDesktop) {
-            await expect(searchDesktop).toBeInTheDocument();
-        }
-    },
-};
-
-export const MobileMenuInteraction: Story = {
-    render: () => {
-        const rootCategory = mockCategories.root;
-        const categoriesList = rootCategory.categories || [];
-        return (
-            <AuthProvider value={guestSession}>
-                <Header>
-                    <ResponsiveNavigationMenu
-                        resolve={Promise.resolve(rootCategory)}
-                        defer={Promise.resolve(categoriesList.flatMap((cat) => cat.categories || []))}
-                    />
-                </Header>
-            </AuthProvider>
-        );
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Tests desktop navigation menu rendering. Mobile menu hamburger button does not render in Storybook test environment due to WithCategoryNavigationMenu + Suspense/Await limitations.',
-            },
-        },
-        viewport: {
-            defaultViewport: 'desktop',
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Note: The mobile hamburger button does not render in Storybook's test environment
-        // due to how WithCategoryNavigationMenu + Suspense/Await resolves. Testing desktop menu instead.
-
-        // Verify header is present
-        const header = canvas.getByRole('banner');
-        await expect(header).toBeInTheDocument();
-
-        // Verify navigation menu structure exists (desktop mega menu)
-        const navigation = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        if (navigation) {
-            await expect(navigation).toBeInTheDocument();
-        }
+        const hamburger = await canvas.findByRole('button', { name: /open menu/i }, { timeout: 5000 });
+        await userEvent.click(hamburger);
+        await expect(hamburger).toHaveAttribute('aria-expanded', 'true');
+        await waitFor(() => {
+            expect(canvas.getByRole('navigation', { name: /mobile navigation menu/i })).toBeInTheDocument();
+        });
     },
 };

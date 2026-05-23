@@ -162,6 +162,26 @@ Interactive search bar for testing user interactions.
     },
 };
 
+export const Focused: Story = {
+    render: () => <SearchBar />,
+    parameters: {
+        docs: {
+            description: {
+                story: 'Search bar in a focused (empty) state — exercises the focus-visible styling and the focus event hook.',
+            },
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
+        searchInput.focus();
+        await expect(searchInput).toHaveFocus();
+        await expect(searchInput).toHaveValue('');
+    },
+};
+
 export const WithQuery: Story = {
     render: () => <SearchBar />,
     parameters: {
