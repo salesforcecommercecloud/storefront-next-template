@@ -30,11 +30,21 @@ export default function BnplTarget() {
 
     if (!messagePromise || !learnMorePromise) return null;
 
+    // Each deferred Promise gets its own <Suspense>/<Await> so the loader's
+    // original Promise identity flows through unchanged — combining them via
+    // Promise.all() inside render produces a fresh Promise on every render,
+    // which breaks <Await>'s identity-keyed tracking and re-suspends every cycle.
     return (
         <Suspense fallback={null}>
-            <Await resolve={Promise.all([messagePromise, learnMorePromise])} errorElement={null}>
-                {([messageData, learnMoreData]) => (
-                    <BuyNowPayLater messageData={messageData} learnMoreData={learnMoreData} />
+            <Await resolve={messagePromise} errorElement={null}>
+                {(messageData) => (
+                    <Suspense fallback={null}>
+                        <Await resolve={learnMorePromise} errorElement={null}>
+                            {(learnMoreData) => (
+                                <BuyNowPayLater messageData={messageData} learnMoreData={learnMoreData} />
+                            )}
+                        </Await>
+                    </Suspense>
                 )}
             </Await>
         </Suspense>
