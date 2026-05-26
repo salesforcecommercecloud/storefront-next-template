@@ -74,6 +74,7 @@ export default function AddressCard({
 
     return (
         <Card
+            data-testid="address-card"
             className={`gap-0 py-4 relative ${isPreferred ? 'border-primary border-2' : 'border-border'} rounded-none shadow-none`}>
             <CardContent className="px-6 pt-4">
                 <AddressDisplay address={address} showName={true} isPreferred={isPreferred} />

@@ -190,8 +190,8 @@ Scenario('Promo code rejects too-short and invalid codes', async () => {
     .tag('@guest-checkout');
 
 Scenario('Place Order shows immediate error when shipping methods are missing', async () => {
-    const { loginFlow } = inject();
-    await loginFlow.execute();
+    const { apiLoginFlow } = inject();
+    await apiLoginFlow.executeWithEnsuredCredentials();
 
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();

@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-const { I } = inject();
-import { getScapiConfig, loginRegistered } from '../utils/scapi-helper';
+const { I, loginFlow } = inject();
+import { getScapiConfig, loginRegistered, type RegisteredTokens, type ScapiConfig } from '../utils/scapi-helper';
 import { buildRegisteredSessionCookieOps } from '../utils/api-login-utils';
 import { getStorefrontOrigin } from '../utils/cookie-utils';
+import { createTokenCache } from '../utils/token-cache';
 import type { LoginData } from '../types/auth.types';
+
+/**
+ * Worker-local SLAS token cache, keyed by email. See `token-cache.ts` for the
+ * coalescing + eviction policy. TTL capped at 25 min — well within SLAS's
+ * ~30 min access-token lifetime.
+ *
+ * Why caching matters: SLAS rate-limits successive logins for the same shopper
+ * to ~1 per second per tenant ("OCAPI" 409 CONFLICT). Back-to-back scenarios
+ * in the same spec each call clearCookies() + apiLoginFlow.execute(); without
+ * the cache they trip the rate limit. The spec's "fresh session per scenario"
+ * intent is preserved by clearing cookies and re-injecting the same tokens.
+ */
+const TOKEN_CACHE_TTL_MS = 25 * 60 * 1000;
+const tokenCache = createTokenCache<RegisteredTokens>();
 
 /**
  * API-based Login Flow
@@ -65,7 +80,7 @@ class ApiLoginFlow {
             );
         }
 
-        const tokens = await loginRegistered(config, credentials);
+        const tokens = await this.getOrFetchTokens(config, credentials);
         const ops = buildRegisteredSessionCookieOps(config.siteId, tokens, getStorefrontOrigin());
 
         await (I.usePlaywrightTo('inject API login session cookies', async ({ page }) => {
@@ -76,6 +91,24 @@ class ApiLoginFlow {
         }) as unknown as Promise<void>);
 
         return credentials;
+    }
+
+    private getOrFetchTokens(config: ScapiConfig, credentials: LoginData): Promise<RegisteredTokens> {
+        return tokenCache.getOrFetch(credentials.email, () => loginRegistered(config, credentials), TOKEN_CACHE_TTL_MS);
+    }
+
+    /**
+     * API-login equivalent of `loginFlow.execute()` (no args): resolves credentials
+     * via the shared credential store (creating an account on demand if none exist),
+     * then logs in via SCAPI.
+     *
+     * Use this when migrating a `loginFlow.execute()` call-site that does not assert
+     * on the UI login form. Specs that test the form itself must keep using
+     * `loginFlow.execute()`.
+     */
+    async executeWithEnsuredCredentials(): Promise<LoginData> {
+        const credentials = await loginFlow.getCredentials();
+        return this.execute(credentials);
     }
 }
 

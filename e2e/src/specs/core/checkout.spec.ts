@@ -16,7 +16,7 @@
 
 Feature('Storefront Checkout Tests').tag('@core').tag('@checkout');
 
-const { checkoutPage, addToCartFlow, apiCartSetupFlow, loginFlow, registeredShopperSetupFlow, storefrontPage } =
+const { checkoutPage, addToCartFlow, apiCartSetupFlow, apiLoginFlow, registeredShopperSetupFlow, storefrontPage } =
     inject();
 import { expect } from 'chai';
 import {
@@ -53,7 +53,7 @@ Scenario('Guest shopper should complete checkout and place order', async () => {
     .tag('@smoke');
 
 Scenario('Registered shopper should complete checkout', async () => {
-    await loginFlow.execute();
+    await apiLoginFlow.executeWithEnsuredCredentials();
 
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;

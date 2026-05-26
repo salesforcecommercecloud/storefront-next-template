@@ -16,6 +16,8 @@
 
 const { I } = inject();
 import { getStorefrontOrigin, getStorefrontScopedCookies } from '../utils/cookie-utils';
+import { getSfccCookieNames } from '../utils/api-login-utils';
+import { getSiteId } from '../utils/site-id';
 import { buildSitePath } from '../utils/url-utils';
 
 /**
@@ -97,18 +99,14 @@ class StorefrontPage {
      * @param siteId - Site ID for cookie namespacing (defaults to environment SITE_ID)
      */
     async validateSFCCCookies(siteId?: string): Promise<void> {
-        const actualSiteId = siteId || process.env.SITE_ID || 'RefArchGlobal';
+        const actualSiteId = getSiteId(siteId);
         const storefrontCookies = await getStorefrontScopedCookies();
+        const names = getSfccCookieNames(actualSiteId);
 
-        // Expected SFCC cookies (namespaced with siteId).
-        // Note: customerId is NOT a cookie — it is derived per-request from the SLAS access
+        // customerId is NOT a cookie — it is derived per-request from the SLAS access
         // token (cc-at) JWT `isb` claim and exposed via useAuth(). `usid` IS a cookie because
         // hybrid storefronts forward it to ECOM, which does not parse the access token.
-        const expectedCookies = [
-            `cc-at_${actualSiteId}`, // Access token
-            `cc-nx-g_${actualSiteId}`, // Next generation guest token
-            `usid_${actualSiteId}`, // User session ID
-        ];
+        const expectedCookies = [names.accessToken, names.guestRefresh, names.usid];
 
         for (const cookieName of expectedCookies) {
             if (!storefrontCookies.has(cookieName)) {
@@ -137,8 +135,9 @@ class StorefrontPage {
         authRefreshToken: string | null;
         usid: string | null;
     }> {
-        const actualSiteId = siteId || process.env.SITE_ID || 'RefArchGlobal';
-        const refreshTokenName = userType === 'guest' ? `cc-nx-g_${actualSiteId}` : `cc-nx_${actualSiteId}`;
+        const actualSiteId = getSiteId(siteId);
+        const names = getSfccCookieNames(actualSiteId);
+        const refreshTokenName = userType === 'guest' ? names.guestRefresh : names.registeredRefresh;
         const timeoutMs = timeoutSeconds * 1000;
 
         const result = await (I.usePlaywrightTo(`wait for ${userType} session cookies`, async ({ page }) => {
@@ -151,10 +150,10 @@ class StorefrontPage {
                 const cookies = await page.context().cookies(origin);
                 const cookieMap = new Map(cookies.map((c: { name: string; value: string }) => [c.name, c.value]));
 
-                const accessToken = cookieMap.get(`cc-at_${actualSiteId}`) ?? null;
-                const guestRefreshToken = cookieMap.get(`cc-nx-g_${actualSiteId}`) ?? null;
-                const authRefreshToken = cookieMap.get(`cc-nx_${actualSiteId}`) ?? null;
-                const usid = cookieMap.get(`usid_${actualSiteId}`) ?? null;
+                const accessToken = cookieMap.get(names.accessToken) ?? null;
+                const guestRefreshToken = cookieMap.get(names.guestRefresh) ?? null;
+                const authRefreshToken = cookieMap.get(names.registeredRefresh) ?? null;
+                const usid = cookieMap.get(names.usid) ?? null;
                 const refreshToken = userType === 'guest' ? guestRefreshToken : authRefreshToken;
 
                 if (accessToken && refreshToken && usid) {
@@ -270,9 +269,9 @@ class StorefrontPage {
      * @param siteId - Site ID for cookie namespacing (defaults to environment SITE_ID)
      */
     async hasRegisteredSession(siteId?: string): Promise<boolean> {
-        const actualSiteId = siteId || process.env.SITE_ID || 'RefArchGlobal';
+        const actualSiteId = getSiteId(siteId);
         const storefrontCookies = await getStorefrontScopedCookies();
-        return storefrontCookies.has(`cc-nx_${actualSiteId}`);
+        return storefrontCookies.has(getSfccCookieNames(actualSiteId).registeredRefresh);
     }
 
     /**
@@ -293,12 +292,12 @@ class StorefrontPage {
      * @param siteId - Site ID for cookie namespacing (defaults to environment SITE_ID)
      */
     async logout(siteId?: string): Promise<void> {
-        const actualSiteId = siteId || process.env.SITE_ID || 'RefArchGlobal';
+        const actualSiteId = getSiteId(siteId);
+        const names = getSfccCookieNames(actualSiteId);
 
-        // Clear all SFCC authentication cookies
-        I.clearCookie(`cc-at_${actualSiteId}`); // Access token
-        I.clearCookie(`cc-nx_${actualSiteId}`); // Authenticated refresh token
-        I.clearCookie(`usid_${actualSiteId}`); // User session ID
+        I.clearCookie(names.accessToken);
+        I.clearCookie(names.registeredRefresh);
+        I.clearCookie(names.usid);
 
         // Reload the page so the storefront's auth middleware runs and issues a new guest session
         I.refreshPage();

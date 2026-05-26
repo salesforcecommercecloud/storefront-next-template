@@ -16,7 +16,7 @@
 
 Feature('Account Details Tests').tag('@core').tag('@account').tag('@user-account');
 
-const { I, storefrontPage, accountDetailsPage, loginFlow, signupFlow } = inject();
+const { I, storefrontPage, accountDetailsPage, apiLoginFlow, signupFlow } = inject();
 import { expect } from 'chai';
 
 /**
@@ -39,7 +39,7 @@ Before(async () => {
         specPassword = signupData.password;
     } else {
         await storefrontPage.clearCookies();
-        await loginFlow.executeWithCredentials(specEmail, specPassword);
+        await apiLoginFlow.execute({ email: specEmail, password: specPassword });
     }
 });
 

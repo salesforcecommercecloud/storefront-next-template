@@ -16,10 +16,59 @@
 
 import type { RegisteredTokens } from './scapi-helper';
 
-// TODO: cookie names (cc-at_, cc-nx_, cc-nx-g_, usid_, customerId_) are scattered across
-// api-login-utils.ts, api-cart-setup.flow.ts, login.flow.ts (logout), and cookie-utils.ts.
-// Extract to a single source of truth in scapi-helper.ts (they're SCAPI/SLAS protocol names)
-// or cookie-utils.ts. Bundle with the loginFlow migration / api-cart-setup dedup TODOs.
+/**
+ * SFCC cookie names used by the storefront's SCAPI/SLAS auth scheme, parameterized
+ * by the site ID. Single source of truth — referenced by api-login-utils,
+ * api-cart-setup.flow, login.flow (logout), and storefront.page.
+ */
+export interface SfccCookieNames {
+    /** SLAS access token (JWT). Used for both guest and registered sessions. */
+    accessToken: string;
+    /** SLAS refresh token for a registered (logged-in) session. */
+    registeredRefresh: string;
+    /** SLAS refresh token for a guest session. */
+    guestRefresh: string;
+    /** SCAPI user session ID. */
+    usid: string;
+    /** Customer ID (set on registered sessions). */
+    customerId: string;
+    /** Storefront-set basket snapshot (NOT site-scoped). */
+    basket: string;
+}
+
+export function getSfccCookieNames(siteId: string): SfccCookieNames {
+    return {
+        accessToken: `cc-at_${siteId}`,
+        registeredRefresh: `cc-nx_${siteId}`,
+        guestRefresh: `cc-nx-g_${siteId}`,
+        usid: `usid_${siteId}`,
+        customerId: `customer_id_${siteId}`,
+        basket: '__sfdc_basket',
+    };
+}
+
+/**
+ * Cookie attributes shared by every SFCC session cookie injected by the E2E
+ * harness: the domain comes from the storefront origin, path is always root,
+ * `secure` follows the protocol, and SameSite is Lax (matches the cookies the
+ * storefront sets in production).
+ */
+export interface CookieDefaults {
+    domain: string;
+    path: '/';
+    secure: boolean;
+    sameSite: 'Lax';
+}
+
+export function buildCookieDefaults(origin: string): CookieDefaults {
+    const url = new URL(origin);
+    return {
+        domain: url.hostname,
+        path: '/',
+        secure: url.protocol === 'https:',
+        sameSite: 'Lax',
+    };
+}
 
 /**
  * Cookie shape compatible with Playwright's `addCookies()`. Re-declared here so
@@ -85,21 +134,16 @@ export function buildRegisteredSessionCookieOps(
     tokens: RegisteredTokens,
     origin: string
 ): RegisteredSessionCookieOps {
-    const url = new URL(origin);
-    const cookieDefaults = {
-        domain: url.hostname,
-        path: '/',
-        secure: url.protocol === 'https:',
-        sameSite: 'Lax' as const,
-    };
+    const cookieDefaults = buildCookieDefaults(origin);
+    const names = getSfccCookieNames(siteId);
 
     return {
-        clear: [`cc-nx-g_${siteId}`],
+        clear: [names.guestRefresh],
         add: [
-            { ...cookieDefaults, name: `cc-at_${siteId}`, value: tokens.accessToken, httpOnly: true },
-            { ...cookieDefaults, name: `cc-nx_${siteId}`, value: tokens.refreshToken, httpOnly: true },
-            { ...cookieDefaults, name: `usid_${siteId}`, value: tokens.usid, httpOnly: true },
-            { ...cookieDefaults, name: `customer_id_${siteId}`, value: tokens.customerId, httpOnly: true },
+            { ...cookieDefaults, name: names.accessToken, value: tokens.accessToken, httpOnly: true },
+            { ...cookieDefaults, name: names.registeredRefresh, value: tokens.refreshToken, httpOnly: true },
+            { ...cookieDefaults, name: names.usid, value: tokens.usid, httpOnly: true },
+            { ...cookieDefaults, name: names.customerId, value: tokens.customerId, httpOnly: true },
         ],
     };
 }

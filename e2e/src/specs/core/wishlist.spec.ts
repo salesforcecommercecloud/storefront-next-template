@@ -16,7 +16,7 @@
 
 Feature('Storefront Wishlist Tests').tag('@core').tag('@wishlist');
 
-const { I, loginFlow, addToWishlistFlow, accountWishlistPage } = inject();
+const { I, apiLoginFlow, storefrontPage, addToWishlistFlow, accountWishlistPage } = inject();
 import { expect } from 'chai';
 
 Scenario('Registered shopper can add product to wishlist and see it in account wishlist', async () => {
@@ -91,8 +91,8 @@ Scenario('Wishlist item persists after logout and login', async () => {
     );
     expect(appearsBeforeLogout, `Expected wishlist to contain "${productTitle}" before logout`).to.be.true;
 
-    await loginFlow.logout();
-    await loginFlow.execute();
+    await storefrontPage.logout();
+    await apiLoginFlow.executeWithEnsuredCredentials();
 
     accountWishlistPage.navigate();
     const afterRelogin = await accountWishlistPage.pollUntilItemsAppear();

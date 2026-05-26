@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { buildRegisteredSessionCookieOps } from './api-login-utils';
+import { buildCookieDefaults, buildRegisteredSessionCookieOps, getSfccCookieNames } from './api-login-utils';
 import type { RegisteredTokens } from './scapi-helper';
 
 const tokens: RegisteredTokens = {
@@ -99,5 +99,52 @@ describe('buildRegisteredSessionCookieOps', () => {
         for (const cookie of ops.add) {
             expect(cookie.sameSite).toBe('Lax');
         }
+    });
+});
+
+describe('getSfccCookieNames', () => {
+    it('returns SCAPI/SLAS cookie names suffixed with the siteId', () => {
+        expect(getSfccCookieNames('RefArchGlobal')).toEqual({
+            accessToken: 'cc-at_RefArchGlobal',
+            registeredRefresh: 'cc-nx_RefArchGlobal',
+            guestRefresh: 'cc-nx-g_RefArchGlobal',
+            usid: 'usid_RefArchGlobal',
+            customerId: 'customer_id_RefArchGlobal',
+            basket: '__sfdc_basket',
+        });
+    });
+
+    it('keeps the registered and guest refresh-token names distinct', () => {
+        // Regression guard: confusing cc-nx_ (registered) with cc-nx-g_ (guest)
+        // would silently mark logged-in users as guests and clobber session state.
+        const names = getSfccCookieNames('SiteA');
+        expect(names.registeredRefresh).toBe('cc-nx_SiteA');
+        expect(names.guestRefresh).toBe('cc-nx-g_SiteA');
+        expect(names.registeredRefresh).not.toBe(names.guestRefresh);
+    });
+
+    it('returns the basket name unprefixed (it is not site-scoped)', () => {
+        expect(getSfccCookieNames('SiteA').basket).toBe('__sfdc_basket');
+        expect(getSfccCookieNames('SiteB').basket).toBe('__sfdc_basket');
+    });
+});
+
+describe('buildCookieDefaults', () => {
+    it('extracts the host from the origin and sets path: /', () => {
+        expect(buildCookieDefaults('https://shop.example.com:8443/some/path')).toEqual({
+            domain: 'shop.example.com',
+            path: '/',
+            secure: true,
+            sameSite: 'Lax',
+        });
+    });
+
+    it('sets secure: false for http origins so localhost dev works', () => {
+        expect(buildCookieDefaults('http://localhost:5173')).toEqual({
+            domain: 'localhost',
+            path: '/',
+            secure: false,
+            sameSite: 'Lax',
+        });
     });
 });
