@@ -31,13 +31,6 @@ import { getBasketCurrency, calculateBasket } from '@/lib/api/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getAddressBookFromCustomer, getPaymentMethodsFromCustomer } from '@/lib/customer/profile-utils';
 
-// Tests of the framework-active path require the framework to be enabled. Mock returns
-// true so the post-hook instrument check actually runs.
-vi.mock('@/lib/payment/framework-enabled.server', () => ({
-    isPaymentFrameworkEnabled: () => true,
-    frameworkDisabledResponse: () => new Response('Not Found', { status: 404 }),
-}));
-
 vi.mock('@/middlewares/basket.server', () => ({
     getBasket: vi.fn(),
     updateBasketResource: vi.fn(),
@@ -270,8 +263,7 @@ describe('action.place-order action', () => {
                     cardType: 'Visa',
                     holder: 'Test User',
                 }),
-            }),
-            undefined
+            })
         );
     });
 
@@ -370,8 +362,7 @@ describe('action.place-order action', () => {
                     cardType: 'Mastercard',
                     holder: 'Jane Doe',
                 }),
-            }),
-            undefined
+            })
         );
         expect(vi.mocked(saveShippingAddressToCustomer)).toHaveBeenCalledWith(
             mockContext,
@@ -475,8 +466,7 @@ describe('action.place-order action', () => {
             'O-3',
             expect.objectContaining({
                 paymentMethodId: 'CREDIT_CARD',
-            }),
-            undefined
+            })
         );
 
         // Shipping address and phone SHOULD be saved (empty profile)
@@ -1081,263 +1071,6 @@ describe('action.place-order action', () => {
             expect(vi.mocked(updateCustomerContactInfo)).toHaveBeenCalledWith(mockContext, 'phone-cust', {
                 phone: '+1 8885551234',
             });
-        });
-    });
-
-    describe('payment extension active (framework_paymentFlowType present)', () => {
-        // Extension-active path is detected by formData.has(framework_paymentFlowType).
-        // The framework calls beforePlaceOrder (which the test environment does not register
-        // a handler for, so it's a no-op), then asserts the basket has an instrument before
-        // calling createOrder.
-
-        test('returns 500 with clear error when extension active but no instrument is attached after beforePlaceOrder', async () => {
-            const basketNoInstrument = {
-                basketId: 'b1',
-                customerInfo: { email: 'ext@example.com' },
-                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
-                shipments: [
-                    {
-                        shipmentId: 's1',
-                        shippingAddress: {
-                            address1: '1 Ext Way',
-                            city: 'Boston',
-                            postalCode: '02101',
-                            countryCode: 'US',
-                        },
-                        shippingMethod: { id: 'ground', name: 'Ground' },
-                    },
-                ],
-                // No paymentInstruments — extension was supposed to attach one in beforePlaceOrder.
-                billingAddress: { address1: '1 Ext Way', city: 'Boston', postalCode: '02101', countryCode: 'US' },
-                orderTotal: 25.0,
-            };
-            vi.mocked(getBasket).mockResolvedValue({ current: basketNoInstrument } as any);
-            vi.mocked(getAuth).mockReturnValue({ customerId: 'cust-ext' } as any);
-            vi.mocked(getBasketCurrency).mockReturnValue('USD');
-
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
-                framework_paymentFlowType: 'inline',
-                framework_idempotencyKey: '11111111-2222-3333-4444-555555555555',
-            });
-            const response = await action({
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/place-order',
-            } as ActionFunctionArgs);
-
-            expect(response.status).toBe(500);
-            const body = await parsePlaceOrderResponse(response);
-            expect(body.success).toBe(false);
-            expect(body.error).toEqual(
-                expect.objectContaining({ message: 'Payment extension did not attach a payment instrument' })
-            );
-            expect(body.step).toBe('placeOrder');
-        });
-
-        test('proceeds to createOrder when instrument is on basket after beforePlaceOrder', async () => {
-            const basketWithInstrument = {
-                basketId: 'b1',
-                customerInfo: { email: 'ext@example.com' },
-                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
-                shipments: [
-                    {
-                        shipmentId: 's1',
-                        shippingAddress: {
-                            address1: '1 Ext Way',
-                            city: 'Boston',
-                            postalCode: '02101',
-                            countryCode: 'US',
-                        },
-                        shippingMethod: { id: 'ground', name: 'Ground' },
-                    },
-                ],
-                paymentInstruments: [{ paymentInstrumentId: 'pi-from-extension' }],
-                billingAddress: { address1: '1 Ext Way', city: 'Boston', postalCode: '02101', countryCode: 'US' },
-                orderTotal: 25.0,
-            };
-            vi.mocked(getBasket).mockResolvedValue({ current: basketWithInstrument } as any);
-            vi.mocked(getAuth).mockReturnValue({ customerId: 'cust-ext' } as any);
-            vi.mocked(getBasketCurrency).mockReturnValue('USD');
-            vi.mocked(calculateBasket).mockResolvedValue({ ...basketWithInstrument, basketId: 'b1' } as any);
-
-            const createOrderMock = vi.fn().mockResolvedValue({
-                data: { orderNo: 'EXT-1', paymentInstruments: [], customerInfo: { email: 'ext@example.com' } },
-            });
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperOrders: { createOrder: createOrderMock },
-            } as any);
-
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
-                framework_paymentFlowType: 'inline',
-                framework_idempotencyKey: '11111111-2222-3333-4444-555555555555',
-            });
-            const response = await action({
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/place-order',
-            } as ActionFunctionArgs);
-
-            expect(createOrderMock).toHaveBeenCalledWith({
-                params: {},
-                body: { basketId: 'b1' },
-            });
-            expect(response.status).toBe(302);
-            expect(response.headers.get('Location')).toContain('/order-confirmation/EXT-1');
-        });
-
-        test('skips built-in billing-address requirement check when extension is active', async () => {
-            // Built-in flow rejects with 400 if billingAddress is missing. With an extension
-            // active, the billing-address check is skipped (extension's beforePlaceOrder is
-            // expected to attach billing as part of payment-instrument setup).
-            const basketNoBilling = {
-                basketId: 'b1',
-                customerInfo: { email: 'ext@example.com' },
-                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
-                shipments: [
-                    {
-                        shipmentId: 's1',
-                        shippingAddress: {
-                            address1: '1 Ext Way',
-                            city: 'Boston',
-                            postalCode: '02101',
-                            countryCode: 'US',
-                        },
-                        shippingMethod: { id: 'ground', name: 'Ground' },
-                    },
-                ],
-                paymentInstruments: [{ paymentInstrumentId: 'pi-from-extension' }],
-                // No billingAddress
-                orderTotal: 25.0,
-            };
-            vi.mocked(getBasket).mockResolvedValue({ current: basketNoBilling } as any);
-            vi.mocked(getAuth).mockReturnValue({ customerId: 'cust-ext' } as any);
-            vi.mocked(getBasketCurrency).mockReturnValue('USD');
-            vi.mocked(calculateBasket).mockResolvedValue({ ...basketNoBilling, basketId: 'b1' } as any);
-            vi.mocked(createApiClients).mockReturnValue({
-                shopperOrders: {
-                    createOrder: vi.fn().mockResolvedValue({
-                        data: {
-                            orderNo: 'EXT-2',
-                            paymentInstruments: [],
-                            customerInfo: { email: 'ext@example.com' },
-                        },
-                    }),
-                },
-            } as any);
-
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
-                framework_paymentFlowType: 'inline',
-                framework_idempotencyKey: '11111111-2222-3333-4444-555555555555',
-            });
-            const response = await action({
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/place-order',
-            } as ActionFunctionArgs);
-
-            // Without the extension bypass, this would be a 400 "Billing address is required".
-            // With it, the action proceeds to createOrder and redirects on success.
-            expect(response.status).toBe(302);
-        });
-
-        test('framework-disabled config: framework_paymentFlowType in formData is ignored, built-in flow runs', async () => {
-            // Reset the mock module to return false for this test only. Vitest-style:
-            // reset all modules and re-import with the disabled mock.
-            vi.doMock('@/lib/payment/framework-enabled.server', () => ({
-                isPaymentFrameworkEnabled: () => false,
-                frameworkDisabledResponse: () => new Response('Not Found', { status: 404 }),
-            }));
-            vi.resetModules();
-            const { action: actionWithDisabled } = await import('./action.place-order');
-
-            // No instrument and no billing address. With framework enabled this is a
-            // post-hook contract failure (500). With framework DISABLED, the framework
-            // ignores framework_paymentFlowType entirely, so the built-in flow's
-            // billing-required check fires (400) — proving the bypass did not happen.
-            const basketNoBilling = {
-                basketId: 'b1',
-                customerInfo: { email: 'gated@example.com' },
-                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
-                shipments: [
-                    {
-                        shipmentId: 's1',
-                        shippingAddress: {
-                            address1: '1 Gate Way',
-                            city: 'Boston',
-                            postalCode: '02101',
-                            countryCode: 'US',
-                        },
-                        shippingMethod: { id: 'ground', name: 'Ground' },
-                    },
-                ],
-                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }],
-                orderTotal: 25.0,
-            };
-            vi.mocked(getBasket).mockResolvedValue({ current: basketNoBilling } as any);
-            vi.mocked(getAuth).mockReturnValue({ customerId: 'cust-gated' } as any);
-            vi.mocked(getBasketCurrency).mockReturnValue('USD');
-
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {
-                framework_paymentFlowType: 'inline',
-                framework_idempotencyKey: '11111111-2222-3333-4444-555555555555',
-            });
-            const response = await actionWithDisabled({
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/place-order',
-            } as ActionFunctionArgs);
-
-            // 400 (built-in billing-required), NOT 500 (framework post-hook check).
-            expect(response.status).toBe(400);
-            const body = await parsePlaceOrderResponse(response);
-            expect(body.error).toEqual(expect.objectContaining({ message: 'Billing address is required' }));
-
-            // Restore the original mock for any subsequent tests.
-            vi.doUnmock('@/lib/payment/framework-enabled.server');
-            vi.resetModules();
-        });
-
-        test('built-in flow (no framework_paymentFlowType) still requires billing address', async () => {
-            // Sanity check: the bypass is gated on extension presence, not on always-skip.
-            const basketNoBilling = {
-                basketId: 'b1',
-                customerInfo: { email: 'noext@example.com' },
-                productItems: [{ itemId: 'i1', productId: 'p1', quantity: 1, shipmentId: 's1' }],
-                shipments: [
-                    {
-                        shipmentId: 's1',
-                        shippingAddress: {
-                            address1: '1 NoExt Way',
-                            city: 'Denver',
-                            postalCode: '80201',
-                            countryCode: 'US',
-                        },
-                        shippingMethod: { id: 'ground', name: 'Ground' },
-                    },
-                ],
-                paymentInstruments: [{ paymentInstrumentId: 'pi-1' }],
-                // No billingAddress — and no framework_paymentFlowType either.
-                orderTotal: 25.0,
-            };
-            vi.mocked(getBasket).mockResolvedValue({ current: basketNoBilling } as any);
-            vi.mocked(getAuth).mockReturnValue({ customerId: 'cust-noext' } as any);
-            vi.mocked(getBasketCurrency).mockReturnValue('USD');
-
-            const request = createFormDataRequest('http://localhost/action/place-order', 'POST', {});
-            const response = await action({
-                request,
-                context: mockContext,
-                params: {},
-                unstable_pattern: '/action/place-order',
-            } as ActionFunctionArgs);
-
-            expect(response.status).toBe(400);
-            const body = await parsePlaceOrderResponse(response);
-            expect(body.error).toEqual(expect.objectContaining({ message: 'Billing address is required' }));
         });
     });
 });

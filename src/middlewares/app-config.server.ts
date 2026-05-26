@@ -17,7 +17,6 @@ import type { MiddlewareFunction } from 'react-router';
 import config from '@/config/server';
 import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
 import { getLogger } from '@/lib/logger.server';
-import { assertPaymentRedirectConfigured } from '@/lib/payment-redirect.server';
 
 let validationRun = false;
 
@@ -115,21 +114,6 @@ function validateConfig(logger: ReturnType<typeof getLogger>): void {
                 `Set defaultSiteId to one of the configured site IDs in your MRT deployment, .env file, or config.server.ts:\n` +
                 `  PUBLIC__app__defaultSiteId=${siteIds[0]}\n\n` +
                 `See docs/README-MULTI-SITE.md for site context configuration documentation.`
-        );
-    }
-
-    // Payment redirect framework: log a warning if the HMAC signing secret is not
-    // configured. We don't fail boot because not every deployment uses payment redirects;
-    // the actual redirect routes will throw on first use if missing. Surfacing the warning
-    // at startup means operators see the issue at deploy time, not from a shopper report.
-    try {
-        assertPaymentRedirectConfigured();
-    } catch (error) {
-        logger.warn(
-            'AppConfig: payment redirect framework is not fully configured. ' +
-                'Set PAYMENT_COOKIE_SECRET (preferred) or CLIENT_SECRET to enable redirect-based payment flows. ' +
-                'Inline-only payment integrations are unaffected.',
-            { error: error instanceof Error ? error.message : String(error) }
         );
     }
 

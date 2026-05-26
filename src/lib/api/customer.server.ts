@@ -860,15 +860,14 @@ export async function savePaymentMethodToCustomer(
 
 /**
  * Save a payment method to a customer's profile via the order payment instrument endpoint.
- * Uses createPaymentInstrumentForOrder with createCustomerPaymentInstrument: true.
- *
- * @param creditCardToken — Pass explicitly from formData; SCAPI strips this from responses.
+ * Uses shopperOrders.createPaymentInstrumentForOrder with createCustomerPaymentInstrument: true,
+ * which triggers the platform's internal copy that preserves creditCardToken — unlike the direct
+ * shopperCustomers.createCustomerPaymentInstrument endpoint which silently drops the token.
  */
 export async function savePaymentMethodToCustomerViaOrder(
     context: ActionFunctionArgs['context'],
     orderNo: string,
-    paymentInstrument: PaymentInstrumentForSave,
-    creditCardToken?: string
+    paymentInstrument: PaymentInstrumentForSave
 ): Promise<boolean> {
     const logger = getLogger(context);
     try {
@@ -889,7 +888,7 @@ export async function savePaymentMethodToCustomerViaOrder(
                           expirationMonth: card.expirationMonth,
                           expirationYear: card.expirationYear,
                           maskedNumber: card.maskedNumber,
-                          creditCardToken: creditCardToken || (card as { creditCardToken?: string }).creditCardToken,
+                          creditCardToken: (card as { creditCardToken?: string }).creditCardToken,
                       }
                     : undefined,
                 createCustomerPaymentInstrument: true,

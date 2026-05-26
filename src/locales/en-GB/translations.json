@@ -292,14 +292,6 @@
             "missingCallbackToken": "Missing x-slas-callback-token header.",
             "missingRequiredFields": "Missing required fields: email_id and token."
         },
-        "payment": {
-            "payment_expired": "Your payment session expired. Please try again.",
-            "payment_invalid": "We couldn't verify the payment response. Please try again.",
-            "basket_changed": "Your cart changed during checkout. Please review your order and try again.",
-            "payment_failed": "Payment was not approved. Please try a different payment method.",
-            "order_failed": "We couldn't place your order. Please try again or contact support.",
-            "unexpected": "Something went wrong with your payment. Please try again."
-        },
         "jwks": {
             "missingEnvironmentVariables": "Missing required configuration: shortCode and organizationId.",
             "invalidResponse": "Invalid JWKS response: missing or invalid keys array.",

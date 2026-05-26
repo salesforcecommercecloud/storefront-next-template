@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, lazy, Suspense, use, useRef, useState, type FormEvent } from 'react';
-import { useFetcher, useSearchParams } from 'react-router';
+import { useFetcher } from 'react-router';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import { useBasket, useBasketHydrated } from '@/providers/basket';
 import { useCheckoutActions, type PaymentSubmissionRef } from '@/hooks/use-checkout-actions';
@@ -76,7 +76,8 @@ import {
 /**
  * Determines whether the user's current payment form selection differs from the payment
  * instrument already on the basket. When they differ, payment must be re-submitted before
- * place order so the basket reflects the user's actual choice.
+ * place order so the basket reflects the user's actual choice (e.g. switching from a saved
+ * card to a new card, or choosing a different saved card).
  */
 function doesPaymentSelectionDiffer(
     paymentData: PaymentData,
@@ -85,10 +86,16 @@ function doesPaymentSelectionDiffer(
     const basketInstrument = basket?.paymentInstruments?.[0];
     if (!basketInstrument) return false;
 
+    // User chose "enter a new card" — the basket's existing instrument (from a prior saved-card
+    // auto-apply or a previous payment submit) is stale and must be replaced.
     if (!paymentData.useSavedPaymentMethod) {
         return true;
     }
 
+    // User chose a saved card. The basket instrument doesn't store the customerPaymentInstrumentId
+    // (v2 basket API limitation), so we can't reliably detect whether the user picked a different
+    // saved card than what's already on the basket. Always re-submit to guarantee the correct card
+    // is applied — the server action is idempotent (removes old instrument, adds the selected one).
     if (paymentData.useSavedPaymentMethod && paymentData.selectedSavedPaymentMethod) {
         return true;
     }
@@ -208,26 +215,10 @@ export default function CheckoutFormPage({
 
     const paymentSubmissionRef = useRef<PaymentSubmissionRef['current']>({
         formDataGetter: null,
-        isSubmitting: false,
-        onPaymentSubmit: null,
-        onPaymentSuccess: null,
-        paymentSubmissionToken: 0,
-        onPaymentReturn: null,
+        shouldPlaceOrderAfterPayment: false,
         options: null,
         setFormErrors: null,
-        flowType: null,
-        idempotencyKey: null,
-        returnUrl: null,
     });
-
-    // Generate a stable idempotency key and set the return URL for this checkout session.
-    // Both are available at render time so payment extensions can use them immediately
-    // when mounting their gateway SDK (e.g., Stripe Elements, Adyen Drop-in).
-    useEffect(() => {
-        if (!paymentSubmissionRef.current.idempotencyKey) {
-            paymentSubmissionRef.current.idempotencyKey = crypto.randomUUID();
-        }
-    }, []);
     const otpFlowActiveRef = useRef(false);
     const noShippingMethodsRef = useRef(false);
     const [hideCreateAccountAfterSkippedPasswordlessOtp, setHideCreateAccountAfterSkippedPasswordlessOtp] =
@@ -383,15 +374,6 @@ export default function CheckoutFormPage({
             return;
         }
 
-        // Synchronous re-entrancy guard. Set BEFORE any await — the placeOrderFetcher
-        // state guard inside useCheckoutActions.submitPlaceOrder only kicks in after the
-        // fetcher transitions to 'submitting', leaving a small window where a second
-        // click would re-enter and call the extension's onPaymentSubmit twice.
-        if (paymentSubmissionRef.current.isSubmitting) {
-            return;
-        }
-        paymentSubmissionRef.current.isSubmitting = true;
-
         // Validate that all non-empty shipments have a shipping method selected.
         // Without this, the request goes through payment sync → server place-order round-trip
         // before the user sees the error, making the UI appear stuck.
@@ -409,75 +391,24 @@ export default function CheckoutFormPage({
                     !shipment.shippingMethod
             );
             if (missingShippingMethod) {
-                paymentSubmissionRef.current.isSubmitting = false;
                 setShippingMethodValidationError(tErrors('checkout.shippingMethodRequired'));
                 goToStep(STEPS.SHIPPING_OPTIONS);
                 return;
             }
         }
 
-        // If a payment extension registered onPaymentSubmit, delegate the entire flow to it.
-        // The contract is async-only — the framework awaits the resolved discriminated union
-        // and dispatches based on `status`. Sync inline flows resolve with `undefined` after
-        // calling `submitPlaceOrder` synchronously inside the handler.
-        if (paymentSubmissionRef.current.onPaymentSubmit) {
-            void paymentSubmissionRef.current
-                .onPaymentSubmit({ submitPlaceOrder })
-                .then(async (submitResult) => {
-                    if (!submitResult) {
-                        // Inline flow: extension already called submitPlaceOrder. Re-entrancy
-                        // flag is cleared in the placeOrderFetcher effect below.
-                        return;
-                    }
-                    if (submitResult.status === 'redirect') {
-                        setIsPlaceOrderPending(true);
-                        const initResponse = await fetch('/action/payment-redirect-init', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                stateToken: submitResult.stateToken,
-                                basketId: cart?.basketId || '',
-                                providerName: paymentSubmissionRef.current.flowType || 'unknown',
-                                idempotencyKey: paymentSubmissionRef.current.idempotencyKey || '',
-                                providerState: submitResult.providerState || '',
-                                shouldCreateAccount,
-                                contactPhone: cart?.billingAddress?.phone || '',
-                            }),
-                        });
-                        if (initResponse.ok) {
-                            // Cleared by full-page navigation below; nothing more to do here.
-                            window.location.href = submitResult.redirectUrl;
-                        } else {
-                            paymentSubmissionRef.current.isSubmitting = false;
-                            setIsPlaceOrderPending(false);
-                            showToast?.('Failed to initiate payment redirect. Please try again.', 'error');
-                        }
-                    } else if (submitResult.status === 'error') {
-                        paymentSubmissionRef.current.isSubmitting = false;
-                        showToast?.(submitResult.message || 'Payment failed', 'error');
-                    } else if (submitResult.status === 'ready') {
-                        // Extension explicitly handed control back without calling submitPlaceOrder.
-                        // Forward extras through to the place-order action.
-                        submitPlaceOrder(submitResult.extraFormData);
-                    }
-                })
-                .catch((error) => {
-                    paymentSubmissionRef.current.isSubmitting = false;
-                    setIsPlaceOrderPending(false);
-                    showToast?.('Payment failed. Please try again.', 'error');
-                    // eslint-disable-next-line no-console
-                    console.error('[Payment] onPaymentSubmit threw', error);
-                });
-            return;
-        }
-
-        // Default payment orchestration: validate, sync payment to basket, then place order.
         const paymentData = paymentSubmissionRef.current.formDataGetter?.();
         const basketAlreadyHasPayment = Boolean(cart?.paymentInstruments?.[0]);
+
+        // Payment must be submitted before place order when the basket has no instrument, or
+        // when the user's current selection differs from what's on the basket (e.g. returning
+        // shopper switched from saved card to "enter new card").
         const needsPaymentSync =
             paymentData && (!basketAlreadyHasPayment || doesPaymentSelectionDiffer(paymentData, cart));
 
         if (needsPaymentSync) {
+            // Validate client-side before submitting so the user sees inline errors.
+            // Runs for new card entry (card fields) and for different billing address (billing fields).
             if (!paymentData.useSavedPaymentMethod || paymentData.useDifferentBilling) {
                 const schema = createPaymentSchema(t);
                 const result = schema.safeParse(paymentData);
@@ -493,22 +424,13 @@ export default function CheckoutFormPage({
                         }
                         setFormErrors(fieldErrors);
                     }
-                    paymentSubmissionRef.current.isSubmitting = false;
                     goToStep(STEPS.PAYMENT);
                     return;
                 }
             }
 
             setIsPlaceOrderPending(true);
-            // Bind the post-payment callback to a fresh submission token. The effect that
-            // watches paymentFetcher only fires the callback when the live token still
-            // matches — protects against a stale callback firing after the user re-edits
-            // payment and the fetcher transitions for an unrelated reason.
-            const submissionToken = ++paymentSubmissionRef.current.paymentSubmissionToken;
-            paymentSubmissionRef.current.onPaymentSuccess = {
-                bindToken: submissionToken,
-                callback: () => submitPlaceOrder(),
-            };
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = true;
             paymentSubmissionRef.current.options = {
                 savePaymentToProfile: paymentData.savePaymentToProfile ?? false,
                 useDifferentBilling: paymentData.useDifferentBilling,
@@ -516,6 +438,7 @@ export default function CheckoutFormPage({
             submitPayment(paymentData);
         } else {
             setIsPlaceOrderPending(true);
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
             paymentSubmissionRef.current.options = paymentData
                 ? {
                       savePaymentToProfile: paymentData.savePaymentToProfile ?? false,
@@ -562,27 +485,6 @@ export default function CheckoutFormPage({
         disabled: (!isRegisteredUser && step < STEPS.PAYMENT) || shippingBlocked,
     };
 
-    // Surface ?error=... query params from payment redirect failures as shopper-facing
-    // toasts. The redirect-finalize and redirect-return routes redirect back to /checkout
-    // with one of: payment_expired, payment_invalid, basket_changed, payment_failed,
-    // order_failed, unexpected. After showing the toast we strip the param from the URL
-    // so a refresh doesn't re-trigger.
-    const [searchParams, setSearchParams] = useSearchParams();
-    useEffect(() => {
-        const errorCode = searchParams.get('error');
-        if (!errorCode) return;
-        const message = tErrors(`payment.${errorCode}`, {
-            defaultValue: tErrors('payment.unexpected', {
-                defaultValue: 'Something went wrong with your payment. Please try again.',
-            }),
-        });
-        showToast?.(message, 'error');
-        // Strip the param so refresh / share doesn't re-fire the toast.
-        const next = new URLSearchParams(searchParams);
-        next.delete('error');
-        setSearchParams(next, { replace: true, preventScrollReset: true });
-    }, [searchParams, setSearchParams, showToast, tErrors]);
-
     // Surface blocking API errors as error toasts for immediate visibility.
     useEffect(() => {
         if (
@@ -591,7 +493,6 @@ export default function CheckoutFormPage({
             !placeOrderFetcher.data.success &&
             placeOrderFetcher.data.error
         ) {
-            paymentSubmissionRef.current.isSubmitting = false;
             setIsPlaceOrderPending(false);
             const error = getCheckoutDisplayError(placeOrderFetcher.data, undefined, tAny);
             if (error) showToast?.(error, 'error');
@@ -632,28 +533,17 @@ export default function CheckoutFormPage({
         if (error) showToast?.(error, 'error');
     }, [paymentFetcher.state, paymentFetcher.data, showToast, tAny]);
 
-    // Invoke the orchestrator's post-payment callback on success; reset on failure.
-    // The callback is bound to the submission token that was current when it was registered;
-    // a stale callback whose token no longer matches paymentSubmissionToken is dropped.
-    // Prevents an in-flight callback from a previous attempt firing on a fresh fetcher
-    // transition (e.g. user re-edited payment after a failure, fetcher reset).
+    // Place the order once payment succeeds; reset ref on failure so we never place order without valid payment
     useEffect(() => {
-        const registration = paymentSubmissionRef.current.onPaymentSuccess;
-        if (!registration || paymentFetcher.state !== 'idle') return;
-        if (registration.bindToken !== paymentSubmissionRef.current.paymentSubmissionToken) {
-            // Stale: a newer submission has started since this callback was registered.
-            paymentSubmissionRef.current.onPaymentSuccess = null;
-            return;
-        }
+        if (!paymentSubmissionRef.current.shouldPlaceOrderAfterPayment || paymentFetcher.state !== 'idle') return;
         if (paymentFetcher.data?.success) {
-            paymentSubmissionRef.current.onPaymentSuccess = null;
-            registration.callback();
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
+            submitPlaceOrder();
         } else {
-            paymentSubmissionRef.current.onPaymentSuccess = null;
-            paymentSubmissionRef.current.isSubmitting = false;
+            paymentSubmissionRef.current.shouldPlaceOrderAfterPayment = false;
             setIsPlaceOrderPending(false);
         }
-    }, [paymentFetcher.state, paymentFetcher.data]);
+    }, [paymentFetcher.state, paymentFetcher.data, submitPlaceOrder]);
 
     // Reload-only: pin to Shipping Address when basket already has an address but no valid delivery methods.
     // Skipped when there's an active submission so the post-submit effect is the single toast source.
