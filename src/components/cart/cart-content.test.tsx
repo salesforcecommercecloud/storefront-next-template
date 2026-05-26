@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useState, type ReactElement } from 'react';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { useDeferredRender } from '@/hooks/use-deferred-render';
 
 const { t } = getTranslation();
 
@@ -49,6 +51,18 @@ vi.mock('@/providers/recommenders', () => ({
         getRecommendations: mockGetRecommendations,
         getZoneRecommendations: mockGetZoneRecommendations,
     }),
+}));
+
+// Mock useDeferredRender so tests can drive pre-/post-idle phases deterministically.
+// Default `true` matches the post-idle behavior the existing test suite was written
+// against (and what users observe within ~16ms of paint), so legacy assertions remain valid.
+// useDeferredRenderSequence is co-located in the same module and is consumed transitively
+// by the carousel's image-gallery; stub to `0` to preserve the real hook's "no preloads
+// until the first idle frame" contract — passing `n` would silently allow eager preloads
+// to slip past tests that ought to fail when that contract regresses.
+vi.mock('@/hooks/use-deferred-render', () => ({
+    useDeferredRender: vi.fn(() => true),
+    useDeferredRenderSequence: () => 0,
 }));
 
 // Components
@@ -118,6 +132,10 @@ describe('CartContent', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockUseRecommenders.mockReturnValue(defaultRecommendersState);
+        // Default to post-idle so existing assertions about lazy ProductRecommendations
+        // mounting / fetching keep passing. The `Defer cart recommendations until idle`
+        // block below opts in to the pre-idle phase explicitly.
+        vi.mocked(useDeferredRender).mockReturnValue(true);
     });
 
     const mockBasket = {
@@ -671,6 +689,125 @@ describe('CartContent', () => {
             expect(mockGetRecommendations).not.toHaveBeenCalled();
             expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
             expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
+        });
+    });
+
+    describe('Defer cart recommendations until idle', () => {
+        // Pre-idle phase: useDeferredRender returns false, so DeferredCartRecommendations
+        // returns null. This must keep the lazy ProductRecommendations chunk request, the
+        // Einstein fetch, and the Suspense reconciliation off the cart's critical render path.
+        // Post-idle phase: useDeferredRender returns true and the carousels mount as before.
+        test('pre-idle: renders no carousel and does not request Einstein recommendations', async () => {
+            vi.mocked(useDeferredRender).mockReturnValue(false);
+            mockUseRecommenders.mockReturnValue({
+                ...defaultRecommendersState,
+                recommendations: {
+                    recommenderName: 'product-to-product-einstein',
+                    recs: buildRecs(['Recommended Shirt']),
+                },
+            });
+
+            renderCartContent({
+                basket: mockBasket,
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            // Cart shell still renders normally
+            expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
+
+            // No carousel titles visible — the wrapper short-circuits before mounting
+            // ProductRecommendations, so even non-empty recs do not surface.
+            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
+            expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
+
+            // Critical: no Einstein fetch fires while we're still in the pre-idle phase.
+            // Use a microtask flush so any (unintended) lazy mount would have a chance to fire.
+            await Promise.resolve();
+            expect(mockGetRecommendations).not.toHaveBeenCalled();
+            expect(mockGetZoneRecommendations).not.toHaveBeenCalled();
+        });
+
+        test('pre-idle then post-idle: same CartContent instance flips and mounts the carousels', async () => {
+            // Drive the hook from a stateful closure so a parent state change re-renders the
+            // SAME tree (not a remount via fresh router) while the hook's return value flips.
+            // This is what catches a hook regression that hard-codes `true`: a remount-based
+            // test would silently pass even if useDeferredRender were removed.
+            let idleReady = false;
+            let triggerRerender: (() => void) | undefined;
+            vi.mocked(useDeferredRender).mockImplementation(() => idleReady);
+
+            mockUseRecommenders.mockReturnValue({
+                ...defaultRecommendersState,
+                recommendations: {
+                    recommenderName: 'product-to-product-einstein',
+                    recs: buildRecs(['Post Idle Shirt']),
+                },
+            });
+
+            function IdleHarness(): ReactElement {
+                const [, setTick] = useState(0);
+                triggerRerender = () => setTick((n) => n + 1);
+                return (
+                    <CartContent
+                        basket={mockBasket}
+                        productsByItemId={mockProductMap}
+                        bonusProductsById={mockBonusProductsById}
+                    />
+                );
+            }
+
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/cart',
+                        element: (
+                            <AllProvidersWrapper>
+                                <IdleHarness />
+                            </AllProvidersWrapper>
+                        ),
+                    },
+                ],
+                { initialEntries: ['/cart'] }
+            );
+            render(<RouterProvider router={router} />);
+
+            // Pre-idle: no fetch, no carousel.
+            expect(mockGetRecommendations).not.toHaveBeenCalled();
+            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
+
+            // Flip the hook and force a re-render of the SAME IdleHarness instance.
+            act(() => {
+                idleReady = true;
+                triggerRerender?.();
+            });
+
+            await waitFor(() => {
+                const requestedNames = mockGetRecommendations.mock.calls.map(([name]) => name);
+                expect(requestedNames).toEqual(
+                    expect.arrayContaining(['product-to-product-einstein', 'viewed-recently-einstein'])
+                );
+            });
+            expect(await screen.findByText(t('product:recommendations.youMightAlsoLike'))).toBeInTheDocument();
+            expect(screen.getByText('Post Idle Shirt')).toBeInTheDocument();
+        });
+
+        test('pre-idle: empty cart short-circuits before the deferred wrapper is reached', async () => {
+            // The deferred wrapper guards against unnecessary lazy chunk mounts on a populated
+            // cart; the empty-cart branch must still render <CartEmpty /> regardless of the
+            // hook's state and must not fetch recommendations.
+            vi.mocked(useDeferredRender).mockReturnValue(false);
+
+            renderCartContent({
+                basket: { ...mockBasket, productItems: [] },
+                productsByItemId: mockProductMap,
+                bonusProductsById: mockBonusProductsById,
+            });
+
+            await waitFor(() => {
+                expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
+            });
+            expect(mockGetRecommendations).not.toHaveBeenCalled();
         });
     });
 

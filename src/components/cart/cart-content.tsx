@@ -18,6 +18,8 @@ import { useState, useLayoutEffect, lazy, Suspense, type ReactElement } from 're
 // Commerce SDK
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
 
+import { useDeferredRender } from '@/hooks/use-deferred-render';
+
 // Components
 import ProductItemsList from '@/components/product-items-list';
 import { RemoveItemButtonWithConfirmation } from '@/components/buttons/remove-item-button-with-confirmation';
@@ -66,6 +68,50 @@ const LazyCartItemAddToWishlistButton = lazy(() =>
 const LazyProductRecommendations = lazy(() => import('@/components/product-recommendations'));
 
 /**
+ * Defers mounting of the cart's below-the-fold recommendations until the
+ * browser is idle. Until then, this component returns `null`, which keeps the
+ * lazy chunk request, the Einstein fetch in `ProductRecommendations`, and the
+ * `<Suspense>` reconciliation off the critical render path. This reduces TBT
+ * on cart entry without changing what eventually renders.
+ */
+function DeferredCartRecommendations({
+    productsByItemId,
+}: {
+    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
+}): ReactElement | null {
+    const { t } = useTranslation('product');
+    const shouldRender = useDeferredRender();
+
+    if (!shouldRender) {
+        return null;
+    }
+
+    // Pre-idle is `return null` above; post-idle uses `<Suspense fallback={null}>` for the brief window between the
+    // chunk request firing and `ProductRecommendations` mounting. We deliberately skip a `ProductRecommendationSkeleton`
+    // for that window: the block sits below cart items, summary, and bonus-discount carousels, so for any non-empty
+    // cart it's below the fold; the user cannot perceive layout shift for content outside the viewport. (Once mounted,
+    // `ProductRecommendations` itself renders `ProductRecommendationSkeleton` while its Einstein fetch is in-flight —
+    // suppressing the chunk-load fallback only avoids a redundant skeleton, not the inner one.)
+    return (
+        <Suspense fallback={null}>
+            <div className="mt-16 space-y-16">
+                <LazyProductRecommendations
+                    recommenderName={EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE}
+                    recommenderTitle={t('recommendations.youMightAlsoLike')}
+                    products={Object.values(productsByItemId)}
+                    className="max-w-none px-0"
+                />
+                <LazyProductRecommendations
+                    recommenderName={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}
+                    recommenderTitle={t('recommendations.recentlyViewed')}
+                    className="max-w-none px-0"
+                />
+            </div>
+        </Suspense>
+    );
+}
+
+/**
  * Props for the CartContent component
  *
  * @interface CartContentProps
@@ -104,7 +150,6 @@ export default function CartContent({
     wishlistProductIds = [],
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
-    const { t: tProduct } = useTranslation('product');
 
     // Calculate total item count for page heading
     const totalItems = basket?.productItems?.reduce((acc, item) => acc + (item.quantity ?? 0), 0) || 0;
@@ -378,21 +423,7 @@ export default function CartContent({
                     </Suspense>
                 )}
 
-                <Suspense fallback={null}>
-                    <div className="mt-16 space-y-16">
-                        <LazyProductRecommendations
-                            recommenderName={EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE}
-                            recommenderTitle={tProduct('recommendations.youMightAlsoLike')}
-                            products={Object.values(productsByItemId)}
-                            className="max-w-none px-0"
-                        />
-                        <LazyProductRecommendations
-                            recommenderName={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}
-                            recommenderTitle={tProduct('recommendations.recentlyViewed')}
-                            className="max-w-none px-0"
-                        />
-                    </div>
-                </Suspense>
+                <DeferredCartRecommendations productsByItemId={productsByItemId} />
 
                 {selectedBonusProduct &&
                     (() => {
