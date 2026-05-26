@@ -51,7 +51,7 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
                       alt="Charcoal crewneck sweater"
                       class="h-full w-full object-cover"
                       loading="lazy"
-                      src="/images/hero-02.webp"
+                      src="__ASSET_MOCK__"
                     />
                   </div>
                 </a>

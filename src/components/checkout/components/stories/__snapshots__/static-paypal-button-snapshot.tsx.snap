@@ -13,7 +13,7 @@ exports[`StaticPayPalButton stories snapshot > Default story renders and matches
     aria-hidden="true"
     class="flex-shrink-0 h-4 w-auto object-contain"
     height="16"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     width="48"
   />
 </button>
@@ -33,7 +33,7 @@ exports[`StaticPayPalButton stories snapshot > Disabled story renders and matche
     aria-hidden="true"
     class="flex-shrink-0 h-4 w-auto object-contain"
     height="16"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     width="48"
   />
 </button>

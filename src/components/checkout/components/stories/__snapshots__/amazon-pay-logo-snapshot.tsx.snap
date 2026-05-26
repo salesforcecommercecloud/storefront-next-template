@@ -6,7 +6,7 @@ exports[`AmazonPayLogo stories snapshot > Decorative story renders and matches s
   aria-hidden="true"
   class=" h-[19px] w-auto object-contain"
   height="19"
-  src="/images/amazon-pay-logo.png"
+  src="__ASSET_MOCK__"
   width="99"
 />
 `;
@@ -16,7 +16,7 @@ exports[`AmazonPayLogo stories snapshot > Default story renders and matches snap
   alt="Amazon Pay"
   class=" h-[19px] w-auto object-contain"
   height="19"
-  src="/images/amazon-pay-logo.png"
+  src="__ASSET_MOCK__"
   width="99"
 />
 `;
@@ -26,7 +26,7 @@ exports[`AmazonPayLogo stories snapshot > WithCustomClassName story renders and 
   alt="Amazon Pay"
   class="custom-class h-[19px] w-auto object-contain"
   height="19"
-  src="/images/amazon-pay-logo.png"
+  src="__ASSET_MOCK__"
   width="99"
 />
 `;

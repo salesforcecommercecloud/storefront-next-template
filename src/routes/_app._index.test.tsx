@@ -146,10 +146,6 @@ vi.mock('@/components/home/skeleton', () => ({
     default: () => <div data-testid="home-skeleton" />,
 }));
 
-// Mock images
-vi.mock('/images/hero-new-arrivals.webp', () => ({ default: '/mock-image.png' }));
-vi.mock('/images/hero-cube.webp', () => ({ default: '/mock-hero-cube.webp' }));
-
 // Mock react-i18next with partial mock to preserve other exports
 vi.mock('react-i18next', async () => {
     const actual: any = await vi.importActual('react-i18next');
@@ -246,7 +242,7 @@ const renderComponent = (loaderDataOverrides?: Partial<HomePageData>) => {
         searchResult: Promise.resolve(mockSearchResult),
         categories: Promise.resolve(mockCategories),
         pageUrl: 'http://localhost/',
-        ogImageUrl: 'http://localhost/mock-hero-01.webp',
+        ogImageUrl: 'http://localhost/__ASSET_MOCK__',
     };
     const data = { ...defaultData, ...loaderDataOverrides };
     return render(<HomePage loaderData={data} />);

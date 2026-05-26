@@ -25,9 +25,16 @@ export default defineConfig((configEnv) =>
         viteConfig(configEnv),
         defineConfig({
             test: {
-                alias: {
-                    'virtual:action-hooks': resolve(__dirname, 'src/test-utils/__mocks__/virtual-action-hooks.ts'),
-                },
+                alias: [
+                    {
+                        find: /^\/.*\.(svg|png|jpe?g|gif|webp|ico|avif|woff2?|ttf|eot)(\?.*)?$/,
+                        replacement: resolve(__dirname, 'src/test-utils/__mocks__/asset-mock.ts'),
+                    },
+                    {
+                        find: 'virtual:action-hooks',
+                        replacement: resolve(__dirname, 'src/test-utils/__mocks__/virtual-action-hooks.ts'),
+                    },
+                ],
                 globals: true,
                 environment: 'jsdom',
                 setupFiles: ['./vitest.setup.ts'],

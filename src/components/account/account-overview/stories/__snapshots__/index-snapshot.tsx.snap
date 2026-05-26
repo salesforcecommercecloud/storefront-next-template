@@ -323,13 +323,13 @@ exports[`AccountOverview stories snapshot > Default story renders and matches sn
               alt="App Store"
               aria-label="App Store"
               class="h-10 w-auto"
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+              src="__ASSET_MOCK__"
             />
             <img
               alt="Google Play"
               aria-label="Google Play"
               class="h-10 w-auto"
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -861,13 +861,13 @@ exports[`AccountOverview stories snapshot > GuestUser story renders and matches 
               alt="App Store"
               aria-label="App Store"
               class="h-10 w-auto"
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+              src="__ASSET_MOCK__"
             />
             <img
               alt="Google Play"
               aria-label="Google Play"
               class="h-10 w-auto"
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -2823,13 +2823,13 @@ exports[`AccountOverview stories snapshot > WithoutOrders story renders and matc
               alt="App Store"
               aria-label="App Store"
               class="h-10 w-auto"
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+              src="__ASSET_MOCK__"
             />
             <img
               alt="Google Play"
               aria-label="Google Play"
               class="h-10 w-auto"
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzUiIGhlaWdodD0iNDAiPjwvc3ZnPg=="
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>

@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import 'reflect-metadata';
-
-vi.mock('/images/hero-01.webp', () => ({
-    default: '/mock-hero-image.png',
-}));
 
 import { getAttributeDefinitions } from '@/lib/decorators/attribute-definition';
 import { HeroCarouselMetadata } from './index';

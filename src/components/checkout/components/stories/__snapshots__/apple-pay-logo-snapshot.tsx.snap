@@ -9,7 +9,7 @@ exports[`ApplePayLogo stories snapshot > Decorative story renders and matches sn
     aria-hidden="true"
     class=" h-4 w-auto object-contain"
     height="16"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     style="filter: brightness(0) invert(1);"
     width="48"
   />
@@ -24,7 +24,7 @@ exports[`ApplePayLogo stories snapshot > Default story renders and matches snaps
     alt="Apple Pay"
     class=" h-4 w-auto object-contain"
     height="16"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     style="filter: brightness(0) invert(1);"
     width="48"
   />
@@ -39,7 +39,7 @@ exports[`ApplePayLogo stories snapshot > WithCustomClassName story renders and m
     alt="Apple Pay"
     class="custom-class h-4 w-auto object-contain"
     height="16"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     style="filter: brightness(0) invert(1);"
     width="48"
   />

@@ -118,7 +118,7 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
               alt="Cancelled Item 1"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -138,7 +138,7 @@ exports[`OrderListItem stories snapshot > Cancelled story renders and matches sn
               alt="Cancelled Item 2"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -277,7 +277,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
               alt="Classic White Shirt"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -291,7 +291,7 @@ exports[`OrderListItem stories snapshot > Default story renders and matches snap
               alt="Blue Dress Pants"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -430,7 +430,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 1"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -450,7 +450,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 2"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -464,7 +464,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 3"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -478,7 +478,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 4"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -498,7 +498,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 5"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -512,7 +512,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 6"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -526,7 +526,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 7"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -546,7 +546,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 8"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -560,7 +560,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 9"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -574,7 +574,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 10"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -594,7 +594,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 11"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -608,7 +608,7 @@ exports[`OrderListItem stories snapshot > Delivered story renders and matches sn
               alt="Product 12"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -751,7 +751,7 @@ exports[`OrderListItem stories snapshot > InTransit story renders and matches sn
               alt="Summer Dress"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -890,7 +890,7 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
               alt="Product With Image"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -921,7 +921,7 @@ exports[`OrderListItem stories snapshot > MixedImages story renders and matches 
               alt="Another Product With Image"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -1074,7 +1074,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Classic White Shirt"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1088,7 +1088,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Blue Dress Pants"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
             <span
@@ -1293,7 +1293,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Summer Dress"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
             <span
@@ -1429,7 +1429,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 1"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
             <span
@@ -1449,7 +1449,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 2"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1463,7 +1463,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 3"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1477,7 +1477,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 4"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
             <span
@@ -1497,7 +1497,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 5"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1511,7 +1511,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 6"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1525,7 +1525,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 7"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
             <span
@@ -1545,7 +1545,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 8"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1559,7 +1559,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 9"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1573,7 +1573,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 10"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
             <span
@@ -1593,7 +1593,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 11"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1607,7 +1607,7 @@ exports[`OrderListItem stories snapshot > OrdersList story renders and matches s
                 alt="Product 12"
                 class="w-full h-full object-cover"
                 loading="lazy"
-                src="/images/hero-02.webp"
+                src="__ASSET_MOCK__"
               />
             </div>
           </div>
@@ -1751,7 +1751,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
               alt="Partially Delivered Item 1"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -1771,7 +1771,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
               alt="Partially Delivered Item 2"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -1791,7 +1791,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
               alt="Partially Delivered Item 3"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -1811,7 +1811,7 @@ exports[`OrderListItem stories snapshot > PartiallyDelivered story renders and m
               alt="Partially Delivered Item 4"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -1944,7 +1944,7 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
               alt="Classic White Shirt - Front View"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -1958,7 +1958,7 @@ exports[`OrderListItem stories snapshot > WithImageAlt story renders and matches
               alt="Blue Dress Pants - Side View"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span
@@ -2097,7 +2097,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
               alt="Classic White Shirt"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
         </div>
@@ -2111,7 +2111,7 @@ exports[`OrderListItem stories snapshot > WithPickupLocation story renders and m
               alt="Blue Dress Pants"
               class="w-full h-full object-cover"
               loading="lazy"
-              src="/images/hero-02.webp"
+              src="__ASSET_MOCK__"
             />
           </div>
           <span

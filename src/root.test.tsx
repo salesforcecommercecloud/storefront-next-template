@@ -79,11 +79,6 @@ vi.mock('@salesforce/storefront-next-runtime/i18n/client', async () => {
     };
 });
 
-// Mock font file imports (used in root.tsx links function for preload)
-vi.mock('/fonts/sen-variable.woff2', () => ({
-    default: '/mocked-fonts/sen-variable.woff2',
-}));
-
 vi.mock('@/components/toast', async () => ({
     ...(await vi.importActual('@/components/toast')),
     AppToaster: () => <div data-testid="toaster">Toaster</div>,

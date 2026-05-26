@@ -66,6 +66,12 @@ export default defineConfig({
         include: ['react', 'react-dom', 'react-router', '@radix-ui/react-accordion'],
     },
     test: {
+        alias: [
+            {
+                find: /^\/.*\.(svg|png|jpe?g|gif|webp|ico|avif|woff2?|ttf|eot)(\?.*)?$/,
+                replacement: path.resolve(__dirname, '../src/test-utils/__mocks__/asset-mock.ts'),
+            },
+        ],
         globals: true,
         environment: 'jsdom',
         setupFiles: ['./vitest.setup.ts'],

@@ -171,7 +171,7 @@ exports[`AddressSuggestionDropdown stories snapshot > Default story renders and 
           <img
             alt="Google Maps"
             class="w-[98px] h-[18px]"
-            src="/images/GoogleMaps_Logo_Gray_4x.png"
+            src="__ASSET_MOCK__"
           />
         </div>
       </div>
@@ -355,7 +355,7 @@ exports[`AddressSuggestionDropdown stories snapshot > StructuredFormattingFallba
           <img
             alt="Google Maps"
             class="w-[98px] h-[18px]"
-            src="/images/GoogleMaps_Logo_Gray_4x.png"
+            src="__ASSET_MOCK__"
           />
         </div>
       </div>

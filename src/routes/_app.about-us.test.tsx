@@ -94,9 +94,6 @@ vi.mock('@/components/content-card', () => ({
     ),
 }));
 
-// Mock images
-vi.mock('/images/hero-02.webp', () => ({ default: '/mock-hero-02.webp' }));
-
 // Mock react-i18next with partial mock to preserve other exports
 vi.mock('react-i18next', async () => {
     const actual: any = await vi.importActual('react-i18next');
@@ -169,7 +166,7 @@ const renderComponent = (loaderDataOverrides?: Partial<AboutUsPageData>) => {
             componentData: {},
         },
         pageUrl: 'http://localhost/about-us',
-        ogImageUrl: 'http://localhost/mock-hero-02.webp',
+        ogImageUrl: 'http://localhost/__ASSET_MOCK__',
     };
     const data = { ...defaultData, ...loaderDataOverrides };
     return render(<AboutUs loaderData={data} />);
@@ -482,7 +479,7 @@ describe('AboutUs', () => {
                 // Assert - Return value contains all expected properties
                 expect(result.page).toBe(mockPageWithData);
                 expect(result.pageUrl).toBe('http://localhost/about-us');
-                expect(result.ogImageUrl).toContain('mock-hero-02.webp');
+                expect(result.ogImageUrl).toContain('__ASSET_MOCK__');
             });
 
             test('constructs correct canonical URL', async () => {
@@ -504,7 +501,7 @@ describe('AboutUs', () => {
 
                 const result = await loader(baseLoaderArgs);
 
-                expect(result.ogImageUrl).toContain('mock-hero-02.webp');
+                expect(result.ogImageUrl).toContain('__ASSET_MOCK__');
                 expect(result.ogImageUrl).toContain('http://localhost');
             });
         });

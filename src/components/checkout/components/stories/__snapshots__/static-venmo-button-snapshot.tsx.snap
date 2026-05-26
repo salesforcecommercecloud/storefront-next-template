@@ -13,7 +13,7 @@ exports[`StaticVenmoButton stories snapshot > Default story renders and matches 
     aria-hidden="true"
     class="flex-shrink-0 h-3 w-auto object-contain"
     height="12"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     style="filter: brightness(0) invert(1);"
     width="48"
   />
@@ -34,7 +34,7 @@ exports[`StaticVenmoButton stories snapshot > Disabled story renders and matches
     aria-hidden="true"
     class="flex-shrink-0 h-3 w-auto object-contain"
     height="12"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     style="filter: brightness(0) invert(1);"
     width="48"
   />

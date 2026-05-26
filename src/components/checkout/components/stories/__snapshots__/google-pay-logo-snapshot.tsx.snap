@@ -6,7 +6,7 @@ exports[`GooglePayLogo stories snapshot > Decorative story renders and matches s
   aria-hidden="true"
   class=" h-4 w-auto object-contain"
   height="16"
-  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+  src="__ASSET_MOCK__"
   width="48"
 />
 `;
@@ -16,7 +16,7 @@ exports[`GooglePayLogo stories snapshot > Default story renders and matches snap
   alt="Google Pay"
   class=" h-4 w-auto object-contain"
   height="16"
-  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+  src="__ASSET_MOCK__"
   width="48"
 />
 `;
@@ -29,7 +29,7 @@ exports[`GooglePayLogo stories snapshot > Inverted story renders and matches sna
     alt="Google Pay"
     class=" h-4 w-auto object-contain"
     height="16"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+    src="__ASSET_MOCK__"
     style="filter: brightness(0) invert(1);"
     width="48"
   />
@@ -41,7 +41,7 @@ exports[`GooglePayLogo stories snapshot > WithCustomClassName story renders and 
   alt="Google Pay"
   class="custom-class h-4 w-auto object-contain"
   height="16"
-  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4="
+  src="__ASSET_MOCK__"
   width="48"
 />
 `;
