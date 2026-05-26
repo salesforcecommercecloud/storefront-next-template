@@ -21,13 +21,15 @@ import { expectStatus } from '@/lib/test-utils';
 vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/auth/error-handler');
 vi.mock('@salesforce/storefront-next-runtime/i18n');
+// Stable logger instance so tests can assert on warn/info calls. Reset in beforeEach.
+const mockLogger = {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+};
 vi.mock('@/lib/logger.server', () => ({
-    getLogger: vi.fn(() => ({
-        error: vi.fn(),
-        warn: vi.fn(),
-        info: vi.fn(),
-        debug: vi.fn(),
-    })),
+    getLogger: vi.fn(() => mockLogger),
 }));
 vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => ({
     ...(await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>()),
@@ -122,6 +124,7 @@ describe('action.authorize-passwordless-email', () => {
 
         const formData = new FormData();
         formData.append('email', 'user@example.com');
+        formData.append('strictVerify', 'true');
         formData.append('turnstileToken', 'valid-token');
         const request = new Request('http://localhost/action/authorize-passwordless-email', {
             method: 'POST',
@@ -132,7 +135,43 @@ describe('action.authorize-passwordless-email', () => {
         const result = response.data;
 
         expect(result).toEqual({ success: true, email: 'user@example.com' });
-        expect(mockAuthorizePasswordless).toHaveBeenCalledWith(mockContext, { userid: 'user@example.com' });
+        expect(mockAuthorizePasswordless).toHaveBeenCalledWith(mockContext, {
+            userid: 'user@example.com',
+            strictVerify: true,
+        });
+    });
+
+    it('forwards strictVerify=true to authorizePasswordless when caller sets it', async () => {
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        formData.append('strictVerify', 'true');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        await action({ request, context: mockContext } as ActionFunctionArgs);
+
+        expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
+            mockContext,
+            expect.objectContaining({ strictVerify: true })
+        );
+    });
+
+    it('forwards strictVerify=false to authorizePasswordless when caller omits it (e.g. My Account reauth)', async () => {
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        await action({ request, context: mockContext } as ActionFunctionArgs);
+
+        expect(mockAuthorizePasswordless).toHaveBeenCalledWith(
+            mockContext,
+            expect.objectContaining({ strictVerify: false })
+        );
     });
 
     it('passes turnstileToken to enforceTurnstile', async () => {
@@ -172,7 +211,7 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.error).toBeTruthy();
     });
 
-    it('returns requiresLogin when SLAS responds with 400 email not verified', async () => {
+    it('returns requiresLogin for any SLAS 400 (covers strict_verify unverified-email rejection)', async () => {
         const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 400,
@@ -204,7 +243,45 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.error).toBeUndefined();
     });
 
-    it('does not return requiresLogin for 400 with a different error message', async () => {
+    it('emits a warn log with tag "EmailNotVerifiedAtCheckout" when SLAS 400 message indicates email not verified', async () => {
+        const { ApiError } = await import('@/scapi');
+        const apiError = new ApiError({
+            status: 400,
+            statusText: 'Bad Request',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+            rawBody: '{"message":"Email not verified"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockAuthorizePasswordless.mockRejectedValue(apiError);
+        const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        await action({ request, context: mockContext } as ActionFunctionArgs);
+
+        expect(mockLogger.warn).toHaveBeenCalledWith(
+            'AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout',
+            expect.objectContaining({
+                tag: 'EmailNotVerifiedAtCheckout',
+                email: expect.stringMatching(/^[a-f0-9]{8}@example\.com$/),
+                status: 400,
+            })
+        );
+        const warnCall = mockLogger.warn.mock.calls.find(
+            (call: unknown[]) => call[0] === 'AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout'
+        );
+        expect(warnCall?.[1]?.email).not.toBe('user@example.com');
+    });
+
+    it('returns requiresLogin for SLAS 400 even when the error detail is not "email not verified"', async () => {
         const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 400,
@@ -212,6 +289,43 @@ describe('action.authorize-passwordless-email', () => {
             headers: new Headers(),
             body: { type: 'error', title: 'Bad Request', detail: 'Invalid request parameters' },
             rawBody: '{"message":"Invalid request parameters"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockAuthorizePasswordless.mockRejectedValue(apiError);
+        const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('Invalid request parameters');
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = response.data;
+
+        expectStatus(response, 200);
+        expect(result.success).toBe(false);
+        expect(result.requiresLogin).toBe(true);
+        expect(result.email).toBe('user@example.com');
+        expect(result.error).toBeUndefined();
+        const warnCalls = mockLogger.warn.mock.calls;
+        const taggedCalls = warnCalls.filter(
+            (call: unknown[]) => call[0] === 'AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout'
+        );
+        expect(taggedCalls).toHaveLength(0);
+    });
+
+    it('treats SLAS 403 (not authorized for passwordless) as a guest path: success=false, no error, no requiresLogin', async () => {
+        const { ApiError } = await import('@/scapi');
+        const apiError = new ApiError({
+            status: 403,
+            statusText: 'Forbidden',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Forbidden', detail: 'Not authorized for passwordless login' },
+            rawBody: '{"message":"Not authorized"}',
             url: 'https://api.example.com/authorize-passwordless',
             method: 'POST',
         });
@@ -227,13 +341,14 @@ describe('action.authorize-passwordless-email', () => {
         const response = await action({ request, context: mockContext } as ActionFunctionArgs);
         const result = response.data;
 
-        expectStatus(response, 400);
+        expectStatus(response, 200);
         expect(result.success).toBe(false);
+        expect(result.email).toBe('user@example.com');
+        expect(result.error).toBeUndefined();
         expect(result.requiresLogin).toBeUndefined();
-        expect(result.error).toBeTruthy();
     });
 
-    it('treats SLAS 404 (unknown user) as a non-error guest path: HTTP 200 with success=false and no error', async () => {
+    it('treats SLAS 404 (unknown user) as a guest path: success=false, no error, no requiresLogin', async () => {
         const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 404,
@@ -342,8 +457,8 @@ describe('action.authorize-passwordless-email', () => {
             expect(getSetCookie(response)).toBeUndefined();
         });
 
-        it('still sets cc-tv cookie when SCAPI returns requiresLogin (400 email-not-verified)', async () => {
-            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        it('still sets cc-tv cookie when SCAPI returns 400 (requiresLogin path)', async () => {
+            const { ApiError } = await import('@/scapi');
             const apiError = new ApiError({
                 status: 400,
                 statusText: 'Bad Request',
@@ -354,8 +469,6 @@ describe('action.authorize-passwordless-email', () => {
                 method: 'POST',
             });
             mockAuthorizePasswordless.mockRejectedValue(apiError);
-            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
-            vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
 
             const formData = new FormData();
             formData.append('email', 'user@example.com');
@@ -366,24 +479,23 @@ describe('action.authorize-passwordless-email', () => {
 
             const response = await action({ request, context: mockContext } as ActionFunctionArgs);
 
+            expectStatus(response, 200);
             expect(response.data.requiresLogin).toBe(true);
             expect(getSetCookie(response)).toContain('cc-tv=1');
         });
 
-        it('still sets cc-tv cookie when SCAPI returns a different 400 error', async () => {
-            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+        it('still sets cc-tv cookie when SCAPI returns 403 (guest path)', async () => {
+            const { ApiError } = await import('@/scapi');
             const apiError = new ApiError({
-                status: 400,
-                statusText: 'Bad Request',
+                status: 403,
+                statusText: 'Forbidden',
                 headers: new Headers(),
-                body: { type: 'error', title: 'Bad Request', detail: 'Some other error' },
-                rawBody: '{"message":"Some other error"}',
+                body: { type: 'error', title: 'Forbidden', detail: 'Not authorized' },
+                rawBody: '{"message":"Not authorized"}',
                 url: 'https://api.example.com/authorize-passwordless',
                 method: 'POST',
             });
             mockAuthorizePasswordless.mockRejectedValue(apiError);
-            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
-            vi.mocked(extractErrorMessage).mockReturnValue('Some other error');
 
             const formData = new FormData();
             formData.append('email', 'user@example.com');
@@ -394,7 +506,9 @@ describe('action.authorize-passwordless-email', () => {
 
             const response = await action({ request, context: mockContext } as ActionFunctionArgs);
 
-            expectStatus(response, 400);
+            expectStatus(response, 200);
+            expect(response.data.success).toBe(false);
+            expect(response.data.requiresLogin).toBeUndefined();
             expect(getSetCookie(response)).toContain('cc-tv=1');
         });
 
@@ -418,7 +532,7 @@ describe('action.authorize-passwordless-email', () => {
             // 5xx ApiError flows to the SLAS-upstream-unavailable branch which returns
             // HTTP 200 + requiresLogin: true. The shopper has cleared Turnstile already;
             // a transient SLAS blip is not a bot signal, so the cookie still attaches.
-            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const { ApiError } = await import('@/scapi');
             const apiError = new ApiError({
                 status: 502,
                 statusText: 'Bad Gateway',
@@ -448,7 +562,7 @@ describe('action.authorize-passwordless-email', () => {
             // 404 ApiError flows to the unknown-user branch which returns HTTP 200 +
             // success: false. The shopper proceeds as guest. They cleared Turnstile, so
             // subsequent actions in the same session can trust the cookie.
-            const { ApiError } = await import('@salesforce/storefront-next-runtime/scapi');
+            const { ApiError } = await import('@/scapi');
             const apiError = new ApiError({
                 status: 404,
                 statusText: 'Not Found',

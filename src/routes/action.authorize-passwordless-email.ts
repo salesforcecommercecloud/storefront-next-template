@@ -23,6 +23,7 @@ import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
+import { redactEmailForLog } from '@/lib/turnstile/log-redact.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile/constants';
 import { ApiError } from '@/scapi';
@@ -58,6 +59,8 @@ export async function action({
     const formData = await request.formData();
     const email = formData.get('email')?.toString()?.trim();
     const turnstileToken = formData.get('turnstileToken')?.toString();
+    // Caller-controlled: checkout sets 'true'; My Account reauth omits it.
+    const strictVerify = formData.get('strictVerify')?.toString() === 'true';
 
     if (!email) {
         return data(
@@ -110,51 +113,42 @@ export async function action({
     const headers = { 'Set-Cookie': setCookieHeader };
 
     try {
-        await authorizePasswordless(context, { userid: email });
+        await authorizePasswordless(context, { userid: email, strictVerify });
 
         logger.info('AuthorizePasswordlessEmail: OTP sent');
 
         return data({ success: true, email }, { headers });
     } catch (error) {
-        if (error instanceof ApiError && error.status === 400) {
-            const errorMessage = extractErrorMessage(error);
-            if (/email not verified/i.test(errorMessage)) {
-                logger.info('AuthorizePasswordlessEmail: email not verified, requires standard login', { email });
+        // The flow for passwordless login from checkout should be:
+        //   200       -> OTP modal (success): show the OTP as we do today
+        //   400       -> Show standard login modal.
+        //   5xx       -> Show standard login modal
+        //   403 / 404 -> Allow the shopper to continue as guest
+        //   other     -> generic error
+        if (error instanceof ApiError) {
+            if (error.status === 400 || error.status >= 500) {
+                if (error.status === 400 && /email not verified/i.test(extractErrorMessage(error))) {
+                    logger.warn('AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout', {
+                        tag: 'EmailNotVerifiedAtCheckout',
+                        email: redactEmailForLog(email),
+                        status: error.status,
+                    });
+                } else {
+                    logger.info('AuthorizePasswordlessEmail: SLAS rejected, falling back to standard login', {
+                        email: redactEmailForLog(email),
+                        status: error.status,
+                    });
+                }
                 return data({ success: false, requiresLogin: true, email }, { headers });
             }
 
-            logger.error('AuthorizePasswordlessEmail: bad request', { email, error: errorMessage });
-            return data(
-                {
-                    success: false,
-                    error: createActionError({ code: ErrorCode.OPERATION_FAILED, message: errorMessage }),
-                },
-                { status: 400, headers }
-            );
-        }
-
-        // Unknown user — SLAS returns 404 when the email is not registered. For checkout
-        // this is a normal guest path, not a server failure: skip the OTP modal and let
-        // the shopper proceed. Returning HTTP 200 with falsy success matches pre-error-
-        // standardization behavior and prevents the MRT edge from surfacing this as 502.
-        if (error instanceof ApiError && error.status === 404) {
-            logger.debug('AuthorizePasswordlessEmail: unknown user, proceed as guest');
-            return data({ success: false, email }, { headers });
-        }
-
-        // SLAS upstream is unavailable (5xx — most commonly 502/503/504, which the
-        // SLAS controller emits when the ECOM /loginId callback times out or the
-        // upstream is otherwise unreachable). We can't tell whether the shopper has
-        // an account, so falling back to standard password login is safer than
-        // dropping them into guest checkout — if they're registered, they can sign
-        // in normally; if not, the login modal lets them choose guest from there.
-        if (error instanceof ApiError && error.status >= 500) {
-            const errorMessage = extractErrorMessage(error);
-            logger.warn('AuthorizePasswordlessEmail: SLAS upstream unavailable, falling back to standard login', {
-                status: error.status,
-                message: errorMessage,
-            });
-            return data({ success: false, requiresLogin: true, email }, { headers });
+            if (error.status === 403 || error.status === 404) {
+                logger.debug('AuthorizePasswordlessEmail: SLAS will not authorize, proceed as guest', {
+                    email: redactEmailForLog(email),
+                    status: error.status,
+                });
+                return data({ success: false, email }, { headers });
+            }
         }
 
         logger.error('AuthorizePasswordlessEmail: failed', { error });

@@ -430,6 +430,7 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     firstName,
                     phoneNumber,
                     customerNo,
+                    strictVerify,
                 } = options;
 
                 if (!clientSecret) {
@@ -454,16 +455,16 @@ export function createAuthHelpers(config: AuthConfig): AuthNamespace {
                     ...(customerNo && { customer_no: customerNo }),
                 };
 
+                const query: Record<string, string> = {};
+                if (registerCustomer === true) query.register_customer = 'true';
+                if (strictVerify === true) query.strict_verify = 'true';
+
                 return shopperLoginClient.authorizePasswordlessCustomer({
                     params: {
                         header: {
                             Authorization: createBasicAuthHeader(clientId, clientSecret),
                         },
-                        ...(registerCustomer === true && {
-                            query: {
-                                register_customer: 'true',
-                            },
-                        }),
+                        ...(Object.keys(query).length > 0 && { query }),
                     },
                     headers: FORM_URLENCODED_HEADER,
                     body: requestBody,

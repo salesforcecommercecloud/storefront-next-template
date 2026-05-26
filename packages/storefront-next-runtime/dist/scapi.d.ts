@@ -29596,6 +29596,15 @@ interface PasswordlessAuthorizeOptions {
   phoneNumber?: string;
   /** Customer number to assign (optional when registerCustomer is true) */
   customerNo?: string;
+  /**
+   * When true, sends `strict_verify=true` as a query parameter to SLAS.
+   * SLAS will return HTTP 400 for shoppers whose email is registered but unverified.
+   * The default behavior (without this flag) is HTTP 200 with an OTP sent to the
+   * unverified email — useful for the verify-and-sign-in flow on the login page,
+   * but undesirable on checkout where we route unverified shoppers to standard
+   * password login up front.
+   */
+  strictVerify?: boolean;
 }
 /**
  * Options for exchanging a passwordless login token for access tokens.

@@ -255,6 +255,7 @@ export default function ContactInfo({
             lastEmailSentRef.current = normalized;
             const formData = new FormData();
             formData.append('email', raw);
+            formData.append('strictVerify', 'true');
             if (turnstileToken) {
                 formData.append('turnstileToken', turnstileToken);
                 tokenConsumedRef.current = true;
@@ -296,6 +297,7 @@ export default function ContactInfo({
 
         const formData = new FormData();
         formData.append('email', raw);
+        formData.append('strictVerify', 'true');
         void passwordlessEmailFetcher.submit(formData, {
             method: 'POST',
             action: authorizePasswordlessEmailPath,
@@ -314,6 +316,7 @@ export default function ContactInfo({
 
         const formData = new FormData();
         formData.append('email', raw);
+        formData.append('strictVerify', 'true');
         formData.append('turnstileToken', turnstileToken);
         tokenConsumedRef.current = true;
         void passwordlessEmailFetcher.submit(formData, {
@@ -410,6 +413,7 @@ export default function ContactInfo({
         lastEmailSentRef.current = null;
         const fd = new FormData();
         fd.append('email', email);
+        fd.append('strictVerify', 'true');
         if (turnstileToken) {
             fd.append('turnstileToken', turnstileToken);
         }

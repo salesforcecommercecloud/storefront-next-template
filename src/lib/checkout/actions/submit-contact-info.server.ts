@@ -115,10 +115,16 @@ export async function action(formData: FormData, context: ActionFunctionArgs['co
 
     // Send OTP for passwordless login when shopper enters email (mode=email). Non-blocking.
     // To enable passwordless login, the "Enable Email Verification" site preference under "Storefront Login Preferences" must be enabled.
+    //
+    // strictVerify=true asks SLAS to reject the authorize call (HTTP 400) for shoppers
+    // whose email is registered but unverified. The error is swallowed here because this
+    // submission is non-blocking; the dedicated /action/authorize-passwordless-email path
+    // (called from contact-info.tsx) is where the requiresLogin response is consumed and
+    // the standard login modal is opened.
     const { emailVerificationEnabled } = getLoginPreferences(context);
     if (emailVerificationEnabled && email?.trim()) {
         try {
-            await authorizePasswordless(context, { userid: email.trim() });
+            await authorizePasswordless(context, { userid: email.trim(), strictVerify: true });
         } catch (error) {
             logger.error('SubmitContactInfo: failed to send passwordless OTP', { error });
         }

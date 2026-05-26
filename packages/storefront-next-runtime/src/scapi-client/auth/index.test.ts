@@ -809,6 +809,74 @@ describe('createAuthHelpers', () => {
                 const call = mockShopperLoginClient.authorizePasswordlessCustomer.mock.calls[0][0];
                 expect(call.params?.query).toBeUndefined();
             });
+
+            it('should include strict_verify=true query when strictVerify is true', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.authorizePasswordlessCustomer.mockResolvedValue({
+                    data: { status: 'ok' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.passwordless.authorize({
+                    userId: 'user@example.com',
+                    mode: 'email',
+                    strictVerify: true,
+                });
+
+                const call = mockShopperLoginClient.authorizePasswordlessCustomer.mock.calls[0][0];
+                expect(call.params?.query).toEqual({ strict_verify: 'true' });
+            });
+
+            it('should not include strict_verify query when strictVerify is omitted', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.authorizePasswordlessCustomer.mockResolvedValue({
+                    data: { status: 'ok' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.passwordless.authorize({
+                    userId: 'user@example.com',
+                    mode: 'email',
+                });
+
+                const call = mockShopperLoginClient.authorizePasswordlessCustomer.mock.calls[0][0];
+                expect(call.params?.query).toBeUndefined();
+            });
+
+            it('should combine register_customer and strict_verify query params when both are true', async () => {
+                const config: AuthConfig = {
+                    ...baseConfig,
+                    clientSecret: 'test-secret',
+                };
+
+                mockShopperLoginClient.authorizePasswordlessCustomer.mockResolvedValue({
+                    data: { status: 'ok' },
+                    response: new Response(),
+                });
+
+                const auth = createAuthHelpers(config);
+                await auth.passwordless.authorize({
+                    userId: 'user@example.com',
+                    mode: 'email',
+                    registerCustomer: true,
+                    email: 'user@example.com',
+                    lastName: 'Doe',
+                    strictVerify: true,
+                });
+
+                const call = mockShopperLoginClient.authorizePasswordlessCustomer.mock.calls[0][0];
+                expect(call.params?.query).toEqual({ register_customer: 'true', strict_verify: 'true' });
+            });
         });
 
         describe('exchangeToken', () => {

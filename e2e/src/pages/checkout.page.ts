@@ -2005,6 +2005,29 @@ class CheckoutPage {
     }
 
     /**
+     * Mock the passwordless authorization API to return the guest path: success=false
+     * with no requiresLogin and no error. Simulates SLAS 403 (not authorized for
+     * passwordless on this site) or 404 (email not registered) - both of which are
+     * mapped server-side to a "let the shopper proceed as guest" response. The OTP
+     * modal must not open and the standard login modal must not open either.
+     */
+    async mockPasswordlessAuthorizationGuestPath(email: string): Promise<void> {
+        await (I.usePlaywrightTo('mock passwordless API with guest path', async ({ browserContext }) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await browserContext.route('**/action/authorize-passwordless-email.data**', async (route: any) => {
+                // Turbo-stream format: flattened index-referenced JSON.
+                // Shape: { success: false, email }. No `requiresLogin` field.
+                const body = JSON.stringify([{ _1: 2 }, 'data', { _3: 4, _5: 6 }, 'success', false, 'email', email]);
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'text/x-script; charset=utf-8',
+                    body,
+                });
+            });
+        }) as unknown as Promise<void>);
+    }
+
+    /**
      * Mock the passwordless authorization API to return requiresLogin (400 scenario).
      * Simulates SLAS responding with 400 when passwordless is not available for the email.
      */

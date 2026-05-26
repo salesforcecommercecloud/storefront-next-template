@@ -207,6 +207,13 @@ export async function authorizePasswordless(
         registerCustomer?: boolean;
         firstName?: string;
         lastName?: string;
+        /**
+         * When true, asks SLAS to fail the authorize call (HTTP 400) for shoppers whose
+         * email is registered but unverified, instead of the default 200 / no-OTP behavior.
+         * The storefront uses this to route unverified shoppers to standard password
+         * login up front rather than opening an OTP modal that will never receive a code.
+         */
+        strictVerify?: boolean;
     }
 ) {
     const performanceTimer = context.get(performanceTimerContext);
@@ -249,6 +256,7 @@ export async function authorizePasswordless(
             usid: usid ? String(usid) : undefined,
             mode,
             ...(locale && { locale }),
+            ...(parameters.strictVerify && { strictVerify: true }),
             ...(parameters.registerCustomer && {
                 registerCustomer: parameters.registerCustomer,
                 firstName: parameters.firstName,
