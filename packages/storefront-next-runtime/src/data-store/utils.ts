@@ -22,6 +22,7 @@ import {
     DataStoreUnavailableError,
 } from '@salesforce/mrt-utilities/data-store';
 import { siteContext } from '../site-context';
+import { type DataStoreLogger, getDataStoreLogger } from './logger-context';
 
 export type DataStoreContextKey<T> = ReturnType<typeof createContext<T | null>>;
 
@@ -31,11 +32,52 @@ export type DataStoreEntry<TValue = unknown> = {
     value?: TValue;
 };
 
+/**
+ * Options for {@link createDataStoreMiddleware} and {@link createLazyDataStoreMiddleware}.
+ *
+ * @typeParam T - The shape stored in `context` after the entry is fetched and transformed.
+ */
 export type DataStoreMiddlewareOptions<T> = {
+    /**
+     * The data store entry key, or a function that derives it from request context (used
+     * for site-scoped keys — see {@link prefixWithSiteId}).
+     */
     entryKey: DataStoreEntryKey;
+    /**
+     * The React Router context the resolved value is written to. Create one with
+     * {@link createDataStoreContext}.
+     */
     context: DataStoreContextKey<T>;
+    /**
+     * Optional projection from the raw entry value to the typed shape stored in context.
+     * Defaults to the identity function (the raw value cast to `T`). Throws from this
+     * function propagate to the caller; do not use it as a place to handle data-store
+     * errors.
+     */
     transform?: (value: Record<string, unknown>) => T;
+    /**
+     * How the middleware reacts when the data store cannot serve the entry
+     * (`DataStoreUnavailableError` or `DataStoreServiceError`). `DataStoreNotFoundError`
+     * is always handled gracefully and ignores this setting.
+     *
+     * - `'throw'` *(factory default)*: rethrow with a stable error message. Use when the
+     *   entry is required and a failure should surface as a 5xx.
+     * - `'fallback'`: warn and resolve to {@link DataStoreMiddlewareOptions.fallbackValue}
+     *   (or the missing state if no fallback is configured). Use for optional preferences
+     *   where graceful degradation is preferred.
+     *
+     * The four built-in middlewares (`customSitePreferencesMiddleware`, etc.) override
+     * this default to `'fallback'` so the storefront stays up during transient outages,
+     * and expose `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` as an opt-in escape hatch.
+     */
     onUnavailable?: 'throw' | 'fallback';
+    /**
+     * Value to populate the context with when `onUnavailable === 'fallback'` and the data
+     * store fetch fails. Either a constant or a function that derives the value from the
+     * router context (useful for fallbacks that need request-scoped information). When
+     * omitted, the middleware leaves the context unset on failure (downstream consumers
+     * see the context's default value, typically `null`).
+     */
     fallbackValue?: T | ((context: Readonly<RouterContextProvider>) => T);
 };
 
@@ -51,16 +93,29 @@ export function createDataStoreContext<T>(): DataStoreContextKey<T> {
 }
 
 /**
- * Creates a data-store middleware that fetches site preferences from MRT data access layer
- * and stores them in the router context.
+ * Creates a React Router middleware that fetches a single MRT data store entry on every
+ * request and stores the resulting value in the supplied router context.
  *
- * Environment variables:
- * - `AWS_REGION` (required): AWS region for the data store table (e.g., "us-east-1")
- * - `MOBIFY_PROPERTY_ID` (required): MRT property identifier (e.g., "abcd1234")
- * - `DEPLOY_TARGET` (required): MRT deploy target (e.g., "production")
+ * Failure handling is controlled by `options.onUnavailable`:
+ * - `'throw'` (default for the factory): rethrow `DataStoreUnavailableError` and
+ *   `DataStoreServiceError` with a stable error message. Fail-fast — the request errors out.
+ * - `'fallback'`: log a warning and resolve to `options.fallbackValue` when configured, or
+ *   to the missing state (context not populated) when no `fallbackValue` is provided. The
+ *   request continues without crashing the middleware chain.
  *
- * @param options - Middleware options for data store entry and context
- * @returns React Router middleware for server requests
+ * `DataStoreNotFoundError` is always treated as "missing" (warn, do not populate context),
+ * regardless of `onUnavailable` — a not-found entry is an expected steady-state for
+ * features that haven't been published yet, not a service failure.
+ *
+ * Errors thrown from `options.transform` propagate to the caller — they indicate a
+ * programmer error in the middleware definition, not data-store unavailability.
+ *
+ * @param options - See {@link DataStoreMiddlewareOptions}.
+ * @returns React Router middleware for server requests.
+ *
+ * @env AWS_REGION (required): AWS region for the data store table (e.g., `us-east-1`).
+ * @env MOBIFY_PROPERTY_ID (required): MRT property identifier.
+ * @env DEPLOY_TARGET (required): MRT deploy target (e.g., `production`).
  */
 export function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response> {
     const { entryKey, context: contextKey, onUnavailable = 'throw', fallbackValue } = options;
@@ -95,6 +150,11 @@ export function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions
  *
  * Repeated reads within the same request share the in-flight promise so
  * the entry is fetched at most once per request.
+ *
+ * Failure handling matches the eager variant: `onUnavailable` and
+ * `fallbackValue` are honored when the underlying fetch fails. The fallback
+ * value (or `null` for the missing state) surfaces through
+ * {@link readLazyDataStoreEntry}.
  *
  * Use this for entries that only a subset of routes consume (e.g. config
  * read by a single feature) rather than entries needed on every request.
@@ -164,42 +224,72 @@ async function loadDataStoreEntry<T>(args: {
     fallbackValue: T | ((context: Readonly<RouterContextProvider>) => T) | undefined;
 }): Promise<LoadResult<T>> {
     const { entryKey, context, transform, onUnavailable, fallbackValue } = args;
+    const logger = getDataStoreLogger(context);
 
     try {
         const entry = await getDataStoreEntry(entryKey);
 
         if (!entry?.value || typeof entry.value !== 'object') {
-            // eslint-disable-next-line no-console
-            console.warn(`Data store entry '${entryKey}' not found or invalid.`);
+            logger.warn(`Data store entry '${entryKey}' not found or invalid.`, { entryKey });
             return { state: 'missing' };
         }
 
         return { state: 'value', value: transform(entry.value as Record<string, unknown>) };
     } catch (error) {
-        if (error instanceof DataStoreUnavailableError) {
-            if (onUnavailable === 'fallback' && typeof fallbackValue !== 'undefined') {
-                const resolvedFallbackValue =
-                    typeof fallbackValue === 'function'
-                        ? (fallbackValue as (ctx: Readonly<RouterContextProvider>) => T)(context)
-                        : fallbackValue;
-                // eslint-disable-next-line no-console
-                console.warn(`Data store unavailable for '${entryKey}'. Using configured fallback value.`);
-                return { state: 'fallback', value: resolvedFallbackValue };
-            }
-            throw new Error(
-                'Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.'
-            );
-        }
         if (error instanceof DataStoreNotFoundError) {
-            // eslint-disable-next-line no-console
-            console.warn(`Data store entry '${entryKey}' not found.`);
+            logger.warn(`Data store entry '${entryKey}' not found.`, { entryKey, error });
             return { state: 'missing' };
         }
-        if (error instanceof DataStoreServiceError) {
-            throw new Error(`Data store request failed for '${entryKey}'.`);
+        if (error instanceof DataStoreUnavailableError || error instanceof DataStoreServiceError) {
+            return resolveDataStoreFallback({
+                entryKey,
+                context,
+                error,
+                onUnavailable,
+                fallbackValue,
+                logger,
+            });
         }
         throw error;
     }
+}
+
+function resolveDataStoreFallback<T>(args: {
+    entryKey: string;
+    context: Readonly<RouterContextProvider>;
+    error: DataStoreUnavailableError | DataStoreServiceError;
+    onUnavailable: 'throw' | 'fallback';
+    fallbackValue: T | ((context: Readonly<RouterContextProvider>) => T) | undefined;
+    logger: DataStoreLogger;
+}): LoadResult<T> {
+    const { entryKey, context, error, onUnavailable, fallbackValue, logger } = args;
+    const reason = error instanceof DataStoreServiceError ? 'service error' : 'unavailable';
+
+    if (onUnavailable === 'fallback') {
+        if (typeof fallbackValue !== 'undefined') {
+            const resolved =
+                typeof fallbackValue === 'function'
+                    ? (fallbackValue as (ctx: Readonly<RouterContextProvider>) => T)(context)
+                    : fallbackValue;
+            logger.warn(`Data store ${reason} for '${entryKey}'. Using configured fallback value.`, {
+                entryKey,
+                reason,
+                error,
+            });
+            return { state: 'fallback', value: resolved };
+        }
+        logger.warn(`Data store ${reason} for '${entryKey}'. No fallback configured; treating entry as missing.`, {
+            entryKey,
+            reason,
+            error,
+        });
+        return { state: 'missing' };
+    }
+
+    if (error instanceof DataStoreUnavailableError) {
+        throw new Error('Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.');
+    }
+    throw new Error(`Data store request failed for '${entryKey}'.`);
 }
 
 /**

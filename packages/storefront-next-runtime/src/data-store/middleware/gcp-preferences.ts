@@ -15,6 +15,7 @@
  */
 
 import type { RouterContextProvider } from 'react-router';
+import { getDataStoreLogger } from '../logger-context';
 import { createDataStoreContext, createDataStoreMiddleware } from '../utils';
 
 /**
@@ -30,7 +31,6 @@ export type GcpPreferences = {
 };
 
 export const DEFAULT_GCP_PREFERENCES_KEY = 'gcp';
-const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 
 /**
  * Map keys inside the `gcp` data store entry. The ECOM MRT sync job writes
@@ -54,8 +54,7 @@ export const gcpPreferencesContext = createDataStoreContext<GcpPreferences>();
 export function getGcpPreferences(context: Readonly<RouterContextProvider>): GcpPreferences {
     const data = context.get(gcpPreferencesContext);
     if (data === null) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        getDataStoreLogger(context).warn(
             'GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.'
         );
         return { apiKey: '' };
@@ -80,14 +79,23 @@ export function getGcpApiKey(context: Readonly<RouterContextProvider>): string {
  * stores them in the router context. The entry shape is `{ "api-key": string, ... }`
  * under data store key `gcp`. Missing/invalid fields coerce to empty/default values.
  *
- * Only available for storefronts connecting to production ECOM instances.
- * Must run before any loader/middleware that reads `getGcpPreferences(context)`
- * or `getGcpApiKey(context)`.
+ * Only available for storefronts connecting to production ECOM instances. When the entry
+ * is not synced (e.g. the GCP feature flag is off in ECOM), the underlying fetch surfaces
+ * as `DataStoreNotFoundError` and the context is left unset; consumers see the empty
+ * default `{ apiKey: '' }` via {@link getGcpPreferences}.
+ *
+ * Defaults to graceful degradation: if the data store is unavailable or returns a service
+ * error, the request continues with `{ apiKey: '' }` rather than crashing. Set
+ * `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back into
+ * fail-fast behavior. The env var is read once at module load.
+ *
+ * Must run before any loader/middleware that reads `getGcpPreferences(context)` or
+ * `getGcpApiKey(context)`.
  */
 export const gcpPreferencesMiddleware = createDataStoreMiddleware<GcpPreferences>({
     entryKey: DEFAULT_GCP_PREFERENCES_KEY,
     context: gcpPreferencesContext,
-    onUnavailable: DATA_STORE_UNAVAILABLE_MODE === 'fallback' ? 'fallback' : 'throw',
+    onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === 'throw' ? 'throw' : 'fallback',
     fallbackValue: { apiKey: '' },
     transform: (value) => {
         const rawKey = value[API_KEY_MAP_KEY];

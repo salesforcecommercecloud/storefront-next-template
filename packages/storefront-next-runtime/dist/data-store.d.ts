@@ -1,4 +1,4 @@
-import * as react_router0 from "react-router";
+import * as react_router2 from "react-router";
 import { MiddlewareFunction, RouterContextProvider, createContext } from "react-router";
 import { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError } from "@salesforce/mrt-utilities/data-store";
 
@@ -9,11 +9,52 @@ type DataStoreEntryKey = string | ((context: Readonly<RouterContextProvider>) =>
 type DataStoreEntry<TValue = unknown> = {
   value?: TValue;
 };
+/**
+ * Options for {@link createDataStoreMiddleware} and {@link createLazyDataStoreMiddleware}.
+ *
+ * @typeParam T - The shape stored in `context` after the entry is fetched and transformed.
+ */
 type DataStoreMiddlewareOptions<T> = {
+  /**
+   * The data store entry key, or a function that derives it from request context (used
+   * for site-scoped keys — see {@link prefixWithSiteId}).
+   */
   entryKey: DataStoreEntryKey;
+  /**
+   * The React Router context the resolved value is written to. Create one with
+   * {@link createDataStoreContext}.
+   */
   context: DataStoreContextKey<T>;
+  /**
+   * Optional projection from the raw entry value to the typed shape stored in context.
+   * Defaults to the identity function (the raw value cast to `T`). Throws from this
+   * function propagate to the caller; do not use it as a place to handle data-store
+   * errors.
+   */
   transform?: (value: Record<string, unknown>) => T;
+  /**
+   * How the middleware reacts when the data store cannot serve the entry
+   * (`DataStoreUnavailableError` or `DataStoreServiceError`). `DataStoreNotFoundError`
+   * is always handled gracefully and ignores this setting.
+   *
+   * - `'throw'` *(factory default)*: rethrow with a stable error message. Use when the
+   *   entry is required and a failure should surface as a 5xx.
+   * - `'fallback'`: warn and resolve to {@link DataStoreMiddlewareOptions.fallbackValue}
+   *   (or the missing state if no fallback is configured). Use for optional preferences
+   *   where graceful degradation is preferred.
+   *
+   * The four built-in middlewares (`customSitePreferencesMiddleware`, etc.) override
+   * this default to `'fallback'` so the storefront stays up during transient outages,
+   * and expose `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` as an opt-in escape hatch.
+   */
   onUnavailable?: 'throw' | 'fallback';
+  /**
+   * Value to populate the context with when `onUnavailable === 'fallback'` and the data
+   * store fetch fails. Either a constant or a function that derives the value from the
+   * router context (useful for fallbacks that need request-scoped information). When
+   * omitted, the middleware leaves the context unset on failure (downstream consumers
+   * see the context's default value, typically `null`).
+   */
   fallbackValue?: T | ((context: Readonly<RouterContextProvider>) => T);
 };
 /**
@@ -25,16 +66,29 @@ type DataStoreMiddlewareOptions<T> = {
  */
 declare function createDataStoreContext<T>(): DataStoreContextKey<T>;
 /**
- * Creates a data-store middleware that fetches site preferences from MRT data access layer
- * and stores them in the router context.
+ * Creates a React Router middleware that fetches a single MRT data store entry on every
+ * request and stores the resulting value in the supplied router context.
  *
- * Environment variables:
- * - `AWS_REGION` (required): AWS region for the data store table (e.g., "us-east-1")
- * - `MOBIFY_PROPERTY_ID` (required): MRT property identifier (e.g., "abcd1234")
- * - `DEPLOY_TARGET` (required): MRT deploy target (e.g., "production")
+ * Failure handling is controlled by `options.onUnavailable`:
+ * - `'throw'` (default for the factory): rethrow `DataStoreUnavailableError` and
+ *   `DataStoreServiceError` with a stable error message. Fail-fast — the request errors out.
+ * - `'fallback'`: log a warning and resolve to `options.fallbackValue` when configured, or
+ *   to the missing state (context not populated) when no `fallbackValue` is provided. The
+ *   request continues without crashing the middleware chain.
  *
- * @param options - Middleware options for data store entry and context
- * @returns React Router middleware for server requests
+ * `DataStoreNotFoundError` is always treated as "missing" (warn, do not populate context),
+ * regardless of `onUnavailable` — a not-found entry is an expected steady-state for
+ * features that haven't been published yet, not a service failure.
+ *
+ * Errors thrown from `options.transform` propagate to the caller — they indicate a
+ * programmer error in the middleware definition, not data-store unavailability.
+ *
+ * @param options - See {@link DataStoreMiddlewareOptions}.
+ * @returns React Router middleware for server requests.
+ *
+ * @env AWS_REGION (required): AWS region for the data store table (e.g., `us-east-1`).
+ * @env MOBIFY_PROPERTY_ID (required): MRT property identifier.
+ * @env DEPLOY_TARGET (required): MRT deploy target (e.g., `production`).
  */
 declare function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOptions<T>): MiddlewareFunction<Response>;
 /**
@@ -46,6 +100,11 @@ declare function createDataStoreMiddleware<T>(options: DataStoreMiddlewareOption
  *
  * Repeated reads within the same request share the in-flight promise so
  * the entry is fetched at most once per request.
+ *
+ * Failure handling matches the eager variant: `onUnavailable` and
+ * `fallbackValue` are honored when the underlying fetch fails. The fallback
+ * value (or `null` for the missing state) surfaces through
+ * {@link readLazyDataStoreEntry}.
  *
  * Use this for entries that only a subset of routes consume (e.g. config
  * read by a single feature) rather than entries needed on every request.
@@ -70,6 +129,44 @@ declare function readLazyDataStoreEntry<T>(context: Readonly<RouterContextProvid
  */
 declare function getDataStoreEntry<TValue = unknown>(key: string): Promise<DataStoreEntry<TValue> | null>;
 //#endregion
+//#region src/data-store/logger-context.d.ts
+/**
+ * Minimal structured-logger interface the data-store middleware depends on.
+ *
+ * Matches the shape of the host application's `Logger` (see the storefront
+ * template's `src/lib/logger.ts`) so a host can pass through its own logger
+ * object via {@link dataStoreLoggerContext} without an adapter.
+ *
+ * The data-store middleware emits at `warn` level today; the full interface
+ * is exposed so future SDK middlewares that need richer levels stay
+ * consistent with this contract.
+ */
+interface DataStoreLogger {
+  error(message: string, metadata?: Record<string, unknown>): void;
+  warn(message: string, metadata?: Record<string, unknown>): void;
+  info(message: string, metadata?: Record<string, unknown>): void;
+  debug(message: string, metadata?: Record<string, unknown>): void;
+}
+/**
+ * Router context the SDK reads to obtain a request-scoped structured logger.
+ *
+ * Hosts (e.g. the storefront template) populate this from their own logging
+ * middleware. When unset, {@link getDataStoreLogger} falls back to a
+ * console-based logger so warnings remain visible.
+ *
+ * Defaults to `null` (not `undefined`) because React Router's
+ * `context.get()` throws when `defaultValue === undefined`.
+ */
+declare const dataStoreLoggerContext: react_router2.RouterContext<DataStoreLogger | null>;
+/**
+ * Read the data-store logger from router context, falling back to a
+ * console-based default when nothing has been injected.
+ *
+ * Use this from inside SDK middleware/loaders that have access to a
+ * {@link RouterContextProvider}.
+ */
+declare function getDataStoreLogger(context: Readonly<RouterContextProvider>): DataStoreLogger;
+//#endregion
 //#region src/data-store/middleware/custom-site-preferences.d.ts
 type SitePreferences = Record<string, unknown>;
 /**
@@ -77,7 +174,6 @@ type SitePreferences = Record<string, unknown>;
  *
  * @param context - Router context provider
  * @returns Site preferences data stored by data-store middleware
- * @throws Error when the data-store context is not available
  */
 declare function getSitePreferences(context: Readonly<RouterContextProvider>): SitePreferences;
 //#endregion
@@ -88,7 +184,6 @@ type CustomGlobalPreferences = Record<string, unknown>;
  *
  * @param context - Router context provider
  * @returns Custom global preferences data stored by data-store middleware
- * @throws Error when the data-store context is not available
  */
 declare function getCustomGlobalPreferences(context: Readonly<RouterContextProvider>): CustomGlobalPreferences;
 //#endregion
@@ -139,7 +234,7 @@ type LoginPreferences = {
 declare function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences;
 //#endregion
 //#region src/data-store/index.d.ts
-declare const dataStoreMiddleware: react_router0.MiddlewareFunction<Response>[];
+declare const dataStoreMiddleware: react_router2.MiddlewareFunction<Response>[];
 //#endregion
-export { type CustomGlobalPreferences, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, dataStoreMiddleware, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, readLazyDataStoreEntry };
+export { type CustomGlobalPreferences, DataStore, type DataStoreContextKey, type DataStoreEntry, type DataStoreEntryKey, type DataStoreLogger, type DataStoreMiddlewareOptions, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, type GcpPreferences, type LoginPreferences, type SitePreferences, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, dataStoreLoggerContext, dataStoreMiddleware, getCustomGlobalPreferences, getDataStoreEntry, getDataStoreLogger, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, readLazyDataStoreEntry };
 //# sourceMappingURL=data-store.d.ts.map

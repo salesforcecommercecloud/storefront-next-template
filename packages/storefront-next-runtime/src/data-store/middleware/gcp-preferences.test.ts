@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { MiddlewareFunction, RouterContextProvider } from 'react-router';
-import { DataStore } from '@salesforce/mrt-utilities/middleware';
+import { DataStore, DataStoreServiceError } from '@salesforce/mrt-utilities/middleware';
 import { gcpPreferencesMiddleware, gcpPreferencesContext, getGcpApiKey, getGcpPreferences } from './gcp-preferences';
 
 type MiddlewareNext = Parameters<MiddlewareFunction<Response>>[1];
@@ -148,10 +148,51 @@ describe('gcpPreferencesMiddleware', () => {
         warnSpy.mockRestore();
     });
 
+    it('defaults to fallback when SFNEXT_DATA_STORE_UNAVAILABLE_MODE is unset', async () => {
+        delete process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockRejectedValue(new DataStoreServiceError('boom')),
+        } as unknown as typeof DataStore._testDocumentClient;
+        DataStore._testLogMRTError = vi.fn();
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        vi.resetModules();
+        const fresh = await import('./gcp-preferences');
+        await fresh.gcpPreferencesMiddleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(fresh.gcpPreferencesContext)).toEqual({ apiKey: '' });
+        expect(next).toHaveBeenCalledOnce();
+        warnSpy.mockRestore();
+    });
+
+    it('throws on service error when SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw', async () => {
+        process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE = 'throw';
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockRejectedValue(new DataStoreServiceError('boom')),
+        } as unknown as typeof DataStore._testDocumentClient;
+        DataStore._testLogMRTError = vi.fn();
+
+        vi.resetModules();
+        const fresh = await import('./gcp-preferences');
+
+        await expect(
+            fresh.gcpPreferencesMiddleware(
+                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                next as MiddlewareNext
+            )
+        ).rejects.toThrow(`Data store request failed for 'gcp'.`);
+        expect(next).not.toHaveBeenCalled();
+        delete process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
+    });
+
     afterEach(() => {
         delete process.env.AWS_REGION;
         delete process.env.MOBIFY_PROPERTY_ID;
         delete process.env.DEPLOY_TARGET;
+        delete process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
         DataStore._testDocumentClient = null;
         DataStore._testLogMRTError = null;
     });

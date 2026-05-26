@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { MiddlewareFunction, RouterContextProvider } from 'react-router';
-import { DataStore } from '@salesforce/mrt-utilities/middleware';
+import { DataStore, DataStoreServiceError } from '@salesforce/mrt-utilities/middleware';
 import {
     createDataStoreContext,
     createDataStoreMiddleware,
@@ -24,6 +24,7 @@ import {
     prefixWithSiteId,
     readLazyDataStoreEntry,
 } from './utils';
+import { type DataStoreLogger, dataStoreLoggerContext } from './logger-context';
 import { getSitePreferences, sitePreferencesContext } from './middleware/custom-site-preferences';
 import { siteContext } from '../site-context';
 
@@ -128,7 +129,7 @@ describe('createDataStoreMiddleware', () => {
         expect(next).toHaveBeenCalledOnce();
     });
 
-    it('throws when data store is unavailable', async () => {
+    it('throws when data store is unavailable and onUnavailable is throw', async () => {
         const originalNodeEnv = process.env.NODE_ENV;
         const originalCi = process.env.CI;
         delete process.env.AWS_REGION;
@@ -140,6 +141,7 @@ describe('createDataStoreMiddleware', () => {
         const middleware = createDataStoreMiddleware({
             entryKey: 'site-preferences',
             context: sitePreferencesContext,
+            onUnavailable: 'throw',
         });
 
         await expect(
@@ -157,6 +159,168 @@ describe('createDataStoreMiddleware', () => {
         } else {
             process.env.CI = originalCi;
         }
+    });
+
+    it('falls back when service error occurs and onUnavailable is fallback', async () => {
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockRejectedValue(new DataStoreServiceError('boom')),
+        } as unknown as typeof DataStore._testDocumentClient;
+        DataStore._testLogMRTError = vi.fn();
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        const middleware = createDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+            onUnavailable: 'fallback',
+            fallbackValue: { ok: false },
+        });
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(sitePreferencesContext)).toEqual({ ok: false });
+        expect(next).toHaveBeenCalledOnce();
+        warnSpy.mockRestore();
+    });
+
+    it('throws with legacy message when service error occurs and onUnavailable is throw', async () => {
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockRejectedValue(new DataStoreServiceError('boom')),
+        } as unknown as typeof DataStore._testDocumentClient;
+        DataStore._testLogMRTError = vi.fn();
+
+        const middleware = createDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+            onUnavailable: 'throw',
+        });
+
+        await expect(
+            middleware(
+                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                next as MiddlewareNext
+            )
+        ).rejects.toThrow(`Data store request failed for 'site-preferences'.`);
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('returns missing state when service error occurs and no fallback value is configured', async () => {
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockRejectedValue(new DataStoreServiceError('boom')),
+        } as unknown as typeof DataStore._testDocumentClient;
+        DataStore._testLogMRTError = vi.fn();
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        const middleware = createDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+            onUnavailable: 'fallback',
+        });
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(sitePreferencesContext)).toBeUndefined();
+        expect(next).toHaveBeenCalledOnce();
+        expect(warnSpy).toHaveBeenCalled();
+        warnSpy.mockRestore();
+    });
+
+    it('returns missing state when data store is unavailable and no fallback value is configured', async () => {
+        const originalNodeEnv = process.env.NODE_ENV;
+        const originalCi = process.env.CI;
+        delete process.env.AWS_REGION;
+        delete process.env.MOBIFY_PROPERTY_ID;
+        delete process.env.DEPLOY_TARGET;
+        process.env.NODE_ENV = 'production';
+        process.env.CI = 'false';
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        const middleware = createDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+            onUnavailable: 'fallback',
+        });
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(sitePreferencesContext)).toBeUndefined();
+        expect(next).toHaveBeenCalledOnce();
+        warnSpy.mockRestore();
+        process.env.NODE_ENV = originalNodeEnv;
+        if (typeof originalCi === 'undefined') {
+            delete process.env.CI;
+        } else {
+            process.env.CI = originalCi;
+        }
+    });
+
+    it('rethrows unknown errors thrown from transform', async () => {
+        // The mrt-utilities client wraps any underlying SDK error into DataStoreServiceError, so
+        // unknown errors bypass that classification only when they come from the transform pipeline.
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({ Item: { value: { ok: true } } }),
+        } as unknown as typeof DataStore._testDocumentClient;
+
+        const middleware = createDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+            onUnavailable: 'fallback',
+            fallbackValue: {},
+            transform: () => {
+                throw new TypeError('something else broke');
+            },
+        });
+
+        await expect(
+            middleware(
+                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                next as MiddlewareNext
+            )
+        ).rejects.toThrow('something else broke');
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('uses the injected logger from dataStoreLoggerContext when provided', async () => {
+        const injected: DataStoreLogger = {
+            error: vi.fn(),
+            warn: vi.fn(),
+            info: vi.fn(),
+            debug: vi.fn(),
+        };
+        context.set(dataStoreLoggerContext, injected);
+
+        // Empty response triggers DataStoreNotFoundError inside getEntry — the path that emits the
+        // structured 'not found' warning we want to assert.
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockResolvedValue({}),
+        } as unknown as typeof DataStore._testDocumentClient;
+        const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        const middleware = createDataStoreMiddleware({
+            entryKey: 'site-preferences',
+            context: sitePreferencesContext,
+        });
+
+        await middleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        expect(injected.warn).toHaveBeenCalledWith(
+            `Data store entry 'site-preferences' not found.`,
+            expect.objectContaining({ entryKey: 'site-preferences' })
+        );
+        expect(consoleWarnSpy).not.toHaveBeenCalled();
+        consoleWarnSpy.mockRestore();
     });
 
     it('uses fallback value when data store is unavailable and fallback mode is configured', async () => {
@@ -370,5 +534,84 @@ describe('getSitePreferences', () => {
         );
 
         warnSpy.mockRestore();
+    });
+});
+
+describe('built-in data-store middlewares', () => {
+    let next: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        process.env.AWS_REGION = 'us-east-1';
+        process.env.MOBIFY_PROPERTY_ID = 'prop-1';
+        process.env.DEPLOY_TARGET = 'production';
+        delete process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
+
+        next = vi.fn().mockResolvedValue(new Response('ok'));
+    });
+
+    afterEach(() => {
+        delete process.env.AWS_REGION;
+        delete process.env.MOBIFY_PROPERTY_ID;
+        delete process.env.DEPLOY_TARGET;
+        delete process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
+        DataStore._testDocumentClient = null;
+        DataStore._testLogMRTError = null;
+    });
+
+    // Build a context populated with the freshly-imported siteContext symbol. After
+    // vi.resetModules(), the module-graph identity of siteContext is reset, so we have to
+    // populate context using the same module instance the middleware was loaded from.
+    async function buildFreshContext(siteId: string): Promise<RouterContextProvider> {
+        const { siteContext: freshSiteContext } = await import('../site-context');
+        const store = new Map<unknown, unknown>();
+        store.set(freshSiteContext, { site: { id: siteId } });
+        return {
+            set: (ctx: unknown, value: unknown) => store.set(ctx, value),
+            get: (ctx: unknown) => store.get(ctx),
+        } as unknown as RouterContextProvider;
+    }
+
+    it('customSitePreferencesMiddleware defaults to fallback on service error', async () => {
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockRejectedValue(new Error('underlying ddb failure')),
+            // logMRTError noop to silence the wrapped log
+        } as unknown as typeof DataStore._testDocumentClient;
+        DataStore._testLogMRTError = vi.fn();
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        vi.resetModules();
+        const { customSitePreferencesMiddleware, sitePreferencesContext: ctxKey } = await import(
+            './middleware/custom-site-preferences'
+        );
+        const context = await buildFreshContext('icelandfoodsuk');
+
+        await customSitePreferencesMiddleware(
+            { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+            next as MiddlewareNext
+        );
+
+        expect(context.get(ctxKey)).toEqual({});
+        expect(next).toHaveBeenCalledOnce();
+        warnSpy.mockRestore();
+    });
+
+    it('customSitePreferencesMiddleware throws when SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw', async () => {
+        process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE = 'throw';
+        DataStore._testDocumentClient = {
+            send: vi.fn().mockRejectedValue(new Error('underlying ddb failure')),
+        } as unknown as typeof DataStore._testDocumentClient;
+        DataStore._testLogMRTError = vi.fn();
+
+        vi.resetModules();
+        const { customSitePreferencesMiddleware } = await import('./middleware/custom-site-preferences');
+        const context = await buildFreshContext('icelandfoodsuk');
+
+        await expect(
+            customSitePreferencesMiddleware(
+                { request: new Request('https://example.com'), context, params: {}, unstable_pattern: '' },
+                next as MiddlewareNext
+            )
+        ).rejects.toThrow(`Data store request failed for 'icelandfoodsuk-custom-site-preferences'.`);
+        expect(next).not.toHaveBeenCalled();
     });
 });

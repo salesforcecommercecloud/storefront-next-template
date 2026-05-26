@@ -15,6 +15,7 @@
  */
 
 import type { RouterContextProvider } from 'react-router';
+import { getDataStoreLogger } from '../logger-context';
 import { createDataStoreContext, createDataStoreMiddleware, prefixWithSiteId } from '../utils';
 
 export type LoginPreferences = {
@@ -22,7 +23,6 @@ export type LoginPreferences = {
 };
 
 export const loginPreferencesContext = createDataStoreContext<LoginPreferences>();
-const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 
 /**
  * Read login preferences from router context.
@@ -33,8 +33,7 @@ const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MO
 export function getLoginPreferences(context: Readonly<RouterContextProvider>): LoginPreferences {
     const data = context.get(loginPreferencesContext);
     if (!data) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        getDataStoreLogger(context).warn(
             'Login preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
         );
         return {};
@@ -42,10 +41,23 @@ export function getLoginPreferences(context: Readonly<RouterContextProvider>): L
     return data;
 }
 
+/**
+ * Middleware that reads the site-scoped `login-preferences` entry from the MRT data store
+ * and stores its `data` field in {@link loginPreferencesContext}. The entry key is
+ * prefixed with the current site id (e.g. `acme-login-preferences`).
+ *
+ * Defaults to graceful degradation: if the data store is unavailable or returns a service
+ * error, the request continues with `{ emailVerificationEnabled: false }` rather than
+ * crashing. Set `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back
+ * into fail-fast behavior. The env var is read once at module load.
+ *
+ * Must run after the site-context middleware (so the site id is available for the entry
+ * key) and before any loader that calls {@link getLoginPreferences}.
+ */
 export const loginPreferencesMiddleware = createDataStoreMiddleware<LoginPreferences>({
     entryKey: prefixWithSiteId('login-preferences'),
     context: loginPreferencesContext,
-    onUnavailable: DATA_STORE_UNAVAILABLE_MODE === 'fallback' ? 'fallback' : 'throw',
+    onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === 'throw' ? 'throw' : 'fallback',
     fallbackValue: { emailVerificationEnabled: false },
     transform: (value) => value.data as LoginPreferences,
 });

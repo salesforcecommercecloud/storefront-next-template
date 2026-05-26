@@ -18,6 +18,8 @@ export { createDataStoreMiddleware } from './utils';
 export { createLazyDataStoreMiddleware, readLazyDataStoreEntry } from './utils';
 export { createDataStoreContext } from './utils';
 export { getDataStoreEntry } from './utils';
+export { dataStoreLoggerContext, getDataStoreLogger } from './logger-context';
+export type { DataStoreLogger } from './logger-context';
 export { getSitePreferences } from './middleware/custom-site-preferences';
 export { getCustomGlobalPreferences } from './middleware/custom-global-preferences';
 export { getGcpApiKey, getGcpPreferences } from './middleware/gcp-preferences';

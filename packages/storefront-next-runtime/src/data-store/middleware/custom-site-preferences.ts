@@ -15,26 +15,24 @@
  */
 
 import type { RouterContextProvider } from 'react-router';
+import { getDataStoreLogger } from '../logger-context';
 import { createDataStoreContext, createDataStoreMiddleware, prefixWithSiteId } from '../utils';
 
 export type SitePreferences = Record<string, unknown>;
 
 export const DEFAULT_SITE_PREFERENCES_KEY = 'site-preferences';
 export const sitePreferencesContext = createDataStoreContext<SitePreferences>();
-const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 
 /**
  * Read site preferences from router context.
  *
  * @param context - Router context provider
  * @returns Site preferences data stored by data-store middleware
- * @throws Error when the data-store context is not available
  */
 export function getSitePreferences(context: Readonly<RouterContextProvider>): SitePreferences {
     const data = context.get(sitePreferencesContext);
     if (!data) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        getDataStoreLogger(context).warn(
             'Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
         );
         return {};
@@ -42,9 +40,22 @@ export function getSitePreferences(context: Readonly<RouterContextProvider>): Si
     return data;
 }
 
+/**
+ * Middleware that reads the site-scoped `custom-site-preferences` entry from the MRT data
+ * store and stores it in {@link sitePreferencesContext}. The entry key is prefixed with
+ * the current site id (e.g. `acme-custom-site-preferences`).
+ *
+ * Defaults to graceful degradation: if the data store is unavailable or returns a service
+ * error, the request continues with `{}` as the preferences value rather than crashing.
+ * Set `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back into
+ * fail-fast behavior. The env var is read once at module load.
+ *
+ * Must run after the site-context middleware (so the site id is available for the entry
+ * key) and before any loader that calls {@link getSitePreferences}.
+ */
 export const customSitePreferencesMiddleware = createDataStoreMiddleware({
     entryKey: prefixWithSiteId('custom-site-preferences'),
     context: sitePreferencesContext,
-    onUnavailable: DATA_STORE_UNAVAILABLE_MODE === 'fallback' ? 'fallback' : 'throw',
+    onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === 'throw' ? 'throw' : 'fallback',
     fallbackValue: {},
 });

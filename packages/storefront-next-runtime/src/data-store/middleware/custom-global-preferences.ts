@@ -15,26 +15,24 @@
  */
 
 import type { RouterContextProvider } from 'react-router';
+import { getDataStoreLogger } from '../logger-context';
 import { createDataStoreContext, createDataStoreMiddleware } from '../utils';
 
 export type CustomGlobalPreferences = Record<string, unknown>;
 
 export const DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY = 'custom-global-preferences';
 export const customGlobalPreferencesContext = createDataStoreContext<CustomGlobalPreferences>();
-const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 
 /**
  * Read custom global preferences from router context.
  *
  * @param context - Router context provider
  * @returns Custom global preferences data stored by data-store middleware
- * @throws Error when the data-store context is not available
  */
 export function getCustomGlobalPreferences(context: Readonly<RouterContextProvider>): CustomGlobalPreferences {
     const data = context.get(customGlobalPreferencesContext);
     if (!data) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        getDataStoreLogger(context).warn(
             'Custom global preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.'
         );
         return {};
@@ -42,9 +40,18 @@ export function getCustomGlobalPreferences(context: Readonly<RouterContextProvid
     return data;
 }
 
+/**
+ * Middleware that reads the global `custom-global-preferences` entry from the MRT data
+ * store and stores it in {@link customGlobalPreferencesContext}.
+ *
+ * Defaults to graceful degradation: if the data store is unavailable or returns a service
+ * error, the request continues with `{}` as the preferences value rather than crashing.
+ * Set `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back into
+ * fail-fast behavior. The env var is read once at module load.
+ */
 export const customGlobalPreferencesMiddleware = createDataStoreMiddleware({
     entryKey: DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY,
     context: customGlobalPreferencesContext,
-    onUnavailable: DATA_STORE_UNAVAILABLE_MODE === 'fallback' ? 'fallback' : 'throw',
+    onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === 'throw' ? 'throw' : 'fallback',
     fallbackValue: {},
 });

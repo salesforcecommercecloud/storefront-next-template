@@ -15,6 +15,7 @@
  */
 import pino from 'pino';
 import type { MiddlewareFunction } from 'react-router';
+import { dataStoreLoggerContext } from '@salesforce/storefront-next-runtime/data-store';
 import { correlationContext } from '@/lib/correlation';
 import { processMetadata, resolveLevel, type Logger } from '@/lib/logger';
 import { loggerContext } from '@/lib/logger.server';
@@ -90,6 +91,11 @@ export const loggingMiddleware: MiddlewareFunction<Response> = async ({ request,
     };
     if (correlationId) bindings.correlationId = correlationId;
     const child = pinoLogger.child(bindings);
-    context.set(loggerContext, wrapPinoLogger(child));
+    const wrapped = wrapPinoLogger(child);
+    context.set(loggerContext, wrapped);
+    // Also expose the same wrapped logger to the runtime SDK so its data-store
+    // middleware emits warnings through pino with the request bindings (correlationId, method, path)
+    // rather than bare console.warn.
+    context.set(dataStoreLoggerContext, wrapped);
     return next();
 };

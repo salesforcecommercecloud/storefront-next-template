@@ -3,6 +3,64 @@ import "./apply-url-config.js";
 import { createContext } from "react-router";
 import { DataStore, DataStore as DataStore$1, DataStoreNotFoundError, DataStoreNotFoundError as DataStoreNotFoundError$1, DataStoreServiceError, DataStoreServiceError as DataStoreServiceError$1, DataStoreUnavailableError, DataStoreUnavailableError as DataStoreUnavailableError$1 } from "@salesforce/mrt-utilities/data-store";
 
+//#region src/data-store/logger-context.ts
+function formatMessage(message, metadata) {
+	if (!metadata) return message;
+	try {
+		return `${message} ${JSON.stringify(metadata, replacerForErrors)}`;
+	} catch {
+		return `${message} [unserializable metadata]`;
+	}
+}
+function replacerForErrors(_key, value) {
+	if (value instanceof Error) return {
+		name: value.name,
+		message: value.message,
+		...value.stack && { stack: value.stack }
+	};
+	return value;
+}
+/**
+* Default logger used when nothing has been injected via
+* {@link dataStoreLoggerContext}. Routes warnings to `console.warn` and
+* errors to `console.error` so diagnostics remain visible in environments
+* (tests, scripts, hosts that haven't wired a structured logger) where the
+* SDK is invoked outside the storefront template. `info` and `debug` are
+* no-ops to avoid noisy default output.
+*/
+const consoleLogger = Object.freeze({
+	error(message, metadata) {
+		console.error(formatMessage(message, metadata));
+	},
+	warn(message, metadata) {
+		console.warn(formatMessage(message, metadata));
+	},
+	info() {},
+	debug() {}
+});
+/**
+* Router context the SDK reads to obtain a request-scoped structured logger.
+*
+* Hosts (e.g. the storefront template) populate this from their own logging
+* middleware. When unset, {@link getDataStoreLogger} falls back to a
+* console-based logger so warnings remain visible.
+*
+* Defaults to `null` (not `undefined`) because React Router's
+* `context.get()` throws when `defaultValue === undefined`.
+*/
+const dataStoreLoggerContext = createContext(null);
+/**
+* Read the data-store logger from router context, falling back to a
+* console-based default when nothing has been injected.
+*
+* Use this from inside SDK middleware/loaders that have access to a
+* {@link RouterContextProvider}.
+*/
+function getDataStoreLogger(context) {
+	return context.get(dataStoreLoggerContext) ?? consoleLogger;
+}
+
+//#endregion
 //#region src/data-store/utils.ts
 /**
 * Creates a typed React Router context for data store entries.
@@ -15,16 +73,29 @@ function createDataStoreContext() {
 	return createContext(null);
 }
 /**
-* Creates a data-store middleware that fetches site preferences from MRT data access layer
-* and stores them in the router context.
+* Creates a React Router middleware that fetches a single MRT data store entry on every
+* request and stores the resulting value in the supplied router context.
 *
-* Environment variables:
-* - `AWS_REGION` (required): AWS region for the data store table (e.g., "us-east-1")
-* - `MOBIFY_PROPERTY_ID` (required): MRT property identifier (e.g., "abcd1234")
-* - `DEPLOY_TARGET` (required): MRT deploy target (e.g., "production")
+* Failure handling is controlled by `options.onUnavailable`:
+* - `'throw'` (default for the factory): rethrow `DataStoreUnavailableError` and
+*   `DataStoreServiceError` with a stable error message. Fail-fast — the request errors out.
+* - `'fallback'`: log a warning and resolve to `options.fallbackValue` when configured, or
+*   to the missing state (context not populated) when no `fallbackValue` is provided. The
+*   request continues without crashing the middleware chain.
 *
-* @param options - Middleware options for data store entry and context
-* @returns React Router middleware for server requests
+* `DataStoreNotFoundError` is always treated as "missing" (warn, do not populate context),
+* regardless of `onUnavailable` — a not-found entry is an expected steady-state for
+* features that haven't been published yet, not a service failure.
+*
+* Errors thrown from `options.transform` propagate to the caller — they indicate a
+* programmer error in the middleware definition, not data-store unavailability.
+*
+* @param options - See {@link DataStoreMiddlewareOptions}.
+* @returns React Router middleware for server requests.
+*
+* @env AWS_REGION (required): AWS region for the data store table (e.g., `us-east-1`).
+* @env MOBIFY_PROPERTY_ID (required): MRT property identifier.
+* @env DEPLOY_TARGET (required): MRT deploy target (e.g., `production`).
 */
 function createDataStoreMiddleware(options) {
 	const { entryKey, context: contextKey, onUnavailable = "throw", fallbackValue } = options;
@@ -51,6 +122,11 @@ function createDataStoreMiddleware(options) {
 *
 * Repeated reads within the same request share the in-flight promise so
 * the entry is fetched at most once per request.
+*
+* Failure handling matches the eager variant: `onUnavailable` and
+* `fallbackValue` are honored when the underlying fetch fails. The fallback
+* value (or `null` for the missing state) surfaces through
+* {@link readLazyDataStoreEntry}.
 *
 * Use this for entries that only a subset of routes consume (e.g. config
 * read by a single feature) rather than entries needed on every request.
@@ -97,10 +173,11 @@ async function readLazyDataStoreEntry(context, contextKey) {
 */
 async function loadDataStoreEntry(args) {
 	const { entryKey, context, transform, onUnavailable, fallbackValue } = args;
+	const logger = getDataStoreLogger(context);
 	try {
 		const entry = await getDataStoreEntry(entryKey);
 		if (!entry?.value || typeof entry.value !== "object") {
-			console.warn(`Data store entry '${entryKey}' not found or invalid.`);
+			logger.warn(`Data store entry '${entryKey}' not found or invalid.`, { entryKey });
 			return { state: "missing" };
 		}
 		return {
@@ -108,24 +185,49 @@ async function loadDataStoreEntry(args) {
 			value: transform(entry.value)
 		};
 	} catch (error) {
-		if (error instanceof DataStoreUnavailableError$1) {
-			if (onUnavailable === "fallback" && typeof fallbackValue !== "undefined") {
-				const resolvedFallbackValue = typeof fallbackValue === "function" ? fallbackValue(context) : fallbackValue;
-				console.warn(`Data store unavailable for '${entryKey}'. Using configured fallback value.`);
-				return {
-					state: "fallback",
-					value: resolvedFallbackValue
-				};
-			}
-			throw new Error("Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.");
-		}
 		if (error instanceof DataStoreNotFoundError$1) {
-			console.warn(`Data store entry '${entryKey}' not found.`);
+			logger.warn(`Data store entry '${entryKey}' not found.`, {
+				entryKey,
+				error
+			});
 			return { state: "missing" };
 		}
-		if (error instanceof DataStoreServiceError$1) throw new Error(`Data store request failed for '${entryKey}'.`);
+		if (error instanceof DataStoreUnavailableError$1 || error instanceof DataStoreServiceError$1) return resolveDataStoreFallback({
+			entryKey,
+			context,
+			error,
+			onUnavailable,
+			fallbackValue,
+			logger
+		});
 		throw error;
 	}
+}
+function resolveDataStoreFallback(args) {
+	const { entryKey, context, error, onUnavailable, fallbackValue, logger } = args;
+	const reason = error instanceof DataStoreServiceError$1 ? "service error" : "unavailable";
+	if (onUnavailable === "fallback") {
+		if (typeof fallbackValue !== "undefined") {
+			const resolved = typeof fallbackValue === "function" ? fallbackValue(context) : fallbackValue;
+			logger.warn(`Data store ${reason} for '${entryKey}'. Using configured fallback value.`, {
+				entryKey,
+				reason,
+				error
+			});
+			return {
+				state: "fallback",
+				value: resolved
+			};
+		}
+		logger.warn(`Data store ${reason} for '${entryKey}'. No fallback configured; treating entry as missing.`, {
+			entryKey,
+			reason,
+			error
+		});
+		return { state: "missing" };
+	}
+	if (error instanceof DataStoreUnavailableError$1) throw new Error("Data store is unavailable. Ensure AWS_REGION, MOBIFY_PROPERTY_ID, and DEPLOY_TARGET are set.");
+	throw new Error(`Data store request failed for '${entryKey}'.`);
 }
 /**
 * Read a data-store entry through the singleton MRT utilities API.
@@ -157,26 +259,37 @@ function prefixWithSiteId(suffix) {
 //#endregion
 //#region src/data-store/middleware/custom-site-preferences.ts
 const sitePreferencesContext = createDataStoreContext();
-const DATA_STORE_UNAVAILABLE_MODE$3 = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Read site preferences from router context.
 *
 * @param context - Router context provider
 * @returns Site preferences data stored by data-store middleware
-* @throws Error when the data-store context is not available
 */
 function getSitePreferences(context) {
 	const data = context.get(sitePreferencesContext);
 	if (!data) {
-		console.warn("Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
+		getDataStoreLogger(context).warn("Data store context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
 		return {};
 	}
 	return data;
 }
+/**
+* Middleware that reads the site-scoped `custom-site-preferences` entry from the MRT data
+* store and stores it in {@link sitePreferencesContext}. The entry key is prefixed with
+* the current site id (e.g. `acme-custom-site-preferences`).
+*
+* Defaults to graceful degradation: if the data store is unavailable or returns a service
+* error, the request continues with `{}` as the preferences value rather than crashing.
+* Set `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back into
+* fail-fast behavior. The env var is read once at module load.
+*
+* Must run after the site-context middleware (so the site id is available for the entry
+* key) and before any loader that calls {@link getSitePreferences}.
+*/
 const customSitePreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: prefixWithSiteId("custom-site-preferences"),
 	context: sitePreferencesContext,
-	onUnavailable: DATA_STORE_UNAVAILABLE_MODE$3 === "fallback" ? "fallback" : "throw",
+	onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === "throw" ? "throw" : "fallback",
 	fallbackValue: {}
 });
 
@@ -184,33 +297,39 @@ const customSitePreferencesMiddleware = createDataStoreMiddleware({
 //#region src/data-store/middleware/custom-global-preferences.ts
 const DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY = "custom-global-preferences";
 const customGlobalPreferencesContext = createDataStoreContext();
-const DATA_STORE_UNAVAILABLE_MODE$2 = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Read custom global preferences from router context.
 *
 * @param context - Router context provider
 * @returns Custom global preferences data stored by data-store middleware
-* @throws Error when the data-store context is not available
 */
 function getCustomGlobalPreferences(context) {
 	const data = context.get(customGlobalPreferencesContext);
 	if (!data) {
-		console.warn("Custom global preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
+		getDataStoreLogger(context).warn("Custom global preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
 		return {};
 	}
 	return data;
 }
+/**
+* Middleware that reads the global `custom-global-preferences` entry from the MRT data
+* store and stores it in {@link customGlobalPreferencesContext}.
+*
+* Defaults to graceful degradation: if the data store is unavailable or returns a service
+* error, the request continues with `{}` as the preferences value rather than crashing.
+* Set `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back into
+* fail-fast behavior. The env var is read once at module load.
+*/
 const customGlobalPreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: DEFAULT_CUSTOM_GLOBAL_PREFERENCES_KEY,
 	context: customGlobalPreferencesContext,
-	onUnavailable: DATA_STORE_UNAVAILABLE_MODE$2 === "fallback" ? "fallback" : "throw",
+	onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === "throw" ? "throw" : "fallback",
 	fallbackValue: {}
 });
 
 //#endregion
 //#region src/data-store/middleware/gcp-preferences.ts
 const DEFAULT_GCP_PREFERENCES_KEY = "gcp";
-const DATA_STORE_UNAVAILABLE_MODE$1 = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Map keys inside the `gcp` data store entry. The ECOM MRT sync job writes
 * to these exact keys; keep in sync with the sync job contract.
@@ -231,7 +350,7 @@ const gcpPreferencesContext = createDataStoreContext();
 function getGcpPreferences(context) {
 	const data = context.get(gcpPreferencesContext);
 	if (data === null) {
-		console.warn("GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.");
+		getDataStoreLogger(context).warn("GCP preferences context not found. Ensure gcpPreferencesMiddleware runs before loaders, or expect empty values in environments without the MRT data store entry.");
 		return { apiKey: "" };
 	}
 	return data;
@@ -252,14 +371,23 @@ function getGcpApiKey(context) {
 * stores them in the router context. The entry shape is `{ "api-key": string, ... }`
 * under data store key `gcp`. Missing/invalid fields coerce to empty/default values.
 *
-* Only available for storefronts connecting to production ECOM instances.
-* Must run before any loader/middleware that reads `getGcpPreferences(context)`
-* or `getGcpApiKey(context)`.
+* Only available for storefronts connecting to production ECOM instances. When the entry
+* is not synced (e.g. the GCP feature flag is off in ECOM), the underlying fetch surfaces
+* as `DataStoreNotFoundError` and the context is left unset; consumers see the empty
+* default `{ apiKey: '' }` via {@link getGcpPreferences}.
+*
+* Defaults to graceful degradation: if the data store is unavailable or returns a service
+* error, the request continues with `{ apiKey: '' }` rather than crashing. Set
+* `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back into
+* fail-fast behavior. The env var is read once at module load.
+*
+* Must run before any loader/middleware that reads `getGcpPreferences(context)` or
+* `getGcpApiKey(context)`.
 */
 const gcpPreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: DEFAULT_GCP_PREFERENCES_KEY,
 	context: gcpPreferencesContext,
-	onUnavailable: DATA_STORE_UNAVAILABLE_MODE$1 === "fallback" ? "fallback" : "throw",
+	onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === "throw" ? "throw" : "fallback",
 	fallbackValue: { apiKey: "" },
 	transform: (value) => {
 		const rawKey = value[API_KEY_MAP_KEY];
@@ -270,7 +398,6 @@ const gcpPreferencesMiddleware = createDataStoreMiddleware({
 //#endregion
 //#region src/data-store/middleware/login-preferences.ts
 const loginPreferencesContext = createDataStoreContext();
-const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE;
 /**
 * Read login preferences from router context.
 *
@@ -280,15 +407,28 @@ const DATA_STORE_UNAVAILABLE_MODE = process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MO
 function getLoginPreferences(context) {
 	const data = context.get(loginPreferencesContext);
 	if (!data) {
-		console.warn("Login preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
+		getDataStoreLogger(context).warn("Login preferences context not found. Ensure data-store middleware runs before loaders and the required env vars are set.");
 		return {};
 	}
 	return data;
 }
+/**
+* Middleware that reads the site-scoped `login-preferences` entry from the MRT data store
+* and stores its `data` field in {@link loginPreferencesContext}. The entry key is
+* prefixed with the current site id (e.g. `acme-login-preferences`).
+*
+* Defaults to graceful degradation: if the data store is unavailable or returns a service
+* error, the request continues with `{ emailVerificationEnabled: false }` rather than
+* crashing. Set `SFNEXT_DATA_STORE_UNAVAILABLE_MODE=throw` in the environment to opt back
+* into fail-fast behavior. The env var is read once at module load.
+*
+* Must run after the site-context middleware (so the site id is available for the entry
+* key) and before any loader that calls {@link getLoginPreferences}.
+*/
 const loginPreferencesMiddleware = createDataStoreMiddleware({
 	entryKey: prefixWithSiteId("login-preferences"),
 	context: loginPreferencesContext,
-	onUnavailable: DATA_STORE_UNAVAILABLE_MODE === "fallback" ? "fallback" : "throw",
+	onUnavailable: process.env.SFNEXT_DATA_STORE_UNAVAILABLE_MODE === "throw" ? "throw" : "fallback",
 	fallbackValue: { emailVerificationEnabled: false },
 	transform: (value) => value.data
 });
@@ -303,5 +443,5 @@ const dataStoreMiddleware = [
 ];
 
 //#endregion
-export { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, dataStoreMiddleware, getCustomGlobalPreferences, getDataStoreEntry, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, readLazyDataStoreEntry };
+export { DataStore, DataStoreNotFoundError, DataStoreServiceError, DataStoreUnavailableError, createDataStoreContext, createDataStoreMiddleware, createLazyDataStoreMiddleware, dataStoreLoggerContext, dataStoreMiddleware, getCustomGlobalPreferences, getDataStoreEntry, getDataStoreLogger, getGcpApiKey, getGcpPreferences, getLoginPreferences, getSitePreferences, readLazyDataStoreEntry };
 //# sourceMappingURL=data-store.js.map

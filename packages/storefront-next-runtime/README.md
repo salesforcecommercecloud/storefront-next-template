@@ -55,9 +55,15 @@ Utilities and middleware for reading scoped entries from the MRT data access lay
 - `AWS_REGION` (required): AWS region for the data store table (e.g., `us-east-1`)
 - `MOBIFY_PROPERTY_ID` (required): MRT property identifier (e.g., `abcd1234`)
 - `DEPLOY_TARGET` (required): MRT deploy target (e.g., `production`)
-- `SFNEXT_DATA_STORE_UNAVAILABLE_MODE` (optional): controls middleware behavior when MRT data store is unavailable
-  - `throw` (default): fail fast by throwing
-  - `fallback`: use middleware-defined safe fallback values and continue request execution
+- `SFNEXT_DATA_STORE_UNAVAILABLE_MODE` (optional): controls built-in middleware behavior when the
+  MRT data store is unavailable or returns a service error
+  - `fallback` (default): use middleware-defined safe fallback values and continue request execution
+  - `throw`: opt back into fail-fast behavior — middleware throws and the request errors out
+
+  Applies to the four built-in middlewares (`customSitePreferencesMiddleware`,
+  `customGlobalPreferencesMiddleware`, `gcpPreferencesMiddleware`, `loginPreferencesMiddleware`).
+  Customer-authored middlewares created via `createDataStoreMiddleware` default to `'throw'`; pass
+  `onUnavailable: 'fallback'` and a `fallbackValue` to opt into graceful degradation.
 
 These are managed by Managed Runtime and are not typically set by SDK consumers directly.
 
