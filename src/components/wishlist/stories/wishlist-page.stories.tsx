@@ -27,7 +27,6 @@ import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import AuthProvider from '@/providers/auth';
 import type { PublicSessionData } from '@/lib/api/types';
 
-const guestSession: PublicSessionData = { userType: 'guest' };
 const registeredSession: PublicSessionData = { userType: 'registered', customerId: 'storybook-1' };
 
 // -- Mock product data --
@@ -175,7 +174,7 @@ export const Default: Story = {
 };
 
 export const Empty: Story = {
-    name: 'Empty wishlist (registered)',
+    name: 'Empty wishlist',
     args: {
         items: [],
         productsByProductId: {},
@@ -189,46 +188,6 @@ export const Empty: Story = {
 
         // No sort/filter controls
         await expect(canvas.queryAllByRole('combobox')).toHaveLength(0);
-
-        // Registered shoppers do not see the guest sign-in CTA
-        await expect(canvas.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
-    },
-};
-
-export const EmptyGuest: Story = {
-    name: 'Empty wishlist (guest with sign-in CTA)',
-    args: {
-        items: [],
-        productsByProductId: {},
-    },
-    decorators: [
-        (Story) => (
-            <ConfigProvider config={mockConfig}>
-                <SiteProvider
-                    site={mockSiteObject}
-                    locale={mockLocale}
-                    language={mockSiteObject.defaultLocale}
-                    currency={mockSiteObject.defaultCurrency}>
-                    <AuthProvider value={guestSession}>
-                        <Story />
-                    </AuthProvider>
-                </SiteProvider>
-            </ConfigProvider>
-        ),
-    ],
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Empty state still renders heart + title + subtitle
-        await expect(canvas.getByRole('heading', { level: 3 })).toBeInTheDocument();
-
-        // Guest-only sign-in CTA
-        const signInLink = canvas.getByRole('link', { name: 'Sign in' });
-        await expect(signInLink).toBeInTheDocument();
-        await expect(signInLink).toHaveAttribute('href', expect.stringContaining('/login'));
-        // Real Link component URL-encodes the slash, so match either /wishlist or %2Fwishlist.
-        await expect(signInLink).toHaveAttribute('href', expect.stringMatching(/returnUrl=(?:%2F|\/)wishlist/));
     },
 };
 

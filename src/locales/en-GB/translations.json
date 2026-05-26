@@ -909,7 +909,8 @@
             },
             "noFilterResults": "No items match your filter.",
             "guestEmptySignInPrompt": "Sign in to see saved items from your account.",
-            "guestEmptySignInCta": "Sign in",
+            "guestKeepItemsBanner": "Sign in to keep all your wishlist items.",
+            "guestKeepItemsBannerCta": "Sign in",
             "mergeSuccess": "Your saved items were added to your account wishlist.",
             "mergePartial": "Some saved items could not be added because they are no longer available."
         },

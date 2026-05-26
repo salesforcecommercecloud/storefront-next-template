@@ -20,6 +20,8 @@ import { loadWishlistPageData, type WishlistPageData } from '@/lib/api/wishlist.
 import { WishlistPageContent, WishlistSkeleton } from '@/components/wishlist/wishlist-page';
 import { WishlistLoadError } from '@/components/wishlist/wishlist-load-error';
 import { SeoMeta } from '@/components/seo-meta';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Link } from '@/components/link';
 import { getLogger } from '@/lib/logger.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { hasUsableShopperSession } from '@/middlewares/auth.utils';
@@ -30,10 +32,9 @@ import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
 /**
  * Public guest wishlist route. Registered shoppers with a usable session are
  * redirected to `/account/wishlist` so the account layout stays consistent.
- * Registered shoppers whose access token has expired are redirected to
- * `/login?returnUrl=/wishlist` so they can recover; on successful sign-in
- * they land back on `/wishlist` and the registered branch hops them to
- * `/account/wishlist`. Guests render the wishlist content inline.
+ * Guests — and registered shoppers whose token is no longer usable — render
+ * the wishlist content inline; the empty-state CTA prompts sign-in for
+ * recovery.
  *
  * Delegates to `loadWishlistPageData` (shared with `/account/wishlist`) for
  * the actual data fetch.
@@ -43,10 +44,7 @@ export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPag
     logger.debug('Wishlist (guest): loader starting');
 
     const session = getAuth(context);
-    if (session.userType === 'registered') {
-        if (!hasUsableShopperSession(session)) {
-            throw redirect(buildUrlFromContext('/login?returnUrl=/wishlist', context));
-        }
+    if (session.userType === 'registered' && hasUsableShopperSession(session)) {
         throw redirect(buildUrlFromContext('/account/wishlist', context));
     }
 
@@ -86,6 +84,14 @@ export default function GuestWishlist({
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <WishlistPageAnalytics />
             <SeoMeta title={t('meta.wishlistTitle', { defaultValue: 'Wishlist' })} />
+            <Alert className="mb-5">
+                <AlertDescription>
+                    {t('wishlist.guestKeepItemsBanner')}{' '}
+                    <Link to="/login?returnUrl=/wishlist" className="font-medium text-primary hover:underline">
+                        {t('wishlist.guestKeepItemsBannerCta')}
+                    </Link>
+                </AlertDescription>
+            </Alert>
             <Suspense fallback={<WishlistSkeleton />}>
                 <Await resolve={loaderData.productsByProductId}>
                     {(productsByProductId) => (

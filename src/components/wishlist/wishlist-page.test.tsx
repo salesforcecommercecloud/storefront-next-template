@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import type { ShopperCustomers, ShopperProducts } from '@/scapi';
@@ -66,23 +65,6 @@ vi.mock('@/components/product-price/utils', () => ({
     getPriceData: (...args: unknown[]) => mockGetPriceData(...args),
 }));
 
-// Mock useAuth so the empty-state CTA branch can be exercised under both
-// guest and registered sessions. Default is guest; tests override per case.
-const mockUseAuth = vi.fn();
-vi.mock('@/providers/auth', () => ({
-    useAuth: () => mockUseAuth(),
-}));
-
-// Mock site-context-aware Link to a plain anchor so it renders without a
-// SiteProvider in tests.
-vi.mock('@/components/link', () => ({
-    Link: ({ to, children, ...rest }: { to: string; children: ReactNode; [key: string]: unknown }) => (
-        <a href={to} {...rest}>
-            {children}
-        </a>
-    ),
-}));
-
 // -- Test data --
 
 const inStockProduct: Product = {
@@ -128,8 +110,6 @@ describe('WishlistPageContent', () => {
         mockGetPriceData.mockImplementation((product: Product) => ({
             isOnSale: product.id === 'prod-on-sale',
         }));
-        // Default to guest session; specific tests override.
-        mockUseAuth.mockReturnValue({ userType: 'guest' });
     });
 
     describe('rendering', () => {
@@ -176,43 +156,6 @@ describe('WishlistPageContent', () => {
         test('does not render sort/filter controls when empty', () => {
             render(<WishlistPageContent items={[]} productsByProductId={{}} />);
             expect(screen.queryByText(t('account:wishlist.sortBy'))).not.toBeInTheDocument();
-        });
-
-        test('shows guest sign-in CTA when guest and empty', () => {
-            mockUseAuth.mockReturnValue({ userType: 'guest' });
-            render(<WishlistPageContent items={[]} productsByProductId={{}} />);
-
-            expect(screen.getByText(t('account:wishlist.guestEmptySignInPrompt'))).toBeInTheDocument();
-            const link = screen.getByRole('link', { name: t('account:wishlist.guestEmptySignInCta') });
-            expect(link).toBeInTheDocument();
-            // returnUrl=/wishlist sends the shopper back to the wishlist after sign-in;
-            // _empty.login.tsx wraps the value with buildUrlFromContext to apply the
-            // site/locale prefix at redirect time.
-            expect(link).toHaveAttribute('href', '/login?returnUrl=/wishlist');
-        });
-
-        test('does not show guest sign-in CTA when registered and empty', () => {
-            mockUseAuth.mockReturnValue({ userType: 'registered', customerId: 'reg-1' });
-            render(<WishlistPageContent items={[]} productsByProductId={{}} />);
-
-            expect(screen.queryByText(t('account:wishlist.guestEmptySignInPrompt'))).not.toBeInTheDocument();
-            expect(
-                screen.queryByRole('link', { name: t('account:wishlist.guestEmptySignInCta') })
-            ).not.toBeInTheDocument();
-        });
-
-        test('does not show guest sign-in CTA when AuthProvider context is missing (fail closed)', () => {
-            mockUseAuth.mockReturnValue(undefined);
-            render(<WishlistPageContent items={[]} productsByProductId={{}} />);
-
-            expect(screen.queryByText(t('account:wishlist.guestEmptySignInPrompt'))).not.toBeInTheDocument();
-        });
-
-        test('does not show guest sign-in CTA when items are present (guest)', () => {
-            mockUseAuth.mockReturnValue({ userType: 'guest' });
-            render(<WishlistPageContent items={allItems} productsByProductId={allProducts} />);
-
-            expect(screen.queryByText(t('account:wishlist.guestEmptySignInPrompt'))).not.toBeInTheDocument();
         });
     });
 
