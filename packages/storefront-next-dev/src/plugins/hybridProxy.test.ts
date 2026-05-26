@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from 'vitest';
-import { shouldSkipProxy, rewriteCookieForLocalhost } from './hybridProxy';
+import { shouldSkipProxy, rewriteCookieForLocalhost, rewriteLocationForProxy } from './hybridProxy';
 
 describe('shouldSkipProxy', () => {
     describe('Vite internals — always skip', () => {
@@ -121,5 +121,112 @@ describe('rewriteCookieForLocalhost', () => {
         expect(rewriteCookieForLocalhost('sid=xyz; SameSite=Lax')).toContain('SameSite=Lax');
         expect(rewriteCookieForLocalhost('sid=xyz; SameSite=Strict')).toContain('SameSite=Strict');
         expect(rewriteCookieForLocalhost('sid=xyz; SameSite=None; Secure')).toContain('SameSite=None');
+    });
+});
+
+describe('rewriteLocationForProxy', () => {
+    const targetOrigin = 'https://zzrf-001.dx.commercecloud.salesforce.com';
+    const proxyOrigin = 'http://localhost:5173';
+
+    it('rewrites SFCC origin in absolute Location URLs to the proxy origin', () => {
+        const result = rewriteLocationForProxy({
+            locationHeader: `${targetOrigin}/s/RefArchGlobal/en-GB/cart`,
+            requestUrl: '/cart',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result).toEqual({ kind: 'rewritten', url: `${proxyOrigin}/s/RefArchGlobal/en-GB/cart` });
+    });
+
+    it('preserves the original request query params when SFCC strips them on redirect', () => {
+        // Repro for W-22582530: user visits /cart?foo=bar; SFCC redirects to its
+        // canonical Cart-Show URL without the user's query string. The proxy must
+        // carry foo=bar through so the destination page receives it.
+        const result = rewriteLocationForProxy({
+            locationHeader: `${targetOrigin}/s/RefArchGlobal/en-GB/Cart-Show`,
+            requestUrl: '/cart?foo=bar',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result).toEqual({
+            kind: 'rewritten',
+            url: `${proxyOrigin}/s/RefArchGlobal/en-GB/Cart-Show?foo=bar`,
+        });
+    });
+
+    it('preserves multi-value request query keys when the redirect target has none', () => {
+        // SFRA refinements and promo lists commonly repeat the same key
+        // (e.g. ?pmid=PROMO1&pmid=PROMO2). All values must survive the merge.
+        const result = rewriteLocationForProxy({
+            locationHeader: `${targetOrigin}/s/RefArchGlobal/en-GB/Cart-Show`,
+            requestUrl: '/cart?pmid=PROMO1&pmid=PROMO2',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result.kind).toBe('rewritten');
+        const parsed = new URL((result as { kind: 'rewritten'; url: string }).url);
+        expect(parsed.searchParams.getAll('pmid')).toEqual(['PROMO1', 'PROMO2']);
+    });
+
+    it('lets the redirect target win on key collisions', () => {
+        // If SFCC intentionally sets ?step=2 on the redirect, that wins over the
+        // user's ?step=1 — SFCC owns the destination page semantics.
+        const result = rewriteLocationForProxy({
+            locationHeader: `${targetOrigin}/s/RefArchGlobal/en-GB/checkout?step=2`,
+            requestUrl: '/checkout?step=1&foo=bar',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result.kind).toBe('rewritten');
+        const parsed = new URL((result as { kind: 'rewritten'; url: string }).url);
+        expect(parsed.searchParams.get('step')).toBe('2');
+        expect(parsed.searchParams.get('foo')).toBe('bar');
+    });
+
+    it('preserves the hash fragment from the redirect target', () => {
+        const result = rewriteLocationForProxy({
+            locationHeader: `${targetOrigin}/s/RefArchGlobal/en-GB/cart#summary`,
+            requestUrl: '/cart?foo=bar',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result).toEqual({
+            kind: 'rewritten',
+            url: `${proxyOrigin}/s/RefArchGlobal/en-GB/cart?foo=bar#summary`,
+        });
+    });
+
+    it('handles relative Location headers as same-origin', () => {
+        // SFCC sometimes returns relative paths in Location.
+        const result = rewriteLocationForProxy({
+            locationHeader: '/s/RefArchGlobal/en-GB/Cart-Show',
+            requestUrl: '/cart?foo=bar',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result).toEqual({
+            kind: 'rewritten',
+            url: `${proxyOrigin}/s/RefArchGlobal/en-GB/Cart-Show?foo=bar`,
+        });
+    });
+
+    it('returns off-origin for Location headers pointing elsewhere', () => {
+        const result = rewriteLocationForProxy({
+            locationHeader: 'https://example.com/somewhere',
+            requestUrl: '/cart?foo=bar',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result).toEqual({ kind: 'off-origin' });
+    });
+
+    it('returns malformed for unparseable Location headers', () => {
+        const result = rewriteLocationForProxy({
+            locationHeader: 'http://[::bad-url',
+            requestUrl: '/cart',
+            targetOrigin,
+            proxyOrigin,
+        });
+        expect(result).toEqual({ kind: 'malformed' });
     });
 });

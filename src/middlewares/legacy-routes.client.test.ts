@@ -328,23 +328,40 @@ describe('legacyRoutesMiddleware', () => {
         });
 
         test('should redirect when multisite-prefixed URL matches a bare legacy route', () => {
-            const request = new Request(`https://example.com/${getSiteRef()}/${mockSiteObject.defaultLocale}/checkout`);
+            const siteRef = getSiteRef();
+            const locale = mockSiteObject.defaultLocale;
+            const request = new Request(`https://example.com/${siteRef}/${locale}/checkout`);
 
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toContain('redirected=1');
+            // Navigation target must be the stripped pathname so the legacy backend (or local
+            // hybrid proxy) can apply its own prefix without doubling up on storefront-next's.
+            expect(window.location.href).toBe('https://example.com/checkout?redirected=1');
         });
 
         test('should redirect for parameterized legacy routes with multisite prefix', () => {
-            const request = new Request(
-                `https://example.com/${getSiteRef()}/${mockSiteObject.defaultLocale}/product/123`
-            );
+            const siteRef = getSiteRef();
+            const locale = mockSiteObject.defaultLocale;
+            const request = new Request(`https://example.com/${siteRef}/${locale}/product/123`);
 
             void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
 
             expect(mockNext).not.toHaveBeenCalled();
             expect(window.location.href).toContain('redirected=1');
+            expect(window.location.href).toBe('https://example.com/product/123?redirected=1');
+        });
+
+        test('should preserve query params and hash when stripping prefix', () => {
+            const siteRef = getSiteRef();
+            const locale = mockSiteObject.defaultLocale;
+            const request = new Request(`https://example.com/${siteRef}/${locale}/checkout?step=2&item=abc#payment`);
+
+            void legacyRoutesMiddleware({ request, context: mockContext, params: {}, unstable_pattern: '' }, mockNext);
+
+            expect(mockNext).not.toHaveBeenCalled();
+            expect(window.location.href).toBe('https://example.com/checkout?step=2&item=abc&redirected=1#payment');
         });
 
         test('should not redirect for non-legacy multisite routes', async () => {

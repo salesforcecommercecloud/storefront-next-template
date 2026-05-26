@@ -240,6 +240,8 @@ Hybrid auth requires that both Storefront Next and SFRA share the same session c
 
 ---
 
+---
+
 ## Gotchas and Pitfalls
 
 ### Routing rules out of sync with production eCDN

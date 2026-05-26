@@ -138,16 +138,22 @@ const legacyRoutesMiddleware: MiddlewareFunction<Record<string, DataStrategyResu
     //   update — the legacyRoutes list stays untouched.
     const urlPrefix = config?.url?.prefix ?? '';
     const strippedPathname = stripPathPrefix({ pathname, prefix: urlPrefix }) || '/';
-
     const isLegacyRoute = legacyRoutes.some((legacyRoute) => matchesRoutePattern(strippedPathname, legacyRoute));
 
     if (isLegacyRoute) {
+        // Navigate to the stripped pathname so the legacy backend (or local hybrid proxy)
+        // can apply its own site/locale prefix without doubling up on storefront-next's.
+        // Without this, '/global/en-GB/cart' would be handed to the proxy, which prepends
+        // its own SFRA prefix and produces '/s/{siteId}/{locale}/global/en-GB/cart' — a 404.
+        const legacyUrl = new URL(strippedPathname, url.origin);
+        legacyUrl.search = url.search;
+        legacyUrl.hash = url.hash;
         // Add redirected=1 to prevent infinite loops
-        url.searchParams.set('redirected', '1');
+        legacyUrl.searchParams.set('redirected', '1');
 
         // Force a full page navigation to hit the server/CDN
         // The CDN routing rules or server middleware will handle routing to the legacy backend
-        window.location.href = url.toString();
+        window.location.href = legacyUrl.toString();
 
         // Suspend indefinitely while the browser navigates away.
         // Returning an empty object would cause React Router to error with

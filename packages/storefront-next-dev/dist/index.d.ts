@@ -200,8 +200,8 @@ interface HybridProxyPluginOptions {
    * hybridProxyPlugin({ routeMatcher: shouldRouteToNext, ... })
    */
   routeMatcher: (pathname: string, routingRules: string) => boolean;
-  /** SFCC Site ID (e.g., 'RefArchGlobal') */
-  siteId: string;
+  /** SFCC default site ID (e.g., 'RefArchGlobal'). Required when `enabled` is true. */
+  defaultSiteId?: string;
   /** Locale for SFRA paths (e.g., 'en-GB'). Defaults to 'default' if not provided. */
   locale?: string;
 }

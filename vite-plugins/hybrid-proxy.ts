@@ -47,7 +47,7 @@ export function hybridProxy({ mode, env }: { mode: string; env: Record<string, s
             '',
         routingRules: process.env.HYBRID_ROUTING_RULES ?? '',
         routeMatcher: shouldRouteToNext,
-        siteId: env.PUBLIC__app__defaultSiteId,
+        defaultSiteId: env.PUBLIC__app__defaultSiteId,
         locale: process.env.HYBRID_PROXY_LOCALE || env.PUBLIC__app__i18n__fallbackLng,
     });
 }

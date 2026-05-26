@@ -46,9 +46,10 @@
  * - HYBRID_PROXY_ENABLED (required) - 'true' to enable the plugin
  * - HYBRID_ROUTING_RULES (required) - Cloudflare routing expression (routes matching go to Next)
  * - SFCC_ORIGIN (required) - SFCC sandbox URL (e.g., https://zzrf-001.dx.commercecloud.salesforce.com)
- * - PUBLIC__app__defaultSiteId (required) - Site ID for SFRA path transformation (e.g., 'RefArchGlobal')
  * - HYBRID_PROXY_LOCALE (optional) - Locale for SFRA path transformation (e.g., 'en-GB')
- * - PUBLIC__app__i18n__fallbackLng (fallback) - Used if HYBRID_PROXY_LOCALE not set
+ *
+ * The host plugin is responsible for sourcing `defaultSiteId` and `locale` from the
+ * template's config (e.g. `config.server.ts`) and/or env vars and passing them in.
  */
 
 import type { Plugin, ViteDevServer } from 'vite';
@@ -75,8 +76,8 @@ export interface HybridProxyPluginOptions {
      * hybridProxyPlugin({ routeMatcher: shouldRouteToNext, ... })
      */
     routeMatcher: (pathname: string, routingRules: string) => boolean;
-    /** SFCC Site ID (e.g., 'RefArchGlobal') */
-    siteId: string;
+    /** SFCC default site ID (e.g., 'RefArchGlobal'). Required when `enabled` is true. */
+    defaultSiteId?: string;
     /** Locale for SFRA paths (e.g., 'en-GB'). Defaults to 'default' if not provided. */
     locale?: string;
 }
@@ -216,6 +217,90 @@ function escapeRegExp(str: string): string {
 }
 
 /**
+ * Discriminated result of {@link rewriteLocationForProxy}.
+ *
+ * - `rewritten` — Location was same-origin; the proxy URL is in `url`.
+ * - `off-origin` — Location points elsewhere; pass the original header through.
+ * - `malformed` — Location couldn't be parsed; caller should warn and pass through.
+ */
+export type LocationRewriteResult = { kind: 'rewritten'; url: string } | { kind: 'off-origin' } | { kind: 'malformed' };
+
+/**
+ * Rewrite an SFCC Location header so the user stays on the proxy origin AND so
+ * any query params from the original request survive an SFCC redirect.
+ *
+ * SFCC frequently redirects bare paths like `/cart` to a canonical SFRA URL
+ * (`/s/{siteId}/{locale}/Cart-Show`) without echoing the user's query string in
+ * the Location header. Without this merge step, params like `?foo=bar` set by
+ * the storefront — including ones the destination page expects — get dropped on
+ * the cross-app hop.
+ *
+ * Resolution rules:
+ * - Off-origin Location → `{ kind: 'off-origin' }` so the caller leaves the
+ *   header unchanged and the browser navigates as SFCC intended.
+ * - Same-origin Location → rewrite the origin to the proxy host, then merge the
+ *   original request's query params into the redirect target's URL. Multi-value
+ *   keys (e.g. SFRA's `pmid=...&pmid=...`) are preserved on both sides. The
+ *   redirect target wins on collision so SFCC can intentionally override a key.
+ * - Malformed Location → `{ kind: 'malformed' }` so the caller can warn.
+ *
+ * @param locationHeader - Raw Location header value from the SFCC response.
+ * @param requestUrl - Original request URL on the proxy (e.g. `/cart?foo=bar`).
+ * @param targetOrigin - SFCC origin used as the base for relative Location values.
+ * @param proxyOrigin - Proxy origin (e.g. `http://localhost:5173`) the caller wants the user to stay on.
+ */
+export function rewriteLocationForProxy({
+    locationHeader,
+    requestUrl,
+    targetOrigin,
+    proxyOrigin,
+}: {
+    locationHeader: string;
+    requestUrl: string;
+    targetOrigin: string;
+    proxyOrigin: string;
+}): LocationRewriteResult {
+    let locationUrl: URL;
+    try {
+        locationUrl = new URL(locationHeader, targetOrigin);
+    } catch {
+        return { kind: 'malformed' };
+    }
+
+    if (locationUrl.origin !== targetOrigin) {
+        return { kind: 'off-origin' };
+    }
+
+    let requestQuery: URLSearchParams;
+    try {
+        requestQuery = new URL(requestUrl, proxyOrigin).searchParams;
+    } catch {
+        requestQuery = new URLSearchParams();
+    }
+
+    // Snapshot the redirect target's keys before mutating, so `has(key)` reflects
+    // only what SFCC put there. Without this snapshot, the first appended value
+    // for a multi-value key would mark the key "present" and drop the rest —
+    // breaking SFRA patterns that repeat keys (e.g. `pmid=PROMO1&pmid=PROMO2`).
+    const targetKeys = new Set(locationUrl.searchParams.keys());
+    for (const [key, value] of requestQuery) {
+        if (!targetKeys.has(key)) {
+            locationUrl.searchParams.append(key, value);
+        }
+    }
+
+    return {
+        kind: 'rewritten',
+        url: `${proxyOrigin}${locationUrl.pathname}${locationUrl.search}${locationUrl.hash}`,
+    };
+}
+
+/** Cap loud values in debug logs so a long URL doesn't drown the dev console. */
+function truncateForLog(value: string, max = 120): string {
+    return value.length > max ? `${value.slice(0, max)}…` : value;
+}
+
+/**
  * Vite plugin for hybrid proxying between Storefront Next and legacy SFRA.
  *
  * Uses http-proxy to silently forward non-matching requests to SFCC without visible
@@ -243,11 +328,21 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
         };
     }
 
+    if (!options.defaultSiteId) {
+        throw new Error(
+            'Hybrid proxy is enabled but no default site ID was provided.\n\n' +
+                'Set PUBLIC__app__defaultSiteId in your .env file:\n' +
+                '  PUBLIC__app__defaultSiteId=RefArchGlobal\n\n' +
+                'See docs/README-HYBRID-PROXY.md for the full reference.'
+        );
+    }
+
     logger.info(`Hybrid proxy enabled → ${options.targetOrigin}`);
     logger.debug(`Hybrid proxy routing rules: ${options.routingRules.slice(0, 100)}...`);
     const locale = options.locale || 'default';
+    const defaultSiteId = options.defaultSiteId;
     logger.debug(
-        `Hybrid proxy path transformation: / → /s/${options.siteId}, /path → /s/${options.siteId}/${locale}/path`
+        `Hybrid proxy path transformation: / → /s/${defaultSiteId}, /path → /s/${defaultSiteId}/${locale}/path`
     );
 
     // Pre-compile regex for URL rewriting in response bodies
@@ -272,7 +367,6 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
         // Skip if:
         // - Already has /s/ prefix
         // - Is an /on/demandware.* path (already in SFCC format)
-        // - Missing siteId or locale config
         const needsTransformation = !pathname.startsWith('/s/') && !pathname.startsWith('/on/demandware.');
 
         if (needsTransformation) {
@@ -283,10 +377,10 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
              * We need to rewrite the path to /s/{siteId} so that it can be proxied to the correct SFCC URL.
              */
             if (pathname === '/') {
-                proxyReq.path = `/s/${options.siteId}${url.search}`;
+                proxyReq.path = `/s/${defaultSiteId}${url.search}`;
             } else {
                 // Rewrite internal proxy path without changing browser URL
-                proxyReq.path = `/s/${options.siteId}/${locale}${pathname}${url.search}`;
+                proxyReq.path = `/s/${defaultSiteId}/${locale}${pathname}${url.search}`;
             }
             logger.debug(`Hybrid proxy path rewrite: ${originalPath} → ${proxyReq.path}`);
         }
@@ -333,18 +427,28 @@ export function hybridProxyPlugin(options: HybridProxyPluginOptions): Plugin {
             });
         }
 
-        // Rewrite Location header in redirects to keep user on localhost
+        // Rewrite Location header in redirects to keep user on localhost AND merge
+        // the original request's query params into the redirect target. SFCC redirects
+        // bare paths like `/cart` to a canonical SFRA URL without echoing the request's
+        // query string, so params like `?foo=bar` would be dropped on the cross-app hop
+        // without this merge.
         if (locationHeader && typeof locationHeader === 'string') {
-            try {
-                const locationUrl = new URL(locationHeader, options.targetOrigin);
-                if (locationUrl.origin === options.targetOrigin) {
-                    const localUrl = `http://${req.headers.host}${locationUrl.pathname}${locationUrl.search}${locationUrl.hash}`;
-                    proxyRes.headers.location = localUrl;
-                    logger.debug(`Hybrid proxy location rewrite: ${locationHeader} → ${localUrl}`);
-                }
-            } catch {
-                logger.warn(`Hybrid proxy: invalid Location header: ${locationHeader}`);
+            const proxyOrigin = `http://${req.headers.host}`;
+            const result = rewriteLocationForProxy({
+                locationHeader,
+                requestUrl: req.url ?? '',
+                targetOrigin: options.targetOrigin,
+                proxyOrigin,
+            });
+            if (result.kind === 'rewritten') {
+                proxyRes.headers.location = result.url;
+                logger.debug(
+                    `Hybrid proxy location rewrite: ${truncateForLog(locationHeader)} → ${truncateForLog(result.url)}`
+                );
+            } else if (result.kind === 'malformed') {
+                logger.warn(`Hybrid proxy: invalid Location header: ${truncateForLog(locationHeader)}`);
             }
+            // off-origin: leave the header alone so the browser follows SFCC's intended redirect
         }
 
         // --- Response body handling ---
