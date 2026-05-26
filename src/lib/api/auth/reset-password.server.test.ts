@@ -25,7 +25,8 @@ import {
     handleResetPasswordLanding,
     resetMarketingCloudTokenCache,
 } from './reset-password.server';
-import { getAppOrigin, extractResponseError } from '@/lib/utils';
+import { extractResponseError } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 
 // Hoist dependencies for use in vi.mock (avoids async imports which fail on Windows)
 const { createContext: reactCreateContext, actualReactRouter } = vi.hoisted(() => {
@@ -65,8 +66,11 @@ vi.mock('jose', () => ({
 
 // Mock utility functions
 vi.mock('@/lib/utils', () => ({
-    getAppOrigin: vi.fn(),
     extractResponseError: vi.fn(),
+}));
+
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(),
 }));
 
 // Mock config module

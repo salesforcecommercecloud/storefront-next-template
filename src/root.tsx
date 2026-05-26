@@ -70,6 +70,8 @@ import {
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 // @sfdc-extension-block-end SFDC_EXT_STORE_LOCATOR
 import { correlationMiddleware } from '@/middlewares/correlation.server';
+import { requestOriginMiddleware } from '@/middlewares/request-origin';
+import { getAppOrigin } from '@/lib/origin';
 import { loggingMiddleware } from '@/middlewares/logging.server';
 import { pageDesignerResolutionMiddleware } from '@/middlewares/page-designer-page-resolution.server';
 import { siteUrlConfigMiddleware } from '@/middlewares/site-url-config.server';
@@ -138,6 +140,7 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
 
 export const middleware: MiddlewareFunction<Response>[] = [
     correlationMiddleware,
+    requestOriginMiddleware,
     loggingMiddleware,
     modeDetectionMiddlewareServer,
     appConfigMiddlewareServer,
@@ -237,7 +240,10 @@ export const loader = ({
     const seoMeta = buildSeoMetaDescriptors({
         site,
         appConfig,
-        origin: requestUrl.origin,
+        // Use the resolved public origin (custom domain on MRT) rather than
+        // requestUrl.origin (lambda-internal hostname on hybrid deployments)
+        // so canonical/hreflang URLs match what the customer is actually browsing.
+        origin: getAppOrigin(context),
         locale,
         location: { pathname: requestUrl.pathname, search: requestUrl.search },
     });

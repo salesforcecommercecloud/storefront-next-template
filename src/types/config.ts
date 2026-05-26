@@ -296,6 +296,20 @@ export type AppConfig = {
                 limit: number;
                 critical?: number;
             };
+            /**
+             * Discrete viewType declarations the storefront uses for product images. Each role
+             * names the viewType that a specific consumer reads (the product tile hero, the
+             * swatch builder, etc.). The search filter derives its SCAPI `imgTypes` query
+             * parameter from these values, so the same declaration drives both what SCAPI
+             * returns and what tile components render — preventing drift. Set a role to
+             * `undefined` to opt out of search filtering for that role.
+             */
+            images?: {
+                /** viewType the product tile reads for the hero image. Default: `'medium'`. */
+                tile?: string;
+                /** viewType the swatch builder reads for color thumbnails. Default: `'swatch'`. */
+                swatch?: string;
+            };
         };
     };
     siteAliasMap?: Record<string, string>;

@@ -59,13 +59,9 @@ vi.mock('@/scapi/custom-clients', () => ({
 }));
 
 // Mock dependencies
-vi.mock('@/lib/utils', async (importOriginal) => {
-    const actual = await importOriginal<typeof vi.importActual>();
-    return {
-        ...actual,
-        getAppOrigin: vi.fn(() => 'https://example.com'),
-    };
-});
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(() => 'https://example.com'),
+}));
 
 vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
     const actual = await importOriginal<typeof vi.importActual>();

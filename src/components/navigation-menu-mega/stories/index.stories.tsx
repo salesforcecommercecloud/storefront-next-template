@@ -68,7 +68,9 @@ const meta: Meta<MegaStoryArgs> = {
         docs: {
             description: {
                 component: `
-Responsive category navigation:
+Header navigation product: the responsive mega menu the storefront actually ships. Consumes the generic \`CategoryNavigationMenu\` engine (see *LAYOUT/Navigation Menu*) and configures it for the header — banner layout (vertical/horizontal driven by \`c_headerMenuOrientation\` + \`c_headerMenuBanner\`), pointer-vs-keyboard behavior on top-level triggers, and DIS image transformation on the banner HTML. Also owns the mobile experience the engine doesn't provide: hamburger button, \`MobileMenuContext\`, and \`MobileMenuDropdown\` with expandable subcategories.
+
+Responsive breakpoints:
 - **Desktop (≥1024px)**: Full-width mega menu with banners + nested categories.
 - **Mobile (<1024px)**: Hamburger button + drawer. Expanding a root category shows all descendant links at once.
 

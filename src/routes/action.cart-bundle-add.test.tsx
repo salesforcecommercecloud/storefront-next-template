@@ -36,9 +36,18 @@ vi.mock('@salesforce/storefront-next-runtime/config');
 vi.mock('@salesforce/storefront-next-runtime/i18n', () => ({
     getTranslation: () => ({ t: (key: string) => key }),
 }));
-vi.mock('@/extensions/bopis/lib/basket-utils', () => ({
-    syncShipmentWithDeliveryOptionChange: vi.fn((_context, basket) => Promise.resolve(basket)),
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
+vi.mock('@/extensions/bopis/lib/basket-utils', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/extensions/bopis/lib/basket-utils')>();
+    return {
+        ...actual,
+        syncShipmentWithDeliveryOptionChange: vi.fn((_context, basket) => Promise.resolve(basket)),
+    };
+});
+vi.mock('@/extensions/bopis/lib/api/shipment.server', () => ({
+    findOrCreatePickupShipment: vi.fn(() => Promise.resolve({ shipmentId: 'pickup-shipment-1' })),
 }));
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 vi.mock('react-router', () => {
     return {
         ...actualReactRouter,
@@ -236,5 +245,43 @@ describe('action.cart-bundle-add', () => {
             expect(result.data.error).toBeDefined();
             expect(result.data.error?.code).toBe('METHOD_NOT_ALLOWED');
         });
+
+        // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        test('rejects pickup bundle from a different store than existing pickup items (BOPIS)', async () => {
+            const basketWithPickup = {
+                basketId: 'test-basket-123',
+                productItems: [{ itemId: 'item-existing', productId: 'p-existing', shipmentId: 's-1', quantity: 1 }],
+                shipments: [{ shipmentId: 's-1', c_fromStoreId: 'store-A' }],
+            };
+            vi.mocked(getBasket).mockResolvedValue({ current: basketWithPickup, snapshot: null } as any);
+
+            const bundleItem = {
+                productId: 'bundle-123',
+                quantity: 1,
+                inventoryId: 'inv-B',
+                storeId: 'store-B',
+            };
+            const childSelections = [
+                {
+                    product: { id: 'standard-product-1' } as ShopperProducts.schemas['Product'],
+                    quantity: 1,
+                },
+            ];
+
+            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+                bundleItem: JSON.stringify(bundleItem),
+                childSelections: JSON.stringify(childSelections),
+            });
+
+            const result = await action(
+                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+            );
+
+            expectStatus(result, 409);
+            expect(result.data.success).toBe(false);
+            expect(result.data.error?.code).toBe('CONFLICT');
+            expect(mockClients.shopperBasketsV2.addItemToBasket).not.toHaveBeenCalled();
+        });
+        // @sfdc-extension-block-end SFDC_EXT_BOPIS
     });
 });

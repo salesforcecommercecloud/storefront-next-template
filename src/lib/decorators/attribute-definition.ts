@@ -50,6 +50,11 @@ export interface AttributeDefinitionConfig {
     required?: boolean; // Whether the attribute is required
     values?: string[]; // Values for enum types
     defaultValue?: unknown; // Default value for the attribute
+    editorDefinition?: {
+        // Custom editor definition for 'custom' type attributes
+        type: string;
+        configuration?: Record<string, unknown>;
+    };
 }
 
 /**

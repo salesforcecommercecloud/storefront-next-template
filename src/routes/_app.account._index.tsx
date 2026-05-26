@@ -706,14 +706,6 @@ function AccountDetailsContent({
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <p className="text-sm font-medium leading-5 text-foreground">{t('profile.email')}</p>
-                                <p
-                                    className="text-sm font-normal leading-5 text-muted-foreground"
-                                    data-testid="profile-value-email">
-                                    {userInfo.email || t('profile.notProvided')}
-                                </p>
-                            </div>
-                            <div className="space-y-2">
                                 <p className="text-sm font-medium leading-5 text-foreground">
                                     {t('profile.phoneNumber')}
                                 </p>
@@ -762,7 +754,7 @@ function AccountDetailsContent({
                 showHeaderSeparator
                 className="bg-card border-border">
                 <ToggleCardSummary>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between" data-testid="sf-toggle-card-email-content">
                         <div className="space-y-2">
                             <p className="text-sm font-medium text-foreground">{t('email.title')}</p>
                             <div className="flex items-center gap-2">

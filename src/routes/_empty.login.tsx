@@ -27,7 +27,8 @@ import PasswordlessLoginForm from '@/components/login/passwordless-login-form';
 import OtpModal from '@/components/login/otp-modal';
 import { LoginGuestWishlistBanner } from '@/components/login/login-guest-wishlist-banner';
 import { SocialLoginButtons } from '@/components/buttons/social-login-buttons';
-import { getAppOrigin, isAbsoluteURL, getSafeReturnUrl } from '@/lib/utils';
+import { isAbsoluteURL, getSafeReturnUrl } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
 import type { AppConfig } from '@/types/config';
@@ -237,7 +238,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
             const socialCallback = config.features.socialLogin.callbackUri;
             const socialLoginRedirectURI = isAbsoluteURL(socialCallback)
                 ? socialCallback
-                : `${getAppOrigin()}${buildUrlFromContext(socialCallback, context)}`;
+                : `${getAppOrigin(context)}${buildUrlFromContext(socialCallback, context)}`;
             const finalRedirectURI = redirectPath
                 ? `${socialLoginRedirectURI}?redirectUrl=${redirectPath}`
                 : socialLoginRedirectURI;
@@ -370,17 +371,22 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
             const pendingAction = actionFromForm || actionFromUrl;
             const actionParams = actionParamsFromForm || actionParamsFromUrl;
 
-            // Redirect to returnUrl (with preserved action params) or home
+            // Redirect to returnUrl (with preserved action params) or home.
+            // `returnUrl` is guaranteed relative by `getSafeReturnUrl` above, so we mutate
+            // its query string in place rather than constructing a `URL` object — that
+            // keeps the redirect target relative end-to-end and removes any temptation
+            // for a future refactor to forward an absolute URL past the open-redirect
+            // guard.
             if (returnUrl) {
                 if (pendingAction || actionParams) {
-                    const returnUrlObj = new URL(returnUrl, getAppOrigin());
-                    if (pendingAction) {
-                        returnUrlObj.searchParams.set('action', pendingAction);
-                    }
-                    if (actionParams) {
-                        returnUrlObj.searchParams.set('actionParams', actionParams);
-                    }
-                    return prepareRedirect(buildUrlFromContext(returnUrlObj.pathname + returnUrlObj.search, context));
+                    const [pathAndQuery, fragment] = returnUrl.split('#');
+                    const [pathname, existingQuery] = pathAndQuery.split('?');
+                    const params = new URLSearchParams(existingQuery);
+                    if (pendingAction) params.set('action', pendingAction);
+                    if (actionParams) params.set('actionParams', actionParams);
+                    const queryString = params.toString();
+                    const target = pathname + (queryString ? `?${queryString}` : '') + (fragment ? `#${fragment}` : '');
+                    return prepareRedirect(buildUrlFromContext(target, context));
                 }
                 return prepareRedirect(buildUrlFromContext(returnUrl, context));
             }

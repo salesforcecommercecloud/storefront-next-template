@@ -2886,6 +2886,60 @@ describe('generateMetadata integration tests', () => {
         expect(enabledAttr.defaultValue).toBeUndefined();
     });
 
+    test('should convert editorDefinition to editor_definition in generated JSON', async () => {
+        const projectDir = '/test/project';
+        const metadataDir = '/test/metadata';
+
+        const componentCode = `
+            @Component({ id: 'testComponent', name: 'Test Component' })
+            class TestComponent {
+                @AttributeDefinition({
+                    type: 'custom',
+                    editorDefinition: {
+                        type: 'einstein.globalrecommenderselector'
+                    }
+                })
+                recommender: string;
+
+                @AttributeDefinition({ type: 'string' })
+                plainField: string;
+            }
+        `;
+
+        vi.mocked(readdir)
+            .mockResolvedValueOnce([{ name: 'components', isDirectory: () => true, isFile: () => false } as any])
+            .mockResolvedValueOnce([
+                { name: 'TestComponent.tsx', isDirectory: () => false, isFile: () => true } as any,
+            ]);
+
+        vi.mocked(readFile).mockResolvedValue(componentCode);
+        vi.mocked(rm).mockResolvedValue(undefined);
+        vi.mocked(mkdir).mockResolvedValue(undefined);
+        vi.mocked(access).mockResolvedValue(undefined);
+        vi.mocked(writeFile).mockResolvedValue(undefined);
+
+        await generateMetadata(projectDir, metadataDir);
+
+        expect(writeFile).toHaveBeenCalled();
+        const writeCall = vi.mocked(writeFile).mock.calls[0];
+        const writtenData = JSON.parse(writeCall[1] as string);
+        const attributes = writtenData.attribute_definition_groups[0].attribute_definitions;
+
+        // Custom field with editor_definition
+        const recommenderAttr = attributes.find((attr: any) => attr.id === 'recommender');
+        expect(recommenderAttr).toBeDefined();
+        expect(recommenderAttr.type).toBe('custom');
+        expect(recommenderAttr.editor_definition).toEqual({
+            type: 'einstein.globalrecommenderselector',
+        });
+        expect(recommenderAttr.editorDefinition).toBeUndefined();
+
+        // Plain field should NOT have editor_definition
+        const plainAttr = attributes.find((attr: any) => attr.id === 'plainField');
+        expect(plainAttr).toBeDefined();
+        expect(plainAttr.editor_definition).toBeUndefined();
+    });
+
     test('should resolve property access on same-file const in defaultValue', async () => {
         const projectDir = '/test/project';
         const metadataDir = '/test/metadata';

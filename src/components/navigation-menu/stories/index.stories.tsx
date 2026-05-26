@@ -15,83 +15,12 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { ShopperProducts } from '@/scapi';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { action } from 'storybook/actions';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { expect, userEvent } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import CategoryNavigationMenu, { WithCategoryNavigationMenu } from '../index';
-import { mockCategories } from '@/components/__mocks__/mock-data';
+import CategoryNavigationMenu from '../index';
+import { mockMegaMenuRootCategory } from '@/components/navigation-menu-mega/stories/mock-menu-data';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logMenuClick = action('menu-click');
-        const logMenuHover = action('menu-hover');
-        const logMenuOpen = action('menu-open');
-        const logMenuClose = action('menu-close');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const navLink = target.closest('a[href]');
-            const trigger = target.closest('[data-slot="navigation-menu-trigger"]');
-
-            if (navLink) {
-                const href = navLink.getAttribute('href') || '';
-                const text = navLink.textContent?.trim() || '';
-                event.preventDefault();
-                (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                logMenuClick({ href, label: text });
-                return;
-            }
-
-            if (trigger) {
-                const label = trigger.textContent?.trim() || '';
-                logMenuOpen({ label });
-            }
-        };
-
-        const handleMouseOver = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const navLink = target.closest('a[href], [data-slot="navigation-menu-trigger"]');
-            if (navLink) {
-                const label = navLink.textContent?.trim() || '';
-                const href = (navLink as HTMLAnchorElement).getAttribute('href') || '';
-                logMenuHover({ label, href });
-            }
-        };
-
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                logMenuClose({});
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('mouseover', handleMouseOver, true);
-        root.addEventListener('keydown', handleKeyDown, true);
-
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('mouseover', handleMouseOver, true);
-            root.removeEventListener('keydown', handleKeyDown, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-const mockRootCategory = mockCategories.root;
-const mockCategoriesList = mockRootCategory.categories || [];
+const rootCategories = mockMegaMenuRootCategory.categories || [];
 
 const meta: Meta<typeof CategoryNavigationMenu> = {
     title: 'LAYOUT/Navigation Menu',
@@ -101,210 +30,55 @@ const meta: Meta<typeof CategoryNavigationMenu> = {
         layout: 'padded',
         docs: {
             description: {
-                component: `
-Navigation menu component for displaying category hierarchies. Supports nested categories with customizable rendering.
-
-**Features:**
-- Nested category support
-- Customizable rendering via render functions
-- Props customization for styling
-- React Router integration
-- Viewport support for dropdown menus
-                `,
+                component: [
+                    'Generic, headless category-tree renderer built on the shadcn/ui `NavigationMenu` primitives. Knows nothing about header layout, banners, or mobile — it just walks a SCAPI `Category` tree and exposes slots / prop generators (`renderElement`, `propsList`, `propsContent`, etc.) so callers can shape the output.',
+                    '',
+                    'The header mega menu (`<CategoryNavigationMenuMega>`) is the primary consumer — production code uses the mega menu, not this directly.',
+                    '',
+                    'The package also exports `WithCategoryNavigationMenu`, a loader-bridging HOC that consumes a `resolve` Promise (root + first-level subcategories, suspends via `Await`) and a `defer` Promise (deeper subcategories, drained into the `SubCategoryContext` store after mount so deeper levels hydrate without suspending). Filtering (default `c_showInMenu`) is applied before children render. Behavior is covered by `index.test.tsx`; not exercised here as it has no visible Storybook output.',
+                ].join('\n'),
             },
         },
     },
-    decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <ActionLogger>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </ActionLogger>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                        {
-                            path: '/category/:id',
-                            element: <div>Category Page</div>,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
+    args: {
+        categories: rootCategories,
+        maxDepth: 2,
+    },
     argTypes: {
-        categories: {
-            description: 'Array of category objects to display in the navigation menu',
-            control: 'object',
-        },
         maxDepth: {
-            description: 'Maximum depth of nested categories to display',
-            control: 'number',
+            control: { type: 'number', min: 1, max: 4 },
+            description: 'Maximum nesting depth (1 = top-level only, unlimited by default).',
         },
-        viewport: {
-            description: 'Whether to show the viewport for dropdown menus',
-            control: 'boolean',
-        },
+        categories: { table: { disable: true } },
     },
 };
 
 export default meta;
 type Story = StoryObj<typeof CategoryNavigationMenu>;
 
+/**
+ * Default top-level + first sub-level. Hovering a trigger opens the dropdown
+ * with first-level subcategories.
+ */
 export const Default: Story = {
     args: {
-        categories: mockCategoriesList,
         maxDepth: 2,
-        viewport: true,
     },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Default navigation menu with nested categories.',
-            },
-        },
-    },
+
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
-    },
-};
+        const canvas = within(canvasElement);
 
-export const WithNestedCategories: Story = {
-    args: {
-        categories: mockCategoriesList,
-        maxDepth: 3,
-        viewport: true,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Navigation menu with deeper nested categories (maxDepth: 3).',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
+        const menu = canvas.getByRole('navigation');
+        await expect(menu).toBeInTheDocument();
 
-        // Find a trigger button if available
-        const triggers = canvasElement.querySelectorAll('[data-slot="navigation-menu-trigger"]');
-        if (triggers.length > 0) {
-            const firstTrigger = triggers[0] as HTMLElement;
-            await userEvent.hover(firstTrigger);
-            await expect(firstTrigger).toBeInTheDocument();
-        }
-    },
-};
+        const triggers = canvasElement.querySelectorAll<HTMLElement>('[data-slot="navigation-menu-trigger"]');
+        expect(triggers.length).toBeGreaterThan(0);
 
-export const WithoutViewport: Story = {
-    args: {
-        categories: mockCategoriesList,
-        maxDepth: 2,
-        viewport: false,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Navigation menu without viewport (inline dropdowns).',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
-    },
-};
-
-export const Interactive: Story = {
-    args: {
-        categories: mockCategoriesList,
-        maxDepth: 2,
-        viewport: true,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Interactive navigation menu with hover and click interactions.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
-
-        // Find and interact with a trigger button
-        const triggers = canvasElement.querySelectorAll('[data-slot="navigation-menu-trigger"]');
-        if (triggers.length > 0) {
-            const firstTrigger = triggers[0] as HTMLElement;
-            await userEvent.hover(firstTrigger);
-            await expect(firstTrigger).toBeInTheDocument();
-
-            // Try to click to open the menu
-            await userEvent.click(firstTrigger);
-        }
-
-        // Find and interact with a link
-        const links = canvasElement.querySelectorAll('a[href]');
-        if (links.length > 0) {
-            const firstLink = links[0] as HTMLElement;
-            await userEvent.hover(firstLink);
-            await expect(firstLink).toBeInTheDocument();
-        }
-    },
-};
-
-// Note: Keyboard accessibility (Enter to open, Escape to close) is covered by the mega menu
-// equivalent (`navigation-menu-mega/stories/index.stories.tsx` → `KeyboardAccessibility`).
-// Without the `WithCategoryNavigationMenu` wrapper plus a Suspense-resolved category promise,
-// `CategoryNavigationMenu` does not render `[data-slot="navigation-menu-trigger"]` markup
-// in the Storybook test runner, so a story-local equivalent here would be unable to assert
-// the open/closed transitions.
-
-export const UsingWithCategoryNavigationMenu: Story = {
-    args: {},
-    render: () => {
-        const rootCategoryPromise = Promise.resolve(mockRootCategory);
-        const subCategoriesPromise = Promise.resolve(
-            mockCategoriesList.flatMap((cat: ShopperProducts.schemas['Category']) => cat.categories || [])
-        );
-
-        return (
-            <WithCategoryNavigationMenu resolve={rootCategoryPromise} defer={subCategoriesPromise}>
-                {({ categories }) => <CategoryNavigationMenu categories={categories} maxDepth={2} viewport={true} />}
-            </WithCategoryNavigationMenu>
-        );
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Navigation menu using WithCategoryNavigationMenu HOC for async category loading.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const menu = canvasElement.querySelector('[data-slot="navigation-menu"]');
-        await expect(menu || canvasElement).toBeInTheDocument();
+        await userEvent.hover(triggers[0]);
+        await waitFor(() => {
+            const viewport = canvasElement.querySelector('[data-slot="navigation-menu-viewport"]');
+            expect(viewport?.getAttribute('data-state')).toBe('open');
+        });
     },
 };

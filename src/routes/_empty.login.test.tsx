@@ -26,7 +26,8 @@ import { loginRegisteredUser } from '@/lib/api/auth/standard-login.server';
 import { authorizeIDP } from '@/lib/api/auth/social-login.server';
 import { mergeBasket } from '@/lib/api/basket.server';
 import { updateBasketResource } from '@/middlewares/basket.server';
-import { getAppOrigin, isAbsoluteURL, extractResponseError } from '@/lib/utils';
+import { isAbsoluteURL, extractResponseError } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { buildUrlFromContext } from '@/lib/url.server';
 
 vi.mock('@/middlewares/auth.server', () => ({
@@ -71,7 +72,6 @@ vi.mock('@/lib/url.server', () => ({
 
 vi.mock('@/lib/utils', () => ({
     isPasswordlessLoginEnabled: false,
-    getAppOrigin: vi.fn(),
     isAbsoluteURL: vi.fn((url: string) => /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url)),
     getSafeReturnUrl: vi.fn((url: string | null | undefined, fallback = '/') =>
         !url || /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url) ? fallback : url
@@ -80,6 +80,10 @@ vi.mock('@/lib/utils', () => ({
         responseMessage: err instanceof Error ? err.message : 'error',
     })),
     cn: (...args: Array<string | false | null | undefined>) => args.filter(Boolean).join(' '),
+}));
+
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(),
 }));
 
 // Mock passwordless form since we're focusing on standard login full-flow tests

@@ -309,6 +309,7 @@ function extractAttributesFromSource(sourceFile, className) {
 			};
 			if (config.values) attribute.values = config.values;
 			if (config.defaultValue !== void 0) attribute.default_value = config.defaultValue;
+			if (config.editorDefinition !== void 0) attribute.editor_definition = config.editorDefinition;
 			attributes.push(attribute);
 		}
 	} catch (error) {

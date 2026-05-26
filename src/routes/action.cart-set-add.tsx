@@ -20,6 +20,7 @@ import { ErrorCode } from '@/lib/error-codes';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment.server';
 import { assertAllProductItemsPickup } from '@/extensions/bopis/lib/product-utils';
+import { validateDeliveryOptionCompatibility } from '@/extensions/bopis/lib/product-actions';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
@@ -57,6 +58,19 @@ export const action = createBasketAction(
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         const firstItem = input[0];
+        const deliveryValidation = validateDeliveryOptionCompatibility(basket, firstItem?.storeId, context);
+        if (!deliveryValidation.valid) {
+            return data(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.CONFLICT,
+                        message: deliveryValidation.errorMessage,
+                    }),
+                },
+                { status: 409 }
+            );
+        }
         if (firstItem.storeId && firstItem.inventoryId) {
             assertAllProductItemsPickup(input);
             const pickupShipment = await findOrCreatePickupShipment(basket, context, firstItem.storeId);

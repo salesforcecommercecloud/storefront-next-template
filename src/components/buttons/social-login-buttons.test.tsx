@@ -102,14 +102,18 @@ describe('SocialLoginButtons', () => {
         renderWithRouter(<SocialLoginButtons />);
 
         const appleButton = screen.getByRole('button', { name: /continue with apple/i });
-        expect(appleButton).toHaveTextContent('🍎');
+        // SiApple from @icons-pack/react-simple-icons exposes the brand title.
+        expect(appleButton.querySelector('svg title')?.textContent).toBe('Apple');
     });
 
     test('renders google icon for Google provider', () => {
         renderWithRouter(<SocialLoginButtons />);
 
         const googleButton = screen.getByRole('button', { name: /continue with google/i });
-        expect(googleButton).toHaveTextContent('🔍');
+        // The Google "G" mark is identifiable by Google blue (#4285F4) on its first path.
+        const svg = googleButton.querySelector('svg');
+        expect(svg).not.toBeNull();
+        expect(svg?.querySelector('path[fill="#4285F4"]')).not.toBeNull();
     });
 
     test('renders default icon for unknown provider', () => {
@@ -124,7 +128,8 @@ describe('SocialLoginButtons', () => {
         renderWithRouter(<SocialLoginButtons />);
 
         const button = screen.getByRole('button', { name: /continue with unknownprovider/i });
-        expect(button).toHaveTextContent('🔑');
+        // Lucide's KeyRound is the fallback icon and tags itself with `lucide-key-round`.
+        expect(button.querySelector('svg.lucide-key-round')).not.toBeNull();
     });
 
     test('renders separator with correct text', () => {

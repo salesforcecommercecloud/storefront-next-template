@@ -32,7 +32,8 @@ import { getLogger } from '@/lib/logger.server';
 import { maintenanceContext } from '@/lib/maintenance';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
-import { getAppOrigin, getScapiBaseUrl, isAbsoluteURL } from '@/lib/utils';
+import { getScapiBaseUrl, isAbsoluteURL } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { customClients, type AppClients } from '@/scapi/custom-clients';
 import { scapiMiddlewareContext } from '@/lib/scapi-middleware';
@@ -446,7 +447,7 @@ const getSlasClientSecret = (): string | undefined => {
  * @returns Configured commerce API clients
  */
 export function createApiClients(context: RouterContextProvider | Readonly<RouterContextProvider>): AppClients {
-    const appOrigin = getAppOrigin();
+    const appOrigin = getAppOrigin(context);
     const config = getConfig<AppConfig>(context);
     const { shortCode, callback, organizationId, clientId } = config.commerce.api;
 

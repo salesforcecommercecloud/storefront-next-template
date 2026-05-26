@@ -16,7 +16,8 @@
 import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from 'react-router';
 import { getAuth, updateAuth } from '@/middlewares/auth.server';
 import { isTrackingConsentEnabled } from '@/middlewares/auth.utils';
-import { getAppOrigin, getErrorMessage, isAbsoluteURL } from '@/lib/utils';
+import { getErrorMessage, isAbsoluteURL } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
@@ -195,7 +196,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
             const callbackUri = config.features.socialLogin.callbackUri;
             const redirectURI = isAbsoluteURL(callbackUri)
                 ? callbackUri
-                : `${getAppOrigin()}${buildUrlFromContext(callbackUri, context)}`;
+                : `${getAppOrigin(context)}${buildUrlFromContext(callbackUri, context)}`;
 
             // Snapshot the guest wishlist BEFORE the SLAS swap; the registered token can't authorize a read against the guest customerId.
             const guestWishlistSnapshot = await captureGuestWishlistSnapshot(context);

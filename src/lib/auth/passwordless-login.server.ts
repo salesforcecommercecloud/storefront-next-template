@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect, type RouterContextProvider } from 'react-router';
-import { getAppOrigin, getErrorMessage } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import {
@@ -36,7 +37,7 @@ async function sendMagicLinkEmail(
     token: string,
     redirectUrl?: string
 ): Promise<object> {
-    const base = getAppOrigin();
+    const base = getAppOrigin(context);
 
     // Get the configured landing path from app config
     const config = getConfig<AppConfig>(context);

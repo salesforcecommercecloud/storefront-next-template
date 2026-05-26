@@ -15,7 +15,7 @@
  */
 import { type RouterContextProvider } from 'react-router';
 import { createRemoteJWKSet, decodeJwt, type JWTPayload, jwtVerify } from 'jose';
-import { getAppOrigin } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
@@ -147,7 +147,7 @@ export async function validateSlasCallbackToken(
  * Creates a remote JWK Set for validating SLAS callback tokens using the local JWKS proxy
  */
 function createJWKSet(context: Readonly<RouterContextProvider>, tenantId: string) {
-    const appOrigin = getAppOrigin();
+    const appOrigin = getAppOrigin(context);
     const config = getConfig<AppConfig>(context);
     if (!config) {
         throw new Error('Runtime configuration not found in context');

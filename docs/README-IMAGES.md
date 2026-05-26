@@ -74,6 +74,36 @@ PUBLIC__app__images__host=https://edge.dis.commercecloud.salesforce.com
 
 When `enableDis` is `false` (e.g., in workspace environments), the image system falls back to serving static assets directly. Format conversion, server-side resizing, and `<source>` generation are all skipped.
 
+## Image Filtering on Product Listing Pages
+
+Search responses (`fetchSearchProducts`) include an `imageGroups` array on every hit. By default SCAPI returns every imageGroup for every variant, which on variant-heavy catalogs can be the dominant contributor to PLP payload size — most of those images are never rendered.
+
+The template restricts the response via SCAPI's [`imgTypes` query parameter](https://developer.salesforce.com/docs/commerce/commerce-api/references/shopper-search?meta=productSearch) using `config.server.ts`:
+
+```typescript
+search: {
+  products: {
+    images: {
+      tile: 'medium',
+      swatch: 'swatch',
+    },
+  },
+}
+```
+
+Each role names the viewType a specific consumer reads — `tile` for the product tile hero, `swatch` for the color thumbnails. The search filter derives its `imgTypes` query parameter as the union of these values (deduplicated and joined with `,`), so adding a new role automatically widens the filter. Setting a role to `undefined` opts that role out; setting all roles to `undefined` (or providing an empty `images: {}`) disables filtering entirely and returns the full payload. `imgTypes` requires `expand=images` and `allImages=true`; both are set by `fetchSearchProducts`.
+
+Implementation: [src/lib/api/search.server.ts](../src/lib/api/search.server.ts). Full config reference: [docs/README-CONFIG-OPTIONS.md](./README-CONFIG-OPTIONS.md#searchproductsimagestile).
+
+### Keeping role-named values aligned with consumers
+
+If you customize the product tile to read a different viewType (e.g. switch the hero from `medium` to `large`), you must update the matching role here — otherwise the tile will receive empty image arrays for the unrequested viewType. The OOTB consumers that should eventually read from these declarations are:
+
+- `tile` → [src/components/product-image/index.tsx](../src/components/product-image/index.tsx) (currently hardcodes `'medium'`)
+- `swatch` → [src/lib/product/product-utils.ts](../src/lib/product/product-utils.ts) (`buildImageSwatchData`, currently hardcodes `'swatch'`)
+
+The hardcoded strings in those consumers are tracked for a follow-up cleanup that will derive them from these same role-named declarations, eliminating drift.
+
 ## `<DynamicImage>` Component
 
 `<DynamicImage>` is a responsive image component that generates an optimized `<picture>` element with DIS-powered `<source>` elements and responsive preloading via React 19's [`preload()`](https://react.dev/reference/react-dom/preload) API.

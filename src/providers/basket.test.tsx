@@ -123,7 +123,7 @@ describe('BasketProvider hooks', () => {
 
     describe('useBasket', () => {
         it('returns the basket from context without fetching', () => {
-            const { result } = renderHook(() => useBasket(), {
+            const { result } = renderHook(() => useBasket({ autoLoad: true }), {
                 wrapper: wrapperWithProps({ basket: mockBasket }),
             });
 
@@ -132,7 +132,7 @@ describe('BasketProvider hooks', () => {
         });
 
         it('loads the basket when missing but snapshot exists', async () => {
-            renderHook(() => useBasket(), {
+            renderHook(() => useBasket({ autoLoad: true }), {
                 wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
             });
 
@@ -142,7 +142,7 @@ describe('BasketProvider hooks', () => {
         });
 
         it('hydrates the basket in context on successful fetch', async () => {
-            const { result, rerender } = renderHook(() => useBasket(), {
+            const { result, rerender } = renderHook(() => useBasket({ autoLoad: true }), {
                 wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
             });
 
@@ -158,15 +158,99 @@ describe('BasketProvider hooks', () => {
         });
 
         it('does not call load when neither basket nor snapshot is present', () => {
-            renderHook(() => useBasket(), {
+            renderHook(() => useBasket({ autoLoad: true }), {
                 wrapper: wrapperWithProps({}),
             });
 
             expect(mockFetcher.load).not.toHaveBeenCalled();
         });
 
+        it('does not call load by default (autoLoad defaults to false)', async () => {
+            // Default semantics: useBasket() is read-only. Auto-fetch on mount must require an
+            // explicit { autoLoad: true } opt-in, so the SSR HTML stays cache-safe and routes that
+            // loader-hydrate the basket don't pay for a redundant client-side GET.
+            renderHook(() => useBasket(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            await Promise.resolve();
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+
+        it('does not call load when autoLoad is false even if snapshot is present', async () => {
+            renderHook(() => useBasket({ autoLoad: false }), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            // Give any potential auto-load effect a chance to fire.
+            await Promise.resolve();
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+
+        it('still returns the current basket when autoLoad is false', () => {
+            const { result } = renderHook(() => useBasket({ autoLoad: false }), {
+                wrapper: wrapperWithProps({ basket: mockBasket, snapshot: mockSnapshot }),
+            });
+
+            expect(result.current).toBe(mockBasket);
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+        });
+
+        it('reflects later basket updates from another consumer when autoLoad is false', async () => {
+            // A read-only consumer (autoLoad: false) on PDP must still observe basket hydration when
+            // a sibling consumer triggers loadBasket() — e.g., the mini-cart sheet auto-loads when opened.
+            const loaderRef: { current: (() => void) | null } = { current: null };
+            const Consumer = () => {
+                loaderRef.current = useBasketLoader();
+                return useBasket({ autoLoad: false });
+            };
+
+            const { result, rerender } = renderHook(() => Consumer(), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            expect(result.current).toBeUndefined();
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+
+            // Sibling triggers an explicit load.
+            act(() => {
+                loaderRef.current?.();
+            });
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+
+            // Resolved payload should propagate to the autoLoad-disabled consumer.
+            mockFetcher.data = mockBasket;
+            mockFetcher.success = true;
+            rerender();
+
+            await waitFor(() => {
+                expect(result.current).toBe(mockBasket);
+            });
+        });
+
+        it('starts loading when autoLoad flips from false to true', async () => {
+            type Props = { autoLoad: boolean };
+            let currentProps: Props = { autoLoad: false };
+
+            const { rerender } = renderHook(() => useBasket({ autoLoad: currentProps.autoLoad }), {
+                wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
+            });
+
+            await Promise.resolve();
+            expect(mockFetcher.load).not.toHaveBeenCalled();
+
+            currentProps = { autoLoad: true };
+            rerender();
+
+            await waitFor(() => {
+                expect(mockFetcher.load).toHaveBeenCalledTimes(1);
+            });
+        });
+
         it('does not refetch the same basketId after an initial load', async () => {
-            const { rerender } = renderHook(() => useBasket(), {
+            const { rerender } = renderHook(() => useBasket({ autoLoad: true }), {
                 wrapper: wrapperWithProps({ snapshot: mockSnapshot }),
             });
 
@@ -184,7 +268,7 @@ describe('BasketProvider hooks', () => {
             type Props = { snapshot?: BasketSnapshot | null };
             let currentProps: Props = { snapshot: mockSnapshot };
 
-            const { rerender } = renderHook(() => useBasket(), {
+            const { rerender } = renderHook(() => useBasket({ autoLoad: true }), {
                 wrapper: ({ children }) => <BasketProvider snapshot={currentProps.snapshot}>{children}</BasketProvider>,
             });
 
@@ -206,7 +290,7 @@ describe('BasketProvider hooks', () => {
             mockFetcher.state = 'loading';
 
             const Consumer = () => ({
-                basket: useBasket(),
+                basket: useBasket({ autoLoad: true }),
                 hydrated: useBasketHydrated(),
             });
 
@@ -232,7 +316,7 @@ describe('BasketProvider hooks', () => {
             mockFetcher.state = 'loading';
 
             const Consumer = () => {
-                const basket = useBasket();
+                const basket = useBasket({ autoLoad: true });
                 const hydrated = useBasketHydrated();
                 return { basket, hydrated };
             };
@@ -393,7 +477,7 @@ describe('BasketProvider hooks', () => {
             mockFetcher.state = 'loading';
 
             const Consumer = () => {
-                const basket = useBasket();
+                const basket = useBasket({ autoLoad: true });
                 const hydrated = useBasketHydrated();
                 return { basket, hydrated };
             };
@@ -427,7 +511,7 @@ describe('BasketProvider hooks', () => {
             mockFetcher.state = 'loading';
 
             const Consumer = () => {
-                const basket = useBasket();
+                const basket = useBasket({ autoLoad: true });
                 return { basket };
             };
 
@@ -604,7 +688,7 @@ describe('BasketProvider hooks', () => {
                 return null;
             };
             const BasketConsumer = () => {
-                useBasket();
+                useBasket({ autoLoad: true });
                 return null;
             };
 

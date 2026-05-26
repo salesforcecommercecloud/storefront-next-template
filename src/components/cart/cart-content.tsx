@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, lazy, Suspense, type ReactElement } from 'react';
+import { useState, useLayoutEffect, lazy, Suspense, type ReactElement } from 'react';
 
 // Commerce SDK
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
@@ -129,9 +129,10 @@ export default function CartContent({
     // Validate cart-wide inventory for checkout button state
     const inventoryValidation = useCartInventoryValidation(basket, productsByItemId);
 
-    // Sync cart page loader basket into basket context
+    // Sync cart page loader basket into basket context pre-paint, so descendants like CartDeliveryOption observe the
+    // hydrated basket on the first painted frame
     const updateBasket = useBasketUpdater();
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (basket?.basketId) {
             updateBasket(basket);
         }

@@ -25,6 +25,8 @@ type QueryParameters = Omit<Partial<ShopperSearch.operations['productSearch']['p
     refine?: ShopperSearch.operations['productSearch']['parameters']['query']['refine'] | string[];
 };
 
+const DEFAULT_IMAGES = { tile: 'medium', swatch: 'swatch' } as const;
+
 export const fetchSearchProducts = async (
     context: LoaderFunctionArgs['context'],
     parameters: QueryParameters
@@ -42,6 +44,15 @@ export const fetchSearchProducts = async (
      * @see {@link https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#default-cache-expiration-and-personalization-settings}
      * @see {@link https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#expand-parameter-impact-on-cache-hit-rates}
      */
+    const appConfig = getConfig<AppConfig>(context);
+    const images = appConfig?.search?.products?.images ?? DEFAULT_IMAGES;
+    // Derive the SCAPI `imgTypes` query param from the role-named declarations: each role
+    // contributes its viewType, and the union is sent as the filter. This ties the search
+    // filter to the same declarations consumers will read from in the future, eliminating
+    // drift. SCAPI ignores `imgTypes` unless `expand` includes `images` and `allImages=true`.
+    const viewTypes = Object.values(images).filter(Boolean);
+    const imgTypes = viewTypes.length ? [...new Set(viewTypes)].join(',') : undefined;
+
     const params: QueryParameters = {
         q: '',
         sort: 'best-matches' as const,
@@ -58,6 +69,7 @@ export const fetchSearchProducts = async (
         allImages: true,
         allVariationProperties: true,
         perPricebook: true,
+        ...(imgTypes && { imgTypes }),
         ...(parameters || {}),
     };
 
@@ -66,7 +78,6 @@ export const fetchSearchProducts = async (
      * currently orderable products.
      */
     const refineSet = new Set<string>(params.refine || []);
-    const appConfig = getConfig<AppConfig>(context);
     if (appConfig?.search.products.refine?.orderableOnly === true) {
         // Make sure we don't accidentally overwrite any existing orderable_only refinements to avoid conflicts
         const orderableOnly = [...refineSet].find((r: string) => r.startsWith('orderable_only='));
@@ -87,6 +98,7 @@ export const fetchSearchProducts = async (
                 },
             },
         });
+
         return data;
     } catch (error) {
         logger.error('shopperSearch.productSearch failed', {

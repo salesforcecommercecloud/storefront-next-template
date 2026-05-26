@@ -36,6 +36,9 @@ vi.mock('@/middlewares/auth.server');
 vi.mock('@/lib/utils', () => ({
     extractResponseError: vi.fn(),
     getErrorMessage: vi.fn(),
+}));
+
+vi.mock('@/lib/origin', () => ({
     getAppOrigin: vi.fn(() => 'https://example.com'),
 }));
 

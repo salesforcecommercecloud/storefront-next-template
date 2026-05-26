@@ -18,8 +18,10 @@ import { data } from 'react-router';
 import { BasketAction, createBasketAction } from '@/lib/cart/basket-action.server';
 import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode } from '@/lib/error-codes';
-// @sfdc-extension-line SFDC_EXT_BOPIS
+// @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { findOrCreatePickupShipment } from '@/extensions/bopis/lib/api/shipment.server';
+import { validateDeliveryOptionCompatibility } from '@/extensions/bopis/lib/product-actions';
+// @sfdc-extension-block-end SFDC_EXT_BOPIS
 
 /**
  * Product selection values structure matching client-side ProductSelectionValues
@@ -83,6 +85,19 @@ export const action = createBasketAction(
         let shipmentId = 'me';
 
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
+        const deliveryValidation = validateDeliveryOptionCompatibility(basket, bundleItem.storeId, context);
+        if (!deliveryValidation.valid) {
+            return data(
+                {
+                    success: false,
+                    error: createActionError({
+                        code: ErrorCode.CONFLICT,
+                        message: deliveryValidation.errorMessage,
+                    }),
+                },
+                { status: 409 }
+            );
+        }
         if (bundleItem.storeId && bundleItem.inventoryId) {
             const pickupShipment = await findOrCreatePickupShipment(basket, context, bundleItem.storeId);
             shipmentId = pickupShipment.shipmentId;

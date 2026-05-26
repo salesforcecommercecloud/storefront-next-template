@@ -368,6 +368,10 @@ function extractAttributesFromSource(sourceFile: SourceFile, className: string):
                 attribute.default_value = config.defaultValue;
             }
 
+            if (config.editorDefinition !== undefined) {
+                attribute.editor_definition = config.editorDefinition;
+            }
+
             attributes.push(attribute);
         }
     } catch (error) {

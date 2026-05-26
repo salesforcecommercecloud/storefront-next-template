@@ -188,30 +188,6 @@ export function getErrorMessage(error: unknown): string {
 }
 
 /**
- * Returns the application's origin.
- *
- * This function is isomorphic, it can be used on the client and server.
- *
- * On the server, it will return the origin derived from the EXTERNAL_DOMAIN_NAME (from process.env).
- *
- * On the client, it will return the window.location.origin
- */
-export const getAppOrigin = () => {
-    if (typeof window !== 'undefined') {
-        return window.location.origin;
-    }
-
-    const EXTERNAL_DOMAIN_NAME = process.env.EXTERNAL_DOMAIN_NAME || 'localhost:5173';
-    if (!EXTERNAL_DOMAIN_NAME) {
-        throw new Error('Environment variable: "EXTERNAL_DOMAIN_NAME" is not set.');
-    }
-
-    const isLocalhost = EXTERNAL_DOMAIN_NAME?.includes('localhost');
-    const protocol = isLocalhost ? 'http' : 'https';
-    return `${protocol}://${EXTERNAL_DOMAIN_NAME}`;
-};
-
-/**
  * Get the SCAPI base URL for server-side requests.
  * Uses SCAPI_PROXY_HOST if set, otherwise constructs from the given shortCode.
  *

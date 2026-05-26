@@ -66,7 +66,7 @@ describe('', () => {
             expect(createApiClients).toHaveBeenCalledWith(mockContext);
             expect(mockProductSearch).toHaveBeenCalledWith({
                 params: {
-                    query: {
+                    query: expect.objectContaining({
                         q: '',
                         sort: 'best-matches',
                         limit: 24,
@@ -77,10 +77,11 @@ describe('', () => {
                         allImages: true,
                         allVariationProperties: true,
                         perPricebook: true,
-                    },
+                        imgTypes: 'medium,swatch',
+                    }),
                 },
             });
-            expect(result).toBe(mockResult);
+            expect(result).toEqual(mockResult);
         });
 
         it('should build refine without duplicates', async () => {
@@ -183,7 +184,7 @@ describe('', () => {
 
             expect(mockProductSearch).toHaveBeenCalledWith({
                 params: {
-                    query: {
+                    query: expect.objectContaining({
                         q: 'boots',
                         sort: 'price-low-to-high',
                         limit: 12,
@@ -194,7 +195,7 @@ describe('', () => {
                         allImages: false,
                         allVariationProperties: false,
                         perPricebook: false,
-                    },
+                    }),
                 },
             });
         });
@@ -292,6 +293,82 @@ describe('', () => {
                     }),
                 },
             });
+        });
+
+        it('should pass imgTypes with default viewTypes when config.images is absent', async () => {
+            const mockContext = createTestContext({
+                appConfig: {} as never,
+            });
+            mockProductSearch.mockResolvedValue({ data: { hits: [] } });
+
+            await fetchSearchProducts(mockContext, { q: 'dress' });
+
+            const query = mockProductSearch.mock.calls[0][0].params.query;
+            expect(query.imgTypes).toBe('medium,swatch');
+        });
+
+        it('should pass imgTypes reflecting configured role-named viewTypes', async () => {
+            const mockContext = createTestContext({
+                appConfig: {
+                    search: {
+                        products: {
+                            images: { tile: 'large' },
+                        },
+                    },
+                } as never,
+            });
+            mockProductSearch.mockResolvedValue({ data: { hits: [] } });
+
+            await fetchSearchProducts(mockContext, { q: 'dress' });
+
+            const query = mockProductSearch.mock.calls[0][0].params.query;
+            expect(query.imgTypes).toBe('large');
+        });
+
+        it('should omit imgTypes when all role-named viewTypes are unset', async () => {
+            const mockContext = createTestContext({
+                appConfig: {
+                    search: {
+                        products: {
+                            images: {},
+                        },
+                    },
+                } as never,
+            });
+            mockProductSearch.mockResolvedValue({ data: { hits: [] } });
+
+            await fetchSearchProducts(mockContext, { q: 'dress' });
+
+            const query = mockProductSearch.mock.calls[0][0].params.query;
+            expect(query.imgTypes).toBeUndefined();
+        });
+
+        it('should deduplicate imgTypes when multiple roles share a viewType', async () => {
+            const mockContext = createTestContext({
+                appConfig: {
+                    search: {
+                        products: {
+                            images: { tile: 'medium', swatch: 'medium' },
+                        },
+                    },
+                } as never,
+            });
+            mockProductSearch.mockResolvedValue({ data: { hits: [] } });
+
+            await fetchSearchProducts(mockContext, { q: 'dress' });
+
+            const query = mockProductSearch.mock.calls[0][0].params.query;
+            expect(query.imgTypes).toBe('medium');
+        });
+
+        it('should allow caller-provided imgTypes to override the generated one', async () => {
+            const mockContext = createTestContext();
+            mockProductSearch.mockResolvedValue({ data: { hits: [] } });
+
+            await fetchSearchProducts(mockContext, { q: 'dress', imgTypes: 'large:1' });
+
+            const query = mockProductSearch.mock.calls[0][0].params.query;
+            expect(query.imgTypes).toBe('large:1');
         });
     });
 });

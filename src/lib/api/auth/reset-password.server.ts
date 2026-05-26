@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect, type RouterContextProvider } from 'react-router';
-import { extractResponseError, getAppOrigin } from '@/lib/utils';
+import { extractResponseError } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 import {
@@ -36,7 +37,7 @@ async function sendResetPasswordEmail(
     email_id: string,
     token: string
 ): Promise<object> {
-    const base = getAppOrigin();
+    const base = getAppOrigin(context);
 
     const config = getConfig<AppConfig>(context);
     const landingPath = config.features.resetPassword.landingUri;

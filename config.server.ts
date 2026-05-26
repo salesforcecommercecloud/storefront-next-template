@@ -370,6 +370,15 @@ export default defineConfig<Config>(
                         limit: 24,
                         critical: 4,
                     },
+                    // Discrete viewType declarations the storefront uses for product images.
+                    // The search filter derives its SCAPI `imgTypes` from these values
+                    // (Object.values), so adding a new role here automatically widens the
+                    // filter. Must stay aligned with the hardcoded viewTypes in product-image
+                    // and product-utils.ts, see docs/README-IMAGES.md.
+                    images: {
+                        tile: 'medium',
+                        swatch: 'swatch',
+                    },
                 },
             },
             // Performance optimization settings

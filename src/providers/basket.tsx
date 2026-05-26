@@ -377,10 +377,21 @@ export const useBasketLoader = (): (() => void) => {
 };
 
 /**
- * Returns the current basket. If missing, triggers a fetch using the snapshot ID and hydrates the context on success.
+ * Returns the current basket from context. By default, this hook is **read-only** — it doesn't trigger any SCAPI
+ * request. Routes that need the basket on first paint are expected to either (a) load it in their server `loader` and
+ * write it to context via `useBasketUpdater()` in a `useLayoutEffect` (cart, checkout), or (b) opt in to auto-load by
+ * passing `{ autoLoad: true }`.
+ *
+ * Pass `{ autoLoad: true }` only on routes that genuinely need a client-side `GET /baskets/{id}` (e.g. PDP edit-mode
+ * where the basket isn't loader-hydrated). When auto-load is enabled and `current` is missing but a `snapshot.basketId`
+ * is available, the provider-owned fetcher is dispatched and the result is written back to context.
+ *
+ * This default keeps consumers from issuing redundant GETs — and keeps the SSR HTML cache-safe, because nothing fans
+ * out an opportunistic basket fetch on hydration unless the consumer asks for it.
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export const useBasket = (): ShopperBasketsV2.schemas['Basket'] | undefined => {
+export const useBasket = (options?: { autoLoad?: boolean }): ShopperBasketsV2.schemas['Basket'] | undefined => {
+    const autoLoad = options?.autoLoad ?? false;
     const { current, snapshot } = useContext(BasketContext);
     const loadBasket = useBasketLoader();
     const basketId = snapshot?.basketId;
@@ -388,10 +399,10 @@ export const useBasket = (): ShopperBasketsV2.schemas['Basket'] | undefined => {
     // basketId is in the dep array so a hand-off (e.g. guest → registered merge changes the id)
     // re-fires the load. loadBasket is reference-stable so it never spuriously re-triggers.
     useEffect(() => {
-        if (!current && basketId) {
+        if (autoLoad && !current && basketId) {
             loadBasket();
         }
-    }, [current, basketId, loadBasket]);
+    }, [autoLoad, current, basketId, loadBasket]);
 
     return current;
 };

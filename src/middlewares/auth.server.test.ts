@@ -129,9 +129,12 @@ vi.mock('@/lib/utils', () => ({
         responseMessage: 'Default error message',
         status_code: '500',
     }),
-    getAppOrigin: vi.fn(() => 'https://example.com'),
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
     stringToBase64: vi.fn((str: string) => Buffer.from(str).toString('base64')),
+}));
+
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(() => 'https://example.com'),
 }));
 
 // Use the shared `buildMockTokenResponse` helper so fixtures stay in sync with the

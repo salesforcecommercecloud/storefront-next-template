@@ -37,3 +37,4 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - 'chokidar@4.0.3'          # Lost SLSA provenance in 4.0.2+; dep of @react-router/dev
   - 'semver@6.3.1 || 5.7.2'   # Lost provenance; dep of eslint-plugin-import, lighthouse
+  - 'tinyexec@1.2.2'          # Lost trusted publisher in 1.2.0+; dep of vitest

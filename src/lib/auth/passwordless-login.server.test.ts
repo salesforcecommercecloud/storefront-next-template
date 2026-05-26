@@ -21,7 +21,8 @@ import {
     handlePasswordlessLanding,
     resetMarketingCloudTokenCache,
 } from './passwordless-login.server';
-import { getAppOrigin, getErrorMessage } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { mockSiteObject } from '@/test-utils/config';
 
@@ -71,8 +72,11 @@ vi.mock('@/lib/api/basket.server', () => ({
 
 // Mock utility functions
 vi.mock('@/lib/utils', () => ({
-    getAppOrigin: vi.fn(),
     getErrorMessage: vi.fn(),
+}));
+
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(),
 }));
 
 // Mock config module

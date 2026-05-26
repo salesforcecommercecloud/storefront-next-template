@@ -525,7 +525,7 @@ describe('AccountDetails', () => {
 
         test('renders current email in summary', async () => {
             await renderAccountDetails();
-            expect(screen.getByTestId('profile-value-email')).toHaveTextContent('john@example.com');
+            expect(screen.getByText('john@example.com')).toBeInTheDocument();
         });
 
         test('shows "Not provided" when customer has no email', async () => {
@@ -544,7 +544,7 @@ describe('AccountDetails', () => {
             await waitFor(() => {
                 expect(screen.queryByTestId('email-update-form')).not.toBeInTheDocument();
             });
-            expect(screen.getByTestId('profile-value-email')).toHaveTextContent('new@example.com');
+            expect(screen.getByText('new@example.com')).toBeInTheDocument();
         });
 
         test('shows error toast on failure', async () => {
@@ -1005,7 +1005,7 @@ describe('AccountDetails', () => {
                 });
 
                 // Email should be updated optimistically
-                expect(screen.getByTestId('profile-value-email')).toHaveTextContent('newemail@example.com');
+                expect(screen.getByText('newemail@example.com')).toBeInTheDocument();
 
                 fetchSpy.mockRestore();
             });

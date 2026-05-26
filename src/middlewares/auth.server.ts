@@ -45,7 +45,8 @@ import {
     COOKIE_DWSID,
     COOKIE_AUTH_RECOVERY_GUARD,
 } from '@/middlewares/auth.utils';
-import { getAppOrigin, isAbsoluteURL } from '@/lib/utils';
+import { isAbsoluteURL } from '@/lib/utils';
+import { getAppOrigin } from '@/lib/origin';
 import { getLogger } from '@/lib/logger.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
@@ -226,7 +227,7 @@ export async function authorizePasswordless(
     } else if (passwordlessCallback) {
         baseCallbackUri = isAbsoluteURL(passwordlessCallback)
             ? passwordlessCallback
-            : `${getAppOrigin()}${passwordlessCallback}`;
+            : `${getAppOrigin(context)}${passwordlessCallback}`;
     }
 
     const finalCallbackUri =
@@ -284,7 +285,7 @@ export async function getPasswordResetToken(
     if (resetPasswordCallbackUri) {
         callbackUri = isAbsoluteURL(resetPasswordCallbackUri)
             ? resetPasswordCallbackUri
-            : `${getAppOrigin()}${resetPasswordCallbackUri}`;
+            : `${getAppOrigin(context)}${resetPasswordCallbackUri}`;
     }
 
     const mode = appConfig.features.resetPassword.mode;

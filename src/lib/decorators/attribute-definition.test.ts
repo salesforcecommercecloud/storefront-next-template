@@ -180,6 +180,24 @@ describe('AttributeDefinition Decorator', () => {
             expect(metadata.fields.isVisible?.defaultValue).toBe(true);
         });
 
+        test('handles custom type with editor definition', () => {
+            class TestComponent {
+                @AttributeDefinition({
+                    type: 'custom',
+                    editorDefinition: {
+                        type: 'einstein.globalrecommenderselector',
+                    },
+                })
+                customField!: unknown;
+            }
+
+            const metadata = getAttributeDefinitions(TestComponent.prototype);
+            expect(metadata.fields.customField?.type).toBe('custom');
+            expect(metadata.fields.customField?.editorDefinition).toEqual({
+                type: 'einstein.globalrecommenderselector',
+            });
+        });
+
         test('handles multiple fields on same class', () => {
             class TestComponent {
                 @AttributeDefinition({ id: 'field1', name: 'Field 1' })

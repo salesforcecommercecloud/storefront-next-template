@@ -54,6 +54,7 @@ vi.mock('@/providers/recommenders', () => ({
 // Components
 import CartContent from './cart-content';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import BasketProvider, { useBasket } from '@/providers/basket';
 
 // Utils
 const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
@@ -774,6 +775,76 @@ describe('CartContent', () => {
             });
 
             expect(editBtn()).not.toBeInTheDocument();
+        });
+    });
+
+    describe('basket sync into BasketProvider', () => {
+        // Read-only consumer: useBasket() does not fall back to a SCAPI fetch. If CartContent's
+        // pre-paint sync is broken, the probe renders "no-basket" on first commit and never recovers.
+        function BasketProbe() {
+            const basket = useBasket();
+            return <div data-testid="basket-probe">{basket?.basketId ?? 'no-basket'}</div>;
+        }
+
+        const renderWithBasketProvider = (
+            basket: typeof mockBasket,
+            ProbeComponent: React.ComponentType = BasketProbe
+        ) => {
+            const router = createMemoryRouter(
+                [
+                    {
+                        path: '/cart',
+                        element: (
+                            <AllProvidersWrapper>
+                                <BasketProvider snapshot={null}>
+                                    <ProbeComponent />
+                                    <CartContent
+                                        basket={basket}
+                                        productsByItemId={mockProductMap}
+                                        bonusProductsById={mockBonusProductsById}
+                                    />
+                                </BasketProvider>
+                            </AllProvidersWrapper>
+                        ),
+                    },
+                ],
+                { initialEntries: ['/cart'] }
+            );
+            return render(<RouterProvider router={router} />);
+        };
+
+        test('makes the loader basket observable to descendants on first commit', async () => {
+            renderWithBasketProvider(mockBasket);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('basket-probe')).toHaveTextContent('test-basket-id');
+            });
+        });
+
+        test('sibling consumer observes undefined on first commit even with the pre-paint sync', async () => {
+            // Load-bearing reason useBasket() defaults to autoLoad:false: CartContent's
+            // useLayoutEffect-based sync runs *after* the first commit of any consumer that
+            // mounts in the same render. Sibling and descendant useBasket() consumers
+            // therefore observe `current === undefined` on their first committed render and
+            // re-render once the sync writes to context. Auto-load on this site would issue
+            // a redundant `GET /baskets/{id}` and flicker the UI before the pre-paint sync
+            // takes effect.
+            const renders: (string | undefined)[] = [];
+            function DefaultProbe() {
+                const basket = useBasket();
+                renders.push(basket?.basketId);
+                return <div data-testid="default-probe">{basket?.basketId ?? 'no-basket'}</div>;
+            }
+
+            renderWithBasketProvider(mockBasket, DefaultProbe);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('default-probe')).toHaveTextContent('test-basket-id');
+            });
+
+            // First committed render does NOT see the basket — the autoLoad:false default is
+            // required at every read-only consumer that mounts inside or alongside CartContent.
+            expect(renders[0]).toBeUndefined();
         });
     });
 });

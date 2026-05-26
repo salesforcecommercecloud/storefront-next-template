@@ -1165,6 +1165,50 @@ PUBLIC__app__search__products__hits__critical=4
 
 ---
 
+### search.products.images.tile
+
+Type: `string` Optional | Default: `'medium'`
+
+The viewType the product tile reads for the hero image on PLPs. Drives the search
+filter (the SCAPI `imgTypes` query parameter is derived as the union of all
+role-named viewTypes here). A planned follow-up will also have the tile component
+itself read this value, eliminating drift between the search filter and the tile's
+image lookup.
+
+Set to `undefined` to opt this role out of the search filter. If you customize the
+tile to read a different viewType (e.g. `'large'`), update this value to match.
+
+Example:
+```bash
+PUBLIC__app__search__products__images__tile=large
+```
+
+---
+
+### search.products.images.swatch
+
+Type: `string` Optional | Default: `'swatch'`
+
+The viewType the swatch builder reads for color thumbnails on PLPs. Same role-named
+declaration pattern as `tile` above — feeds the SCAPI `imgTypes` filter; a planned
+follow-up will have the swatch builder itself read this value.
+
+Set to `undefined` to opt this role out of the search filter.
+
+Example:
+```bash
+PUBLIC__app__search__products__images__swatch=swatch
+```
+
+Both roles together control PLP image filtering. To disable filtering entirely and
+return the full imageGroups payload, set both to `undefined` or pass an empty
+`images: {}` config block. Only applies to `fetchSearchProducts` (search/category
+pages); PDP and cart fetches are unaffected. See
+[docs/README-IMAGES.md](./README-IMAGES.md#image-filtering-on-product-listing-pages)
+for the full pattern.
+
+---
+
 ## performance
 
 Performance optimization configuration.

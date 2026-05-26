@@ -58,6 +58,10 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     })),
 }));
 
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(() => 'https://example.com'),
+}));
+
 describe('marketing-cloud', () => {
     beforeEach(() => {
         vi.clearAllMocks();

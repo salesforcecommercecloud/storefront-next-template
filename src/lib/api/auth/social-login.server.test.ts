@@ -60,8 +60,11 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
 
 vi.mock('@/lib/utils', () => ({
     getErrorMessage: vi.fn((err?: any) => (err && err.message) || 'An error occurred'),
-    getAppOrigin: vi.fn(() => 'https://example.com'),
     isAbsoluteURL: vi.fn((url: string) => url.startsWith('http')),
+}));
+
+vi.mock('@/lib/origin', () => ({
+    getAppOrigin: vi.fn(() => 'https://example.com'),
 }));
 
 const mockLogger = vi.hoisted(() => ({

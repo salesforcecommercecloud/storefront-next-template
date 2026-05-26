@@ -54,7 +54,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         OrganizationId: string;
@@ -68,15 +68,6 @@ export interface components {
          * @example RefArch
          */
         SiteId: string;
-        /**
-         * @description The String256 schema is a foundational schema designed for fields or attributes that are stored in a database field with a maximum capacity of 256 bytes.
-         *     This schema accommodates various character sets, with the following considerations:
-         *       - ASCII Characters: Each ASCII character occupies 1 byte, allowing up to 256 characters.
-         *       - Latin Characters: Many Latin characters require 2 bytes each, allowing up to 128 characters.
-         *       - Asian Characters: Many Asian characters require 3 bytes each, allowing approximately 85 characters.
-         * @example Max Mustermann
-         */
-        String256: string;
         /**
          * @description A three letter uppercase currency code conforming to the [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) standard, or the string `N/A` indicating that a currency is not applicable.
          * @example USD
@@ -134,24 +125,15 @@ export interface components {
         PaginatedResultBase: {
             offset: components["schemas"]["Offset"];
         } & WithRequired<components["schemas"]["ResultBase"], "limit" | "total">;
-        /**
-         * @description The String4000 schema is a foundational schema designed for fields or attributes that are stored in a database field with a maximum capacity of 4000 bytes.
-         *     This schema accommodates various character sets, with the following considerations:
-         *       - ASCII Characters: Each ASCII character occupies 1 byte, allowing up to 4000 characters.
-         *       - Latin Characters: Many Latin characters require 2 bytes each, allowing up to 2000 characters.
-         *       - Asian Characters: Many Asian characters require 3 bytes each, allowing approximately 1333 characters.
-         * @example This is a detailed description of an Excellent Product. It includes all the features, specifications, and benefits of the product. The Excellent Product is designed to provide exceptional performance and reliability. It is made from high-quality materials and has been rigorously tested to ensure it meets the highest standards. Whether you are using it for personal or professional purposes, the Excellent Product is the perfect choice. With its advanced technology and user-friendly design, it offers unparalleled convenience and efficiency. Order your Excellent Product today and experience the difference it can make.
-         */
-        String4000: string;
         Image: {
             /** @example The White Dress Shirt */
-            alt?: components["schemas"]["String4000"];
+            alt?: string;
             /** @example https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZEU_006/on/demandware.static/-/Sites-apparel-catalog/default/dw9368b001/images/large/70284588_100_0.jpg */
-            disBaseLink?: components["schemas"]["String4000"];
+            disBaseLink?: string;
             /** @example https://zzeu-006.sandbox.us01.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-catalog/default/dw9368b001/images/large/70284588_100_0.jpg */
-            link: components["schemas"]["String4000"];
+            link: string;
             /** @example The White Dress Shirt */
-            title?: components["schemas"]["String4000"];
+            title?: string;
         };
         /** @description Document representing a product type. */
         ProductType: {
@@ -205,7 +187,7 @@ export interface components {
              * @description The localized description of the variation value.
              * @example Size 15R
              */
-            description?: components["schemas"]["String4000"];
+            description?: string;
             /** @description The first product image for the configured viewtype and this variation value. */
             image?: components["schemas"]["Image"];
             /** @description The first product image for the configured viewtype and this variation value. Typically the swatch image. */
@@ -214,7 +196,7 @@ export interface components {
              * @description The localized display name of the variation value.
              * @example 15R
              */
-            name?: components["schemas"]["String4000"];
+            name?: string;
             /**
              * @description A flag indicating whether at least one variant with this variation attribute value is available to sell.
              * @example true
@@ -224,7 +206,7 @@ export interface components {
              * @description The actual variation value.
              * @example 15R
              */
-            value: components["schemas"]["String4000"];
+            value: string;
         };
         /** @description Document representing a variation attribute. */
         VariationAttribute: {
@@ -232,12 +214,12 @@ export interface components {
              * @description The ID of the variation attribute.
              * @example size
              */
-            id: components["schemas"]["String256"];
+            id: string;
             /**
              * @description The localized display name of the variation attribute.
              * @example size
              */
-            name?: components["schemas"]["String4000"];
+            name?: string;
             /** @description The sorted array of variation values. This array can be empty. */
             values?: components["schemas"]["VariationAttributeValue"][];
         };
@@ -251,7 +233,7 @@ export interface components {
              * @description The image view type.
              * @example hi-res
              */
-            viewType: string & components["schemas"]["String256"];
+            viewType: string;
         };
         /** @description Document representing price ranges for a product which happens to be a master product (per Pricebook) */
         PriceRange: {
@@ -271,7 +253,7 @@ export interface components {
              * @description The active pricebook from which the min and the max prices are calculated. The pricebook is based on the site context of the request as defined in ECOM.
              * @example usd-list-pricebook
              */
-            pricebook?: components["schemas"]["String256"];
+            pricebook?: string;
         };
         /** @description Document representing a product promotion. */
         ProductPromotion: {
@@ -279,7 +261,7 @@ export interface components {
              * @description The localized call-out message of the promotion.
              * @example Fantastic promotion
              */
-            calloutMsg: components["schemas"]["String4000"];
+            calloutMsg: string;
             /**
              * @description The unique ID of the promotion.
              * @example summerSale
@@ -304,7 +286,7 @@ export interface components {
              * @description The active pricebook for which this price is defined
              * @example usd-list-pricebook
              */
-            pricebook?: components["schemas"]["String256"];
+            pricebook?: string;
             /**
              * Format: double
              * @description Quantity tier for which the price is defined.
@@ -334,7 +316,7 @@ export interface components {
             tieredPrices?: components["schemas"]["ProductPriceTable"][];
             /** @description The actual variation attribute ID - value pairs. */
             variationValues?: {
-                [key: string]: components["schemas"]["String4000"];
+                [key: string]: string;
             };
             /**
              * @description The array of active customer product promotions for this product. This array can be empty.
@@ -364,7 +346,7 @@ export interface components {
             productId: string;
             /** @description The actual variation attribute ID - value pairs. */
             variationValues: {
-                [key: string]: components["schemas"]["String4000"];
+                [key: string]: string;
             };
         };
         /** @description Document representing a product search hit. */
@@ -374,7 +356,7 @@ export interface components {
              * @description The type information for the search hit.
              * @example product
              */
-            hitType?: components["schemas"]["String256"];
+            hitType?: string;
             /** @description The first image of the product hit for the configured viewtype. */
             image?: components["schemas"]["Image"];
             /**
@@ -404,7 +386,7 @@ export interface components {
              * @description The localized name of the product.
              * @example Modern Dress Shirt
              */
-            productName?: components["schemas"]["String4000"];
+            productName?: string;
             /** @description The type information for the product. */
             productType?: components["schemas"]["ProductType"];
             /** @description The first represented product. */
@@ -437,12 +419,36 @@ export interface components {
              * @description The ID of the Page Meta Tag.
              * @example title
              */
-            id?: components["schemas"]["String256"];
+            id?: string;
             /**
              * @description Locale-specific value of the Page Meta Tag, evaluated by resolving the rule set for the given Business Manager ID.
              * @example Buy the Long Sleeve Covered Placket Blouse for USD 61.99.
              */
             value?: string;
+        };
+        /**
+         * @description The query string that was searched for.
+         * @example dresses
+         */
+        query: string;
+        /** @description The result of a processor execution. */
+        AppliedProcessor: {
+            /**
+             * @description The name of the processor.
+             * @example Attribute Aware Search
+             */
+            processorName?: string;
+            result?: components["schemas"]["query"];
+            /** @description The refinements that were applied to the query. */
+            refinements?: {
+                [key: string]: string;
+            };
+        };
+        /** @description The result of query processing. */
+        ProcessedQuery: {
+            query?: components["schemas"]["query"];
+            /** @description The processors that were executed for the search query and their results. */
+            appliedProcessors?: components["schemas"]["AppliedProcessor"][];
         };
         /** @description Document representing a product search refinement value. */
         ProductSearchRefinementValue: {
@@ -450,7 +456,7 @@ export interface components {
              * @description The localized description of the refinement value.
              * @example The Beige objects
              */
-            description?: components["schemas"]["String4000"];
+            description?: string;
             /**
              * Format: int32
              * @description The number of search hits when selecting the refinement value. Can be 0.
@@ -461,14 +467,14 @@ export interface components {
              * @description The localized label of the refinement value.
              * @example Beige
              */
-            label: components["schemas"]["String4000"];
+            label: string;
             /**
              * @description The optional presentation ID associated with the refinement value.
              *      The presentation ID can be used, for example, to associate an ID with
              *      an HTML widget.
              * @example beige
              */
-            presentationId?: components["schemas"]["String256"];
+            presentationId?: string;
             /**
              * @description The refinement value. In the case of an attribute refinement, this is the bucket, the attribute value, or a
              *     value range. In the case of a category refinement, this is the category ID. In the case of a price
@@ -476,7 +482,7 @@ export interface components {
              *     "(100..999)" and "(Aa..Fa)" are valid ranges.
              * @example Beige
              */
-            value: string & components["schemas"]["String4000"];
+            value: string;
             /** @description The array of hierarchical refinement values. This array can be empty. */
             values?: components["schemas"]["ProductSearchRefinementValue"][];
         };
@@ -488,12 +494,12 @@ export interface components {
              *      category refinement, the ID must be "cgid". In the case of a price refinement, the ID must be "price".
              * @example refinementColor
              */
-            attributeId: components["schemas"]["String256"];
+            attributeId: string;
             /**
              * @description The localized label of the refinement.
              * @example Color
              */
-            label?: components["schemas"]["String256"];
+            label?: string;
             /** @description The sorted array of refinement values. This array can be empty. */
             values?: components["schemas"]["ProductSearchRefinementValue"][];
         };
@@ -560,12 +566,12 @@ export interface components {
              * @description The ID of the sorting option.
              * @example best-matches
              */
-            id: components["schemas"]["String256"];
+            id: string;
             /**
              * @description The localized label of the sorting option.
              * @example Best Matches
              */
-            label: components["schemas"]["String4000"];
+            label: string;
         };
         /** @description Document representing a product search result. */
         ProductSearchResult: {
@@ -578,19 +584,21 @@ export interface components {
              * @example dresses
              */
             query: string;
+            /** @description The result of query processing. */
+            processedQuery?: components["schemas"]["ProcessedQuery"];
             /** @description The sorted array of search refinements. This array can be empty. */
             refinements: components["schemas"]["ProductSearchRefinement"][];
             /** @description The suggestion given by the system for the submitted search phrase. */
             searchPhraseSuggestions: components["schemas"]["Suggestion"];
             /** @description A map of selected refinement attribute ID or value pairs. The sorting order is the same as in request URL. */
             selectedRefinements?: {
-                [key: string]: components["schemas"]["String4000"];
+                [key: string]: string;
             };
             /**
              * @description The ID of the applied sorting option.
              * @example best-matches
              */
-            selectedSortingOption?: components["schemas"]["String4000"];
+            selectedSortingOption?: string;
             /** @description The sorted array of search sorting options. This array can be empty. */
             sortingOptions: components["schemas"]["ProductSearchSortingOption"][];
         } & WithRequired<components["schemas"]["PaginatedResultBase"], "offset">;
@@ -643,12 +651,12 @@ export interface components {
              * @description The localized name of the category.
              * @example Dresses
              */
-            name: components["schemas"]["String4000"];
+            name: string;
             /**
              * @description The name of the parent category.
              * @example Clothing
              */
-            parentCategoryName: components["schemas"]["String4000"];
+            parentCategoryName: string;
         } & {
             [key: string]: unknown;
         };
@@ -675,7 +683,7 @@ export interface components {
              * @description The localized name of the product.
              * @example Playstation 3 Bundle
              */
-            productName: components["schemas"]["String4000"];
+            productName: string;
         } & {
             [key: string]: unknown;
         };
@@ -717,7 +725,7 @@ export interface components {
     responses: never;
     parameters: {
         /**
-         * @description An identifier for the organization the request is being made by
+         * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
          * @example f_ecom_zzxy_prd
          */
         organizationId: components["schemas"]["OrganizationId"];
@@ -725,7 +733,7 @@ export interface components {
         productSearchSelect: components["schemas"]["Select"];
         /** @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites. */
         siteId: components["schemas"]["SiteId"];
-        /** @description The query phrase to search for. For example to search for a product "shirt", type q=shirt. */
+        /** @description The query phrase to search for. For example to search for a product "shirt", type q=shirt. **Note:** - Lexical search queries are limited to a maximum of 50 characters. */
         qProductSearch: string;
         /**
          * @description Parameter that represents a refinement attribute or values pair. Refinement attribute ID and values are separated by '='.<br>
@@ -751,7 +759,7 @@ export interface components {
          */
         refine: string;
         /** @description The ID of the sorting option to sort the search hits. */
-        sort: components["schemas"]["String256"];
+        sort: string;
         /** @description A three letter uppercase currency code conforming to the [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) standard, or the string `N/A` indicating that a currency is not applicable. */
         currency: components["schemas"]["CurrencyCode"];
         /** @description A descriptor for a geographical region by both a language and country code. By combining these two, regional differences in a language can be addressed, such as with the request header parameter `Accept-Language` following [RFC 2616](https://tools.ietf.org/html/rfc2616) & [RFC 1766](https://tools.ietf.org/html/rfc1766). This can also just refer to a language code, also RFC 2616/1766 compliant, as a default if there is no specific match for a country. Finally, can also be used to define default behavior if there is no locale specified. */
@@ -763,17 +771,26 @@ export interface components {
          */
         expandProductSearch: ("none" | "availability" | "images" | "prices" | "represented_products" | "variations" | "promotions" | "custom_properties" | "page_meta_tags")[];
         /**
-         * @description When the `images` expand parameter is used with this flag, the response includes the `imageGroups property`, which contains an image model.
-         *     If this flag is true, the full image model is returned. If false, only matching images are included.
+         * @description When the `images` expand parameter is used with this flag, the response includes the `imageGroups` property, which contains an image model.
+         *     If this flag is true, the full image model is returned and you can combine with `imgTypes` to filter image types and counts. If false, only matching images are included.
          *     If no flag is passed, the `imageGroups` property is omitted from the response.
          */
         allImages: boolean;
+        /**
+         * @description Filters product images by type with optional count limits per type. This parameter requires both the `images` expand parameter and `allImages=true`.
+         *     When used, the response includes the `imageGroups` property filtered by the specified image types.
+         *     The format is a comma-separated list of image types with optional counts: `<imageType>:<count>,<imageType>:<count>`.
+         *     If the count is omitted, all images of that type are returned. If specified, the count limits the number of images returned for that type.
+         *     For example, `imgTypes=large:2,small:1` returns up to 2 large images and 1 small image per product in the imageGroups.
+         *     If `imgTypes` is used without `allImages=true`, it is ignored and imageGroups aren't included in the response.
+         */
+        imgTypes: string;
         /** @description When this flag is set to `true` and is used with the `prices` expand parameter, the response includes per PriceBook prices and tiered prices (if available). */
         perPricebook: boolean;
         /** @description The flag that determines which variation properties are included in the result. When set to `true` with the `variations` expand parameter, all variation properties (`variationAttributes`, `variationGroups`, `variants`) are returned. When set to false, only the default property `variationAttributes` is returned. */
         allVariationProperties: boolean;
         /** @description A comma-separated list of custom property ids to be returned for variant products. The `variants` expand parameter and `allVariationProperties` query parameter are required for these properties to be returned. */
-        includedCustomVariationProperties: (string & components["schemas"]["String256"])[];
+        includedCustomVariationProperties: string[];
         /** @description The search phrase (q) for which suggestions are evaluated. Search suggestions are determined when the search phrase input is at least three (default) characters long. The value is configurable in the Business Manager. */
         qSearchSuggestion: string;
         /** @description The maximum number of suggestions made per request. If no value is defined, by default five suggestions per suggestion type are evaluated. This affects all types of suggestions (category, product, brand, and custom suggestions). */
@@ -784,7 +801,7 @@ export interface components {
          */
         expandSearchSuggestion: ("images" | "prices" | "custom_product_properties")[];
         /** @description A comma-separated list of custom property ids to be returned for product suggestions. The `custom_product_properties` expand parameter is required for these properties to be returned. */
-        includedCustomProductProperties: (string & components["schemas"]["String256"])[];
+        includedCustomProductProperties: string[];
         /** @description The flag that determines whether or not to show recent and popular suggested phrases from Einstein. */
         includeEinsteinSuggestedPhrases: boolean;
     };
@@ -801,7 +818,7 @@ export interface operations {
                 select?: components["parameters"]["productSearchSelect"];
                 /** @description The identifier of the site that a request is being made in the context of. Attributes might have site specific values, and some objects may only be assigned to specific sites. */
                 siteId: components["parameters"]["siteId"];
-                /** @description The query phrase to search for. For example to search for a product "shirt", type q=shirt. */
+                /** @description The query phrase to search for. For example to search for a product "shirt", type q=shirt. **Note:** - Lexical search queries are limited to a maximum of 50 characters. */
                 q?: components["parameters"]["qProductSearch"];
                 /**
                  * @description Parameter that represents a refinement attribute or values pair. Refinement attribute ID and values are separated by '='.<br>
@@ -839,18 +856,27 @@ export interface operations {
                  */
                 expand?: components["parameters"]["expandProductSearch"];
                 /**
-                 * @description When the `images` expand parameter is used with this flag, the response includes the `imageGroups property`, which contains an image model.
-                 *     If this flag is true, the full image model is returned. If false, only matching images are included.
+                 * @description When the `images` expand parameter is used with this flag, the response includes the `imageGroups` property, which contains an image model.
+                 *     If this flag is true, the full image model is returned and you can combine with `imgTypes` to filter image types and counts. If false, only matching images are included.
                  *     If no flag is passed, the `imageGroups` property is omitted from the response.
                  */
                 allImages?: components["parameters"]["allImages"];
+                /**
+                 * @description Filters product images by type with optional count limits per type. This parameter requires both the `images` expand parameter and `allImages=true`.
+                 *     When used, the response includes the `imageGroups` property filtered by the specified image types.
+                 *     The format is a comma-separated list of image types with optional counts: `<imageType>:<count>,<imageType>:<count>`.
+                 *     If the count is omitted, all images of that type are returned. If specified, the count limits the number of images returned for that type.
+                 *     For example, `imgTypes=large:2,small:1` returns up to 2 large images and 1 small image per product in the imageGroups.
+                 *     If `imgTypes` is used without `allImages=true`, it is ignored and imageGroups aren't included in the response.
+                 */
+                imgTypes?: components["parameters"]["imgTypes"];
                 /** @description When this flag is set to `true` and is used with the `prices` expand parameter, the response includes per PriceBook prices and tiered prices (if available). */
                 perPricebook?: components["parameters"]["perPricebook"];
                 /** @description The flag that determines which variation properties are included in the result. When set to `true` with the `variations` expand parameter, all variation properties (`variationAttributes`, `variationGroups`, `variants`) are returned. When set to false, only the default property `variationAttributes` is returned. */
                 allVariationProperties?: components["parameters"]["allVariationProperties"];
                 /** @description A comma-separated list of custom property ids to be returned for variant products. The `variants` expand parameter and `allVariationProperties` query parameter are required for these properties to be returned. */
                 includedCustomVariationProperties?: components["parameters"]["includedCustomVariationProperties"];
-                /** @description Maximum records to retrieve per request, not to exceed 200. Defaults to 25. */
+                /** @description Number of records to retrieve per request. Must be between 1 (minimum) and 200 (maximum). Defaults to 25. */
                 limit?: number;
                 /** @description Used to retrieve the results based on a particular resource offset. */
                 offset?: number;
@@ -858,7 +884,7 @@ export interface operations {
             header?: never;
             path: {
                 /**
-                 * @description An identifier for the organization the request is being made by
+                 * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
                  * @example f_ecom_zzxy_prd
                  */
                 organizationId: components["parameters"]["organizationId"];
@@ -913,7 +939,7 @@ export interface operations {
             header?: never;
             path: {
                 /**
-                 * @description An identifier for the organization the request is being made by
+                 * @description An identifier for the Salesforce Commerce Cloud organization the request is being made by. It consists of a prefix 'f_ecom_' followed by a 4-character [realm identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#realm-id) and a 3-character [instance type identifier](https://developer.salesforce.com/docs/commerce/commerce-api/guide/base-url.html#instance-id).
                  * @example f_ecom_zzxy_prd
                  */
                 organizationId: components["parameters"]["organizationId"];
