@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useMemo, type ReactElement, Suspense, useState, lazy } from 'react';
+import { useEffect, useMemo, type ReactElement, Suspense, useState, lazy, useCallback } from 'react';
 import { useOutletContext, Await, useFetcher, useRevalidator } from 'react-router';
 /** @sfdc-extension-line SFDC_EXT_CUSTOMER_PREFERENCES */
 import type { Route } from './+types/_app.account._index';
@@ -197,10 +197,10 @@ function AccountDetailsContent({
      * - Analytics tracking
      * - Cache invalidation
      */
-    const handleLoginSuccess = () => {
+    const handleLoginSuccess = useCallback(() => {
         // Revalidate to refresh customer data
         void revalidator.revalidate();
-    };
+    }, [revalidator]);
 
     /**
      * Handles login error after password update.
@@ -210,10 +210,10 @@ function AccountDetailsContent({
      * - Analytics tracking
      * - Custom error handling
      */
-    const handleLoginError = () => {
+    const handleLoginError = useCallback(() => {
         // Show error toast
         addToast(t('password.autoLoginFailed'), 'error');
-    };
+    }, [addToast, t]);
 
     /**
      * Handles profile toggle card edit action.
@@ -244,33 +244,48 @@ function AccountDetailsContent({
 
     // Watch updateEmailLoginFetcher for automatic login after email update
     // This fetcher is triggered by handleEmailSuccess when the user updates their email address.
+    const handleEmailLoginError = useCallback(() => {
+        addToast(t('email.autoLoginFailed'), 'error');
+    }, [addToast, t]);
+
     useFetcherEffect<unknown>(updateEmailLoginFetcher, {
         onSuccess: handleLoginSuccess,
-        onError: () => addToast(t('email.autoLoginFailed'), 'error'),
+        onError: handleEmailLoginError,
     });
 
     // Watch passwordResetFetcher for password reset email sending
-    useFetcherEffect<{ success?: boolean; error?: string }>(passwordResetFetcher, {
-        onSuccess: (data) => {
+    const handlePasswordResetSuccess = useCallback(
+        (data: { success?: boolean; error?: string } | undefined) => {
             if (data?.error) {
                 addToast(data.error, 'error');
             } else {
                 addToast(t('password.resetPasswordToast', { email: userInfo.email }), 'success');
             }
         },
-        onError: (error) => {
+        [addToast, t, userInfo.email]
+    );
+
+    const handlePasswordResetError = useCallback(
+        (error: string | string[]) => {
             const errorMessage = typeof error === 'string' ? error : t('password.resetPasswordFailed');
             addToast(errorMessage, 'error');
         },
+        [addToast, t]
+    );
+
+    useFetcherEffect<{ success?: boolean; error?: string }>(passwordResetFetcher, {
+        onSuccess: handlePasswordResetSuccess,
+        onError: handlePasswordResetError,
     });
 
     // Watch otpRequestFetcher for OTP send errors
-    useFetcherEffect<unknown>(otpRequestFetcher, {
-        onSuccess: () => {
-            // OTP sent successfully - modal is already open
-            setOtpError(undefined);
-        },
-        onError: (error) => {
+    const handleOtpRequestSuccess = useCallback(() => {
+        // OTP sent successfully - modal is already open
+        setOtpError(undefined);
+    }, []);
+
+    const handleOtpRequestError = useCallback(
+        (error: string | string[]) => {
             // OTP send failed - show error in modal or as toast
             const errorMessage = typeof error === 'string' ? error : t('email.otpSendFailed');
             setOtpError(errorMessage);
@@ -279,6 +294,12 @@ function AccountDetailsContent({
                 addToast(errorMessage, 'error');
             }
         },
+        [addToast, t, isOtpModalOpen]
+    );
+
+    useFetcherEffect<unknown>(otpRequestFetcher, {
+        onSuccess: handleOtpRequestSuccess,
+        onError: handleOtpRequestError,
     });
 
     /**

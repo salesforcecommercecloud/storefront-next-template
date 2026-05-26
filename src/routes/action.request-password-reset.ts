@@ -19,34 +19,29 @@ import { getLogger } from '@/lib/logger.server';
 import { extractErrorMessage, getPasswordResetErrorMessageKey } from '@/lib/auth/error-handler';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
-type RequestPasswordResetActionData = {
-    success?: boolean;
-    error?: string;
-};
-
 /**
  * Action endpoint for requesting a password reset email.
  * Used by account page when user without password clicks "Reset password".
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<RequestPasswordResetActionData> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     const logger = getLogger(context);
     const { t } = getTranslation(context);
     const formData = await request.formData();
     const email = formData.get('email')?.toString();
 
     if (!email) {
-        return { error: t('resetPassword:emailRequired') };
+        return Response.json({ error: t('resetPassword:emailRequired') });
     }
 
     try {
         // Send password reset token using SLAS and Marketing Cloud
         await getPasswordResetToken(context, { email });
         logger.info('RequestPasswordReset: reset token sent', { email });
-        return { success: true };
+        return Response.json({ success: true });
     } catch (error) {
         logger.error('RequestPasswordReset: failed', { error, email });
         const errorMessage = extractErrorMessage(error);
         const errorKey = getPasswordResetErrorMessageKey(errorMessage);
-        return { error: t(errorKey) };
+        return Response.json({ error: t(errorKey) });
     }
 }

@@ -45,7 +45,9 @@ describe('action.request-password-reset', () => {
 
         const result = await action({ request, context: mockContext, params: {} } as any);
 
-        expect(result).toEqual({ error: 'resetPassword:emailRequired' });
+        expect(result).toBeInstanceOf(Response);
+        const data = await result.json();
+        expect(data).toEqual({ error: 'resetPassword:emailRequired' });
         expect(mockT).toHaveBeenCalledWith('resetPassword:emailRequired');
     });
 
@@ -59,7 +61,9 @@ describe('action.request-password-reset', () => {
 
         const result = await action({ request, context: mockContext, params: {} } as any);
 
-        expect(result).toEqual({ success: true });
+        expect(result).toBeInstanceOf(Response);
+        const data = await result.json();
+        expect(data).toEqual({ success: true });
         expect(getPasswordResetToken).toHaveBeenCalledWith(mockContext, {
             email: 'test@example.com',
         });
@@ -79,7 +83,9 @@ describe('action.request-password-reset', () => {
 
         const result = await action({ request, context: mockContext, params: {} } as any);
 
-        expect(result).toHaveProperty('error');
+        expect(result).toBeInstanceOf(Response);
+        const data = await result.json();
+        expect(data).toHaveProperty('error');
         expect(mockLogger.error).toHaveBeenCalledWith('RequestPasswordReset: failed', {
             error,
             email: 'test@example.com',
@@ -97,7 +103,9 @@ describe('action.request-password-reset', () => {
 
         const result = await action({ request, context: mockContext, params: {} } as any);
 
-        expect(result).toHaveProperty('error');
+        expect(result).toBeInstanceOf(Response);
+        const data = await result.json();
+        expect(data).toHaveProperty('error');
         expect(mockLogger.error).toHaveBeenCalled();
     });
 
@@ -109,7 +117,9 @@ describe('action.request-password-reset', () => {
 
         const result = await action({ request, context: mockContext, params: {} } as any);
 
-        expect(result).toEqual({ error: 'resetPassword:emailRequired' });
+        expect(result).toBeInstanceOf(Response);
+        const data = await result.json();
+        expect(data).toEqual({ error: 'resetPassword:emailRequired' });
     });
 
     it('trims and validates email', async () => {
@@ -122,7 +132,9 @@ describe('action.request-password-reset', () => {
 
         const result = await action({ request, context: mockContext, params: {} } as any);
 
-        expect(result).toEqual({ success: true });
+        expect(result).toBeInstanceOf(Response);
+        const data = await result.json();
+        expect(data).toEqual({ success: true });
         expect(getPasswordResetToken).toHaveBeenCalledWith(mockContext, {
             email: '  test@example.com  ',
         });

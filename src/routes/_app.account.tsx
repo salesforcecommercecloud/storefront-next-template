@@ -98,6 +98,11 @@ export function shouldRevalidate({ defaultShouldRevalidate, formAction }: Should
         return false;
     }
 
+    // Defer revalidation for password reset action - no need to refetch customer data
+    if (formAction?.includes('/action/request-password-reset')) {
+        return false;
+    }
+
     return defaultShouldRevalidate;
 }
 
