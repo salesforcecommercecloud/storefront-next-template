@@ -82,6 +82,42 @@ describe('_app.account shouldRevalidate', () => {
 
         expect(result).toBe(false);
     });
+
+    test('returns false when formAction targets otp-verify', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/otp-verify',
+            defaultShouldRevalidate: true,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
+
+    test('returns false when formAction targets authorize-passwordless-email', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/authorize-passwordless-email',
+            defaultShouldRevalidate: true,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
+
+    test('returns false when formAction targets otp-request', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/otp-request',
+            defaultShouldRevalidate: true,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
+
+    test('returns false when formAction targets verify-passwordless-otp', () => {
+        const result = shouldRevalidate({
+            formAction: '/action/verify-passwordless-otp',
+            defaultShouldRevalidate: true,
+        } as unknown as ShouldRevalidateFunctionArgs);
+
+        expect(result).toBe(false);
+    });
 });
 
 describe('AccountPage layout', () => {

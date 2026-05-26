@@ -450,10 +450,7 @@ function AccountDetailsContent({
         setIsOtpModalOpen(false);
         setOtpError(undefined);
 
-        if (otpModalMode === 'reauthenticate') {
-            // After re-authentication with new email, revalidate to refresh customer data with new JWT
-            void revalidator.revalidate();
-        } else if (otpModalMode === 'verifyEmail') {
+        if (otpModalMode === 'reauthenticate' || otpModalMode === 'verifyEmail') {
             // After email verification, update badge optimistically
             setProfileOverride((prev) => ({ ...prev, emailVerified: true }));
         } else {

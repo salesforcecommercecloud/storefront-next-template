@@ -84,7 +84,17 @@ export function shouldRevalidate({ defaultShouldRevalidate, formAction }: Should
     }
 
     // Defer revalidation for OTP email verification so modal can close and email edit form can open
-    if (formAction?.includes('/action/otp-verify')) {
+    if (formAction?.includes('/action/otp-request') || formAction?.includes('/action/otp-verify')) {
+        return false;
+    }
+
+    // Defer revalidation when sending the passwordless OTP to the new email after an email change.
+    // We cannot revalidate until the user completes the verify-passwordless call and is reauthenticated
+    // with a new JWT scoped to the new email.
+    if (
+        formAction?.includes('/action/authorize-passwordless-email') ||
+        formAction?.includes('/action/verify-passwordless-otp')
+    ) {
         return false;
     }
 
