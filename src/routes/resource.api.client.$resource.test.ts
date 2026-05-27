@@ -16,6 +16,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { type RouterContextProvider } from 'react-router';
 import { encodeBase64Url } from '@/lib/url';
+import { encodeResource } from '@/lib/scapi/resource-encoding';
 import { action, loader, type ApiResponse } from './resource.api.client.$resource';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { ApiError } from '@/scapi';
@@ -483,10 +484,13 @@ describe('Commerce SDK resource', () => {
                 });
             });
 
-            it('should coerce known form fields to booleans and nullable numbers', async () => {
+            it('passes FormData fields through as raw strings without per-field coercion', async () => {
+                // FormData values are inherently strings; callers needing typed values (numbers,
+                // booleans, null) must submit JSON instead. The resource route does not bake in
+                // knowledge of specific SCAPI field schemas.
                 const formData = {
                     preferred: '1',
-                    gender: 'not-a-number',
+                    gender: '2',
                 };
 
                 const result = await action(createActionArgs(encodedValidActionResource, formData));
@@ -500,18 +504,63 @@ describe('Commerce SDK resource', () => {
                         path: { customerId: 'customer-123' },
                     },
                     body: {
-                        preferred: true,
-                        gender: null,
+                        preferred: '1',
+                        gender: '2',
                     },
                 });
             });
 
-            it('should convert an empty gender field to null', async () => {
-                const formData = {
-                    gender: '',
-                };
+            it('reads JSON body when Content-Type is application/json', async () => {
+                // JSON path used by useScapiFetch and form callers that need typed values
+                // (numbers, booleans, null) — body shape arrives as-is, no string coercion.
+                const resource = encodeResource('shopperCustomers', 'updateCustomer', {
+                    params: { path: { customerId: 'customer-123' } },
+                });
+                const request = new Request(`http://localhost/resource/api/client/${resource}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ firstName: 'Ada', gender: 2, preferred: true }),
+                });
 
-                const result = await action(createActionArgs(encodedValidActionResource, formData));
+                const result = await action({
+                    params: { resource },
+                    context: mockContextProvider,
+                    request,
+                    unstable_pattern: 'resource/api/client/:resource',
+                } as never);
+
+                expect(result).toEqual({
+                    success: true,
+                    data: mockActionResponseData,
+                });
+                // Typed values (number, boolean) survive the round-trip with no munging.
+                expect(mockShopperCustomersUpdateCustomer).toHaveBeenCalledWith({
+                    params: {
+                        path: { customerId: 'customer-123' },
+                    },
+                    body: { firstName: 'Ada', gender: 2, preferred: true },
+                });
+            });
+
+            it('passes JSON null values through to clear nullable fields', async () => {
+                // Callers can clear server-side fields by submitting JSON with explicit nulls
+                // (e.g., resetting `gender`). FormData cannot represent this — that's why
+                // typed mutations should use `encType: 'application/json'`.
+                const resource = encodeResource('shopperCustomers', 'updateCustomer', {
+                    params: { path: { customerId: 'customer-123' } },
+                });
+                const request = new Request(`http://localhost/resource/api/client/${resource}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ gender: null }),
+                });
+
+                const result = await action({
+                    params: { resource },
+                    context: mockContextProvider,
+                    request,
+                    unstable_pattern: 'resource/api/client/:resource',
+                } as never);
 
                 expect(result).toEqual({
                     success: true,
@@ -521,9 +570,7 @@ describe('Commerce SDK resource', () => {
                     params: {
                         path: { customerId: 'customer-123' },
                     },
-                    body: {
-                        gender: null,
-                    },
+                    body: { gender: null },
                 });
             });
         });

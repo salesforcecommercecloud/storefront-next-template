@@ -18,124 +18,39 @@ import { decodeBase64Url } from '@/lib/url';
 import { extractResponseError, getErrorMessage } from '@/lib/utils';
 import { createApiClients } from '@/lib/api-clients.server';
 import type { AppClients } from '@/scapi/custom-clients';
-import { ApiError, type OperationMethodsOnly } from '@/scapi';
+import { ApiError } from '@/scapi';
+import {
+    HELPER_NAMESPACES,
+    type ApiResponse,
+    type CommerceSdkKeyMap,
+    type CommerceSdkMethodName,
+    type CommerceSdkMethodParameters,
+    type CommerceSdkMethodReturnType,
+    type HelperNamespaceKeyMap,
+} from '@/lib/scapi/types';
 
 import type { Route } from './+types/resource.api.client.$resource';
 import { getLogger } from '@/lib/logger.server';
 
-/**
- * Single source of truth for which Clients namespaces are helpers.
- * Runtime allow-list that also drives the type-level allow-list below.
- * Prevents crafted URLs from accessing non-helper namespaces (e.g., shopperCustomers).
- *
- * To expose a new helper namespace via `useScapiFetcher('helpers', ...)`:
- *   1. Add the namespace to the `Clients` type in storefront-next-runtime/scapi
- *   2. Add it to this record — types and runtime validation update automatically
- *
- * `Pick<Clients, ...>` will error if a key here doesn't exist on `Clients`.
- */
-const HELPER_NAMESPACE_MAP = { auth: true, basket: true } as const;
-const HELPER_NAMESPACES = new Set(Object.keys(HELPER_NAMESPACE_MAP));
+// Re-export the foundational SCAPI types for backward compatibility with any
+// callers that still import from this route module. New code should import
+// directly from `@/lib/scapi/types`.
+export type {
+    ApiResponse,
+    CommerceSdkCtorFromKey,
+    CommerceSdkKeyMap,
+    CommerceSdkMethodName,
+    CommerceSdkMethodParameters,
+    CommerceSdkMethodReturnType,
+    HelperMethodName,
+    HelperMethodParameters,
+    HelperMethodReturnType,
+    HelperNamespaceKeyMap,
+    HelperNamespaces,
+} from '@/lib/scapi/types';
 
 // Proxy client members that are not SCAPI operations and must not be invocable from a crafted resource URL.
 const RESERVED_PROXY_MEMBERS = new Set(['use', 'eject']);
-
-/**
- * Keys for helper namespaces (e.g., 'auth', 'basket'), derived from the runtime allow-list.
- */
-export type HelperNamespaceKeyMap = keyof typeof HELPER_NAMESPACE_MAP;
-
-/**
- * Helper namespaces available on the Clients object from `@salesforce/storefront-next-runtime/scapi`.
- * Unlike SCAPI proxy clients (e.g. `shopperProducts`, `shopperCustomers`), helper namespaces
- * expose domain-specific utility methods that aren't direct 1:1 SCAPI endpoint proxies.
- */
-export type HelperNamespaces = Pick<AppClients, HelperNamespaceKeyMap>;
-
-/**
- * Type representing Commerce SDK client names (camelCase)
- * These are the keys from the app's merged client map, including custom clients.
- */
-export type CommerceSdkKeyMap = Exclude<keyof AppClients, 'use' | HelperNamespaceKeyMap>;
-
-/**
- * Type helper to get the client type from a client name
- */
-export type CommerceSdkCtorFromKey<C extends CommerceSdkKeyMap> = AppClients[C];
-
-/**
- * Type representing valid operation method names for a Commerce SDK client.
- * This relies on OperationMethodsOnly (from storefront-next-runtime) to exclude
- * 'use' and 'eject' methods. The intersection with keyof CommerceSdkCtorFromKey<C>
- * is needed for type inference, but TypeScript's intersection of keyof types can
- * reintroduce excluded keys, so we explicitly exclude them again as a safeguard.
- * @template C - The Commerce SDK client key
- */
-export type CommerceSdkMethodName<C extends CommerceSdkKeyMap> = Exclude<
-    keyof OperationMethodsOnly<CommerceSdkCtorFromKey<C>> & string & keyof CommerceSdkCtorFromKey<C>,
-    'use' | 'eject'
->;
-
-/**
- * Type helper to extract the return type of a Commerce SDK method.
- * @template C - The Commerce SDK client key
- * @template M - The method name on the Commerce SDK client
- */
-export type CommerceSdkMethodReturnType<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = ReturnType<
-    CommerceSdkCtorFromKey<C>[M] extends (...a: any[]) => any ? CommerceSdkCtorFromKey<C>[M] : never // eslint-disable-line @typescript-eslint/no-explicit-any
->;
-
-/**
- * Type helper to extract the parameters of a Commerce SDK method.
- * @template C - The Commerce SDK client key
- * @template M - The method name on the Commerce SDK client
- */
-export type CommerceSdkMethodParameters<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = Parameters<
-    CommerceSdkCtorFromKey<C>[M] extends (...a: any[]) => any ? CommerceSdkCtorFromKey<C>[M] : never // eslint-disable-line @typescript-eslint/no-explicit-any
->;
-
-/**
- * Type representing valid callable method names for a helper namespace.
- * Filters to only include functions (excludes sub-namespaces which are objects).
- * @template H - The helper namespace key
- */
-export type HelperMethodName<H extends HelperNamespaceKeyMap> = {
-    [K in keyof AppClients[H]]: AppClients[H][K] extends (...args: any[]) => any ? K : never; // eslint-disable-line @typescript-eslint/no-explicit-any
-}[keyof AppClients[H]] &
-    string;
-
-/**
- * Type helper to extract the return type of a helper method.
- * @template H - The helper namespace key
- * @template M - The method name on the helper namespace
- */
-export type HelperMethodReturnType<
-    H extends HelperNamespaceKeyMap,
-    M extends HelperMethodName<H>,
-> = M extends keyof AppClients[H] ? (AppClients[H][M] extends (...args: any[]) => infer R ? R : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-/**
- * Type helper to extract the parameters of a helper method.
- * @template H - The helper namespace key
- * @template M - The method name on the helper namespace
- */
-export type HelperMethodParameters<
-    H extends HelperNamespaceKeyMap,
-    M extends HelperMethodName<H>,
-> = M extends keyof AppClients[H] ? (AppClients[H][M] extends (...args: infer P) => any ? P : never) : never; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-/**
- * Structured response type for API operations
- * @template T - The type of data returned on success
- */
-export interface ApiResponse<T = unknown> {
-    /** Whether the operation was successful */
-    success: boolean;
-    /** Array of error messages if the operation failed */
-    errors?: string[];
-    /** Data returned on successful operation */
-    data?: T;
-}
 
 // Default empty array string for resource parameter fallback
 const DEFAULT_RESOURCE_ARRAY = '[]';
@@ -312,30 +227,33 @@ export async function action<
     }
 
     try {
-        // Extract form data from the request
-        const formData = await request.formData();
+        // Body extraction is content-type aware so the same action serves both clients:
+        //   - useScapiFetcher submits FormData (application/x-www-form-urlencoded / multipart)
+        //   - useScapiFetchClient/useScapiFetchHelper submit JSON (application/json)
+        // Match the bare MIME type (strip `; charset=utf-8`, etc.) so we don't accidentally
+        // route `application/json-patch+json` or other variants through the JSON branch.
+        const mimeType = (request.headers.get('content-type') ?? '').split(';')[0].trim();
+        let bodyData: Record<string, unknown>;
 
-        // Convert FormData to a plain object for the body
-        // Note: FormData converts all values to strings, so we need to convert known fields back to their proper types
-        const bodyData: Record<string, FormDataEntryValue | boolean | number | null> = {};
-        for (const [key, value] of formData.entries()) {
-            // Convert known boolean fields from string to boolean
-            if (key === 'preferred' && typeof value === 'string') {
-                bodyData[key] = value === 'true' || value === '1';
+        if (mimeType === 'application/json') {
+            // JSON path — body shape arrives as-is; no string→type coercion needed.
+            try {
+                bodyData = (await request.json()) as Record<string, unknown>;
+            } catch {
+                bodyData = {};
             }
-            // Convert known numeric fields from string to number, or null to clear
-            else if (key === 'gender' && typeof value === 'string') {
-                // If empty string, send null to clear the field; otherwise convert to number
-                // If parsing fails (NaN), treat as null to avoid sending invalid data
-                if (value === '') {
-                    bodyData[key] = null;
-                } else {
-                    const parsed = parseInt(value, 10);
-                    bodyData[key] = isNaN(parsed) ? null : parsed;
-                }
-            } else {
-                bodyData[key] = value;
+        } else {
+            // FormData path — pass values through as-is. Callers that need typed values
+            // (numbers, booleans, null) should submit a plain-object payload; useScapiFetcher
+            // auto-encodes plain objects as JSON so the request body is the source of truth
+            // for shape. Adding per-field coercion here is a magic side-channel that doesn't
+            // scale and would couple this generic resource route to specific SCAPI schemas.
+            const formData = await request.formData();
+            const formBody: Record<string, FormDataEntryValue> = {};
+            for (const [key, value] of formData.entries()) {
+                formBody[key] = value;
             }
+            bodyData = formBody;
         }
 
         const clients = createApiClients(context);

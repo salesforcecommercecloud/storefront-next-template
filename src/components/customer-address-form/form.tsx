@@ -214,7 +214,9 @@ export const CustomerAddressForm = ({
             addressData.stateCode = data.stateCode;
         }
 
-        // Submit the update request - response will be handled by parent component's fetcher effect
+        // Plain-object payloads are submitted as JSON by useScapiFetcher's auto-detect,
+        // so typed values (e.g., `preferred` as boolean) survive the round-trip without
+        // server-side per-field coercion. Response is handled by the parent's fetcher effect.
         void updateFetcher.submit(addressData);
     });
 

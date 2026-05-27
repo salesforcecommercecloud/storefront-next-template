@@ -19,16 +19,19 @@ import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WishlistButton } from './wishlist-button';
 
-let mockIsLoading = false;
-const mockToggleWishlist = vi.fn().mockResolvedValue(undefined);
-const mockIsItemInWishlist = vi.fn().mockReturnValue(false);
+let mockIsPending = false;
+const mockToggle = vi.fn().mockResolvedValue({ success: true, data: null });
+// `mockIsMember` survives as the source of truth for the per-product hook in
+// these tests; toast/analytics branches read it via useIsInWishlist below.
+const mockIsMember = vi.fn().mockReturnValue(false);
 
-vi.mock('@/hooks/use-wishlist', () => ({
-    useWishlist: () => ({
-        isLoading: mockIsLoading,
-        pendingOperation: null,
-        toggleWishlist: mockToggleWishlist,
-        isItemInWishlist: mockIsItemInWishlist,
+vi.mock('@/providers/wishlist', () => ({
+    useIsInWishlist: (productId: string | undefined) => (productId ? (mockIsMember(productId) as boolean) : false),
+    useWishlistActions: () => ({
+        add: vi.fn(),
+        remove: vi.fn(),
+        toggle: mockToggle,
+        isPending: mockIsPending,
     }),
 }));
 
@@ -38,6 +41,16 @@ vi.mock('@/hooks/check-and-execute-pending-action', () => ({
     useCheckAndExecutePendingAction: (opts: { onMatch: (params: Record<string, unknown>) => void }) => {
         capturedOnMatch = opts.onMatch;
     },
+}));
+
+// Pass-through useRequireAuth so the component runs the toggle action without an auth context.
+vi.mock('@/hooks/use-require-auth', () => ({
+    useRequireAuth: (fn: (...args: unknown[]) => Promise<unknown>) => fn,
+}));
+
+const mockAddToast = vi.fn();
+vi.mock('@/components/toast', () => ({
+    useToast: () => ({ addToast: mockAddToast }),
 }));
 
 vi.mock('../icons', () => ({
@@ -61,7 +74,7 @@ describe('WishlistButton — replaceState cleanup', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockIsLoading = false;
+        mockIsPending = false;
         capturedOnMatch = null;
         replaceStateSpy = vi.fn();
         vi.spyOn(window.history, 'replaceState').mockImplementation(replaceStateSpy);
@@ -84,12 +97,12 @@ describe('WishlistButton — replaceState cleanup', () => {
         expect(capturedOnMatch).toBeTruthy();
         act(() => capturedOnMatch?.({}));
 
-        // Transition isLoading to true
-        mockIsLoading = true;
+        // Transition isPending to true
+        mockIsPending = true;
         rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
-        // Transition isLoading to false — should trigger replaceState
-        mockIsLoading = false;
+        // Transition isPending to false — should trigger replaceState
+        mockIsPending = false;
         rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
         expect(replaceStateSpy).toHaveBeenCalledTimes(1);
@@ -107,10 +120,10 @@ describe('WishlistButton — replaceState cleanup', () => {
         // User clicks the heart (not via pending action)
         await userEvent.click(screen.getByRole('button'));
 
-        // Transition isLoading true→false
-        mockIsLoading = true;
+        // Transition isPending true→false
+        mockIsPending = true;
         rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-        mockIsLoading = false;
+        mockIsPending = false;
         rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
         expect(replaceStateSpy).not.toHaveBeenCalled();
@@ -125,9 +138,9 @@ describe('WishlistButton — replaceState cleanup', () => {
 
         act(() => capturedOnMatch?.({}));
 
-        mockIsLoading = true;
+        mockIsPending = true;
         rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-        mockIsLoading = false;
+        mockIsPending = false;
         rerender(<WishlistButton product={baseProduct} surface="pdp" />);
 
         expect(replaceStateSpy).toHaveBeenCalledTimes(1);
@@ -136,5 +149,68 @@ describe('WishlistButton — replaceState cleanup', () => {
         expect(replacedUrl).toContain('refine=color');
         expect(replacedUrl).not.toContain('action=');
         expect(replacedUrl).not.toContain('actionParams=');
+    });
+});
+
+describe('WishlistButton — toast UX', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockIsPending = false;
+        mockIsMember.mockReturnValue(false);
+        mockToggle.mockReset();
+    });
+
+    test('success add: shows addedToWishlist success toast', async () => {
+        mockIsMember.mockReturnValue(false);
+        mockToggle.mockResolvedValue({ success: true, data: null });
+
+        render(<WishlistButton product={baseProduct} surface="pdp" />);
+        await userEvent.click(screen.getByRole('button'));
+
+        expect(mockAddToast).toHaveBeenCalledTimes(1);
+        const [message, level] = mockAddToast.mock.calls[0];
+        expect(message).toBe('Added Test Shoe to wishlist.');
+        expect(level).toBe('success');
+    });
+
+    test('success remove: shows removedFromWishlist success toast', async () => {
+        mockIsMember.mockReturnValue(true);
+        mockToggle.mockResolvedValue({ success: true, data: null });
+
+        render(<WishlistButton product={baseProduct} surface="pdp" />);
+        await userEvent.click(screen.getByRole('button'));
+
+        expect(mockAddToast).toHaveBeenCalledTimes(1);
+        const [message, level] = mockAddToast.mock.calls[0];
+        expect(message).toBe('Removed from wishlist.');
+        expect(level).toBe('success');
+    });
+
+    test('failure add: shows failedToAddToWishlist error toast', async () => {
+        mockIsMember.mockReturnValue(false);
+        mockToggle.mockResolvedValue({ success: false, errors: ['Boom'] });
+
+        render(<WishlistButton product={baseProduct} surface="pdp" />);
+        await userEvent.click(screen.getByRole('button'));
+
+        expect(mockAddToast).toHaveBeenCalledTimes(1);
+        const [message, level] = mockAddToast.mock.calls[0];
+        expect(message).toBe('Failed to add item to wishlist.');
+        expect(level).toBe('error');
+    });
+
+    test('alreadyInWishlist signal: shows alreadyInWishlist info toast', async () => {
+        // wasInWishlist=false → would otherwise show addedToWishlist; the
+        // alreadyInWishlist signal in result.data must take precedence.
+        mockIsMember.mockReturnValue(false);
+        mockToggle.mockResolvedValue({ success: true, data: { alreadyInWishlist: true } });
+
+        render(<WishlistButton product={baseProduct} surface="pdp" />);
+        await userEvent.click(screen.getByRole('button'));
+
+        expect(mockAddToast).toHaveBeenCalledTimes(1);
+        const [message, level] = mockAddToast.mock.calls[0];
+        expect(message).toBe('Test Shoe is already in your wishlist.');
+        expect(level).toBe('info');
     });
 });

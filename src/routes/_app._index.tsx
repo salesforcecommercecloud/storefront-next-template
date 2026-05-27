@@ -19,6 +19,9 @@ import type { Route } from './+types/_app._index';
 import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { fetchCarouselProducts } from '@/components/product-carousel/loaders';
 import { fetchCategories } from '@/lib/api/categories.server';
+import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
+import { WishlistProvider } from '@/providers/wishlist';
 import { siteContext, resolvePrefix, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { Region } from '@/components/region';
 import PopularCategories from '@/components/home/popular-categories';
@@ -83,6 +86,7 @@ export type HomePageData = {
     page: ReturnType<typeof fetchPageWithComponentData>;
     searchResult: Promise<ShopperSearch.schemas['ProductSearchResult']>;
     categories: Promise<ShopperProducts.schemas['Category'][]>;
+    wishlistInitialState: Promise<WishlistInitialState>;
     pageUrl: string;
     ogImageUrl: string;
 };
@@ -125,6 +129,7 @@ export function loader(args: Route.LoaderArgs): HomePageData {
             currency: currency ?? undefined,
         }),
         categories: fetchCategories(args.context, 'root', 1),
+        wishlistInitialState: fetchWishlistInitialState(args.context),
         pageUrl,
         ogImageUrl: new URL(hero01, requestUrl.origin).href,
     };
@@ -186,112 +191,116 @@ export default function HomePage({ loaderData }: { loaderData: HomePageData }) {
     ];
 
     return (
-        <div className="pb-16 -mt-8">
-            <SeoMeta
-                rawTitle
-                title={t('meta.title', { defaultValue: 'NextGen PWA Kit Store' })}
-                description={t('meta.description', { defaultValue: 'Welcome to our web store for high performers!' })}
-                openGraph={{
-                    type: 'website',
-                    url: loaderData.pageUrl,
-                    image: loaderData.ogImageUrl,
-                }}
-            />
-            {/* Header Banner Region - Region component handles its own Suspense internally */}
-            <div>
+        <WishlistProvider initialState={loaderData.wishlistInitialState}>
+            <div className="pb-16 -mt-8">
+                <SeoMeta
+                    rawTitle
+                    title={t('meta.title', { defaultValue: 'NextGen PWA Kit Store' })}
+                    description={t('meta.description', {
+                        defaultValue: 'Welcome to our web store for high performers!',
+                    })}
+                    openGraph={{
+                        type: 'website',
+                        url: loaderData.pageUrl,
+                        image: loaderData.ogImageUrl,
+                    }}
+                />
+                {/* Header Banner Region - Region component handles its own Suspense internally */}
+                <div>
+                    <Region
+                        page={loaderData.page}
+                        regionId="headerbanner"
+                        fallbackElement={
+                            <>
+                                {/* Provide fallback skeletons for the above the fold content */}
+                                <HeroCarouselSkeleton showDots={true} showNavigation={true} />
+                                <ProductCarouselSkeleton title={t('featuredProducts.title')} />
+                            </>
+                        }
+                        errorElement={
+                            <>
+                                <HeroCarousel
+                                    slides={heroSlides}
+                                    autoPlay={true}
+                                    autoPlayInterval={6000}
+                                    showNavigation={true}
+                                    showDots={true}
+                                />
+
+                                {/* Featured Products */}
+                                <Suspense fallback={<ProductCarouselSkeleton title={t('featuredProducts.title')} />}>
+                                    <Await resolve={loaderData.searchResult} errorElement={<FeaturedProductsError />}>
+                                        {(searchResult) => (
+                                            <ProductCarouselWithData
+                                                data={searchResult}
+                                                title={t('featuredProducts.title')}
+                                                shopAllUrl="/category/root"
+                                                shopAllText={t('featuredProducts.shopAll')}
+                                            />
+                                        )}
+                                    </Await>
+                                </Suspense>
+                            </>
+                        }
+                    />
+                </div>
+
+                {/* Main Region - Region component handles its own Suspense internally */}
+                {/* Note: This region doesn't provide fallback skeletons right now as it's located below the fold */}
                 <Region
                     page={loaderData.page}
-                    regionId="headerbanner"
-                    fallbackElement={
-                        <>
-                            {/* Provide fallback skeletons for the above the fold content */}
-                            <HeroCarouselSkeleton showDots={true} showNavigation={true} />
-                            <ProductCarouselSkeleton title={t('featuredProducts.title')} />
-                        </>
-                    }
+                    regionId="main"
                     errorElement={
                         <>
-                            <HeroCarousel
-                                slides={heroSlides}
-                                autoPlay={true}
-                                autoPlayInterval={6000}
-                                showNavigation={true}
-                                showDots={true}
-                            />
+                            {/* Popular Categories - full-width section with its own gray bg and container */}
+                            <PopularCategories categoriesPromise={loaderData.categories} />
 
-                            {/* Featured Products */}
-                            <Suspense fallback={<ProductCarouselSkeleton title={t('featuredProducts.title')} />}>
-                                <Await resolve={loaderData.searchResult} errorElement={<FeaturedProductsError />}>
-                                    {(searchResult) => (
-                                        <ProductCarouselWithData
-                                            data={searchResult}
-                                            title={t('featuredProducts.title')}
-                                            shopAllUrl="/category/root"
-                                            shopAllText={t('featuredProducts.shopAll')}
+                            {/* Featured Content Cards - Static content */}
+                            <div className="pt-16">
+                                <div className="section-container">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <ContentCard
+                                            title={t('featuredContent.women.title')}
+                                            description={t('featuredContent.women.description')}
+                                            imageUrl={hero03}
+                                            imageAlt={t('featuredContent.women.imageAlt')}
+                                            buttonText={t('featuredContent.women.ctaText')}
+                                            buttonLink="/category/womens"
+                                            showBackground={false}
+                                            showBorder={false}
+                                            loading="lazy"
                                         />
-                                    )}
-                                </Await>
-                            </Suspense>
+                                        <ContentCard
+                                            title={t('featuredContent.men.title')}
+                                            description={t('featuredContent.men.description')}
+                                            imageUrl={hero04}
+                                            imageAlt={t('featuredContent.men.imageAlt')}
+                                            buttonText={t('featuredContent.men.ctaText')}
+                                            buttonLink="/category/mens"
+                                            showBackground={false}
+                                            showBorder={false}
+                                            loading="lazy"
+                                        />
+                                    </div>
+
+                                    {/* Text-only card below women/men cards */}
+                                    <div className="mt-16 max-w-4xl mx-auto layout-gutter text-center">
+                                        <ContentCard
+                                            title={t('featuredContent.styleForRealLife.title')}
+                                            description={t('featuredContent.styleForRealLife.description')}
+                                            showBackground={false}
+                                            showBorder={false}
+                                            cardFooterClassName="items-center text-center p-0"
+                                            cardDescriptionClassName="text-center"
+                                            className="[&_h3]:text-3xl [&_h3]:md:text-4xl [&_h3]:font-normal [&_h3]:text-brand-black [&_h3]:mb-6 [&_h3]:tracking-tight [&_p]:text-sm [&_p]:text-brand-gray-700 [&_p]:leading-relaxed [&_p]:font-normal [&_p:last-of-type]:text-base [&_p:last-of-type]:text-brand-gray-600"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </>
                     }
                 />
             </div>
-
-            {/* Main Region - Region component handles its own Suspense internally */}
-            {/* Note: This region doesn't provide fallback skeletons right now as it's located below the fold */}
-            <Region
-                page={loaderData.page}
-                regionId="main"
-                errorElement={
-                    <>
-                        {/* Popular Categories - full-width section with its own gray bg and container */}
-                        <PopularCategories categoriesPromise={loaderData.categories} />
-
-                        {/* Featured Content Cards - Static content */}
-                        <div className="pt-16">
-                            <div className="section-container">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <ContentCard
-                                        title={t('featuredContent.women.title')}
-                                        description={t('featuredContent.women.description')}
-                                        imageUrl={hero03}
-                                        imageAlt={t('featuredContent.women.imageAlt')}
-                                        buttonText={t('featuredContent.women.ctaText')}
-                                        buttonLink="/category/womens"
-                                        showBackground={false}
-                                        showBorder={false}
-                                        loading="lazy"
-                                    />
-                                    <ContentCard
-                                        title={t('featuredContent.men.title')}
-                                        description={t('featuredContent.men.description')}
-                                        imageUrl={hero04}
-                                        imageAlt={t('featuredContent.men.imageAlt')}
-                                        buttonText={t('featuredContent.men.ctaText')}
-                                        buttonLink="/category/mens"
-                                        showBackground={false}
-                                        showBorder={false}
-                                        loading="lazy"
-                                    />
-                                </div>
-
-                                {/* Text-only card below women/men cards */}
-                                <div className="mt-16 max-w-4xl mx-auto layout-gutter text-center">
-                                    <ContentCard
-                                        title={t('featuredContent.styleForRealLife.title')}
-                                        description={t('featuredContent.styleForRealLife.description')}
-                                        showBackground={false}
-                                        showBorder={false}
-                                        cardFooterClassName="items-center text-center p-0"
-                                        cardDescriptionClassName="text-center"
-                                        className="[&_h3]:text-3xl [&_h3]:md:text-4xl [&_h3]:font-normal [&_h3]:text-brand-black [&_h3]:mb-6 [&_h3]:tracking-tight [&_p]:text-sm [&_p]:text-brand-gray-700 [&_p]:leading-relaxed [&_p]:font-normal [&_p:last-of-type]:text-base [&_p:last-of-type]:text-brand-gray-600"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                }
-            />
-        </div>
+        </WishlistProvider>
     );
 }

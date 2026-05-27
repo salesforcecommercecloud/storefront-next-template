@@ -22,6 +22,9 @@ import { useTranslation } from 'react-i18next';
 import type { ShopperCustomers } from '@/scapi';
 import { fetchCustomerOrders, type CustomerOrdersResult } from '@/lib/api/order.server';
 import { getAuth } from '@/middlewares/auth.server';
+import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
+import { WishlistProvider } from '@/providers/wishlist';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -31,6 +34,7 @@ type AccountLayoutContext = {
 
 type OverviewLoaderData = {
     ordersPromise: Promise<CustomerOrdersResult>;
+    wishlistInitialState: Promise<WishlistInitialState>;
 };
 
 const RECENT_ORDERS_LIMIT = 5;
@@ -52,7 +56,7 @@ export function loader({ context }: Route.LoaderArgs): OverviewLoaderData {
         limit: RECENT_ORDERS_LIMIT,
     });
 
-    return { ordersPromise };
+    return { ordersPromise, wishlistInitialState: fetchWishlistInitialState(context) };
 }
 
 /**
@@ -67,10 +71,10 @@ export function loader({ context }: Route.LoaderArgs): OverviewLoaderData {
 export default function AccountOverviewRoute(): ReactElement {
     const { t } = useTranslation('account');
     const { customer: customerPromise } = useOutletContext<AccountLayoutContext>();
-    const { ordersPromise } = useLoaderData<typeof loader>();
+    const { ordersPromise, wishlistInitialState } = useLoaderData<typeof loader>();
 
     return (
-        <>
+        <WishlistProvider initialState={wishlistInitialState}>
             <SeoMeta title={t('meta.overviewTitle', { defaultValue: 'Account Overview' })} noIndex />
             <Suspense fallback={<AccountOverviewSkeleton />}>
                 <Await resolve={customerPromise}>
@@ -79,6 +83,6 @@ export default function AccountOverviewRoute(): ReactElement {
                     )}
                 </Await>
             </Suspense>
-        </>
+        </WishlistProvider>
     );
 }

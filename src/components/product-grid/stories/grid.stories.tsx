@@ -22,6 +22,8 @@ import type { ShopperSearch } from '@/scapi';
 import ProductGrid from '../grid';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
 const mockSite = mockSiteObject;
 import {
@@ -157,9 +159,11 @@ Features:
                     locale={mockLocale}
                     language={mockSiteObject.defaultLocale}
                     currency={mockSiteObject.defaultCurrency}>
-                    <div className="section-container py-8 bg-background">
-                        <Story />
-                    </div>
+                    <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                        <div className="section-container py-8 bg-background">
+                            <Story />
+                        </div>
+                    </WishlistProvider>
                 </SiteProvider>
             </ActionLogger>
         ),

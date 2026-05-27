@@ -19,6 +19,9 @@ import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@/scapi';
 import { fetchProductById } from '@/lib/api/products.server';
 import { fetchCategory } from '@/lib/api/categories.server';
+import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
+import { WishlistProvider } from '@/providers/wishlist';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import ProductView from '@/components/product-view';
@@ -109,6 +112,7 @@ export type ProductPageData = {
     pageKey: string;
     pageUrl: string;
     productSchema: Promise<ReturnType<typeof generateProductSchema> | null>;
+    wishlistInitialState: Promise<WishlistInitialState>;
     // @sfdc-extension-block-start SFDC_EXT_BNPL
     bnplMessage: Promise<BuyNowPayLaterMessageData>;
     bnplLearnMore: Promise<BuyNowPayLaterLearnMoreData>;
@@ -262,6 +266,7 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         pageKey: productId,
         pageUrl,
         productSchema: productSchemaPromise,
+        wishlistInitialState: fetchWishlistInitialState(context),
         // @sfdc-extension-block-start SFDC_EXT_BNPL
         bnplMessage: getBuyNowPayLaterMessage(productLookupId),
         bnplLearnMore: getBuyNowPayLaterLearnMore(productLookupId),
@@ -516,17 +521,21 @@ export default function ProductPage({ loaderData }: { loaderData: ProductPageDat
     const pageKey = loaderData.pageKey;
 
     return (
-        <Fragment key={pageKey}>
-            <ProductDetailView loaderData={loaderData} />
+        <WishlistProvider initialState={loaderData.wishlistInitialState}>
+            <Fragment key={pageKey}>
+                <ProductDetailView loaderData={loaderData} />
 
-            {/* Product JSON-LD Schema for SEO - render after page content so it appears at end of body flow.
-                JSON-LD is non-critical: errorElement renders nothing so a schema-generation failure
-                silently degrades to no <script> tag. */}
-            <Suspense fallback={null}>
-                <Await resolve={loaderData.productSchema} errorElement={null}>
-                    {(productSchema) => (productSchema ? <JsonLd data={productSchema} id="product-schema" /> : null)}
-                </Await>
-            </Suspense>
-        </Fragment>
+                {/* Product JSON-LD Schema for SEO - render after page content so it appears at end of body flow.
+                    JSON-LD is non-critical: errorElement renders nothing so a schema-generation failure
+                    silently degrades to no <script> tag. */}
+                <Suspense fallback={null}>
+                    <Await resolve={loaderData.productSchema} errorElement={null}>
+                        {(productSchema) =>
+                            productSchema ? <JsonLd data={productSchema} id="product-schema" /> : null
+                        }
+                    </Await>
+                </Suspense>
+            </Fragment>
+        </WishlistProvider>
     );
 }

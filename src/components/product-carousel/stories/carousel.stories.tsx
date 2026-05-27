@@ -24,6 +24,8 @@ import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import DynamicImageProvider from '@/providers/dynamic-image';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
 const mockSite = mockSiteObject;
 
@@ -83,9 +85,11 @@ const meta: Meta<typeof ProductCarousel> = {
                     currency={mockSiteObject.defaultCurrency}>
                     <ActionLogger>
                         <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
-                            <div className="p-8">
-                                <Story />
-                            </div>
+                            <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                                <div className="p-8">
+                                    <Story />
+                                </div>
+                            </WishlistProvider>
                         </DynamicImageProvider>
                     </ActionLogger>
                 </SiteProvider>

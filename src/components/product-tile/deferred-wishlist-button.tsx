@@ -16,6 +16,7 @@
 import { type ComponentProps, lazy, Suspense, useCallback, useState } from 'react';
 import { type WishlistButton } from '@/components/buttons/wishlist-button';
 import { HeartIcon } from '@/components/icons';
+import { useIsInWishlist } from '@/providers/wishlist';
 
 const LazyWishlistButton = lazy(() =>
     import('@/components/buttons/wishlist-button').then((m) => ({ default: m.WishlistButton }))
@@ -24,11 +25,21 @@ const LazyWishlistButton = lazy(() =>
 type WishlistButtonProps = ComponentProps<typeof WishlistButton>;
 
 /**
- * Deferred WishlistButton for product tiles. Renders a placeholder icon until the tile receives a pointer event, then
- * lazy-loads the real {@link WishlistButton} (with its heavy useWishlist / useRequireAuth hooks).
+ * Deferred WishlistButton for product tiles. Renders a placeholder icon until the tile receives a pointer event,
+ * then lazy-loads the real {@link WishlistButton} (with its useRequireAuth + pending-action machinery).
+ *
+ * The placeholder subscribes to wishlist membership via context so the heart paints filled on first SSR render
+ * for items already in the shopper's wishlist. The original deferral existed to skip the per-tile `useFetcher`
+ * pair (×2) used by the legacy `useWishlist` hook; the provider now hosts a single shared SCAPI fetch pair, so
+ * a context read here is cheap. The lazy boundary still defers the interactive hooks (`useRequireAuth`,
+ * `useCheckAndExecutePendingAction`, `useToast`) until pointer enter.
  */
 export function DeferredWishlistButton(props: WishlistButtonProps) {
     const [loaded, setLoaded] = useState(false);
+    const productId = props.variant?.productId || props.product.productId;
+    // Per-product subscription via useSyncExternalStore — only re-renders when
+    // *this* tile's entry changes, never on unrelated wishlist updates.
+    const inWishlist = useIsInWishlist(productId);
 
     const handlePointerEnter = useCallback(() => {
         if (!loaded) {
@@ -38,7 +49,15 @@ export function DeferredWishlistButton(props: WishlistButtonProps) {
 
     if (loaded) {
         return (
-            <Suspense fallback={<HeartIcon size={props.size} className={props.className} tabIndex={props.tabIndex} />}>
+            <Suspense
+                fallback={
+                    <HeartIcon
+                        isFilled={inWishlist}
+                        size={props.size}
+                        className={props.className}
+                        tabIndex={props.tabIndex}
+                    />
+                }>
                 <LazyWishlistButton {...props} />
             </Suspense>
         );
@@ -46,6 +65,7 @@ export function DeferredWishlistButton(props: WishlistButtonProps) {
 
     return (
         <HeartIcon
+            isFilled={inWishlist}
             size={props.size}
             className={props.className}
             tabIndex={props.tabIndex}

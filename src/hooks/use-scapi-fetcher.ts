@@ -18,51 +18,21 @@ import { useFetcher, type FetcherWithComponents, type FetcherSubmitOptions, type
 import type {
     CommerceSdkKeyMap,
     CommerceSdkMethodName,
-    CommerceSdkMethodReturnType,
-    CommerceSdkMethodParameters,
     HelperNamespaceKeyMap,
     HelperMethodName,
-    HelperMethodReturnType,
     HelperMethodParameters,
     ApiResponse,
-} from '@/routes/resource.api.client.$resource';
-import { encodeBase64Url } from '@/lib/url';
-
-// API route for Commerce SDK resource endpoints
-const RESOURCE_API_ROUTE = '/resource/api/client';
-
-/**
- * Unwraps the payload type from our ApiResponse wrapper or the SCAPI client shape `{ data, response }`.
- * The second branch matches the openapi-fetch response shape exposed by the proxied Commerce SDK clients.
- */
-type UnwrapApiResponse<T> = T extends ApiResponse<infer P> ? P : T extends { data: infer P; response: unknown } ? P : T;
-
-/** Infers the argument signature for a given Commerce SDK client and method */
-type CommerceSdkMethodArgs<
-    C extends CommerceSdkKeyMap,
-    M extends CommerceSdkMethodName<C>,
-> = CommerceSdkMethodParameters<C, M>[0];
-
-/** Extracts the request body type from a Commerce SDK method, or undefined for no-body operations */
-type CommerceSdkMethodBody<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> =
-    CommerceSdkMethodArgs<C, M> extends { body: infer B } ? B : undefined;
-
-/** Resolves the return payload type for a given Commerce SDK client and method */
-type CommerceSdkMethodPayload<C extends CommerceSdkKeyMap, M extends CommerceSdkMethodName<C>> = UnwrapApiResponse<
-    Awaited<CommerceSdkMethodReturnType<C, M>>
->;
-
-/** Infers the first argument type for a helper method */
-type HelperMethodArgs<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> = HelperMethodParameters<H, M>[0];
-
-/** Extracts the request body type from a helper method, or undefined for no-body operations */
-type HelperMethodBody<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> =
-    HelperMethodArgs<H, M> extends { body: infer B } ? B : undefined;
-
-/** Resolves the return payload type for a helper method */
-type HelperMethodPayload<H extends HelperNamespaceKeyMap, M extends HelperMethodName<H>> = Awaited<
-    HelperMethodReturnType<H, M>
->;
+} from '@/lib/scapi/types';
+import { encodeResource, RESOURCE_API_ROUTE } from '@/lib/scapi/resource-encoding';
+import type {
+    CommerceSdkMethodArgs,
+    CommerceSdkMethodBody,
+    CommerceSdkMethodPayload,
+    HelperMethodArgs,
+    HelperMethodBody,
+    HelperMethodPayload,
+    UnwrapApiResponse,
+} from '@/lib/scapi/method-types';
 
 /**
  * Custom fetcher interface for Commerce SDK operations.
@@ -225,16 +195,13 @@ export function useScapiFetcher(
         return prevMethodParamsRef.current;
     }, [optionsString]);
 
-    // Build the resource encoding
+    // Build the resource encoding via shared util.
     const resource = isHelper
-        ? encodeBase64Url(
-              JSON.stringify([
-                  'helpers',
-                  methodOrNamespace,
-                  { helperName: optionsOrMethod as string, ...(methodParams as Record<string, unknown>) },
-              ])
-          )
-        : encodeBase64Url(JSON.stringify([clientOrHelpers, methodOrNamespace, methodParams]));
+        ? encodeResource('helpers', methodOrNamespace, {
+              helperName: optionsOrMethod as string,
+              ...(methodParams as Record<string, unknown>),
+          })
+        : encodeResource(clientOrHelpers, methodOrNamespace, methodParams);
 
     const fetcher = useFetcher<ApiResponse<unknown>>({ key: resource });
 
@@ -255,17 +222,34 @@ export function useScapiFetcher(
      * This method invokes the fetcher's submit method which triggers the action/clientAction functions on the server.
      * The response data will be available in fetcher.data once the request completes.
      *
+     * Encoding is auto-picked from the payload shape so callers don't have to specify it:
+     * plain-object payloads are submitted as `application/json` (so numbers/booleans/null
+     * survive intact end-to-end); `FormData` / `HTMLFormElement` / `URLSearchParams` payloads
+     * use the default `application/x-www-form-urlencoded` / `multipart/form-data`. Pass an
+     * explicit `encType` in `opts` to override.
+     *
      * @param target - The data to submit (plain object, FormData, or HTMLFormElement). If not provided, an empty object is used.
      * @param opts - Optional configuration
      * @returns Promise that resolves when the request completes
      */
     const submit = useCallback(
         (payload?: unknown, _opts?: Omit<FetcherSubmitOptions, 'action' | 'method'>): Promise<void> => {
-            // Invoke fetcher submit method for actions with the provided target data
+            // Default to JSON encoding for plain-object payloads so typed values (numbers,
+            // booleans, null) survive the round-trip without string→type coercion in the
+            // server action. FormData / HTMLFormElement / URLSearchParams payloads keep
+            // their native encoding (form-urlencoded). Callers can still override via
+            // `_opts.encType`.
+            const isFormPayload =
+                (typeof FormData !== 'undefined' && payload instanceof FormData) ||
+                (typeof HTMLFormElement !== 'undefined' && payload instanceof HTMLFormElement) ||
+                (typeof URLSearchParams !== 'undefined' && payload instanceof URLSearchParams);
+            const encType = _opts?.encType ?? (isFormPayload ? undefined : 'application/json');
+
             return fetcher.submit((payload ?? {}) as SubmitTarget, {
                 ..._opts,
                 method: 'POST',
                 action: `${RESOURCE_API_ROUTE}/${resource}`,
+                ...(encType ? { encType } : {}),
             });
         },
         [fetcher, resource]

@@ -520,6 +520,22 @@ class AccountAddressesPage {
     }
 
     /**
+     * Wait for an address card with the given name to disappear from the DOM.
+     *
+     * Used after delete-address actions where `revalidator.revalidate()` fires alongside
+     * the success toast — the toast appears before the network refetch resolves, so a
+     * single immediate DOM check can race the stale render. Playwright's auto-wait
+     * polls until the element is gone or the timeout elapses.
+     *
+     * @param name - Customer name on the address card (e.g., "John Doe")
+     * @param timeout - Seconds to wait (default: 5)
+     */
+    waitForAddressRemoved(name: string, timeout: number = 5): void {
+        const nameLocator = locate('[data-slot="card"]').find('p.font-medium').withText(name);
+        I.waitForInvisible(nameLocator, timeout);
+    }
+
+    /**
      * Return the current browser URL
      * @returns Promise<string> - Current page URL
      */

@@ -18,6 +18,8 @@ import { DeferredWishlistButton } from '../deferred-wishlist-button';
 import { mockProductSearchItem } from '../../__mocks__/product-search-hit-data';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
 const meta: Meta<typeof DeferredWishlistButton> = {
     title: 'Components/ProductTile/DeferredWishlistButton',
@@ -29,9 +31,11 @@ const meta: Meta<typeof DeferredWishlistButton> = {
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <div className="relative w-64 h-64">
-                    <Story />
-                </div>
+                <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                    <div className="relative w-64 h-64">
+                        <Story />
+                    </div>
+                </WishlistProvider>
             </ConfigProvider>
         ),
     ],

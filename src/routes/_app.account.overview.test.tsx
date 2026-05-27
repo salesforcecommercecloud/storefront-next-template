@@ -48,6 +48,12 @@ vi.mock('@/middlewares/auth.server', () => ({
     getAuth: vi.fn(() => ({ customerId: 'cust-123' })),
 }));
 
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() =>
+        Promise.resolve({ customerId: null, listId: null, itemsByProductId: new Map() })
+    ),
+}));
+
 const mockCustomer = {
     customerId: 'cust-123',
     firstName: 'Jane',
@@ -108,6 +114,11 @@ describe('Account Overview page', () => {
                                 element: <AccountOverviewRoute />,
                                 loader: () => ({
                                     ordersPromise: Promise.resolve(mockOrdersResult),
+                                    wishlistInitialState: Promise.resolve({
+                                        customerId: null,
+                                        listId: null,
+                                        itemsByProductId: new Map(),
+                                    }),
                                 }),
                             },
                         ],

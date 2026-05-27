@@ -20,6 +20,9 @@ import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { fetchSearchProducts } from '@/lib/api/search.server';
+import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
+import { WishlistProvider } from '@/providers/wishlist';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
@@ -92,6 +95,7 @@ type CategoryPageData = {
     locale: string;
     initialFiltersOpen?: boolean;
     categorySchema: Promise<ReturnType<typeof generateCategorySchema> | null>;
+    wishlistInitialState: Promise<WishlistInitialState>;
 };
 
 /**
@@ -219,6 +223,7 @@ export async function loader(args: Route.LoaderArgs): Promise<CategoryPageData> 
         locale,
         initialFiltersOpen,
         categorySchema: categorySchemaPromise,
+        wishlistInitialState: fetchWishlistInitialState(args.context),
     };
 }
 
@@ -283,6 +288,7 @@ export default function CategoryPage({
         currency,
         initialFiltersOpen,
         categorySchema,
+        wishlistInitialState,
     },
 }: {
     loaderData: CategoryPageData;
@@ -374,7 +380,7 @@ export default function CategoryPage({
     );
 
     return (
-        <>
+        <WishlistProvider initialState={wishlistInitialState}>
             <SeoMeta
                 title={category.name || category.id}
                 description={category.pageDescription || category.description}
@@ -480,6 +486,6 @@ export default function CategoryPage({
             <Suspense fallback={null}>
                 <CategoryJsonLd categorySchemaPromise={categorySchema} />
             </Suspense>
-        </>
+        </WishlistProvider>
     );
 }

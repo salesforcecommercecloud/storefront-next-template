@@ -17,15 +17,75 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { WishlistButton } from '../wishlist-button';
 import { mockProductSearchItem } from '@/components/__mocks__/product-search-hit-data';
 import { HeartIcon } from '../../icons';
-import { useEffect, useRef, useState, type ReactNode, type ReactElement } from 'react';
+import { action } from 'storybook/actions';
+import { useEffect, useMemo, useRef, useState, type ReactNode, type ReactElement } from 'react';
 
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
+
+const WISHLIST_HARNESS_ATTR = 'data-wishlist-harness';
 
 function WishlistStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    return <ConfigProvider config={mockConfig}>{children}</ConfigProvider>;
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const logToggle = useMemo(() => action('wishlist-toggle'), []);
+    const logHover = useMemo(() => action('wishlist-hovered'), []);
+
+    const configValue = useMemo(() => mockConfig, []);
+
+    useEffect(() => {
+        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${WISHLIST_HARNESS_ATTR}]`));
+
+        const handleClick = (event: MouseEvent) => {
+            const button = (event.target as HTMLElement | null)?.closest('button');
+            if (!button || !(button instanceof HTMLButtonElement) || !isInsideHarness(button)) {
+                return;
+            }
+            const label = button.getAttribute('aria-label') ?? button.textContent ?? '';
+            const trimmed = label.trim();
+            if (!trimmed) {
+                return;
+            }
+            logToggle({ label: trimmed });
+        };
+
+        const handleMouseOver = (event: MouseEvent) => {
+            const button = (event.target as HTMLElement | null)?.closest('button');
+            if (!button || !(button instanceof HTMLButtonElement) || !isInsideHarness(button)) {
+                return;
+            }
+            const related = event.relatedTarget as HTMLElement | null;
+            if (related && button.contains(related)) {
+                return;
+            }
+            const label = button.getAttribute('aria-label') ?? button.textContent ?? '';
+            const trimmed = label.trim();
+            if (!trimmed) {
+                return;
+            }
+            logHover({ label: trimmed });
+        };
+
+        document.addEventListener('click', handleClick, true);
+        document.addEventListener('mouseover', handleMouseOver, true);
+        return () => {
+            document.removeEventListener('click', handleClick, true);
+            document.removeEventListener('mouseover', handleMouseOver, true);
+        };
+    }, [logToggle, logHover]);
+
+    return (
+        <ConfigProvider config={configValue}>
+            <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                <div ref={containerRef} {...{ [WISHLIST_HARNESS_ATTR]: 'true' }}>
+                    {children}
+                </div>
+            </WishlistProvider>
+        </ConfigProvider>
+    );
 }
 
 const meta: Meta<typeof WishlistButton> = {
@@ -129,8 +189,14 @@ function ProductCard({ product }) {
                 defaultValue: { summary: "'md'" },
             },
         },
-        // `className` is utility-class noise — Designer-Friendly Input Rule.
-        className: { control: false, table: { disable: true } },
+        className: {
+            control: 'text',
+            description: 'Additional CSS classes for styling',
+            table: {
+                type: { summary: 'string' },
+                defaultValue: { summary: 'undefined' },
+            },
+        },
         product: { control: false, table: { disable: true } },
         variant: { control: false, table: { disable: true } },
         surface: { control: false, table: { disable: true } },

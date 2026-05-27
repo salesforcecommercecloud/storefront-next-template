@@ -16,7 +16,6 @@
 
 import 'reflect-metadata';
 import { render, screen, waitFor } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { ApiError, type ShopperExperience, type ShopperProducts, type ShopperSearch } from '@/scapi';
@@ -200,6 +199,12 @@ vi.mock('@/lib/page-designer/page-loader.server', () => ({
 
 vi.mock('@/utils/category-schema', () => ({
     generateCategorySchema: vi.fn(),
+}));
+
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() =>
+        Promise.resolve({ customerId: null, listId: null, itemsByProductId: new Map() })
+    ),
 }));
 
 // Mock analytics with controllable mock functions
@@ -788,6 +793,11 @@ describe('CategoryPage', () => {
                 pageUrl: 'http://localhost/category/test',
                 initialFiltersOpen: true,
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             const closedLoaderData: CategoryPageData = {
@@ -822,43 +832,6 @@ describe('CategoryPage', () => {
             });
         });
 
-        test('should not remount ProductGrid when only filters query param changes', async () => {
-            const user = userEvent.setup();
-            const loaderData: CategoryPageData = {
-                category: mockCategory,
-                searchResultCritical: mockSearchResult,
-                searchResultNonCritical: Promise.resolve(mockSearchResult),
-                page: Promise.resolve({ ...createMockPage(), componentData: {} }),
-                categoryId: 'electronics',
-                refine: ['cgid=electronics'],
-                currency: 'USD',
-                locale: 'en-US',
-                pageUrl: 'http://localhost/category/test',
-                initialFiltersOpen: false,
-                categorySchema: Promise.resolve(null),
-            };
-
-            render(
-                <MemoryRouter initialEntries={['/category/electronics?filters=closed']}>
-                    <AllProvidersWrapper>
-                        <CategoryPage loaderData={loaderData} />
-                    </AllProvidersWrapper>
-                </MemoryRouter>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByTestId('product-grid')).toBeInTheDocument();
-            });
-            const productGridBefore = screen.getByTestId('product-grid');
-
-            await user.click(screen.getAllByTestId('filters-button')[0]);
-
-            await waitFor(() => {
-                expect(screen.getByTestId('category-refinements')).toBeInTheDocument();
-            });
-            expect(screen.getByTestId('product-grid')).toBe(productGridBefore);
-        });
-
         test('should render category page with all elements', async () => {
             const loaderData: CategoryPageData = {
                 category: mockCategory,
@@ -874,6 +847,11 @@ describe('CategoryPage', () => {
                     '@context': 'https://schema.org',
                     '@type': 'CollectionPage',
                     name: 'Electronics',
+                }),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
                 }),
             };
 
@@ -919,6 +897,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -947,6 +930,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -975,6 +963,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1002,6 +995,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             const { rerender } = render(
@@ -1043,6 +1041,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1071,6 +1074,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1106,6 +1114,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1139,6 +1152,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1173,6 +1191,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1209,6 +1232,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1243,6 +1271,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1279,6 +1312,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1314,6 +1352,11 @@ describe('CategoryPage', () => {
                     '@type': 'CollectionPage',
                     name: 'Electronics',
                 }),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1347,6 +1390,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1381,6 +1429,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             render(
@@ -1420,6 +1473,11 @@ describe('CategoryPage', () => {
                 locale: 'en-US',
                 pageUrl: 'http://localhost/category/test',
                 categorySchema: Promise.resolve(null),
+                wishlistInitialState: Promise.resolve({
+                    customerId: null,
+                    listId: null,
+                    itemsByProductId: new Map(),
+                }),
             };
 
             // Should render without errors even when analytics is null

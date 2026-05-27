@@ -38,6 +38,12 @@ vi.mock('@/lib/cart/cart-wishlist.server', () => ({
     fetchWishlistProductIdsForCart: vi.fn(),
 }));
 
+vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
+    fetchWishlistInitialState: vi.fn(() =>
+        Promise.resolve({ customerId: null, listId: null, itemsByProductId: new Map() })
+    ),
+}));
+
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 vi.mock('@/extensions/bopis/lib/api/stores.server', () => ({
     fetchStoresForBasket: vi.fn(),

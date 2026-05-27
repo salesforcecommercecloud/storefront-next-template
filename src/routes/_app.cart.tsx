@@ -29,6 +29,9 @@ import { getBasket, getBasketSnapshot, type BasketSnapshot } from '@/middlewares
 import { fetchProductsInBasket } from '@/lib/cart/basket-products.server';
 import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
 import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
+import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
+import type { WishlistInitialState } from '@/lib/wishlist/state';
+import { WishlistProvider } from '@/providers/wishlist';
 
 // Components
 import CartSkeleton from '@/components/cart/cart-skeleton';
@@ -61,6 +64,7 @@ type CartPageData = {
         storesByStoreId: Record<string, ShopperStores.schemas['Store']>;
     }>;
     wishlistProductIdsPromise: Promise<string[]>;
+    wishlistInitialState: Promise<WishlistInitialState>;
     basketSnapshot: BasketSnapshot | null;
     pageUrl: string;
 };
@@ -112,6 +116,7 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
     return {
         basketDataPromise,
         wishlistProductIdsPromise,
+        wishlistInitialState: fetchWishlistInitialState(context),
         basketSnapshot: getBasketSnapshot(context),
         pageUrl,
     };
@@ -147,8 +152,14 @@ export default function Cart(): ReactElement {
     // instances (wishlist toggle, quantity update) get orphaned.
     const [pinnedWishlistPromise] = useState(() => pageData.wishlistProductIdsPromise);
 
+    // Same rationale for the new wishlist provider's initial-state seed: pin so cart
+    // revalidations (basket mutations re-run the loader and produce a fresh Promise
+    // identity) don't re-trigger the provider's hydration effect and clobber any
+    // post-hydration optimistic state.
+    const [pinnedWishlistInitialState] = useState(() => pageData.wishlistInitialState);
+
     return (
-        <>
+        <WishlistProvider initialState={pinnedWishlistInitialState}>
             <SeoMeta
                 title={t('meta.title', { defaultValue: 'Cart' })}
                 description={t('meta.description', {
@@ -171,7 +182,7 @@ export default function Cart(): ReactElement {
                     )}
                 </Await>
             </Suspense>
-        </>
+        </WishlistProvider>
     );
 }
 

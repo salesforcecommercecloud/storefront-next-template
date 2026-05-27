@@ -23,6 +23,8 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import { WishlistProvider } from '@/providers/wishlist';
+import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
 
 const mockSite = mockSiteObject;
 
@@ -99,11 +101,13 @@ const meta: Meta<typeof ProductView> = {
                         locale={mockLocale}
                         language={mockSiteObject.defaultLocale}
                         currency={mockSiteObject.defaultCurrency}>
-                        <ActionLogger>
-                            <div className="section-container py-4">
-                                <Story />
-                            </div>
-                        </ActionLogger>
+                        <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                            <ActionLogger>
+                                <div className="section-container py-4">
+                                    <Story />
+                                </div>
+                            </ActionLogger>
+                        </WishlistProvider>
                     </SiteProvider>
                 </ConfigProvider>
             );

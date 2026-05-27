@@ -145,15 +145,23 @@ export const CustomerProfileForm = ({
      * @param data.birthday - The customer's date of birth
      */
     const handleSubmit = form.handleSubmit((data) => {
-        // Prepare customer data in the format expected by Commerce SDK
-        // Only include fields that have values to avoid sending empty strings
-        const customerUpdateData: Record<string, string | number> = {
+        // Prepare customer data in the format expected by Commerce SDK.
+        // Submitting as JSON preserves typed values (e.g., `gender` as `number | null`)
+        // so the action route doesn't need ad-hoc per-field string→type coercion.
+        const customerUpdateData: Record<string, string | number | null> = {
             firstName: data.firstName,
             lastName: data.lastName,
         };
 
-        // Add optional fields if they have values
-        customerUpdateData.gender = data.gender ?? '';
+        // `gender` is optional on the SCAPI customer schema and typed as a number.
+        // Convert empty string to `null` to clear the field; otherwise parse to number.
+        // If parsing fails, send `null` rather than NaN.
+        if (data.gender === undefined || data.gender === '') {
+            customerUpdateData.gender = null;
+        } else {
+            const parsed = parseInt(data.gender, 10);
+            customerUpdateData.gender = Number.isNaN(parsed) ? null : parsed;
+        }
 
         // Phone is editable and optional - include if provided
         if (data.phone) {
@@ -165,7 +173,9 @@ export const CustomerProfileForm = ({
         // Now we no longer pass in an empty string, but skipping it instead.
         if (data.birthday) customerUpdateData.birthday = data.birthday;
 
-        // Submit the update request - response will be handled by useScapiFetcherEffect
+        // Plain-object payloads are submitted as JSON by useScapiFetcher's auto-detect,
+        // so typed values (numbers, nulls, booleans) survive the round-trip end-to-end
+        // without server-side per-field coercion. Response is handled by useScapiFetcherEffect.
         void updateFetcher.submit(customerUpdateData);
     });
 

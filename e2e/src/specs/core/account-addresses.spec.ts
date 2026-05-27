@@ -464,7 +464,9 @@ Scenario('Deleting default address auto-promotes remaining address', async () =>
     // Verify success toast
     accountAddressesPage.validateSuccessToast();
 
-    // Verify address removed
+    // Verify address removed — waits for the card to disappear after the toast fires,
+    // since revalidate() resolves slightly after the toast renders.
+    accountAddressesPage.waitForAddressRemoved(addressNameToDelete);
     const addressExists = await accountAddressesPage.addressExistsByName(addressNameToDelete);
     expect(addressExists, 'Default address should be removed').to.be.false;
 
