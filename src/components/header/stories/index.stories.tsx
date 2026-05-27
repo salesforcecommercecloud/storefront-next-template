@@ -46,6 +46,14 @@ function HeaderHarness({ authenticated }: HeaderStoryArgs): ReactElement {
     );
 }
 
+function CheckoutHeaderHarness(): ReactElement {
+    return (
+        <AuthProvider value={guestSession}>
+            <Header variant="checkout" />
+        </AuthProvider>
+    );
+}
+
 const meta: Meta<HeaderStoryArgs> = {
     title: 'LAYOUT/Header',
     tags: ['autodocs', 'interaction'],
@@ -54,7 +62,7 @@ const meta: Meta<HeaderStoryArgs> = {
         docs: {
             description: {
                 component:
-                    'Top application header with brand, search, user actions, store locator, and cart, plus the responsive mega-menu navigation. Toggle **authenticated** in the controls panel to switch between guest (Sign In link) and registered (My Account link) states.',
+                    'Top application header with brand, search, user actions, store locator, and cart, plus the responsive mega-menu navigation. Toggle **authenticated** in the controls panel to switch between guest (Sign In link) and registered (My Account link) states. The `variant="checkout"` prop renders a stripped-down version (logo + cart only) used on checkout pages — see the `CheckoutVariant` story.',
             },
         },
     },
@@ -106,6 +114,33 @@ const mobileViewport = {
     name: 'iPhone',
     styles: { width: '375px', height: '844px' },
     type: 'mobile' as const,
+};
+
+/**
+ * `variant="checkout"` strips the header down to just the logo + cart badge.
+ * Search, user actions, wishlist, and the navigation menu are all removed so the
+ * checkout flow gets a distraction-free top bar. Used by `_checkout.tsx`.
+ */
+export const CheckoutVariant: Story = {
+    parameters: {
+        // Same Suspense/Await snapshot caveat as Default.
+        snapshot: false,
+        docs: {
+            description: {
+                story: 'Checkout header — logo + cart only. No search, user actions, wishlist, or navigation menu.',
+            },
+        },
+    },
+    render: () => <CheckoutHeaderHarness />,
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByTestId('header-logo')).toBeInTheDocument();
+        await expect(canvas.queryByRole('combobox')).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('link', { name: /sign in/i })).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('link', { name: /wishlist/i })).not.toBeInTheDocument();
+    },
 };
 
 export const MobileView: Story = {

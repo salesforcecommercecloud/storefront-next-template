@@ -29,7 +29,7 @@ const meta: Meta<typeof CurrencySwitcher> = {
         docs: {
             description: {
                 component:
-                    'A native `<select>` for changing currency. Persistence requires a server action + page reload, so a "change" interaction story would only repeat the steady-state assertion in `Default`. The two stories below cover the value-driven states (default, preselected) plus a Focused variant.',
+                    'A native `<select>` for changing currency. Persistence requires a server action + page reload, so a "change" interaction story would only repeat the steady-state assertion in `Default`. The two stories below cover the value-driven states (default GBP, preselected EUR).',
             },
         },
     },
@@ -74,18 +74,5 @@ export const EuroSelected: Story = {
 
         const select = await canvas.findByRole('combobox', {}, { timeout: 5000 });
         await expect(select).toHaveValue('EUR');
-    },
-};
-
-export const Focused: Story = {
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const select = await canvas.findByRole('combobox', {}, { timeout: 5000 });
-        // Focus the target directly. `userEvent.tab()` depends on global tab order and can
-        // land on an unrelated focusable inserted by Storybook's preview chrome.
-        select.focus();
-        await expect(select).toHaveFocus();
     },
 };

@@ -50,7 +50,7 @@ const meta: Meta<FooterStoryArgs> = {
         docs: {
             description: {
                 component:
-                    'Site footer with policy links, switchers, legal links, social icons, and (homepage-only) newsletter signup.',
+                    'Site footer with policy links, switchers, legal links, social icons, and (homepage-only) newsletter signup. The `variant="checkout"` prop renders a stripped-down trust-marks-only layout used on checkout pages — see the `CheckoutVariant` story.',
             },
         },
     },
@@ -126,5 +126,32 @@ export const MobileView: Story = {
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
         await expect(canvas.getAllByRole('link', { name: /about us/i }).length).toBeGreaterThan(0);
+    },
+};
+
+/**
+ * `variant="checkout"` renders the stripped-down footer used on checkout pages
+ * (`_checkout.tsx`): no newsletter, no policy-links section, no social icons,
+ * no switchers — just the copyright line and the legal links row.
+ */
+export const CheckoutVariant: Story = {
+    parameters: {
+        docs: {
+            description: {
+                story: 'Stripped-down checkout footer — copyright + legal links only. Used on `_checkout.tsx` so trust marks remain visible without distracting from the checkout flow.',
+            },
+        },
+    },
+    render: () => <Footer variant="checkout" />,
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        // Legal links remain.
+        await expect(canvas.getAllByRole('link', { name: /privacy policy/i }).length).toBeGreaterThan(0);
+
+        // Newsletter, switchers, and social icons are stripped out.
+        await expect(canvas.queryByPlaceholderText(/your email/i)).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('button', { name: /subscribe/i })).not.toBeInTheDocument();
+        await expect(canvas.queryByRole('heading', { name: /join our community/i })).not.toBeInTheDocument();
     },
 };

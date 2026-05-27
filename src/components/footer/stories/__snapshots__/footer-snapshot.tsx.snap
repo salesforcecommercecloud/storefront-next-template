@@ -1,5 +1,42 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Footer stories snapshot > CheckoutVariant story renders and matches snapshot 1`] = `
+<footer
+  class="mt-auto border-t border-border"
+>
+  <div
+    class="section-container py-4"
+  >
+    <div
+      class="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-muted-foreground"
+    >
+      <div>
+        © 
+        Market Street
+         
+        415 Mission St, San Francisco, CA 94105
+      </div>
+      <div
+        class="flex items-center gap-4"
+      >
+        <a
+          class="hover:text-foreground transition-colors"
+          href="/privacy"
+        >
+          Privacy Policy
+        </a>
+        <a
+          class="hover:text-foreground transition-colors"
+          href="/terms"
+        >
+          Terms of Use
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+`;
+
 exports[`Footer stories snapshot > Default story renders and matches snapshot 1`] = `
 <footer
   class="mt-auto"

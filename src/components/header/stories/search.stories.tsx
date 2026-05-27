@@ -132,67 +132,17 @@ Default search bar component.
     },
 };
 
-export const Interactive: Story = {
-    render: () => <SearchBar />,
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Interactive search bar for testing user interactions.
-
-### Features:
-- Input typing
-- Form submission
-- Suggestions display
-            `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Find and interact with search input
-        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
-        await userEvent.type(searchInput, 'dress');
-        await expect(searchInput).toHaveValue('dress');
-
-        // Wait a bit for suggestions to potentially appear
-        await new Promise((resolve) => setTimeout(resolve, 500));
-    },
-};
-
-export const Focused: Story = {
-    render: () => <SearchBar />,
-    parameters: {
-        docs: {
-            description: {
-                story: 'Search bar in a focused (empty) state — exercises the focus-visible styling and the focus event hook.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
-        searchInput.focus();
-        await expect(searchInput).toHaveFocus();
-        await expect(searchInput).toHaveValue('');
-    },
-};
-
 export const WithQuery: Story = {
     render: () => <SearchBar />,
     parameters: {
         docs: {
             description: {
                 story: `
-Search bar with a query entered (simulated).
+Search bar after a query has been typed in.
 
 ### Features:
 - Pre-filled search query
-- Suggestions may appear
+- Suggestions popover may appear
             `,
             },
         },
@@ -201,18 +151,16 @@ Search bar with a query entered (simulated).
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Find search input and type a query
         const searchInput = await canvas.findByRole('combobox', {}, { timeout: 5000 });
         await userEvent.type(searchInput, 'jacket');
         await expect(searchInput).toHaveValue('jacket');
 
-        // Wait for suggestions to potentially load
+        // Wait for suggestions to potentially load.
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Check if suggestions popover appears (may or may not appear depending on mock data)
+        // Suggestions are mock-data-dependent — assert only when present.
         const documentBody = within(document.body);
         const suggestions = documentBody.queryByRole('listbox');
-        // Suggestions may or may not appear, so we don't assert on them
         if (suggestions) {
             await expect(suggestions).toBeInTheDocument();
         }

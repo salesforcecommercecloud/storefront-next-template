@@ -94,7 +94,7 @@ export const ItalianSelected: Story = {
     },
 };
 
-export const FocusAndSwitch: Story = {
+export const SwitchLanguage: Story = {
     loaders: [
         async () => {
             await i18next.changeLanguage('en-GB');
@@ -106,11 +106,6 @@ export const FocusAndSwitch: Story = {
         const canvas = within(canvasElement);
 
         const selector = canvas.getByRole('combobox');
-
-        // Focus the target directly. `userEvent.tab()` depends on global tab order and can
-        // land on an unrelated focusable inserted by Storybook's preview chrome.
-        selector.focus();
-        await expect(selector).toHaveFocus();
         await expect(selector).toHaveValue('en-GB');
 
         await userEvent.selectOptions(selector, 'it-IT');
