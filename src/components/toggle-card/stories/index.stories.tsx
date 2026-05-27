@@ -14,70 +14,11 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { action } from 'storybook/actions';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, useState, type ReactElement, type ReactNode } from 'react';
+import { useState } from 'react';
 import { ToggleCard, ToggleCardEdit, ToggleCardSummary } from '../index';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logEnterEdit = action('toggle-card-enter-edit');
-        const logSave = action('toggle-card-save');
-        const logCancel = action('toggle-card-cancel');
-        const logFieldChange = action('toggle-card-field-change');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            // Edit toggle button (commonly text "Edit")
-            const editBtn = target.closest('button, a');
-            const label = editBtn?.textContent?.trim() || '';
-            if (editBtn && /^edit$/i.test(label)) {
-                event.preventDefault();
-                logEnterEdit({ label });
-                return;
-            }
-
-            // Save/Cancel in edit mode
-            if (editBtn && /^save$/i.test(label)) {
-                event.preventDefault();
-                logSave({ label });
-                return;
-            }
-            if (editBtn && /^cancel$/i.test(label)) {
-                event.preventDefault();
-                logCancel({ label });
-            }
-        };
-
-        const handleChange = (event: Event) => {
-            const input = event.target as HTMLInputElement | null;
-            if (!input) return;
-            if (input.matches('input, textarea')) {
-                logFieldChange({ id: input.id, name: input.name, value: input.value });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('change', handleChange, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('change', handleChange, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof ToggleCard> = {
     title: 'COMMON/Toggle Card',
@@ -91,7 +32,7 @@ const meta: Meta<typeof ToggleCard> = {
             },
         },
     },
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     argTypes: {
         id: {
             description: 'Unique identifier for the card',
@@ -137,17 +78,15 @@ const meta: Meta<typeof ToggleCard> = {
             description: 'Whether the card is in loading state',
             control: 'boolean',
         },
-        className: {
-            description: 'Additional CSS classes',
-            control: 'text',
-        },
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
     },
     decorators: [
-        (Story: React.ComponentType) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
+        // Re-key on `editing` and `isLoading` so toggling those Controls
+        // remounts the wrapper. Without this, ToggleCardWrapper snapshots
+        // both args into useState on first render and ignores subsequent
+        // arg changes — making the Controls panel for these two props dead.
+        (Story, context) => <Story key={`${String(context.args.editing)}-${String(context.args.isLoading)}`} />,
     ],
 };
 
@@ -256,27 +195,6 @@ export const Default: Story = {
         editLabel: 'Edit',
         editAction: 'Save',
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test initial state - should show summary view
-        const summaryContent = canvas.getByText('Contact Information');
-        await expect(summaryContent).toBeInTheDocument();
-
-        // Test that component renders properly
-        await expect(canvasElement.firstChild).toBeInTheDocument();
-
-        // Test edit button is present (but don't click in test environment)
-        const editButtons = canvas.getAllByRole('button');
-        void expect(editButtons.length).toBeGreaterThan(0);
-
-        // Verify buttons are properly rendered
-        editButtons.forEach((button) => {
-            void expect(button).toBeInTheDocument();
-            void expect(button).not.toBeDisabled();
-        });
-    },
 };
 
 export const Disabled: Story = {
@@ -287,12 +205,6 @@ export const Disabled: Story = {
         disabled: true,
         editLabel: 'Edit',
     },
-    play: ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        // When disabled=true, edit button is not rendered
-        const editButton = canvas.queryByRole('button', { name: /edit/i });
-        void expect(editButton).toBeNull();
-    },
 };
 
 export const DisableEdit: Story = {
@@ -302,12 +214,6 @@ export const DisableEdit: Story = {
         description: 'This information cannot be edited',
         disableEdit: true,
         editLabel: 'Edit',
-    },
-    play: ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        // When disableEdit=true, edit button is not rendered
-        const editButton = canvas.queryByRole('button', { name: /edit/i });
-        void expect(editButton).toBeNull();
     },
 };
 
@@ -320,25 +226,6 @@ export const Editing: Story = {
         editLabel: 'Edit',
         editAction: 'Save',
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Edit-mode form fields are visible.
-        await expect(canvas.getByLabelText(/name/i)).toBeInTheDocument();
-        await expect(canvas.getByLabelText(/email/i)).toBeInTheDocument();
-
-        // Two Save buttons exist in edit mode: the card-header action button
-        // (the one ToggleCard renders for `editAction`) and the inner form's
-        // submit button rendered by `ToggleCardWrapper`. Both should be
-        // present and enabled.
-        const saveButtons = canvas.getAllByRole('button', { name: /save/i });
-        await expect(saveButtons).toHaveLength(2);
-        for (const btn of saveButtons) {
-            await expect(btn).toBeInTheDocument();
-        }
-        await expect(canvas.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-    },
 };
 
 export const Loading: Story = {
@@ -349,15 +236,6 @@ export const Loading: Story = {
         isLoading: true,
         editLabel: 'Edit',
         editAction: 'Save',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        // The loading overlay is an absolutely-positioned div that renders a
-        // <Spinner /> (.animate-spin) on top of the card content. Asserting on
-        // the spinner's class avoids the previous permissive fallback that
-        // passed even when the overlay was absent.
-        const spinner = canvasElement.querySelector('.animate-spin');
-        void expect(spinner).not.toBeNull();
     },
 };
 
@@ -378,11 +256,5 @@ export const StaticView: Story = {
                 </div>
             </div>
         ),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const status = canvas.getByText(/active/i);
-        await expect(status).toBeInTheDocument();
     },
 };

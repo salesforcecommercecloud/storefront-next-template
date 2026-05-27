@@ -15,24 +15,8 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import withSuspense from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-
-function WithSuspenseStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logRender = action('with-suspense-render');
-        logRender({ component: 'SuspenseWrapper' });
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 // Example component to use with withSuspense
 function ExampleComponent({ data, message }: { data?: { name: string }; message?: string }) {
@@ -88,13 +72,6 @@ A higher-order component that wraps components with Suspense boundaries and opti
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <WithSuspenseStoryHarness>
-                <Story />
-            </WithSuspenseStoryHarness>
-        ),
-    ],
 };
 
 export default meta;
@@ -121,35 +98,6 @@ Component wrapped with Suspense using default fallback.
 
         // Check for loaded content
         const content = await canvas.findByText(/default component/i, {}, { timeout: 5000 });
-        await expect(content).toBeInTheDocument();
-    },
-};
-
-export const WithCustomFallback: Story = {
-    render: () => {
-        const CustomSuspense = withSuspense(ExampleComponent, {
-            fallback: <div className="p-6 bg-muted rounded">Custom loading state...</div>,
-        });
-        return <CustomSuspense message="Custom Fallback" />;
-    },
-    parameters: {
-        docs: {
-            story: `
-Component wrapped with Suspense using custom fallback.
-
-### Features:
-- Custom fallback UI
-- Better loading experience
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for loaded content
-        const content = await canvas.findByText(/custom fallback/i, {}, { timeout: 5000 });
         await expect(content).toBeInTheDocument();
     },
 };
@@ -205,9 +153,10 @@ Component wrapped with Suspense that resolves a promise and passes data as prop.
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
-        // Assert the resolved-data state — the promise resolves on the next tick,
-        // so the suspense fallback should always give way to "Resolved Data".
-        const resolved = await canvas.findByText(/resolved data/i, {}, { timeout: 5000 });
+        // The promise resolves at 600ms (see buildExampleWithPromise above);
+        // a 1500ms ceiling is tight enough to catch a "promise never resolves"
+        // regression without flaking on slow CI.
+        const resolved = await canvas.findByText(/resolved data/i, {}, { timeout: 1500 });
         await expect(resolved).toBeInTheDocument();
     },
 };

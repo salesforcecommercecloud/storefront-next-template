@@ -25,6 +25,15 @@ const meta: Meta<typeof CollapsibleHtmlSection> = {
     parameters: {
         layout: 'padded',
     },
+    argTypes: {
+        contentType: {
+            control: 'radio',
+            options: ['plain-text', 'bulleted-list', 'table-2-column'],
+            description: 'Declares the expected HTML structure; resolves default styling',
+        },
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
+    },
 };
 
 export default meta;

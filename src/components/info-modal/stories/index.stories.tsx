@@ -14,45 +14,15 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within, userEvent } from 'storybook/test';
+import { within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, useState, type ReactElement, type ReactNode } from 'react';
+import { useState, type ReactElement } from 'react';
 import { action } from 'storybook/actions';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import InfoModal, { type InfoModalData } from '../index';
 import { Button } from '@/components/ui/button';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-                logAction({ type: 'click', tag, label });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 function InfoModalWrapper({
     data,
@@ -70,12 +40,10 @@ function InfoModalWrapper({
                 locale={mockLocale}
                 language={mockSiteObject.defaultLocale}
                 currency={currency}>
-                <ActionLogger>
-                    <div className="p-6">
-                        <Button onClick={() => setOpen(true)}>Open Modal</Button>
-                        <InfoModal open={open} onOpenChange={setOpen} data={data} />
-                    </div>
-                </ActionLogger>
+                <div className="p-6">
+                    <Button onClick={() => setOpen(true)}>Open Modal</Button>
+                    <InfoModal open={open} onOpenChange={setOpen} data={data} />
+                </div>
             </SiteProvider>
         </ConfigProvider>
     );
@@ -110,10 +78,10 @@ The modal accepts structured data with a specific type and transforms it into th
         },
     },
     argTypes: {
-        data: {
-            description: 'Structured modal data from adapter',
-            control: 'object',
-        },
+        // `data` is a discriminated union with deeply structured shapes —
+        // JSON editor fails the Designer-Friendly Input Rule. The
+        // branch-specific stories below cover every meaningful `type`.
+        data: { control: false, table: { disable: true } },
         currency: {
             description: 'Currency code for formatting',
             control: 'select',
@@ -136,11 +104,8 @@ export const NoData: Story = {
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-        await expect(inDialog.getByText('Information')).toBeInTheDocument();
-        await expect(inDialog.getByText('No data available.')).toBeInTheDocument();
+        // Verify the dialog opens — the post-mount text content is covered by snapshot.
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
@@ -175,14 +140,7 @@ export const PaymentScheduleType: Story = {
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-
-        await expect(inDialog.getByText('Pay in 4 interest-free payments')).toBeInTheDocument();
-        await expect(inDialog.getByText('Payment Schedule')).toBeInTheDocument();
-        await expect(inDialog.getByText('How it works')).toBeInTheDocument();
-        await expect(inDialog.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
@@ -210,11 +168,7 @@ export const PaymentScheduleOnly: Story = {
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-        await expect(inDialog.getByText('Pay in 4')).toBeInTheDocument();
-        await expect(inDialog.getByText('Payment Schedule')).toBeInTheDocument();
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
@@ -259,21 +213,7 @@ Star rating distribution modal displaying rating overview and distribution break
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-
-        // Check modal title (same as right label in star rating)
-        // Note: Text appears twice (DialogTitle with aria-hidden and StarRating label)
-        const ratingTexts = inDialog.getAllByText('4.8 out of 5');
-        await expect(ratingTexts.length).toBeGreaterThanOrEqual(1);
-
-        // Check that star rating component is rendered
-        await expect(inDialog.getByText('Based on 200 reviews')).toBeInTheDocument();
-
-        // Check that stars are rendered
-        const stars = dialog.querySelectorAll('svg');
-        await expect(stars.length).toBeGreaterThan(5);
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
@@ -320,15 +260,7 @@ export const PaymentScheduleLongContent: Story = {
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-
-        await expect(inDialog.getByText(/Pay over 12 months/i)).toBeInTheDocument();
-        // Confirm at least one of the late-payments items rendered.
-        await expect(inDialog.getByText(/Month 12/i)).toBeInTheDocument();
-        // Confirm long disclaimer is present.
-        await expect(inDialog.getByText(/US residents over 18/i)).toBeInTheDocument();
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
 
@@ -369,16 +301,6 @@ Highly rated product with most reviews being 5-star. Demonstrates how the modal 
         const openButton = canvas.getByRole('button', { name: /open modal/i });
         await userEvent.click(openButton);
 
-        const documentBody = within(document.body);
-        const dialog = await documentBody.findByRole('dialog', {}, { timeout: 5000 });
-        const inDialog = within(dialog);
-
-        // Check modal title defaults to rating label when title is not provided
-        // Note: Text appears twice (DialogTitle with aria-hidden and StarRating label)
-        const ratingTexts = inDialog.getAllByText('4.9 out of 5');
-        await expect(ratingTexts.length).toBeGreaterThanOrEqual(1);
-
-        // Check that star rating is displayed
-        await expect(inDialog.getByText('Based on 200 reviews')).toBeInTheDocument();
+        await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };

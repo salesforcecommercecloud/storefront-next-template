@@ -25,6 +25,11 @@ const meta: Meta<typeof CollapsibleSection> = {
     parameters: {
         layout: 'padded',
     },
+    // Re-key on `defaultOpen` so toggling that Control remounts the section.
+    // CollapsibleSection seeds its `isOpen`/`hasOpened` state from
+    // `defaultOpen` via useState (index.tsx:61) with no useEffect resync, so
+    // without a remount the Controls panel value would be ignored.
+    decorators: [(Story, context) => <Story key={`defaultOpen-${String(context.args.defaultOpen)}`} />],
     // Only props that visibly drive the canvas are exposed in the controls
     // panel. `labelSupplement` is a ReactNode — Storybook's controls can't
     // usefully edit JSX, so it's hidden.
@@ -42,11 +47,8 @@ const meta: Meta<typeof CollapsibleSection> = {
                 defaultValue: { summary: 'false' },
             },
         },
-        className: {
-            control: 'text',
-            description: 'Additional CSS classes for the outer <details> element',
-            table: { type: { summary: 'string' } },
-        },
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
         // `children` is typed as ReactNode but the component renders strings
         // as plain text nodes inside the <details> body. Exposing it as a
         // `text` control lets a Storybook user edit the body inline.

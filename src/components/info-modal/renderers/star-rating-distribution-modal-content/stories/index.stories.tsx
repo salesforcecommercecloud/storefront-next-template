@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, expect } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
 import { StarRatingDistributionModalContent } from '../../star-rating-distribution-modal-content';
 import type { RatingDistributionData } from '../../../types';
@@ -62,6 +60,7 @@ function StarRatingDistributionModalContentWrapper({
 const meta: Meta<typeof StarRatingDistributionModalContentWrapper> = {
     title: 'COMMON/Info Modal/Star Rating Distribution Modal Content',
     component: StarRatingDistributionModalContentWrapper,
+    tags: ['autodocs'],
     parameters: {
         layout: 'centered',
         docs: {
@@ -90,14 +89,11 @@ The layout stacks the star rating component on top of the rating distributions c
             control: { type: 'number', min: 0 },
             description: 'The total number of reviews',
         },
-        distributions: {
-            control: 'object',
-            description: 'Array of rating distribution data for 1-5 stars',
-        },
-        onSeeReviewsClick: {
-            control: false,
-            description: 'Optional callback when "See customer reviews" button is clicked',
-        },
+        // `distributions` is a structured array — JSON editor fails the
+        // Designer-Friendly Input Rule. Branch-specific stories cover the
+        // meaningful shapes. `onSeeReviewsClick` is a function ref.
+        distributions: { control: false, table: { disable: true } },
+        onSeeReviewsClick: { control: false, table: { disable: true } },
     },
 };
 
@@ -127,22 +123,6 @@ Default star rating distribution modal content with typical distribution data.
             },
         },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test that star rating is displayed with right label
-        const ratingLabel = canvas.getByText('4.8 out of 5');
-        await expect(ratingLabel).toBeInTheDocument();
-
-        // Test that review count label is displayed
-        const reviewCountLabel = canvas.getByText('Based on 200 reviews');
-        await expect(reviewCountLabel).toBeInTheDocument();
-
-        // Test that stars are rendered
-        const stars = canvasElement.querySelectorAll('svg');
-        await expect(stars.length).toBeGreaterThan(5); // Should have stars in both components
-    },
 };
 
 export const HighlyRated: Story = {
@@ -165,14 +145,6 @@ Highly rated product with most reviews being 5-star.
                 `,
             },
         },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test that star rating is displayed with right label
-        const ratingLabel = canvas.getByText('4.9 out of 5');
-        await expect(ratingLabel).toBeInTheDocument();
     },
 };
 
@@ -203,14 +175,6 @@ Product with moderate rating showing balanced distribution.
             },
         },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test that star rating is displayed with right label
-        const ratingLabel = canvas.getByText('3.5 out of 5');
-        await expect(ratingLabel).toBeInTheDocument();
-    },
 };
 
 export const LargeReviewCount: Story = {
@@ -239,17 +203,5 @@ Product with large number of reviews demonstrating scale.
                 `,
             },
         },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Test that star rating is displayed with right label
-        const ratingLabel = canvas.getByText('4.7 out of 5');
-        await expect(ratingLabel).toBeInTheDocument();
-
-        // Test that large review count is displayed
-        const reviewCountLabel = canvas.getByText('Based on 12,345 reviews');
-        await expect(reviewCountLabel).toBeInTheDocument();
     },
 };

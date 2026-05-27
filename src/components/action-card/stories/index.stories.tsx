@@ -17,55 +17,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within, waitFor } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
+import { useEffect, useRef } from 'react';
 
 import ActionCard from '../index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-
-function ActionCardHoverLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logHover = useMemo(() => action('hovered'), []);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const button = target.closest('button');
-            if (!button || !root.contains(button)) {
-                return;
-            }
-
-            const cardFooter = button.closest('[data-slot="card-footer"]');
-            if (!cardFooter) {
-                return;
-            }
-
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && button.contains(related)) {
-                return;
-            }
-
-            const label = (button.getAttribute('aria-label') ?? button.textContent ?? '').trim();
-            if (!label) {
-                return;
-            }
-
-            logHover({ label });
-        };
-
-        root.addEventListener('mouseover', handleMouseOver);
-
-        return () => {
-            root.removeEventListener('mouseover', handleMouseOver);
-        };
-    }, [logHover]);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const logEditClick = () => action('edit clicked');
 const logRemoveClick = () => action('remove clicked');
@@ -154,22 +109,11 @@ When \`onRemove\` returns a promise, the component automatically:
             control: false,
             description: 'Function called when remove button is clicked',
         },
-        editBtnLabel: {
-            control: 'text',
-            description: 'Custom label for edit button',
-            table: {
-                type: { summary: 'string' },
-                defaultValue: { summary: 'undefined' },
-            },
-        },
-        removeBtnLabel: {
-            control: 'text',
-            description: 'Custom label for remove button',
-            table: {
-                type: { summary: 'string' },
-                defaultValue: { summary: 'undefined' },
-            },
-        },
+        // `editBtnLabel` / `removeBtnLabel` only override the buttons'
+        // `aria-label`; the visible text is always the translated `Edit` /
+        // `Remove`. No canvas-driving value, so hide from Controls.
+        editBtnLabel: { control: false, table: { disable: true } },
+        removeBtnLabel: { control: false, table: { disable: true } },
     },
 };
 
@@ -186,21 +130,19 @@ export const Default: Story = {
         const removeLabel = removeBtnLabel ?? t('actionCard:remove');
 
         return (
-            <ActionCardHoverLogger>
-                <ActionCard
-                    {...rest}
-                    onEdit={createEditHandler(editLabel, userOnEdit)}
-                    onRemove={createRemoveHandler(removeLabel, userOnRemove)}
-                    editBtnLabel={editBtnLabel}
-                    removeBtnLabel={removeBtnLabel}>
-                    <div className="space-y-2">
-                        <h3 className="font-semibold text-sm">John Doe</h3>
-                        <p className="text-sm text-muted-foreground">john.doe@example.com</p>
-                        <p className="text-sm">123 Main Street, Apt 4B</p>
-                        <p className="text-sm">New York, NY 10001</p>
-                    </div>
-                </ActionCard>
-            </ActionCardHoverLogger>
+            <ActionCard
+                {...rest}
+                onEdit={createEditHandler(editLabel, userOnEdit)}
+                onRemove={createRemoveHandler(removeLabel, userOnRemove)}
+                editBtnLabel={editBtnLabel}
+                removeBtnLabel={removeBtnLabel}>
+                <div className="space-y-2">
+                    <h3 className="font-semibold text-sm">John Doe</h3>
+                    <p className="text-sm text-muted-foreground">john.doe@example.com</p>
+                    <p className="text-sm">123 Main Street, Apt 4B</p>
+                    <p className="text-sm">New York, NY 10001</p>
+                </div>
+            </ActionCard>
         );
     },
     parameters: {
@@ -272,14 +214,12 @@ function MountTriggeredRemoveCard() {
 
     return (
         <div ref={cardRef}>
-            <ActionCardHoverLogger>
-                <ActionCard onEdit={createEditHandler(editLabel)} onRemove={createRemoveHandler(removeLabel, onRemove)}>
-                    <div className="space-y-2">
-                        <h3 className="font-semibold text-sm">Pending Removal</h3>
-                        <p className="text-sm">Loading overlay is mounted while removal is in flight.</p>
-                    </div>
-                </ActionCard>
-            </ActionCardHoverLogger>
+            <ActionCard onEdit={createEditHandler(editLabel)} onRemove={createRemoveHandler(removeLabel, onRemove)}>
+                <div className="space-y-2">
+                    <h3 className="font-semibold text-sm">Pending Removal</h3>
+                    <p className="text-sm">Loading overlay is mounted while removal is in flight.</p>
+                </div>
+            </ActionCard>
         </div>
     );
 }

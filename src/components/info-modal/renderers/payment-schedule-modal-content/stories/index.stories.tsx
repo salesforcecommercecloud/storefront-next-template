@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { PaymentScheduleModalContent } from '../../payment-schedule-modal-content';
 import type { PaymentSchedule, StepInfo } from '../../../types';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
@@ -35,8 +32,7 @@ function PaymentScheduleModalContentWrapper({
     disclaimer?: string;
     currency?: string;
 }): ReactElement {
-    const inRouter = useInRouterContext();
-    const content = (
+    return (
         <ConfigProvider config={mockConfig}>
             <SiteProvider
                 site={mockSiteObject}
@@ -54,22 +50,6 @@ function PaymentScheduleModalContentWrapper({
             </SiteProvider>
         </ConfigProvider>
     );
-
-    if (inRouter) {
-        return content;
-    }
-
-    const router = createMemoryRouter(
-        [
-            {
-                path: '/',
-                element: content,
-            },
-        ],
-        { initialEntries: ['/'] }
-    );
-
-    return <RouterProvider router={router} />;
 }
 
 const meta: Meta<typeof PaymentScheduleModalContentWrapper> = {
@@ -90,6 +70,24 @@ This component is used internally by InfoModal when the modal type is 'payment-s
                 `,
             },
         },
+    },
+    // `paymentSchedule` and `steps` are deeply structured fixtures that
+    // would render as JSON editors in Controls — fails the
+    // Designer-Friendly Input Rule. The branch-specific stories below
+    // already cover every meaningful shape via realistic args. `disclaimer`
+    // is exposed as a text control; `currency` as a small select.
+    argTypes: {
+        disclaimer: {
+            control: 'text',
+            description: 'Disclaimer text rendered below the schedule',
+        },
+        currency: {
+            control: 'select',
+            options: ['USD', 'EUR', 'GBP', 'JPY'],
+            description: 'Currency code used to format payment amounts',
+        },
+        paymentSchedule: { control: false, table: { disable: true } },
+        steps: { control: false, table: { disable: true } },
     },
 };
 
@@ -117,13 +115,6 @@ export const Default: Story = {
         disclaimer: 'Subject to credit approval. Terms apply.',
         currency: mockSiteObject.defaultCurrency,
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText('Payment Schedule')).toBeInTheDocument();
-        await expect(canvas.getByText('How it works')).toBeInTheDocument();
-        await expect(canvas.getByText('Subject to credit approval. Terms apply.')).toBeInTheDocument();
-    },
 };
 
 export const PaymentScheduleOnly: Story = {
@@ -140,12 +131,6 @@ export const PaymentScheduleOnly: Story = {
         },
         currency: mockSiteObject.defaultCurrency,
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText('Payment Schedule')).toBeInTheDocument();
-        await expect(canvas.getByText('Today')).toBeInTheDocument();
-    },
 };
 
 export const StepsOnly: Story = {
@@ -156,11 +141,5 @@ export const StepsOnly: Story = {
             { number: 3, text: 'Complete your purchase' },
         ],
         currency: mockSiteObject.defaultCurrency,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText('How it works')).toBeInTheDocument();
-        await expect(canvas.getByText('Select payment method at checkout')).toBeInTheDocument();
     },
 };

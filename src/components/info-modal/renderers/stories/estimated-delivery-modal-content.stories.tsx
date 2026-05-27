@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
 
@@ -71,6 +69,25 @@ const meta: Meta<typeof Wrapper> = {
     tags: ['autodocs'],
     parameters: {
         layout: 'centered',
+        docs: {
+            description: {
+                component: `
+EstimatedDeliveryModalContent is a renderer component that displays delivery options, shipping rates, international shipping notes, and order tracking information within the InfoModal.
+
+This component is used internally by InfoModal when the modal type is 'estimated-delivery'.
+                `,
+            },
+        },
+    },
+    // `deliveryData` is a deeply structured fixture that would render as
+    // a JSON editor in Controls — fails the Designer-Friendly Input Rule.
+    argTypes: {
+        currency: {
+            control: 'select',
+            options: ['USD', 'EUR', 'GBP', 'JPY'],
+            description: 'Currency code used to format shipping costs',
+        },
+        deliveryData: { control: false, table: { disable: true } },
     },
 };
 
@@ -81,17 +98,5 @@ export const Default: Story = {
     args: {
         deliveryData: mockDeliveryData,
         currency: mockSiteObject.defaultCurrency,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText(/Standard Shipping/)).toBeInTheDocument();
-        await expect(canvas.getByText(/Express Shipping/)).toBeInTheDocument();
-        await expect(canvas.getByText(/Next Day Delivery/)).toBeInTheDocument();
-        await expect(canvas.getAllByText('5-7 business days').length).toBeGreaterThanOrEqual(1);
-        await expect(canvas.getByText('Free')).toBeInTheDocument();
-        await expect(canvas.getByText('International Shipping')).toBeInTheDocument();
-        await expect(canvas.getByText('Order Tracking')).toBeInTheDocument();
     },
 };

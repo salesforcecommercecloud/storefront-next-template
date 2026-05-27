@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, screen } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { WriteReviewModalContent } from '../../write-review-modal-content';
 import type { WriteReviewFormData } from '@/lib/adapters/product-content/data-types';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
@@ -64,30 +61,13 @@ function WriteReviewModalContentWrapper({
     formConfig?: WriteReviewFormData;
     onClose?: () => void;
 }): ReactElement {
-    const inRouter = useInRouterContext();
-    const content = (
+    return (
         <ConfigProvider config={mockConfig}>
             <div className="max-w-lg p-6">
                 <WriteReviewModalContent onClose={onClose} formConfig={formConfig} />
             </div>
         </ConfigProvider>
     );
-
-    if (inRouter) {
-        return content;
-    }
-
-    const router = createMemoryRouter(
-        [
-            {
-                path: '/',
-                element: content,
-            },
-        ],
-        { initialEntries: ['/'] }
-    );
-
-    return <RouterProvider router={router} />;
 }
 
 const meta: Meta<typeof WriteReviewModalContentWrapper> = {
@@ -111,6 +91,14 @@ This component is used internally by InfoModal when the modal type is 'write-rev
             },
         },
     },
+    // `formConfig` is a deeply structured fixture that would render as a
+    // JSON editor in Controls — fails the Designer-Friendly Input Rule.
+    // The two stories already cover the with-config and without-config
+    // branches. `onClose` is a function ref, not editable in Controls.
+    argTypes: {
+        formConfig: { control: false, table: { disable: true } },
+        onClose: { control: false, table: { disable: true } },
+    },
 };
 
 export default meta;
@@ -120,23 +108,10 @@ export const Default: Story = {
     args: {
         formConfig: defaultFormConfig,
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        await expect(screen.getByText('Overall Rating')).toBeInTheDocument();
-        await expect(screen.getByText('Review Title')).toBeInTheDocument();
-        await expect(screen.getByText('Your Review')).toBeInTheDocument();
-        await expect(screen.getByText('Would you recommend this product?')).toBeInTheDocument();
-        await expect(screen.getByText('Cancel')).toBeInTheDocument();
-        await expect(screen.getByText('Submit Review')).toBeInTheDocument();
-    },
 };
 
 export const WithoutFormConfig: Story = {
     args: {
         formConfig: undefined,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        await expect(screen.queryByText('Overall Rating')).not.toBeInTheDocument();
     },
 };

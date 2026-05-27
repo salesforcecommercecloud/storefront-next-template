@@ -1,81 +1,11 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Spinner stories snapshot > CustomColor story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-[40vh] bg-background flex items-center justify-center"
-  >
-    <div
-      data-testid="spinner"
-    >
-      <div
-        class="animate-spin rounded-full border-2 border-border size-8 border-t-destructive"
-      />
-    </div>
-  </div>
-</div>
-`;
-
 exports[`Spinner stories snapshot > Default story renders and matches snapshot 1`] = `
-<div>
+<div
+  class="min-h-[40vh] bg-background flex items-center justify-center"
+>
   <div
-    class="min-h-[40vh] bg-background flex items-center justify-center"
-  >
-    <div
-      data-testid="spinner"
-    >
-      <div
-        class="animate-spin rounded-full border-2 border-border border-t-primary size-6"
-      />
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Spinner stories snapshot > ExtraLarge story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-[40vh] bg-background flex items-center justify-center"
-  >
-    <div
-      data-testid="spinner"
-    >
-      <div
-        class="animate-spin rounded-full border-2 border-border border-t-primary size-12"
-      />
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Spinner stories snapshot > Large story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-[40vh] bg-background flex items-center justify-center"
-  >
-    <div
-      data-testid="spinner"
-    >
-      <div
-        class="animate-spin rounded-full border-2 border-border border-t-primary size-8"
-      />
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Spinner stories snapshot > Small story renders and matches snapshot 1`] = `
-<div>
-  <div
-    class="min-h-[40vh] bg-background flex items-center justify-center"
-  >
-    <div
-      data-testid="spinner"
-    >
-      <div
-        class="animate-spin rounded-full border-2 border-border border-t-primary size-4"
-      />
-    </div>
-  </div>
+    class="animate-spin rounded-full border-2 border-border border-t-primary size-6"
+  />
 </div>
 `;

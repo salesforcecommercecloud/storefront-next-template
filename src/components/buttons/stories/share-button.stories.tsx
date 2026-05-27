@@ -15,22 +15,14 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ShareButton } from '../share-button';
-import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
+import { useMemo, type ReactNode, type ReactElement } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
 
-const SHARE_HARNESS_ATTR = 'data-share-harness';
-
 function ShareStoryHarness({ children, providers }: { children: ReactNode; providers?: string[] }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logClick = useMemo(() => action('share-button-clicked'), []);
-    const logShareOption = useMemo(() => action('share-option-selected'), []);
-    const logHover = useMemo(() => action('share-button-hovered'), []);
-
     const configValue = useMemo(() => {
         return {
             ...mockConfig,
@@ -44,60 +36,7 @@ function ShareStoryHarness({ children, providers }: { children: ReactNode; provi
         } as typeof mockConfig;
     }, [providers]);
 
-    useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${SHARE_HARNESS_ATTR}]`));
-
-        const handleClick = (event: MouseEvent) => {
-            const button = (event.target as HTMLElement | null)?.closest('button');
-            if (!button || !(button instanceof HTMLButtonElement) || !isInsideHarness(button)) {
-                return;
-            }
-            const label = (button.getAttribute('aria-label') ?? button.textContent ?? '').trim();
-            if (!label) {
-                return;
-            }
-
-            // Check if it's a dropdown menu item
-            const menuItem = button.closest('[role="menuitem"]');
-            if (menuItem) {
-                const itemText = button.textContent?.trim() || label;
-                logShareOption({ option: itemText });
-            } else {
-                logClick({ label });
-            }
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const button = (event.target as HTMLElement | null)?.closest('button');
-            if (!button || !(button instanceof HTMLButtonElement) || !isInsideHarness(button)) {
-                return;
-            }
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && button.contains(related)) {
-                return;
-            }
-            const label = (button.getAttribute('aria-label') ?? button.textContent ?? '').trim();
-            if (!label) {
-                return;
-            }
-            logHover({ label });
-        };
-
-        document.addEventListener('click', handleClick, true);
-        document.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            document.removeEventListener('click', handleClick, true);
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, [logClick, logShareOption, logHover]);
-
-    return (
-        <ConfigProvider config={configValue}>
-            <div ref={containerRef} {...{ [SHARE_HARNESS_ATTR]: 'true' }}>
-                {children}
-            </div>
-        </ConfigProvider>
-    );
+    return <ConfigProvider config={configValue}>{children}</ConfigProvider>;
 }
 
 const meta: Meta<typeof ShareButton> = {
@@ -211,14 +150,8 @@ Share providers are configured via \`config.features.socialShare\`:
                 defaultValue: { summary: "'md'" },
             },
         },
-        className: {
-            control: 'text',
-            description: 'Optional additional CSS classes',
-            table: {
-                type: { summary: 'string' },
-                defaultValue: { summary: 'undefined' },
-            },
-        },
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
         product: { control: false, table: { disable: true } },
         // tabIndex is a focus-management hook for the consumer; not relevant
         // to user-facing visual demonstration in the canvas.

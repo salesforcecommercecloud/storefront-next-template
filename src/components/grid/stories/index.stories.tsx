@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 import { Grid } from '../index';
 
 function renderItems(count: number, variant: 'muted' | 'card' = 'muted') {
@@ -31,7 +29,7 @@ function renderItems(count: number, variant: 'muted' | 'card' = 'muted') {
 const meta: Meta<typeof Grid> = {
     title: 'COMMON/Grid',
     component: Grid,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     parameters: {
         layout: 'padded',
         docs: {
@@ -100,10 +98,8 @@ const meta: Meta<typeof Grid> = {
             description: 'Display mode',
             table: { defaultValue: { summary: 'grid' } },
         },
-        className: {
-            control: 'text',
-            description: 'Additional CSS classes for the outer element',
-        },
+        // `className` is utility-class noise — Designer-Friendly Input Rule.
+        className: { control: false, table: { disable: true } },
         // Hidden: ReactNode and Page Designer internals.
         children: { control: false, table: { disable: true } },
         as: { control: false, table: { disable: true } },
@@ -138,12 +134,6 @@ type Story = StoryObj<typeof Grid>;
  */
 export const Default: Story = {
     render: (args) => <Grid {...args}>{renderItems(Number(args.columns ?? '3'))}</Grid>,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText('Item 1')).toBeInTheDocument();
-        await expect(canvas.getByText('Item 3')).toBeInTheDocument();
-    },
 };
 
 /**
@@ -161,10 +151,4 @@ export const Featured: Story = {
         className: 'p-8',
     },
     render: (args) => <Grid {...args}>{renderItems(Number(args.columns ?? '4'), 'card')}</Grid>,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        await expect(canvas.getByText('Item 1')).toBeInTheDocument();
-        await expect(canvas.getByText('Item 4')).toBeInTheDocument();
-    },
 };

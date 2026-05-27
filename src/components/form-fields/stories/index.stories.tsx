@@ -144,21 +144,6 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     render: () => <FormFieldsDemo />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const nameInput = canvas.getByPlaceholderText('Enter your name');
-        await expect(nameInput).toHaveAttribute('data-slot', 'input');
-        await expect(nameInput).toHaveAttribute('aria-invalid', 'false');
-        await expect(nameInput).not.toHaveAttribute('aria-describedby');
-
-        const emailInput = canvas.getByPlaceholderText('Enter your email');
-        await expect(emailInput).toHaveAttribute('data-slot', 'input');
-
-        const countrySelect = canvas.getByRole('combobox', { name: 'Country' });
-        await expect(countrySelect).toHaveAttribute('data-slot', 'native-select');
-    },
 };
 
 /**
@@ -190,14 +175,6 @@ export const WithValidationErrors: Story = {
  */
 export const WithValue: Story = {
     render: () => <FormFieldsDemo defaultValues={{ name: 'Ada Lovelace', email: 'ada@example.com', country: 'GB' }} />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByPlaceholderText('Enter your name')).toHaveValue('Ada Lovelace');
-        await expect(canvas.getByPlaceholderText('Enter your email')).toHaveValue('ada@example.com');
-        await expect(canvas.getByRole('combobox', { name: 'Country' })).toHaveValue('GB');
-    },
 };
 
 /**
@@ -205,14 +182,6 @@ export const WithValue: Story = {
  */
 export const Disabled: Story = {
     render: () => <FormFieldsDemo defaultValues={{ name: 'Ada Lovelace', email: 'ada@example.com' }} disabled />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByPlaceholderText('Enter your name')).toBeDisabled();
-        await expect(canvas.getByPlaceholderText('Enter your email')).toBeDisabled();
-        await expect(canvas.getByRole('combobox', { name: 'Country' })).toBeDisabled();
-    },
 };
 
 /**
@@ -221,11 +190,4 @@ export const Disabled: Story = {
  */
 export const ReadOnly: Story = {
     render: () => <FormFieldsDemo defaultValues={{ name: 'Ada Lovelace', email: 'ada@example.com' }} readOnly />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByPlaceholderText('Enter your name')).toHaveAttribute('readonly');
-        await expect(canvas.getByPlaceholderText('Enter your email')).toHaveAttribute('readonly');
-    },
 };

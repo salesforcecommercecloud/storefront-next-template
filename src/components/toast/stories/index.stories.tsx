@@ -205,3 +205,54 @@ export const Promise_: Story = {
         );
     },
 };
+
+/**
+ * Promise rejection variant — exercises the rejected-path of `toast.promise`,
+ * where the loading toast is replaced by the configured `error` string when
+ * the underlying promise rejects.
+ */
+export const PromiseRejection: Story = {
+    render: () => (
+        <div className="flex flex-col items-start gap-4 p-6">
+            <AppToaster />
+            <Button
+                onClick={() => {
+                    const work = new Promise<{ name: string }>((_, reject) =>
+                        setTimeout(() => reject(new globalThis.Error('Network timeout')), 1500)
+                    );
+                    toast.promise(work, {
+                        loading: 'Placing order…',
+                        success: (data) => `${data.name} placed`,
+                        error: 'Order could not be placed',
+                    });
+                }}>
+                Show promise rejection toast
+            </Button>
+        </div>
+    ),
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = await canvas.findByRole('button', { name: /show promise rejection toast/i });
+
+        await userEvent.click(button);
+
+        // Loading toast appears first.
+        await waitFor(
+            async () => {
+                await expect(within(document.body).findByText(/placing order/i)).resolves.toBeInTheDocument();
+            },
+            { timeout: 1000 }
+        );
+
+        // Then the rejected error toast replaces it (1500ms delay above).
+        await waitFor(
+            async () => {
+                await expect(
+                    within(document.body).findByText(/order could not be placed/i)
+                ).resolves.toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+    },
+};
