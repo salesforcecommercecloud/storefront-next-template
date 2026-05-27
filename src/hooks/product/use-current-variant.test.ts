@@ -22,12 +22,22 @@ import type { ShopperProducts } from '@/scapi';
 // Mock react-router so we can drive useSearchParams + observe setSearchParams calls.
 let mockSearchParams = new URLSearchParams();
 const mockSetSearchParams = vi.fn();
+type NavState = { state: 'idle' | 'loading'; location: { pathname: string; search: string } | undefined };
+let mockNavigationState: NavState = { state: 'idle', location: undefined };
 vi.mock('react-router', () => ({
     useSearchParams: () => [mockSearchParams, mockSetSearchParams],
+    useNavigation: () => mockNavigationState,
 }));
 
 const setSearchParams = (search: string) => {
     mockSearchParams = new URLSearchParams(search);
+};
+
+const setPendingNavigation = (search: string | null) => {
+    mockNavigationState =
+        search === null
+            ? { state: 'idle', location: undefined }
+            : { state: 'loading', location: { pathname: '/', search } };
 };
 
 type Product = ShopperProducts.schemas['Product'];
@@ -48,6 +58,7 @@ describe('useCurrentVariant', () => {
     beforeEach(() => {
         mockSetSearchParams.mockClear();
         mockSearchParams = new URLSearchParams();
+        setPendingNavigation(null);
     });
 
     describe('variant resolution', () => {
@@ -117,6 +128,19 @@ describe('useCurrentVariant', () => {
 
         test('skips the URL update when the current pid already matches', () => {
             setSearchParams('color=RED&size=L&pid=v2');
+            renderHook(() => useCurrentVariant({ product: masterProduct }));
+            expect(mockSetSearchParams).not.toHaveBeenCalled();
+        });
+
+        test('defers the pid sync while a swatch navigation is pending', () => {
+            // Canonical URL is the old variant. The user just clicked the RED swatch and the
+            // NavLink's nav to ?color=RED&size=L is in flight — useSelectedVariations has
+            // optimistically flipped to RED/L, so currentVariant points at v2. If the effect
+            // fired now, it would build a new URL from the canonical (color=NAVY) snapshot,
+            // setSearchParams would supersede the in-flight nav, and the user's color choice
+            // would be lost. The hook must wait until navigation settles.
+            setSearchParams('color=NAVY&size=M&pid=v1');
+            setPendingNavigation('color=RED&size=L');
             renderHook(() => useCurrentVariant({ product: masterProduct }));
             expect(mockSetSearchParams).not.toHaveBeenCalled();
         });

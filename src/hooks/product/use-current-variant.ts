@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigation, useSearchParams } from 'react-router';
 import type { ShopperProducts } from '@/scapi';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
 
@@ -54,6 +54,7 @@ interface UseCurrentVariantProps {
  */
 export function useCurrentVariant({ product, isChildProduct = false, selectionsOverride }: UseCurrentVariantProps) {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigation = useNavigation();
 
     // Use useSelectedVariations to get URL-aware selected attributes (or override-driven in modal usage)
     const selectedAttributes = useSelectedVariations({ product, isChildProduct, selectionsOverride });
@@ -75,8 +76,16 @@ export function useCurrentVariant({ product, isChildProduct = false, selectionsO
 
     // Update URL when variant changes. Skip when an override is supplied (modal usage) so swatch
     // changes there don't pollute the page URL or trigger route revalidation.
+    //
+    // The navigation.state === 'idle' guard avoids a race during the swatch click: while the
+    // NavLink's nav to ?color=<new> is in flight, useSelectedVariations has already flipped
+    // optimistically, so currentVariant points at the new variant — but searchParams is still
+    // the canonical (old) URL. Building a new URL from that snapshot and calling setSearchParams
+    // would supersede the in-flight nav with one that strips the user's color choice. Defer the
+    // pid sync until the navigation has settled and searchParams reflects the new URL.
     useEffect(() => {
         if (
+            navigation.state === 'idle' &&
             product?.id &&
             currentVariant &&
             currentVariant.productId !== product.id &&
@@ -91,7 +100,7 @@ export function useCurrentVariant({ product, isChildProduct = false, selectionsO
                 setSearchParams(newSearchParams, { replace: true, preventScrollReset: true });
             }
         }
-    }, [currentVariant, product, searchParams, setSearchParams, isChildProduct, selectionsOverride]);
+    }, [currentVariant, product, searchParams, setSearchParams, isChildProduct, selectionsOverride, navigation.state]);
 
     return currentVariant;
 }

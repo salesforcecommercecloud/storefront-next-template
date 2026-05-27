@@ -14,19 +14,32 @@
  * limitations under the License.
  */
 
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useSelectedVariations } from './use-selected-variations';
 import type { ShopperProducts } from '@/scapi';
 
 const mockUseSearchParams = vi.fn();
+const mockUseNavigation = vi.fn();
 vi.mock('react-router', () => ({
     useSearchParams: () => mockUseSearchParams(),
+    useNavigation: () => mockUseNavigation(),
 }));
 
 const setSearchParams = (search: string) => {
     mockUseSearchParams.mockReturnValue([new URLSearchParams(search)]);
 };
+
+const setPendingNavigation = (search: string | null) => {
+    mockUseNavigation.mockReturnValue({
+        state: search === null ? 'idle' : 'loading',
+        location: search === null ? undefined : { search, pathname: '/', hash: '', state: null, key: 'k' },
+    });
+};
+
+beforeEach(() => {
+    setPendingNavigation(null);
+});
 
 type Product = ShopperProducts.schemas['Product'];
 
@@ -229,6 +242,93 @@ describe('useSelectedVariations', () => {
                 })
             );
             expect(result.current).toEqual({ color: 'RED', size: 'M' });
+        });
+    });
+
+    describe('pending navigation (optimistic swatch activation)', () => {
+        test('prefers pending navigation params over current URL', () => {
+            // User clicked the RED swatch; the canonical URL is still color=NAVY until the
+            // navigation settles. The hook should report RED so the swatch flips immediately.
+            setSearchParams('color=NAVY');
+            setPendingNavigation('color=RED');
+            const product = {
+                id: 'p1',
+                variationAttributes: [{ id: 'color', name: 'Color', values: [{ value: 'NAVY' }, { value: 'RED' }] }],
+            } as Product;
+            const { result } = renderHook(() => useSelectedVariations({ product }));
+            expect(result.current).toEqual({ color: 'RED' });
+        });
+
+        test('falls back to current URL when navigation is idle', () => {
+            // Sanity check that the new branch only activates when navigation.location is set.
+            setSearchParams('color=NAVY');
+            setPendingNavigation(null);
+            const product = {
+                id: 'p1',
+                variationAttributes: [{ id: 'color', name: 'Color', values: [{ value: 'NAVY' }, { value: 'RED' }] }],
+            } as Product;
+            const { result } = renderHook(() => useSelectedVariations({ product }));
+            expect(result.current).toEqual({ color: 'NAVY' });
+        });
+
+        test('keeps optimistic value through the pid-sync second navigation', () => {
+            // After the swatch click navigates to ?color=RED, useCurrentVariant syncs ?pid=...
+            // The pending-nav target now carries both color and pid; color must remain RED.
+            setSearchParams('color=NAVY');
+            setPendingNavigation('color=RED&pid=newVariant');
+            const product = {
+                id: 'p1',
+                variationAttributes: [{ id: 'color', name: 'Color', values: [{ value: 'NAVY' }, { value: 'RED' }] }],
+            } as Product;
+            const { result } = renderHook(() => useSelectedVariations({ product }));
+            expect(result.current).toEqual({ color: 'RED' });
+        });
+
+        test('uses pending nav for nested child-product params', () => {
+            setSearchParams('child-1=color%3DNAVY');
+            setPendingNavigation('child-1=color%3DRED');
+            const product = {
+                id: 'child-1',
+                variationAttributes: [{ id: 'color', name: 'Color', values: [{ value: 'NAVY' }, { value: 'RED' }] }],
+            } as Product;
+            const { result } = renderHook(() => useSelectedVariations({ product, isChildProduct: true }));
+            expect(result.current).toEqual({ color: 'RED' });
+        });
+
+        test('selectionsOverride still wins over pending navigation', () => {
+            // Modal/controlled contexts must not be perturbed by URL navigations.
+            setSearchParams('color=NAVY');
+            setPendingNavigation('color=RED');
+            const product = {
+                id: 'p1',
+                variationAttributes: [
+                    {
+                        id: 'color',
+                        name: 'Color',
+                        values: [{ value: 'NAVY' }, { value: 'RED' }, { value: 'BLUE' }],
+                    },
+                ],
+            } as Product;
+            const { result } = renderHook(() =>
+                useSelectedVariations({ product, selectionsOverride: { color: 'BLUE' } })
+            );
+            expect(result.current).toEqual({ color: 'BLUE' });
+        });
+
+        test('default fallbacks still apply for attributes the pending nav does not supply', () => {
+            setSearchParams('');
+            setPendingNavigation('color=RED');
+            const product = {
+                id: 'p1',
+                variationAttributes: [
+                    { id: 'color', name: 'Color', values: [{ value: 'NAVY' }, { value: 'RED' }] },
+                    { id: 'size', name: 'Size', values: [{ value: 'L' }, { value: 'M' }] },
+                ],
+                variationValues: { color: 'NAVY', size: 'L' },
+            } as unknown as Product;
+            const { result } = renderHook(() => useSelectedVariations({ product }));
+            // color comes from pending nav, size falls through to product default.
+            expect(result.current).toEqual({ color: 'RED', size: 'L' });
         });
     });
 });

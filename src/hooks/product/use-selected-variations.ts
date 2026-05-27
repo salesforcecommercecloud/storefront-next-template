@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useMemo } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigation, useSearchParams } from 'react-router';
 import type { ShopperProducts } from '@/scapi';
 
 interface UseSelectedVariationsParams {
@@ -34,7 +34,15 @@ interface UseSelectedVariationsParams {
 }
 
 /**
- * Hook to get currently selected variation values from URL parameters with fallback to product defaults.
+ * Hook to get currently selected variation values, with fallback to product defaults.
+ *
+ * Selection sources are consulted in priority order:
+ *   1. `selectionsOverride` (modal contexts where selections must not touch the URL)
+ *   2. The destination URL of an in-flight navigation (`useNavigation().location`) — yields
+ *      optimistic readings while a swatch click's nav is settling, so consumers see the
+ *      user's choice on the next paint
+ *   3. The canonical URL search params (`useSearchParams`)
+ *   4. Product defaults (`variationValues` → fallback variant → single-value attributes)
  *
  * @param params - Configuration object
  * @param params.product - Product containing variation attributes and optional default variationValues
@@ -69,6 +77,13 @@ interface UseSelectedVariationsParams {
  * const selections = useSelectedVariations({ product: childProduct, isChildProduct: true });
  * // Returns: { color: 'RED', size: 'L' }
  * // Note: Extracts and decodes nested parameters for individual products within bundles/sets
+ *
+ * @example
+ * // URL: /?color=NAVY (canonical), navigation in flight to /?color=RED
+ * const selections = useSelectedVariations({ product });
+ * // Returns: { color: 'RED' }
+ * // Note: While the click navigation is pending, the destination's params are preferred so
+ * // the swatch's `selected` flag reflects the user's choice immediately.
  */
 export const useSelectedVariations = ({
     product,
@@ -76,11 +91,24 @@ export const useSelectedVariations = ({
     selectionsOverride,
 }: UseSelectedVariationsParams) => {
     const [searchParams] = useSearchParams();
+    const navigation = useNavigation();
 
     return useMemo(() => {
         if (!product?.variationAttributes) return {};
 
-        // Source for current selections: caller-provided override (modal contexts) or URL params (PDP).
+        // Optimistic swatch activation: while a navigation triggered by clicking a swatch is in
+        // flight, prefer the destination URL's params over the canonical URL so the clicked
+        // swatch reflects as selected on the next paint instead of waiting for the loader chain
+        // (color/size click → pid sync → SCAPI roundtrip) to settle. Same pattern the PLP uses
+        // for refines — see docs/README-STATE.md "Via useNavigation()" and the precedent in
+        // category-refinements/index.tsx. `useNavigation()` is global — it reflects any in-flight
+        // navigation, not just swatch clicks. Acceptable trade-off: a cross-page nav (e.g. PDP→PDP
+        // via a related-product link) unmounts this hook before the brief deselection paints.
+        const pendingSearchParams = navigation.location ? new URLSearchParams(navigation.location.search) : undefined;
+        const effectiveSearchParams = pendingSearchParams ?? searchParams;
+
+        // Source for current selections: caller-provided override (modal contexts) or
+        // pending-nav-aware URL params (PDP).
         const getSelected = (attributeId: string): string | undefined => {
             if (selectionsOverride) {
                 return selectionsOverride[attributeId];
@@ -88,10 +116,10 @@ export const useSelectedVariations = ({
             if (isChildProduct) {
                 // For child products (individual products within bundles/sets): params are nested
                 // like ?childProductId=color%3DRED%26size%3DL
-                const productParamsString = searchParams.get(product.id) || '';
+                const productParamsString = effectiveSearchParams.get(product.id) || '';
                 return new URLSearchParams(productParamsString).get(attributeId) || undefined;
             }
-            return searchParams.get(attributeId) || undefined;
+            return effectiveSearchParams.get(attributeId) || undefined;
         };
 
         // For master products that lack their own variationValues (e.g. set/bundle children),
@@ -144,5 +172,5 @@ export const useSelectedVariations = ({
         );
 
         return result;
-    }, [product, searchParams, isChildProduct, selectionsOverride]);
+    }, [product, searchParams, navigation.location, isChildProduct, selectionsOverride]);
 };
