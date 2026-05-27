@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ShopperSearch } from '@/scapi';
 import { HeartIcon } from '../icons';
 import { useToast } from '@/components/toast';
 import { useIsInWishlist, useWishlistActions } from '@/providers/wishlist';
-import { useRequireAuth } from '@/hooks/use-require-auth';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { useCheckAndExecutePendingAction } from '@/hooks/check-and-execute-pending-action';
-import { ACTION_PARAMS } from '@/hooks/use-filters-panel-state';
 
 interface WishlistButtonProps {
     product: ShopperSearch.schemas['ProductSearchHit'];
@@ -50,7 +47,7 @@ const WishlistButton = ({ product, variant, size = 'md', className, tabIndex, su
     const inWishlistRef = useRef(inWishlist);
     inWishlistRef.current = inWishlist;
 
-    const toggleBase = useCallback(async () => {
+    const handleWishlistToggle = useCallback(async () => {
         if (!productId || isPending) {
             return;
         }
@@ -89,40 +86,6 @@ const WishlistButton = ({ product, variant, size = 'md', className, tabIndex, su
         trackWishlistItemAdded,
         trackWishlistItemRemoved,
     ]);
-
-    // Wrap with auth requirement (preserves the post-login redirect flow).
-    const handleWishlistToggle = useRequireAuth(toggleBase as (...args: unknown[]) => Promise<unknown>, {
-        actionName: 'addToWishlist',
-        getActionParams: () => (productId ? { productId } : {}),
-        getReturnUrl: () => window.location.pathname + window.location.search,
-        toastMessage: t('signInToContinue'),
-    }) as () => Promise<void>;
-
-    const pendingActionRef = useRef(false);
-    const wasPendingRef = useRef(false);
-
-    useCheckAndExecutePendingAction({
-        actionName: 'addToWishlist',
-        shouldExecute: (params) => params.productId === productId,
-        onMatch: () => {
-            pendingActionRef.current = true;
-            void handleWishlistToggle();
-        },
-    });
-
-    // Scrub action params from the URL after a pending-action completes.
-    useEffect(() => {
-        if (!pendingActionRef.current) return;
-        if (wasPendingRef.current && !isPending) {
-            pendingActionRef.current = false;
-            const url = new URL(window.location.href);
-            for (const key of ACTION_PARAMS) {
-                url.searchParams.delete(key);
-            }
-            window.history.replaceState(null, '', url.pathname + url.search);
-        }
-        wasPendingRef.current = isPending;
-    }, [isPending]);
 
     return (
         <HeartIcon

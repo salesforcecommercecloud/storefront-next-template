@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { describe, test, expect, vi, beforeEach, type Mock } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WishlistButton } from './wishlist-button';
 
@@ -33,19 +33,6 @@ vi.mock('@/providers/wishlist', () => ({
         toggle: mockToggle,
         isPending: mockIsPending,
     }),
-}));
-
-let capturedOnMatch: ((params: Record<string, unknown>) => void) | null = null;
-
-vi.mock('@/hooks/check-and-execute-pending-action', () => ({
-    useCheckAndExecutePendingAction: (opts: { onMatch: (params: Record<string, unknown>) => void }) => {
-        capturedOnMatch = opts.onMatch;
-    },
-}));
-
-// Pass-through useRequireAuth so the component runs the toggle action without an auth context.
-vi.mock('@/hooks/use-require-auth', () => ({
-    useRequireAuth: (fn: (...args: unknown[]) => Promise<unknown>) => fn,
 }));
 
 const mockAddToast = vi.fn();
@@ -68,89 +55,6 @@ vi.mock('../icons', () => ({
 const baseProduct = { productId: 'prod-123', productName: 'Test Shoe' } as Parameters<
     typeof WishlistButton
 >[0]['product'];
-
-describe('WishlistButton — replaceState cleanup', () => {
-    let replaceStateSpy: Mock;
-
-    beforeEach(() => {
-        vi.clearAllMocks();
-        mockIsPending = false;
-        capturedOnMatch = null;
-        replaceStateSpy = vi.fn();
-        vi.spyOn(window.history, 'replaceState').mockImplementation(replaceStateSpy);
-    });
-
-    function setLocationUrl(url: string) {
-        Object.defineProperty(window, 'location', {
-            value: new URL(url),
-            writable: true,
-            configurable: true,
-        });
-    }
-
-    test('calls replaceState after pending action completes (isLoading true→false)', () => {
-        setLocationUrl('http://localhost/category/shoes?sort=price&action=addToWishlist&actionParams=%7B%7D');
-
-        const { rerender } = render(<WishlistButton product={baseProduct} surface="pdp" />);
-
-        // Simulate onMatch firing (sets pendingActionRef)
-        expect(capturedOnMatch).toBeTruthy();
-        act(() => capturedOnMatch?.({}));
-
-        // Transition isPending to true
-        mockIsPending = true;
-        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-
-        // Transition isPending to false — should trigger replaceState
-        mockIsPending = false;
-        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-
-        expect(replaceStateSpy).toHaveBeenCalledTimes(1);
-        const replacedUrl = replaceStateSpy.mock.calls[0][2] as string;
-        expect(replacedUrl).toContain('sort=price');
-        expect(replacedUrl).not.toContain('action=');
-        expect(replacedUrl).not.toContain('actionParams=');
-    });
-
-    test('does not call replaceState for normal user clicks', async () => {
-        setLocationUrl('http://localhost/category/shoes?action=addToWishlist&actionParams=%7B%7D');
-
-        const { rerender } = render(<WishlistButton product={baseProduct} surface="pdp" />);
-
-        // User clicks the heart (not via pending action)
-        await userEvent.click(screen.getByRole('button'));
-
-        // Transition isPending true→false
-        mockIsPending = true;
-        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-        mockIsPending = false;
-        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-
-        expect(replaceStateSpy).not.toHaveBeenCalled();
-    });
-
-    test('preserves non-action URL params during cleanup', () => {
-        setLocationUrl(
-            'http://localhost/category/shoes?sort=price-asc&refine=color%3Ablue&action=addToWishlist&actionParams=%7B%22productId%22%3A%22prod-123%22%7D'
-        );
-
-        const { rerender } = render(<WishlistButton product={baseProduct} surface="pdp" />);
-
-        act(() => capturedOnMatch?.({}));
-
-        mockIsPending = true;
-        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-        mockIsPending = false;
-        rerender(<WishlistButton product={baseProduct} surface="pdp" />);
-
-        expect(replaceStateSpy).toHaveBeenCalledTimes(1);
-        const replacedUrl = replaceStateSpy.mock.calls[0][2] as string;
-        expect(replacedUrl).toContain('sort=price-asc');
-        expect(replacedUrl).toContain('refine=color');
-        expect(replacedUrl).not.toContain('action=');
-        expect(replacedUrl).not.toContain('actionParams=');
-    });
-});
 
 describe('WishlistButton — toast UX', () => {
     beforeEach(() => {
@@ -212,5 +116,26 @@ describe('WishlistButton — toast UX', () => {
         const [message, level] = mockAddToast.mock.calls[0];
         expect(message).toBe('Test Shoe is already in your wishlist.');
         expect(level).toBe('info');
+    });
+
+    test('guest click: invokes toggle directly with no auth redirect or sign-in toast', async () => {
+        // Acceptance criteria: a guest clicking the heart silently adds the item to
+        // their guest wishlist via the provider's toggle(). No useRequireAuth gate,
+        // no "Sign in to continue" toast, no navigation. The provider's add() works
+        // for guest gcid sessions because SCAPI's product-list endpoints accept guest
+        // tokens; the client-side experience for guests should be indistinguishable
+        // from registered users.
+        mockIsMember.mockReturnValue(false);
+        mockToggle.mockResolvedValue({ success: true, data: null });
+
+        render(<WishlistButton product={baseProduct} surface="pdp" />);
+        await userEvent.click(screen.getByRole('button'));
+
+        // toggle was called with the productId — same as the registered path.
+        expect(mockToggle).toHaveBeenCalledTimes(1);
+        expect(mockToggle).toHaveBeenCalledWith('prod-123');
+        // The success toast appears once — there is no separate "Sign in to continue" toast.
+        expect(mockAddToast).toHaveBeenCalledTimes(1);
+        expect(mockAddToast.mock.calls[0][0]).toBe('Added Test Shoe to wishlist.');
     });
 });
