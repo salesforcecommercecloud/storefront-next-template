@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useMemo, type ReactElement, Suspense, useState, lazy, useCallback } from 'react';
+import { lazy, type ReactElement, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useOutletContext, Await, useFetcher, useRevalidator } from 'react-router';
 /** @sfdc-extension-line SFDC_EXT_CUSTOMER_PREFERENCES */
 import type { Route } from './+types/_app.account._index';
@@ -909,17 +909,33 @@ export default function AccountDetails(): ReactElement {
     const { customer: customerPromise, subscriptions: subscriptionsPromise } = useOutletContext<AccountLayoutContext>();
     const { t } = useTranslation('account');
 
-    // Stable promise reference so Await does not reset (unmount children) on every re-render.
-    const dataPromise = useMemo(
-        () => Promise.all([customerPromise, subscriptionsPromise]),
-        [customerPromise, subscriptionsPromise]
-    );
+    // Pin `Promise.all` by input identity. Re-compose only when an input promise changes (e.g., after a revalidation).
+    // A clean alternative would be to split the `<AccountDetailsContent>` into two separate components, each consuming
+    // a single promise, suspending only when the respective promise changes.
+    const pinRef = useRef<{
+        inputs: readonly [
+            Promise<Customer | null>,
+            Promise<ShopperConsents.schemas['ConsentSubscriptionResponse'] | null>,
+        ];
+        combined: Promise<[Customer | null, ShopperConsents.schemas['ConsentSubscriptionResponse'] | null]>;
+    } | null>(null);
+
+    if (
+        pinRef.current === null ||
+        pinRef.current.inputs[0] !== customerPromise ||
+        pinRef.current.inputs[1] !== subscriptionsPromise
+    ) {
+        pinRef.current = {
+            inputs: [customerPromise, subscriptionsPromise],
+            combined: Promise.all([customerPromise, subscriptionsPromise]),
+        };
+    }
 
     return (
         <>
             <SeoMeta title={t('meta.accountDetailsTitle', { defaultValue: 'Account Details' })} noIndex />
             <Suspense fallback={<AccountDetailSkeleton />}>
-                <Await resolve={dataPromise}>
+                <Await resolve={pinRef.current.combined}>
                     {([customer, subscriptions]: [
                         Customer | null,
                         ShopperConsents.schemas['ConsentSubscriptionResponse'] | null,

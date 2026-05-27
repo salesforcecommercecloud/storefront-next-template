@@ -112,7 +112,7 @@ function renderRegionContent(
  *    <Region page={loaderData.page} regionId="main" fallbackElement={<Skeleton />} />
  *    ```
  *    - Accepts page (Promise<PageWithComponentData> or PageWithComponentData)
- *    - Wraps in Suspense for async loading
+ *    - Wraps in Suspense for async loading; renders synchronously when the page is already resolved
  *    - Provides ComponentDataContext at page level
  *    - Registers PageDesignerPageMetadataProvider for root regions
  *
@@ -153,49 +153,46 @@ export function Region(props: RegionProps) {
     }
 
     // PAGE MODE: Rendering a page-level region
-    const pagePromise = Promise.resolve(props.page);
+    const renderResolvedPage = (resolvedPage: PageWithDesignMetadata | null) => {
+        if (!resolvedPage) {
+            return errorElement ?? null;
+        }
 
-    return (
-        <Suspense fallback={fallbackElement}>
-            <Await resolve={pagePromise} errorElement={errorElement}>
-                {(resolvedPage) => {
-                    if (!resolvedPage) {
-                        return errorElement ?? null;
-                    }
+        const region = resolvedPage.regions?.find((r) => r.id === regionId);
+        if (!region || (fallbackOnEmpty && !region.components?.length)) {
+            return errorElement ?? null;
+        }
 
-                    const region = resolvedPage.regions?.find((r) => r.id === regionId);
-                    if (!region || (fallbackOnEmpty && !region.components?.length)) {
-                        return errorElement ?? null;
-                    }
+        const metadata = resolvedPage.designMetadata?.regionDefinitions?.find((r) => r.id === regionId);
+        const { componentData: pageComponentData, ...pageData } = resolvedPage;
 
-                    const metadata = resolvedPage.designMetadata?.regionDefinitions?.find((r) => r.id === regionId);
-                    const { componentData: pageComponentData, ...pageData } = resolvedPage;
+        const content = (
+            <>
+                {!regionContext && <PageDesignerPageMetadataProvider page={pageData} />}
+                {renderRegionContent(region, regionId, metadata, className, rest, errorElement, isDesignMode)}
+            </>
+        );
 
-                    const content = (
-                        <>
-                            {!regionContext && <PageDesignerPageMetadataProvider page={pageData} />}
-                            {renderRegionContent(
-                                region,
-                                regionId,
-                                metadata,
-                                className,
-                                rest,
-                                errorElement,
-                                isDesignMode
-                            )}
-                        </>
-                    );
+        // Provide ComponentDataContext at page level only
+        if (pageComponentData && !existingComponentData) {
+            return <ComponentDataProvider value={pageComponentData}>{content}</ComponentDataProvider>;
+        }
 
-                    // Provide ComponentDataContext at page level only
-                    if (pageComponentData && !existingComponentData) {
-                        return <ComponentDataProvider value={pageComponentData}>{content}</ComponentDataProvider>;
-                    }
+        return content;
+    };
 
-                    return content;
-                }}
-            </Await>
-        </Suspense>
-    );
+    // When props.page is already resolved, render synchronously and skip Suspense entirely.
+    if (props.page instanceof Promise) {
+        return (
+            <Suspense fallback={fallbackElement}>
+                <Await resolve={props.page} errorElement={errorElement}>
+                    {renderResolvedPage}
+                </Await>
+            </Suspense>
+        );
+    }
+
+    return renderResolvedPage(props.page);
 }
 
 // Re-export RegionWrapper for direct usage if needed

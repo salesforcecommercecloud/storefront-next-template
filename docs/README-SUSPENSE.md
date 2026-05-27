@@ -196,6 +196,115 @@ function CombinedView({
 > [!TIP]
 > **Exception:** Truly dependent promises (for example, fetching details after a list) can share a boundary because they represent one logical loading unit.
 
+### Promise Identity
+
+A [`<Suspense>`](https://react.dev/reference/react/Suspense#reference) boundary identifies a pending promise by its reference, not by its value. When a child suspends, the boundary remembers *that exact promise object* and waits for it to settle. On the next render, if the child hands back a different promise object — even one that resolves to the same data — the boundary treats it as new pending work, throws away what it just rendered, and shows the fallback again. With a fresh promise on every render, the cycle never ends and the fallback flickers forever. This applies equally to React's [`use()`](https://react.dev/reference/react/use#reference) and React Router's [`<Await>`](https://reactrouter.com/api/components/Await).
+
+So the rule is: *the same logical operation must produce the same promise object across renders*.
+
+Promises returned from a route `loader` satisfy this automatically — React Router preserves their identity for the lifetime of the active route match, whether read via `useLoaderData`, `useRouteLoaderData`, or `useOutletContext`. Anything composed in the component body with `Promise.all`, `Promise.race`, `.then(...)`, or any wrapper expression does not: the expression is evaluated on every render, producing a brand-new Promise object each time.
+
+#### Anti-pattern: composing promises in the component
+
+```jsx
+// ❌ BAD: Promise.all returns a new promise every render, even with stable inputs.
+// The Suspense boundary never sees the resolved reference and flickers forever.
+function CombinedView() {
+  const { promise1, promise2 } = useLoaderData();
+  const combined = Promise.all([promise1, promise2]);
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={combined}>
+        {([a, b]) => <Content a={a} b={b} />}
+      </Await>
+    </Suspense>
+  );
+}
+```
+
+`useMemo(() => Promise.all([p1, p2]), [p1, p2])` does **not** fix this: React discards the memo cache when the component suspends on initial mount (see [`useMemo` Caveats](https://react.dev/reference/react/useMemo#caveats), *"a state variable or a ref may be more appropriate"*; failure mode confirmed in [remix-run/remix#7392](https://github.com/remix-run/remix/issues/7392)).
+
+#### Fix 1 — primary: compose in the loader
+
+If the promises form one logical loading unit, combine them in the loader so `loaderData` exposes a single stable reference.
+
+```jsx
+// route.tsx
+export async function loader() {
+  const critical = await fetchCritical();
+  // Created once per request; loaderData preserves identity across renders.
+  const combined = Promise.all([fetchA(), fetchB()]);
+  return { critical, combined };
+}
+
+function CombinedView() {
+  const { combined } = useLoaderData();
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={combined}>
+        {([a, b]) => <Content a={a} b={b} />}
+      </Await>
+    </Suspense>
+  );
+}
+```
+
+#### Fix 2 — primary: split into sibling boundaries
+
+If the promises don't truly form one loading unit, give each its own `<Suspense>` boundary so they resolve independently (see [Suspense Boundary Granularity](#suspense-boundary-granularity)). No composition needed.
+
+```jsx
+function CombinedView({ p1, p2 }) {
+  return (
+    <>
+      <Suspense fallback={<SkeletonA />}>
+        <Await resolve={p1}>{(a) => <SectionA data={a} />}</Await>
+      </Suspense>
+      <Suspense fallback={<SkeletonB />}>
+        <Await resolve={p2}>{(b) => <SectionB data={b} />}</Await>
+      </Suspense>
+    </>
+  );
+}
+```
+
+#### Fix 3 — escape hatch: pin the composed promise locally
+
+Use only when neither primary fix applies (e.g. the inputs arrive from a parent layout's `useOutletContext`, props, or fetcher hooks, and the consuming component must combine them). The examples assume `p1` and `p2` are already stable references; how they're obtained doesn't matter.
+
+**Variant A — lazy `useState` pin.** Frozen for the component's lifetime; invalidate by remounting via `<Component key={inputIdentity} />`.
+
+```jsx
+function CombinedView({ p1, p2 }) {
+  // Lazy initializer runs once per component lifetime and survives Suspense throws.
+  const [combined] = useState(() => Promise.all([p1, p2]));
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={combined}>{…}</Await>
+    </Suspense>
+  );
+}
+```
+
+**Variant B — `useRef` pin with manual re-pin.** Use when the consumer can't be remounted via `key` (e.g. inputs change on revalidation while the component stays mounted). Re-pins when input identity changes; survives Suspense throws.
+
+```jsx
+function CombinedView({ p1, p2 }) {
+  const pinRef = useRef(null);
+  if (pinRef.current === null || pinRef.current.inputs[0] !== p1 || pinRef.current.inputs[1] !== p2) {
+    pinRef.current = { inputs: [p1, p2], combined: Promise.all([p1, p2]) };
+  }
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Await resolve={pinRef.current.combined}>{…}</Await>
+    </Suspense>
+  );
+}
+```
+
+> [!NOTE]
+> The same rule applies to `use()` wrappers: a child that calls `use(somePromise)` must receive a stable promise reference as a prop. Constructing the promise in the parent's render (e.g. `<Child promise={Promise.all([a, b])} />`, `<Child promise={a.then(transform)} />`) re-suspends on every render for the same reason.
+
 ## Imperative Loading States
 
 Imperative loading states aren't defined structurally in the component tree but are read programmatically via hooks. Rather than triggering a `Suspense` boundary, these hooks expose the current state of an async operation as a discrete value that the component consumes conditionally. This makes them the appropriate choice for scenarios where a `Suspense` boundary is either unavailable or insufficient, such as global navigation feedback, out-of-band mutations, or manual revalidation. For details on how these hooks relate to the broader state model, see [State Management](README-STATE.md).

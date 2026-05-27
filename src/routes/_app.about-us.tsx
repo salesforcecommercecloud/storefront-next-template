@@ -159,7 +159,7 @@ function AboutUsRegionContent({
     // Always render Region, it will handle empty regions:
     // - In Page Designer: shows empty placeholder for drag-and-drop
     // - In MRT: shows errorElement (static content) when no components
-    return <Region page={Promise.resolve(page)} regionId={regionId} errorElement={fallback} />;
+    return <Region page={page} regionId={regionId} errorElement={fallback} />;
 }
 
 /**
