@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 import { Suspense } from 'react';
-import { Await, useRouteLoaderData } from 'react-router';
+import { Await } from 'react-router';
 import BuyNowPayLater from '@/extensions/bnpl/components/buy-now-pay-later';
-import type { BuyNowPayLaterMessageData, BuyNowPayLaterLearnMoreData } from '@/extensions/bnpl/lib/api/bnpl.server';
-
-interface PdpRouteData {
-    bnplMessage?: Promise<BuyNowPayLaterMessageData>;
-    bnplLearnMore?: Promise<BuyNowPayLaterLearnMoreData>;
-}
+import { useBnpl } from '@/extensions/bnpl/context/bnpl-context';
 
 export default function BnplTarget() {
-    const data = useRouteLoaderData<PdpRouteData>('routes/_app.product.$productId');
-    const messagePromise = data?.bnplMessage;
-    const learnMorePromise = data?.bnplLearnMore;
+    const bnpl = useBnpl();
 
-    if (!messagePromise || !learnMorePromise) return null;
+    if (!bnpl) return null;
 
-    // Each deferred Promise gets its own <Suspense>/<Await> so the loader's
-    // original Promise identity flows through unchanged — combining them via
-    // Promise.all() inside render produces a fresh Promise on every render,
-    // which breaks <Await>'s identity-keyed tracking and re-suspends every cycle.
+    const { messagePromise, learnMorePromise } = bnpl;
+
     return (
         <Suspense fallback={null}>
             <Await resolve={messagePromise} errorElement={null}>

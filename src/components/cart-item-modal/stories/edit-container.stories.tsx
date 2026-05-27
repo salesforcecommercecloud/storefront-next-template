@@ -37,9 +37,7 @@ const meta: Meta<typeof CartItemModalEditContainer> = {
                 if (inRouter) {
                     return content;
                 }
-                const router = createMemoryRouter([{ path: '/', element: content }], {
-                    initialEntries: ['/'],
-                });
+                const router = createMemoryRouter([{ path: '/', element: content }], { initialEntries: ['/'] });
                 return <RouterProvider router={router} />;
             };
             return <RouterWrapper />;

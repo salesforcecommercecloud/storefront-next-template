@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useRef, Suspense, Fragment, lazy } from 'react';
+import { useEffect, useRef, Suspense, Fragment } from 'react';
 import { Await } from 'react-router';
 import type { Route } from './+types/_app.product.$productId';
 import { type ShopperProducts } from '@/scapi';
@@ -25,11 +25,6 @@ import ProductView from '@/components/product-view';
 import ChildProducts from '@/components/product-view/child-products';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import { CategoryBreadcrumbsSkeleton } from '@/components/category-breadcrumbs/skeleton';
-
-// Lazy-load reviews section to reduce initial PDP bundle (reviews chunk loads with product page)
-const CustomerReviewsSection = lazy(() =>
-    import('@/components/customer-reviews-section').then((m) => ({ default: m.CustomerReviewsSection }))
-);
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import ProductRecommendations from '@/components/product-recommendations';
 import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';
@@ -38,7 +33,6 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
 import { ProductProvider } from '@/providers/product-context';
 import ProductContentProvider from '@/providers/product-content';
-import { ProductReviewsProvider } from '@/providers/product-reviews-context';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
@@ -60,7 +54,20 @@ import {
     type BuyNowPayLaterMessageData,
     type BuyNowPayLaterLearnMoreData,
 } from '@/extensions/bnpl/lib/api/bnpl.server';
+import { BnplProvider } from '@/extensions/bnpl/context/bnpl-context';
 // @sfdc-extension-block-end SFDC_EXT_BNPL
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import {
+    getReviewsSummary,
+    getReviews,
+    getWriteReviewForm,
+    type ReviewsSummaryData,
+    type ReviewsData,
+    type WriteReviewFormData,
+} from '@/extensions/ratings-reviews/lib/api/reviews.server';
+import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
+import { WriteReviewFormProvider } from '@/extensions/ratings-reviews/context/write-review-form-context';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
 import {
     getReturnsAndWarranty,
@@ -106,6 +113,11 @@ export type ProductPageData = {
     bnplMessage: Promise<BuyNowPayLaterMessageData>;
     bnplLearnMore: Promise<BuyNowPayLaterLearnMoreData>;
     // @sfdc-extension-block-end SFDC_EXT_BNPL
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    reviewsSummary: ReviewsSummaryData;
+    reviewsList: Promise<ReviewsData>;
+    writeReviewForm: Promise<WriteReviewFormData>;
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     returnsWarranty: Promise<ReturnsAndWarrantyData>;
     faqQuestions: Promise<FaqQuestionsData>;
@@ -147,6 +159,13 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
     // Resolve the product critically. A 404 here must propagate as Response(404)
     // so the route error boundary renders the 404 page with the correct HTTP status.
     const productLookupId = variantPid || productId;
+
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    // Start reviews summary fetch in parallel with the product fetch — it only
+    // needs the product ID and drives above-the-fold star display + SEO.
+    const reviewsSummaryPromise = getReviewsSummary(productLookupId);
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
     let product: ShopperProducts.schemas['Product'] | null;
     try {
         product = await fetchProductById(context, productLookupId, {
@@ -222,6 +241,13 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         }
     );
 
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    // Await the summary started earlier (ran in parallel with fetchProductById).
+    const reviewsSummary = await reviewsSummaryPromise;
+    const reviewsList = getReviews(productLookupId);
+    const writeReviewForm = getWriteReviewForm(productLookupId);
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
     return {
         product,
         category: categoryPromise,
@@ -240,6 +266,11 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         bnplMessage: getBuyNowPayLaterMessage(productLookupId),
         bnplLearnMore: getBuyNowPayLaterLearnMore(productLookupId),
         // @sfdc-extension-block-end SFDC_EXT_BNPL
+        // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+        reviewsSummary,
+        reviewsList,
+        writeReviewForm,
+        // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
         // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
         returnsWarranty: getReturnsAndWarranty(productLookupId),
         faqQuestions: getFaqQuestions(productLookupId),
@@ -295,6 +326,11 @@ export function shouldRevalidate({
 function ProductContent({
     product,
     url,
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    reviewsSummary,
+    reviewsList,
+    writeReviewForm,
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     returnsWarrantyPromise,
     faqQuestionsPromise,
@@ -303,6 +339,11 @@ function ProductContent({
 }: {
     product: ShopperProducts.schemas['Product'];
     url: string;
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    reviewsSummary: ReviewsSummaryData;
+    reviewsList: Promise<ReviewsData>;
+    writeReviewForm: Promise<WriteReviewFormData>;
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     returnsWarrantyPromise: Promise<ReturnsAndWarrantyData>;
     faqQuestionsPromise: Promise<FaqQuestionsData>;
@@ -340,33 +381,40 @@ function ProductContent({
                     faqQuestionsPromise={faqQuestionsPromise}
                     pdpCollapsiblesPromise={pdpCollapsiblesPromise}>
                     {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
-                    <ProductReviewsProvider>
-                        <SeoMeta
-                            title={product.name}
-                            description={product.pageDescription || product.shortDescription}
-                            openGraph={{
-                                type: 'product',
-                                url,
-                                image: primaryImage,
-                            }}
-                        />
-                        <div className="space-y-8">
-                            {isProductASet || isProductABundle ? (
-                                <>
+                    {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                    {/* Provider wraps ProductView so the in-page rating summary shares state
+                        with the customer reviews accordion (expand/jump-to coordination). */}
+                    <ProductReviewsProvider summary={reviewsSummary} reviewsListPromise={reviewsList}>
+                        <WriteReviewFormProvider writeReviewFormPromise={writeReviewForm}>
+                            {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
+                            <SeoMeta
+                                title={product.name}
+                                description={product.pageDescription || product.shortDescription}
+                                openGraph={{
+                                    type: 'product',
+                                    url,
+                                    image: primaryImage,
+                                }}
+                            />
+                            <div className="space-y-8">
+                                {isProductASet || isProductABundle ? (
+                                    <>
+                                        <ProductView product={product} />
+                                        <ChildProducts parentProduct={product} />
+                                    </>
+                                ) : (
                                     <ProductView product={product} />
-                                    <ChildProducts parentProduct={product} />
-                                </>
-                            ) : (
-                                <ProductView product={product} />
-                            )}
+                                )}
 
-                            {/* Customer Reviews Section (lazy-loaded to reduce initial bundle) */}
-                            <Suspense fallback={null}>
-                                <CustomerReviewsSection />
-                            </Suspense>
-                            <UITarget targetId="sfcc.pdp.reviews.qna" />
-                        </div>
+                                {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                                <UITarget targetId="sfcc.pdp.reviews.section" />
+                                {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
+                                <UITarget targetId="sfcc.pdp.reviews.qna" />
+                            </div>
+                            {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                        </WriteReviewFormProvider>
                     </ProductReviewsProvider>
+                    {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
                     {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
                 </ProductContentDataProvider>
                 {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
@@ -401,6 +449,11 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                 <ProductContent
                     product={loaderData.product}
                     url={loaderData.pageUrl}
+                    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+                    reviewsSummary={loaderData.reviewsSummary}
+                    reviewsList={loaderData.reviewsList}
+                    writeReviewForm={loaderData.writeReviewForm}
+                    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
                     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
                     returnsWarrantyPromise={loaderData.returnsWarranty}
                     faqQuestionsPromise={loaderData.faqQuestions}
@@ -439,8 +492,15 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
 
     let finalContent = content;
     // @sfdc-extension-block-start SFDC_EXT_BOPIS
-    finalContent = <PickupProvider>{content}</PickupProvider>;
+    finalContent = <PickupProvider>{finalContent}</PickupProvider>;
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
+    // @sfdc-extension-block-start SFDC_EXT_BNPL
+    finalContent = (
+        <BnplProvider messagePromise={loaderData.bnplMessage} learnMorePromise={loaderData.bnplLearnMore}>
+            {finalContent}
+        </BnplProvider>
+    );
+    // @sfdc-extension-block-end SFDC_EXT_BNPL
 
     return finalContent;
 }

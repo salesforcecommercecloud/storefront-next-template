@@ -160,4 +160,13 @@ export const buildDefaultMockRoutes = (
         path: '/resource/api/client/:resource',
         loader: () => ({ success: true, data: scapiMock?.data ?? masterProduct }),
     },
+    {
+        // Mock loader for the ratings-reviews summary fetcher used by surfaces
+        // that mount outside the route loader chain (e.g. CartItemModal). The
+        // ProductReviewsProvider invokes useFetcher.load('/resource/reviews-summary')
+        // when no `summary` prop is supplied — without this route the storybook
+        // router 404s and the modal's ErrorBoundary swallows the dialog.
+        path: '/resource/reviews-summary',
+        loader: () => ({ success: true, summary: null }),
+    },
 ];

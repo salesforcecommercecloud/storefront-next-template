@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StarRating } from '@/components/product-ratings/star-rating';

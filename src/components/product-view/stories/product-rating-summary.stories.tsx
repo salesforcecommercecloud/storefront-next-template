@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { ProductProvider } from '@/providers/product-context';
 import ProductContentProvider from '@/providers/product-content';
-import { ProductReviewsProvider } from '@/providers/product-reviews-context';
+import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
 import { mockConfig } from '@/test-utils/config';
 import { ProductRatingSummary } from '../product-rating-summary';
 

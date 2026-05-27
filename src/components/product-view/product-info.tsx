@@ -27,7 +27,9 @@ import type { AppConfig } from '@/types/config';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import InventoryMessage, { InventoryStatus } from '../inventory-message';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 import { ProductRatingSummary } from './product-rating-summary';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 import { useCurrentVariant } from '@/hooks/product/use-current-variant';
 import { useTranslation } from 'react-i18next';
 import { WishlistButton } from '@/components/buttons/wishlist-button';
@@ -318,11 +320,13 @@ export default function ProductInfo({
                 </div>
             )}
             {/* Rating summary - visible on both mobile and desktop */}
+            {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
             {!isCompactStyle && (
                 <UITarget targetId="sfcc.pdp.reviews.rating">
                     <ProductRatingSummary interactive={!disableRatingInteraction} />
                 </UITarget>
             )}
+            {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
 
             {/* Price - show unit price on PDP */}
             <div className="space-y-3">

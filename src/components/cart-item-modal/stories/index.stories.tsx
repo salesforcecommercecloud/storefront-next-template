@@ -294,15 +294,7 @@ function CartItem({ product, itemId, quantity }) {
                     return content;
                 }
 
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
+                const router = createMemoryRouter([{ path: '/', element: content }], { initialEntries: ['/'] });
 
                 return <RouterProvider router={router} />;
             };

@@ -53,6 +53,26 @@ vi.mock('@/providers/recommenders', () => ({
     }),
 }));
 
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => ({
+    ProductReviewsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useProductReviews: () => ({
+        reviewsSummary: null,
+        reviewsSummaryLoading: false,
+        reviews: [],
+        reviewsLoading: false,
+        loadReviewsIfNeeded: () => {},
+        aiSummary: '',
+        addReviewOptimistic: () => {},
+        removeReviewOptimistic: () => {},
+        expandReviews: () => {},
+        registerExpand: () => {},
+        registerOnExpanded: () => {},
+        triggerOnExpanded: () => {},
+    }),
+}));
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
 // Mock useDeferredRender so tests can drive pre-/post-idle phases deterministically.
 // Default `true` matches the post-idle behavior the existing test suite was written
 // against (and what users observe within ~16ms of paint), so legacy assertions remain valid.

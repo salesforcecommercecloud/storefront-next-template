@@ -15,7 +15,7 @@
  */
 /** @sfdc-extension-file SFDC_EXT_CUSTOMER_PREFERENCES */
 import { Suspense, type ReactElement } from 'react';
-import { Await, useRouteLoaderData } from 'react-router';
+import { Await } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,28 +23,20 @@ import {
     InterestsPreferencesSection,
     InterestsPreferencesSectionSkeleton,
 } from '@/extensions/customer-preferences/components/interests-preferences-section';
+import { useCustomerPreferences } from '@/extensions/customer-preferences/context/customer-preferences-context';
 import type { CustomerPreferencesData } from '@/extensions/customer-preferences/lib/api/customer-preferences.server';
-
-/**
- * Shape of the loader data this target consumes from `routes/_app.account._index`.
- * Only the deferred field this extension owns is required.
- */
-type AccountIndexLoaderData = {
-    customerPreferencesPromise?: Promise<CustomerPreferencesData>;
-};
 
 /**
  * UITarget wrapper for the interests & preferences section on the account
  * details page.
  *
- * Reads the deferred Promise from the parent route loader and streams the
- * section into a `<Suspense>` boundary with a matching skeleton fallback.
- * Renders nothing when the loader did not include the Promise (e.g., when
- * the extension is uninstalled and the loader markers were stripped).
+ * Reads the deferred Promise from the `CustomerPreferencesProvider` context
+ * and streams the section into a `<Suspense>` boundary with a matching
+ * skeleton fallback. Renders nothing when the provider is not mounted
+ * (e.g., when the extension is uninstalled and the route markers were stripped).
  */
 export default function PreferencesTarget(): ReactElement | null {
-    const data = useRouteLoaderData<AccountIndexLoaderData>('routes/_app.account._index');
-    const customerPreferencesPromise = data?.customerPreferencesPromise;
+    const customerPreferencesPromise = useCustomerPreferences();
 
     if (!customerPreferencesPromise) {
         return null;

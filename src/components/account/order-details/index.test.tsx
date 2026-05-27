@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 import { render, screen } from '@testing-library/react';
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { OrderDetails } from './index';
+
+vi.mock('@/targets/ui-target', () => ({ UITarget: () => null }));
+vi.mock('@/extensions/ratings-reviews/components/target/order-line-review-target', () => ({
+    default: () => null,
+}));
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';

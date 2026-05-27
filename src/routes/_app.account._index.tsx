@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { lazy, type ReactElement, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useOutletContext, Await, useFetcher, useRevalidator } from 'react-router';
+import { Await, useFetcher, useLoaderData, useOutletContext, useRevalidator } from 'react-router';
 /** @sfdc-extension-line SFDC_EXT_CUSTOMER_PREFERENCES */
 import type { Route } from './+types/_app.account._index';
 import { ToggleCard, ToggleCardSummary, ToggleCardEdit } from '@/components/toggle-card';
@@ -35,6 +35,7 @@ import { useAuth } from '@/providers/auth';
 import { useTranslation } from 'react-i18next';
 /** @sfdc-extension-block-start SFDC_EXT_CUSTOMER_PREFERENCES */
 import { getCustomerPreferencesData } from '@/extensions/customer-preferences/lib/api/customer-preferences.server';
+import { CustomerPreferencesProvider } from '@/extensions/customer-preferences/context/customer-preferences-context';
 import { getAuth as getAuthServer } from '@/middlewares/auth.server';
 /** @sfdc-extension-block-end SFDC_EXT_CUSTOMER_PREFERENCES */
 import { formatDateForLocale } from '@/lib/date-utils';
@@ -908,6 +909,9 @@ function AccountDetailsContent({
 export default function AccountDetails(): ReactElement {
     const { customer: customerPromise, subscriptions: subscriptionsPromise } = useOutletContext<AccountLayoutContext>();
     const { t } = useTranslation('account');
+    /** @sfdc-extension-block-start SFDC_EXT_CUSTOMER_PREFERENCES */
+    const loaderData = useLoaderData<typeof loader>();
+    /** @sfdc-extension-block-end SFDC_EXT_CUSTOMER_PREFERENCES */
 
     // Pin `Promise.all` by input identity. Re-compose only when an input promise changes (e.g., after a revalidation).
     // A clean alternative would be to split the `<AccountDetailsContent>` into two separate components, each consuming
@@ -931,7 +935,7 @@ export default function AccountDetails(): ReactElement {
         };
     }
 
-    return (
+    let content: ReactElement = (
         <>
             <SeoMeta title={t('meta.accountDetailsTitle', { defaultValue: 'Account Details' })} noIndex />
             <Suspense fallback={<AccountDetailSkeleton />}>
@@ -944,4 +948,16 @@ export default function AccountDetails(): ReactElement {
             </Suspense>
         </>
     );
+
+    /** @sfdc-extension-block-start SFDC_EXT_CUSTOMER_PREFERENCES */
+    if (loaderData?.customerPreferencesPromise) {
+        content = (
+            <CustomerPreferencesProvider customerPreferencesPromise={loaderData.customerPreferencesPromise}>
+                {content}
+            </CustomerPreferencesProvider>
+        );
+    }
+    /** @sfdc-extension-block-end SFDC_EXT_CUSTOMER_PREFERENCES */
+
+    return content;
 }

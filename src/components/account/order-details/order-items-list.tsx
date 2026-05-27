@@ -27,8 +27,11 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import type { EnrichedProductItem } from '@/lib/product/product-utils';
 import type { ShopperOrders, ShopperProducts } from '@/scapi';
-import { OrderLineRateReview } from '@/components/account/order-details/order-line-rate-review';
 import { getOrderLineReviewKey } from '@/components/account/order-details/order-line-review-key';
+import { UITarget } from '@/targets/ui-target';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import { OrderLineReviewSlot } from '@/extensions/ratings-reviews/components/order-line-review-context';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
 type OrderItem = ShopperOrders.schemas['ProductItem'];
 
@@ -101,12 +104,15 @@ export function OrderItemsList({
                                 </p>
                                 {showLineReviews && productData ? (
                                     <div className="pt-1">
-                                        <OrderLineRateReview
+                                        {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                                        <OrderLineReviewSlot
                                             product={productData}
                                             lineKey={lineReviewKey}
                                             reviewSubmitted={reviewSubmitted}
-                                            onLineReviewSubmitted={onOrderLineReviewSubmitted}
-                                        />
+                                            onLineReviewSubmitted={onOrderLineReviewSubmitted}>
+                                            <UITarget targetId="sfcc.account.orderDetail.lineReview" />
+                                        </OrderLineReviewSlot>
+                                        {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
                                     </div>
                                 ) : null}
                             </div>

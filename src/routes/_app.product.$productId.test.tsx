@@ -131,6 +131,22 @@ vi.mock('@/components/json-ld', () => ({
     JsonLd: ({ id }: any) => <script data-testid={id} type="application/ld+json" />,
 }));
 
+vi.mock('@/targets/ui-target', () => ({
+    UITarget: () => null,
+}));
+
+vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => ({
+    ProductReviewsProvider: ({ children }: any) => <div data-testid="product-reviews-provider">{children}</div>,
+}));
+
+vi.mock('@/extensions/ratings-reviews/components/target/reviews-section-target', () => ({
+    default: () => <div data-testid="reviews-section-target" />,
+}));
+
+vi.mock('@/extensions/ratings-reviews/components/target/reviews-summary-target', () => ({
+    default: () => <div data-testid="reviews-summary-target" />,
+}));
+
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 vi.mock('@/extensions/store-locator/middlewares/selected-store.server', () => ({
     selectedStoreContext: { id: 'selectedStoreContext' },
@@ -190,6 +206,39 @@ describe('Product Detail Route', () => {
             disclosures: '',
         }),
         // @sfdc-extension-block-end SFDC_EXT_BNPL
+        // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+        reviewsSummary: {
+            totalCount: 0,
+            averageRating: 0,
+            distribution: { oneStar: 0, twoStars: 0, threeStars: 0, fourStars: 0, fiveStars: 0 },
+            basedOnLabel: '',
+        },
+        reviewsList: Promise.resolve({
+            heading: '',
+            subtitle: '',
+            writeReviewButtonLabel: '',
+            summary: {
+                averageRating: 0,
+                totalCount: 0,
+                basedOnLabel: '',
+                distribution: { oneStar: 0, twoStars: 0, threeStars: 0, fourStars: 0, fiveStars: 0 },
+            },
+            searchPlaceholder: '',
+            sortOptions: [],
+            reviews: [],
+        }),
+        writeReviewForm: Promise.resolve({
+            title: '',
+            overallRating: { label: '', required: true, placeholder: '' },
+            reviewTitle: { label: '', placeholder: '', maxCharacters: 0 },
+            reviewBody: { label: '', placeholder: '', minCharacters: 0, maxCharacters: 0 },
+            recommend: { label: '', yesLabel: '', noLabel: '' },
+            addPhotos: { label: '', hint: '', accept: '', maxSize: '' },
+            termsText: '',
+            cancelLabel: '',
+            submitLabel: '',
+        }),
+        // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
         // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
         returnsWarranty: Promise.resolve({
             title: '',

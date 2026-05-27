@@ -26,7 +26,9 @@ import ChildProducts from '@/components/product-view/child-products';
 import { useTranslation } from 'react-i18next';
 import { ProductProvider } from '@/providers/product-context';
 import ProductContentProvider from '@/providers/product-content';
-import { ProductReviewsProvider } from '@/providers/product-reviews-context';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
 /**
  * `DialogContent sm:max-w-4xl` (~848) with `md:grid-cols-2` → gallery is the full inner column below `md` and
@@ -125,7 +127,9 @@ export function CartItemModalView({
                     <>
                         <ProductProvider product={currentProduct}>
                             <ProductContentProvider>
+                                {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
                                 <ProductReviewsProvider>
+                                    {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
                                     <ProductViewProvider
                                         product={currentProduct}
                                         mode={mode}
@@ -199,7 +203,9 @@ export function CartItemModalView({
                                                 selectionSource="local"
                                             />
                                         ))}
+                                    {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
                                 </ProductReviewsProvider>
+                                {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
                             </ProductContentProvider>
                         </ProductProvider>
                     </>

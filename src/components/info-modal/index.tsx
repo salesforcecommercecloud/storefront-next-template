@@ -28,9 +28,11 @@ export type {
     PaymentSchedule,
     StepInfo,
     PaymentScheduleModalData,
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     WriteReviewModalData,
     RatingDistributionData,
     StarRatingDistributionModalData,
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     EstimatedDeliveryModalData,
     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     ReturnsAndWarrantyModalData,
@@ -38,8 +40,10 @@ export type {
 } from './types';
 
 import { PaymentScheduleModalContent } from './renderers/payment-schedule-modal-content';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 import { WriteReviewModalContent } from './renderers/write-review-modal-content';
 import { StarRatingDistributionModalContent } from './renderers/star-rating-distribution-modal-content';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 import { EstimatedDeliveryModalContent } from './renderers/estimated-delivery-modal-content';
 // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
 import { ReturnsAndWarrantyModalContent } from './renderers/returns-and-warranty-modal-content';
@@ -58,8 +62,10 @@ function getCurrencySymbolForRegex(currencyCode: string): string {
 
 /** Modal width classes by modal type. */
 const MODAL_WIDTH_CLASSES = {
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     'write-review': 'max-w-lg sm:max-w-lg',
     'star-rating-distribution': 'w-[304px] max-w-[304px] sm:w-[304px] sm:max-w-[304px]',
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     'payment-schedule': 'max-w-2xl sm:max-w-2xl',
     'estimated-delivery': 'max-w-2xl sm:max-w-2xl',
     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
@@ -163,6 +169,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                         </div>
                     </>
                 )}
+                {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
                 {data.type === 'write-review' && (
                     <>
                         {data.formConfig != null && (
@@ -207,6 +214,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                         </div>
                     </>
                 )}
+                {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
                 {data.type === 'estimated-delivery' && (
                     <>
                         <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">

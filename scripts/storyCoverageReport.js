@@ -65,9 +65,16 @@ const EXCLUDED_COMPONENTS = new Set([
     // from `useRouteLoaderData`. Underlying section components have their own stories.
     'customer-preferences/components/target/preferences-target',
     'bnpl/components/target/bnpl-target',
+    'ratings-reviews/components/target/order-line-review-target',
+    'ratings-reviews/components/target/reviews-section-target',
+    'ratings-reviews/components/target/reviews-summary-target',
+    // Tiny per-line context provider used to forward props through a UITarget boundary.
+    'ratings-reviews/components/order-line-review-context',
     'product-content/components/target/returns-and-warranty-target',
     'product-content/components/target/faq-target',
     'product-content/components/target/pdp-collapsibles-target',
+    // Wraps Sonner's <Toaster> to apply app-level config; no visual content of its own.
+    'toast/app-toaster',
     // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these
     'region/component',
     'region/component-data-context',

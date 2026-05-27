@@ -229,7 +229,7 @@
             },
             {
                 "name": "assets/\\(locales\\)-\\(it-IT\\)-index.*.js",
-                "limit": "82 kB",
+                "limit": "83 kB",
                 "comment": "Italian locale chunk. Italian translations are ~10% more verbose than English due to language characteristics (longer words, articles, formal address forms). Baseline: it-IT ~80 kB vs en-US ~73 kB."
             },
             {

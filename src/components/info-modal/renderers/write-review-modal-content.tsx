@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useState, useCallback, useRef } from 'react';
+/** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
+import { type ReactElement, useState, useCallback, useRef, useEffect } from 'react';
+import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { StarRating } from '@/components/product-ratings/star-rating';
 import { Button } from '@/components/ui/button';
@@ -22,8 +24,9 @@ import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
 import { filterAcceptedFiles, getFileUploadConfig } from '@/lib/file-upload-utils';
 import { cn } from '@/lib/utils';
-import type { ReviewItem, WriteReviewFormData } from '@/lib/adapters/product-content/data-types';
-import { useProductReviews } from '@/hooks/product-reviews/use-product-reviews';
+import type { ReviewItem, WriteReviewFormData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
+import type { AddReviewResponse } from '@/extensions/ratings-reviews/routes/action.add-review';
+import { useProductReviews } from '@/extensions/ratings-reviews/providers/product-reviews-context';
 
 /** Inline field error — plain text, no border or padding. */
 function FieldError({ id, message }: { id?: string; message: string }): ReactElement {
@@ -64,7 +67,24 @@ export function WriteReviewModalContent({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { t } = useTranslation('writeReview');
     const { t: tProduct } = useTranslation('product');
-    const { addReview } = useProductReviews();
+    const { addReviewOptimistic, removeReviewOptimistic, productId } = useProductReviews();
+    const fetcher = useFetcher<AddReviewResponse>();
+    const pendingReviewIdRef = useRef<string | null>(null);
+    const isSubmitting = fetcher.state !== 'idle';
+
+    // Watch fetcher completion — close on success, rollback on failure.
+    useEffect(() => {
+        if (fetcher.state !== 'idle' || !fetcher.data) return;
+        if (pendingReviewIdRef.current) {
+            removeReviewOptimistic(pendingReviewIdRef.current);
+            pendingReviewIdRef.current = null;
+        }
+        if (fetcher.data.success) {
+            addReviewOptimistic(fetcher.data.review);
+            onAfterSubmit?.(fetcher.data.review);
+            onClose?.();
+        }
+    }, [fetcher.state, fetcher.data, onAfterSubmit, onClose, removeReviewOptimistic, addReviewOptimistic]);
 
     const minReviewLength = formConfig?.reviewBody?.minCharacters ?? 50;
     const maxReviewLength = formConfig?.reviewBody?.maxCharacters;
@@ -108,8 +128,10 @@ export function WriteReviewModalContent({
                 return;
             }
 
+            // Optimistic local update — immediate UI feedback while action persists.
+            const reviewId = `new-${Date.now()}`;
             const newReview: ReviewItem = {
-                id: `new-${Date.now()}`,
+                id: reviewId,
                 authorName: 'You',
                 verifiedPurchase: false,
                 date: new Date().toISOString().split('T')[0],
@@ -124,23 +146,34 @@ export function WriteReviewModalContent({
                 helpfulCount: 0,
                 reportLabel: tProduct('report'),
             };
-            addReview(newReview);
-            onAfterSubmit?.(newReview);
-            onClose?.();
+            addReviewOptimistic(newReview);
+            pendingReviewIdRef.current = reviewId;
+
+            // Submit to action route — onAfterSubmit and onClose fire in the
+            // useEffect above once the fetcher returns idle with data.
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('rating', String(selectedRating));
+            formData.append('headline', reviewTitleTrimmed);
+            formData.append('body', reviewBodyTrimmed);
+            if (location.trim()) formData.append('location', location.trim());
+            if (recommend !== null) formData.append('recommend', String(recommend));
+            void fetcher.submit(formData, { method: 'POST', action: '/action/add-review' });
         },
         [
-            addReview,
-            onAfterSubmit,
+            addReviewOptimistic,
             location,
-            onClose,
             reviewBodyTrimmed,
             reviewTitleTrimmed,
             selectedRating,
             selectedFiles,
+            recommend,
             minReviewLength,
             maxReviewLength,
             maxTitleLength,
             tProduct,
+            productId,
+            fetcher,
         ]
     );
 
@@ -516,10 +549,13 @@ export function WriteReviewModalContent({
                     type="button"
                     variant="outline"
                     onClick={handleCancel}
+                    disabled={isSubmitting}
                     className="hover:bg-muted hover:text-foreground hover:border-border">
                     {formConfig.cancelLabel}
                 </Button>
-                <Button type="submit">{formConfig.submitLabel}</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                    {formConfig.submitLabel}
+                </Button>
             </div>
         </form>
     );

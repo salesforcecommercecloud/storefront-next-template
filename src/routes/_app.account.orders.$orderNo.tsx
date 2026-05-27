@@ -38,6 +38,10 @@ import type { ShopperOrders } from '@/scapi';
 import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { getLogger } from '@/lib/logger.server';
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import { getWriteReviewForm, type WriteReviewFormData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
+import { WriteReviewFormProvider } from '@/extensions/ratings-reviews/context/write-review-form-context';
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
 type OrderDetailsLoaderData = {
     order: ShopperOrders.schemas['Order'];
@@ -46,6 +50,9 @@ type OrderDetailsLoaderData = {
 
 type OrderDetailsPageLoaderData = {
     orderData: Promise<OrderDetailsLoaderData>;
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    writeReviewForm: Promise<WriteReviewFormData>;
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 };
 
 /** Loader fetches order and product details via SCAPI (getOrder + getProducts). */
@@ -63,6 +70,10 @@ export function loader({ context, params }: Route.LoaderArgs): OrderDetailsPageL
 
     return {
         orderData: orderDataPromise,
+        // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+        // Form config for per-line "Rate & Review" — one config per order is sufficient.
+        writeReviewForm: getWriteReviewForm(orderNo),
+        // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     };
 }
 
@@ -102,7 +113,7 @@ export default function OrderDetailsPage(): ReactElement {
     const { orderNo } = useParams();
     const loaderData = useLoaderData<typeof loader>();
 
-    return (
+    let content: ReactElement = (
         <div className="w-full section-container pt-0 pb-8">
             <SeoMeta title={t('meta.orderDetailsTitle', { defaultValue: 'Order Details' })} noIndex />
             <Breadcrumb className="mb-5">
@@ -147,4 +158,12 @@ export default function OrderDetailsPage(): ReactElement {
             </Suspense>
         </div>
     );
+
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    content = (
+        <WriteReviewFormProvider writeReviewFormPromise={loaderData.writeReviewForm}>{content}</WriteReviewFormProvider>
+    );
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+
+    return content;
 }
