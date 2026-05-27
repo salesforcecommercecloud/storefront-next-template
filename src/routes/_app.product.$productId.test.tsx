@@ -190,6 +190,17 @@ describe('Product Detail Route', () => {
             disclosures: '',
         }),
         // @sfdc-extension-block-end SFDC_EXT_BNPL
+        // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+        returnsWarranty: Promise.resolve({
+            title: '',
+            description: '',
+            returnsPolicy: { heading: '', intro: '', conditions: [], howToReturn: [] },
+            warranty: { heading: '', intro: '', whatsCovered: [], whatsNotCovered: [], claimsProcess: '' },
+            exchanges: { heading: '', intro: '', process: '' },
+        }),
+        faqQuestions: Promise.resolve({ questions: [] }),
+        pdpCollapsibles: Promise.resolve([]),
+        // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
     };
 
     describe('shouldRevalidate function', () => {

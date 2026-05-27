@@ -27,13 +27,8 @@ describe('ProductContentMockAdapter', () => {
 
         it('should return adapter with all mock methods', () => {
             expect(adapter).toHaveProperty('getSizeGuide');
-            expect(adapter).toHaveProperty('getReturnsAndWarranty');
             expect(adapter).toHaveProperty('getEstimatedDelivery');
             expect(adapter).toHaveProperty('getProductDescription');
-            expect(adapter).toHaveProperty('getIngredientsData');
-            expect(adapter).toHaveProperty('getUsageInstructions');
-            expect(adapter).toHaveProperty('getCareInstructions');
-            expect(adapter).toHaveProperty('getTechSpecs');
             expect(adapter).toHaveProperty('getReviews');
             expect(adapter).toHaveProperty('getWriteReviewForm');
         });
@@ -51,21 +46,6 @@ describe('ProductContentMockAdapter', () => {
             expect(data.chart.rows[0]).toEqual({ size: 'XS', us: 4, eu: 34, uk: 6, cm: 22 });
             expect(data.howToMeasure).toHaveLength(3);
             expect(data.sizeTips.tips).toHaveLength(4);
-        });
-    });
-
-    describe('getReturnsAndWarranty', () => {
-        it('should return returns and warranty mock data', async () => {
-            const data = await adapter.getReturnsAndWarranty?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.title).toBe('30-Day Returns & 1 Year Warranty');
-            expect(data.returnsPolicy.heading).toBe('30-Day Returns Policy');
-            expect(data.returnsPolicy.conditions).toHaveLength(4);
-            expect(data.warranty.heading).toBe('1-Year Warranty');
-            expect(data.warranty.whatsCovered).toHaveLength(4);
-            expect(data.exchanges.heading).toBe('Exchanges');
-            expect(data.needHelp?.email).toBe('support@marketstreet.com');
         });
     });
 
@@ -94,46 +74,6 @@ describe('ProductContentMockAdapter', () => {
             expect(data.features[0]).toHaveProperty('html');
             expect(data.features[0]).toHaveProperty('contentType', 'bulleted-list');
             expect(data.features[1]).toHaveProperty('contentType', 'table-2-column');
-        });
-    });
-
-    describe('getIngredientsData', () => {
-        it('should return ingredients & materials as HTML', async () => {
-            const data = await adapter.getIngredientsData?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.contentType).toBe('bulleted-list');
-            expect(data.html).toContain('composite resin');
-        });
-    });
-
-    describe('getUsageInstructions', () => {
-        it('should return usage instructions as HTML', async () => {
-            const data = await adapter.getUsageInstructions?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.contentType).toBe('bulleted-list');
-            expect(data.html).toContain('flat, stable surface');
-        });
-    });
-
-    describe('getCareInstructions', () => {
-        it('should return care instructions as HTML', async () => {
-            const data = await adapter.getCareInstructions?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.contentType).toBe('bulleted-list');
-            expect(data.html).toContain('Hand wash cold');
-        });
-    });
-
-    describe('getTechSpecs', () => {
-        it('should return tech specs as HTML', async () => {
-            const data = await adapter.getTechSpecs?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.contentType).toBe('table-2-column');
-            expect(data.html).toContain('Material:');
         });
     });
 

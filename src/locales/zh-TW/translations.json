@@ -1370,19 +1370,6 @@
         "shippingOptionsHeading": "運送選項和費率",
         "free": "免費"
     },
-    "returnsAndWarranty": {
-        "learnMore": "檢視政策",
-        "returnConditions": "退貨條件：",
-        "howToReturn": "如何退貨：",
-        "note": "備註：",
-        "whatsCovered": "涵蓋項目：",
-        "whatsNotCovered": "不涵蓋項目：",
-        "warrantyClaims": "保固聲明：",
-        "exchangeProcess": "換貨流程：",
-        "needHelp": "是否需要協助？",
-        "contactAt": "聯絡我們：",
-        "orCall": "或致電"
-    },
     "writeReview": {
         "validation": {
             "pleaseFixFollowing": "請修正以下內容：",
@@ -1415,6 +1402,22 @@
         "apology": "We apologise for any inconvenience. Thank you for your patience!"
     },
     "error": {
+        "403": {
+            "title": "Access restricted",
+            "message": "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
+            "secondaryMessage": "In the meantime, feel free to browse our collection."
+        },
+        "404": {
+            "title": "Page not found",
+            "message": "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
+            "secondaryMessage": "Don't worry—you can still explore our collection or head back home.",
+            "details": "The requested page could not be found."
+        },
+        "500": {
+            "title": "Something went wrong",
+            "message": "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
+            "secondaryMessage": "Please try again in a few moments, or browse our shop while we sort things out."
+        },
         "defaultTitle": "Something went wrong",
         "defaultDescription": "An error occurred",
         "defaultDetails": "An unexpected error occurred.",
@@ -1426,22 +1429,6 @@
         "allRightsReserved": "All rights reserved.",
         "recommendations": {
             "title": "You might also like"
-        },
-        "404": {
-            "title": "Page not found",
-            "message": "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
-            "secondaryMessage": "Don't worry—you can still explore our collection or head back home.",
-            "details": "The requested page could not be found."
-        },
-        "403": {
-            "title": "Access restricted",
-            "message": "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
-            "secondaryMessage": "In the meantime, feel free to browse our collection."
-        },
-        "500": {
-            "title": "Something went wrong",
-            "message": "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
-            "secondaryMessage": "Please try again in a few moments, or browse our shop while we sort things out."
         }
     }
 }

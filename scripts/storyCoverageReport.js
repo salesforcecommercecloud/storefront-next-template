@@ -65,6 +65,9 @@ const EXCLUDED_COMPONENTS = new Set([
     // from `useRouteLoaderData`. Underlying section components have their own stories.
     'customer-preferences/components/target/preferences-target',
     'bnpl/components/target/bnpl-target',
+    'product-content/components/target/returns-and-warranty-target',
+    'product-content/components/target/faq-target',
+    'product-content/components/target/pdp-collapsibles-target',
     // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these
     'region/component',
     'region/component-data-context',

@@ -21,6 +21,7 @@ import bnplTranslations from '@/extensions/bnpl/locales/fr-FR/translations.json'
 import bopisTranslations from '@/extensions/bopis/locales/fr-FR/translations.json';
 import customerPreferencesTranslations from '@/extensions/customer-preferences/locales/fr-FR/translations.json';
 import multishipTranslations from '@/extensions/multiship/locales/fr-FR/translations.json';
+import productContentTranslations from '@/extensions/product-content/locales/fr-FR/translations.json';
 import storeLocatorTranslations from '@/extensions/store-locator/locales/fr-FR/translations.json';
 
 // Namespace is based on the following convention: extPascalCase, and it's the pascal case of the folder name (e.g. store-locator -> extStoreLocator)
@@ -29,5 +30,6 @@ export default {
     extBopis: bopisTranslations,
     extCustomerPreferences: customerPreferencesTranslations,
     extMultiship: multishipTranslations,
+    extProductContent: productContentTranslations,
     extStoreLocator: storeLocatorTranslations,
 };

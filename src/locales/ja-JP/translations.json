@@ -1369,19 +1369,6 @@
         "shippingOptionsHeading": "配送オプションと料金",
         "free": "無料"
     },
-    "returnsAndWarranty": {
-        "learnMore": "ポリシーを見る",
-        "returnConditions": "返品条件:",
-        "howToReturn": "返品方法:",
-        "note": "注意: ",
-        "whatsCovered": "保証対象:",
-        "whatsNotCovered": "保証対象外:",
-        "warrantyClaims": "保証請求:",
-        "exchangeProcess": "交換手続き:",
-        "needHelp": "お困りですか?",
-        "contactAt": "お問い合わせ先",
-        "orCall": "またはお電話でお問い合わせください"
-    },
     "writeReview": {
         "validation": {
             "pleaseFixFollowing": "以下を修正してください。",
@@ -1414,6 +1401,22 @@
         "apology": "We apologise for any inconvenience. Thank you for your patience!"
     },
     "error": {
+        "403": {
+            "title": "Access restricted",
+            "message": "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
+            "secondaryMessage": "In the meantime, feel free to browse our collection."
+        },
+        "404": {
+            "title": "Page not found",
+            "message": "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
+            "secondaryMessage": "Don't worry—you can still explore our collection or head back home.",
+            "details": "The requested page could not be found."
+        },
+        "500": {
+            "title": "Something went wrong",
+            "message": "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
+            "secondaryMessage": "Please try again in a few moments, or browse our shop while we sort things out."
+        },
         "defaultTitle": "Something went wrong",
         "defaultDescription": "An error occurred",
         "defaultDetails": "An unexpected error occurred.",
@@ -1425,22 +1428,6 @@
         "allRightsReserved": "All rights reserved.",
         "recommendations": {
             "title": "You might also like"
-        },
-        "404": {
-            "title": "Page not found",
-            "message": "We couldn't find the page you're looking for. It may have been moved or the link might be incorrect.",
-            "secondaryMessage": "Don't worry—you can still explore our collection or head back home.",
-            "details": "The requested page could not be found."
-        },
-        "403": {
-            "title": "Access restricted",
-            "message": "You don't have permission to view this page. If you believe this is an error, please contact our support team.",
-            "secondaryMessage": "In the meantime, feel free to browse our collection."
-        },
-        "500": {
-            "title": "Something went wrong",
-            "message": "We're sorry, but something unexpected happened on our end. Our team has been notified and is working to fix it.",
-            "secondaryMessage": "Please try again in a few moments, or browse our shop while we sort things out."
         }
     }
 }

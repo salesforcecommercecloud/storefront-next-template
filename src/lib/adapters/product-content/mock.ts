@@ -16,20 +16,14 @@
 import i18n from 'i18next';
 import type { ProductContentAdapter } from '@/lib/adapters/product-content/types';
 import type {
-    CareInstructionsData,
     EstimatedDeliveryData,
-    FaqQuestionsData,
-    IngredientsData,
     ProductDescriptionData,
     RatingDistribution,
-    ReturnsAndWarrantyData,
     ReviewItem,
     ReviewsData,
     ReviewsSummaryData,
     ShippingEstimate,
     SizeGuideData,
-    TechSpecsData,
-    UsageInstructionsData,
     WriteReviewFormData,
 } from '@/lib/adapters/product-content/data-types';
 
@@ -78,62 +72,6 @@ const MOCK_SIZE_GUIDE_DATA: SizeGuideData = {
             "If you're between sizes, we recommend sizing up",
             'For questions about fit, contact our customer service team',
         ],
-    },
-};
-
-/**
- * Mock returns & warranty data for PDP Returns & Warranty modal.
- * Matches the UI: 30-day returns, 1-year warranty, exchanges, need help.
- */
-const MOCK_RETURNS_AND_WARRANTY_DATA: ReturnsAndWarrantyData = {
-    title: '30-Day Returns & 1 Year Warranty',
-    description: 'Returns accepted within 30 days. Full warranty coverage included.',
-    returnsPolicy: {
-        heading: '30-Day Returns Policy',
-        intro: "We want you to love your purchase. If you're not completely satisfied, you can return most items within 30 days of delivery for a full refund or exchange.",
-        conditions: [
-            'Items must be in original, unworn condition',
-            'Original tags and packaging must be included',
-            'Items must not show signs of use or damage',
-            'Proof of purchase required',
-        ],
-        howToReturn: [
-            'Log into your account and go to Order History',
-            'Select the item(s) you wish to return',
-            'Print the prepaid return label',
-            'Package the item(s) securely and attach the label',
-            'Drop off at any authorized carrier location',
-        ],
-        note: 'Return shipping costs are the responsibility of the customer unless the item is defective or incorrect.',
-    },
-    warranty: {
-        heading: '1-Year Warranty',
-        intro: "All products come with a comprehensive 1-year manufacturer's warranty covering defects in materials and workmanship.",
-        whatsCovered: [
-            'Manufacturing defects',
-            'Material defects',
-            'Workmanship issues',
-            'Premature wear under normal use',
-        ],
-        whatsNotCovered: [
-            'Normal wear and tear',
-            'Damage from misuse or accidents',
-            'Damage from improper care or cleaning',
-            'Modifications or alterations',
-        ],
-        claimsProcess:
-            "To file a warranty claim, contact our customer service team with your order number, photos of the defect, and a description of the issue. We'll review your claim and provide a resolution within 5-7 business days.",
-    },
-    exchanges: {
-        heading: 'Exchanges',
-        intro: 'Need a different size or color? We offer hassle-free exchanges within 30 days of purchase. Exchanges are subject to product availability.',
-        process:
-            "Follow the same return process and specify that you'd like an exchange. We'll process your exchange once we receive your original item.",
-    },
-    needHelp: {
-        intro: 'Our customer service team is here to assist you.',
-        email: 'support@marketstreet.com',
-        phone: '1-800-123-4567',
     },
 };
 
@@ -202,49 +140,6 @@ const MOCK_PRODUCT_DESCRIPTION_DATA: ProductDescriptionData = {
             html: '<table><tr><td>Material:</td><td>Full-grain leather</td></tr><tr><td>Sole:</td><td>Rubber</td></tr><tr><td>Heel height:</td><td>1.5"</td></tr><tr><td>Closure:</td><td>Lace-up + side zip</td></tr></table>',
             contentType: 'table-2-column',
         },
-    ],
-};
-
-/**
- * Mock ingredients & materials (Ingredients & Materials collapsible section).
- */
-const MOCK_INGREDIENTS_DATA: IngredientsData = {
-    html: '<ul><li>High-density composite resin</li><li>UV-resistant matte coating</li><li>Weighted stabilizing core</li></ul>',
-    contentType: 'bulleted-list',
-};
-
-/**
- * Mock usage instructions (Usage Instructions collapsible section).
- */
-const MOCK_USAGE_INSTRUCTIONS_DATA: UsageInstructionsData = {
-    html: '<ul><li>Place on any flat, stable surface</li><li>Position near natural light for best effect</li><li>Rotate periodically to appreciate all angles</li></ul>',
-    contentType: 'bulleted-list',
-};
-
-/**
- * Mock care instructions (Care Instructions collapsible section).
- */
-const MOCK_CARE_INSTRUCTIONS_DATA: CareInstructionsData = {
-    html: '<ul><li>Hand wash cold</li><li>Do not wring or twist</li><li>Hang dry</li><li>Iron on low heat on reverse side</li></ul>',
-    contentType: 'bulleted-list',
-};
-
-/**
- * Mock tech specs (Technical Specs collapsible section).
- */
-const MOCK_TECH_SPECS_DATA: TechSpecsData = {
-    html: '<table style="border: none;"><tr style="border: none;"><td style="font-weight: normal">Material:</td><td>Premium composite</td></tr><tr style="border: none;"><td style="font-weight: normal">Finish:</td><td>Matte</td></tr><tr style="border: none;"><td style="font-weight: normal">Origin:</td><td>Made in Portugal</td></tr></table>',
-    contentType: 'table-2-column',
-};
-
-/**
- * Mock FAQ questions for "Ask assistant" collapsible section on PDP.
- */
-const MOCK_FAQ_QUESTIONS: FaqQuestionsData = {
-    questions: [
-        'What sizes does this come in?',
-        'Which color would work best for a minimalist space?',
-        'Will this work in a minimalist living room?',
     ],
 };
 
@@ -480,10 +375,6 @@ export function createProductContentMockAdapter(config: ProductContentMockAdapte
             await simulateDelay(mockDelay);
             return MOCK_SIZE_GUIDE_DATA;
         },
-        getReturnsAndWarranty: async (_productId?: string): Promise<ReturnsAndWarrantyData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_RETURNS_AND_WARRANTY_DATA;
-        },
         getEstimatedDelivery: async (_productId?: string): Promise<EstimatedDeliveryData> => {
             await simulateDelay(mockDelay);
             return MOCK_ESTIMATED_DELIVERY_DATA;
@@ -491,26 +382,6 @@ export function createProductContentMockAdapter(config: ProductContentMockAdapte
         getProductDescription: async (_productId?: string): Promise<ProductDescriptionData> => {
             await simulateDelay(mockDelay);
             return MOCK_PRODUCT_DESCRIPTION_DATA;
-        },
-        getIngredientsData: async (_productId?: string): Promise<IngredientsData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_INGREDIENTS_DATA;
-        },
-        getUsageInstructions: async (_productId?: string): Promise<UsageInstructionsData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_USAGE_INSTRUCTIONS_DATA;
-        },
-        getCareInstructions: async (_productId?: string): Promise<CareInstructionsData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_CARE_INSTRUCTIONS_DATA;
-        },
-        getTechSpecs: async (_productId?: string): Promise<TechSpecsData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_TECH_SPECS_DATA;
-        },
-        getFaqQuestions: async (_productId?: string): Promise<FaqQuestionsData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_FAQ_QUESTIONS;
         },
         getReviewsSummary: async (productId?: string): Promise<ReviewsSummaryData> => {
             await simulateDelay(mockDelay);

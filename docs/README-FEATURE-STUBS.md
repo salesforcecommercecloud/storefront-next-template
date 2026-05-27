@@ -145,4 +145,40 @@ Config updates:
 
 ---
 
+### Product Content (PDP collapsibles, returns & warranty, FAQ)
+
+| Field | Details |
+|-------|---------|
+| **Status** | Stub — no backend integration |
+| **Location** | `src/extensions/product-content/` |
+| **Surfaces** | Product detail page (PDP) |
+| **Extension** | `SFDC_EXT_PRODUCT_CONTENT` (named "(Demo) Product Content" in `src/extensions/config.json`) |
+
+**Current behavior:**
+Three PDP surfaces are wired up and fully functional, but backed by hard-coded fixtures in `lib/api/product-content.server.ts`:
+- A **Returns & Warranty** info card with a "View Policies" modal containing the full policy text.
+- An **"Ask assistant" FAQ** collapsible (rendered only when the shopper agent is enabled and product-context UI is on).
+- The merchant-customizable **collapsible product sections** (Materials, Usage Instructions, Care Instructions, Specifications) — driven by `lib/pdp-sections.ts`.
+
+The fixtures return the same content for every product — the `productId` argument is accepted but ignored.
+
+**To productionize:**
+Replace the bodies of `getReturnsAndWarranty`, `getIngredientsData`, `getUsageInstructions`, `getCareInstructions`, `getTechSpecs`, and `getFaqQuestions` in `src/extensions/product-content/lib/api/product-content.server.ts` with calls into your CMS, PIM, or Page Designer-backed content service. The PDP loader (`src/routes/_app.product.$productId.tsx`) and the UITarget wrappers do not need to change. Customize the ordered list of collapsibles per product via `src/extensions/product-content/lib/pdp-sections.ts`. Drop the `(Demo)` prefix from the extension name in `src/extensions/config.json` once a real backend is wired up.
+
+**To remove:**
+Uninstall the extension by stripping the `@sfdc-extension-*` markers from core files and deleting the extension folder.
+
+Files to delete:
+- `src/extensions/product-content/` (entire folder)
+
+Parent components to update (remove the marker block):
+- `src/routes/_app.product.$productId.tsx` — the `returnsWarranty` / `faqQuestions` / `pdpCollapsibles` loader Promises and the imports
+- `src/components/product-view/product-view.tsx` — the three `<UITarget>` calls (`sfcc.pdp.returnsWarranty`, `sfcc.pdp.faq`, `sfcc.pdp.collapsibles`)
+
+Config updates:
+- Remove `SFDC_EXT_PRODUCT_CONTENT` from `src/extensions/config.json`
+- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+
+---
+
 <!-- Add new stubs below using the same format -->

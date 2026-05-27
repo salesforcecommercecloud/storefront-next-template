@@ -1438,19 +1438,6 @@
         "shippingOptionsHeading": "Tariffe e opzioni di spedizione",
         "free": "Gratis"
     },
-    "returnsAndWarranty": {
-        "learnMore": "Visualizza le policy",
-        "returnConditions": "Condizioni di reso:",
-        "howToReturn": "Come procedere con i resi:",
-        "note": "Nota:",
-        "whatsCovered": "Cosa è coperto:",
-        "whatsNotCovered": "Cosa non è coperto:",
-        "warrantyClaims": "Richieste di garanzia:",
-        "exchangeProcess": "Procedura di cambio:",
-        "needHelp": "Serve aiuto?",
-        "contactAt": "Contattaci all'indirizzo",
-        "orCall": "o chiama"
-    },
     "writeReview": {
         "validation": {
             "pleaseFixFollowing": "Risolvi i seguenti problemi:",

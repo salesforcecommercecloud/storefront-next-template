@@ -355,34 +355,6 @@ describe('ProductView', () => {
         });
     });
 
-    describe('PDP collapsible sections', () => {
-        test('renders all 4 section shells by default', () => {
-            const { container } = renderProductView({ product: mockProduct });
-
-            expect(screen.getByText('Materials')).toBeInTheDocument();
-            expect(screen.getByText('Usage Instructions')).toBeInTheDocument();
-            expect(screen.getByText('Care Instructions')).toBeInTheDocument();
-            expect(screen.getByText('Specifications')).toBeInTheDocument();
-
-            // Each label lives inside a <summary> within a <details>
-            const summaries = container.querySelectorAll('details > summary');
-            const sectionLabels = Array.from(summaries).map((s) => s.textContent?.trim());
-            expect(sectionLabels).toContain('Materials');
-            expect(sectionLabels).toContain('Usage Instructions');
-            expect(sectionLabels).toContain('Care Instructions');
-            expect(sectionLabels).toContain('Specifications');
-        });
-
-        test('section shells are collapsed by default', () => {
-            const { container } = renderProductView({ product: mockProduct });
-
-            const detailsForMaterials = Array.from(container.querySelectorAll('details')).find((d) =>
-                d.querySelector('summary')?.textContent?.includes('Materials')
-            );
-            expect(detailsForMaterials).not.toHaveAttribute('open');
-        });
-    });
-
     describe('Description section', () => {
         test('description summary has hover background style', () => {
             const productWithDescription = {

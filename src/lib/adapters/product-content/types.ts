@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 import type {
-    CareInstructionsData,
     EstimatedDeliveryData,
-    FaqQuestionsData,
-    HtmlContent,
-    IngredientsData,
     ProductDescriptionData,
-    ReturnsAndWarrantyData,
     ReviewItem,
     ReviewsData,
     ReviewsSummaryData,
     ShippingEstimate,
     SizeGuideData,
-    TechSpecsData,
-    UsageInstructionsData,
     WriteReviewFormData,
 } from './data-types';
 
@@ -56,11 +49,6 @@ export interface ProductContentAdapter {
     getSizeGuide?(productId?: string): Promise<SizeGuideData>;
 
     /**
-     * Get returns and warranty content for PDP modal
-     */
-    getReturnsAndWarranty?(productId?: string): Promise<ReturnsAndWarrantyData>;
-
-    /**
      * Get estimated delivery content for PDP (Fulfillment & Shipping modal)
      */
     getEstimatedDelivery?(productId?: string): Promise<EstimatedDeliveryData>;
@@ -69,31 +57,6 @@ export interface ProductContentAdapter {
      * Get product description for PDP (intro paragraph + features)
      */
     getProductDescription?(productId?: string): Promise<ProductDescriptionData>;
-
-    /**
-     * Get ingredients/materials data for collapsible content on PDP
-     */
-    getIngredientsData?(productId?: string): Promise<IngredientsData>;
-
-    /**
-     * Get usage instructions for collapsible content on PDP
-     */
-    getUsageInstructions?(productId?: string): Promise<UsageInstructionsData>;
-
-    /**
-     * Get care instructions for collapsible content on PDP
-     */
-    getCareInstructions?(productId?: string): Promise<CareInstructionsData>;
-
-    /**
-     * Get tech specs for collapsible content on PDP
-     */
-    getTechSpecs?(productId?: string): Promise<TechSpecsData>;
-
-    /**
-     * Get FAQ questions for the "Ask assistant" collapsible section on PDP
-     */
-    getFaqQuestions?(productId?: string): Promise<FaqQuestionsData>;
 
     /**
      * Get lightweight reviews summary for accordion header (count, rating, distribution, AI summary).
@@ -123,18 +86,3 @@ export interface ProductContentAdapter {
      */
     getShippingEstimates?(productId?: string, zipcode?: string): Promise<ShippingEstimate>;
 }
-
-/**
- * Union of ProductContentAdapter method names whose return type is Promise<HtmlContent>.
- * Automatically stays in sync as the adapter interface evolves — no manual string union to maintain.
- *
- * Required<> strips the optional ? marker from each property so the extends check matches
- * the function type rather than `functionType | undefined`.
- */
-export type HtmlContentAdapterMethod = {
-    [K in keyof ProductContentAdapter]-?: Required<ProductContentAdapter>[K] extends (
-        productId?: string
-    ) => Promise<HtmlContent>
-        ? K
-        : never;
-}[keyof ProductContentAdapter];

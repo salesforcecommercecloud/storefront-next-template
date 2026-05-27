@@ -61,6 +61,18 @@ import {
     type BuyNowPayLaterLearnMoreData,
 } from '@/extensions/bnpl/lib/api/bnpl.server';
 // @sfdc-extension-block-end SFDC_EXT_BNPL
+// @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+import {
+    getReturnsAndWarranty,
+    getFaqQuestions,
+    pdpSectionApi,
+    type ReturnsAndWarrantyData,
+    type FaqQuestionsData,
+    type HtmlContent,
+} from '@/extensions/product-content/lib/api/product-content.server';
+import { resolvePdpSections } from '@/extensions/product-content/lib/pdp-sections';
+import { ProductContentDataProvider } from '@/extensions/product-content/context/product-content-data-context';
+// @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
 
 @PageType({
     name: 'Product Detail Page',
@@ -94,6 +106,11 @@ export type ProductPageData = {
     bnplMessage: Promise<BuyNowPayLaterMessageData>;
     bnplLearnMore: Promise<BuyNowPayLaterLearnMoreData>;
     // @sfdc-extension-block-end SFDC_EXT_BNPL
+    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+    returnsWarranty: Promise<ReturnsAndWarrantyData>;
+    faqQuestions: Promise<FaqQuestionsData>;
+    pdpCollapsibles: Promise<Array<HtmlContent | null>>;
+    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
 };
 
 /**
@@ -223,6 +240,15 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductPageData> {
         bnplMessage: getBuyNowPayLaterMessage(productLookupId),
         bnplLearnMore: getBuyNowPayLaterLearnMore(productLookupId),
         // @sfdc-extension-block-end SFDC_EXT_BNPL
+        // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+        returnsWarranty: getReturnsAndWarranty(productLookupId),
+        faqQuestions: getFaqQuestions(productLookupId),
+        pdpCollapsibles: Promise.all(
+            resolvePdpSections(product).map((section) =>
+                pdpSectionApi[section.apiMethod](productLookupId).catch(() => null)
+            )
+        ),
+        // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
     };
 }
 
@@ -266,7 +292,23 @@ export function shouldRevalidate({
     return false;
 }
 
-function ProductContent({ product, url }: { product: ShopperProducts.schemas['Product']; url: string }) {
+function ProductContent({
+    product,
+    url,
+    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+    returnsWarrantyPromise,
+    faqQuestionsPromise,
+    pdpCollapsiblesPromise,
+    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
+}: {
+    product: ShopperProducts.schemas['Product'];
+    url: string;
+    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+    returnsWarrantyPromise: Promise<ReturnsAndWarrantyData>;
+    faqQuestionsPromise: Promise<FaqQuestionsData>;
+    pdpCollapsiblesPromise: Promise<Array<HtmlContent | null>>;
+    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
+}) {
     const analytics = useAnalytics();
     const lastTrackedProductIdRef = useRef<string | null>(null);
 
@@ -291,33 +333,43 @@ function ProductContent({ product, url }: { product: ShopperProducts.schemas['Pr
     return (
         <ProductProvider product={product}>
             <ProductContentProvider>
-                <ProductReviewsProvider>
-                    <SeoMeta
-                        title={product.name}
-                        description={product.pageDescription || product.shortDescription}
-                        openGraph={{
-                            type: 'product',
-                            url,
-                            image: primaryImage,
-                        }}
-                    />
-                    <div className="space-y-8">
-                        {isProductASet || isProductABundle ? (
-                            <>
+                {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
+                <ProductContentDataProvider
+                    product={product}
+                    returnsWarrantyPromise={returnsWarrantyPromise}
+                    faqQuestionsPromise={faqQuestionsPromise}
+                    pdpCollapsiblesPromise={pdpCollapsiblesPromise}>
+                    {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
+                    <ProductReviewsProvider>
+                        <SeoMeta
+                            title={product.name}
+                            description={product.pageDescription || product.shortDescription}
+                            openGraph={{
+                                type: 'product',
+                                url,
+                                image: primaryImage,
+                            }}
+                        />
+                        <div className="space-y-8">
+                            {isProductASet || isProductABundle ? (
+                                <>
+                                    <ProductView product={product} />
+                                    <ChildProducts parentProduct={product} />
+                                </>
+                            ) : (
                                 <ProductView product={product} />
-                                <ChildProducts parentProduct={product} />
-                            </>
-                        ) : (
-                            <ProductView product={product} />
-                        )}
+                            )}
 
-                        {/* Customer Reviews Section (lazy-loaded to reduce initial bundle) */}
-                        <Suspense fallback={null}>
-                            <CustomerReviewsSection />
-                        </Suspense>
-                        <UITarget targetId="sfcc.pdp.reviews.qna" />
-                    </div>
-                </ProductReviewsProvider>
+                            {/* Customer Reviews Section (lazy-loaded to reduce initial bundle) */}
+                            <Suspense fallback={null}>
+                                <CustomerReviewsSection />
+                            </Suspense>
+                            <UITarget targetId="sfcc.pdp.reviews.qna" />
+                        </div>
+                    </ProductReviewsProvider>
+                    {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
+                </ProductContentDataProvider>
+                {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
             </ProductContentProvider>
         </ProductProvider>
     );
@@ -346,7 +398,15 @@ function ProductDetailView({ loaderData }: { loaderData: ProductPageData }) {
                 </Suspense>
 
                 {/* Main Product Content — product is resolved synchronously by the loader */}
-                <ProductContent product={loaderData.product} url={loaderData.pageUrl} />
+                <ProductContent
+                    product={loaderData.product}
+                    url={loaderData.pageUrl}
+                    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+                    returnsWarrantyPromise={loaderData.returnsWarranty}
+                    faqQuestionsPromise={loaderData.faqQuestions}
+                    pdpCollapsiblesPromise={loaderData.pdpCollapsibles}
+                    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
+                />
 
                 {/* Engagement Content Region - Shows page content or recommendations */}
                 <Region

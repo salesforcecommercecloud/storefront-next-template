@@ -32,14 +32,18 @@ export type {
     RatingDistributionData,
     StarRatingDistributionModalData,
     EstimatedDeliveryModalData,
+    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     ReturnsAndWarrantyModalData,
+    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
 } from './types';
 
 import { PaymentScheduleModalContent } from './renderers/payment-schedule-modal-content';
 import { WriteReviewModalContent } from './renderers/write-review-modal-content';
 import { StarRatingDistributionModalContent } from './renderers/star-rating-distribution-modal-content';
 import { EstimatedDeliveryModalContent } from './renderers/estimated-delivery-modal-content';
+// @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
 import { ReturnsAndWarrantyModalContent } from './renderers/returns-and-warranty-modal-content';
+// @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
 
 /** Escapes a string for safe use inside a RegExp. */
 function escapeRegex(s: string): string {
@@ -58,7 +62,9 @@ const MODAL_WIDTH_CLASSES = {
     'star-rating-distribution': 'w-[304px] max-w-[304px] sm:w-[304px] sm:max-w-[304px]',
     'payment-schedule': 'max-w-2xl sm:max-w-2xl',
     'estimated-delivery': 'max-w-2xl sm:max-w-2xl',
+    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     'returns-and-warranty': 'max-w-2xl sm:max-w-2xl',
+    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
 } as const;
 
 /**
@@ -219,6 +225,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                         </div>
                     </>
                 )}
+                {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
                 {data.type === 'returns-and-warranty' && (
                     <>
                         <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
@@ -237,6 +244,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                         </div>
                     </>
                 )}
+                {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
             </DialogContent>
         </Dialog>
     );
