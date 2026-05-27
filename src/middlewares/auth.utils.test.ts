@@ -24,7 +24,10 @@ import {
     isTrackingConsentEnabled,
     getPublicSessionData,
     hasUsableShopperSession,
+    updateAuthStorageDataByTokenResponse,
+    type AuthStorageData,
 } from './auth.utils';
+import { buildMockTokenResponse } from '@/test-utils/auth';
 import type { SessionData } from '@/lib/api/types';
 import type { AppConfig } from '@/types/config';
 import { createTestContext } from '@/lib/test-utils';
@@ -592,6 +595,8 @@ describe('auth.utils', () => {
                 codeVerifier: 'secret-code-verifier',
                 idpAccessToken: 'secret-idp-token',
                 idpAccessTokenExpiry: 1111111111,
+                idToken: 'secret-id-token',
+                idpRefreshToken: 'secret-idp-refresh-token',
                 dwsid: 'secret-dwsid',
             };
 
@@ -611,7 +616,49 @@ describe('auth.utils', () => {
             expect(publicData).not.toHaveProperty('refreshToken');
             expect(publicData).not.toHaveProperty('codeVerifier');
             expect(publicData).not.toHaveProperty('idpAccessToken');
+            expect(publicData).not.toHaveProperty('idToken');
+            expect(publicData).not.toHaveProperty('idpRefreshToken');
             expect(publicData).not.toHaveProperty('dwsid');
+        });
+    });
+
+    describe('updateAuthStorageDataByTokenResponse', () => {
+        const makeStorage = () => new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+        it('stores idToken when id_token is present on the response', () => {
+            const storage = makeStorage();
+            const tokenResponse = buildMockTokenResponse();
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+
+            expect(storage.get('idToken')).toBe('id-token-123');
+        });
+
+        it('does not store idToken when token response omits id_token', () => {
+            const storage = makeStorage();
+            const tokenResponse = { ...buildMockTokenResponse(), id_token: undefined as unknown as string };
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+
+            expect(storage.has('idToken')).toBe(false);
+        });
+
+        it('stores idpRefreshToken when idp_refresh_token is present on the response', () => {
+            const storage = makeStorage();
+            const tokenResponse = buildMockTokenResponse();
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+
+            expect(storage.get('idpRefreshToken')).toBe('idp-refresh-token-789');
+        });
+
+        it('does not store idpRefreshToken when token response omits idp_refresh_token', () => {
+            const storage = makeStorage();
+            const tokenResponse = { ...buildMockTokenResponse(), idp_refresh_token: undefined };
+
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+
+            expect(storage.has('idpRefreshToken')).toBe(false);
         });
     });
 

@@ -32,6 +32,14 @@ export type SessionData = {
     // IDP tokens (for social login)
     idpAccessToken?: string;
     idpAccessTokenExpiry?: number;
+    // OIDC id_token (server-only; never serialized to the client via PublicSessionData).
+    // Cookie expiry is reused from accessTokenExpiry at write time (matches PWA Kit's
+    // process-token-response.js, where id_token tracks the access-token JWT exp).
+    idToken?: string;
+    // IDP refresh token (server-only; never serialized to the client via PublicSessionData).
+    // Cookie expiry is reused from refreshTokenExpiry at write time (matches PWA Kit, where
+    // idp_refresh_token shares the SLAS refresh-token TTL).
+    idpRefreshToken?: string;
 
     // hybrid
     dwsid?: string;

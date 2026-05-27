@@ -211,6 +211,8 @@ function getMockAuthData(): AuthData {
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
         idpAccessToken: 'idp_access_token',
+        idToken: 'id_token',
+        idpRefreshToken: 'idp_refresh_token',
         trackingConsent: TrackingConsent.Declined,
     };
 }
@@ -227,6 +229,8 @@ function getMockRegisteredAuthData(): AuthData {
         codeVerifier: 'codeVerifier',
         dwsid: 'dwsid',
         idpAccessToken: 'idp_access_token',
+        idToken: 'id_token',
+        idpRefreshToken: 'idp_refresh_token',
         trackingConsent: TrackingConsent.Declined,
     };
 }
@@ -1633,7 +1637,7 @@ describe('auth middleware (server)', () => {
             expect(expiry).toBe(exp * 1000); // Should be in milliseconds
         });
 
-        it('should destroy all 12 cookies when isDestroyed is set', async () => {
+        it('should destroy all 14 cookies when isDestroyed is set', async () => {
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
             });
@@ -1674,10 +1678,10 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            // Verify all 12 cookies were deleted:
+            // Verify all 14 cookies were deleted:
             // cc-nx-g, cc-nx, cc-at, usid, customerId (legacy cleanup), encUserId, cc-idp-at,
-            // dwsid, cc-cv, tc, storefront-next-context_*, dwsourcecode_*
-            expect(mockSerialize).toHaveBeenCalledTimes(12);
+            // id_token, idp_refresh_token, dwsid, cc-cv, tc, storefront-next-context_*, dwsourcecode_*
+            expect(mockSerialize).toHaveBeenCalledTimes(14);
             expect(mockSerialize).toHaveBeenCalledWith(
                 '',
                 expect.objectContaining({
@@ -1727,6 +1731,8 @@ describe('auth middleware (server)', () => {
 
             expect(mockSerialize).toHaveBeenCalledWith(mockTokenResponse.access_token, expect.any(Object));
             expect(mockSerialize).toHaveBeenCalledWith('idp-access-token-123', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith('id-token-123', expect.any(Object));
+            expect(mockSerialize).toHaveBeenCalledWith('idp-refresh-token-789', expect.any(Object));
             expect(mockSerialize).toHaveBeenCalledWith('refresh-dwsid', expect.any(Object));
         });
 
@@ -1819,10 +1825,10 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            // Verify all 12 cookies were deleted due to error
+            // Verify all 14 cookies were deleted due to error
             // cc-nx-g, cc-nx, cc-at, usid, customerId (legacy cleanup), encUserId, cc-idp-at,
-            // dwsid, cc-cv, tc, storefront-next-context_*, dwsourcecode_*
-            expect(mockSerialize).toHaveBeenCalledTimes(12);
+            // id_token, idp_refresh_token, dwsid, cc-cv, tc, storefront-next-context_*, dwsourcecode_*
+            expect(mockSerialize).toHaveBeenCalledTimes(14);
         });
 
         it('should use getCookieNameWithSiteId to get cookie names', async () => {
@@ -1861,6 +1867,8 @@ describe('auth middleware (server)', () => {
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('usid', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('enc_user_id', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('idp_access_token', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('id_token', context);
+            expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('idp_refresh_token', context);
             expect(mockgetCookieNameWithSiteId).toHaveBeenCalledWith('cc-cv', context);
         });
 
@@ -1975,6 +1983,92 @@ describe('auth middleware (server)', () => {
 
             // Verify IDP access token was reconstructed from cookies
             expect(storage.get('idpAccessToken')).toBe('idp-access-token');
+        });
+
+        it('should read and reconstruct id_token from cookies', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = buildMockAccessToken({ exp });
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                id_token: 'id-token-from-cookie',
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; id_token=id-token-from-cookie',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            expect(storage.get('idToken')).toBe('id-token-from-cookie');
+        });
+
+        it('should read and reconstruct idp_refresh_token from cookies', async () => {
+            const mockTokenResponse = getMockTokenResponse();
+            mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
+
+            const now = Math.floor(Date.now() / 1000);
+            const exp = now + 1800;
+            const mockAccessToken = buildMockAccessToken({ exp });
+
+            mockParseAllCookies.mockReturnValue({
+                'cc-nx-g': 'guest-refresh-token',
+                'cc-at': mockAccessToken,
+                idp_refresh_token: 'idp-refresh-token-from-cookie',
+            });
+
+            const request = new Request('https://example.com/test', {
+                headers: {
+                    Cookie: 'cc-nx-g=guest-refresh-token; cc-at=access-token; idp_refresh_token=idp-refresh-token-from-cookie',
+                },
+            });
+
+            const context = new RouterContextProvider();
+            const storage = new Map<keyof AuthStorageData, AuthStorageData[keyof AuthStorageData]>();
+
+            vi.spyOn(context, 'get').mockImplementation((key) => {
+                if (key === performanceTimerContext) return mockPerformanceTimer;
+                if (key === appConfigContext) return mockConfig;
+                return storage;
+            });
+
+            vi.spyOn(context, 'set').mockImplementation((_key, value) => {
+                if (typeof value === 'object' && value instanceof Map) {
+                    value.forEach((v, k) => storage.set(k, v));
+                }
+            });
+
+            const mockResponse = new Response('OK');
+            const next = vi.fn().mockResolvedValue(mockResponse);
+
+            await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
+
+            expect(storage.get('idpRefreshToken')).toBe('idp-refresh-token-from-cookie');
         });
 
         it('should read and reconstruct code verifier from cookie', async () => {

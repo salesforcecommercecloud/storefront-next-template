@@ -114,5 +114,6 @@ export function buildMockTokenResponse(
         customer_id: overrides.customer_id ?? customerId,
         enc_user_id: 'enc-user-id-123',
         idp_access_token: 'idp-access-token-123',
+        idp_refresh_token: 'idp-refresh-token-789',
     };
 }

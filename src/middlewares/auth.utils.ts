@@ -40,6 +40,10 @@ export const COOKIE_USID = 'usid'; // User session ID
 export const COOKIE_CUSTOMER_ID = 'customer_id'; // Legacy customer ID — only used for destroy-path cookie deletion
 export const COOKIE_ENC_USER_ID = 'enc_user_id'; // Encoded user ID
 export const COOKIE_IDP_ACCESS_TOKEN = 'idp_access_token'; // IDP access token (for social login)
+// SFNext intentionally diverges from PWA Kit (which sets id_token without HttpOnly) —
+// SFNext's convention is HttpOnly for everything except cc-cv.
+export const COOKIE_ID_TOKEN = 'id_token'; // OIDC id_token (HttpOnly; expires with access token)
+export const COOKIE_IDP_REFRESH_TOKEN = 'idp_refresh_token'; // IDP refresh token (HttpOnly; expires with refresh token)
 export const COOKIE_CODE_VERIFIER = 'cc-cv'; // OAuth2 PKCE code verifier (server-only, short-lived)
 export const COOKIE_TRACKING_CONSENT = 'dw_dnt'; // Tracking consent preference (cookie value matches TrackingConsent enum)
 export const COOKIE_DWSID = 'dwsid'; // Hybrid storefront session ID (for session bridge)
@@ -245,6 +249,20 @@ export const updateAuthStorageDataByTokenResponse = (
         if (idpAccessTokenExpiryValue && typeof idpAccessTokenExpiryValue === 'number') {
             storage.set('idpAccessTokenExpiry', idpAccessTokenExpiryValue);
         }
+    }
+
+    // Store id_token if available (OIDC ID token). Cookie expiry is reused from
+    // accessTokenExpiry at write time — matches PWA Kit's process-token-response.js
+    // where id_token tracks the access-token JWT exp.
+    if (tokenResponse?.id_token) {
+        storage.set('idToken', tokenResponse.id_token);
+    }
+
+    // Store idp_refresh_token if available (IDP refresh token, social login). Cookie
+    // expiry is reused from refreshTokenExpiry at write time — matches PWA Kit, where
+    // idp_refresh_token shares the SLAS refresh-token TTL.
+    if (tokenResponse?.idp_refresh_token) {
+        storage.set('idpRefreshToken', tokenResponse.idp_refresh_token);
     }
 
     // Store dwsid if available (from Set-Cookie response header, for hybrid storefronts)

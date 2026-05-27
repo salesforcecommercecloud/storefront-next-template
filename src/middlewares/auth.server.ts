@@ -40,6 +40,8 @@ import {
     COOKIE_CUSTOMER_ID,
     COOKIE_ENC_USER_ID,
     COOKIE_IDP_ACCESS_TOKEN,
+    COOKIE_ID_TOKEN,
+    COOKIE_IDP_REFRESH_TOKEN,
     COOKIE_CODE_VERIFIER,
     COOKIE_TRACKING_CONSENT,
     COOKIE_DWSID,
@@ -706,6 +708,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const accessToken = getAuthCookie(COOKIE_ACCESS_TOKEN);
     const encUserId = getAuthCookie(COOKIE_ENC_USER_ID);
     const idpAccessToken = getAuthCookie(COOKIE_IDP_ACCESS_TOKEN);
+    const idToken = getAuthCookie(COOKIE_ID_TOKEN);
+    const idpRefreshToken = getAuthCookie(COOKIE_IDP_REFRESH_TOKEN);
     const codeVerifier = getAuthCookie(COOKIE_CODE_VERIFIER);
     const dwsid = getAuthCookie(COOKIE_DWSID);
     const authRecoveryGuard = getAuthCookie(COOKIE_AUTH_RECOVERY_GUARD);
@@ -741,6 +745,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const customerIdDeletionCookie = createCookie<string>(COOKIE_CUSTOMER_ID, cookieConfig, context);
     const encUserIdCookie = createCookie<string>(COOKIE_ENC_USER_ID, cookieConfig, context);
     const idpAccessTokenCookie = createCookie<string>(COOKIE_IDP_ACCESS_TOKEN, cookieConfig, context);
+    const idTokenCookie = createCookie<string>(COOKIE_ID_TOKEN, cookieConfig, context);
+    const idpRefreshTokenCookie = createCookie<string>(COOKIE_IDP_REFRESH_TOKEN, cookieConfig, context);
     const dwsidCookie = createCookie<string>(COOKIE_DWSID, cookieConfig, context);
     const authRecoveryCookie = createCookie<string>(COOKIE_AUTH_RECOVERY_GUARD, cookieConfig, context);
     // Code verifier cookie is httpOnly for security (OAuth2 PKCE flow, server-only)
@@ -831,6 +837,10 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     if (encUserId) authData.encUserId = encUserId;
     // Add IDP access token for social login (if present)
     if (idpAccessToken) authData.idpAccessToken = idpAccessToken;
+    // Add OIDC id_token (if present)
+    if (idToken) authData.idToken = idToken;
+    // Add IDP refresh token (if present)
+    if (idpRefreshToken) authData.idpRefreshToken = idpRefreshToken;
     // Add code verifier for OAuth2 PKCE flow (if present)
     if (codeVerifier) authData.codeVerifier = codeVerifier;
     // Add dwsid for hybrid storefronts (if present)
@@ -989,6 +999,8 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         response.headers.append('Set-Cookie', await customerIdDeletionCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await encUserIdCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await idpAccessTokenCookie.serialize('', deleteCookieConfig));
+        response.headers.append('Set-Cookie', await idTokenCookie.serialize('', deleteCookieConfig));
+        response.headers.append('Set-Cookie', await idpRefreshTokenCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await dwsidCookie.serialize('', deleteCookieConfig));
         response.headers.append('Set-Cookie', await codeVerifierCookie.serialize('', deleteHttpOnlyCookieConfig));
         response.headers.append('Set-Cookie', await trackingConsentCookie.serialize('', deleteCookieConfig));
@@ -1116,6 +1128,42 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
                     getCookieConfig(
                         {
                             expires: new Date(idpAccessTokenExpiryValue),
+                        },
+                        context
+                    )
+                )
+            );
+        }
+
+        // Set id_token cookie with access-token expiry (OIDC id_token tracks the access-token
+        // JWT exp — same rule PWA Kit uses, see process-token-response.js).
+        const idTokenValue = authStorage.get('idToken');
+        if (idTokenValue && typeof idTokenValue === 'string' && accessTokenExpiryValue) {
+            response.headers.append(
+                'Set-Cookie',
+                await idTokenCookie.serialize(
+                    idTokenValue,
+                    getCookieConfig(
+                        {
+                            expires: new Date(accessTokenExpiryValue),
+                        },
+                        context
+                    )
+                )
+            );
+        }
+
+        // Set idp_refresh_token cookie with refresh-token expiry (IDP refresh token shares the
+        // SLAS refresh-token TTL — same rule PWA Kit uses).
+        const idpRefreshTokenValue = authStorage.get('idpRefreshToken');
+        if (idpRefreshTokenValue && typeof idpRefreshTokenValue === 'string' && refreshTokenExpiryValue) {
+            response.headers.append(
+                'Set-Cookie',
+                await idpRefreshTokenCookie.serialize(
+                    idpRefreshTokenValue,
+                    getCookieConfig(
+                        {
+                            expires: new Date(refreshTokenExpiryValue),
                         },
                         context
                     )
