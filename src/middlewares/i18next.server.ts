@@ -17,13 +17,12 @@ import { type MiddlewareFunction } from 'react-router';
 import { createI18nMiddleware } from '@salesforce/storefront-next-runtime/i18n';
 import resources from '@/locales';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 let middleware: MiddlewareFunction<Response> | null = null;
 
 export const i18nextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
     if (!middleware) {
-        const config = getConfig<AppConfig>(args.context);
+        const config = getConfig(args.context);
         middleware = createI18nMiddleware({
             resources,
             supportedLanguages: config.i18n.supportedLngs,

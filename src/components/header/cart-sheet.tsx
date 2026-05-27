@@ -29,7 +29,6 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
 import { useBasketUpdater, useMiniCart } from '@/providers/basket';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import {
     Sheet,
     SheetClose,
@@ -136,7 +135,7 @@ const MiniCartItemContainer = memo(function MiniCartItemContainer({
 const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => void }): ReactElement {
     const { t, i18n } = useTranslation('header');
     const { t: tMiniCart } = useTranslation('miniCart');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const navigate = useNavigate();
     const { currency } = useSite();
     const titleId = 'mini-cart-title';

@@ -27,7 +27,6 @@ import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-01.webp';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { loader } from './loaders';
@@ -94,7 +93,7 @@ export default function PopularCategory({
     ...rest
 }: PopularCategoryProps) {
     const { t } = useTranslation('home');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     // Use data from loader (Page Designer) or category prop (programmatic use)
     // If category is a string, it's from Page Designer and we should ignore it (wait for loader data)

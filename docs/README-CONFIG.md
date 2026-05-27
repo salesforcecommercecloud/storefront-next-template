@@ -10,17 +10,16 @@ One TypeScript file for all your app settings. Configure via `.env` files for di
 
 ```typescript
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 // ✅ Server loader/action - pass context
 export function loader({ context }: LoaderFunctionArgs) {
-  const config = getConfig<AppConfig>(context);
+  const config = getConfig(context);
   return { limit: config.search.products.hits.limit };
 }
 
 // ✅ Client loader - no context needed
 export function clientLoader() {
-  const config = getConfig<AppConfig>();
+  const config = getConfig();
   return { limit: config.search.products.hits.limit };
 }
 ```
@@ -29,13 +28,16 @@ export function clientLoader() {
 
 ```typescript
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 export function MyComponent() {
-  const config = useConfig<AppConfig>();
+  const config = useConfig();
   return <div>Showing {config.search.products.hits.limit} products</div>;
 }
 ```
+
+> Both functions return `AppConfig` because the template augments
+> `AppConfigShape` once in `src/types/config.ts`. Future templates do the same
+> for their own `AppConfig` shape.
 
 ## Required vs Optional Variables
 
@@ -316,10 +318,9 @@ PUBLIC__app__myFeature__maxItems=20
 **In React components:**
 ```typescript
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 export function MyComponent() {
-  const config = useConfig<AppConfig>();
+  const config = useConfig();
 
   if (config.myFeature.enabled) {
     const maxItems = config.myFeature.maxItems;
@@ -331,11 +332,10 @@ export function MyComponent() {
 **In loaders/actions:**
 ```typescript
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 export function loader({ context }: LoaderFunctionArgs) {
-  const config = getConfig<AppConfig>(context);
-  
+  const config = getConfig(context);
+
   if (config.myFeature.enabled) {
     // Your loader code here
   }
@@ -369,12 +369,30 @@ export function loader({ context }: LoaderFunctionArgs) {
 
 1. **Types defined** in `src/types/config.ts` — `AppConfig` defines all app fields, `Config = BaseConfig<AppConfig>`
 2. **Defaults defined** in `config.server.ts` — clean, no `process.env` references
-3. **Environment variables** with `PUBLIC__` prefix are automatically merged by `defineConfig()`
+3. **Environment variables** with `PUBLIC__` prefix are automatically merged by `defineConfig()` — `defineConfig` reads `process.env` at call time, so it only resolves `PUBLIC__*` overrides on the server.
 4. **Final config** is made available via:
-   - `getConfig<AppConfig>(context)` for server loaders/actions
-   - `getConfig<AppConfig>()` for client loaders
-   - `useConfig<AppConfig>()` for React components
+   - `getConfig(context)` for server loaders/actions
+   - `getConfig()` for client loaders
+   - `useConfig()` for React components
    - `window.__APP_CONFIG__` for client code
+
+   `getConfig` and `useConfig` return `AppConfig` automatically because the template augments `AppConfigShape` in `src/types/config.ts`:
+
+   ```typescript
+   declare module '@salesforce/storefront-next-runtime/config' {
+       interface AppConfigShape extends AppConfig {}
+   }
+   ```
+
+   > **Multi-template caveat:** if you build two templates in the same TS program (rare — usually each template has its own `tsconfig`), only one `AppConfigShape extends ...` wins. Fall back to an explicit per-call generic in the loser: `getConfig<MyAppConfig>(context)`.
+
+5. **Custom middleware** can read the resolved app config from `appConfigContext` — this is the same context that `getConfig(context)` reads from internally:
+
+   ```typescript
+   import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+
+   const config = context.get(appConfigContext);
+   ```
 
 The `.server.ts` suffix prevents accidental direct imports. The `PUBLIC__` prefix ensures only client-safe values are exposed.
 
@@ -383,9 +401,10 @@ The `.server.ts` suffix prevents accidental direct imports. The `PUBLIC__` prefi
 - The `runtime` and `metadata` sections → Server-only (not injected to client)
 
 **Where things live:**
-- Config utilities (`defineConfig`, `getConfig`, `useConfig`, `ConfigProvider`, `createAppConfig`, `mergeEnvConfig`, `deepMerge`) → `@salesforce/storefront-next-runtime/config`
-- Build-time config loader (`loadConfig`) → `@salesforce/storefront-next-runtime/load-config`
+- Public config API (`defineConfig`, `getConfig`, `useConfig`, `ConfigProvider`, `appConfigContext`, `AppConfigShape`, plus `BaseConfig`/`DefineConfigOptions`/`Site`/`Locale`/`Url` types) → `@salesforce/storefront-next-runtime/config`
+- Build-time config loader (`loadConfig`) → `@salesforce/storefront-next-runtime/config/load-config`
 - Template-specific types (`Config`, `AppConfig`) → `src/types/config.ts`
+- App-config server/client middleware (template-owned) → `src/middlewares/app-config.{server,client}.ts`
 - Default values → `config.server.ts`
 
 ## Testing
@@ -396,19 +415,19 @@ The template provides shared test utilities for components and hooks that depend
 import { mockConfig, mockBuildConfig, ConfigWrapper, createConfigWrapper } from '@/test-utils/config';
 
 // Use the default wrapper
-renderHook(() => useConfig<AppConfig>(), { wrapper: ConfigWrapper });
+renderHook(() => useConfig(), { wrapper: ConfigWrapper });
 
 // Use a wrapper with custom overrides (deep merged)
 const CustomWrapper = createConfigWrapper({
   app: { ...mockBuildConfig.app, pages: { ...mockBuildConfig.app.pages, cart: { ...mockBuildConfig.app.pages.cart, maxQuantityPerItem: 5 } } },
 });
-renderHook(() => useConfig<AppConfig>(), { wrapper: CustomWrapper });
+renderHook(() => useConfig(), { wrapper: CustomWrapper });
 ```
 
 - `mockBuildConfig` — a full `Config` object with realistic test values
-- `mockConfig` — the `app` section extracted via `createAppConfig(mockBuildConfig)`
+- `mockConfig` — the `app` section (i.e., `mockBuildConfig.app`)
 - `ConfigWrapper` — a ready-to-use wrapper component for `renderHook` / `render`
-- `createConfigWrapper(overrides?)` — creates a wrapper with custom config (uses `deepMerge` for nested overrides)
+- `createConfigWrapper(overrides?)` — creates a wrapper with custom config (deep-merges nested overrides)
 
 For tests that need all providers (config + currency + store locator), use `AllProvidersWrapper` from `@/test-utils/context-provider`.
 

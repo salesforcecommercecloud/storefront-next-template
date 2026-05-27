@@ -20,13 +20,12 @@ import { useFetcher } from 'react-router';
 import { NativeSelect } from '@/components/ui/native-select';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import type { AppConfig } from '@/types/config';
 
 export default function SiteSwitcher(): ReactElement {
     const id = useId();
     const { t } = useTranslation('sitePicker');
     const fetcher = useFetcher();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { site } = useSite();
     const sites = config.commerce.sites;
 

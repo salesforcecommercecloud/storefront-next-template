@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next';
 import { getLoginModeHref } from './get-login-mode-href';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 interface PasswordlessLoginFormProps {
@@ -38,7 +37,7 @@ export default function PasswordlessLoginForm({
 }: PasswordlessLoginFormProps): ReactElement {
     const location = useLocation();
     const { t } = useTranslation('login');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 

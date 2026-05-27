@@ -17,7 +17,6 @@ import { type RouterContextProvider } from 'react-router';
 import { createRemoteJWKSet, decodeJwt, type JWTPayload, jwtVerify } from 'jose';
 import { getAppOrigin } from '@/lib/origin';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 /**
  * Tokens are valid for 20 minutes. We store it at the top level scope to reuse
@@ -148,7 +147,7 @@ export async function validateSlasCallbackToken(
  */
 function createJWKSet(context: Readonly<RouterContextProvider>, tenantId: string) {
     const appOrigin = getAppOrigin(context);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     if (!config) {
         throw new Error('Runtime configuration not found in context');
     }

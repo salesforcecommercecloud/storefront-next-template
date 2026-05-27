@@ -17,7 +17,6 @@ import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect, type Router
 import { extractResponseError } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/origin';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import {
     resetMarketingCloudTokenCache,
     sendMarketingCloudEmail,
@@ -39,7 +38,7 @@ async function sendResetPasswordEmail(
 ): Promise<object> {
     const base = getAppOrigin(context);
 
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const landingPath = config.features.resetPassword.landingUri;
     const magicLink = `${base}${landingPath}?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email_id)}`;
 

@@ -16,7 +16,6 @@
 import { useLoaderData, useSearchParams } from 'react-router';
 import type { Route } from './+types/_empty.maintenance';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { Link } from '@/components/link';
 import { getLogger } from '@/lib/logger.server';
 import { Settings } from 'lucide-react';
@@ -25,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 export async function loader(args: Route.LoaderArgs) {
     const logger = getLogger(args.context);
     logger.debug('MaintenancePage: loader starting');
-    const config = getConfig<AppConfig>(args.context);
+    const config = getConfig(args.context);
     const { sharedMaintenancePage, cdnUrl, forwardedHost } = config.pages.maintenancePage;
 
     if (sharedMaintenancePage) {

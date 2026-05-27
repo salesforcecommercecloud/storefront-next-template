@@ -32,7 +32,6 @@ import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-
 
 // Lib
 import { cn } from '@/lib/utils';
-import type { AppConfig } from '@/types/config';
 
 interface UserMenuProps {
     isAuthenticated: boolean;
@@ -52,7 +51,7 @@ export function UserMenu({ isAuthenticated, trigger }: UserMenuProps): ReactElem
     const openedViaMouseRef = useRef(false);
     const { t } = useTranslation('header');
     const { t: tAccount } = useTranslation('account');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     // Clear timeout on unmount

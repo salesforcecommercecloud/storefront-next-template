@@ -57,7 +57,7 @@ export function ConfigWrapper({ children }: { children: ReactNode }) {
  * </AllProvidersWrapper>
  *
  * // Use custom config
- * const customConfig = createAppConfig({ ...mockBuildConfig, ...overrides });
+ * const customConfig = { ...mockBuildConfig.app, ...overrides };
  * <AllProvidersWrapper config={customConfig}>
  *   <MyComponent />
  * </AllProvidersWrapper>

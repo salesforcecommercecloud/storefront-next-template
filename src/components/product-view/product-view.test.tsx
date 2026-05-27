@@ -29,7 +29,6 @@ import { standardProd } from '@/components/__mocks__/standard-product-2';
 import { bundleProd } from '@/components/__mocks__/bundle-product';
 import { setProduct } from '@/components/__mocks__/set-product';
 import { mockAltSiteObject, mockBuildConfig } from '@/test-utils/config';
-import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig } from '@/types/config';
 
 // Prop-capture mock for <ImageGallery>. The PDP intentionally does not pass `widths` so the
@@ -436,16 +435,13 @@ describe('ProductView', () => {
                 value: undefined,
             });
 
-            const customConfig = createAppConfig({
-                ...mockBuildConfig,
-                app: {
-                    ...mockBuildConfig.app,
-                    features: {
-                        ...mockBuildConfig.app.features,
-                        socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
-                    },
+            const customConfig: AppConfig = {
+                ...mockBuildConfig.app,
+                features: {
+                    ...mockBuildConfig.app.features,
+                    socialShare: { enabled: false, providers: ['Twitter', 'Facebook', 'LinkedIn', 'Email'] },
                 },
-            }) as AppConfig;
+            };
 
             const user = userEvent.setup();
             const router = createMemoryRouter(
@@ -495,16 +491,13 @@ describe('ProductView', () => {
                 value: undefined,
             });
 
-            const customConfig = createAppConfig({
-                ...mockBuildConfig,
-                app: {
-                    ...mockBuildConfig.app,
-                    features: {
-                        ...mockBuildConfig.app.features,
-                        socialShare: { enabled: true, providers: ['Email'] },
-                    },
+            const customConfig: AppConfig = {
+                ...mockBuildConfig.app,
+                features: {
+                    ...mockBuildConfig.app.features,
+                    socialShare: { enabled: true, providers: ['Email'] },
                 },
-            }) as AppConfig;
+            };
 
             const user = userEvent.setup();
             const router = createMemoryRouter(

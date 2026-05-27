@@ -16,7 +16,6 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useFetcher } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { useAuth } from '@/providers/auth';
 import { TrackingConsent } from '@/types/tracking-consent';
 
@@ -56,7 +55,7 @@ import { TrackingConsent } from '@/types/tracking-consent';
  * ```
  */
 export function useTrackingConsent() {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const fetcher = useFetcher();
     const auth = useAuth();
 

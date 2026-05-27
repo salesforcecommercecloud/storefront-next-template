@@ -16,7 +16,6 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import CollapsibleSection from '@/components/collapsible-section';
 import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
 import { isShopperAgentContextUiEnabled } from '@/lib/shopper-context/agent-ui';
@@ -46,7 +45,7 @@ export interface FaqProps {
  */
 export default function Faq({ questions }: FaqProps): ReactElement | null {
     const { t } = useTranslation('extProductContent');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const showShopperAgent =
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&
         validateShopperAgentConfig(config.commerceAgent);

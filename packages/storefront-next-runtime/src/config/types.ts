@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+/**
+ * Baseline configuration shapes for templates that have a notion of sites,
+ * locales, and URL prefixes. These are opt-in helpers, not enforced contracts —
+ * `BaseConfig<App>` is generic over the template's `App` shape, so a template
+ * with a different shopper model (e.g. B2B, OMS-only) can define its own types
+ * and ignore the ones below.
+ *
+ * For richer runtime shapes used by the site context middleware (with
+ * cookie-based detection, site/locale aliases, etc.) see
+ * `@salesforce/storefront-next-runtime/site-context`.
+ */
+
 export type Locale = {
     id: string;
     preferredCurrency: string;
@@ -32,11 +44,16 @@ export type Site = {
 };
 
 export type Url = {
-    /** URL path prefix using React Router param syntax. e.g. '/:siteId/:localeId' */
+    /**
+     * URL path prefix using React Router param syntax — interpolated by the
+     * template's URL builder. Templates with site/locale routing typically use
+     * something like `'/:siteId/:localeId'`; templates without routing params
+     * can omit this field.
+     */
     prefix?: string;
     /**
-     * Query parameters to append to URLs, using ':param' syntax.
-     * e.g. '?lng=:localeId' or '?lng=:localeId&site=:siteId'
+     * Query parameters to append to URLs, using `:param` syntax — interpolated
+     * by the template's URL builder. Pair shape with `prefix` above.
      */
     search?: string;
 

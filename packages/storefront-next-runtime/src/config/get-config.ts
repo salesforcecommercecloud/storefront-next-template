@@ -17,14 +17,20 @@
 /**
  * Configuration access for loaders, actions, utilities, and React components.
  *
- * Two functions:
- * - `getConfig()` — For loaders, actions, and utilities
- * - `useConfig()` — For React components (hook required for React Context)
+ * - `getConfig()` — for loaders, actions, and utilities (pass `context` on the server)
+ * - `useConfig()` — for React components (hook required for React Context)
+ *
+ * Both return the resolved `app` slice typed as `AppConfigShape`. Templates
+ * augment `AppConfigShape` once to get typed access without a per-call generic.
  */
 
 import { useContext } from 'react';
 import type { RouterContextProvider } from 'react-router';
-import { ConfigContext, appConfigContext } from './context';
+import { ConfigContext, appConfigContext, type AppConfigShape } from './context';
+
+// Re-export so consumers can `import type { AppConfigShape } from '.../config'`
+// from the package barrel without reaching into `./context`.
+export type { AppConfigShape };
 
 declare global {
     interface Window {
@@ -33,15 +39,12 @@ declare global {
 }
 
 /**
- * Get configuration in loaders, actions, and utilities.
- *
- * Pass context parameter in server loaders/actions.
- * Omit context parameter in client loaders (uses window.__APP_CONFIG__).
- *
- * @param context - Router context for server loaders/actions
- * @returns App configuration
+ * Get configuration in loaders, actions, and utilities. Pass `context` on the
+ * server; omit it on the client (reads `window.__APP_CONFIG__`). Returns the
+ * augmented `AppConfigShape` — pass an explicit generic only for narrower or
+ * unrelated shapes (rare).
  */
-export function getConfig<T extends Record<string, unknown> = Record<string, unknown>>(
+export function getConfig<T extends Record<string, unknown> = AppConfigShape>(
     context?: Readonly<RouterContextProvider>
 ): T {
     if (context) {
@@ -68,13 +71,10 @@ export function getConfig<T extends Record<string, unknown> = Record<string, unk
 }
 
 /**
- * Get configuration in React components.
- *
- * Must use this hook (not getConfig) because React Context requires useContext().
- *
- * @returns App configuration
+ * Get configuration in React components (use this instead of `getConfig` —
+ * React Context requires `useContext`). Returns the augmented `AppConfigShape`.
  */
-export function useConfig<T extends Record<string, unknown> = Record<string, unknown>>(): T {
+export function useConfig<T extends Record<string, unknown> = AppConfigShape>(): T {
     const config = useContext(ConfigContext);
     if (!config) {
         throw new Error(

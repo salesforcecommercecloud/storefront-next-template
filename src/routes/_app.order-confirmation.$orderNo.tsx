@@ -30,7 +30,6 @@ import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { useBasketReset } from '@/providers/basket';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import type {
     ShopperOrders,
     ShopperProducts,
@@ -191,7 +190,7 @@ function OrderConfirmationContent({
     storesByStoreId,
     showPostOrderRegistration,
 }: OrderConfirmationData & { showPostOrderRegistration: boolean }): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t, i18n } = useTranslation('checkout');
     const { currency } = useSite();
     const resetBasket = useBasketReset();

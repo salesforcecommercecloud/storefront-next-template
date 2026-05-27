@@ -82,7 +82,7 @@ function useSwatchMode(): 'click' | 'hover' {
  */
 export function ProductTileProvider({ children }: PropsWithChildren) {
     const navigate = useNavigate();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t } = useTranslation('product');
     const { currency } = useSite();
     const swatchMode = useSwatchMode();
@@ -111,7 +111,7 @@ export function useProductTileContext(): ProductTileContextValue {
     }
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     return {
         // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -21,12 +21,12 @@
  * pages, features, engagement, etc. `Config` wraps it in `BaseConfig<AppConfig>`
  * which adds `metadata` and `runtime` sections.
  */
-import type { BaseConfig, Site, Url } from '@salesforce/storefront-next-runtime/config';
+import type { BaseConfig, Url } from '@salesforce/storefront-next-runtime/config';
 import type { ConsentCategory } from '@salesforce/storefront-next-runtime/events';
 import type { EngagementAdapterConfig } from '@/lib/adapters';
 import type { TrackingConsent } from '@/types/tracking-consent';
 
-import type { DetectionConfig, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
+import type { DetectionConfig, Site, SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 
 export type BadgeDetail = {
     propertyName: string;
@@ -308,3 +308,13 @@ export type AppConfig = {
 };
 
 export type Config = BaseConfig<AppConfig>;
+
+/**
+ * Augment the SDK so `getConfig()` and `useConfig()` return `AppConfig` without
+ * a generic argument at every call site. Customers writing additional templates
+ * augment this interface in their own template's types file.
+ */
+declare module '@salesforce/storefront-next-runtime/config' {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface AppConfigShape extends AppConfig {}
+}

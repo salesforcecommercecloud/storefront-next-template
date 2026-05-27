@@ -16,7 +16,6 @@
 import { describe, it, expect } from 'vitest';
 import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { mockAltSiteObject, mockBuildConfig } from '@/test-utils/config';
-import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import type { Config } from '@/types/config';
 import { generateCategorySchema } from './category-schema';
 
@@ -369,10 +368,10 @@ describe('generateCategorySchema', () => {
             searchResult: searchResultWithUnknownOrderable,
             pageUrl: validPageUrl,
             defaultCurrency,
-            config: createAppConfig({
-                ...mockBuildConfig,
-                ...({ app: { search: { products: { refine: { orderableOnly: true } } } } } as Partial<Config>),
-            }),
+            config: {
+                ...mockBuildConfig.app,
+                search: { ...mockBuildConfig.app.search, products: { refine: { orderableOnly: true } } },
+            } as Config['app'],
         });
 
         const items = schema.mainEntity?.itemListElement || [];

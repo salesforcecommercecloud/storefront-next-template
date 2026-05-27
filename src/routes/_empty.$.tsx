@@ -17,7 +17,6 @@ import { type RouterContextProvider } from 'react-router';
 import type { Route } from './+types/_empty.$';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { stripPathPrefix } from '@salesforce/storefront-next-runtime/site-context';
-import type { AppConfig } from '@/types/config';
 import { handlePasswordlessCallback, handlePasswordlessLanding } from '@/lib/auth/passwordless-login.server';
 import { handleSocialLoginLanding } from '@/lib/api/auth/social-login.server';
 import { handleResetPasswordCallback, handleResetPasswordLanding } from '@/lib/api/auth/reset-password.server';
@@ -54,7 +53,7 @@ function extractPathname(uri: string): string {
  * Get the loader handler for a given pathname
  */
 function getLoaderHandler(pathname: string, context: Readonly<RouterContextProvider>): LoaderHandler | null {
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
 
     // Use extractPathname to support both relative paths and absolute URLs in config.
     // When comparing against the incoming request's pathname, we need to extract just
@@ -88,7 +87,7 @@ function getLoaderHandler(pathname: string, context: Readonly<RouterContextProvi
  * Get the action handler for a given pathname
  */
 function getActionHandler(pathname: string, context: Readonly<RouterContextProvider>): ActionHandler | null {
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     // Use extractPathname to support both relative paths and absolute URLs in config.
     // When comparing against the incoming request's pathname, we need to extract just
     // the pathname component from potentially absolute URLs (e.g., "https://example.com/callback" -> "/callback")
@@ -111,7 +110,7 @@ function getActionHandler(pathname: string, context: Readonly<RouterContextProvi
 
 export async function loader(args: Route.LoaderArgs) {
     const logger = getLogger(args.context);
-    const config = getConfig<AppConfig>(args.context);
+    const config = getConfig(args.context);
     const url = new URL(args.request.url);
     const strippedPath = stripPathPrefix({ pathname: url.pathname, prefix: config.url?.prefix ?? '' });
     logger.debug('CatchAllRoute: loader starting', { pathname: url.pathname, strippedPath });
@@ -129,7 +128,7 @@ export async function loader(args: Route.LoaderArgs) {
 
 export async function action(args: Route.ActionArgs) {
     const logger = getLogger(args.context);
-    const config = getConfig<AppConfig>(args.context);
+    const config = getConfig(args.context);
     const url = new URL(args.request.url);
     const strippedPath = stripPathPrefix({ pathname: url.pathname, prefix: config.url?.prefix ?? '' });
     logger.debug('CatchAllRoute: action starting', { pathname: url.pathname, strippedPath });

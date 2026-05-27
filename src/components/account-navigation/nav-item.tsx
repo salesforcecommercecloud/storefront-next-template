@@ -26,7 +26,6 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
-import type { AppConfig } from '@/types/config';
 
 interface AccountNavItemProps {
     item: {
@@ -42,7 +41,7 @@ interface AccountNavItemProps {
 }
 
 export function AccountNavItem({ item, isMobile = false }: AccountNavItemProps): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const Icon = item.icon;
     const baseClasses =

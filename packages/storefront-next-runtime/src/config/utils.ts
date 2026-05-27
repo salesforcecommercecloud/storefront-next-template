@@ -188,7 +188,7 @@ export const extractValidPaths = (obj: unknown, prefix = ''): string[] => {
         const currentPath = prefix ? `${prefix}__${normalizedKey}` : normalizedKey;
 
         if (isPlainObject(value)) {
-            paths.push(currentPath); // Allow setting whole object (e.g. PUBLIC__app__commerceAgent)
+            paths.push(currentPath); // Allow setting whole nested object via JSON env var
             // Recursively extract paths from nested objects
             paths.push(...extractValidPaths(value, currentPath));
         } else {
@@ -239,18 +239,20 @@ export interface MergeEnvConfigOptions {
  * @returns Object with overrides to merge into base config
  *
  * @example
- * // Environment variables:
- * // PUBLIC__app__commerce__api__clientId=abc123
- * // PUBLIC__app__pages__cart__quantityUpdateDebounce=1000
- * // PUBLIC__app__features__socialLogin__providers=["Apple","Google"]
+ * // Environment variables (template-specific paths shown):
+ * // PUBLIC__app__some__nested__value=abc123
+ * // PUBLIC__app__some__numericKnob=1000
+ * // PUBLIC__app__some__listKnob=["A","B"]
  *
  * mergeEnvConfig()
  * // Returns:
  * // {
  * //   app: {
- * //     commerce: { api: { clientId: 'abc123' } },
- * //     pages: { cart: { quantityUpdateDebounce: 1000 } },
- * //     features: { socialLogin: { providers: ['Apple', 'Google'] } }
+ * //     some: {
+ * //       nested: { value: 'abc123' },
+ * //       numericKnob: 1000,
+ * //       listKnob: ['A', 'B']
+ * //     }
  * //   }
  * // }
  */
@@ -307,8 +309,8 @@ export const mergeEnvConfig = (
         if (isProtected) {
             throw new Error(
                 `Environment variable "${varName}" attempts to override protected config path "${path}".\n\n` +
-                    `The engagement configuration cannot be overridden via environment variables. ` +
-                    `Update config.server.ts directly to change engagement settings.`
+                    `Protected paths cannot be overridden via environment variables. ` +
+                    `Update config.server.ts directly, or remove the path from \`protectedPaths\` if env override is intended.`
             );
         }
 

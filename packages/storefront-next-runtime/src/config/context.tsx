@@ -19,43 +19,46 @@
  *
  * Provides configuration access throughout the application using React Router's
  * context system. Supports both server and client rendering with proper hydration.
+ *
+ * `ConfigContext` is intentionally not part of the public surface — consumers
+ * must read configuration through `useConfig()` so a single React context owns
+ * the value. `appConfigContext` is the public router-context handle for
+ * loaders/actions/middleware.
  */
 
 import { createContext, type ReactNode } from 'react';
 import { createContext as createRouterContext } from 'react-router';
-import type { BaseConfig } from './schema';
 
 /**
- * Router context for application configuration.
- *
- * Populated by `createAppConfigMiddleware` with the `app` section of config.
- * Accessible in loaders, actions, and middleware via `context.get(appConfigContext)`.
+ * Augmentation hook for typing `getConfig()` / `useConfig()` /
+ * `appConfigContext`. Templates augment once via `declare module` so call
+ * sites don't need a per-call generic. Without augmentation, property
+ * accesses type to `unknown`. See README-CONFIG.md for the augmentation
+ * snippet and the multi-template caveat.
  */
-// eslint-disable-next-line react-refresh/only-export-components
-export const appConfigContext = createRouterContext<Record<string, unknown>>();
-
-/**
- * React context for application configuration.
- *
- * Used by the `useConfig()` hook in React components.
- * Populated by `ConfigProvider` in the component tree.
- */
-// eslint-disable-next-line react-refresh/only-export-components
-export const ConfigContext = createContext<Record<string, unknown> | null>(null);
-
-/**
- * Extract the `app` section from a full config object.
- *
- * @param staticConfig - The full config object (output of `defineConfig()`)
- * @returns The `app` section of the config
- */
-// eslint-disable-next-line react-refresh/only-export-components
-export function createAppConfig<T extends BaseConfig>(staticConfig: T): T['app'] {
-    return staticConfig.app;
+export interface AppConfigShape {
+    [key: string]: unknown;
 }
 
+/**
+ * Router context for application configuration. Populated by the template's
+ * app-config middleware; read via `context.get(appConfigContext)` in loaders,
+ * actions, and other middleware. Returns the augmented `AppConfigShape`.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export const appConfigContext = createRouterContext<AppConfigShape>();
+
+/**
+ * Internal React context backing `useConfig()`.
+ *
+ * Not exported from the public barrel — components must read config via
+ * `useConfig()` so the React tree has a single source of truth.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export const ConfigContext = createContext<AppConfigShape | null>(null);
+
 interface ConfigProviderProps {
-    config: Record<string, unknown>;
+    config: AppConfigShape;
     children: ReactNode;
 }
 

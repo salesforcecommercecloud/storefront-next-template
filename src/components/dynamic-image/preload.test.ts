@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import type { AppConfig, Config } from '@/types/config';
 import { mockBuildConfig, mockConfig } from '@/test-utils/config';
 import { deepMerge } from '@/test-utils/deep-merge';
@@ -32,7 +31,7 @@ const SFCC_SRC =
     'https://demo-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dwbeefee44/images/large/P0048_001.jpg';
 
 const buildConfig = (overrides?: Partial<Config>): AppConfig =>
-    overrides ? createAppConfig(deepMerge(mockBuildConfig, overrides as Record<string, unknown>)) : mockConfig;
+    overrides ? deepMerge(mockBuildConfig, overrides as Record<string, unknown>).app : mockConfig;
 
 describe('preloadDynamicImage', () => {
     beforeEach(() => {

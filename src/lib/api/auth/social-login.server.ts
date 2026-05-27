@@ -20,7 +20,6 @@ import { getErrorMessage, isAbsoluteURL } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/origin';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { mergeBasket } from '@/lib/api/basket.server';
 import {
@@ -175,7 +174,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
     const { t } = getTranslation(context);
 
     try {
-        const config = getConfig<AppConfig>(context);
+        const config = getConfig(context);
         const url = new URL(request.url);
 
         // SLAS may send different parameter names than direct OAuth

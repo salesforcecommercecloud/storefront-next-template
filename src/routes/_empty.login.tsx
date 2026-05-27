@@ -31,7 +31,6 @@ import { isAbsoluteURL, getSafeReturnUrl } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/origin';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
 import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
-import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { updateBasketResource } from '@/middlewares/basket.server';
 import { buildUrlFromContext } from '@/lib/url.server';
@@ -113,7 +112,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     const actionParams = url.searchParams.get('actionParams');
     const error = url.searchParams.get('error');
 
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     // To enable passwordless login, the "Enable Email Verification" site preference under "Storefront Login Preferences" must be enabled.
     const { emailVerificationEnabled } = getLoginPreferences(context);
     const isPasswordlessLoginEnabled = Boolean(emailVerificationEnabled);
@@ -215,7 +214,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
  */
 export async function action({ request, context }: Route.ActionArgs): Promise<LoginActionResponse | Response> {
     const logger = getLogger(context);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const { t } = getTranslation(context);
     const genericError = t('errors:genericTryAgain');
 
@@ -402,7 +401,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
     const { t } = useTranslation('login');
     const actionData = useActionData<typeof action>();
     const navigate = useNavigate();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     const {
         error: loaderError,

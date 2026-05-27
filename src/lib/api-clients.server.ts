@@ -31,7 +31,6 @@ import { correlationContext } from '@/lib/correlation';
 import { getLogger } from '@/lib/logger.server';
 import { maintenanceContext } from '@/lib/maintenance';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getScapiBaseUrl, isAbsoluteURL } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/origin';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
@@ -448,7 +447,7 @@ const getSlasClientSecret = (): string | undefined => {
  */
 export function createApiClients(context: RouterContextProvider | Readonly<RouterContextProvider>): AppClients {
     const appOrigin = getAppOrigin(context);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const { shortCode, callback, organizationId, clientId } = config.commerce.api;
 
     // Site ID is always resolved by site context middleware

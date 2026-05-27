@@ -17,7 +17,6 @@ import type { LoaderFunctionArgs } from 'react-router';
 import type { ShopperSearch } from '@/scapi';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
@@ -44,7 +43,7 @@ export const fetchSearchProducts = async (
      * @see {@link https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#default-cache-expiration-and-personalization-settings}
      * @see {@link https://developer.salesforce.com/docs/commerce/commerce-api/guide/server-side-web-tier-caching.html#expand-parameter-impact-on-cache-hit-rates}
      */
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const images = appConfig?.search?.products?.images ?? DEFAULT_IMAGES;
     // Derive the SCAPI `imgTypes` query param from the role-named declarations: each role
     // contributes its viewType, and the union is sent as the filter. This ties the search

@@ -17,7 +17,7 @@ import type { ComponentProps } from 'react';
 import type { ShopperSearch } from '@/scapi';
 import { cn } from '@/lib/utils';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig, BadgeDetail } from '@/types/config';
+import type { BadgeDetail } from '@/types/config';
 import {
     productBadgesVariants,
     productBadgeSemanticVariants,
@@ -92,7 +92,7 @@ const ProductBadges = ({
     'aria-label': ariaLabel,
     ...props
 }: ProductBadgesProps) => {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     // Use runtime config if badgeDetails not provided
     const finalBadgeDetails = badgeDetails ?? config.global.badges;
 

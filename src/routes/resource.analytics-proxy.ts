@@ -29,7 +29,6 @@
  */
 import type { Route } from './+types/resource.analytics-proxy';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getAuth } from '@/middlewares/auth.server';
 import { getLogger } from '@/lib/logger.server';
 
@@ -56,7 +55,7 @@ async function proxyAnalytics({ request, context }: Route.LoaderArgs | Route.Act
         return new Response('Missing url parameter', { status: 400 });
     }
 
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const activeDataHost = config.engagement?.adapters?.activeData?.host;
 
     if (!activeDataHost) {

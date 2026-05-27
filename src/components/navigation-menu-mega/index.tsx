@@ -30,7 +30,6 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toImageUrl, transformHtmlImageUrls } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { useSubCategory } from '@/components/navigation-menu/context';
@@ -66,7 +65,7 @@ function CategoryBanner({
     category,
     ...props
 }: ComponentPropsWithoutRef<'a'> & { category: ShopperProducts.schemas['Category'] }) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const imageSrc = toImageUrl({ src: (category?.c_slotBannerImage as string) ?? '', config });
 
     // Transform any image URLs in the HTML banner to use DIS with WebP optimization

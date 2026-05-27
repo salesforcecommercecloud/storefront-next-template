@@ -22,7 +22,6 @@ import { fetchCategory } from '@/lib/api/categories.server';
 import { fetchSearchProducts } from '@/lib/api/search.server';
 import { getAllQueryParams, getQueryParam, PRODUCT_SEARCH_QUERY_PARAMS } from '@/lib/query-params';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import CategoryBreadcrumbs from '@/components/category-breadcrumbs';
 import CategoryPagination from '@/components/category-pagination';
@@ -119,7 +118,7 @@ export async function loader(args: Route.LoaderArgs): Promise<CategoryPageData> 
     const initialFiltersOpen = getInitialFiltersOpen(searchParams);
 
     // Get currency and locale for cache-busting the page key
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const siteCtx = context.get(siteContext);
     if (!siteCtx) {
         logger.error('Category: site context is not available');
@@ -288,7 +287,7 @@ export default function CategoryPage({
 }: {
     loaderData: CategoryPageData;
 }) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);
     const limit = config.search.products.hits.limit;

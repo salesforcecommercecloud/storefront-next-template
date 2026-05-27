@@ -24,7 +24,6 @@ import type { ShopperBasketsV2 } from '@/scapi';
 import { getBasket } from '@/middlewares/basket.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { getInventoryIdsFromPickupShipments } from '@/extensions/bopis/lib/basket-utils';
@@ -78,7 +77,7 @@ export async function loader({ context }: Route.LoaderArgs): Promise<BasketProdu
     // @sfdc-extension-block-end SFDC_EXT_BOPIS
 
     try {
-        const config = getConfig<AppConfig>(context);
+        const config = getConfig(context);
         const clients = createApiClients(context);
         const siteCtx = context.get(siteContext);
         if (!siteCtx) {

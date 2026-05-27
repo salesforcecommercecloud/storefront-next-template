@@ -24,7 +24,6 @@ import { Region } from '@/components/region';
 import PopularCategories from '@/components/home/popular-categories';
 import ContentCard from '@/components/content-card';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 
@@ -97,7 +96,7 @@ export function loader(args: Route.LoaderArgs): HomePageData {
     const logger = getLogger(args.context);
     logger.debug('HomePage: loader starting');
 
-    const config = getConfig<AppConfig>(args.context);
+    const config = getConfig(args.context);
     const requestUrl = new URL(args.request.url);
 
     // Redirect bare "/" to the default site/locale prefixed homepage

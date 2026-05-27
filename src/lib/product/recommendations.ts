@@ -21,7 +21,7 @@ import type { AppConfig } from '@/types/config';
  */
 export function getEnabledRecommendationTypes(configParam?: AppConfig): string[] {
     // Use provided config or fallback to getConfig()
-    const config = configParam || getConfig<AppConfig>();
+    const config = configParam ?? getConfig<AppConfig>();
     const typesConfig = config.global.recommendations.types;
     return Object.entries(typesConfig)
         .filter(([, typeConfig]) => (typeConfig as { enabled: boolean }).enabled)

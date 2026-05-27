@@ -182,18 +182,20 @@ const extractValidPaths = (obj, prefix = "") => {
 * @returns Object with overrides to merge into base config
 *
 * @example
-* // Environment variables:
-* // PUBLIC__app__commerce__api__clientId=abc123
-* // PUBLIC__app__pages__cart__quantityUpdateDebounce=1000
-* // PUBLIC__app__features__socialLogin__providers=["Apple","Google"]
+* // Environment variables (template-specific paths shown):
+* // PUBLIC__app__some__nested__value=abc123
+* // PUBLIC__app__some__numericKnob=1000
+* // PUBLIC__app__some__listKnob=["A","B"]
 *
 * mergeEnvConfig()
 * // Returns:
 * // {
 * //   app: {
-* //     commerce: { api: { clientId: 'abc123' } },
-* //     pages: { cart: { quantityUpdateDebounce: 1000 } },
-* //     features: { socialLogin: { providers: ['Apple', 'Google'] } }
+* //     some: {
+* //       nested: { value: 'abc123' },
+* //       numericKnob: 1000,
+* //       listKnob: ['A', 'B']
+* //     }
 * //   }
 * // }
 */
@@ -214,7 +216,7 @@ const mergeEnvConfig = (env = typeof process !== "undefined" ? process.env : {},
 		const depth = path.split("__").length;
 		if (depth > MAX_DEPTH) throw new Error(`Environment variable "${varName}" exceeds maximum path depth of ${MAX_DEPTH}. Current depth: ${depth}. Consider consolidating with JSON values or reducing nesting levels.`);
 		const normalizedPath = path.toLowerCase();
-		if (protectedPaths.some((protectedPath) => normalizedPath === protectedPath || normalizedPath.startsWith(`${protectedPath}__`))) throw new Error(`Environment variable "${varName}" attempts to override protected config path "${path}".\n\nThe engagement configuration cannot be overridden via environment variables. Update config.server.ts directly to change engagement settings.`);
+		if (protectedPaths.some((protectedPath) => normalizedPath === protectedPath || normalizedPath.startsWith(`${protectedPath}__`))) throw new Error(`Environment variable "${varName}" attempts to override protected config path "${path}".\n\nProtected paths cannot be overridden via environment variables. Update config.server.ts directly, or remove the path from \`protectedPaths\` if env override is intended.`);
 		if (baseConfig && validPaths.length > 0) {
 			if (!validPaths.includes(normalizedPath)) {
 				console.warn(`[Config Warning] Ignoring environment variable "${varName}": Config path "${path}" does not exist in config.server.ts.`);
@@ -256,15 +258,18 @@ const mergeEnvConfig = (env = typeof process !== "undefined" ? process.env : {},
 /**
 * Define a type-safe storefront configuration with IDE autocomplete.
 *
-* Automatically merges `PUBLIC__` prefixed environment variables into the config
-* at load time. Validates env vars against the base config structure (strict mode —
-* only allows overriding existing paths).
+* Reads `process.env` at call time and merges any `PUBLIC__`-prefixed
+* variables into the config (validated against the base config structure —
+* env vars targeting paths that don't exist in the base config are ignored
+* with a warning). This is a server-only side effect by design; calling
+* `defineConfig` from a browser bundle silently no-ops because `PUBLIC__`
+* vars are not present in the client environment.
 *
 * Environment variables:
 * - `PUBLIC__<path>` (optional): Override any config path using double underscore separators.
-*   e.g. `PUBLIC__app__commerce__api__clientId=abc123` maps to `config.app.commerce.api.clientId`
-* - `PUBLIC__app__pages__cart__quantityUpdateDebounce=1000` maps to a number (optimistic JSON parsing)
-* - `PUBLIC__app__features__socialLogin__providers=["Apple","Google"]` maps to an array
+*   e.g. `PUBLIC__app__some__nested__value=abc123` maps to `config.app.some.nested.value`
+* - JSON values are parsed optimistically: numbers, booleans, arrays, and objects all work.
+*   `PUBLIC__app__features__providers=["A","B"]` parses to an array.
 *
 * @param config - The base configuration object with all defaults
 * @param options - Optional settings (e.g., protectedPaths to prevent env var overrides)
@@ -277,10 +282,9 @@ const mergeEnvConfig = (env = typeof process !== "undefined" ? process.env : {},
 * export default defineConfig({
 *     metadata: { projectName: 'My Store', projectSlug: 'my-store' },
 *     app: {
-*         commerce: { api: { clientId: '', organizationId: '', shortCode: '' }, sites: [] },
-*         defaultSiteId: 'RefArch',
+*         // template-specific shape
 *     },
-* }, { protectedPaths: ['app__engagement'] });
+* }, { protectedPaths: ['app__analytics'] });
 */
 function defineConfig(config, options) {
 	return deepMerge(config, mergeEnvConfig(process.env, config, { protectedPaths: options?.protectedPaths }));
@@ -289,28 +293,18 @@ function defineConfig(config, options) {
 //#endregion
 //#region src/config/context.tsx
 /**
-* Router context for application configuration.
-*
-* Populated by `createAppConfigMiddleware` with the `app` section of config.
-* Accessible in loaders, actions, and middleware via `context.get(appConfigContext)`.
+* Router context for application configuration. Populated by the template's
+* app-config middleware; read via `context.get(appConfigContext)` in loaders,
+* actions, and other middleware. Returns the augmented `AppConfigShape`.
 */
 const appConfigContext = createContext$1();
 /**
-* React context for application configuration.
+* Internal React context backing `useConfig()`.
 *
-* Used by the `useConfig()` hook in React components.
-* Populated by `ConfigProvider` in the component tree.
+* Not exported from the public barrel — components must read config via
+* `useConfig()` so the React tree has a single source of truth.
 */
 const ConfigContext = createContext(null);
-/**
-* Extract the `app` section from a full config object.
-*
-* @param staticConfig - The full config object (output of `defineConfig()`)
-* @returns The `app` section of the config
-*/
-function createAppConfig(staticConfig) {
-	return staticConfig.app;
-}
 /**
 * React context provider for application configuration.
 *
@@ -327,13 +321,10 @@ function ConfigProvider({ config, children }) {
 //#endregion
 //#region src/config/get-config.ts
 /**
-* Get configuration in loaders, actions, and utilities.
-*
-* Pass context parameter in server loaders/actions.
-* Omit context parameter in client loaders (uses window.__APP_CONFIG__).
-*
-* @param context - Router context for server loaders/actions
-* @returns App configuration
+* Get configuration in loaders, actions, and utilities. Pass `context` on the
+* server; omit it on the client (reads `window.__APP_CONFIG__`). Returns the
+* augmented `AppConfigShape` — pass an explicit generic only for narrower or
+* unrelated shapes (rare).
 */
 function getConfig(context) {
 	if (context) {
@@ -345,11 +336,8 @@ function getConfig(context) {
 	throw new Error("Configuration not available. This can happen if:\n1. Server: Pass context parameter: getConfig(context)\n2. Client: Ensure window.__APP_CONFIG__ was injected during SSR\n3. React component: Use useConfig() hook instead of getConfig()");
 }
 /**
-* Get configuration in React components.
-*
-* Must use this hook (not getConfig) because React Context requires useContext().
-*
-* @returns App configuration
+* Get configuration in React components (use this instead of `getConfig` —
+* React Context requires `useContext`). Returns the augmented `AppConfigShape`.
 */
 function useConfig() {
 	const config = useContext(ConfigContext);
@@ -358,5 +346,5 @@ function useConfig() {
 }
 
 //#endregion
-export { ConfigContext, ConfigProvider, appConfigContext, createAppConfig, defineConfig, getConfig, useConfig };
+export { ConfigProvider, appConfigContext, defineConfig, getConfig, useConfig };
 //# sourceMappingURL=config.js.map

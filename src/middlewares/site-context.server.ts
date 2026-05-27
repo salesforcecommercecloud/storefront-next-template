@@ -16,7 +16,6 @@
 import { type MiddlewareFunction } from 'react-router';
 import { createSiteContextMiddleware, type SiteConfig } from '@salesforce/storefront-next-runtime/site-context';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -27,7 +26,7 @@ import { getLogger } from '@/lib/logger.server';
  */
 export const siteContextMiddleware: MiddlewareFunction<Response> = async (args, next) => {
     const logger = getLogger(args.context);
-    const config = getConfig<AppConfig>(args.context);
+    const config = getConfig(args.context);
     const sites = config.commerce.sites;
 
     logger.debug('SiteContext: middleware starting', {

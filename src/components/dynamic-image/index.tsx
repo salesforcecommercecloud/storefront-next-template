@@ -17,7 +17,6 @@ import { type ElementType, type ImgHTMLAttributes, useMemo } from 'react';
 import { preload } from 'react-dom';
 import type { ComponentDesignMetadata } from '@salesforce/storefront-next-runtime/design/react';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { cn, isServer } from '@/lib/utils';
 import {
     type DynamicImageDimensions,
@@ -333,7 +332,7 @@ const DynamicImage = ({
     data: _data,
     ...rest
 }: DynamicImageProps) => {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     // Page Designer passes image-type attributes as objects — normalize to a plain string.
     // SFCC image objects can use several URL properties depending on source and context.

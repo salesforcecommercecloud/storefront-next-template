@@ -101,15 +101,16 @@ vi.mock('@/extensions/hybrid-proxy/config', () => ({
 // @sfdc-extension-block-end SFDC_EXT_HYBRID_PROXY
 
 vi.mock('@salesforce/storefront-next-runtime/config', async () => {
-    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
-    const { ConfigContext, createAppConfig } = await import('@salesforce/storefront-next-runtime/config');
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
 
     return {
         ...actual,
         ConfigProvider: ({ children }: PropsWithChildren) => (
-            <ConfigContext.Provider value={createAppConfig(mockBuildConfig)}>
+            <actual.ConfigProvider config={mockBuildConfig.app}>
                 <div data-testid="config-provider">{children}</div>
-            </ConfigContext.Provider>
+            </actual.ConfigProvider>
         ),
     };
 });

@@ -17,7 +17,6 @@ import { type ReactElement, useMemo, useState } from 'react';
 import type { ShopperProducts } from '@/scapi';
 import { useToast } from '@/components/toast';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -66,7 +65,7 @@ const providerLabels: Record<ShareProvider, string> = {
  */
 export function ShareButton({ product, size = 'md', className, tabIndex }: ShareButtonProps): ReactElement {
     const { addToast } = useToast();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const [open, setOpen] = useState(false);
 
     const productName = product.name || 'Check out this product';

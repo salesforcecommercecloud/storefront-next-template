@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { DataStrategyResult, MiddlewareFunction } from 'react-router';
-import { appConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { appConfigContext, type AppConfigShape } from '@salesforce/storefront-next-runtime/config';
 
 /**
  * Client middleware to ensure app config is in context before other middleware runs
@@ -43,7 +43,10 @@ export const appConfigMiddlewareClient: MiddlewareFunction<Record<string, DataSt
         );
     }
 
-    context.set(appConfigContext, appConfig);
+    // SSR injects `window.__APP_CONFIG__` as `Record<string, unknown>` (the SDK
+    // declares it that way to avoid forcing a type on the customer); the
+    // template knows the value is its own augmented `AppConfigShape`.
+    context.set(appConfigContext, appConfig as AppConfigShape);
 
     return next();
 };

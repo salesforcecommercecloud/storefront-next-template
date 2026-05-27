@@ -18,7 +18,6 @@ import type { ProductContentAdapter } from '@/lib/adapters/product-content/types
 import { getProductContentAdapter, PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME } from '@/lib/adapters/product-content/store';
 import { ensureProductContentAdapterRegistered } from '@/lib/adapters/product-content/ensure-registered';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();
@@ -43,7 +42,7 @@ const ProductContentProvider = ({
     children,
     adapterName = PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME,
 }: ProductContentProviderProps) => {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const [adapter, setAdapter] = useState<ProductContentAdapter | undefined>(undefined);
 
     useEffect(() => {

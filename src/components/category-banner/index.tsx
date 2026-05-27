@@ -18,7 +18,6 @@ import { useLocation, useNavigation, useRouteLoaderData } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 
 type CategoryRouteData = {
@@ -38,7 +37,7 @@ export default function CategoryBanner() {
     const { t } = useTranslation('category');
     const navigation = useNavigation();
     const location = useLocation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     const category = loaderData?.category;
     const total = loaderData?.searchResultCritical?.total;

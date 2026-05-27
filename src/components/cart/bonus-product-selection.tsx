@@ -25,7 +25,6 @@ import { getBonusProductCountsForPromotion } from '@/lib/cart/bonus-product-util
 import { requiresVariantSelection, getPrimaryProductImageUrl, isRuleBasedPromotion } from '@/lib/product/product-utils';
 import { useRuleBasedBonusProducts } from '@/hooks/use-rule-based-bonus-products';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
@@ -49,7 +48,7 @@ export default function BonusProductSelection({
     const addToCartFetcher = useFetcher();
     const { addToast } = useToast();
     const { t, i18n } = useTranslation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { currency } = useSite();
 
     // Track processed fetcher data to prevent duplicate toasts

@@ -112,6 +112,16 @@ vi.mock('@/hooks/use-checkout', () => ({
     }),
 }));
 
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
+    return {
+        ...actual,
+        useConfig: () => ({ auth: { otpLength: 6 } }),
+    };
+});
+
 import { composeStories } from '@storybook/react-vite';
 
 import * as ContactInfoStories from './contact-info.stories';

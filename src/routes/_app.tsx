@@ -20,7 +20,6 @@ import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { type ShopperProducts } from '@/scapi';
 import { fetchCategory } from '@/lib/api/categories.server';
 import { getLogger } from '@/lib/logger.server';
-import type { AppConfig } from '@/types/config';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import ResponsiveNavigationMenu from '@/components/navigation-menu-mega';
@@ -49,7 +48,7 @@ export function shouldRevalidate() {
 
 export function loader({ context }: Route.LoaderArgs): LoaderData {
     const logger = getLogger(context);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const { rootCategoryId, maxDepth } = config.pages.navigation;
 
     logger.debug('AppLayout: loader starting', { rootCategoryId, maxDepth });

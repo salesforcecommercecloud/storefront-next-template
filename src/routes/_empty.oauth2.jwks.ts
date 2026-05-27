@@ -23,7 +23,6 @@
  */
 import type { Route } from './+types/_empty.oauth2.jwks';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { getScapiBaseUrl } from '@/lib/utils';
 import { getLogger } from '@/lib/logger.server';
@@ -49,7 +48,7 @@ interface JWKSResponse {
  */
 async function fetchUpstreamJWKS(context: Route.LoaderArgs['context']): Promise<JWKSResponse> {
     const { t } = getTranslation(context);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     if (!config) {
         throw new Error('App configuration not found in context');
     }

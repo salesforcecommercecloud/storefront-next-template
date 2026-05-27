@@ -15,7 +15,6 @@
  */
 import { Link } from '@/components/link';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import type { DecoratedVariationAttributeValue } from '@/lib/product/product-utils';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 import { cn } from '@/lib/utils';
@@ -60,7 +59,7 @@ export function ProductTileSwatches({
     maxSwatches,
     productHref,
 }: ProductTileSwatchesProps) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t } = useTranslation('product');
     const overflowCount = totalColorCount - maxSwatches;
 

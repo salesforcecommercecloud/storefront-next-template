@@ -168,7 +168,7 @@ describe('mergeEnvConfig - protectedPaths option', () => {
     it('should throw for sub-paths of protected paths (case-insensitive)', () => {
         const env = { PUBLIC__APP__ENGAGEMENT__ADAPTERS__EINSTEIN__ENABLED: 'false' };
         expect(() => mergeEnvConfig(env, baseConfig, options)).toThrow(
-            'engagement configuration cannot be overridden via environment variables'
+            'Protected paths cannot be overridden via environment variables'
         );
     });
 

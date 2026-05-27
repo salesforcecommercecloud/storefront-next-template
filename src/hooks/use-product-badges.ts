@@ -16,7 +16,7 @@
 import { useCallback, useMemo } from 'react';
 import type { ShopperSearch } from '@/scapi';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig, BadgeDetail } from '@/types/config';
+import type { BadgeDetail } from '@/types/config';
 
 interface UseProductBadgesProps {
     product: ShopperSearch.schemas['ProductSearchHit'];
@@ -25,7 +25,7 @@ interface UseProductBadgesProps {
 }
 
 export const useProductBadges = ({ product, badgeDetails, maxBadges = 3 }: UseProductBadgesProps) => {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const defaultBadgeDetails = badgeDetails || config.global.badges;
     // Helper function to check if a property should show a badge
     const shouldShowBadge = useCallback((value: unknown): boolean => {

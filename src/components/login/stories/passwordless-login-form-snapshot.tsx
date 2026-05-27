@@ -113,8 +113,6 @@ vi.mock('@salesforce/storefront-next-runtime/config', () => ({
     useConfig: () => ({}),
     getConfig: () => ({}),
     ConfigProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    createAppConfig: (config: unknown) => config,
-    appConfigContext: {},
 }));
 
 vi.mock('@/hooks/use-navigate', () => ({

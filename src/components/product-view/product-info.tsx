@@ -23,7 +23,6 @@ import { useOptionalProductView } from '@/providers/product-view';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import ProductPrice from '../product-price';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import InventoryMessage, { InventoryStatus } from '../inventory-message';
@@ -127,7 +126,7 @@ export default function ProductInfo({
     headerAction,
     disableRatingInteraction = false,
 }: ProductInfoProps): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const isProductASet = isProductSet(product);
     const isProductABundle = isProductBundle(product);
     // Use variation attributes hook for URL-aware swatches

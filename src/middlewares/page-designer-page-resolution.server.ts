@@ -35,7 +35,6 @@ import type { ShopperExperience, Middleware, Clients } from '@/scapi';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import type { AppConfig } from '@/types/config';
 import { getScapiMiddlewareRegistry } from '@/lib/scapi-middleware';
 import { getLogger } from '@/lib/logger.server';
 import type { Logger } from '@/lib/logger';
@@ -124,7 +123,7 @@ class QualifierResolveError extends Error {
  * are never intercepted — they always reach SCAPI for live content.
  */
 export const pageDesignerResolutionMiddleware: MiddlewareFunction<Response> = async ({ context }, next) => {
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
 
     const registry = getScapiMiddlewareRegistry(context);
 
@@ -230,7 +229,7 @@ function createPageResolutionMiddleware(
     context: RouterContextProvider | Readonly<RouterContextProvider>,
     clients: Clients
 ): Middleware | null {
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const siteCtx = context.get(siteContext);
     const { i18next } = getTranslation(context);
     const siteId = siteCtx?.site.id ?? config.defaultSiteId;

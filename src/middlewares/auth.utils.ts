@@ -66,7 +66,7 @@ export const AUTH_TOKEN_INVALID_ERROR = 'AUTH_TOKEN_INVALID';
  * }
  */
 export function isTrackingConsentEnabled(context?: Readonly<RouterContextProvider>): boolean {
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     return appConfig.engagement?.analytics?.trackingConsent?.enabled ?? false;
 }
 
@@ -309,7 +309,7 @@ export const updateStorageAndCache = async (
     userType: 'guest' | 'registered'
 ): Promise<void> => {
     const promiseCache = context.get(authContext);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     promiseCache.ref = Promise.resolve(tokenResponse).then((response) => {
         const { dwsid, ...tokenData } = response;
         updateAuthStorageDataByTokenResponse(storage, tokenData, userType, appConfig, dwsid);

@@ -51,7 +51,6 @@ import { getLogger } from '@/lib/logger.server';
 import { createApiClients } from '@/lib/api-clients.server';
 import { performanceTimerContext, PERFORMANCE_MARKS } from '@/middlewares/performance-metrics';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { createCookie, getCookieConfig, getCookieNameWithSiteId, parseAllCookies } from '@/lib/cookie-utils.server';
 import { getTranslation, getLocale } from '@salesforce/storefront-next-runtime/i18n';
 import { TrackingConsent, trackingConsentToBoolean } from '@/types/tracking-consent';
@@ -115,7 +114,7 @@ export async function loginGuestUser(
     const logger = getLogger(context);
     const clients = createApiClients(context);
     const performanceTimer = context.get(performanceTimerContext);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const isSlasPrivate = appConfig.commerce.api.privateKeyEnabled;
     const performanceName = isSlasPrivate
         ? PERFORMANCE_MARKS.authLoginGuestUserPrivate
@@ -223,7 +222,7 @@ export async function authorizePasswordless(
     const session = getAuth(context);
     const userId = parameters.userid;
 
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const passwordlessCallback = appConfig.features.passwordlessLogin.callbackUri;
     const mode = appConfig.features.passwordlessLogin.mode;
 
@@ -287,7 +286,7 @@ export async function getPasswordResetToken(
     performanceTimer?.mark(PERFORMANCE_MARKS.authGetPasswordResetToken, 'start');
 
     const clients = createApiClients(context);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const resetPasswordCallbackUri = appConfig.features.resetPassword.callbackUri;
     let callbackUri: string | undefined;
     if (resetPasswordCallbackUri) {
@@ -419,7 +418,7 @@ export async function requestOtp(
     performanceTimer?.mark(PERFORMANCE_MARKS.authRequestOtp, 'start');
 
     const clients = createApiClients(context);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     const callbackUri = appConfig.features.otpRequest.callbackUri;
 
     const mode = appConfig.features.otpRequest.mode;
@@ -1267,7 +1266,7 @@ export const updateAuth = (
     const storage = context.get(authStorageContext);
     const cache = context.get(authCacheContext);
     const promiseCache = context.get(authContext);
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
     if (!storage || !cache || !promiseCache) {
         throw new Error('updateAuth must be used within the Commerce API middleware');
     }

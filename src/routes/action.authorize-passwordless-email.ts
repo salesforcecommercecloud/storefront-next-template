@@ -21,7 +21,6 @@ import { createActionError } from '@/lib/action-error-helpers.server';
 import { ErrorCode, type ActionError } from '@/lib/error-codes';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
 import { redactEmailForLog } from '@/lib/turnstile/log-redact.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
@@ -72,7 +71,7 @@ export async function action({
         );
     }
 
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
 
     const allowed = await enforceTurnstile({
         request,

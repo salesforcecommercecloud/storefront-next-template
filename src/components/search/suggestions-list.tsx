@@ -19,7 +19,6 @@ import { DynamicImage } from '@/components/dynamic-image';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 
 interface Suggestion {
@@ -39,7 +38,7 @@ interface SuggestionsProps {
 
 const Suggestions: React.FC<SuggestionsProps> = ({ suggestions, searchPhrase, closeAndNavigate, className }) => {
     const analytics = useAnalytics();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t } = useTranslation('common');
     if (!suggestions || suggestions.length === 0) {
         return null;

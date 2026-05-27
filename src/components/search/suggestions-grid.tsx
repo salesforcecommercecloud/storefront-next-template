@@ -20,7 +20,6 @@ import { DynamicImage } from '@/components/dynamic-image';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
@@ -44,7 +43,7 @@ const SearchSuggestionsPopup: React.FC<SearchSuggestionsPopupProps> = ({
     closeAndNavigate,
 }) => {
     const analytics = useAnalytics();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t, i18n } = useTranslation('common');
     const { currency } = useSite();
     if (!suggestions || suggestions.length === 0) {

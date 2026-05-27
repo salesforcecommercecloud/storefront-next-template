@@ -17,13 +17,12 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { ConfigWrapper, createConfigWrapper, mockBuildConfig, mockConfig, mockSiteObject } from './config';
 
 describe('Config Test Utils', () => {
     describe('ConfigWrapper', () => {
         it('should provide config context to hooks', () => {
-            const { result } = renderHook(() => useConfig<AppConfig>(), { wrapper: ConfigWrapper });
+            const { result } = renderHook(() => useConfig(), { wrapper: ConfigWrapper });
 
             expect(result.current).toBeDefined();
             expect(result.current.commerce.api.clientId).toBe('test-client');
@@ -31,7 +30,7 @@ describe('Config Test Utils', () => {
         });
 
         it('should provide access to all config sections', () => {
-            const { result } = renderHook(() => useConfig<AppConfig>(), { wrapper: ConfigWrapper });
+            const { result } = renderHook(() => useConfig(), { wrapper: ConfigWrapper });
 
             expect(result.current.commerce).toBeDefined();
             expect(result.current.commerce.sites).toBeDefined();
@@ -45,7 +44,7 @@ describe('Config Test Utils', () => {
     describe('createConfigWrapper', () => {
         it('should create a wrapper with default config when no overrides provided', () => {
             const CustomWrapper = createConfigWrapper();
-            const { result } = renderHook(() => useConfig<AppConfig>(), { wrapper: CustomWrapper });
+            const { result } = renderHook(() => useConfig(), { wrapper: CustomWrapper });
 
             expect(result.current.commerce.api.clientId).toBe('test-client');
             expect(result.current.commerce.sites[0].defaultLocale).toBe('en-GB');
@@ -65,7 +64,7 @@ describe('Config Test Utils', () => {
                 },
             });
 
-            const { result } = renderHook(() => useConfig<AppConfig>(), { wrapper: CustomWrapper });
+            const { result } = renderHook(() => useConfig(), { wrapper: CustomWrapper });
 
             expect(result.current.commerce.api.clientId).toBe('custom-client');
             expect(result.current.commerce.sites[0].defaultLocale).toBe('en-GB'); // Original value preserved
@@ -88,7 +87,7 @@ describe('Config Test Utils', () => {
                 },
             });
 
-            const { result } = renderHook(() => useConfig<AppConfig>(), { wrapper: CustomWrapper });
+            const { result } = renderHook(() => useConfig(), { wrapper: CustomWrapper });
 
             expect(result.current.commerce.sites[0].defaultLocale).toBe('fr-FR');
             expect(result.current.commerce.sites[0].defaultCurrency).toBe('EUR');
@@ -111,7 +110,7 @@ describe('Config Test Utils', () => {
                 },
             });
 
-            const { result } = renderHook(() => useConfig<AppConfig>(), { wrapper: CustomWrapper });
+            const { result } = renderHook(() => useConfig(), { wrapper: CustomWrapper });
 
             expect(result.current.search.products.hits.limit).toBe(48);
         });

@@ -93,10 +93,13 @@ vi.mock('@/lib/customer/profile-utils', () => ({ getContactInfoFromCustomer: () 
 vi.mock('@/lib/address/country-codes', () => ({
     getCommonPhoneCountryCodes: () => [{ dialingCode: '+1', countryName: 'United States' }],
 }));
-vi.mock('@salesforce/storefront-next-runtime/config', () => {
-    const { createContext } = React;
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
     return {
-        ConfigContext: createContext<{ auth?: { otpLength?: number } } | null>({ auth: { otpLength: 6 } }),
+        ...actual,
+        useConfig: () => ({ auth: { otpLength: 6 } }),
     };
 });
 

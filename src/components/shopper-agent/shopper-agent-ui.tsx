@@ -16,7 +16,6 @@
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { resolvePrefix } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
-import type { AppConfig } from '@/types/config';
 import { ShopperAgentWindow } from './shopper-agent-window';
 import { validateShopperAgentConfig, type ShopperAgentConfig } from './shopper-agent.utils';
 
@@ -63,7 +62,7 @@ export default function ShopperAgentUI({
     userId,
     usid,
 }: ShopperAgentUIProps) {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     if (!validateShopperAgentConfig(commerceAgentConfiguration)) {

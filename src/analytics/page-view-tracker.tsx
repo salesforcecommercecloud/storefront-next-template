@@ -17,7 +17,6 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
-import type { AppConfig } from '@/types/config';
 import { useAuth } from '@/providers/auth';
 import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
@@ -37,7 +36,7 @@ const logger = createLogger();
  */
 export function PageViewTracker() {
     const location = useLocation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const auth = useAuth();
     const { trackingConsent, isTrackingConsentEnabled } = useTrackingConsent();
     const { site, language } = useSite();

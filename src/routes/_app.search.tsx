@@ -20,7 +20,6 @@ import type { ShopperSearch } from '@/scapi';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 import { fetchSearchProducts } from '@/lib/api/search.server';
 import { getConfig, useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getLogger } from '@/lib/logger.server';
 import CategoryPagination from '@/components/category-pagination';
@@ -97,7 +96,7 @@ export async function loader(args: Route.LoaderArgs): Promise<SearchPageData> {
     const sort = searchParams.get('sort') ?? '';
     const refine = searchParams.getAll('refine');
     const initialFiltersOpen = getInitialFiltersOpen(searchParams);
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const logger = getLogger(context);
 
     const siteCtx = context.get(siteContext);
@@ -196,7 +195,7 @@ export default function SearchPage({
     loaderData: SearchPageData;
 }) {
     const { t } = useTranslation('search');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const limit = config.search.products.hits.limit;
 
     const [filtersOpen, toggleFiltersOpen] = useFiltersPanelState(initialFiltersOpen);

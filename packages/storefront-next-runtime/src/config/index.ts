@@ -17,22 +17,33 @@
 /**
  * Configuration module for storefront applications.
  *
- * Provides the config system: type-safe schema definition via `defineConfig()`,
- * access via `getConfig()` / `useConfig()`, and React context.
+ * Public surface:
+ * - `defineConfig()` — define a typed config in `config.server.ts` (merges `PUBLIC__*` env vars at call time)
+ * - `getConfig()` / `useConfig()` — access the resolved app config in loaders/actions/components
+ * - `appConfigContext` — router context populated by template middleware (read with `context.get(appConfigContext)`)
+ * - `ConfigProvider` — React provider that powers `useConfig()`
+ * - `BaseConfig`, `DefineConfigOptions` — types for `defineConfig`
+ * - `Locale`, `Site`, `Url` — opt-in baseline shapes templates can use in their `AppConfig`
+ * - `AppConfigShape` — augmentation hook for typing `getConfig()` / `useConfig()` (see JSDoc on `AppConfigShape`)
+ *
+ * Templates own their own validating server/client middleware that read `defineConfig`'s output
+ * and write `config.app` into `appConfigContext`. The SDK does not ship a generic config middleware
+ * because validation is template-specific (e.g. retail validates SCAPI credentials and sites).
  */
 
 // Types
 export type { Locale, Site, Url } from './types';
 export type { BaseConfig, DefineConfigOptions } from './schema';
+export type { AppConfigShape } from './get-config';
 
-// Config definition (server-only by convention)
+// Config definition (server-only by convention — reads process.env at call time)
 export { defineConfig } from './schema';
 
 // Config access (isomorphic)
 export { getConfig, useConfig } from './get-config';
 
 // Context primitives (isomorphic)
-export { appConfigContext, ConfigContext, ConfigProvider, createAppConfig } from './context';
+export { appConfigContext, ConfigProvider } from './context';
 
 // Dynamic loading (for dev server / build tools — node-only)
 // Exported via separate entry point: @salesforce/storefront-next-runtime/config/load-config

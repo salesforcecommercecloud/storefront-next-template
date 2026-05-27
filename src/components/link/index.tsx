@@ -22,7 +22,6 @@ import {
 } from 'react-router';
 import { buildUrl, useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 
 /**
@@ -32,7 +31,7 @@ import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-
  */
 export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link({ to: _to, ...rest }, ref) {
     const { site } = useSite();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
 
     const to =
@@ -52,7 +51,7 @@ export const Link = forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link
  */
 export const NavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps>(function NavLink({ to: _to, ...rest }, ref) {
     const { site } = useSite();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const to =
         typeof _to === 'string' && site

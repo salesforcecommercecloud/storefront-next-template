@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { test } from 'vitest';
-import { createAppConfig } from '@salesforce/storefront-next-runtime/config';
 import { deepMerge } from '@/test-utils/deep-merge';
 import type { Config } from '@/types/config';
 import {
@@ -1618,7 +1617,7 @@ describe('resolveDynamicImageAttributes()', () => {
     const DIS_SRC = disImageURL.withoutOptionalParams;
 
     const buildConfig = (overrides?: Partial<Config>) =>
-        overrides ? createAppConfig(deepMerge(mockBuildConfig, overrides as Record<string, unknown>)) : mockConfig;
+        overrides ? deepMerge(mockBuildConfig, overrides as Record<string, unknown>).app : mockConfig;
 
     describe('with DIS enabled (default)', () => {
         test('rewrites raw SFCC URL to DIS host in transformedSrc and src/srcSets', () => {

@@ -204,7 +204,7 @@ export const loader = ({
 } => {
     const session = getAuthServer(context);
 
-    const appConfig = getConfig<AppConfig>(context);
+    const appConfig = getConfig(context);
 
     // On the server side, our middleware stores the translations in this i18next object
     // so we'll need to be careful not to accidentally serialize this object (to avoid bloating the html).

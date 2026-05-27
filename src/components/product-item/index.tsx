@@ -37,7 +37,6 @@ import { getPriceData } from '../product-price/utils';
 import { useItemFetcherLoading } from '@/hooks/use-item-fetcher';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 // Utils
 import { formatCurrency } from '@/lib/currency';
@@ -66,7 +65,7 @@ export function ProductItemVariantImage({
     className?: string;
     width?: string;
 }): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t: tProduct } = useTranslation('product');
 
     if (!productItem) {
@@ -305,7 +304,7 @@ function ProductItem({
     // Get currency from context (automatically derived from locale)
     const { currency } = useSite();
     const { t, i18n } = useTranslation();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const showLineItemDescription = config.pages.cart?.showLineItemDescription ?? false;
 
     // Check if this is a bonus product

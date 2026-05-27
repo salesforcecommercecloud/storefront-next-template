@@ -96,7 +96,7 @@ async function trackEvent<TEventType extends AnalyticsEvent['eventType']>(
  */
 export const useAnalytics = () => {
     const auth = useAuth();
-    const appConfig = useConfig<AppConfig>();
+    const appConfig = useConfig();
     const { trackingConsent, isTrackingConsentEnabled } = useTrackingConsent();
     const { site, language } = useSite();
     const siteInfo = { siteId: site.id, localeId: language };

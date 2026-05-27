@@ -17,7 +17,6 @@ import type { ComponentType, ReactElement, SVGProps } from 'react';
 import { Form } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 import { SiApple } from '@icons-pack/react-simple-icons';
 import { KeyRound } from 'lucide-react';
@@ -46,7 +45,7 @@ const FALLBACK_ICON: ProviderIconConfig = {
 };
 
 export function SocialLoginButtons({ redirectPath }: SocialLoginButtonsProps = {}): ReactElement | null {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t } = useTranslation('login');
     const socialIDPs: string[] = config.features.socialLogin.providers;
 

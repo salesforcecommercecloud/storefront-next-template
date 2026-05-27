@@ -24,7 +24,6 @@ import Suggestions from '@/components/search/suggestions';
 import { useSearchSuggestions } from '@/hooks/use-search-suggestions';
 import { useTransformSearchSuggestions } from '@/hooks/use-transform-search-suggestions';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getSessionJSONItem, setSessionJSONItem, clearSessionJSONItem } from '@/lib/utils';
 import { openShopperAgentAndSendMessage } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
@@ -37,7 +36,7 @@ const RECENT_SEARCH_MIN_LENGTH = 3;
 export default function SearchBar(): ReactElement {
     const { t } = useTranslation('header');
     const navigate = useNavigate();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [query, setQuery] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);

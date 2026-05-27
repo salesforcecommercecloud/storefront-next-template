@@ -17,7 +17,6 @@ import { data, redirect } from 'react-router';
 import type { Route } from './+types/action.set-site-context';
 import { siteContext, getSiteContextCookies, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getLogger } from '@/lib/logger.server';
 
 /**
@@ -51,7 +50,7 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
                 throw new Response('siteId is required', { status: 400 });
             }
 
-            const config = getConfig<AppConfig>(context);
+            const config = getConfig(context);
             const site = config.commerce.sites.find((s) => s.id === siteId);
             if (!site) {
                 logger.warn('SetSiteContext: site not found', {

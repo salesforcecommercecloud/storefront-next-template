@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useRef, useCallback, useEffect, useState, useContext, lazy, Suspense, type ReactNode } from 'react';
+import { useMemo, useRef, useCallback, useEffect, useState, lazy, Suspense, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFetcher, useResolvedPath, useRevalidator } from 'react-router';
@@ -41,9 +41,8 @@ import {
 } from '@/lib/address/phone-utils';
 import type { OtpFlowActiveRef } from '@/hooks/use-checkout-actions';
 import { Spinner } from '@/components/spinner';
-import { ConfigContext } from '@salesforce/storefront-next-runtime/config';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
-import type { AppConfig } from '@/types/config';
 import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
@@ -86,7 +85,7 @@ export default function ContactInfo({
     const customerProfile = useCustomerProfile();
     const { shipmentDistribution, exitEditMode } = useCheckoutContext();
     const { t } = useTranslation('checkout');
-    const appConfig = useContext(ConfigContext);
+    const appConfig = useConfig();
 
     const customerContactInfo = getContactInfoFromCustomer(customerProfile);
 
@@ -117,13 +116,13 @@ export default function ContactInfo({
     const verificationFailureCountRef = useRef(0);
     const MAX_VERIFICATION_RETRIES = 3;
 
-    const turnstileEnabled = appConfig ? isTurnstileEnabled(appConfig as AppConfig) : false;
-    const turnstileMode = appConfig ? getTurnstileMode(appConfig as AppConfig) : 'managed';
+    const turnstileEnabled = isTurnstileEnabled(appConfig);
+    const turnstileMode = getTurnstileMode(appConfig);
     const turnstileSiteKey = useMemo(() => {
-        if (!appConfig || !turnstileEnabled) return null;
+        if (!turnstileEnabled) return null;
         if (typeof window !== 'undefined') {
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
-            return getTurnstileSiteKey(appConfig as AppConfig, baseUrl);
+            return getTurnstileSiteKey(appConfig, baseUrl);
         }
         return null;
     }, [appConfig, turnstileEnabled]);

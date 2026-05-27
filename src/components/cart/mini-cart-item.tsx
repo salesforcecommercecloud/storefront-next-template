@@ -27,7 +27,6 @@ import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import { useCartQuantityUpdate } from '@/hooks/use-cart-quantity-update';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { useTranslation } from 'react-i18next';
 
 // Utils
@@ -110,7 +109,7 @@ export default function MiniCartItem({
     // @sfdc-extension-line SFDC_EXT_BOPIS
     isPickup = false,
 }: MiniCartItemProps): ReactElement {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { t: tMiniCart, i18n } = useTranslation('miniCart');
     const { t: tRemoveItem } = useTranslation('removeItem');
     const { currency } = useSite();

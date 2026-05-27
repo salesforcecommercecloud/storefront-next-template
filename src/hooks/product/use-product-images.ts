@@ -19,7 +19,6 @@ import type { GalleryImage } from '@/components/image-gallery';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 import { isDynamicImageSource, toImageUrl } from '@/lib/images/dynamic-image';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 interface UseProductImagesProps {
     product: ShopperProducts.schemas['Product'];
@@ -77,7 +76,7 @@ export function useProductImages({
     selectedAttributes,
     viewType = 'large',
 }: UseProductImagesProps): UseProductImagesReturn {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
 
     // Get images filtered by selected attributes
     const filteredImages = useMemo(() => {

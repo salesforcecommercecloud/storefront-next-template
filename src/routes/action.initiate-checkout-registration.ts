@@ -27,7 +27,6 @@ import { extractErrorMessage } from '@/lib/auth/error-handler';
 import { ApiError } from '@/scapi';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { enforceTurnstile } from '@/lib/turnstile/enforce.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { COOKIE_TURNSTILE_VERIFIED, TURNSTILE_VERIFIED_MAX_AGE } from '@/lib/turnstile/constants';
@@ -103,7 +102,7 @@ export async function action({
         const email = formData.get('email')?.toString();
         const turnstileToken = formData.get('turnstileToken')?.toString();
 
-        const appConfig = getConfig<AppConfig>(context);
+        const appConfig = getConfig(context);
 
         const cookieHeader = request.headers.get('Cookie');
         const turnstileVerifiedViaCookie = (await tvCookie.parse(cookieHeader)) === '1';

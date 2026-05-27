@@ -19,7 +19,6 @@ import { getAdapter } from '@/lib/adapters';
 import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger();
@@ -43,7 +42,7 @@ type RecommendersProviderProps = PropsWithChildren<{
  * @param adapterName - Name of the adapter to use (default: EINSTEIN_ADAPTER_NAME)
  */
 const RecommendersProvider = ({ children, adapterName = EINSTEIN_ADAPTER_NAME }: RecommendersProviderProps) => {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const [adapter, setAdapter] = useState<RecommendersAdapter | undefined>(undefined);
 
     useEffect(() => {

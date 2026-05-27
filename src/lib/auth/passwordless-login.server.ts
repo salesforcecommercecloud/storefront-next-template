@@ -17,7 +17,6 @@ import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect, type Router
 import { getErrorMessage } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/origin';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import {
     resetMarketingCloudTokenCache,
     sendMarketingCloudEmail,
@@ -40,7 +39,7 @@ async function sendMagicLinkEmail(
     const base = getAppOrigin(context);
 
     // Get the configured landing path from app config
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     const landingPath = config.features.passwordlessLogin.landingUri;
     let magicLink = `${base}${landingPath}?token=${encodeURIComponent(token)}`;
 

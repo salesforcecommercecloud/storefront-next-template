@@ -1,61 +1,30 @@
 import { n as Site, r as Url, t as Locale } from "./types.js";
 import { n as DefineConfigOptions, r as defineConfig, t as BaseConfig } from "./schema.js";
-import * as react0 from "react";
 import { ReactNode } from "react";
-import * as react_jsx_runtime1 from "react/jsx-runtime";
+import * as react_jsx_runtime0 from "react/jsx-runtime";
 import * as react_router0 from "react-router";
 import { RouterContextProvider } from "react-router";
 
-//#region src/config/get-config.d.ts
+//#region src/config/context.d.ts
 
-declare global {
-  interface Window {
-    __APP_CONFIG__?: Record<string, unknown>;
-  }
+/**
+ * Augmentation hook for typing `getConfig()` / `useConfig()` /
+ * `appConfigContext`. Templates augment once via `declare module` so call
+ * sites don't need a per-call generic. Without augmentation, property
+ * accesses type to `unknown`. See README-CONFIG.md for the augmentation
+ * snippet and the multi-template caveat.
+ */
+interface AppConfigShape {
+  [key: string]: unknown;
 }
 /**
- * Get configuration in loaders, actions, and utilities.
- *
- * Pass context parameter in server loaders/actions.
- * Omit context parameter in client loaders (uses window.__APP_CONFIG__).
- *
- * @param context - Router context for server loaders/actions
- * @returns App configuration
+ * Router context for application configuration. Populated by the template's
+ * app-config middleware; read via `context.get(appConfigContext)` in loaders,
+ * actions, and other middleware. Returns the augmented `AppConfigShape`.
  */
-declare function getConfig<T extends Record<string, unknown> = Record<string, unknown>>(context?: Readonly<RouterContextProvider>): T;
-/**
- * Get configuration in React components.
- *
- * Must use this hook (not getConfig) because React Context requires useContext().
- *
- * @returns App configuration
- */
-declare function useConfig<T extends Record<string, unknown> = Record<string, unknown>>(): T;
-//#endregion
-//#region src/config/context.d.ts
-/**
- * Router context for application configuration.
- *
- * Populated by `createAppConfigMiddleware` with the `app` section of config.
- * Accessible in loaders, actions, and middleware via `context.get(appConfigContext)`.
- */
-declare const appConfigContext: react_router0.RouterContext<Record<string, unknown>>;
-/**
- * React context for application configuration.
- *
- * Used by the `useConfig()` hook in React components.
- * Populated by `ConfigProvider` in the component tree.
- */
-declare const ConfigContext: react0.Context<Record<string, unknown> | null>;
-/**
- * Extract the `app` section from a full config object.
- *
- * @param staticConfig - The full config object (output of `defineConfig()`)
- * @returns The `app` section of the config
- */
-declare function createAppConfig<T extends BaseConfig>(staticConfig: T): T['app'];
+declare const appConfigContext: react_router0.RouterContext<AppConfigShape>;
 interface ConfigProviderProps {
-  config: Record<string, unknown>;
+  config: AppConfigShape;
   children: ReactNode;
 }
 /**
@@ -67,7 +36,26 @@ interface ConfigProviderProps {
 declare function ConfigProvider({
   config,
   children
-}: ConfigProviderProps): react_jsx_runtime1.JSX.Element;
+}: ConfigProviderProps): react_jsx_runtime0.JSX.Element;
 //#endregion
-export { type BaseConfig, ConfigContext, ConfigProvider, type DefineConfigOptions, type Locale, type Site, type Url, appConfigContext, createAppConfig, defineConfig, getConfig, useConfig };
+//#region src/config/get-config.d.ts
+declare global {
+  interface Window {
+    __APP_CONFIG__?: Record<string, unknown>;
+  }
+}
+/**
+ * Get configuration in loaders, actions, and utilities. Pass `context` on the
+ * server; omit it on the client (reads `window.__APP_CONFIG__`). Returns the
+ * augmented `AppConfigShape` — pass an explicit generic only for narrower or
+ * unrelated shapes (rare).
+ */
+declare function getConfig<T extends Record<string, unknown> = AppConfigShape>(context?: Readonly<RouterContextProvider>): T;
+/**
+ * Get configuration in React components (use this instead of `getConfig` —
+ * React Context requires `useContext`). Returns the augmented `AppConfigShape`.
+ */
+declare function useConfig<T extends Record<string, unknown> = AppConfigShape>(): T;
+//#endregion
+export { type AppConfigShape, type BaseConfig, ConfigProvider, type DefineConfigOptions, type Locale, type Site, type Url, appConfigContext, defineConfig, getConfig, useConfig };
 //# sourceMappingURL=config.d.ts.map

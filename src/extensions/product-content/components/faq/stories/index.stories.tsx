@@ -18,29 +18,25 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
-import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
-import { deepMerge } from '@/test-utils/deep-merge';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockAltSiteObject, mockBuildConfig, mockSiteObject } from '@/test-utils/config';
 import Faq from '../index';
 import type { ReactElement } from 'react';
 
 /** FAQ only mounts when shopper agent is enabled and passes validation (matches unit test fixtures). */
-const faqStoryConfig = createAppConfig(
-    deepMerge(mockBuildConfig, {
-        app: {
-            commerceAgent: {
-                enabled: 'true' as const,
-                embeddedServiceName: 'storybook_service',
-                embeddedServiceEndpoint: 'https://test.my.site.com/ESWtest',
-                scriptSourceUrl: 'https://test.my.site.com/ESWtest/assets/js/bootstrap.min.js',
-                scrt2Url: 'https://test.salesforce-scrt.com',
-                salesforceOrgId: '00Dxx0000000000',
-                siteId: mockAltSiteObject.id,
-            },
-        },
-    })
-);
+const faqStoryConfig = {
+    ...mockBuildConfig.app,
+    commerceAgent: {
+        enabled: 'true' as const,
+        embeddedServiceName: 'storybook_service',
+        embeddedServiceEndpoint: 'https://test.my.site.com/ESWtest',
+        scriptSourceUrl: 'https://test.my.site.com/ESWtest/assets/js/bootstrap.min.js',
+        scrt2Url: 'https://test.salesforce-scrt.com',
+        salesforceOrgId: '00Dxx0000000000',
+        siteId: mockAltSiteObject.id,
+    },
+};
 
 const mockQuestions = [
     'What sizes does this come in?',

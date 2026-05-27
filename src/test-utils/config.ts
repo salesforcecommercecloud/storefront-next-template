@@ -22,7 +22,7 @@
  */
 
 import { createElement, type ReactNode } from 'react';
-import { ConfigProvider, createAppConfig } from '@salesforce/storefront-next-runtime/config';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { deepMerge } from '@/test-utils/deep-merge';
 import type { Config } from '@/types/config';
 import { TrackingConsent } from '@/types/tracking-consent';
@@ -331,7 +331,7 @@ export const mockBuildConfig: Config = {
 /**
  * Pre-created mock config for convenience
  */
-export const mockConfig = createAppConfig(mockBuildConfig);
+export const mockConfig = mockBuildConfig.app;
 
 /**
  * Derived site objects and values for use in test assertions and mock return values.
@@ -411,7 +411,7 @@ export function ConfigWrapper({ children }: { children: ReactNode }) {
  */
 export function createConfigWrapper(configOverrides?: Partial<Config>) {
     const customConfig = configOverrides
-        ? createAppConfig(deepMerge(mockBuildConfig, configOverrides as Record<string, unknown>))
+        ? deepMerge(mockBuildConfig, configOverrides as Record<string, unknown>).app
         : mockConfig;
 
     return function CustomConfigWrapper({ children }: { children: ReactNode }) {

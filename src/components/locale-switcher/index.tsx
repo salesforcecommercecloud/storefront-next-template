@@ -19,7 +19,6 @@ import { useFetcher, useLocation } from 'react-router';
 
 import { NativeSelect } from '@/components/ui/native-select';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { buildUrl, resolvePrefix, stripPathPrefix, useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 
@@ -27,7 +26,7 @@ export default function LocaleSwitcher(): ReactElement {
     const id = useId();
     const { t, i18n } = useTranslation('localeSwitcher');
     const fetcher = useFetcher();
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { site } = useSite();
 
     // Show only languages the app has translations for AND the current site supports.

@@ -44,7 +44,6 @@ import { getPasswordlessErrorMessageKey } from '@/lib/auth/error-handler';
 import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
-import type { AppConfig } from '@/types/config';
 
 // Lazy load OTP modal for passwordless email editing
 const OtpModal = lazy(() => import('@/components/login/otp-modal').then((m) => ({ default: m.default })));
@@ -118,7 +117,7 @@ function AccountDetailsContent({
     const revalidator = useRevalidator();
     const auth = useAuth();
     const { t, i18n } = useTranslation('account');
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
     const customerId = auth?.customerId;
     const canSubmitCustomerUpdates = Boolean(customerId);

@@ -40,7 +40,6 @@ import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { useTranslation } from 'react-i18next';
 import { getLogger } from '@/lib/logger.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { getPasswordlessErrorMessageKey, extractErrorMessage } from '@/lib/auth/error-handler';
 import { getLoginPreferences } from '@salesforce/storefront-next-runtime/data-store';
 
@@ -73,7 +72,7 @@ export function loader({ request, context }: Route.LoaderArgs): SignupLoaderData
         return redirect('/');
     }
 
-    const config = getConfig<AppConfig>(context);
+    const config = getConfig(context);
     // Enabling the email verification site preference will enable the passwordless registration flow.
     const { emailVerificationEnabled } = getLoginPreferences(context);
     const isPasswordlessEnabled = Boolean(emailVerificationEnabled);

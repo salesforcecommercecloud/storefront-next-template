@@ -25,7 +25,6 @@ import logo from '/images/logo.svg';
 import { Button } from '@/components/ui/button';
 import { SparklesIcon } from '@/components/icons';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 import { launchChat } from '@/components/shopper-agent';
 import { validateShopperAgentConfig } from '@/components/shopper-agent/shopper-agent.utils';
 import { UITarget } from '@/targets/ui-target';
@@ -46,7 +45,7 @@ function LocationKeyedSearch() {
 export default function Header({ children, beforeHeader, variant = 'full' }: HeaderProps): ReactElement {
     const { t } = useTranslation('header');
     const headerRef = useRef<HTMLElement>(null);
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const showChat =
         variant === 'full' &&
         (config.commerceAgent?.enabled === 'true' || config.commerceAgent?.enabled === true) &&

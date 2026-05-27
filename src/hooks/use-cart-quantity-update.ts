@@ -28,7 +28,6 @@ import { useToast } from '@/components/toast';
 
 // Hooks
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
 
 // Constants
 // Types
@@ -114,7 +113,7 @@ export function useCartQuantityUpdate<TResponse extends { success?: boolean } = 
     debounceDelay,
     fetcher,
 }: UseCartQuantityUpdateProps<TResponse>): UseCartQuantityUpdateReturn {
-    const config = useConfig<AppConfig>();
+    const config = useConfig();
     const { addToast } = useToast();
     const { t } = useTranslation('quantitySelector');
 

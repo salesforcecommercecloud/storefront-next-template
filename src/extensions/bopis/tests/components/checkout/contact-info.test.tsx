@@ -78,6 +78,16 @@ vi.mock('@/lib/address/country-codes', () => ({
     getCommonPhoneCountryCodes: () => mockGetCommonPhoneCountryCodes(),
 }));
 
+vi.mock('@salesforce/storefront-next-runtime/config', async () => {
+    const actual = await vi.importActual<typeof import('@salesforce/storefront-next-runtime/config')>(
+        '@salesforce/storefront-next-runtime/config'
+    );
+    return {
+        ...actual,
+        useConfig: () => ({ auth: { otpLength: 6 } }),
+    };
+});
+
 const createMockBasket = (overrides = {}) => ({
     basketId: 'test-basket-123',
     currency: 'USD',
