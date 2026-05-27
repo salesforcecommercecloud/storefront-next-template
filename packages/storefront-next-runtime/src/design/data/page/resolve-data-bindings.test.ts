@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { describe, test, expect } from 'vitest';
-import { parseExpression, resolveExpression, resolveComponentDataBindings } from './resolve-data-bindings';
+import {
+    parseExpression,
+    parseFieldValue,
+    resolveExpression,
+    resolveComponentDataBindings,
+} from './resolve-data-bindings';
 import type { ShopperExperience } from '@/scapi-client/types';
 import type { ComponentDataBinding, DataBindingRequirement, QualifierContext } from '../types';
 
@@ -52,6 +57,36 @@ describe('parseExpression', () => {
 
     test('returns null for expression with too many segments', () => {
         expect(parseExpression('a.b.c')).toBeNull();
+    });
+});
+
+describe('parseFieldValue', () => {
+    test('coerces "true" and "false" to booleans', () => {
+        expect(parseFieldValue('true')).toBe(true);
+        expect(parseFieldValue('false')).toBe(false);
+    });
+
+    test('coerces numeric strings to numbers', () => {
+        expect(parseFieldValue('2026')).toBe(2026);
+        expect(parseFieldValue('0')).toBe(0);
+        expect(parseFieldValue('-12.5')).toBe(-12.5);
+    });
+
+    test('returns non-numeric, non-boolean strings as-is', () => {
+        expect(parseFieldValue('Winter Sale')).toBe('Winter Sale');
+        expect(parseFieldValue('<div>Hi</div>')).toBe('<div>Hi</div>');
+    });
+
+    test('preserves empty and whitespace-only strings as strings', () => {
+        expect(parseFieldValue('')).toBe('');
+        expect(parseFieldValue('   ')).toBe('   ');
+    });
+
+    test('passes non-string values through unchanged', () => {
+        expect(parseFieldValue(42)).toBe(42);
+        expect(parseFieldValue(true)).toBe(true);
+        expect(parseFieldValue(null)).toBe(null);
+        expect(parseFieldValue(undefined)).toBe(undefined);
     });
 });
 
@@ -102,6 +137,23 @@ describe('resolveExpression', () => {
         };
         expect(resolveExpression('content_asset.count', contexts, bindingsWithFalsy)).toBe(0);
         expect(resolveExpression('content_asset.active', contexts, bindingsWithFalsy)).toBe(false);
+    });
+
+    test('parses string values returned by the API into typed values', () => {
+        const stringBindings: NonNullable<QualifierContext['dataBindings']> = {
+            content_asset: {
+                'asset-uuid-1': {
+                    year: '2026',
+                    active: 'true',
+                    disabled: 'false',
+                    title: 'Winter Sale',
+                },
+            },
+        };
+        expect(resolveExpression('content_asset.year', contexts, stringBindings)).toBe(2026);
+        expect(resolveExpression('content_asset.active', contexts, stringBindings)).toBe(true);
+        expect(resolveExpression('content_asset.disabled', contexts, stringBindings)).toBe(false);
+        expect(resolveExpression('content_asset.title', contexts, stringBindings)).toBe('Winter Sale');
     });
 
     test('resolves with multiple contexts selecting the correct one', () => {

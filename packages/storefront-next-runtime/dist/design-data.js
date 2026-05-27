@@ -349,6 +349,24 @@ function transformRegion(region, visitor) {
 */
 const BARE_EXPRESSION_PATTERN = /^(\w+)\.(\w+)$/;
 /**
+* Coerces a string value returned by the data binding API into a boolean or
+* number when the contents represent one. The data provider returns every
+* field as a string, so callers expecting typed values would otherwise receive
+* `"true"` instead of `true` or `"2026"` instead of `2026`.
+*
+* Non-string inputs are returned as-is. Strings that are neither booleans nor
+* finite numbers are returned unchanged.
+*/
+function parseFieldValue(value) {
+	if (typeof value !== "string") return value;
+	if (value === "true") return true;
+	if (value === "false") return false;
+	if (value.trim() === "") return value;
+	const num = Number(value);
+	if (Number.isFinite(num)) return num;
+	return value;
+}
+/**
 * Parses a binding expression string into its provider type and field name.
 * Supports the bare `type.field` format.
 *
@@ -389,7 +407,7 @@ function resolveExpression(expression, contexts, dataBindings) {
 	if (!context) return "";
 	const record = dataBindings[context.type]?.[context.id];
 	if (!record) return "";
-	return record[parsed.field] ?? "";
+	return parseFieldValue(record[parsed.field] ?? "");
 }
 /**
 * Resolves data binding expressions for a single component. Replaces attribute
