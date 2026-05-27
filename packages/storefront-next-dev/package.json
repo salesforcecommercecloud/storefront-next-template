@@ -195,7 +195,7 @@
     "express": "5.1.0",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
-    "handlebars": "4.7.8",
+    "handlebars": "4.7.9",
     "http-proxy": "1.18.1",
     "http-proxy-middleware": "^3.0.0",
     "jiti": "^2.6.1",

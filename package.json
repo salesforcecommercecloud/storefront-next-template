@@ -160,9 +160,13 @@
         "pnpm": "10.28.0"
     },
     "pnpm": {
-        "//": "Override happy-dom's @types/node 20.x → 24.x to drop undici-types@6.21.0 from the graph (it was published without npm provenance, triggering pnpm's trust-downgrade check). Remove once upstream republishes with provenance.",
         "overrides": {
-            "happy-dom>@types/node": "^24.0.0"
+            "happy-dom>@types/node": "^24.0.0",
+            "@isaacs/brace-expansion": "^5.0.1",
+            "axios": "^1.15.2",
+            "basic-ftp": "^5.3.1",
+            "flatted": "^3.4.2",
+            "shell-quote": "^1.8.4"
         }
     },
     "bundlesize": {
