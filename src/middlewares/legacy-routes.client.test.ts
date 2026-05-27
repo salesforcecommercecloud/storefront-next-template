@@ -305,6 +305,38 @@ describe('legacyRoutesMiddleware', () => {
             // Parameters should not match slashes
             expect(matchesRoutePattern('/product/123/456', '/product/:id')).toBe(false);
         });
+
+        test('should match trailing wildcard patterns across any depth', () => {
+            // Single segment, multi-segment, and empty tail all match
+            expect(matchesRoutePattern('/categoryLv1/shoes', '/categoryLv1/*')).toBe(true);
+            expect(matchesRoutePattern('/categoryLv1/shoes/running', '/categoryLv1/*')).toBe(true);
+            expect(matchesRoutePattern('/categoryLv1/', '/categoryLv1/*')).toBe(true);
+            // Different base path should not match
+            expect(matchesRoutePattern('/categoryLv2/shoes', '/categoryLv1/*')).toBe(false);
+            // Parent path without the trailing slash does not match the '/categoryLv1/*' form
+            expect(matchesRoutePattern('/categoryLv1', '/categoryLv1/*')).toBe(false);
+        });
+
+        test('should match a wildcard combined with a named param', () => {
+            // Named param stays single-segment; wildcard absorbs the rest
+            expect(matchesRoutePattern('/category/shoes/details/blue', '/category/:cat/*')).toBe(true);
+            expect(matchesRoutePattern('/category/shoes/', '/category/:cat/*')).toBe(true);
+        });
+
+        test('should match a root wildcard against any path', () => {
+            expect(matchesRoutePattern('/anything', '*')).toBe(true);
+            expect(matchesRoutePattern('/a/b/c', '*')).toBe(true);
+        });
+
+        test('should match wildcards in the middle of a pattern', () => {
+            // '*' is not restricted to a trailing splat — it matches any content (including '/') anywhere
+            expect(matchesRoutePattern('/api/v1/data', '/api/*/data')).toBe(true);
+            expect(matchesRoutePattern('/api/v1/v2/data', '/api/*/data')).toBe(true);
+            expect(matchesRoutePattern('/api/data', '/api/*/data')).toBe(false);
+            // Combine prefix + suffix around a non-trailing '*'
+            expect(matchesRoutePattern('/files/photo-thumb', '/files/*-thumb')).toBe(true);
+            expect(matchesRoutePattern('/files/photo-full', '/files/*-thumb')).toBe(false);
+        });
     });
 
     describe('multisite prefix stripping', () => {

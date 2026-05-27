@@ -574,12 +574,14 @@ PUBLIC__app__hybrid__enabled=true
 
 Type: `string[]` Optional | Default: `[]`
 
-Array of route patterns that should be handled by the legacy system when hybrid mode is enabled.
+Array of route patterns that should be handled by the legacy system when hybrid mode is enabled. Patterns may be exact paths, single-segment named params (`:name`), or multi-segment wildcards (`*`).
 
 Example:
 ```bash
-PUBLIC__app__hybrid__legacyRoutes='["/account", "/checkout"]'
+PUBLIC__app__hybrid__legacyRoutes='["/account", "/checkout", "/product/:id", "/categoryLv1/*"]'
 ```
+
+See the [Hybrid Proxy guide](./README-HYBRID-PROXY.md#public__app__hybrid__legacyroutes) for full pattern syntax (`:param`, `*`) and matching semantics.
 
 ---
 
