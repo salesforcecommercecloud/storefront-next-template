@@ -21,6 +21,8 @@ import {
     decodeSLASAccessToken,
     getSLASAccessTokenClaims,
     getCustomerIdFromClaims,
+    isRegisteredTokenClaims,
+    deriveUserTypeFromClaims,
     isTrackingConsentEnabled,
     getPublicSessionData,
     hasUsableShopperSession,
@@ -455,43 +457,49 @@ describe('auth.utils', () => {
         describe('getCustomerIdFromClaims', () => {
             it.each([
                 {
-                    desc: 'gcid for guest user',
-                    userType: 'guest' as const,
+                    desc: 'gcid when only gcid is present (guest token)',
                     gcid: 'guest-id',
                     rcid: null,
                     expected: 'guest-id',
                 },
                 {
-                    desc: 'rcid for registered user',
-                    userType: 'registered' as const,
+                    desc: 'rcid when both are present (registered token)',
                     gcid: 'guest-id',
                     rcid: 'reg-id',
                     expected: 'reg-id',
                 },
                 {
-                    desc: 'gcid fallback for registered when rcid is null',
-                    userType: 'registered' as const,
-                    gcid: 'guest-id',
-                    rcid: null,
-                    expected: 'guest-id',
-                },
-                {
-                    desc: 'null for guest when gcid is null',
-                    userType: 'guest' as const,
+                    desc: 'null when neither claim is present',
                     gcid: null,
                     rcid: null,
                     expected: null,
                 },
-                {
-                    desc: 'null for registered when both null',
-                    userType: 'registered' as const,
-                    gcid: null,
-                    rcid: null,
-                    expected: null,
-                },
-            ])('should return $desc', ({ userType, gcid, rcid, expected }) => {
+            ])('should return $desc', ({ gcid, rcid, expected }) => {
                 const claims = { expiry: 1234567890000, trackingConsent: null, gcid, rcid, usid: null };
-                expect(getCustomerIdFromClaims(claims, userType)).toBe(expected);
+                expect(getCustomerIdFromClaims(claims)).toBe(expected);
+            });
+        });
+
+        describe('isRegisteredTokenClaims / deriveUserTypeFromClaims', () => {
+            const baseClaims = { expiry: 1234567890000, trackingConsent: null, usid: 'usid-1' };
+
+            it.each<{ desc: string; gcid: string; rcid: string | null; expected: boolean }>([
+                { desc: 'rcid present and non-empty', gcid: 'g', rcid: 'r', expected: true },
+                { desc: 'rcid is null', gcid: 'g', rcid: null, expected: false },
+                { desc: 'rcid is empty string', gcid: 'g', rcid: '', expected: false },
+            ])('isRegisteredTokenClaims returns $expected when $desc', ({ gcid, rcid, expected }) => {
+                const claims = { ...baseClaims, gcid, rcid };
+                expect(isRegisteredTokenClaims(claims)).toBe(expected);
+            });
+
+            it('deriveUserTypeFromClaims returns "registered" when rcid is non-empty', () => {
+                const claims = { ...baseClaims, gcid: 'g', rcid: 'r' };
+                expect(deriveUserTypeFromClaims(claims)).toBe('registered');
+            });
+
+            it('deriveUserTypeFromClaims returns "guest" when rcid is missing', () => {
+                const claims = { ...baseClaims, gcid: 'g', rcid: null };
+                expect(deriveUserTypeFromClaims(claims)).toBe('guest');
             });
         });
     });
@@ -629,7 +637,7 @@ describe('auth.utils', () => {
             const storage = makeStorage();
             const tokenResponse = buildMockTokenResponse();
 
-            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
 
             expect(storage.get('idToken')).toBe('id-token-123');
         });
@@ -638,7 +646,7 @@ describe('auth.utils', () => {
             const storage = makeStorage();
             const tokenResponse = { ...buildMockTokenResponse(), id_token: undefined as unknown as string };
 
-            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
 
             expect(storage.has('idToken')).toBe(false);
         });
@@ -647,7 +655,7 @@ describe('auth.utils', () => {
             const storage = makeStorage();
             const tokenResponse = buildMockTokenResponse();
 
-            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
 
             expect(storage.get('idpRefreshToken')).toBe('idp-refresh-token-789');
         });
@@ -656,7 +664,7 @@ describe('auth.utils', () => {
             const storage = makeStorage();
             const tokenResponse = { ...buildMockTokenResponse(), idp_refresh_token: undefined };
 
-            updateAuthStorageDataByTokenResponse(storage, tokenResponse, 'guest', mockConfig);
+            updateAuthStorageDataByTokenResponse(storage, tokenResponse, mockConfig);
 
             expect(storage.has('idpRefreshToken')).toBe(false);
         });

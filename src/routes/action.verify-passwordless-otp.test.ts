@@ -156,11 +156,9 @@ describe('action.verify-passwordless-otp', () => {
             pwdlessLoginToken: '12345678',
         });
 
-        expect(mockUpdateAuth).toHaveBeenCalledTimes(2);
-        expect(mockUpdateAuth).toHaveBeenNthCalledWith(1, mockContext, mockTokenResponse);
-
-        const updater = mockUpdateAuth.mock.calls[1][1] as (session: unknown) => unknown;
-        expect(updater({})).toEqual({ userType: 'registered' });
+        // Single updateAuth call: userType derives from the JWT inside updateAuth — no follow-up.
+        expect(mockUpdateAuth).toHaveBeenCalledTimes(1);
+        expect(mockUpdateAuth).toHaveBeenCalledWith(mockContext, mockTokenResponse);
 
         expect(mockGetBasket).toHaveBeenCalledWith(mockContext);
         expect(mockGetBasketCurrency).toHaveBeenCalledWith(mockContext, { basketId: 'basket-1', currency: 'USD' });

@@ -39,12 +39,10 @@ export const loginRegisteredUser = async (
             credentials.password,
             options
         );
-        // Update session with user tokens and info
+        // Update session with user tokens and info. userType, customerId, usid, and the
+        // refresh-token expiry cap all derive from the access-token JWT inside updateAuth —
+        // no follow-up call is needed.
         updateAuth(context, tokenResponse);
-        updateAuth(context, (session) => ({
-            ...session,
-            userType: 'registered',
-        }));
 
         logger.info('StandardLogin: succeeded');
         return {

@@ -143,18 +143,12 @@ export const loginIDPUser = async (
             ...(dnt !== undefined && { dnt }),
         });
 
-        // Update session with user tokens and info (similar to standard login)
-        // result already includes dwsid extracted from response headers by SDK
+        // Update session with user tokens and info (similar to standard login). userType,
+        // customerId, usid, and the refresh-token expiry cap all derive from the access-token
+        // JWT inside updateAuth. The PKCE code verifier is wiped because updateAuth clears
+        // non-meta storage keys before writing the new token-response state — no follow-up
+        // call is needed.
         updateAuth(context, result);
-        updateAuth(context, (current) => {
-            // Delete the code verifier once the user has logged in
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { codeVerifier: _, ...rest } = current;
-            return {
-                ...rest,
-                userType: 'registered',
-            };
-        });
 
         logger.info('SocialLogin: IDP login succeeded');
         return {

@@ -288,6 +288,32 @@ describe('auth middleware (server)', () => {
             expect(storage.get('accessToken')).toBe(tokenResponse.access_token);
             expect(storage.get('isUpdated')).toBe(true);
         });
+
+        test('post-login session state matches registered token claims (in-request, no second call)', () => {
+            // Acceptance criterion (bug-fix proof): after updateAuth() with a registered token
+            // response, getAuth(context).customerId must equal the JWT's rcid (NOT the previous
+            // guest gcid) and userType must be 'registered' — within the same request, before
+            // any post-login basket/wishlist/customer SCAPI call. Prior to this refactor a
+            // follow-up `updateAuth(s => ({ ...s, userType: 'registered' }))` call was needed
+            // to flip userType, and crucially that follow-up did NOT re-derive customerId, so
+            // session.customerId stayed stuck on the guest gcid for the rest of the request.
+            const guestData = getMockAuthData();
+            guestData.customerId = 'guest-cust-1';
+            guestData.userType = 'guest';
+            const { provider, storage } = mockContext(guestData);
+
+            const registeredTokenResponse = buildMockTokenResponse({
+                accessToken: { customerId: 'guest-cust-1', rcid: 'reg-cust-1', usid: 'usid-2' },
+                customer_id: 'reg-cust-1',
+                usid: 'usid-2',
+            });
+
+            updateAuth(provider, registeredTokenResponse);
+
+            expect(storage.get('userType')).toBe('registered');
+            expect(storage.get('customerId')).toBe('reg-cust-1');
+            expect(storage.get('usid')).toBe('usid-2');
+        });
     });
 
     describe('destroyAuth()', () => {
@@ -1507,11 +1533,14 @@ describe('auth middleware (server)', () => {
             expect(next).toHaveBeenCalled();
         });
 
-        it('should determine user type from refresh token cookie presence - guest', async () => {
+        it('should derive userType=guest from a guest-shaped JWT (gcid only)', async () => {
+            // JWT-shaped guest token returned by guest login → userType derived from claims.
             const mockTokenResponse = getMockTokenResponse();
             mockAuth.loginAsGuest.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
-            // Mock guest refresh token cookie only
+            // Cold start: only the guest refresh-cookie present; ingest will fall back to
+            // guest login, and updateAuthStorageDataByTokenResponse will set userType from the
+            // (guest-shaped) JWT.
             mockParseAllCookies.mockReturnValue({
                 'cc-nx-g': 'guest-refresh-token',
             });
@@ -1544,20 +1573,16 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            // Verify userType was set to 'guest' in storage
             expect(storage.get('userType')).toBe('guest');
         });
 
-        it('should determine user type from refresh token cookie presence - registered', async () => {
-            const mockTokenResponse = getMockTokenResponse();
-            mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
-
-            // Create valid JWT with expiry
+        it('should derive userType=registered from a registered-shaped JWT (gcid+rcid)', async () => {
+            // The access-token JWT is the source of truth — having the cc-nx cookie alone is
+            // not sufficient. Build a registered-shaped JWT and verify userType derives from it.
             const now = Math.floor(Date.now() / 1000);
             const exp = now + 1800;
-            const mockAccessToken = buildMockAccessToken({ exp });
+            const mockAccessToken = buildMockAccessToken({ exp, rcid: 'reg-cust-1' });
 
-            // Mock registered refresh token cookie only
             mockParseAllCookies.mockReturnValue({
                 'cc-nx': 'registered-refresh-token',
                 'cc-at': mockAccessToken,
@@ -1589,8 +1614,8 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            // Verify userType was set to 'registered' in storage
             expect(storage.get('userType')).toBe('registered');
+            expect(storage.get('customerId')).toBe('reg-cust-1');
         });
 
         it('should extract access token expiry from JWT during middleware initialization', async () => {
@@ -1898,14 +1923,16 @@ describe('auth middleware (server)', () => {
             expect(next).toHaveBeenCalled();
         });
 
-        it('should prioritize registered refresh token over guest when both exist', async () => {
-            // Both refresh tokens present (shouldn't happen in practice but test defensive logic)
+        it('should pick the registered refresh-cookie on cold start when both refresh-cookies exist', async () => {
+            // Cold start (no access token, can't decode JWT) → cookie-name fallback. The
+            // registered cookie wins, refresh runs against it, and the refreshed JWT (registered
+            // shape) sets the final userType.
             mockParseAllCookies.mockReturnValue({
                 'cc-nx': 'registered-refresh-token',
                 'cc-nx-g': 'guest-refresh-token',
             });
 
-            const mockTokenResponse = getMockTokenResponse();
+            const mockTokenResponse = buildMockTokenResponse({ accessToken: { rcid: 'reg-cust-1' } });
             mockAuth.refreshToken.mockResolvedValue(getMockAuthResponse(mockTokenResponse));
 
             const request = new Request('https://example.com/test', {
@@ -1934,9 +1961,11 @@ describe('auth middleware (server)', () => {
 
             await authMiddleware({ request, context, params: {}, unstable_pattern: '/' }, next);
 
-            // Should use registered type (cc-nx takes priority)
+            // Refresh ran against the registered refresh-cookie; final JWT is registered-shaped
+            expect(mockAuth.refreshToken).toHaveBeenCalledWith(
+                expect.objectContaining({ refreshToken: 'registered-refresh-token' })
+            );
             expect(storage.get('userType')).toBe('registered');
-            expect(storage.get('refreshToken')).toBe('registered-refresh-token');
         });
 
         it('should read and reconstruct IDP access token from cookies', async () => {

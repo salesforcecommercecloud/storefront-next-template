@@ -127,12 +127,10 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         try {
             const tokenResponse = await getPasswordLessAccessToken(context, token);
 
-            // Update session with auth data
+            // Update session with auth data. userType, customerId, usid, and the refresh-token
+            // expiry cap all derive from the access-token JWT inside updateAuth — no follow-up
+            // call is needed.
             updateAuthServer(context, tokenResponse);
-            updateAuthServer(context, (prevSession) => ({
-                ...prevSession,
-                userType: 'registered',
-            }));
 
             // Merge guest basket with registered user basket
             try {

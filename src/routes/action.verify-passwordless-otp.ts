@@ -90,15 +90,10 @@ export async function action({
             ...(dnt !== undefined && { dnt }),
         });
 
-        // Update auth with token response directly
+        // Update auth with token response. userType, customerId, usid, and the refresh-token
+        // expiry cap all derive from the access-token JWT inside updateAuth — no follow-up
+        // call is needed.
         updateAuth(context, tokenResponse);
-
-        // Update userType separately - expiry times are preserved by updateAuthStorageData
-        // The refresh token expiry was already calculated, so we just need to set userType
-        updateAuth(context, (authSession) => ({
-            ...authSession,
-            userType: 'registered',
-        }));
 
         // For registrations, mergeBasket is not needed — SLAS creates the account under the same
         // guest usid, so the basket is already owned by the new registered customer.

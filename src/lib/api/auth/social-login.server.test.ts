@@ -204,8 +204,10 @@ describe('Social Login', () => {
                 usid: 'session-usid',
             });
 
-            // Tokens saved and codeVerifier cleared via two updateAuth calls
-            expect(auth.updateAuth).toHaveBeenCalledTimes(2);
+            // Single updateAuth call: tokens saved (which also wipes the code verifier from
+            // storage) and userType derives from the JWT inside updateAuth — no follow-up call.
+            expect(auth.updateAuth).toHaveBeenCalledTimes(1);
+            expect(auth.updateAuth).toHaveBeenCalledWith(mockContext, expect.objectContaining({ accessToken: 'at' }));
             expect(result).toEqual({ success: true });
         });
 

@@ -31,6 +31,7 @@ import {
     updateStorageAndCache,
     getSLASAccessTokenClaims,
     getCustomerIdFromClaims,
+    deriveUserTypeFromClaims,
     isTrackingConsentEnabled,
     AUTH_TOKEN_INVALID_ERROR,
     COOKIE_REFRESH_TOKEN_GUEST,
@@ -515,18 +516,19 @@ const retrieveAuthStorageData = async (
     }
     // Token missing or expired - proceed to refresh flow below
 
-    // If access token missing but refresh token exists, use it to get new access token
+    // If access token missing but refresh token exists, use it to get new access token.
+    // The eventual userType is derived from the JWT inside updateAuthStorageDataByTokenResponse;
+    // we don't need to know it ahead of time.
     if (typeof refreshToken === 'string' && refreshToken.length) {
         const storedUserType = storage.get('userType');
-        const userType: 'guest' | 'registered' = storedUserType === 'registered' ? 'registered' : 'guest';
-        logger.debug('Auth: access token expired or missing, refreshing', { userType });
+        logger.debug('Auth: access token expired or missing, refreshing', { storedUserType });
         try {
             // Use refresh token operation and update storage/cache
             performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'start');
             const tokenResponse = await refreshAccessToken(context, refreshToken);
             performanceTimer?.mark(PERFORMANCE_MARKS.authRefreshToken, 'end');
-            await updateStorageAndCache(context, storage, cache, tokenResponse, userType);
-            logger.info('Auth: token refreshed', { userType });
+            await updateStorageAndCache(context, storage, cache, tokenResponse);
+            logger.info('Auth: token refreshed', { userType: storage.get('userType') });
             return 'tokenRefreshed';
         } catch (error) {
             // Invalid/expired refresh token: log and fall through to guest login. We do NOT
@@ -534,7 +536,7 @@ const retrieveAuthStorageData = async (
             // populate the error key, so a successful guest login below leaves clean state.
             // (Previously this set storage.error here, which leaked into a successful guest
             // login because updateAuthStorageDataByTokenResponse doesn't clear keys on success.)
-            logger.warn('Auth: refresh token failed, falling back to guest login', { error, userType });
+            logger.warn('Auth: refresh token failed, falling back to guest login', { error, storedUserType });
         }
     }
 
@@ -552,7 +554,7 @@ const retrieveAuthStorageData = async (
             usid: typeof usid === 'string' && usid.length ? usid : undefined,
         });
         performanceTimer?.mark(PERFORMANCE_MARKS.authGuestLogin, 'end');
-        await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
+        await updateStorageAndCache(context, storage, cache, tokenResponse);
         logger.info('Auth: guest session created');
         return 'guestLogin';
     } catch (error) {
@@ -759,36 +761,34 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const shopperContextCookie = createCookie<string>(SHOPPER_CONTEXT_COOKIE_NAME_BASE, cookieConfig, context);
     const sourceCodeCookie = createCookie<string>(SOURCE_CODE_COOKIE_NAME_BASE, cookieConfig, context);
 
-    // Determine user type and refresh token from which cookie exists
-    // Only one should exist at a time (guest and registered are mutually exclusive)
-    //
-    // IMPORTANT: userType is NEVER written to cookies. It is ALWAYS derived at runtime
-    // from which refresh token cookie exists:
-    // - cc-nx exists → registered user
-    // - cc-nx-g exists → guest user
-    // - neither exists → fallback to guest
-    //
-    // userType is stored in authStorage/authCache for easy in-app access,
-    // and is set explicitly during login flows for in-memory state management.
-    let userType: 'guest' | 'registered';
-    let refreshToken: string | null;
+    // Decode access token claims once for expiry, tracking consent, customer ID, usid, and userType
+    const claims = accessToken ? getSLASAccessTokenClaims(accessToken) : null;
+    const claimsAreDecodable = claims !== null && claims.expiry !== null;
 
-    if (refreshTokenRegistered) {
-        // cc-nx exists → user is registered
+    // Determine userType and refresh token.
+    //
+    // IMPORTANT: the access-token JWT is the single source of truth for `userType`. Cookie names
+    // (`cc-nx` / `cc-nx-g`) are only consulted as a cold-start fallback when no access token has
+    // been issued yet, and as the response-side decision for which refresh-cookie to write or
+    // delete (still keyed off the JWT-derived value).
+    //
+    // The matching refresh token is selected by the JWT-derived userType; the "other"
+    // refresh-cookie, if present, is ignored on read and will be deleted on write below.
+    let userType: 'guest' | 'registered';
+    if (claimsAreDecodable) {
+        userType = deriveUserTypeFromClaims(claims);
+    } else if (refreshTokenRegistered) {
+        // Cold-start with a registered refresh-cookie but no access token
         userType = 'registered';
-        refreshToken = refreshTokenRegistered;
-    } else if (refreshTokenGuest) {
-        // cc-nx-g exists → user is guest
-        userType = 'guest';
-        refreshToken = refreshTokenGuest;
     } else {
-        // No refresh token exists - will fallback to guest login
+        // No refresh-cookie or guest cookie — will fallback to guest login
         userType = 'guest';
-        refreshToken = null;
     }
+    const refreshToken: string | null = userType === 'registered' ? refreshTokenRegistered : refreshTokenGuest;
 
     logger.debug('Auth middleware: cookies parsed', {
         userType,
+        userTypeSource: claimsAreDecodable ? 'jwt' : 'cookie',
         hasRefreshToken: !!refreshToken,
         hasAccessToken: !!accessToken,
     });
@@ -799,8 +799,6 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
     const authData: Partial<AuthStorageData> = {};
     if (refreshToken) authData.refreshToken = refreshToken;
 
-    // Decode access token claims once for expiry, tracking consent, customer ID, and usid
-    const claims = accessToken ? getSLASAccessTokenClaims(accessToken) : null;
     if (accessToken) {
         authData.accessToken = accessToken;
         if (claims?.expiry) authData.accessTokenExpiry = claims.expiry;
@@ -829,7 +827,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
         authData.usid = usidCookieValue;
     }
     if (claims) {
-        const tokenCustomerId = getCustomerIdFromClaims(claims, userType);
+        const tokenCustomerId = getCustomerIdFromClaims(claims);
         if (tokenCustomerId) {
             authData.customerId = tokenCustomerId;
         }
@@ -911,7 +909,7 @@ const authMiddleware: MiddlewareFunction<Response> = async ({ request, context }
                 logger.error('Auth: SLAS access token sub claim is missing the usid segment');
                 throw new AuthTokenInvalidError('SLAS access token sub claim is missing the usid segment');
             }
-            if (!getCustomerIdFromClaims(claims, userType)) {
+            if (!getCustomerIdFromClaims(claims)) {
                 logger.error('Auth: SLAS access token isb claim is missing the customer ID (gcid/rcid)');
                 throw new AuthTokenInvalidError('SLAS access token isb claim is missing the customer ID (gcid/rcid)');
             }
@@ -1387,7 +1385,7 @@ export const clearInvalidSessionAndRestoreGuest = async (context: Readonly<Route
     try {
         // Get new guest session (no usid - start completely fresh)
         const tokenResponse = await loginGuestUser(context, { usid: undefined });
-        await updateStorageAndCache(context, storage, cache, tokenResponse, 'guest');
+        await updateStorageAndCache(context, storage, cache, tokenResponse);
         promiseCache.ref = createAuthPromise(context, cache.ref);
 
         // Mark for destruction - triggers cookie deletion in response section
