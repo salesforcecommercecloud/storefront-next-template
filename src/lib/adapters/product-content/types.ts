@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 import type {
-    EstimatedDeliveryData,
     ProductDescriptionData,
     ReviewItem,
     ReviewsData,
     ReviewsSummaryData,
-    ShippingEstimate,
     SizeGuideData,
     WriteReviewFormData,
 } from './data-types';
@@ -49,11 +47,6 @@ export interface ProductContentAdapter {
     getSizeGuide?(productId?: string): Promise<SizeGuideData>;
 
     /**
-     * Get estimated delivery content for PDP (Fulfillment & Shipping modal)
-     */
-    getEstimatedDelivery?(productId?: string): Promise<EstimatedDeliveryData>;
-
-    /**
      * Get product description for PDP (intro paragraph + features)
      */
     getProductDescription?(productId?: string): Promise<ProductDescriptionData>;
@@ -80,9 +73,4 @@ export interface ProductContentAdapter {
      * Get Write a Review form config for PDP (submit review modal). Excludes name and email.
      */
     getWriteReviewForm?(productId?: string): Promise<WriteReviewFormData>;
-
-    /**
-     * Get shipping estimates for a product to a destination zipcode
-     */
-    getShippingEstimates?(productId?: string, zipcode?: string): Promise<ShippingEstimate>;
 }

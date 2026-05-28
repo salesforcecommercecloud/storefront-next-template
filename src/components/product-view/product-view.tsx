@@ -21,7 +21,6 @@ import ProductCartActions from '@/components/product-cart-actions';
 import ProductViewProvider from '@/providers/product-view';
 import { useProductImages } from '@/hooks/product/use-product-images';
 import { useSelectedVariations } from '@/hooks/product/use-selected-variations';
-import EstimatedDelivery from '@/components/estimated-delivery';
 import { isProductSet, isProductBundle } from '@/lib/product/product-utils';
 import CollapsibleHtmlSection from '@/components/collapsible-section/collapsible-html-section';
 import { useTranslation } from 'react-i18next';
@@ -90,7 +89,9 @@ export default function ProductView({ product }: ProductViewProps): ReactElement
                     <ProductInfo product={product} />
                     <ProductCartActions product={product} />
                     <UITarget targetId="sfcc.pdp.returnsWarranty" />
-                    <EstimatedDelivery productId={product.id} />
+                    {/* @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY */}
+                    <UITarget targetId="sfcc.pdp.estimatedDelivery" />
+                    {/* @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY */}
                     <UITarget targetId="sfcc.pdp.faq" />
                     <UITarget targetId="sfcc.pdp.collapsibles" />
                 </div>

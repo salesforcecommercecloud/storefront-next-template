@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useState, useEffect, lazy, Suspense } from 'react';
+/** @sfdc-extension-file SFDC_EXT_SHIPPING_DELIVERY */
+import { type ReactElement, useState, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays } from 'lucide-react';
 import type { InfoModalData } from '@/components/info-modal/types';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
-import { useProductContent } from '@/hooks/product-content/use-product-content';
+import type { EstimatedDeliveryData } from '@/extensions/shipping-delivery/lib/api/shipping-delivery.server';
 import ProductInfoCard from '@/components/product-info-card';
 
 const InfoModal = lazy(() => import('@/components/info-modal'));
 
-/**
- * Maps adapter data to InfoModalData for estimated-delivery modal type.
- */
 function mapToInfoModalData(data: EstimatedDeliveryData): InfoModalData {
     return {
         type: 'estimated-delivery',
@@ -35,55 +32,17 @@ function mapToInfoModalData(data: EstimatedDeliveryData): InfoModalData {
 }
 
 export interface EstimatedDeliveryProps {
-    /** Optional product ID for adapter lookups */
-    productId?: string;
+    data: EstimatedDeliveryData;
 }
 
-/**
- * EstimatedDelivery component displays an estimated delivery info card on PDP.
- *
- * Card content and "Learn More" modal content are loaded from the product content adapter
- * via `getEstimatedDelivery`. Clicking "Learn More" opens the InfoModal with
- * fulfillment & shipping details.
- *
- * @returns ReactElement
- */
-export default function EstimatedDelivery({ productId }: EstimatedDeliveryProps): ReactElement | null {
+export default function EstimatedDelivery({ data }: EstimatedDeliveryProps): ReactElement {
     const { t } = useTranslation('estimatedDelivery');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [deliveryData, setDeliveryData] = useState<EstimatedDeliveryData | null>(null);
-    const modalData = deliveryData ? mapToInfoModalData(deliveryData) : undefined;
+    const modalData = mapToInfoModalData(data);
 
-    const { adapter, isEnabled } = useProductContent();
-
-    useEffect(() => {
-        if (!isEnabled || !adapter) return;
-        if (!adapter.getEstimatedDelivery) return;
-        const getEstimatedDelivery = adapter.getEstimatedDelivery.bind(adapter);
-        let cancelled = false;
-        void (async () => {
-            try {
-                const data = await getEstimatedDelivery(productId);
-                if (cancelled || data == null) return;
-                setDeliveryData(data);
-            } catch {
-                if (!cancelled) {
-                    setDeliveryData(null);
-                }
-            }
-        })();
-        return () => {
-            cancelled = true;
-        };
-    }, [adapter, isEnabled, productId]);
-
-    if (!deliveryData) {
-        return null;
-    }
-
-    const firstOption = deliveryData.estimatedDelivery.options[0];
+    const firstOption = data.estimatedDelivery.options[0];
     const cardDescription = firstOption
-        ? `${firstOption.deliveryTime} \u00B7 ${t('cardDescription')}`
+        ? `${firstOption.deliveryTime} · ${t('cardDescription')}`
         : t('cardDescription');
 
     return (

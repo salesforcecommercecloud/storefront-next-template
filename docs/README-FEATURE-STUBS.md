@@ -181,4 +181,68 @@ Config updates:
 
 ---
 
+### Ratings & Reviews
+
+| Field | Details |
+|-------|---------|
+| **Status** | Stub — no backend integration |
+| **Location** | `src/extensions/ratings-reviews/` |
+| **Surfaces** | Product detail page (PDP reviews accordion), cart-item modal (rating stars), order detail (per-line "Rate & Review") |
+| **Extension** | `SFDC_EXT_RATINGS_REVIEWS` (named "(Demo) Ratings & Reviews" in `src/extensions/config.json`) |
+
+**Current behavior:**
+Customer reviews, rating summaries, AI summary, and the "Write a Review" form are fully functional but backed by mock fixtures in `lib/api/reviews.server.ts`. Reviews are stored in an in-memory Map — writes persist only for the lifetime of the server process.
+
+**To productionize:**
+Replace the bodies of `getReviewsSummary`, `getReviews`, `getWriteReviewForm`, and `addReview` in `src/extensions/ratings-reviews/lib/api/reviews.server.ts` with calls into your reviews provider (Bazaarvoice, PowerReviews, Yotpo, Trustpilot, etc.). The PDP loader, resource routes, and UI components do not need to change. Drop the `(Demo)` prefix from the extension name in `src/extensions/config.json` once a real provider is wired up.
+
+**To remove:**
+Uninstall the extension by stripping the `@sfdc-extension-*` markers from core files and deleting the extension folder.
+
+Files to delete:
+- `src/extensions/ratings-reviews/` (entire folder)
+
+Parent components to update (remove the marker block):
+- `src/routes/_app.product.$productId.tsx` — the `reviewsSummary` / `reviewsList` / `writeReviewForm` loader Promises and the `ProductReviewsProvider` wrapper
+- `src/routes/_app.account.orders.$orderNo.tsx` — the `writeReviewForm` loader Promise and the `ProductReviewsProvider` wrapper in order-items
+- `src/components/cart-item-modal/view.tsx` — the `<UITarget targetId="sfcc.pdp.reviews.summary" />` block
+
+Config updates:
+- Remove `SFDC_EXT_RATINGS_REVIEWS` from `src/extensions/config.json`
+- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+
+---
+
+### Shipping & Delivery
+
+| Field | Details |
+|-------|---------|
+| **Status** | Stub — no backend integration |
+| **Location** | `src/extensions/shipping-delivery/` |
+| **Surfaces** | Product detail page (PDP estimated delivery card + "Learn More" modal), BOPIS delivery options (zip-code shipping estimator) |
+| **Extension** | `SFDC_EXT_SHIPPING_DELIVERY` (named "(Demo) Shipping & Delivery" in `src/extensions/config.json`) |
+
+**Current behavior:**
+The estimated delivery card and the BOPIS shipping calculator are fully functional but backed by mock fixtures in `lib/api/shipping-delivery.server.ts`. The fixtures return the same delivery estimate regardless of product or zip code.
+
+**To productionize:**
+Replace the bodies of `getEstimatedDelivery` and `getShippingEstimates` in `src/extensions/shipping-delivery/lib/api/shipping-delivery.server.ts` with calls into your shipping provider (ShipEngine, EasyPost, carrier APIs, etc.). The PDP loader, resource route, and UI components do not need to change. Drop the `(Demo)` prefix from the extension name in `src/extensions/config.json` once a real provider is wired up.
+
+**To remove:**
+Uninstall the extension by stripping the `@sfdc-extension-*` markers from core files and deleting the extension folder.
+
+Files to delete:
+- `src/extensions/shipping-delivery/` (entire folder)
+
+Parent components to update (remove the marker block):
+- `src/routes/_app.product.$productId.tsx` — the `estimatedDelivery` loader Promise and the `ShippingDeliveryProvider` wrapper
+- `src/components/product-view/product-view.tsx` — the `<UITarget targetId="sfcc.pdp.estimatedDelivery" />` block
+
+Config updates:
+- Remove `SFDC_EXT_SHIPPING_DELIVERY` from `src/extensions/config.json`
+- Update `SFDC_EXT_BOPIS` dependencies to remove `"SFDC_EXT_SHIPPING_DELIVERY"`
+- Re-run `pnpm locales:aggregate-extensions` and `pnpm smoke-test:generate`
+
+---
+
 <!-- Add new stubs below using the same format -->

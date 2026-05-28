@@ -11,6 +11,11 @@
             "hint": "pdp"
         },
         {
+            "targetId": "sfcc.account.orderDetail.lineReview",
+            "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
+            "hint": "account"
+        },
+        {
             "targetId": "sfcc.accountPaymentOptions.payments.savedPaymentMethods",
             "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
             "hint": "accountPaymentOptions"
@@ -556,6 +561,11 @@
             "hint": "pdp"
         },
         {
+            "targetId": "sfcc.pdp.estimatedDelivery",
+            "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
+            "hint": "pdp"
+        },
+        {
             "targetId": "sfcc.pdp.faq",
             "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
             "hint": "pdp"
@@ -586,16 +596,6 @@
             "hint": "pdp"
         },
         {
-            "targetId": "sfcc.pdp.reviews.form",
-            "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
-            "hint": "pdp"
-        },
-        {
-            "targetId": "sfcc.pdp.reviews.list",
-            "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
-            "hint": "pdp"
-        },
-        {
             "targetId": "sfcc.pdp.reviews.qna",
             "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
             "hint": "pdp"
@@ -606,7 +606,7 @@
             "hint": "pdp"
         },
         {
-            "targetId": "sfcc.pdp.reviews.summary",
+            "targetId": "sfcc.pdp.reviews.section",
             "path": "extensions/ui-target-smoke-test/components/generic-marker.tsx",
             "hint": "pdp"
         },

@@ -256,6 +256,15 @@ describe('Product Detail Route', () => {
         faqQuestions: Promise.resolve({ questions: [] }),
         pdpCollapsibles: Promise.resolve([]),
         // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
+        // @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+        estimatedDelivery: Promise.resolve({
+            title: '',
+            estimatedDelivery: { options: [], note: '' },
+            shippingOptions: [],
+            internationalShipping: { heading: '', points: [] },
+            orderTracking: { heading: '', points: [] },
+        }),
+        // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
     };
 
     describe('shouldRevalidate function', () => {

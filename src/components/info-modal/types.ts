@@ -16,10 +16,12 @@
 
 import type {
     WriteReviewFormData,
-    EstimatedDeliveryData,
     ReturnsAndWarrantyData,
     ReviewItem,
 } from '@/lib/adapters/product-content/data-types';
+// @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+import type { EstimatedDeliveryData } from '@/extensions/shipping-delivery/lib/api/shipping-delivery.server';
+// @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
 
 /**
  * Payment schedule data for installment payment modal
@@ -92,11 +94,13 @@ export interface StarRatingDistributionModalData extends InfoModalDataBase {
     onSeeReviewsClick?: () => void;
 }
 
+// @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
 /** Data for estimated delivery / fulfillment & shipping modal */
 export interface EstimatedDeliveryModalData extends InfoModalDataBase {
     type: 'estimated-delivery';
     deliveryData: EstimatedDeliveryData;
 }
+// @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
 
 /** Data for returns & warranty modal */
 export interface ReturnsAndWarrantyModalData extends InfoModalDataBase {
@@ -108,12 +112,15 @@ export interface ReturnsAndWarrantyModalData extends InfoModalDataBase {
  * Structured data for the info modal. Add new modal types by defining a new variant
  * (e.g. SizeGuideModalData) and extending this union.
  */
+// prettier-ignore
 export type InfoModalData =
-    | PaymentScheduleModalData
+    // @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+    | EstimatedDeliveryModalData
+    // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
     | WriteReviewModalData
     | StarRatingDistributionModalData
-    | EstimatedDeliveryModalData
-    | ReturnsAndWarrantyModalData;
+    | ReturnsAndWarrantyModalData
+    | PaymentScheduleModalData;
 
 export interface InfoModalProps {
     open: boolean;

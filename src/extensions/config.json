@@ -44,6 +44,12 @@
             "description": "Renders three PDP surfaces backed by editorial / CMS-style content: a returns & warranty card with a 'View Policies' modal, an 'Ask assistant' FAQ, and the merchant-customizable collapsible sections (Materials, Usage Instructions, Care Instructions, Specifications). Ships with mock fixtures; replace the bodies of the API functions to integrate a real CMS, PIM, or Page Designer-backed content service.",
             "folder": "product-content",
             "dependencies": []
+        },
+        "SFDC_EXT_SHIPPING_DELIVERY": {
+            "name": "(Demo) Shipping & Delivery",
+            "description": "Renders estimated delivery information on the PDP and provides a zip-code shipping estimator for the BOPIS delivery flow. Ships with mock fixtures; replace the API function bodies to integrate a real shipping provider.",
+            "folder": "shipping-delivery",
+            "dependencies": []
         }
     }
 }

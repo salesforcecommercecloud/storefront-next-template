@@ -76,6 +76,9 @@ const EXCLUDED_COMPONENTS = new Set([
     'product-content/components/target/returns-and-warranty-target',
     'product-content/components/target/faq-target',
     'product-content/components/target/pdp-collapsibles-target',
+    'shipping-delivery/components/target/estimated-delivery-target',
+    // Hook that returns a lazy-loaded slot — not a standalone visual component
+    'bopis/components/delivery-options/use-shipping-calculator',
     // Wraps Sonner's <Toaster> to apply app-level config; no visual content of its own.
     'toast/app-toaster',
     // Page Designer Region and Component Wrapper, there is no value in having storybook stories for these

@@ -16,13 +16,11 @@
 import i18n from 'i18next';
 import type { ProductContentAdapter } from '@/lib/adapters/product-content/types';
 import type {
-    EstimatedDeliveryData,
     ProductDescriptionData,
     RatingDistribution,
     ReviewItem,
     ReviewsData,
     ReviewsSummaryData,
-    ShippingEstimate,
     SizeGuideData,
     WriteReviewFormData,
 } from '@/lib/adapters/product-content/data-types';
@@ -71,56 +69,6 @@ const MOCK_SIZE_GUIDE_DATA: SizeGuideData = {
             'Sizes may vary slightly between different products',
             "If you're between sizes, we recommend sizing up",
             'For questions about fit, contact our customer service team',
-        ],
-    },
-};
-
-/**
- * Mock estimated delivery / Fulfillment & Shipping modal data.
- */
-const MOCK_ESTIMATED_DELIVERY_DATA: EstimatedDeliveryData = {
-    title: 'Fulfillment & Shipping',
-    estimatedDelivery: {
-        options: [
-            { name: 'Standard Shipping', deliveryTime: '5-7 business days' },
-            { name: 'Express Shipping', deliveryTime: '2-3 business days' },
-            { name: 'Overnight Shipping', deliveryTime: 'Next business day' },
-        ],
-        note: 'Delivery estimates are calculated from the date your order ships. Processing time is typically 1-2 business days.',
-    },
-    shippingOptions: [
-        {
-            name: 'Standard Shipping',
-            deliveryTime: '5-7 business days',
-            cost: 5.99,
-            condition: 'Free on orders over $50',
-        },
-        {
-            name: 'Express Shipping',
-            deliveryTime: '2-3 business days',
-            cost: 12.99,
-            condition: 'Free on orders over $100',
-        },
-        {
-            name: 'Overnight Shipping',
-            deliveryTime: 'Next business day',
-            cost: 24.99,
-            condition: 'Orders placed before 2 PM EST',
-        },
-    ],
-    internationalShipping: {
-        heading: 'International Shipping',
-        points: [
-            'We ship to over 50 countries worldwide. International shipping rates and delivery times vary by destination.',
-            'Customs & Duties: International orders may be subject to customs fees and import duties, which are the responsibility of the customer.',
-        ],
-        note: 'For specific international shipping rates, please continue to checkout and enter your shipping address.',
-    },
-    orderTracking: {
-        heading: 'Order Tracking',
-        points: [
-            "Once your order ships, you'll receive a confirmation email with tracking information. You can track your order status in real-time through our website or mobile app.",
-            'Need Help? Contact our customer service team if you have questions about your shipment or delivery.',
         ],
     },
 };
@@ -375,10 +323,6 @@ export function createProductContentMockAdapter(config: ProductContentMockAdapte
             await simulateDelay(mockDelay);
             return MOCK_SIZE_GUIDE_DATA;
         },
-        getEstimatedDelivery: async (_productId?: string): Promise<EstimatedDeliveryData> => {
-            await simulateDelay(mockDelay);
-            return MOCK_ESTIMATED_DELIVERY_DATA;
-        },
         getProductDescription: async (_productId?: string): Promise<ProductDescriptionData> => {
             await simulateDelay(mockDelay);
             return MOCK_PRODUCT_DESCRIPTION_DATA;
@@ -418,45 +362,6 @@ export function createProductContentMockAdapter(config: ProductContentMockAdapte
         getWriteReviewForm: async (_productId?: string): Promise<WriteReviewFormData> => {
             await simulateDelay(mockDelay);
             return MOCK_WRITE_REVIEW_FORM_DATA;
-        },
-        /**
-         * Get shipping estimates for a product to a destination
-         *
-         * Mock implementation returns 3-5 day delivery estimates based on zipcode.
-         *
-         * Features:
-         * - Simulated network delay (configurable)
-         * - Deterministic delivery estimates based on zipcode
-         * - Error simulation for testing (zipcode 99999 always fails)
-         */
-        getShippingEstimates: async (_productId?: string, zipcode?: string): Promise<ShippingEstimate> => {
-            await simulateDelay(mockDelay);
-
-            if (!zipcode) {
-                throw new Error('ZIP code is required');
-            }
-
-            // Simulate error for specific zipcode (99999)
-            if (zipcode === '99999') {
-                throw new Error('Delivery not available to this zipcode');
-            }
-
-            // Calculate 3-5 days based on zipcode (deterministic for consistent testing)
-            const seed = parseInt(zipcode.slice(-2)) || 1;
-            const days = (seed % 3) + 3; // 3-5 days
-            const date = new Date();
-            date.setDate(date.getDate() + days);
-
-            // Calculate cost based on zipcode (some are free, some have cost)
-            // If last digit is even, free shipping; if odd, $5.99
-            const lastDigit = parseInt(zipcode.slice(-1)) || 0;
-            const cost = lastDigit % 2 === 0 ? 0 : 5.99;
-
-            return {
-                delivery_date: date.toISOString().split('T')[0],
-                cost,
-                days,
-            };
         },
     };
 }

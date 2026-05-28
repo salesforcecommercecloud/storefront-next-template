@@ -27,7 +27,6 @@ describe('ProductContentMockAdapter', () => {
 
         it('should return adapter with all mock methods', () => {
             expect(adapter).toHaveProperty('getSizeGuide');
-            expect(adapter).toHaveProperty('getEstimatedDelivery');
             expect(adapter).toHaveProperty('getProductDescription');
             expect(adapter).toHaveProperty('getReviews');
             expect(adapter).toHaveProperty('getWriteReviewForm');
@@ -46,20 +45,6 @@ describe('ProductContentMockAdapter', () => {
             expect(data.chart.rows[0]).toEqual({ size: 'XS', us: 4, eu: 34, uk: 6, cm: 22 });
             expect(data.howToMeasure).toHaveLength(3);
             expect(data.sizeTips.tips).toHaveLength(4);
-        });
-    });
-
-    describe('getEstimatedDelivery', () => {
-        it('should return fulfillment & shipping mock data', async () => {
-            const data = await adapter.getEstimatedDelivery?.();
-            expect(data).toBeDefined();
-            if (!data) return;
-            expect(data.title).toBe('Fulfillment & Shipping');
-            expect(data.estimatedDelivery.options).toHaveLength(3);
-            expect(data.shippingOptions).toHaveLength(3);
-            expect(data.shippingOptions[0].cost).toBe(5.99);
-            expect(data.internationalShipping.points).toHaveLength(2);
-            expect(data.orderTracking.points).toHaveLength(2);
         });
     });
 

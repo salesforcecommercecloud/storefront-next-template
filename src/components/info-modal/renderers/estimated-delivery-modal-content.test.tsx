@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** @sfdc-extension-file SFDC_EXT_SHIPPING_DELIVERY */
 
 import type React from 'react';
 import { describe, it, expect } from 'vitest';
@@ -21,7 +22,7 @@ import { EstimatedDeliveryModalContent } from './estimated-delivery-modal-conten
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
-import type { EstimatedDeliveryData } from '@/lib/adapters/product-content/data-types';
+import type { EstimatedDeliveryData } from '@/extensions/shipping-delivery/lib/api/shipping-delivery.server';
 
 const mockSite: Site = mockSiteObject;
 

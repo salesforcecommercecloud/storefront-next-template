@@ -33,7 +33,9 @@ export type {
     RatingDistributionData,
     StarRatingDistributionModalData,
     // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+    // @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
     EstimatedDeliveryModalData,
+    // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     ReturnsAndWarrantyModalData,
     // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
@@ -44,7 +46,9 @@ import { PaymentScheduleModalContent } from './renderers/payment-schedule-modal-
 import { WriteReviewModalContent } from './renderers/write-review-modal-content';
 import { StarRatingDistributionModalContent } from './renderers/star-rating-distribution-modal-content';
 // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+// @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
 import { EstimatedDeliveryModalContent } from './renderers/estimated-delivery-modal-content';
+// @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
 // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
 import { ReturnsAndWarrantyModalContent } from './renderers/returns-and-warranty-modal-content';
 // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
@@ -61,17 +65,34 @@ function getCurrencySymbolForRegex(currencyCode: string): string {
 }
 
 /** Modal width classes by modal type. */
-const MODAL_WIDTH_CLASSES = {
+const MODAL_WIDTH_CLASSES: Record<string, string> = {
     // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     'write-review': 'max-w-lg sm:max-w-lg',
     'star-rating-distribution': 'w-[304px] max-w-[304px] sm:w-[304px] sm:max-w-[304px]',
     // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
     'payment-schedule': 'max-w-2xl sm:max-w-2xl',
+    // @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
     'estimated-delivery': 'max-w-2xl sm:max-w-2xl',
+    // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
     // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
     'returns-and-warranty': 'max-w-2xl sm:max-w-2xl',
     // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
-} as const;
+};
+
+/** Modal description i18n keys by modal type. */
+const MODAL_DESCRIPTIONS: Record<string, string> = {
+    'payment-schedule': 'paymentScheduleDescription',
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+    'write-review': 'writeReviewDescription',
+    'star-rating-distribution': 'starRatingDistributionDescription',
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
+    // @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY
+    'estimated-delivery': 'estimatedDeliveryDescription',
+    // @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY
+    // @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT
+    'returns-and-warranty': 'returnsAndWarrantyDescription',
+    // @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT
+};
 
 /**
  * InfoModal is a generic, reusable modal component that displays informational content.
@@ -92,6 +113,7 @@ const MODAL_WIDTH_CLASSES = {
 export default function InfoModal({ open, onOpenChange, data, className }: InfoModalProps): ReactElement {
     const { currency } = useSite();
     const { t } = useTranslation('infoModal');
+    // @sfdc-extension-line SFDC_EXT_RATINGS_REVIEWS
     const { t: tProduct } = useTranslation('product');
 
     if (!data) {
@@ -111,15 +133,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className={cn(MODAL_WIDTH_CLASSES[data.type], 'gap-0 p-0 border-0', className)}>
                 <DialogDescription className="sr-only">
-                    {data.type === 'payment-schedule'
-                        ? t('paymentScheduleDescription')
-                        : data.type === 'write-review'
-                          ? t('writeReviewDescription')
-                          : data.type === 'estimated-delivery'
-                            ? t('estimatedDeliveryDescription')
-                            : data.type === 'returns-and-warranty'
-                              ? t('returnsAndWarrantyDescription')
-                              : t('starRatingDistributionDescription')}
+                    {t(MODAL_DESCRIPTIONS[data.type] ?? 'paymentScheduleDescription', '')}
                 </DialogDescription>
                 {data.type === 'payment-schedule' && (
                     <>
@@ -215,6 +229,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                     </>
                 )}
                 {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
+                {/* @sfdc-extension-block-start SFDC_EXT_SHIPPING_DELIVERY */}
                 {data.type === 'estimated-delivery' && (
                     <>
                         <DialogHeader className="p-6 pt-8 pb-0 pr-12 text-left">
@@ -233,6 +248,7 @@ export default function InfoModal({ open, onOpenChange, data, className }: InfoM
                         </div>
                     </>
                 )}
+                {/* @sfdc-extension-block-end SFDC_EXT_SHIPPING_DELIVERY */}
                 {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
                 {data.type === 'returns-and-warranty' && (
                     <>

@@ -84,45 +84,6 @@ export interface ReturnsAndWarrantyData {
     };
 }
 
-// --- Estimated Delivery (Fulfillment & Shipping) ---
-
-/**
- * One shipping option with delivery time and optional cost/condition
- */
-export interface ShippingOption {
-    name: string;
-    deliveryTime: string;
-    /** Cost in dollars (e.g. 5.99). Omit if free or conditional */
-    cost?: number;
-    /** e.g. "Free on orders over $50" or "Orders placed before 2 PM EST" */
-    condition?: string;
-}
-
-/**
- * Estimated delivery / Fulfillment & Shipping modal content
- */
-export interface EstimatedDeliveryData {
-    title: string;
-    /** Estimated delivery times by method (e.g. Standard 5-7 days) */
-    estimatedDelivery: {
-        options: Array<{ name: string; deliveryTime: string }>;
-        note: string;
-    };
-    /** Shipping options with rates and conditions */
-    shippingOptions: ShippingOption[];
-    /** International shipping section */
-    internationalShipping: {
-        heading: string;
-        points: string[];
-        note?: string;
-    };
-    /** Order tracking section */
-    orderTracking: {
-        heading: string;
-        points: string[];
-    };
-}
-
 // --- HTML Content Types ---
 
 /** Describes the expected HTML structure of a content fragment */
@@ -300,19 +261,4 @@ export interface WriteReviewFormData {
     termsText: string;
     cancelLabel: string;
     submitLabel: string;
-}
-
-// --- Shipping Estimates ---
-
-/**
- * Shipping estimate for PDP delivery calculator.
- * Returns estimated delivery date, cost, and days for a specific zipcode.
- */
-export interface ShippingEstimate {
-    /** Estimated delivery date in ISO format (YYYY-MM-DD) */
-    delivery_date: string;
-    /** Shipping cost in dollars (0 = free shipping) */
-    cost: number;
-    /** Estimated delivery days from now */
-    days: number;
 }
