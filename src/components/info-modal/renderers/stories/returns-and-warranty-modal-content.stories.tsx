@@ -16,7 +16,7 @@
 /** @sfdc-extension-file SFDC_EXT_PRODUCT_CONTENT */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ReturnsAndWarrantyModalContent } from '../returns-and-warranty-modal-content';
-import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content/data-types';
+import type { ReturnsAndWarrantyData } from '@/extensions/product-content/lib/api/product-content.server';
 
 const mockData: ReturnsAndWarrantyData = {
     title: 'Returns & Warranty',

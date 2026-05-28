@@ -16,7 +16,7 @@
 /** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { WriteReviewModalContent } from '../../write-review-modal-content';
-import type { WriteReviewFormData } from '@/lib/adapters/product-content/data-types';
+import type { WriteReviewFormData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import type { ReactElement } from 'react';

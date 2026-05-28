@@ -115,11 +115,6 @@ vi.mock('@/providers/product-context', () => ({
     useProduct: vi.fn(() => null),
 }));
 
-vi.mock('@/providers/product-content', () => ({
-    default: ({ children }: any) => <div data-testid="product-content-provider">{children}</div>,
-    useProductContentAdapter: vi.fn(() => undefined),
-}));
-
 vi.mock('@/components/region', () => ({
     Region: ({ fallback }: any) => <div data-testid="region">{fallback}</div>,
 }));

@@ -52,8 +52,10 @@ type ProductInfoBaseProps = {
     hideActionIcons?: boolean;
     /** Optional action content rendered inline with title in full variant style */
     headerAction?: ReactNode;
+    // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
     /** Disable rating summary interactions (hover popover and review links) */
     disableRatingInteraction?: boolean;
+    // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 };
 type ProductInfoUncontrolledProps = ProductInfoBaseProps & {
     /** Mode for swatch interaction: 'uncontrolled' uses URL navigation */
@@ -124,6 +126,7 @@ export default function ProductInfo({
     isVariantInventoryLoading = false,
     hideActionIcons = false,
     headerAction,
+    // @sfdc-extension-line SFDC_EXT_RATINGS_REVIEWS
     disableRatingInteraction = false,
 }: ProductInfoProps): ReactElement {
     const config = useConfig();

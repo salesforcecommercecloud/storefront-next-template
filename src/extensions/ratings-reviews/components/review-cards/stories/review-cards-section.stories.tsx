@@ -20,7 +20,6 @@ import React, { type ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { ProductProvider } from '@/providers/product-context';
-import ProductContentProvider from '@/providers/product-content';
 import {
     ProductReviewsProvider,
     useProductReviews,
@@ -146,16 +145,14 @@ function ReviewCardsSectionWrapper(): ReactElement {
     const content = (
         <ConfigProvider config={mockConfig}>
             <ProductProvider product={mockProduct}>
-                <ProductContentProvider>
-                    <ProductReviewsProvider summary={mockSummary} reviewsListPromise={reviewsListPromise}>
-                        <LoadReviewsOnMount>
-                            <div className="max-w-3xl">
-                                <h2 className="mb-4 text-2xl font-semibold">Customer Reviews</h2>
-                                <ReviewCardsSection />
-                            </div>
-                        </LoadReviewsOnMount>
-                    </ProductReviewsProvider>
-                </ProductContentProvider>
+                <ProductReviewsProvider summary={mockSummary} reviewsListPromise={reviewsListPromise}>
+                    <LoadReviewsOnMount>
+                        <div className="max-w-3xl">
+                            <h2 className="mb-4 text-2xl font-semibold">Customer Reviews</h2>
+                            <ReviewCardsSection />
+                        </div>
+                    </LoadReviewsOnMount>
+                </ProductReviewsProvider>
             </ProductProvider>
         </ConfigProvider>
     );
@@ -196,7 +193,7 @@ ReviewCardsSection displays paginated customer reviews for a product.
 - Pagination (5 per page) with previous/next and page numbers
 - Scrolls to top of section on page change
 - Write a Review button (opens modal via adapter getWriteReviewForm)
-- Must be used within PDP context (ProductProvider + ProductContentProvider)
+- Must be used within PDP context (ProductProvider + ProductReviewsProvider)
                 `,
             },
         },

@@ -19,7 +19,6 @@ import type { ReactElement, ReactNode } from 'react';
 import type { ShopperProducts } from '@/scapi';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import ProductContentProvider from '@/providers/product-content';
 import AuthProvider from '@/providers/auth';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { OrderLineRateReview } from '../order-line-rate-review';
@@ -48,7 +47,7 @@ const meta: Meta<typeof OrderLineRateReview> = {
         docs: {
             description: {
                 component:
-                    'Per-line “Rate & Review” control: opens the PDP-parity write-review modal when not submitted; shows “Review submitted” after submit. Requires ProductContentProvider (ancestor in the app).',
+                    'Per-line “Rate & Review” control: opens the PDP-parity write-review modal when not submitted; shows “Review submitted” after submit.',
             },
         },
     },
@@ -64,11 +63,9 @@ const meta: Meta<typeof OrderLineRateReview> = {
                                 locale={mockLocale}
                                 language={mockSiteObject.defaultLocale}
                                 currency={mockSiteObject.defaultCurrency}>
-                                <ProductContentProvider>
-                                    <div className="p-2">
-                                        <Story />
-                                    </div>
-                                </ProductContentProvider>
+                                <div className="p-2">
+                                    <Story />
+                                </div>
                             </SiteProvider>
                         </AuthProvider>
                     </ConfigProvider>

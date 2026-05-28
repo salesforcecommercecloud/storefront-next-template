@@ -18,7 +18,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReviewCard } from './review-card';
-import type { ReviewItem } from '@/lib/adapters/product-content/data-types';
+import type { ReviewItem } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 
 vi.mock('./review-card-images', () => ({
     REVIEW_CARD_IMAGES: {

@@ -16,7 +16,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentType } from 'react';
 import { ReviewCard } from '../review-card';
-import type { ReviewItem } from '@/lib/adapters/product-content/data-types';
+import type { ReviewItem } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 
 const SHORT_BODY =
     "I've been meaning to write this review for a while now. The matte white finish is absolutely pristine. Worth every penny.";

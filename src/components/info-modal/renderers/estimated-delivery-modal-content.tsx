@@ -25,7 +25,6 @@ import type { EstimatedDeliveryData } from '@/extensions/shipping-delivery/lib/a
 
 /**
  * Renders estimated delivery / fulfillment & shipping modal content.
- * Receives the adapter data directly from ProductContentAdapter.getEstimatedDelivery().
  * Layout: Estimated Delivery options table, Shipping Options (rates), International Shipping, Order Tracking.
  */
 export function EstimatedDeliveryModalContent({

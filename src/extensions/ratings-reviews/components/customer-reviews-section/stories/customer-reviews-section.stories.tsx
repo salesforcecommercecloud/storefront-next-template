@@ -18,7 +18,6 @@ import type { ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { ProductProvider } from '@/providers/product-context';
-import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
 import type { ReviewsSummaryData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 import { mockConfig } from '@/test-utils/config';
@@ -46,13 +45,11 @@ function CustomerReviewsSectionHarness(): ReactElement {
     const content = (
         <ConfigProvider config={mockConfig}>
             <ProductProvider product={mockProduct}>
-                <ProductContentProvider>
-                    <ProductReviewsProvider summary={mockSummary}>
-                        <div className="max-w-3xl">
-                            <CustomerReviewsSection />
-                        </div>
-                    </ProductReviewsProvider>
-                </ProductContentProvider>
+                <ProductReviewsProvider summary={mockSummary}>
+                    <div className="max-w-3xl">
+                        <CustomerReviewsSection />
+                    </div>
+                </ProductReviewsProvider>
             </ProductProvider>
         </ConfigProvider>
     );

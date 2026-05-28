@@ -19,7 +19,6 @@ import type { ReactElement } from 'react';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { ProductProvider } from '@/providers/product-context';
-import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
 import { mockConfig } from '@/test-utils/config';
 import { ProductRatingSummary } from '../product-rating-summary';
@@ -31,13 +30,11 @@ function ProductRatingSummaryWrapper({ interactive }: { interactive?: boolean })
     const content = (
         <ConfigProvider config={mockConfig}>
             <ProductProvider product={mockProduct}>
-                <ProductContentProvider>
-                    <ProductReviewsProvider>
-                        <div className="max-w-md">
-                            <ProductRatingSummary interactive={interactive} />
-                        </div>
-                    </ProductReviewsProvider>
-                </ProductContentProvider>
+                <ProductReviewsProvider>
+                    <div className="max-w-md">
+                        <ProductRatingSummary interactive={interactive} />
+                    </div>
+                </ProductReviewsProvider>
             </ProductProvider>
         </ConfigProvider>
     );

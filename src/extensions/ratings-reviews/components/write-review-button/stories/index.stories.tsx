@@ -19,7 +19,6 @@ import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { ProductProvider } from '@/providers/product-context';
-import ProductContentProvider from '@/providers/product-content';
 import { ProductReviewsProvider } from '@/extensions/ratings-reviews/providers/product-reviews-context';
 import type { ReviewsSummaryData, WriteReviewFormData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 import AuthProvider from '@/providers/auth';
@@ -69,13 +68,11 @@ function WriteReviewButtonWrapper(): ReactElement {
         <ConfigProvider config={mockConfig}>
             <AuthProvider value={{ userType: 'registered', customerId: 'cust-123' }}>
                 <ProductProvider product={mockProduct}>
-                    <ProductContentProvider>
-                        <ProductReviewsProvider summary={mockSummary}>
-                            <div className="max-w-md p-6">
-                                <WriteReviewButton formConfig={mockFormConfig} />
-                            </div>
-                        </ProductReviewsProvider>
-                    </ProductContentProvider>
+                    <ProductReviewsProvider summary={mockSummary}>
+                        <div className="max-w-md p-6">
+                            <WriteReviewButton formConfig={mockFormConfig} />
+                        </div>
+                    </ProductReviewsProvider>
                 </ProductProvider>
             </AuthProvider>
         </ConfigProvider>
@@ -112,7 +109,7 @@ The WriteReviewButton component opens the Write a Review modal.
 **Features:**
 - Fetches form config from the product content adapter (getWriteReviewForm)
 - Displays the modal title as the button label when loaded
-- Must be used within PDP context (ProductProvider + ProductContentProvider)
+- Must be used within PDP context (ProductProvider + ProductReviewsProvider)
                 `,
             },
         },

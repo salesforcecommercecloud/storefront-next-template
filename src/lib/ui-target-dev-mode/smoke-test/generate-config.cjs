@@ -120,6 +120,7 @@ try {
                 targetId,
                 path: SMOKE_TEST_PATH,
                 hint: deriveHint(targetId),
+                order: 999,
             };
         });
 

@@ -17,6 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useState, type ReactElement } from 'react';
+// @sfdc-extension-line SFDC_EXT_RATINGS_REVIEWS
 import { action } from 'storybook/actions';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
@@ -172,6 +173,7 @@ export const PaymentScheduleOnly: Story = {
     },
 };
 
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 export const StarRatingDistributionType: Story = {
     args: {
         data: {
@@ -216,6 +218,8 @@ Star rating distribution modal displaying rating overview and distribution break
         await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
+
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
 export const PaymentScheduleLongContent: Story = {
     args: {
@@ -264,6 +268,7 @@ export const PaymentScheduleLongContent: Story = {
     },
 };
 
+// @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 export const StarRatingDistributionHighlyRated: Story = {
     args: {
         data: {
@@ -304,3 +309,4 @@ Highly rated product with most reviews being 5-star. Demonstrates how the modal 
         await within(document.body).findByRole('dialog', {}, { timeout: 5000 });
     },
 };
+// @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS

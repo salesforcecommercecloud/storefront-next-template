@@ -18,7 +18,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ReviewCardsSection from './review-cards-section';
-import type { ReviewItem } from '@/lib/adapters/product-content/data-types';
+import type { ReviewItem } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 
 const mockReview1: ReviewItem = {
     id: 'r1',

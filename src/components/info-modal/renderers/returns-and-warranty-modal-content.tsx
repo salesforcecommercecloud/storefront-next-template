@@ -17,11 +17,10 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/components/typography';
-import type { ReturnsAndWarrantyData } from '@/lib/adapters/product-content/data-types';
+import type { ReturnsAndWarrantyData } from '@/extensions/product-content/lib/api/product-content.server';
 
 /**
  * Renders returns & warranty modal content.
- * Receives the adapter data directly from ProductContentAdapter.getReturnsAndWarranty().
  * Layout: Returns Policy, Warranty, Exchanges, Need Help.
  */
 export function ReturnsAndWarrantyModalContent({

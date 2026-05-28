@@ -27,10 +27,10 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useTranslation } from 'react-i18next';
 import type { EnrichedProductItem } from '@/lib/product/product-utils';
 import type { ShopperOrders, ShopperProducts } from '@/scapi';
-import { getOrderLineReviewKey } from '@/components/account/order-details/order-line-review-key';
-import { UITarget } from '@/targets/ui-target';
 import { routes, routeHref } from '@/route-paths';
 // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
+import { getOrderLineReviewKey } from '@/components/account/order-details/order-line-review-key';
+import { UITarget } from '@/targets/ui-target';
 import { OrderLineReviewSlot } from '@/extensions/ratings-reviews/components/order-line-review-context';
 // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
@@ -78,8 +78,10 @@ export function OrderItemsList({
                 const productData = item.productId ? productsById[item.productId] : undefined;
                 const productKey = item.itemId ? `${item.itemId}-${index}` : `${item.productId ?? 'item'}-${index}`;
                 const productName = item.productName;
+                // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
                 const lineReviewKey = getOrderLineReviewKey(orderNo, item, index);
                 const reviewSubmitted = submittedReviewLineKeys?.has(lineReviewKey) ?? false;
+                // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
                 const enrichedItem: EnrichedProductItem = { ...productData, ...item } as EnrichedProductItem;
                 return (
                     <li key={productKey} data-testid="order-item">

@@ -35,7 +35,6 @@ import { useTranslation } from 'react-i18next';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Region } from '@/components/region';
 import { ProductProvider } from '@/providers/product-context';
-import ProductContentProvider from '@/providers/product-content';
 import { PageType } from '@/lib/decorators/page-type';
 import { RegionDefinition } from '@/lib/decorators/region-definition';
 import { fetchPageWithComponentData } from '@/lib/page-designer/page-loader.server';
@@ -391,52 +390,50 @@ function ProductContent({
 
     return (
         <ProductProvider product={product}>
-            <ProductContentProvider>
-                {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
-                <ProductContentDataProvider
-                    product={product}
-                    returnsWarrantyPromise={returnsWarrantyPromise}
-                    faqQuestionsPromise={faqQuestionsPromise}
-                    pdpCollapsiblesPromise={pdpCollapsiblesPromise}>
-                    {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
-                    {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
-                    {/* Provider wraps ProductView so the in-page rating summary shares state
-                        with the customer reviews accordion (expand/jump-to coordination). */}
-                    <ProductReviewsProvider summary={reviewsSummary} reviewsListPromise={reviewsList}>
-                        <WriteReviewFormProvider writeReviewFormPromise={writeReviewForm}>
-                            {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
-                            <SeoMeta
-                                title={product.name}
-                                description={product.pageDescription || product.shortDescription}
-                                openGraph={{
-                                    type: 'product',
-                                    url,
-                                    image: primaryImage,
-                                }}
-                            />
-                            <div className="space-y-8">
-                                {isProductASet || isProductABundle ? (
-                                    <>
-                                        <ProductView product={product} />
-                                        <ChildProducts parentProduct={product} />
-                                    </>
-                                ) : (
-                                    <ProductView product={product} />
-                                )}
-
-                                {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
-                                <UITarget targetId="sfcc.pdp.reviews.section" />
-                                {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
-                                <UITarget targetId="sfcc.pdp.reviews.qna" />
-                            </div>
-                            {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
-                        </WriteReviewFormProvider>
-                    </ProductReviewsProvider>
-                    {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
-                    {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
-                </ProductContentDataProvider>
+            {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
+            <ProductContentDataProvider
+                product={product}
+                returnsWarrantyPromise={returnsWarrantyPromise}
+                faqQuestionsPromise={faqQuestionsPromise}
+                pdpCollapsiblesPromise={pdpCollapsiblesPromise}>
                 {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
-            </ProductContentProvider>
+                {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                {/* Provider wraps ProductView so the in-page rating summary shares state
+                        with the customer reviews accordion (expand/jump-to coordination). */}
+                <ProductReviewsProvider summary={reviewsSummary} reviewsListPromise={reviewsList}>
+                    <WriteReviewFormProvider writeReviewFormPromise={writeReviewForm}>
+                        {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
+                        <SeoMeta
+                            title={product.name}
+                            description={product.pageDescription || product.shortDescription}
+                            openGraph={{
+                                type: 'product',
+                                url,
+                                image: primaryImage,
+                            }}
+                        />
+                        <div className="space-y-8">
+                            {isProductASet || isProductABundle ? (
+                                <>
+                                    <ProductView product={product} />
+                                    <ChildProducts parentProduct={product} />
+                                </>
+                            ) : (
+                                <ProductView product={product} />
+                            )}
+
+                            {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                            <UITarget targetId="sfcc.pdp.reviews.section" />
+                            {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
+                            <UITarget targetId="sfcc.pdp.reviews.qna" />
+                        </div>
+                        {/* @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS */}
+                    </WriteReviewFormProvider>
+                </ProductReviewsProvider>
+                {/* @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS */}
+                {/* @sfdc-extension-block-start SFDC_EXT_PRODUCT_CONTENT */}
+            </ProductContentDataProvider>
+            {/* @sfdc-extension-block-end SFDC_EXT_PRODUCT_CONTENT */}
         </ProductProvider>
     );
 }

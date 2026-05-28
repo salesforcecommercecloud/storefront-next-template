@@ -13,15 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-    CareInstructionsData,
-    FaqQuestionsData,
-    HtmlContent,
-    IngredientsData,
-    ReturnsAndWarrantyData,
-    TechSpecsData,
-    UsageInstructionsData,
-} from '@/lib/adapters/product-content/data-types';
+import type { HtmlContent } from '@/components/html-fragment/types';
 
 /**
  * @feature-stub Product Content (server module)
@@ -40,15 +32,51 @@ import type {
  * productionizing or removing stubs.
  */
 
-export type {
-    CareInstructionsData,
-    FaqQuestionsData,
-    HtmlContent,
-    IngredientsData,
-    ReturnsAndWarrantyData,
-    TechSpecsData,
-    UsageInstructionsData,
-};
+export type { HtmlContent };
+
+export interface ReturnsAndWarrantyData {
+    title: string;
+    description: string;
+    returnsPolicy: {
+        heading: string;
+        intro: string;
+        conditions: string[];
+        howToReturn: string[];
+        note?: string;
+    };
+    warranty: {
+        heading: string;
+        intro: string;
+        whatsCovered: string[];
+        whatsNotCovered: string[];
+        claimsProcess: string;
+    };
+    exchanges: {
+        heading: string;
+        intro: string;
+        process: string;
+    };
+    needHelp?: {
+        intro: string;
+        email: string;
+        phone: string;
+    };
+}
+
+export interface ProductDescriptionData {
+    heading: string;
+    intro: string;
+    features: HtmlContent[];
+}
+
+export interface FaqQuestionsData {
+    questions: string[];
+}
+
+export type IngredientsData = HtmlContent;
+export type UsageInstructionsData = HtmlContent;
+export type CareInstructionsData = HtmlContent;
+export type TechSpecsData = HtmlContent;
 
 const MOCK_RETURNS_AND_WARRANTY_DATA: ReturnsAndWarrantyData = {
     title: '30-Day Returns & 1 Year Warranty',
