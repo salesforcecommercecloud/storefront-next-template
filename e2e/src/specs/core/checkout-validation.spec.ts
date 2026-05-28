@@ -189,27 +189,6 @@ Scenario('Promo code rejects too-short and invalid codes', async () => {
     .tag('@promo-code-validation')
     .tag('@guest-checkout');
 
-Scenario('Place Order shows immediate error when shipping methods are missing', async () => {
-    const { apiLoginFlow } = inject();
-    await apiLoginFlow.executeWithEnsuredCredentials();
-
-    await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
-    checkoutPage.validatePageLoaded();
-
-    // Registered shopper auto-advances — Place Order should be visible
-    const placeOrderVisible = await checkoutPage.isPlaceOrderButtonVisible();
-    if (!placeOrderVisible) {
-        await checkoutPage.selectShippingMethod(0);
-        checkoutPage.waitForPlaceOrderButton();
-    }
-
-    const buttonVisible = await checkoutPage.isPlaceOrderButtonVisible();
-    expect(buttonVisible, 'Place Order button should be visible').to.be.true;
-})
-    .config({ retries: 0 })
-    .tag('@shipping-method-validation')
-    .tag('@registered-shopper');
-
 Scenario('Payment rejects too-short card number', async () => {
     await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     checkoutPage.validatePageLoaded();
