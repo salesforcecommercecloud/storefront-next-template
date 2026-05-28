@@ -81,68 +81,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual: Record<string, unknown> = await importOriginal();
-    return {
-        ...(actual as object),
-        useFetcher: () => ({
-            data: null,
-            state: 'idle',
-            submit: vi.fn(),
-        }),
-        useFetchers: () => [],
-        useNavigate: () => vi.fn(),
-        useLocation: () => ({ pathname: '/account', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/account', search: '', hash: '', state: null, key: 'test' },
-        }),
-        useSearchParams: () => [new URLSearchParams(), vi.fn()],
-        useInRouterContext: () => false,
-        // Add missing createMemoryRouter
-        createMemoryRouter: vi.fn().mockImplementation(() => ({
-            navigate: vi.fn(),
-            state: { location: { pathname: '/account', search: '', hash: '', state: null } },
-        })),
-        NavLink: ({
-            to,
-            children,
-            className,
-            ...rest
-        }: LinkProps & { className?: string | ((props: { isActive: boolean }) => string) }) => {
-            const {
-                to: toProp,
-                href,
-                children: linkChildren,
-                ...linkRest
-            } = (rest ?? {}) as AnchorHTMLAttributes<HTMLAnchorElement> & {
-                to?: string;
-                href?: string;
-                children?: ReactNode;
-            };
-            const hrefValue = to ?? toProp ?? href ?? '#';
-            const resolvedClassName =
-                typeof className === 'function' ? className({ isActive: hrefValue === '/account' }) : className;
-            return (
-                <a href={hrefValue} className={resolvedClassName} {...linkRest}>
-                    {linkChildren ?? children}
-                </a>
-            );
-        },
-        Link: (props: LinkProps) => {
-            const { to, href, children, ...rest } = (props ?? {}) as AnchorHTMLAttributes<HTMLAnchorElement> & {
-                to?: string;
-                href?: string;
-                children?: ReactNode;
-            };
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 
 import { composeStories } from '@storybook/react-vite';
 

@@ -57,36 +57,6 @@ vi.mock('react-router', () => ({
     },
 }));
 
-vi.mock('react-router-dom', async (importOriginal) => {
-    const actual: Record<string, unknown> = await importOriginal();
-    return {
-        ...(actual as object),
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-        useNavigate: () => vi.fn(),
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle',
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        Link: (
-            props:
-                | (AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string; href?: string; children?: ReactNode })
-                | null
-        ) => {
-            const { to, href, children, ...rest } = (props ?? {}) as AnchorHTMLAttributes<HTMLAnchorElement> & {
-                to?: string;
-                href?: string;
-                children?: ReactNode;
-            };
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 
 vi.mock('@/hooks/use-promo-code-actions', () => ({
     usePromoCodeActions: () => ({

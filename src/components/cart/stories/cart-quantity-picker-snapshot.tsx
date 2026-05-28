@@ -53,33 +53,6 @@ vi.mock('react-router', () => ({
         );
     },
 }));
-vi.mock('react-router-dom', async () => {
-    const actual = await vi.importActual('react-router-dom');
-    return {
-        ...(actual as Record<string, unknown>),
-        useFetcher: () => fetcherMock,
-        useFetchers: () => [],
-
-        useNavigate: () => () => {},
-        useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-        useNavigation: () => ({
-            state: 'idle' as const,
-            location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-        }),
-        createMemoryRouter: vi.fn().mockImplementation(() => ({
-            navigate: vi.fn(),
-            state: { location: { pathname: '/', search: '', hash: '', state: null } },
-        })),
-        Link: (props: MockLinkProps) => {
-            const { to, href, children, ...rest } = props ?? {};
-            return (
-                <a href={to ?? href} {...rest}>
-                    {children}
-                </a>
-            );
-        },
-    };
-});
 
 vi.mock('@salesforce/storefront-next-runtime/config', async () => {
     const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
