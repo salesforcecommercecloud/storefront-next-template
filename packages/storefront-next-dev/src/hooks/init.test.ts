@@ -28,6 +28,11 @@ vi.mock('../cli-plugins.js', () => ({
 describe('init hook', () => {
     let loadEnvFileSpy: ReturnType<typeof vi.spyOn>;
 
+    // Standalone-bin context: the published `sfnext` CLI runs every command with bin === 'sfnext',
+    // so the scope guard always passes. All existing behavior (.env load, plugin discovery)
+    // continues unchanged.
+    const standaloneCtx = { config: { bin: 'sfnext' } } as never;
+
     beforeEach(() => {
         vi.clearAllMocks();
         loadEnvFileSpy = vi.spyOn(process, 'loadEnvFile').mockImplementation(() => undefined);
@@ -35,42 +40,42 @@ describe('init hook', () => {
 
     test('calls initializePlugins', async () => {
         const { default: hook } = await import('./init.js');
-        await hook.call({} as never, { argv: [] } as never);
+        await hook.call(standaloneCtx, { argv: [] } as never);
 
         expect(mockInitializePlugins).toHaveBeenCalledOnce();
     });
 
     test('loads .env from cwd when no --project-directory flag given', async () => {
         const { default: hook } = await import('./init.js');
-        await hook.call({} as never, { argv: [] } as never);
+        await hook.call(standaloneCtx, { argv: [] } as never);
 
         expect(loadEnvFileSpy).toHaveBeenCalledWith(path.join(process.cwd(), '.env'));
     });
 
     test('loads .env from --project-directory flag value', async () => {
         const { default: hook } = await import('./init.js');
-        await hook.call({} as never, { argv: ['--project-directory', '/custom/dir'] } as never);
+        await hook.call(standaloneCtx, { argv: ['--project-directory', '/custom/dir'] } as never);
 
         expect(loadEnvFileSpy).toHaveBeenCalledWith(path.join(path.resolve('/custom/dir'), '.env'));
     });
 
     test('loads .env from -d shorthand', async () => {
         const { default: hook } = await import('./init.js');
-        await hook.call({} as never, { argv: ['-d', '/short/dir'] } as never);
+        await hook.call(standaloneCtx, { argv: ['-d', '/short/dir'] } as never);
 
         expect(loadEnvFileSpy).toHaveBeenCalledWith(path.join(path.resolve('/short/dir'), '.env'));
     });
 
     test('loads .env from --project-directory=value inline form', async () => {
         const { default: hook } = await import('./init.js');
-        await hook.call({} as never, { argv: ['--project-directory=/inline/dir'] } as never);
+        await hook.call(standaloneCtx, { argv: ['--project-directory=/inline/dir'] } as never);
 
         expect(loadEnvFileSpy).toHaveBeenCalledWith(path.join(path.resolve('/inline/dir'), '.env'));
     });
 
     test('falls back to cwd when --project-directory is followed by another flag instead of a value', async () => {
         const { default: hook } = await import('./init.js');
-        await hook.call({} as never, { argv: ['--project-directory', '--yes'] } as never);
+        await hook.call(standaloneCtx, { argv: ['--project-directory', '--yes'] } as never);
 
         expect(loadEnvFileSpy).toHaveBeenCalledWith(path.join(process.cwd(), '.env'));
     });
@@ -81,7 +86,23 @@ describe('init hook', () => {
         });
 
         const { default: hook } = await import('./init.js');
-        await expect(hook.call({} as never, { argv: [] } as never)).resolves.toBeUndefined();
+        await expect(hook.call(standaloneCtx, { argv: [] } as never)).resolves.toBeUndefined();
+    });
+
+    test('runs body for sfnext-namespaced commands when loaded under another CLI', async () => {
+        const { default: hook } = await import('./init.js');
+        await hook.call({ config: { bin: 'b2c' } } as never, { argv: [], id: 'sfnext:dev' } as never);
+
+        expect(mockInitializePlugins).toHaveBeenCalledOnce();
+        expect(loadEnvFileSpy).toHaveBeenCalled();
+    });
+
+    test('does NOT run body for unrelated commands of a host CLI', async () => {
+        const { default: hook } = await import('./init.js');
+        await hook.call({ config: { bin: 'b2c' } } as never, { argv: [], id: 'auth:login' } as never);
+
+        expect(mockInitializePlugins).not.toHaveBeenCalled();
+        expect(loadEnvFileSpy).not.toHaveBeenCalled();
     });
 });
 
@@ -117,7 +138,14 @@ describe('init hook — integration', () => {
             // source-map the dist execution back to src files, overwriting unit test coverage.
             const distHookPath = path.join(ROOT, 'dist/hooks/init.js');
             const { default: hook } = await import(distHookPath);
-            await hook.call({} as never, { argv: ['--project-directory', testDir] } as never);
+            // The hook scope-guards on `this.config.bin === 'sfnext'` (or sfnext-prefixed id),
+            // so we must provide a matching context.
+            await hook.call(
+                { config: { bin: 'sfnext' } } as never,
+                {
+                    argv: ['--project-directory', testDir],
+                } as never
+            );
 
             // Confirms the init hook loaded .env into process.env.
             // oclif reads process.env when resolving flags with env: 'MRT_PROJECT',

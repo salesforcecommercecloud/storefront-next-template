@@ -48,6 +48,7 @@ async function initializePlugins() {
 * @env {string} [MRT_TARGET] - Target environment for MRT deployments
 */
 const hook = async function(opts) {
+	if (!(this.config.bin === "sfnext" || opts.id === "sfnext" || (opts.id?.startsWith("sfnext:") ?? false))) return;
 	const args = opts.argv ?? [];
 	let projectDir = process.cwd();
 	for (let i = 0; i < args.length; i++) {

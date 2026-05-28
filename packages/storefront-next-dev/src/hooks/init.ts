@@ -34,6 +34,13 @@ import { PROJECT_DIRECTORY_FLAG, PROJECT_DIRECTORY_CHAR } from '../flags.js';
  * @env {string} [MRT_TARGET] - Target environment for MRT deployments
  */
 const hook: Hook<'init'> = async function (opts) {
+    // Scope guard: only run for sfnext commands. When invoked through the standalone
+    // `sfnext` bin, every command qualifies. When loaded as a plugin under another CLI
+    // (e.g. `b2c sfnext …`), we only want this hook firing for sfnext-namespaced
+    // commands — not for unrelated commands of the host CLI.
+    const isSfnext = this.config.bin === 'sfnext' || opts.id === 'sfnext' || (opts.id?.startsWith('sfnext:') ?? false);
+    if (!isSfnext) return;
+
     // Parse --project-directory / -d from raw argv before oclif processes flags
     // so we load the correct .env regardless of where the CLI is invoked from.
     const args = opts.argv ?? [];
