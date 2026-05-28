@@ -47,12 +47,11 @@ exports[`RateRecentPurchasesCard stories snapshot > Default story renders and ma
                   <div
                     class="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted"
                   >
-                    <img
-                      alt="Charcoal crewneck sweater"
-                      class="h-full w-full object-cover"
-                      loading="lazy"
-                      src="__ASSET_MOCK__"
-                    />
+                    <div
+                      class="flex h-full w-full items-center justify-center text-xs text-muted-foreground"
+                    >
+                      Item
+                    </div>
                   </div>
                 </a>
                 <a

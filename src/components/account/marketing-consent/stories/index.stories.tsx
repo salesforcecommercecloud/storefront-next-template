@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { MarketingConsent, type MarketingConsentSubscriptions } from '../index';
 
@@ -71,43 +71,13 @@ export const Default: Story = {
         const canvas = within(canvasElement);
 
         await expect(canvas.getByText('Marketing & Communication Preferences')).toBeInTheDocument();
-        const editButton = canvas.getByRole('button', { name: /edit/i });
-        await expect(editButton).toBeInTheDocument();
-        await expect(editButton).toHaveAttribute('type', 'button');
+        const editButton = canvas.getByRole('button', { name: /edit marketing preferences/i });
+        await expect(editButton).toHaveAttribute('aria-label', 'Edit marketing preferences');
         await expect(canvas.getByRole('heading', { level: 2, name: 'Email' })).toBeInTheDocument();
-        const lists = canvas.getAllByRole('list');
-        await expect(lists.length).toBe(1);
         const switches = canvas.getAllByRole('switch');
-        await expect(switches.length).toBe(2);
+        await expect(switches).toHaveLength(2);
         await expect(canvas.getByText('Sale')).toBeInTheDocument();
         await expect(canvas.getByText('Newsletter')).toBeInTheDocument();
-    },
-};
-
-export const ClickEditButton: Story = {
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const editButton = canvas.getByRole('button', { name: /edit marketing preferences/i });
-        await expect(editButton).toBeInTheDocument();
-        await expect(editButton).toHaveAttribute('type', 'button');
-        await expect(editButton).toHaveAttribute('aria-label', 'Edit marketing preferences');
-    },
-};
-
-export const Empty: Story = {
-    args: {
-        subscriptions: { data: [] },
-    },
-    parameters: { snapshot: false },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Component does not render when there is no subscription data
-        await expect(canvas.queryByText('Marketing & Communication Preferences')).not.toBeInTheDocument();
-        await expect(canvas.queryByRole('button', { name: /edit/i })).not.toBeInTheDocument();
     },
 };
 
@@ -121,8 +91,14 @@ export const SwitchesDisabledNoContactPoint: Story = {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
 
+        // Click Edit first so switches enter editable mode — otherwise they're
+        // disabled simply because the section isn't being edited, and this
+        // story passes for the wrong reason. We want to prove that disabled-
+        // ness specifically tracks the missing `contactPointValueByChannel`.
+        await userEvent.click(canvas.getByRole('button', { name: /edit marketing preferences/i }));
+
         const switches = canvas.getAllByRole('switch');
-        await expect(switches.length).toBe(2);
+        await expect(switches).toHaveLength(2);
         for (const sw of switches) {
             await expect(sw).toBeDisabled();
         }

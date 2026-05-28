@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { ReactElement } from 'react';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import type { ShopperOrders, ShopperProducts } from '@/scapi';
 import { OrderDetails } from '../index';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { ConfigWrapper, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-
-const mockSite = mockSiteObject;
 
 const { t } = getTranslation();
 
@@ -100,30 +96,21 @@ const meta: Meta<typeof OrderDetails> = {
     },
     tags: ['autodocs', 'interaction'],
     decorators: [
-        (Story) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <ConfigWrapper>
-                        <SiteProvider
-                            site={mockSite}
-                            locale={mockLocale}
-                            language={mockSiteObject.defaultLocale}
-                            currency={mockSiteObject.defaultCurrency}>
-                            <Story />
-                        </SiteProvider>
-                    </ConfigWrapper>
-                );
-                if (inRouter) return content;
-                const router = createMemoryRouter([{ path: '*', element: content }], { initialEntries: ['/'] });
-                return <RouterProvider router={router} />;
-            };
-            return <RouterWrapper />;
-        },
+        (Story) => (
+            <ConfigWrapper>
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <Story />
+                </SiteProvider>
+            </ConfigWrapper>
+        ),
     ],
     argTypes: {
-        order: { control: false },
-        productsById: { control: false },
+        order: { table: { disable: true } },
+        productsById: { table: { disable: true } },
     },
 };
 

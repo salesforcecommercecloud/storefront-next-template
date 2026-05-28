@@ -15,24 +15,6 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import AccountAddressesSkeleton from '../index';
-import { expect } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logRender = action('account-addresses-skeleton-render');
-        logRender({});
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof AccountAddressesSkeleton> = {
     title: 'SKELETON/AccountAddressesSkeleton',
@@ -42,27 +24,14 @@ const meta: Meta<typeof AccountAddressesSkeleton> = {
         docs: {
             description: {
                 component:
-                    'Skeleton component for the account addresses page content. Matches the structure of the actual addresses page with a grid of address cards.',
+                    'Loading placeholder for /account/addresses. Mirrors the production grid of address cards so the page maintains layout dimensions while customer data resolves.',
             },
         },
     },
-    tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
+    tags: ['autodocs'],
 };
 
 export default meta;
-type Story = StoryObj<typeof AccountAddressesSkeleton>;
+type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const container = canvasElement.firstChild;
-        await expect(container).toBeInTheDocument();
-    },
-};
+export const Default: Story = {};

@@ -15,9 +15,10 @@
  */
 import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
+import { render, cleanup } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 
 import * as RateRecentPurchasesCardStories from './rate-recent-purchases-card.stories';
-import { render, cleanup } from '@testing-library/react';
 
 const composed = composeStories(RateRecentPurchasesCardStories);
 
@@ -27,9 +28,13 @@ afterEach(() => {
 
 describe('RateRecentPurchasesCard stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
+        if (Story?.parameters?.snapshot === false) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
-            const { container } = render(<Story />);
+            // Snapshot tests run via composeStories without the global preview
+            // decorators, so they need their own router. The story-level
+            // ConfigWrapper + SiteProvider come through composeStories.
+            const router = createMemoryRouter([{ path: '/', element: <Story /> }], { initialEntries: ['/'] });
+            const { container } = render(<RouterProvider router={router} />);
             expect(container.firstChild).toMatchSnapshot();
         });
     }
