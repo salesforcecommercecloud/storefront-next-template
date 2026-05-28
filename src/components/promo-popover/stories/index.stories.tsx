@@ -15,164 +15,86 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import PromoPopover from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import type { ReactElement } from 'react';
 
-function PromoPopoverStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('promo-popover-click');
-        const logHover = action('promo-popover-hover');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-            const button = target.closest('button');
-            if (button) {
-                logClick({ button: button.getAttribute('aria-label') || '' });
-            }
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-            logHover({ element: target.tagName });
-        };
-
-        root.addEventListener('click', handleClick);
-        root.addEventListener('mouseover', handleMouseOver);
-        return () => {
-            root.removeEventListener('click', handleClick);
-            root.removeEventListener('mouseover', handleMouseOver);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+interface PopoverHarnessArgs {
+    header?: string;
+    body?: string;
 }
 
-const meta: Meta<typeof PromoPopover> = {
-    title: 'COMMON/Promo Popover',
-    component: PromoPopover,
+function PopoverHarness({ header, body }: PopoverHarnessArgs): ReactElement {
+    return (
+        <PromoPopover header={header}>
+            <p>{body}</p>
+        </PromoPopover>
+    );
+}
+
+const meta: Meta<typeof PopoverHarness> = {
+    title: 'CART/Promo Popover',
+    component: PopoverHarness,
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
         docs: {
             description: {
                 component: `
-A popover component that displays promotional information when hovering over an info icon.
+\`<PromoPopover>\` renders a small **info** icon that opens a tooltip-style popover on hover/focus. Used to surface applied-promotion details on the cart/order summary line items.
 
-### Features:
-- Info icon trigger
-- Hover-activated popover
-- Customizable header and content
-- Used for promotions on products and orders
+The component's API is just two slots: an optional \`header\` and required \`children\`. Per Pattern 10 those are exposed as text controls (using the ReactNode-as-text trick) on a single **Default** story rather than spawning per-content variants.
+
+Pattern 11 — overlay closed by default: the trigger button is in the canvas, the popover content lives in a portal and only mounts on hover.
                 `,
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <PromoPopoverStoryHarness>
-                <Story />
-            </PromoPopoverStoryHarness>
-        ),
-    ],
+    argTypes: {
+        header: {
+            control: 'text',
+            description: 'Optional header rendered above the body, separated by a divider.',
+        },
+        body: {
+            control: 'text',
+            description: 'Body copy. Wrapped in a `<p>` so plain strings work in the controls textarea.',
+        },
+    },
+    args: {
+        header: 'Special Promotion',
+        body: 'This is a special promotional offer. Get 20% off on your next purchase when you spend over $100!',
+    },
 };
 
 export default meta;
-type Story = StoryObj<typeof PromoPopover>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    render: () => (
-        <PromoPopover>
-            <p>This is a promotional offer. Get 20% off on your next purchase!</p>
-        </PromoPopover>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Standard promo popover with content only.
-
-### Features:
-- Info icon
-- Content text
-- Hover to view
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement, args }) => {
         const canvas = within(canvasElement);
 
         await waitForStorybookReady(canvasElement);
 
-        // Check for info button
         const infoButton = await canvas.findByRole('button', { name: /info/i }, { timeout: 5000 });
         await expect(infoButton).toBeInTheDocument();
-    },
-};
 
-export const WithHeader: Story = {
-    render: () => (
-        <PromoPopover header="Special Promotion">
-            <p>This is a special promotional offer. Get 20% off on your next purchase when you spend over $100!</p>
-        </PromoPopover>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Promo popover with header and content.
-
-### Features:
-- Header title
-- Content text
-- Separated by border
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for info button
-        const infoButton = await canvas.findByRole('button', { name: /info/i }, { timeout: 5000 });
-        await expect(infoButton).toBeInTheDocument();
-    },
-};
-
-export const WithCustomContent: Story = {
-    render: () => (
-        <PromoPopover header="Free Shipping">
-            <div>
-                <p className="mb-2">Free shipping on orders over $50.</p>
-                <p className="text-xs text-muted-foreground">Valid until end of month.</p>
-            </div>
-        </PromoPopover>
-    ),
-    parameters: {
-        docs: {
-            story: `
-Promo popover with custom formatted content.
-
-### Features:
-- Custom HTML content
-- Multiple paragraphs
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for info button
-        const infoButton = await canvas.findByRole('button', { name: /info/i }, { timeout: 5000 });
-        await expect(infoButton).toBeInTheDocument();
+        // Radix tooltips open on pointerenter / focus and portal their content
+        // to `document.body`, so the assertion has to walk the whole document.
+        // Use focus rather than `userEvent.hover` because Radix's hover delay
+        // (`delayDuration` default ~700 ms) makes hover-driven flows flaky in
+        // the headless test runner; focus is synchronous and matches the
+        // keyboard path users hit anyway.
+        //
+        // Radix also renders a hidden duplicate of the popover content for
+        // `aria-describedby` purposes — `findAllByText` returns both nodes;
+        // we accept any matching node existing.
+        infoButton.focus();
+        const documentBody = within(document.body);
+        if (args.header) {
+            const headers = await documentBody.findAllByText(args.header, undefined, { timeout: 5000 });
+            await expect(headers.length).toBeGreaterThan(0);
+        }
+        const bodies = await documentBody.findAllByText(args.body ?? '', undefined, { timeout: 5000 });
+        await expect(bodies.length).toBeGreaterThan(0);
     },
 };

@@ -32,6 +32,7 @@ export const basketWithBonusOpportunity: ShopperBasketsV2.schemas['Basket'] = {
             priceAfterItemDiscount: 20.0,
             priceAdjustments: [
                 {
+                    priceAdjustmentId: 'bonus-shirt-tie',
                     promotionId: 'promo-buy-one-get-tie',
                     itemText: 'Buy one Classic Fit Shirt, get 2 free ties!',
                     price: 0,
@@ -71,6 +72,7 @@ export const basketWithBonusOpportunityPartialSelection: ShopperBasketsV2.schema
             priceAfterItemDiscount: 20.0,
             priceAdjustments: [
                 {
+                    priceAdjustmentId: 'bonus-shirt-tie',
                     promotionId: 'promo-buy-one-get-tie',
                     itemText: 'Buy one Classic Fit Shirt, get 2 free ties!',
                     price: 0,
@@ -120,6 +122,7 @@ export const basketWithBonusOpportunityAllSlotsFilled: ShopperBasketsV2.schemas[
             priceAfterItemDiscount: 20.0,
             priceAdjustments: [
                 {
+                    priceAdjustmentId: 'bonus-shirt-tie',
                     promotionId: 'promo-buy-one-get-tie',
                     itemText: 'Buy one Classic Fit Shirt, get 2 free ties!',
                     price: 0,
@@ -179,6 +182,7 @@ export const basketWithMultipleBonusOpportunities: ShopperBasketsV2.schemas['Bas
             priceAfterItemDiscount: 20.0,
             priceAdjustments: [
                 {
+                    priceAdjustmentId: 'bonus-shirt-tie',
                     promotionId: 'promo-buy-one-get-tie',
                     itemText: 'Buy one Classic Fit Shirt, get 2 free ties!',
                     price: 0,
@@ -195,6 +199,7 @@ export const basketWithMultipleBonusOpportunities: ShopperBasketsV2.schemas['Bas
             priceAfterItemDiscount: 100.0,
             priceAdjustments: [
                 {
+                    priceAdjustmentId: 'bonus-suit-shoes',
                     promotionId: 'promo-buy-suit-get-shoes',
                     itemText: 'Buy a suit, get free shoes!',
                     price: 0,

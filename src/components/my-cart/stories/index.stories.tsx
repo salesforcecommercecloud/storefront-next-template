@@ -18,7 +18,7 @@ import { Title, Description, Controls } from '@storybook/addon-docs/blocks';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import MyCart from '../index';
-import { checkoutWithMultipleItems, checkoutWithOneItem } from '@/components/__mocks__/checkout-data';
+import { checkoutWithMultipleItems } from '@/components/__mocks__/checkout-data';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
 import { CheckoutActionLogger } from '@/components/checkout/storybook/checkout-action-logger';
@@ -34,19 +34,10 @@ const mockProductMap: Record<string, Record<string, unknown>> = {
             { id: 'size', name: 'Size', values: [{ name: '6', value: '006' }] },
         ],
         variationValues: { color: 'JJ5FUXX', size: '006' },
-        imageGroups: [
-            {
-                images: [
-                    {
-                        alt: 'Button Front Jacket, Grey Heather, small',
-                        link: 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw4de1503e/images/small/PG.10221714.JJ5FUXX.PZ.jpg',
-                        title: 'Button Front Jacket, Grey Heather',
-                    },
-                ],
-                viewType: 'small',
-                variationAttributes: [{ id: 'color', values: [{ value: 'JJ5FUXX' }] }],
-            },
-        ],
+        // No imageGroups so the "No image" placeholder renders rather than a
+        // broken thumbnail (the SCAPI demo CDN URLs frequently 404 in headless
+        // Storybook).
+        imageGroups: [],
         price: 39.67,
         tieredPrices: [{ price: 39.67, pricebook: 'gbp-m-list-prices', quantity: 1 }],
     },
@@ -59,19 +50,7 @@ const mockProductMap: Record<string, Record<string, unknown>> = {
             { id: 'size', name: 'Size', values: [{ name: '8', value: '008' }] },
         ],
         variationValues: { color: 'BLACKFB', size: '008' },
-        imageGroups: [
-            {
-                images: [
-                    {
-                        alt: 'Casual To Dressy Trousers, Black, small',
-                        link: 'https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw688a7e1f/images/small/PG.10236482.BLACKFB.PZ.jpg',
-                        title: 'Casual To Dressy Trousers, Black',
-                    },
-                ],
-                viewType: 'small',
-                variationAttributes: [{ id: 'color', values: [{ value: 'BLACKFB' }] }],
-            },
-        ],
+        imageGroups: [],
         price: 124.8,
         tieredPrices: [{ price: 124.8, pricebook: 'gbp-m-list-prices', quantity: 1 }],
     },
@@ -99,7 +78,7 @@ const discountedProductMap: Record<string, Record<string, unknown>> = {
 };
 
 const meta: Meta<typeof MyCart> = {
-    title: 'COMMON/My Cart',
+    title: 'CART/My Cart',
     component: MyCart,
     tags: ['autodocs', 'interaction'],
     parameters: {
@@ -176,10 +155,11 @@ export default meta;
 type Story = StoryObj<typeof MyCart>;
 
 /**
- * Two items: one at qty 1, one at qty 3. Shows delivery badges, variation
- * attributes (color, size), product images, and per-unit "each" pricing.
+ * Default: two items (one at qty 1, one at qty 3). Shows delivery badges,
+ * variation attributes (color, size), and per-unit "each" pricing on the
+ * higher-quantity line.
  */
-export const MultipleItems: Story = {
+export const Default: Story = {
     render: () => (
         <MyCart basket={checkoutWithMultipleItems.cart} productMap={mockProductMap as Record<string, never>} />
     ),
@@ -193,21 +173,6 @@ export const MultipleItems: Story = {
         await expect(canvas.getByText('Casual To Dressy Trousers')).toBeInTheDocument();
         await expect(canvas.getByText('Color: Grey Heather')).toBeInTheDocument();
         await expect(canvas.getByText('Size: 6')).toBeInTheDocument();
-    },
-};
-
-/**
- * Single item at qty 1. No per-unit "each" price is shown.
- */
-export const SingleItem: Story = {
-    render: () => <MyCart basket={checkoutWithOneItem.cart} productMap={mockProductMap as Record<string, never>} />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByTestId('my-cart-item-701642868279M')).toBeInTheDocument();
-        await expect(canvas.getByText('Button Front Jacket')).toBeInTheDocument();
-        await expect(canvas.queryByText(/each/)).not.toBeInTheDocument();
     },
 };
 

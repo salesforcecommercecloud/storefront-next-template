@@ -14,393 +14,143 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 
 import { PromoCodeForm, type PromoCodeFormProps } from '../index';
-import { action } from 'storybook/actions';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { basketWithPromoError } from '@/components/__mocks__';
+import type { ShopperBasketsV2 } from '@/scapi';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-        const { t } = getTranslation();
-
-        const logToggle = action('promo-accordion-toggle');
-        const logType = action('promo-input');
-        const logTypeValue = action('promo-input-value');
-        const logApply = action('promo-apply');
-
-        const isInsideHarness = (element: Element) => root.contains(element);
-
-        const deriveLabel = (element: HTMLElement): string => {
-            const ariaLabel = element.getAttribute('aria-label')?.trim();
-            if (ariaLabel) {
-                return ariaLabel;
-            }
-
-            if (element instanceof HTMLInputElement) {
-                const placeholder = element.placeholder?.trim();
-                if (placeholder) {
-                    return placeholder;
-                }
-            }
-
-            const text = element.textContent?.replace(/\s+/g, ' ').trim();
-            if (text) {
-                return text;
-            }
-
-            const title = element.getAttribute('title')?.trim();
-            if (title) {
-                return title;
-            }
-
-            const testId = element.getAttribute('data-testid')?.trim();
-            return testId ?? '';
-        };
-
-        const findInteractiveElement = (start: Element | null): HTMLElement | null => {
-            if (!start) {
-                return null;
-            }
-
-            const selectors = [
-                'button',
-                'a',
-                '[role="button"]',
-                'input',
-                'textarea',
-                'select',
-                '[data-testid]',
-                '[tabindex]',
-                'label',
-            ].join(', ');
-
-            const match = start.closest(selectors);
-            if (match instanceof HTMLElement) {
-                return match;
-            }
-
-            if (start instanceof HTMLElement) {
-                return start;
-            }
-
-            return start.parentElement ? findInteractiveElement(start.parentElement) : null;
-        };
-
-        const isAccordionTrigger = (element: HTMLElement, label: string): boolean => {
-            if (element.hasAttribute('data-state')) {
-                return true;
-            }
-
-            return label.toLowerCase() === t('cart:promoCode.accordionTitle').toLowerCase();
-        };
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target;
-            if (!(target instanceof Element)) {
-                return;
-            }
-
-            const interactive = findInteractiveElement(target);
-            if (!interactive || !isInsideHarness(interactive)) {
-                return;
-            }
-
-            if (interactive instanceof HTMLButtonElement && interactive.type === 'submit') {
-                return;
-            }
-
-            const label = deriveLabel(interactive);
-            if (!label) {
-                return;
-            }
-
-            if (isAccordionTrigger(interactive, label)) {
-                logToggle({ label });
-            }
-        };
-
-        const handleChange = (event: Event) => {
-            const target = event.target;
-            if (!(target instanceof HTMLInputElement) || !isInsideHarness(target)) {
-                return;
-            }
-
-            const label = deriveLabel(target);
-            if (!label) {
-                return;
-            }
-
-            logType({ label });
-
-            const value = target.value ?? '';
-            logTypeValue({ label: value });
-        };
-
-        const handleSubmit = (event: SubmitEvent) => {
-            const form = event.target;
-            if (!(form instanceof HTMLFormElement) || !isInsideHarness(form)) {
-                return;
-            }
-
-            event.preventDefault();
-            event.stopImmediatePropagation?.();
-
-            const submitter = (event.submitter as Element | null) ?? form.querySelector('[type="submit"]');
-            const interactive = submitter ? findInteractiveElement(submitter) : null;
-            const label = interactive ? deriveLabel(interactive) : t('cart:promoCode.apply');
-
-            if (label) {
-                logApply({ label });
-            }
-        };
-
-        const originalFetch = window.fetch;
-        window.fetch = (async (...args) => {
-            const [input] = args;
-            let url = '';
-
-            if (typeof input === 'string') {
-                url = input;
-            } else if (input instanceof URL) {
-                url = input.toString();
-            } else if (input instanceof Request) {
-                url = input.url;
-            }
-
-            let pathname = '';
-            try {
-                pathname = new URL(url, window.location.origin).pathname;
-            } catch {
-                pathname = url;
-            }
-
-            if (pathname.startsWith('/action/promo-code-add') || pathname.startsWith('/action/promo-code-remove')) {
-                return Promise.resolve(
-                    new Response(JSON.stringify({ success: true }), {
-                        status: 200,
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                );
-            }
-
-            return originalFetch(...args);
-        }) as typeof window.fetch;
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('submit', handleSubmit, true);
-
-        return () => {
-            window.fetch = originalFetch;
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('submit', handleSubmit, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+const basketWithAppliedCoupon = {
+    basketId: 'applied-coupon-basket',
+    currency: 'GBP',
+    couponItems: [
+        {
+            couponItemId: 'coupon-applied-1',
+            code: 'SAVE10',
+            statusCode: 'applied',
+        },
+    ],
+    orderPriceAdjustments: [
+        {
+            priceAdjustmentId: 'adj-applied-1',
+            couponCode: 'SAVE10',
+            itemText: '10% Off Order',
+            price: -3.84,
+            promotionId: 'promo-save-10',
+        },
+    ],
+} as ShopperBasketsV2.schemas['Basket'];
 
 const meta: Meta<typeof PromoCodeForm> = {
     component: PromoCodeForm,
-    title: 'CART/PromoCodeForm',
+    title: 'CART/Promo Code Form',
     tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
-### PromoCodeForm Component
+\`<PromoCodeForm>\` renders the cart-side promo-code accordion: enter a code, submit it, see applied coupons with a remove (×) affordance. Validation flows through \`react-hook-form\` + Zod; the apply / remove fetches go through \`usePromoCodeActions\` (\`/action/promo-code-add\` and \`/action/promo-code-remove\`).
 
-This component provides an accordion-based interface for applying promo codes to a shopping basket. It renders as a collapsible accordion containing a form for entering and submitting promo codes.
+The component takes a single \`basket\` prop and reads three things off it:
+- \`basketId\` — required for the apply mutation; absence triggers an inline error
+- \`couponItems\` — drives the applied-coupon list at the bottom
+- \`orderPriceAdjustments\` + \`productItems[].priceAdjustments\` — power the per-coupon discount sub-line
 
-**Key Features:**
-- **Accordion Interface**: Collapsible form that can be expanded/collapsed
-- **Form Validation**: Uses react-hook-form with Zod schema validation for promo code input
-- **Toast Notifications**: Displays success/error feedback through toast notifications
-- **Auto Reset**: Form automatically resets and closes accordion on successful submission
-- **Basket Integration**: Associates promo codes with specific basket IDs
-- **Loading States**: Shows loading state during promo code application
+Stories:
 
-**Dependencies:**
-- \`react-hook-form\`: Form state management and validation
-- \`@hookform/resolvers/zod\`: Zod schema validation integration
-- \`@/components/ui/accordion\`: Collapsible accordion interface
-- \`@/hooks/use-promo-code-actions\`: Custom hook for promo code operations
-- \`@/components/toast\`: Toast notification system
-- \`@/lib/fetcher-states\`: Fetcher state management
-
-**Usage:**
-The component requires a \`basketId\` prop to associate the promo code with a specific shopping basket. If no basket ID is provided, form submission will show an error.
+| Story | Description |
+|-------|-------------|
+| **Default** | Empty basket — form open, accordion expanded, no applied coupons. \`basket\` is a control so different IDs / couponItems can be swapped without spawning new stories (Pattern 10) |
+| **WithAppliedCoupon** | Basket has one applied coupon (no discount line) — verifies the badge + remove (×) affordance |
+| **WithCouponDiscount** | Basket has one applied coupon plus a matching \`orderPriceAdjustment\` — verifies the per-coupon discount amount renders next to the badge. Backed by \`basketWithPromoError\` |
                 `,
             },
         },
     },
     decorators: [
-        (Story: React.ComponentType) => {
-            return (
-                <ActionLogger>
-                    <div className="max-w-md mx-auto p-6">
-                        <Story />
-                    </div>
-                </ActionLogger>
-            );
-        },
+        (Story: React.ComponentType) => (
+            <div className="max-w-md mx-auto p-6">
+                <Story />
+            </div>
+        ),
     ],
     argTypes: {
         basket: {
             control: 'object',
-            description: 'Optional basket object to associate the promo code with',
+            description: 'Basket containing `basketId`, `couponItems`, and price adjustments. Drives every variant.',
         },
     },
-    render: (args: { basketId?: string; basket?: unknown }) => {
-        // Support both basketId (legacy) and basket props
-        // Convert basketId to basket object for the component
-        const basket = args.basket || (args.basketId ? { basketId: args.basketId } : undefined);
-        return <PromoCodeForm basket={basket as PromoCodeFormProps['basket']} />;
+    args: {
+        basket: { basketId: 'test-basket-123', currency: 'GBP' } as ShopperBasketsV2.schemas['Basket'],
     },
+    render: (args: PromoCodeFormProps) => <PromoCodeForm basket={args.basket} />,
 };
 
 export default meta;
-// Extend args to support basketId for convenience in stories
-type Story = StoryObj<typeof meta> & {
-    args?: { basketId?: string } & PromoCodeFormProps;
-};
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    args: {
-        basketId: 'test-basket-123',
-    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
         const { t } = getTranslation();
 
         await waitForStorybookReady(canvasElement);
 
-        // Test that accordion trigger is present and expanded by default
         const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
         await expect(accordionTrigger).toBeInTheDocument();
 
-        // Input field should be visible since accordion starts expanded
         const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
         await expect(input).toBeInTheDocument();
 
-        // Test that apply button is present
-        const button = await canvas.findByRole('button', { name: /apply|submit/i });
-        await expect(button).toBeInTheDocument();
-    },
-};
-
-export const WithoutBasketId: Story = {
-    args: {
-        basketId: undefined,
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form without a basket ID, which will display an error when trying to submit.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test that accordion trigger is present
-        const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await expect(accordionTrigger).toBeInTheDocument();
-
-        // Input field should be visible since accordion starts expanded
-        const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
-        await expect(input).toBeInTheDocument();
-
-        // Test that apply button is present
         const button = await canvas.findByRole('button', { name: /apply|submit/i });
         await expect(button).toBeInTheDocument();
 
-        // Test typing in input (should work even without basket ID)
-        await userEvent.type(input, 'TESTCODE');
-        await expect(input).toHaveValue('TESTCODE');
-    },
-};
-
-export const WithCustomBasketId: Story = {
-    args: {
-        basketId: 'custom-basket-456',
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Shows the form with a custom basket ID for testing different basket scenarios.',
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test that accordion trigger is present
-        const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await expect(accordionTrigger).toBeInTheDocument();
-
-        // Input field should be visible since accordion starts expanded
-        const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
-        await expect(input).toBeInTheDocument();
-
-        // Test that apply button is present
-        const button = await canvas.findByRole('button', { name: /apply|submit/i });
-        await expect(button).toBeInTheDocument();
-
-        // Test form interaction
         await userEvent.type(input, 'CUSTOM20');
         await expect(input).toHaveValue('CUSTOM20');
     },
 };
 
-export const Expanded: Story = {
+export const WithAppliedCoupon: Story = {
     args: {
-        basketId: 'test-basket-123',
+        basket: basketWithAppliedCoupon,
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+
+        await waitForStorybookReady(canvasElement);
+
+        const appliedCoupons = await canvas.findByTestId('applied-coupons');
+        await expect(appliedCoupons).toBeInTheDocument();
+        await expect(appliedCoupons).toHaveTextContent('SAVE10');
+
+        const removeButton = await canvas.findByRole('button', { name: /remove SAVE10/i });
+        await expect(removeButton).toBeInTheDocument();
+    },
+};
+
+export const WithCouponDiscount: Story = {
+    args: {
+        basket: basketWithPromoError,
     },
     parameters: {
         docs: {
             description: {
-                story: 'Shows the accordion in an expanded state with the form visible.',
+                story: 'Applied coupon (`SAVE10`) backed by an `orderPriceAdjustment` carrying the matching `couponCode` — `AppliedCouponRow` sums the adjustment by `couponCode === item.code` and renders the formatted discount (`-£3.84`) beside the coupon badge.',
             },
         },
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-        const { t } = getTranslation();
 
         await waitForStorybookReady(canvasElement);
 
-        // Test that accordion trigger is present and expanded by default
-        const accordionTrigger = await canvas.findByRole('button', { name: t('cart:promoCode.accordionTitle') });
-        await expect(accordionTrigger).toBeInTheDocument();
-
-        // Input field should be visible since accordion starts expanded
-        const input = await canvas.findByPlaceholderText(/promo code|discount code|enter code/i);
-        await expect(input).toBeInTheDocument();
-
-        // Test that apply button is visible in expanded state
-        const button = await canvas.findByRole('button', { name: /apply|submit/i });
-        await expect(button).toBeInTheDocument();
-
-        // Test form interaction in expanded state
-        await userEvent.type(input, 'EXPANDED');
-        await expect(input).toHaveValue('EXPANDED');
+        const appliedCoupons = await canvas.findByTestId('applied-coupons');
+        await expect(appliedCoupons).toBeInTheDocument();
+        await expect(appliedCoupons).toHaveTextContent('SAVE10');
+        // Discount line: -£3.84 (formatted via the basket's GBP currency)
+        await expect(appliedCoupons.textContent ?? '').toMatch(/£3\.84/);
     },
 };

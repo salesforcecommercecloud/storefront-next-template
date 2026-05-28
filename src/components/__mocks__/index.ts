@@ -21,6 +21,22 @@
 
 export { basketWithOneItem, inBasketProductDetails } from './basket-with-dress';
 export { basketWithMultipleItems, inBasketMultipleItemDetails } from './basket-with-multiple-items';
+export {
+    basketWithBonusOpportunity,
+    basketWithBonusOpportunityPartialSelection,
+    basketWithBonusOpportunityAllSlotsFilled,
+    basketWithMultipleBonusOpportunities,
+    emptyBasketWithNoBonus,
+    basketWithNonQualifyingProduct,
+} from './basket-with-bonus';
+export { default as basketWithGift } from './basket-with-gift';
+export {
+    basketWithInstallmentSchedule,
+    basketWithSinglePayment,
+    basketWithUnavailableSchedule,
+} from './basket-with-payment-schedule';
+export { default as basketWithPromoError } from './basket-with-promo-error';
+export { mockCartLineProduct, type CartStoryProduct } from './cart-story-product';
 export { default as emptyBasket } from './empty-basket';
 export { checkoutWithMultipleItems, checkoutWithOneItem } from './checkout-data';
 export { masterProduct } from './master-variant-product';

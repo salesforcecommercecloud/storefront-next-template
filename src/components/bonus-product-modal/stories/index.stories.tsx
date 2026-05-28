@@ -181,7 +181,7 @@ function BonusProductModalWrapper(): ReactElement {
 }
 
 const meta: Meta<typeof BonusProductModal> = {
-    title: 'Components/BonusProductModal',
+    title: 'CART/Bonus Product Modal',
     component: BonusProductModal,
     parameters: {
         layout: 'centered',
@@ -215,8 +215,8 @@ export const Default: Story = {
         await expect(openButton).toBeInTheDocument();
         await userEvent.click(openButton);
 
-        // Check if modal content is visible — target the dialog title via its unique
-        // "of N selected" suffix since the product name also appears in the ProductInfo section.
+        // Modal title — target the dialog title via its unique "of N selected"
+        // suffix since the product name also appears in the ProductInfo section.
         const documentBody = within(document.body);
         const modalTitle = await documentBody.findByRole(
             'heading',
@@ -225,33 +225,23 @@ export const Default: Story = {
         );
         await expect(modalTitle).toBeInTheDocument();
 
-        // Check if variant swatches are present
+        // Variant swatches render with the product name in the accessible label.
+        // The modal auto-selects the first orderable variant on open
+        // (`computeInitialVariationValues` fallback #3), so Red is pre-checked.
         const redSwatch = await documentBody.findByRole('radio', { name: /red/i }, { timeout: 5000 });
         await expect(redSwatch).toBeInTheDocument();
-    },
-};
+        await expect(redSwatch).toBeChecked();
 
-export const WithVariantSelection: Story = {
-    render: () => <BonusProductModalWrapper />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Open the modal
-        const openButton = canvas.getByRole('button', { name: /open bonus product modal/i });
-        await userEvent.click(openButton);
-
-        const documentBody = within(document.body);
-
-        // Select a color variant
         const turquoiseSwatch = await documentBody.findByRole('radio', { name: /turquoise/i }, { timeout: 5000 });
-        await userEvent.click(turquoiseSwatch);
+        await expect(turquoiseSwatch).not.toBeChecked();
 
-        // Check if the swatch is selected
-        await expect(turquoiseSwatch).toBeChecked();
-
-        // Check if add to cart button is enabled (after variant selection)
+        // "Add to Cart" is enabled because a variant is already selected.
         const addToCartButton = await documentBody.findByRole('button', { name: /add to cart/i }, { timeout: 5000 });
         await expect(addToCartButton).toBeEnabled();
+
+        // Clicking turquoise flips the selection — verifies swatch toggle behaviour.
+        await userEvent.click(turquoiseSwatch);
+        await expect(turquoiseSwatch).toBeChecked();
+        await expect(redSwatch).not.toBeChecked();
     },
 };

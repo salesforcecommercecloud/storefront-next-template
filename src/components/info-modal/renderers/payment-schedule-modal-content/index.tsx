@@ -17,7 +17,7 @@ import { type ReactElement } from 'react';
 import { formatCurrency } from '@/lib/currency';
 import { Typography } from '@/components/typography';
 import { cn } from '@/lib/utils';
-import type { PaymentSchedule, StepInfo } from '../types';
+import type { PaymentSchedule, StepInfo } from '../../types';
 import { useTranslation } from 'react-i18next';
 
 /**

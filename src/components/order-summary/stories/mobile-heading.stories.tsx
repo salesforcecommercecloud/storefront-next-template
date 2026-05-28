@@ -27,7 +27,6 @@ import OrderSummary from '../index';
 import { OrderSummaryMobileAccordion } from '../mobile-heading';
 
 const mockSite = mockSiteObject;
-const mockBasket = basketWithMultipleItems;
 const mockProductMap: Record<string, ShopperProducts.schemas['Product']> = {};
 
 if (inBasketMultipleItemDetails.data && basketWithMultipleItems.productItems) {
@@ -44,11 +43,37 @@ if (inBasketMultipleItemDetails.data && basketWithMultipleItems.productItems) {
 const meta: Meta<typeof OrderSummaryMobileAccordion> = {
     title: 'CHECKOUT/Order Summary/Mobile Accordion',
     component: OrderSummaryMobileAccordion,
+    tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
         viewport: {
             defaultViewport: 'mobile1',
         },
+        docs: {
+            description: {
+                component:
+                    '`<OrderSummaryMobileAccordion>` is the mobile-only collapsible wrapper around `<OrderSummary>`. It produces the sticky bottom-of-viewport "Estimated Total (X items)" trigger on the cart route. Used by `<CartContent>` only — `defaultExpanded` is exposed as a control rather than spawning two stories per Pattern 10.',
+            },
+        },
+    },
+    argTypes: {
+        defaultExpanded: {
+            description: 'Whether the accordion should mount in the expanded state',
+            control: 'boolean',
+        },
+        isEstimate: {
+            description: 'Whether to show "Est." prefix for totals',
+            control: 'boolean',
+        },
+        basket: {
+            description: 'The shopping basket to display in the trigger summary line',
+            table: { disable: true },
+        },
+    },
+    args: {
+        basket: basketWithMultipleItems,
+        defaultExpanded: false,
+        isEstimate: true,
     },
     decorators: [
         (Story: React.ComponentType) => (
@@ -66,62 +91,28 @@ const meta: Meta<typeof OrderSummaryMobileAccordion> = {
 export default meta;
 type Story = StoryObj<typeof OrderSummaryMobileAccordion>;
 
-export const Collapsed: Story = {
-    args: {
-        basket: mockBasket,
-        defaultExpanded: false,
-        isEstimate: true,
-    },
+export const Default: Story = {
     render: (args) => (
         <OrderSummaryMobileAccordion {...args}>
             <OrderSummary
-                basket={mockBasket}
+                basket={args.basket}
                 showCartItems={false}
                 showHeading={false}
                 showPromoCodeForm={true}
-                isEstimate={true}
+                isEstimate={args.isEstimate}
                 productsByItemId={mockProductMap}
                 showCheckoutAction={false}
                 className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
             />
         </OrderSummaryMobileAccordion>
     ),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
         const trigger = Array.from(canvasElement.querySelectorAll('button')).find((button) =>
             button.textContent?.toLowerCase().includes('estimated total')
         );
-        void expect(trigger).toBeInTheDocument();
-        void expect(trigger?.textContent).toMatch(/\d+\s+items?/i);
-    },
-};
-
-export const Expanded: Story = {
-    args: {
-        basket: mockBasket,
-        defaultExpanded: true,
-        isEstimate: true,
-    },
-    render: (args) => (
-        <OrderSummaryMobileAccordion {...args}>
-            <OrderSummary
-                basket={mockBasket}
-                showCartItems={false}
-                showHeading={false}
-                showPromoCodeForm={true}
-                isEstimate={true}
-                productsByItemId={mockProductMap}
-                showCheckoutAction={false}
-                className="border-none shadow-none rounded-none !py-0 [--cart-summary-px:1rem]"
-            />
-        </OrderSummaryMobileAccordion>
-    ),
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const trigger = Array.from(canvasElement.querySelectorAll('button')).find((button) =>
-            button.textContent?.toLowerCase().includes('estimated total')
-        );
-        void expect(trigger).toBeInTheDocument();
-        void expect(trigger).toHaveAttribute('aria-expanded', 'true');
+        await expect(trigger).toBeInTheDocument();
+        await expect(trigger?.textContent).toMatch(/\d+\s+items?/i);
+        await expect(trigger).toHaveAttribute('aria-expanded', String(Boolean(args.defaultExpanded)));
     },
 };

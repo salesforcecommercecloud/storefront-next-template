@@ -13,50 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { vi, expect, test, describe, afterEach } from 'vitest';
-
-type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
-type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
-
-const fetcherMock = {
-    data: null,
-    state: 'idle',
-
-    submit: () => {},
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-};
-
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => fetcherMock,
-    useFetchers: () => [],
-
-    useNavigate: () => () => {},
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle',
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    Link: (props: MockLinkProps) => {
-        const { to, href, children, ...rest } = props ?? {};
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-}));
-vi.mock('@/components/toast', () => ({
-    useToast: () => ({
-        addToast: () => {},
-    }),
-}));
-
+import { expect, test, describe, afterEach } from 'vitest';
 import { composeStories } from '@storybook/react-vite';
+import { render, cleanup } from '@testing-library/react';
 
 import * as CartTitleStories from './cart-title.stories';
-import { render, cleanup } from '@testing-library/react';
+
+// Pattern 3: `<CartTitle>` has no `react-router` / `useFetcher` / `useToast`
+// dependency, so this harness needs no `vi.mock` boilerplate.
 
 const composed = composeStories(CartTitleStories);
 

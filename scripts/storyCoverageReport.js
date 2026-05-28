@@ -86,6 +86,12 @@ const EXCLUDED_COMPONENTS = new Set([
     'cart/cart-load-error',
     // Mock-based composite story deleted — real component has deep hook deps, sub-components have own stories
     'checkout/checkout-form-page',
+    // Cart item modal sub-containers — internal mode-router targets composed inside
+    // `cart-item-modal/index.tsx` and exercised by the parent `cart-item-modal` story.
+    // No external importers; unit tests cover the mode-routing logic.
+    'cart-item-modal/add-container',
+    'cart-item-modal/edit-container',
+    'cart-item-modal/view',
     // Internal implementation of the public `navigation-menu/index.tsx` —
     // exercised via the index story; not a public component.
     'navigation-menu/impl',

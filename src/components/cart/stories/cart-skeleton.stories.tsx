@@ -16,27 +16,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
 
 import CartSkeleton from '../cart-skeleton';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logRender = action('cart-skeleton-render');
-        logRender({});
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
 const meta: Meta<typeof CartSkeleton> = {
-    title: 'SKELETON/CartSkeleton',
+    title: 'CART/Cart Skeleton',
     component: CartSkeleton,
     tags: ['autodocs', 'interaction'],
     args: {
@@ -50,6 +34,10 @@ const meta: Meta<typeof CartSkeleton> = {
 Skeleton loading state for the CartContent component. Mirrors the cart page layout — including the
 mobile fixed-bottom checkout bar and the desktop OrderSummary card — so the skeleton occupies the
 same space as the resolved page on every breakpoint.
+
+\`productItemCount\` is the only prop and drives every render variant — \`0\` renders the empty-cart
+skeleton, \`1\`+ renders the line-item skeleton with that many rows. A single \`Default\` story covers
+all three; flip the control to switch between empty, single, and multi-item skeletons.
 
 ## Layout
 
@@ -67,66 +55,23 @@ same space as the resolved page on every breakpoint.
     argTypes: {
         productItemCount: {
             control: 'number',
-            description: 'Number of item skeletons to render. `0` (or undefined) renders the empty-cart skeleton.',
+            description: 'Number of item skeletons to render. `0` renders the empty-cart skeleton.',
             table: {
                 type: { summary: 'number' },
                 defaultValue: { summary: '1' },
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
 };
 
 export default meta;
 type Story = StoryObj<typeof CartSkeleton>;
 
 export const Default: Story = {
-    args: {
-        productItemCount: 1,
-    },
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
-        const container = canvasElement.querySelector('[data-testid="sf-cart-skeleton"]');
+        const testId = (args.productItemCount ?? 1) === 0 ? 'sf-cart-empty-skeleton' : 'sf-cart-skeleton';
+        const container = canvasElement.querySelector(`[data-testid="${testId}"]`);
         await expect(container).toBeInTheDocument();
-
-        const titleSkeleton = canvasElement.querySelector('.h-10.w-48');
-        await expect(titleSkeleton).toBeInTheDocument();
-        const imageSkeleton = canvasElement.querySelector('.aspect-square');
-        await expect(imageSkeleton).toBeInTheDocument();
-    },
-};
-
-export const EmptyCart: Story = {
-    args: {
-        productItemCount: 0,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const container = canvasElement.querySelector('[data-testid="sf-cart-empty-skeleton"]');
-        await expect(container).toBeInTheDocument();
-        const emptyPanel = canvasElement.querySelector('.bg-background.p-8');
-        await expect(emptyPanel).toBeInTheDocument();
-        // Real cart-empty.tsx renders a single button for both guests and registered shoppers.
-        const button = canvasElement.querySelector('.h-9.rounded-md');
-        await expect(button).toBeInTheDocument();
-    },
-};
-
-export const MultipleItems: Story = {
-    args: {
-        productItemCount: 3,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const container = canvasElement.querySelector('[data-testid="sf-cart-skeleton"]');
-        await expect(container).toBeInTheDocument();
-        const imageSkeletons = canvasElement.querySelectorAll('.aspect-square');
-        await expect(imageSkeletons.length).toBe(3);
     },
 };

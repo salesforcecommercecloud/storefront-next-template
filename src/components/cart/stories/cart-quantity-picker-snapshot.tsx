@@ -14,50 +14,35 @@
  * limitations under the License.
  */
 import { vi, expect, test, describe, afterEach } from 'vitest';
+import { composeStories } from '@storybook/react-vite';
+import { render, cleanup } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router';
+import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
+import { mockConfig } from '@/test-utils/config';
 
-type MockFormProps = React.PropsWithChildren<Record<string, unknown>>;
-type MockLinkProps = React.PropsWithChildren<{ to?: string; href?: string; [key: string]: unknown }>;
+import * as CartQuantityPickerStories from './cart-quantity-picker.stories';
 
-const fetcherMock = {
-    data: null,
-    state: 'idle' as const,
-
-    submit: () => {},
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-};
-
-vi.mock('react-router', () => ({
-    createContext: vi.fn().mockImplementation(() => ({})),
-    useFetcher: () => fetcherMock,
-    useFetchers: () => [],
-
-    useNavigate: () => () => {},
-    useLocation: () => ({ pathname: '/', search: '', hash: '', state: null, key: 'test' }),
-    useNavigation: () => ({
-        state: 'idle' as const,
-        location: { pathname: '/', search: '', hash: '', state: null, key: 'test' },
-    }),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
-    Form: (props: MockFormProps) => <form {...props}>{props.children}</form>,
-    createMemoryRouter: vi.fn().mockImplementation(() => ({
-        navigate: vi.fn(),
-        state: { location: { pathname: '/', search: '', hash: '', state: null } },
-    })),
-    RouterProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    Link: (props: MockLinkProps) => {
-        const { to, href, children, ...rest } = props ?? {};
-        return (
-            <a href={to ?? href} {...rest}>
-                {children}
-            </a>
-        );
-    },
-}));
-
-vi.mock('@salesforce/storefront-next-runtime/config', async () => {
-    const actual = await vi.importActual('@salesforce/storefront-next-runtime/config');
+// Partial mock — keep RouterProvider/createMemoryRouter real, only override
+// the hooks the snapshot needs to be deterministic. Full-replacement mocks
+// strip RouterProvider's children and produce null snapshots (Pattern 2).
+vi.mock('react-router', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-router')>();
     return {
-        ...(actual as Record<string, unknown>),
+        ...actual,
+        useFetcher: () => ({
+            data: null,
+            state: 'idle' as const,
+            submit: () => {},
+            Form: actual.Form,
+        }),
+        useNavigation: () => ({ state: 'idle' as const, location: undefined }),
+    };
+});
+
+vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>();
+    return {
+        ...actual,
         useConfig: () => ({
             pages: {
                 cart: {
@@ -67,14 +52,6 @@ vi.mock('@salesforce/storefront-next-runtime/config', async () => {
         }),
     };
 });
-
-import { composeStories } from '@storybook/react-vite';
-
-import * as CartQuantityPickerStories from './cart-quantity-picker.stories';
-import { render, cleanup } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
-import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { mockConfig } from '@/test-utils/config';
 
 const composed = composeStories(CartQuantityPickerStories);
 
