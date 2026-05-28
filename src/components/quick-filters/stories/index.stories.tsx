@@ -14,120 +14,148 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { within, expect, userEvent } from 'storybook/test';
 import QuickFilters from '../index';
+import { useEffect, type ComponentType } from 'react';
+import { within, expect, userEvent } from 'storybook/test';
+import { waitForStorybookReady } from '@storybook/test-utils';
+import { useNavigate } from '@/hooks/use-navigate';
+import type { ShopperProducts } from '@/scapi';
+
+// ---------------------------------------------------------------------------
+// QuickFilters takes a `category` object and renders one chip per
+// `category.categories[]` entry. Visible state is fully a function of (a)
+// the count of subcategories and (b) which one is the active `cgid` in the
+// URL. Both fold into Controls. Empty `category.categories` returns null —
+// kept as a dedicated story.
+//
+// The component owns its click handling (writes URL via navigate). RouteSetter
+// keeps Controls-driven `activeCategoryId` in sync with the URL after first
+// render; the default URL is set via `parameters.initialEntries`.
+// ---------------------------------------------------------------------------
+
+function RouteSetter({ initialEntries }: { initialEntries: string[] }) {
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (initialEntries[0]) {
+            navigate(initialEntries[0], { replace: true });
+        }
+    }, [initialEntries, navigate]);
+    return null;
+}
+
+const ALL_SUBCATEGORIES: NonNullable<ShopperProducts.schemas['Category']['categories']> = [
+    { id: 'womens-tops', name: 'Tops' },
+    { id: 'womens-bottoms', name: 'Bottoms' },
+    { id: 'womens-dresses', name: 'Dresses' },
+    { id: 'womens-outerwear', name: 'Outerwear' },
+    { id: 'womens-shoes', name: 'Shoes' },
+    { id: 'womens-accessories', name: 'Accessories' },
+    { id: 'womens-bags', name: 'Bags' },
+    { id: 'womens-jewelry', name: 'Jewelry' },
+];
+const MAX_VALUES = ALL_SUBCATEGORIES.length;
+
+type SyntheticArgs = {
+    valueCount: number;
+    activeCategoryId: string;
+    showLabels: boolean;
+};
 
 const meta: Meta<typeof QuickFilters> = {
     title: 'Components/QuickFilters',
     component: QuickFilters,
+    tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'padded',
+        docs: {
+            description: {
+                component:
+                    'Horizontal chip row of subcategory quick filters. Reads `category.categories[]` and renders one outline button per entry; the chip whose `cgid` is active in the URL gets the filled `default` variant.',
+            },
+        },
     },
-    tags: ['autodocs'],
 };
 
 export default meta;
-type Story = StoryObj<typeof QuickFilters>;
+type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline — 4 subcategories with no active `cgid`.
+ * `valueCount` slices the canonical list (1–8). `activeCategoryId` seeds
+ * the URL `refine=cgid=...` to drive the active-chip state. `showLabels`
+ * toggles whether `name` is set on each subcategory (off = falls back to
+ * the raw `id`).
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        category: {
-            id: 'mens',
-            name: 'Men',
-            categories: [
-                { id: 'mens-suits', name: 'Suits' },
-                { id: 'mens-shorts', name: 'Shorts' },
-                { id: 'mens-pants', name: 'Pants' },
-                { id: 'mens-accessories', name: 'Accessories' },
-            ],
+        valueCount: 4,
+        activeCategoryId: '',
+        showLabels: true,
+    },
+    argTypes: {
+        valueCount: {
+            description: `Synthetic: number of subcategory chips to render (1–${MAX_VALUES})`,
+            control: { type: 'number', min: 1, max: MAX_VALUES, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        activeCategoryId: {
+            description:
+                'Synthetic: seeds `refine=cgid=<id>` in the URL. The matching chip flips to the filled `default` variant. Empty = no active chip.',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        showLabels: {
+            description:
+                'Synthetic: when off, subcategory `name` fields are stripped so chips render the raw `id` (matches old `NoLabels` story).',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
         },
     },
-};
-
-export const ManyCategories: Story = {
-    args: {
-        category: {
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            valueCount: args.valueCount ?? 4,
+            activeCategoryId: args.activeCategoryId ?? '',
+            showLabels: args.showLabels ?? true,
+        };
+        const clamped = Math.max(1, Math.min(synthetic.valueCount, MAX_VALUES));
+        const subcategories = ALL_SUBCATEGORIES.slice(0, clamped).map((cat) =>
+            synthetic.showLabels ? cat : { id: cat.id }
+        );
+        const category: ShopperProducts.schemas['Category'] = {
             id: 'womens',
             name: 'Women',
-            categories: [
-                { id: 'womens-tops', name: 'Tops' },
-                { id: 'womens-bottoms', name: 'Bottoms' },
-                { id: 'womens-dresses', name: 'Dresses' },
-                { id: 'womens-outerwear', name: 'Outerwear' },
-                { id: 'womens-shoes', name: 'Shoes' },
-                { id: 'womens-accessories', name: 'Accessories' },
-                { id: 'womens-bags', name: 'Bags' },
-                { id: 'womens-jewelry', name: 'Jewelry' },
-            ],
-        },
+            categories: subcategories,
+        };
+        const initialUrl = synthetic.activeCategoryId ? `/?refine=cgid=${synthetic.activeCategoryId}` : '/';
+        return (
+            <>
+                <RouteSetter initialEntries={[initialUrl]} />
+                <QuickFilters category={category} />
+            </>
+        );
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const buttons = canvas.getAllByRole('button');
+        await expect(buttons.length).toBeGreaterThan(0);
+        const firstChip = buttons[0];
+        if (firstChip) {
+            await expect(firstChip).toHaveAttribute('aria-pressed');
+            await userEvent.click(firstChip);
+        }
     },
 };
 
-export const NoLabels: Story = {
-    args: {
-        category: {
-            id: 'mens',
-            name: 'Men',
-            categories: [{ id: 'mens-tops' }, { id: 'mens-bottoms' }],
-        },
-    },
-};
-
+/**
+ * Empty `category.categories` makes the component return null. Worth a
+ * bookmarkable URL to assert this null-render explicitly.
+ */
 export const EmptyState: Story = {
     args: {},
-};
-
-// Interaction test
-export const ClickCategory: Story = {
-    args: {
-        category: {
-            id: 'mens',
-            name: 'Men',
-            categories: [
-                { id: 'mens-tops', name: 'Tops' },
-                { id: 'mens-bottoms', name: 'Bottoms' },
-            ],
-        },
-    },
-    play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-        const canvas = within(canvasElement);
-
-        // Find the Bottoms button
-        const bottomsButton = canvas.getByRole('button', { name: 'Bottoms' });
-
-        // Verify it's not pressed initially
-        expect(bottomsButton).toHaveAttribute('aria-pressed', 'false');
-
-        // Click it
-        await userEvent.click(bottomsButton);
-
-        // Note: Navigation is mocked in Storybook, so we can't test the actual navigation
-        // But we can verify the button is clickable
-        expect(bottomsButton).toBeInTheDocument();
-    },
-};
-
-// Accessibility test - shows all buttons in default state
-export const AccessibilityTest: Story = {
-    args: {
-        category: {
-            id: 'mens',
-            name: 'Men',
-            categories: [
-                { id: 'mens-tops', name: 'Tops' },
-                { id: 'mens-bottoms', name: 'Bottoms' },
-                { id: 'mens-outerwear', name: 'Outerwear' },
-            ],
-        },
-    },
-    play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-        const canvas = within(canvasElement);
-
-        // Verify all buttons have proper aria attributes
-        const topsButton = canvas.getByRole('button', { name: 'Tops' });
-        expect(topsButton).toHaveAttribute('aria-pressed');
-
-        const bottomsButton = canvas.getByRole('button', { name: 'Bottoms' });
-        expect(bottomsButton).toHaveAttribute('aria-pressed');
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const buttons = canvasElement.querySelectorAll('button');
+        await expect(buttons.length).toBe(0);
     },
 };

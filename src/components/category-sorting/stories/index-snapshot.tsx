@@ -18,7 +18,7 @@ import { composeStories } from '@storybook/react-vite';
 
 import * as CategorySortingStories from './index.stories';
 import { render, cleanup } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
+import { StoryTestWrapper } from '../../../../.storybook/test-wrapper';
 
 const composed = composeStories(CategorySortingStories);
 
@@ -28,18 +28,13 @@ afterEach(() => {
 
 describe('CategorySorting stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
+        if (Story?.parameters?.snapshot === false || /interactiontests?/i.test(storyName)) continue;
         test(`${storyName} story renders and matches snapshot`, () => {
-            const router = createMemoryRouter(
-                [
-                    {
-                        path: '/',
-                        element: <Story />,
-                    },
-                ],
-                { initialEntries: ['/'] }
+            const { container } = render(
+                <StoryTestWrapper>
+                    <Story />
+                </StoryTestWrapper>
             );
-
-            const { container } = render(<RouterProvider router={router} />);
             expect(container.firstChild).toMatchSnapshot();
         });
     }

@@ -67,6 +67,17 @@ interface RouterDecoratorParameters {
      * fixtures without forking the decorator.
      */
     mockRoutes?: RouteObject[];
+    /**
+     * Seed the memory router with a non-root URL so the story renders against
+     * a specific path / search-params combination on first paint. Useful for
+     * components that read URL state via `useLocation` / `useSearchParams`
+     * (e.g. ActiveFilters reading `?refine=...`) — avoids the `useEffect`-driven
+     * `RouteSetter` pattern that produces empty-wrapper snapshots because the
+     * effect hasn't fired by the time `toMatchSnapshot()` is called.
+     *
+     * Defaults to `['/']` when omitted.
+     */
+    initialEntries?: string[];
 }
 
 interface RouterWrapperProps {
@@ -89,6 +100,7 @@ function RouterWrapper({ Story, context, Wrapper }: RouterWrapperProps) {
     const scapiMock = context.parameters?.scapiMock;
     const miniCartData = context.parameters?.miniCartData;
     const extraMockRoutes = context.parameters?.mockRoutes;
+    const initialEntries = context.parameters?.initialEntries;
 
     const WrappedStory = (
         <Wrapper>
@@ -145,12 +157,12 @@ function RouterWrapper({ Story, context, Wrapper }: RouterWrapperProps) {
                     },
                 ],
                 {
-                    initialEntries: ['/'],
+                    initialEntries: initialEntries ?? ['/'],
                 }
             );
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [WrappedStory, routeLoaderData, scapiMock, miniCartData, extraMockRoutes]
+        [WrappedStory, routeLoaderData, scapiMock, miniCartData, extraMockRoutes, initialEntries]
     );
 
     return <RouterProvider router={router} />;
@@ -168,6 +180,7 @@ function RouterWrapper({ Story, context, Wrapper }: RouterWrapperProps) {
  * - `parameters.scapiMock` — override the resource loader's product fixture.
  * - `parameters.miniCartData` — override the `/resource/basket-products` payload.
  * - `parameters.mockRoutes` — append story-specific routes.
+ * - `parameters.initialEntries` — seed the router with a non-root URL on first paint.
  */
 export const withRouter = (Wrapper: ComponentType<{ children: ReactNode }>): Decorator =>
     (Story, context) => (

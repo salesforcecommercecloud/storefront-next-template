@@ -16,11 +16,21 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import PriceRangeInput from '../index';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, useState, type ReactNode, type ReactElement } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type ReactElement, type ReactNode } from 'react';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
+
+// ---------------------------------------------------------------------------
+// PriceRangeInput is a leaf input component — its visible state is fully a
+// function of the four props it accepts: `minPrice`, `maxPrice`,
+// `minAllowed`, `maxAllowed`. All four fold cleanly into Controls. The
+// `OutOfRange` story is kept because it demonstrates a fundamentally
+// different visual state (both inputs in destructive styling) that's worth
+// a single bookmarkable URL — even though the same state can be reached
+// from FullyFeatured by tweaking values.
+// ---------------------------------------------------------------------------
 
 const mockSite = mockSiteObject;
 
@@ -65,16 +75,8 @@ const meta: Meta<typeof PriceRangeInput> = {
         layout: 'centered',
         docs: {
             description: {
-                component: `
-A price range input component with min and max price fields, validation, and apply functionality.
-
-### Features:
-- Min and max price inputs
-- Real-time validation
-- Error states
-- Enter key to apply
-- Customizable min/max allowed values
-                `,
+                component:
+                    'Min/max price input pair with currency-aware formatting and live out-of-range/inverted-range validation. Used inside `RefinePrice` but also stands alone in any price-filter context.',
             },
         },
     },
@@ -94,19 +96,16 @@ A price range input component with min and max price fields, validation, and app
 };
 
 export default meta;
-type Story = StoryObj<typeof PriceRangeInput>;
+type Story = StoryObj<typeof meta>;
 
-function PriceRangeInputExample({
-    initialMin = '',
-    initialMax = '',
-    minAllowed,
-    maxAllowed,
-}: {
-    initialMin?: string;
-    initialMax?: string;
+type SyntheticArgs = {
+    initialMin: string;
+    initialMax: string;
     minAllowed?: number;
     maxAllowed?: number;
-}) {
+};
+
+function PriceRangeInputExample({ initialMin = '', initialMax = '', minAllowed, maxAllowed }: SyntheticArgs) {
     const [minPrice, setMinPrice] = useState(initialMin);
     const [maxPrice, setMaxPrice] = useState(initialMax);
 
@@ -129,74 +128,65 @@ function PriceRangeInputExample({
     );
 }
 
-export const Default: Story = {
-    render: () => <PriceRangeInputExample />,
-    parameters: {
-        docs: {
-            story: `
-Standard price range input with empty values.
-
-### Features:
-- Empty min and max fields
-- Placeholder text
-- Validation enabled
-            `,
+/**
+ * Rich-but-realistic baseline — empty inputs with no allowed limits set.
+ * Use Controls to seed values, set `minAllowed`/`maxAllowed`, or trigger
+ * the validation states (out-of-range, inverted).
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
+    args: {
+        initialMin: '',
+        initialMax: '',
+    },
+    argTypes: {
+        initialMin: {
+            description: 'Synthetic: initial value of the min input (empty = placeholder shown).',
+            control: 'text',
+            table: { category: 'Synthetic (initial state)' },
+        },
+        initialMax: {
+            description: 'Synthetic: initial value of the max input (empty = placeholder shown).',
+            control: 'text',
+            table: { category: 'Synthetic (initial state)' },
+        },
+        minAllowed: {
+            description: 'Direct prop: lower validation bound — the smallest value the inputs accept without an error.',
+            control: { type: 'number', min: 0, step: 1 },
+        },
+        maxAllowed: {
+            description:
+                'Direct prop: upper validation bound — values larger than this trigger out-of-range error styling.',
+            control: { type: 'number', min: 0, step: 1 },
         },
     },
+    render: (args) => (
+        <PriceRangeInputExample
+            initialMin={args.initialMin ?? ''}
+            initialMax={args.initialMax ?? ''}
+            minAllowed={args.minAllowed}
+            maxAllowed={args.maxAllowed}
+        />
+    ),
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
-        // Check for inputs
         const inputs = canvasElement.querySelectorAll('input[type="number"]');
         await expect(inputs.length).toBeGreaterThanOrEqual(2);
     },
 };
 
-export const WithValues: Story = {
-    render: () => <PriceRangeInputExample initialMin="10" initialMax="100" />,
-    parameters: {
-        docs: {
-            story: `
-Price range input with pre-filled values.
-
-### Features:
-- Min price: $10
-- Max price: $100
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        // Check for inputs with values - wait for them to render
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        const inputs = canvasElement.querySelectorAll('input[type="number"]');
-        await expect(inputs.length).toBeGreaterThanOrEqual(2);
-
-        // Check that at least one input has the value "10"
-        const hasValue = Array.from(inputs).some((input) => (input as HTMLInputElement).value === '10');
-        await expect(hasValue).toBe(true);
-    },
-};
-
-export const WithLimits: Story = {
-    render: () => <PriceRangeInputExample initialMin="5" initialMax="200" minAllowed={0} maxAllowed={500} />,
-    parameters: {
-        docs: {
-            story: `
-Price range input with min and max allowed values.
-
-### Features:
-- Min allowed: $0
-- Max allowed: $500
-- Validation against limits
-            `,
-        },
-    },
+/**
+ * Both inputs in destructive styling: min=600 exceeds maxAllowed=500
+ * (out-of-range) AND max=50 is less than min (inverted range). Worth a
+ * single bookmarkable URL because the resulting visual state is
+ * fundamentally different from the empty/normal-values case.
+ */
+export const OutOfRange: Story = {
+    render: () => <PriceRangeInputExample initialMin="600" initialMax="50" minAllowed={0} maxAllowed={500} />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
-        // Check for inputs
         const inputs = canvasElement.querySelectorAll('input[type="number"]');
         await expect(inputs.length).toBeGreaterThanOrEqual(2);
+        const errorInputs = canvasElement.querySelectorAll('.text-destructive');
+        await expect(errorInputs.length).toBeGreaterThan(0);
     },
 };

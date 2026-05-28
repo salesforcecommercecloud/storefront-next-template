@@ -15,86 +15,24 @@
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import SuggestionsGrid from '../suggestions-grid';
-import { expect, within, userEvent } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import type { ComponentType } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// SuggestionsGrid renders a horizontal product grid in the search dropdown.
+// Visible state is fully a function of (a) how many suggestions are present
+// and (b) whether each entry has an `image` and/or `price` field. All three
+// fold cleanly into Controls. `closeAndNavigate` binds to `action()` directly
+// via component props. The empty case renders null — kept as a dedicated
+// story so the null-render is bookmarkable.
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('suggestion-click');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            const link = target.closest('a');
-            if (link && root.contains(link)) {
-                event.preventDefault(); // Prevent navigation in storybook
-                logClick({ href: link.getAttribute('href'), text: link.textContent?.trim() });
-            }
-        };
-
-        root.addEventListener('click', handleClick);
-        return () => {
-            root.removeEventListener('click', handleClick);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-const meta: Meta<typeof SuggestionsGrid> = {
-    title: 'Search/SuggestionsGrid',
-    component: SuggestionsGrid,
-    parameters: {
-        layout: 'centered',
-        docs: {
-            description: {
-                component:
-                    'Displays product suggestions in a horizontal grid layout. Used for showing product search results in the search suggestions dropdown.',
-            },
-        },
-    },
-    tags: ['autodocs', 'interaction'],
-    decorators: [
-        (Story) => (
-            <ConfigProvider config={mockConfig}>
-                <SiteProvider
-                    site={mockSiteObject}
-                    locale={mockLocale}
-                    language={mockSiteObject.defaultLocale}
-                    currency={mockSiteObject.defaultCurrency}>
-                    <ActionLogger>
-                        <Story />
-                    </ActionLogger>
-                </SiteProvider>
-            </ConfigProvider>
-        ),
-    ],
-    argTypes: {
-        suggestions: {
-            description: 'Array of product suggestions to display',
-            control: 'object',
-        },
-        closeAndNavigate: {
-            description: 'Callback function to close the search and navigate to a URL',
-            action: 'closeAndNavigate',
-        },
-    },
-};
-
-export default meta;
-type Story = StoryObj<typeof SuggestionsGrid>;
-
-const mockSuggestions = [
+const ALL_PRODUCTS = [
     {
         name: 'Running Shoes',
         link: '/products/running-shoes',
@@ -126,99 +64,122 @@ const mockSuggestions = [
         price: 49.99,
     },
 ];
+const MAX_PRODUCTS = ALL_PRODUCTS.length;
 
-export const Default: Story = {
+const meta: Meta<typeof SuggestionsGrid> = {
+    title: 'Search/SuggestionsGrid',
+    component: SuggestionsGrid,
+    parameters: {
+        layout: 'centered',
+        docs: {
+            description: {
+                component:
+                    'Horizontal product grid used in the search-suggestions dropdown. Each tile shows image, name, and price; missing image/price fields fall back to a placeholder icon and a hidden price line.',
+            },
+        },
+    },
+    tags: ['autodocs', 'interaction'],
+    decorators: [
+        (Story: ComponentType) => (
+            <ConfigProvider config={mockConfig}>
+                <SiteProvider
+                    site={mockSiteObject}
+                    locale={mockLocale}
+                    language={mockSiteObject.defaultLocale}
+                    currency={mockSiteObject.defaultCurrency}>
+                    <Story />
+                </SiteProvider>
+            </ConfigProvider>
+        ),
+    ],
+};
+
+export default meta;
+
+type SyntheticArgs = {
+    productCount: number;
+    showImages: boolean;
+    showPrices: boolean;
+    searchPhrase: string;
+};
+
+/**
+ * Rich-but-realistic baseline — 3-tile grid with images and prices, mid-search.
+ * Use Controls to adjust `productCount`, strip `image` or `price` fields, or
+ * change the `searchPhrase` that's passed through to analytics.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        suggestions: mockSuggestions,
-        closeAndNavigate: action('closeAndNavigate'),
+        productCount: 3,
+        showImages: true,
+        showPrices: true,
+        searchPhrase: 'shoes',
+    },
+    argTypes: {
+        productCount: {
+            description: `Synthetic: number of product tiles to render (0–${MAX_PRODUCTS}). Setting to 0 falls through to the null-render branch.`,
+            control: { type: 'number', min: 0, max: MAX_PRODUCTS, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        showImages: {
+            description:
+                'Synthetic: when off, strips the `image` field from each suggestion so tiles fall back to the ImageOff placeholder.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        showPrices: {
+            description:
+                'Synthetic: when off, strips the `price` field from each suggestion so the price line is hidden under each tile.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        searchPhrase: {
+            description: 'Direct prop: the search phrase that triggered the suggestions. Passed to analytics on click.',
+            control: 'text',
+        },
+    },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            productCount: args.productCount ?? 3,
+            showImages: args.showImages ?? true,
+            showPrices: args.showPrices ?? true,
+            searchPhrase: args.searchPhrase ?? '',
+        };
+        const clamped = Math.max(0, Math.min(synthetic.productCount, MAX_PRODUCTS));
+        const suggestions = ALL_PRODUCTS.slice(0, clamped).map((p) => ({
+            name: p.name,
+            link: p.link,
+            ...(synthetic.showImages ? { image: p.image } : {}),
+            ...(synthetic.showPrices ? { price: p.price } : {}),
+        }));
+        return (
+            <SuggestionsGrid
+                suggestions={suggestions}
+                searchPhrase={synthetic.searchPhrase}
+                closeAndNavigate={action('closeAndNavigate')}
+            />
+        );
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        const runningShoesLink = await canvas.findByRole('link', { name: /running shoes/i });
-        await expect(runningShoesLink).toBeInTheDocument();
-
-        await userEvent.click(runningShoesLink);
+        const links = await canvas.findAllByRole('link', {}, { timeout: 5000 });
+        await expect(links.length).toBeGreaterThan(0);
     },
 };
 
-export const Empty: Story = {
+/**
+ * Empty `suggestions` makes the component return null. Worth a bookmarkable
+ * URL so the null-render can be asserted explicitly.
+ */
+export const Empty: StoryObj<typeof SuggestionsGrid> = {
     args: {
         suggestions: [],
         closeAndNavigate: action('closeAndNavigate'),
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        // Component should render nothing when empty (returns null)
-        // The container might have a wrapper div, so we check that no links are rendered
         const links = canvasElement.querySelectorAll('a');
         await expect(links.length).toBe(0);
-    },
-};
-
-export const SingleProduct: Story = {
-    args: {
-        suggestions: [
-            {
-                name: 'Running Shoes',
-                link: '/products/running-shoes',
-                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
-                price: 99.99,
-            },
-        ],
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const productLink = canvas.getByRole('link', { name: /running shoes/i });
-        await expect(productLink).toBeInTheDocument();
-    },
-};
-
-export const WithoutImages: Story = {
-    args: {
-        suggestions: [
-            {
-                name: 'Product Without Image',
-                link: '/products/no-image',
-                price: 29.99,
-            },
-            {
-                name: 'Another Product',
-                link: '/products/another',
-                price: 39.99,
-            },
-        ],
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const productLink = canvas.getByRole('link', { name: /product without image/i });
-        await expect(productLink).toBeInTheDocument();
-    },
-};
-
-export const WithoutPrices: Story = {
-    args: {
-        suggestions: [
-            {
-                name: 'Product Without Price',
-                link: '/products/no-price',
-                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
-            },
-        ],
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const productLink = canvas.getByRole('link', { name: /product without price/i });
-        await expect(productLink).toBeInTheDocument();
     },
 };

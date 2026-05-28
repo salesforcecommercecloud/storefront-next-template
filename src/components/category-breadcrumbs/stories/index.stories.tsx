@@ -16,65 +16,42 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
 import CategoryBreadcrumbs from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { mockCategory } from '@/components/__mocks__/mock-data';
 import type { ShopperProducts } from '@/scapi';
 
-const BREADCRUMBS_HARNESS_ATTR = 'data-breadcrumbs-harness';
+// ---------------------------------------------------------------------------
+// CategoryBreadcrumbs receives a SCAPI Category and renders one link per item
+// in `parentCategoryTree` (plus a Home link). The visible variations are:
+//   - the depth of the tree (1 link, a few links, deep enough to wrap)
+//   - the text of the leaf category
+// Both fold into Controls — `depth` selects how many levels render,
+// `leafCategoryName` overrides the final breadcrumb's label so QA can verify
+// long-name wrapping without hand-editing fixtures.
+// ---------------------------------------------------------------------------
 
-function BreadcrumbsStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logClick = useMemo(() => action('breadcrumb-clicked'), []);
-    const logHover = useMemo(() => action('breadcrumb-hovered'), []);
+type SyntheticArgs = {
+    depth: number;
+    leafCategoryName: string;
+};
 
-    useEffect(() => {
-        const isInsideHarness = (element: Element | null) => Boolean(element?.closest(`[${BREADCRUMBS_HARNESS_ATTR}]`));
+const PATH = ['Mens', 'Clothing', 'Tops', 'Shirts', 'Casual Shirts', 'Long Sleeve'];
 
-        const handleClick = (event: MouseEvent) => {
-            const link = (event.target as HTMLElement | null)?.closest('a');
-            if (!link || !isInsideHarness(link)) {
-                return;
-            }
-            event.preventDefault();
-            event.stopPropagation();
-            const text = link.textContent?.trim() || '';
-            if (text) {
-                logClick({ label: text, href: link.getAttribute('href') });
-            }
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const link = (event.target as HTMLElement | null)?.closest('a');
-            if (!link || !isInsideHarness(link)) {
-                return;
-            }
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && link.contains(related)) {
-                return;
-            }
-            const text = link.textContent?.trim() || '';
-            if (text) {
-                logHover({ label: text });
-            }
-        };
-
-        document.addEventListener('click', handleClick, true);
-        document.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            document.removeEventListener('click', handleClick, true);
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, [logClick, logHover]);
-
-    return (
-        <div ref={containerRef} {...{ [BREADCRUMBS_HARNESS_ATTR]: 'true' }}>
-            {children}
-        </div>
-    );
+function buildCategory({ depth, leafCategoryName }: SyntheticArgs): ShopperProducts.schemas['Category'] {
+    const clamped = Math.max(1, Math.min(depth, PATH.length));
+    const tree = PATH.slice(0, clamped).map((name, idx) => ({
+        id: `cat-${idx}-${name.toLowerCase().replace(/\s+/g, '-')}`,
+        name,
+    }));
+    if (leafCategoryName) {
+        tree[tree.length - 1] = { ...tree[tree.length - 1], name: leafCategoryName };
+    }
+    const leaf = tree[tree.length - 1];
+    return {
+        id: leaf.id,
+        name: leaf.name,
+        parentCategoryTree: tree,
+    };
 }
 
 const meta: Meta<typeof CategoryBreadcrumbs> = {
@@ -87,238 +64,96 @@ const meta: Meta<typeof CategoryBreadcrumbs> = {
         docs: {
             description: {
                 component: `
-A breadcrumb navigation component that displays the category hierarchy path. Users can navigate to parent categories by clicking on breadcrumb links.
+Hierarchical breadcrumb navigation. Renders a Home link followed by one link per
+entry in \`category.parentCategoryTree\`, separated by chevron icons.
 
-## Features
-
-- **Hierarchical Navigation**: Shows the full category path from root to current category
-- **Clickable Links**: Each breadcrumb item is a clickable link to navigate to that category
-- **Visual Separators**: Chevron icons separate breadcrumb items
-- **Accessible**: Proper ARIA labels and semantic HTML
-- **Action Logging**: Integrates with Storybook's ActionLogger to track user interactions
-
-## Usage
-
-The CategoryBreadcrumbs component is used on:
-- Category pages
-- Product listing pages
-- Any page that needs to show category hierarchy
-
-\`\`\`tsx
-import CategoryBreadcrumbs from '../category-breadcrumbs';
-import { getCategory } from '@/lib/api/categories.server';
-
-function CategoryPage({ categoryId }) {
-  const category = await getCategory(categoryId);
-  return <CategoryBreadcrumbs category={category} />;
-}
-\`\`\`
-
-## Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| \`category\` | \`ShopperProducts.schemas['Category']\` | The category object containing parent category tree information |
-
-## Behavior
-
-- **Clicking a breadcrumb**: Navigates to that category page
-- **Hovering a breadcrumb**: Highlights the link
-- **Single category**: If no parent tree exists, shows only the current category
+Use the Controls panel to adjust the breadcrumb depth and the leaf's label —
+both visible variations are toggleable from one place.
                 `,
             },
         },
     },
     decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <BreadcrumbsStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </BreadcrumbsStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                // Create router with catch-all route to handle any category navigation
-                // This prevents 404 errors when breadcrumb links navigate to category paths
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                        {
-                            path: '/category/*',
-                            element: content,
-                        },
-                        {
-                            path: '*',
-                            element: content,
-                        },
-                    ],
-                    {
-                        initialEntries: ['/'],
-                    }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
+        (Story) => (
+            <div className="p-4">
+                <Story />
+            </div>
+        ),
     ],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+type StoryWithSynthetic = StoryObj<React.ComponentType<Partial<SyntheticArgs>>>;
 
-// Create mock category with parent tree
-const mockCategoryWithTree: ShopperProducts.schemas['Category'] = {
-    ...mockCategory,
-    parentCategoryTree: mockCategory.parentCategoryTree || [
-        { id: 'mens', name: 'Mens' },
-        { id: 'mens-accessories', name: 'Accessories' },
-        { id: 'mens-accessories-ties', name: 'Ties' },
-    ],
-};
-
-const mockCategorySingle: ShopperProducts.schemas['Category'] = {
-    id: 'womens',
-    name: 'Womens',
-    parentCategoryTree: [{ id: 'womens', name: 'Womens' }],
-};
-
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline: a 3-level mens-clothing breadcrumb. Increase
+ * `depth` to see deeper hierarchies wrap on smaller viewports; set it to 1 to
+ * see the single-category case. Use `leafCategoryName` to verify long-name
+ * wrapping at the leaf.
+ */
+export const FullyFeatured: StoryWithSynthetic = {
     args: {
-        category: mockCategoryWithTree,
+        depth: 3,
+        leafCategoryName: '',
     },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-The default CategoryBreadcrumbs shows a full category hierarchy:
-
-### Features:
-- **Multiple levels**: Shows all parent categories
-- **Clickable links**: Each breadcrumb is clickable
-- **Chevron separators**: Visual separators between items
-- **Action logging**: All clicks and hovers are logged
-
-### Use Cases:
-- Standard category pages
-- Deep category hierarchies
-- Multi-level navigation
-                `,
-            },
+    argTypes: {
+        depth: {
+            description: 'Synthetic: number of levels in the breadcrumb tree (1–6)',
+            control: { type: 'number', min: 1, max: 6, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        leafCategoryName: {
+            description: 'Synthetic: override the leaf breadcrumb label (empty = use the path default)',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
         },
     },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            depth: args.depth ?? 3,
+            leafCategoryName: args.leafCategoryName ?? '',
+        };
+        return <CategoryBreadcrumbs category={buildCategory(synthetic)} />;
+    },
+    play: async ({ canvasElement, args }) => {
         await waitForStorybookReady(canvasElement);
-
-        // Test breadcrumb navigation is present
+        const canvas = within(canvasElement);
         const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
         await expect(nav).toBeInTheDocument();
-
-        // Test breadcrumb links are present
         const links = canvas.getAllByRole('link');
-        await expect(links.length).toBeGreaterThan(0);
-
-        // Test clicking a breadcrumb link - just verify it exists, don't actually navigate
-        // Navigation would cause 404 errors in Storybook since we don't have all category routes
-        await expect(links[0]).toBeInTheDocument();
+        const expectedDepth = args.depth ?? 3;
+        // Home link + one link per tree node
+        await expect(links).toHaveLength(1 + Math.max(1, Math.min(expectedDepth, PATH.length)));
     },
 };
 
+/**
+ * Single category — no parent tree. Renders Home + one link only, no chevron
+ * separators between siblings. Distinct enough from the FullyFeatured layout
+ * to be worth a bookmarkable URL.
+ */
 export const SingleCategory: Story = {
     args: {
-        category: mockCategorySingle,
+        category: {
+            id: 'womens',
+            name: 'Womens',
+            parentCategoryTree: [{ id: 'womens', name: 'Womens' }],
+        },
     },
     parameters: {
         docs: {
             description: {
-                story: `
-CategoryBreadcrumbs with a single category (no parent tree):
-
-### Single Category Features:
-- **One item**: Shows only the current category
-- **No separators**: No chevrons needed
-- **Same functionality**: Still clickable and logged
-
-### Use Cases:
-- Root category
-- Top-level categories
-- Categories without parents
-                `,
+                story: 'Top-level category with no parents. Renders Home + the leaf only.',
             },
         },
     },
     play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Test breadcrumb navigation is present
-        const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
-        await expect(nav).toBeInTheDocument();
-
-        // Home link + single category link
+        const canvas = within(canvasElement);
         const links = canvas.getAllByRole('link');
         await expect(links).toHaveLength(2);
         await expect(links[0]).toHaveTextContent('Home');
         await expect(links[1]).toHaveTextContent('Womens');
-    },
-};
-
-export const DeepHierarchy: Story = {
-    args: {
-        category: {
-            ...mockCategoryWithTree,
-            parentCategoryTree: [
-                { id: 'mens', name: 'Mens' },
-                { id: 'mens-clothing', name: 'Clothing' },
-                { id: 'mens-clothing-tops', name: 'Tops' },
-                { id: 'mens-clothing-tops-shirts', name: 'Shirts' },
-                { id: 'mens-clothing-tops-shirts-casual', name: 'Casual Shirts' },
-            ],
-        },
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-CategoryBreadcrumbs with a deep category hierarchy:
-
-### Deep Hierarchy Features:
-- **Many levels**: Shows 6+ category levels
-- **Wrapping**: Breadcrumbs wrap on smaller screens
-- **Full path**: Complete navigation path visible
-- **All clickable**: Each level is navigable
-
-### Use Cases:
-- Deep category structures
-- Specific product categories
-- Multi-level navigation paths
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test breadcrumb navigation is present
-        const nav = canvas.getByRole('navigation', { name: /breadcrumb/i });
-        await expect(nav).toBeInTheDocument();
-
-        // Home + 5 category items = 6 links
-        const links = canvas.getAllByRole('link');
-        await expect(links.length).toBeGreaterThanOrEqual(6);
     },
 };

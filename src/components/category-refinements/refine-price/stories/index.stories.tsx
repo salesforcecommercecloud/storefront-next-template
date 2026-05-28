@@ -16,75 +16,65 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import RefinePrice from '..';
 import { action } from 'storybook/actions';
-import { useEffect, useMemo, useRef, type ReactNode, type ReactElement } from 'react';
-import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
+import { useEffect, type ComponentType } from 'react';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
+import { useNavigate } from '@/hooks/use-navigate';
 import searchResults from '@/components/__mocks__/search-results';
 import type { FilterValue } from '../../types';
 import type { ShopperSearch } from '@/scapi';
 
-const REFINE_PRICE_HARNESS_ATTR = 'data-refine-price-harness';
+// ---------------------------------------------------------------------------
+// RefinePrice composes PriceRangeInput (for free-form min/max entry) with
+// DefaultRefinement (for the predefined price-bucket checkboxes). Visible
+// state is driven by:
+//   - the count of predefined buckets (`values.length`),
+//   - which bucket is checked (`isFilterSelected` per value),
+//   - the URL `refine=price=(min..max)` param (read via useLocation, drives
+//     the inputs).
+// All three fold into Controls. Empty `values` array stays as a dedicated
+// `NoPredefinedRanges` story because the layout collapses to inputs-only —
+// a fundamentally different visual state worth a bookmarkable URL.
+//
+// `RouteSetter` keeps Controls-driven `preMinPrice`/`preMaxPrice` in sync with
+// the URL after first render. The default URL is set via
+// `parameters.initialEntries` so the at-rest snapshot/render renders without
+// waiting for an effect to fire.
+// ---------------------------------------------------------------------------
 
-function RefinePriceStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const logChange = useMemo(() => action('price-filter-changed'), []);
-    const logApply = useMemo(() => action('price-filter-applied'), []);
-    const logHover = useMemo(() => action('price-filter-hovered'), []);
-
+function RouteSetter({ path }: { path: string }) {
+    const navigate = useNavigate();
     useEffect(() => {
-        const isInsideHarness = (element: Element | null) =>
-            Boolean(element?.closest(`[${REFINE_PRICE_HARNESS_ATTR}]`));
-
-        const handleChange = (event: Event) => {
-            const input = event.target as HTMLInputElement | null;
-            if (!input || !isInsideHarness(input)) {
-                return;
-            }
-            if (input.type === 'number') {
-                logChange({ value: input.value, field: input.name || 'price' });
-            }
-        };
-
-        const handleClick = (event: MouseEvent) => {
-            const button = (event.target as HTMLElement | null)?.closest('button');
-            if (!button || !isInsideHarness(button)) {
-                return;
-            }
-            const text = button.textContent?.trim() || '';
-            if (text.toLowerCase().includes('apply')) {
-                logApply({});
-            }
-        };
-
-        const handleMouseOver = (event: MouseEvent) => {
-            const element = (event.target as HTMLElement | null)?.closest('input, button');
-            if (!element || !isInsideHarness(element)) {
-                return;
-            }
-            const related = event.relatedTarget as HTMLElement | null;
-            if (related && element.contains(related)) {
-                return;
-            }
-            logHover({});
-        };
-
-        document.addEventListener('change', handleChange, true);
-        document.addEventListener('click', handleClick, true);
-        document.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            document.removeEventListener('change', handleChange, true);
-            document.removeEventListener('click', handleClick, true);
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, [logChange, logApply, logHover]);
-
-    return (
-        <div ref={containerRef} {...{ [REFINE_PRICE_HARNESS_ATTR]: 'true' }}>
-            {children}
-        </div>
-    );
+        if (path) {
+            navigate(path, { replace: true });
+        }
+    }, [path, navigate]);
+    return null;
 }
+
+function buildPriceUrl(preMinPrice: string, preMaxPrice: string): string {
+    if (!preMinPrice && !preMaxPrice) return '/';
+    const min = preMinPrice || '0';
+    const max = preMaxPrice || '';
+    return `/?refine=price=(${min}..${max})`;
+}
+
+const ALL_PRICE_VALUES: FilterValue[] = [
+    { value: '(0..50)', label: '$0 - $50', hitCount: 5 },
+    { value: '(50..100)', label: '$50 - $100', hitCount: 20 },
+    { value: '(100..200)', label: '$100 - $200', hitCount: 15 },
+    { value: '(200..)', label: '$200+', hitCount: 6 },
+];
+const MAX_VALUES = ALL_PRICE_VALUES.length;
+
+const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
+
+type SyntheticArgs = {
+    valueCount: number;
+    selectedValue: string;
+    preMinPrice: string;
+    preMaxPrice: string;
+};
 
 const meta: Meta<typeof RefinePrice> = {
     title: 'CATEGORY/Category Refinements/Refine Price',
@@ -94,265 +84,111 @@ const meta: Meta<typeof RefinePrice> = {
         layout: 'padded',
         docs: {
             description: {
-                component: `
-A price refinement component that allows users to filter products by price range. Includes both manual price input and predefined price ranges.
-
-## Features
-
-- **Price Range Input**: Min and max price inputs
-- **Apply Button**: Button to apply the price filter
-- **Predefined Ranges**: Checkbox list of predefined price ranges
-- **Validation**: Validates price inputs against product prices
-- **URL Integration**: Reads from and updates URL parameters
-- **Action Logging**: Integrates with Storybook's ActionLogger to track user interactions
-
-## Usage
-
-The RefinePrice component is used within:
-- Category refinements accordion
-- Product filter sidebars
-- Price-based filtering
-
-\`\`\`tsx
-import RefinePrice from '@/components/category-refinements/refine-price';
-
-function PriceFilter({ values, attributeId, isFilterSelected, toggleFilter, result }) {
-  return (
-    <RefinePrice
-      values={values}
-      attributeId={attributeId}
-      isFilterSelected={isFilterSelected}
-      toggleFilter={toggleFilter}
-      result={result}
-    />
-  );
-}
-\`\`\`
-
-## Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| \`values\` | \`FilterValue[]\` | Array of predefined price range values |
-| \`attributeId\` | \`string\` | The attribute ID (typically 'price') |
-| \`isFilterSelected\` | \`(attributeId: string, value: string) => boolean\` | Function to check if a filter is selected |
-| \`toggleFilter\` | \`(attributeId: string, value: string) => void\` | Function to toggle a filter |
-| \`result\` | \`ShopperSearch.schemas['ProductSearchResult']\` | Product search result for price validation |
-
-## Behavior
-
-- **Entering prices**: Updates min/max price inputs
-- **Applying filter**: Creates price range filter
-- **Predefined ranges**: Can select predefined price ranges
-- **URL sync**: Reads price from URL on mount
-                `,
+                component:
+                    'Price filter inside the side-panel filters. Combines a free-form min/max input row (PriceRangeInput) with a checkbox list of predefined price buckets (DefaultRefinement). Inputs auto-populate from the `refine=price=(min..max)` URL param.',
             },
         },
     },
-    decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <RefinePriceStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </RefinePriceStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Use real mock data from @mocks directory
-const mockSearchResult = searchResults as ShopperSearch.schemas['ProductSearchResult'];
-
-const mockPriceValues: FilterValue[] = [
-    { value: '(0..50)', label: '$0 - $50', hitCount: 5 },
-    { value: '(50..100)', label: '$50 - $100', hitCount: 20 },
-    { value: '(100..200)', label: '$100 - $200', hitCount: 15 },
-    { value: '(200..)', label: '$200+', hitCount: 6 },
-];
-
-const isFilterSelected = (attributeId: string, value: string) => {
-    return attributeId === 'price' && value === '(50..100)';
-};
-
-const toggleFilter = (attributeId: string, value: string) => {
-    // Mock toggle function
-    void attributeId;
-    void value;
-};
-
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline — all 4 predefined buckets, "$50 - $100" pre-checked,
+ * inputs left blank (no URL price filter applied). Use Controls to slice the
+ * bucket list, change the checked bucket, or seed the inputs via URL.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        values: mockPriceValues,
-        attributeId: 'price',
-        isFilterSelected,
-        toggleFilter,
-        result: mockSearchResult,
+        valueCount: 4,
+        selectedValue: '(50..100)',
+        preMinPrice: '',
+        preMaxPrice: '',
     },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-The default RefinePrice shows price range inputs and predefined ranges:
-
-### Features:
-- **Price inputs**: Min and max price inputs
-- **Apply button**: Button to apply price filter
-- **Predefined ranges**: Checkbox list of price ranges
-- **Selected state**: "$50 - $100" is selected
-- **Action logging**: All interactions are logged
-
-### Use Cases:
-- Standard price filtering
-- Custom price ranges
-- Predefined price ranges
-                `,
-            },
+    argTypes: {
+        valueCount: {
+            description: `Synthetic: number of predefined price buckets to render (1–${MAX_VALUES})`,
+            control: { type: 'number', min: 1, max: MAX_VALUES, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        selectedValue: {
+            description: 'Synthetic: the `value` of the bucket to render checked (e.g. `(50..100)`). Empty = none.',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        preMinPrice: {
+            description: 'Synthetic: seeds `refine=price=(min..max)` URL param to drive the min input.',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        preMaxPrice: {
+            description: 'Synthetic: seeds `refine=price=(min..max)` URL param to drive the max input.',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
         },
     },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            valueCount: args.valueCount ?? MAX_VALUES,
+            selectedValue: args.selectedValue ?? '',
+            preMinPrice: args.preMinPrice ?? '',
+            preMaxPrice: args.preMaxPrice ?? '',
+        };
+        const clamped = Math.max(1, Math.min(synthetic.valueCount, MAX_VALUES));
+        const values = ALL_PRICE_VALUES.slice(0, clamped);
+        const isFilterSelected = (attributeId: string, value: string) =>
+            attributeId === 'price' && value === synthetic.selectedValue;
+        const initialUrl = buildPriceUrl(synthetic.preMinPrice, synthetic.preMaxPrice);
+        return (
+            <>
+                <RouteSetter path={initialUrl} />
+                <RefinePrice
+                    values={values}
+                    attributeId="price"
+                    isFilterSelected={isFilterSelected}
+                    toggleFilter={action('price-toggle-filter')}
+                    result={mockSearchResult}
+                />
+            </>
+        );
+    },
     play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Test price inputs are present
+        const canvas = within(canvasElement);
         const inputs = canvas.getAllByRole('spinbutton');
         await expect(inputs.length).toBeGreaterThanOrEqual(2);
-
-        // Test predefined ranges are present
         const checkboxes = canvas.getAllByRole('checkbox');
         await expect(checkboxes.length).toBeGreaterThan(0);
     },
 };
 
-export const WithPriceInUrl: Story = {
-    args: {
-        values: mockPriceValues,
-        attributeId: 'price',
-        isFilterSelected,
-        toggleFilter,
-        result: mockSearchResult,
-    },
-    decorators: [
-        (Story: React.ComponentType, context) => {
-            const RouterWrapper = (): ReactElement => {
-                const inRouter = useInRouterContext();
-                const content = (
-                    <RefinePriceStoryHarness>
-                        <Story {...(context.args as Record<string, unknown>)} />
-                    </RefinePriceStoryHarness>
-                );
-
-                if (inRouter) {
-                    return content;
-                }
-
-                const router = createMemoryRouter(
-                    [
-                        {
-                            path: '/',
-                            element: content,
-                        },
-                    ],
-                    { initialEntries: ['/?refine=price=(50..100)'] }
-                );
-
-                return <RouterProvider router={router} />;
-            };
-
-            return <RouterWrapper />;
-        },
-    ],
-    parameters: {
-        docs: {
-            description: {
-                story: `
-RefinePrice with price filter in URL:
-
-### URL Price Features:
-- **Pre-populated**: Inputs are pre-filled from URL
-- **Same functionality**: All features work the same
-- **URL sync**: Reads price from URL on mount
-
-### Use Cases:
-- URL-based price filtering
-- Preserved price selection
-- Deep linking with price filter
-                `,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Test price inputs are present
-        const inputs = canvas.getAllByRole('spinbutton');
-        await expect(inputs.length).toBeGreaterThanOrEqual(2);
-    },
-};
-
+/**
+ * Fundamentally different layout: empty `values` array collapses the
+ * checkbox list, leaving only the min/max inputs. Worth a bookmarkable URL
+ * to assert this null-list state explicitly.
+ */
 export const NoPredefinedRanges: Story = {
     args: {
         values: [],
         attributeId: 'price',
         isFilterSelected: () => false,
-        toggleFilter,
+        toggleFilter: action('price-toggle-filter'),
         result: mockSearchResult,
     },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-RefinePrice with no predefined ranges:
-
-### No Ranges Features:
-- **Price inputs only**: Only shows min/max inputs
-- **No checkboxes**: No predefined range checkboxes
-- **Same functionality**: Price input still works
-
-### Use Cases:
-- Custom price filtering only
-- No predefined ranges configured
-- Manual price entry
-                `,
-            },
-        },
-    },
+    decorators: [
+        (Story: ComponentType, context) => (
+            <>
+                <RouteSetter path="/" />
+                <Story {...(context.args as Record<string, unknown>)} />
+            </>
+        ),
+    ],
     play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
         await waitForStorybookReady(canvasElement);
-
-        // Test price inputs are present
+        const canvas = within(canvasElement);
         const inputs = canvas.getAllByRole('spinbutton');
         await expect(inputs.length).toBeGreaterThanOrEqual(2);
-
-        // Test no checkboxes for predefined ranges
         const checkboxes = canvas.queryAllByRole('checkbox');
         await expect(checkboxes.length).toBe(0);
     },

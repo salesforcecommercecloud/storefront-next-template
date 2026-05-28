@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within, userEvent } from 'storybook/test';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
+import { expect, within } from 'storybook/test';
+import type { ComponentType } from 'react';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperSearch } from '@/scapi';
 import ProductGrid from '../grid';
@@ -24,8 +23,6 @@ import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
 import { WishlistProvider } from '@/providers/wishlist';
 import { EMPTY_WISHLIST_STATE } from '@/lib/wishlist/state';
-
-const mockSite = mockSiteObject;
 import {
     mockProductSearchItem,
     mockStandardProductHit,
@@ -34,104 +31,44 @@ import {
     mockProductSetHit,
 } from '@/components/__mocks__/product-search-hit-data';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// ProductGrid renders a 2/3/4-column responsive grid of product tiles. Visible
+// state is driven by:
+//   - the lengths of `critical` / `nonCritical` (and the mix of hit types)
+//   - `hasRefinementsPanel` (toggles responsive image widths)
+//   - `isLoading` (replaces grid with skeleton)
+//   - `skeletonCount` (appends pending-tile skeletons after the hits)
+//   - `topCategoryName`, `showPickupAvailable` (forwarded to each tile)
+// All variation in the prior story set folds into Controls; the empty-state
+// and loading-state visuals are kept as dedicated stories because the empty
+// "no products found" message and the skeleton-only render are bookmarkable.
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+type ProductSearchHit = ShopperSearch.schemas['ProductSearchHit'];
 
-        const logNavigate = action('grid-product-navigate');
-        const logWishlist = action('grid-product-wishlist');
-        const logSwatch = action('grid-product-swatch');
-        const logHover = action('grid-product-hover');
-        const logMoreOptions = action('grid-product-more-options');
-
-        const sanitizeLabel = (value: string | null | undefined): string => {
-            if (!value) {
-                return '';
-            }
-            return value.replace(/\s+/g, ' ').trim();
-        };
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const pdp = target.closest('a[href^="/product"]');
-            if (pdp) {
-                event.preventDefault();
-                (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                const name = sanitizeLabel(pdp.textContent);
-                logNavigate({ label: name || 'Product Detail' });
-                return;
-            }
-
-            const wishlist = target.closest('button[aria-label*="wishlist"], button[aria-label*="Wishlist"]');
-            if (wishlist) {
-                const aria = sanitizeLabel((wishlist as HTMLElement).getAttribute('aria-label'));
-                logWishlist({ label: aria || 'Wishlist' });
-                return;
-            }
-
-            const moreOptionsButton = target.closest('button');
-            if (moreOptionsButton) {
-                const label = sanitizeLabel(moreOptionsButton.textContent);
-                if (/more options/i.test(label)) {
-                    event.preventDefault();
-                    (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.();
-                    logMoreOptions({ label: label || 'More Options' });
-                    return;
-                }
-            }
-
-            const swatch = target.closest(
-                'button[role="radio"][aria-label], button[role="radio"][name], [data-testid^="swatch-"]'
-            );
-            if (swatch) {
-                const el = swatch as HTMLElement;
-                const value = sanitizeLabel(
-                    el.getAttribute('data-testid') || el.getAttribute('aria-label') || el.getAttribute('name')
-                );
-                logSwatch({ label: value || 'Swatch' });
-            }
-        };
-
-        const handleMouseOver = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const swatch = target.closest(
-                'button[role="radio"][aria-label], button[role="radio"][name], [data-testid^="swatch-"]'
-            );
-            if (swatch) {
-                const el = swatch as HTMLElement;
-                const value = sanitizeLabel(
-                    el.getAttribute('data-testid') || el.getAttribute('aria-label') || el.getAttribute('name')
-                );
-                logHover({ label: value || 'Swatch' });
-                return;
-            }
-
-            const card = target.closest('[data-slot="card"]');
-            if (card) {
-                const link = card.querySelector('a[href^="/product"]');
-                const nameEl = link?.querySelector('h3, [data-slot="card-title"]');
-                const name = sanitizeLabel(nameEl?.textContent || link?.textContent);
-                logHover({ label: name || 'Product Card' });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        root.addEventListener('mouseover', handleMouseOver, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-            root.removeEventListener('mouseover', handleMouseOver, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
+function cloneHit(base: ProductSearchHit, overrides: Partial<ProductSearchHit> = {}): ProductSearchHit {
+    return {
+        ...base,
+        ...overrides,
+    } as ProductSearchHit;
 }
+
+const ALL_PRODUCTS: ProductSearchHit[] = Array.from({ length: 24 }).map((_, idx) => {
+    const bases = [
+        mockStandardProductHit,
+        mockMasterProductHitWithOneVariant,
+        mockMasterProductHitWithMultipleVariants,
+        mockProductSearchItem,
+        mockProductSetHit,
+    ];
+    const base = bases[idx % bases.length];
+    return cloneHit(base, {
+        productId: `PROD-${idx + 1}`,
+        productName: `Product ${idx + 1}`,
+        price: (base.price ?? 50) + (idx % 5) * 3,
+    });
+});
+const MAX_PRODUCTS = ALL_PRODUCTS.length;
 
 const meta: Meta<typeof ProductGrid> = {
     title: 'PRODUCTS/Product Grid',
@@ -140,241 +77,155 @@ const meta: Meta<typeof ProductGrid> = {
     parameters: {
         docs: {
             description: {
-                component: `
-Renders a responsive grid of product tiles from search results.
-
-Features:
-- 2/3/4-column responsive grid
-- Uses ProductCard for each hit
-- Empty state message when no products
-                `,
+                component:
+                    'Responsive 2/3/4-column grid of product tiles. Splits hits into a critical (eager-loading, high-priority images) prefix and a non-critical remainder. Supports loading skeletons, an empty-state message, and a BOPIS pickup-availability flag. Image widths and hydration scope are controlled by `hasRefinementsPanel`.',
             },
         },
     },
     decorators: [
-        (Story) => (
-            <ActionLogger>
-                <SiteProvider
-                    site={mockSite}
-                    locale={mockLocale}
-                    language={mockSiteObject.defaultLocale}
-                    currency={mockSiteObject.defaultCurrency}>
-                    <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
-                        <div className="section-container py-8 bg-background">
-                            <Story />
-                        </div>
-                    </WishlistProvider>
-                </SiteProvider>
-            </ActionLogger>
+        (Story: ComponentType) => (
+            <SiteProvider
+                site={mockSiteObject}
+                locale={mockLocale}
+                language={mockSiteObject.defaultLocale}
+                currency={mockSiteObject.defaultCurrency}>
+                <WishlistProvider initialState={EMPTY_WISHLIST_STATE}>
+                    <div className="section-container py-8 bg-background">
+                        <Story />
+                    </div>
+                </WishlistProvider>
+            </SiteProvider>
         ),
     ],
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-function cloneHit(
-    base: ShopperSearch.schemas['ProductSearchHit'],
-    overrides: Partial<ShopperSearch.schemas['ProductSearchHit']> = {}
-) {
-    return {
-        ...base,
-        ...overrides,
-    } as ShopperSearch.schemas['ProductSearchHit'];
-}
+type SyntheticArgs = {
+    criticalCount: number;
+    nonCriticalCount: number;
+    hasRefinementsPanel: boolean;
+    topCategoryName: string;
+    skeletonCount: number;
+    showPickupAvailable: boolean;
+};
 
-const defaultProducts: ShopperSearch.schemas['ProductSearchHit'][] = [
-    cloneHit(mockStandardProductHit, { productId: 'STD-1', productName: 'Standard Product 1' }),
-    cloneHit(mockMasterProductHitWithOneVariant, { productId: 'MASTER-1', productName: 'Master Product 1' }),
-    cloneHit(mockMasterProductHitWithMultipleVariants, { productId: 'MASTER-MULTI-1', productName: 'Master Multi 1' }),
-    cloneHit(mockProductSearchItem, { productId: 'MASTER-2', productName: 'Master Product 2' }),
-    cloneHit(mockProductSetHit, { productId: 'SET-1', productName: 'Product Set 1' }),
-    cloneHit(mockStandardProductHit, { productId: 'STD-2', productName: 'Standard Product 2' }),
-    cloneHit(mockMasterProductHitWithMultipleVariants, { productId: 'MASTER-MULTI-2', productName: 'Master Multi 2' }),
-    cloneHit(mockProductSearchItem, { productId: 'MASTER-3', productName: 'Master Product 3' }),
-];
-
-export const DefaultGrid: Story = {
+/**
+ * Rich-but-realistic baseline — 2 critical + 6 non-critical product tiles
+ * with refinements panel enabled (default merchant config). Use Controls to
+ * slice either bucket independently (0–24 each), toggle the refinements
+ * layout, append loading skeletons after the hits, or flip the BOPIS pickup
+ * flag.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        critical: defaultProducts.slice(0, 1),
-        nonCritical: defaultProducts.slice(1),
+        criticalCount: 2,
+        nonCriticalCount: 6,
+        hasRefinementsPanel: true,
+        topCategoryName: '',
+        skeletonCount: 0,
+        showPickupAvailable: false,
     },
-    parameters: {
-        docs: {
-            description: {
-                story: `
-Standard grid with a variety of product hit types (standard, master, set).
-                `,
-            },
+    argTypes: {
+        criticalCount: {
+            description: `Synthetic: number of critical (above-the-fold, high-priority image) tiles (0–${MAX_PRODUCTS}).`,
+            control: { type: 'number', min: 0, max: MAX_PRODUCTS, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
         },
+        nonCriticalCount: {
+            description: `Synthetic: number of non-critical (below-the-fold) tiles appended after the critical ones (0–${MAX_PRODUCTS}).`,
+            control: { type: 'number', min: 0, max: MAX_PRODUCTS, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        hasRefinementsPanel: {
+            description:
+                'Direct prop: when true (default), the grid uses tighter responsive image widths to leave room for a refinements sidebar at lg/xl breakpoints. When false, tiles use a wider responsive image range.',
+            control: 'boolean',
+        },
+        topCategoryName: {
+            description:
+                'Direct prop: forwarded to every tile for analytics / breadcrumb context (e.g. "Mens" or "Womens"). Empty by default.',
+            control: 'text',
+        },
+        skeletonCount: {
+            description:
+                'Direct prop: number of extra tile skeletons rendered after the hits (e.g. while a fetch for additional pages is in flight). 0 = no skeletons.',
+            control: { type: 'number', min: 0, max: 8, step: 1 },
+        },
+        showPickupAvailable: {
+            description:
+                'Direct prop (BOPIS extension): when true, each tile shows a "Pickup available" indicator. Defaults to whatever the URL `pickup` query param indicates.',
+            control: 'boolean',
+        },
+    },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            criticalCount: args.criticalCount ?? 0,
+            nonCriticalCount: args.nonCriticalCount ?? 0,
+            hasRefinementsPanel: args.hasRefinementsPanel ?? true,
+            topCategoryName: args.topCategoryName ?? '',
+            skeletonCount: args.skeletonCount ?? 0,
+            showPickupAvailable: args.showPickupAvailable ?? false,
+        };
+        const clampedCritical = Math.max(0, Math.min(synthetic.criticalCount, MAX_PRODUCTS));
+        const clampedNonCritical = Math.max(0, Math.min(synthetic.nonCriticalCount, MAX_PRODUCTS - clampedCritical));
+        const critical = ALL_PRODUCTS.slice(0, clampedCritical);
+        const nonCritical = ALL_PRODUCTS.slice(clampedCritical, clampedCritical + clampedNonCritical);
+        return (
+            <ProductGrid
+                critical={critical}
+                nonCritical={nonCritical}
+                hasRefinementsPanel={synthetic.hasRefinementsPanel}
+                topCategoryName={synthetic.topCategoryName || undefined}
+                skeletonCount={synthetic.skeletonCount}
+                showPickupAvailable={synthetic.showPickupAvailable}
+            />
+        );
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         const productLinks = canvas.queryAllByRole('link', { name: /product/i });
-        if (productLinks.length > 0) {
-            await userEvent.hover(productLinks[0]);
-            await userEvent.click(productLinks[0]);
-        } else {
-            // If no product links found, verify component still renders
-            void expect(canvasElement).toBeInTheDocument();
-        }
+        await expect(productLinks.length).toBeGreaterThan(0);
     },
 };
 
-export const SingleProductCritical: Story = {
-    args: {
-        critical: [cloneHit(mockStandardProductHit, { productId: 'STD-ONLY', productName: 'Standard Only' })],
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `Single critical product tile rendering.`,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const wishlistButtons = canvas.queryAllByRole('button', { name: /wishlist/i });
-        if (wishlistButtons.length > 0) {
-            const enabledButton = wishlistButtons.find((btn) => !btn.hasAttribute('disabled'));
-            if (enabledButton) {
-                await userEvent.click(enabledButton);
-            }
-        } else {
-            // If no wishlist buttons found, verify component still renders
-            void expect(canvasElement).toBeInTheDocument();
-        }
-    },
-};
-
-export const SingleProductNonCritical: Story = {
-    args: {
-        nonCritical: [cloneHit(mockStandardProductHit, { productId: 'STD-ONLY', productName: 'Standard Only' })],
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `Single non-critical product tile rendering.`,
-            },
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const wishlistButtons = canvas.queryAllByRole('button', { name: /wishlist/i });
-        if (wishlistButtons.length > 0) {
-            const enabledButton = wishlistButtons.find((btn) => !btn.hasAttribute('disabled'));
-            if (enabledButton) {
-                await userEvent.click(enabledButton);
-            }
-        } else {
-            // If no wishlist buttons found, verify component still renders
-            void expect(canvasElement).toBeInTheDocument();
-        }
-    },
-};
-
-export const EmptyState: Story = {
+/**
+ * Empty `critical` and `nonCritical` arrays. The grid renders a single
+ * "no products found" message inside the column-spanning empty cell. Worth a
+ * bookmarkable URL because the resulting visual is fundamentally different
+ * (no tiles, just one centered message).
+ */
+export const EmptyState: StoryObj<typeof ProductGrid> = {
     args: {
         critical: [],
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `Shows the empty state messaging when there are no products.`,
-            },
-        },
+        nonCritical: [],
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const emptyMessage = canvasElement.querySelector('p');
-        void expect(emptyMessage).toHaveTextContent(/no products/i);
+        await expect(emptyMessage).toHaveTextContent(/no products/i);
     },
 };
 
-const manyProducts: ShopperSearch.schemas['ProductSearchHit'][] = Array.from({ length: 24 }).map((_, idx) =>
-    cloneHit(mockStandardProductHit, {
-        productId: `STD-MANY-${idx + 1}`,
-        productName: `Standard Product ${idx + 1}`,
-        price: (mockStandardProductHit.price ?? 50) + (idx % 5) * 3,
-    })
-);
-
-export const ManyProducts: Story = {
+/**
+ * `isLoading=true` short-circuits the grid render and shows a fixed-count
+ * skeleton block instead. Worth a dedicated story because the loading layout
+ * (no tiles, no empty message — only skeletons) is fundamentally different
+ * from any populated grid state and is the canonical entry point for the
+ * `data-testid="product-grid-loading-state"` selector that LCP / a11y tests
+ * rely on.
+ */
+export const Loading: StoryObj<typeof ProductGrid> = {
     args: {
-        critical: manyProducts.slice(0, 2),
-        nonCritical: manyProducts.slice(2),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `Grid with many products to demonstrate wrapping and spacing across breakpoints.`,
-            },
-        },
+        critical: ALL_PRODUCTS.slice(0, 2),
+        nonCritical: ALL_PRODUCTS.slice(2, 8),
+        isLoading: true,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const productLinks = canvas.getAllByRole('link', { name: /product/i });
-        if (productLinks.length > 1) {
-            await userEvent.hover(productLinks[1]);
-        }
-    },
-};
-
-export const MobileView: Story = {
-    args: {
-        critical: defaultProducts.slice(0, 2),
-        nonCritical: defaultProducts.slice(2),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `Mobile viewport showing 2-column grid.`,
-            },
-        },
-    },
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const productLinks = canvas.queryAllByRole('link', { name: /product/i });
-        if (productLinks.length > 0) {
-            await userEvent.click(productLinks[0]);
-        } else {
-            // If no product links found, verify component still renders
-            void expect(canvasElement).toBeInTheDocument();
-        }
-    },
-};
-
-export const DesktopView: Story = {
-    args: {
-        critical: defaultProducts.slice(0, 2),
-        nonCritical: defaultProducts.slice(2),
-    },
-    parameters: {
-        docs: {
-            description: {
-                story: `Desktop viewport showing 4-column grid.`,
-            },
-        },
-    },
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const moreOptionsButtons = canvas.queryAllByRole('button', { name: /more options/i });
-        if (moreOptionsButtons.length > 0) {
-            await userEvent.click(moreOptionsButtons[0]);
-        } else {
-            void expect(canvasElement).toBeInTheDocument();
-        }
+        const loadingState = canvasElement.querySelector('[data-testid="product-grid-loading-state"]');
+        await expect(loadingState).toBeInTheDocument();
+        await expect(loadingState).toHaveAttribute('aria-busy');
     },
 };

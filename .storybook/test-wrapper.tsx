@@ -35,7 +35,20 @@ const mockProductsById = inBasketProductDetails.data.reduce(
 
 const mockBasketProductsData = { basket: basketWithOneItem, productsById: mockProductsById };
 
-export function StoryTestWrapper({ children }: { children: ReactNode }): ReactElement {
+export function StoryTestWrapper({
+    children,
+    initialEntries,
+}: {
+    children: ReactNode;
+    /**
+     * Seed the memory router with a non-root URL so components that read
+     * `useLocation()` / `useSearchParams()` see the correct path/search on
+     * first paint. Avoids the `useEffect`-driven URL-setter pattern that
+     * produces empty-wrapper snapshots because the effect hasn't fired by
+     * the time `toMatchSnapshot()` is called.
+     */
+    initialEntries?: string[];
+}): ReactElement {
     const inRouter = useInRouterContext();
 
     // Wrap with providers in the correct order (matching root.tsx)
@@ -80,7 +93,7 @@ export function StoryTestWrapper({ children }: { children: ReactNode }): ReactEl
             },
         ],
         {
-            initialEntries: ['/'],
+            initialEntries: initialEntries ?? ['/'],
         }
     );
 

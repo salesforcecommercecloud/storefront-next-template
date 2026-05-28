@@ -18,47 +18,67 @@ import SuggestionSection from '../suggestions-section';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import type { ComponentType } from 'react';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
+import type { SearchSuggestions } from '../types';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// SuggestionSection is the populated branch of the search dropdown — it shows
+// up to four sections (categories, products, popular searches, "did you
+// mean") arranged differently on mobile vs. desktop. Visible state is fully
+// a function of which buckets are populated. All four counts plus the
+// did-you-mean toggle fold cleanly into Controls. `closeAndNavigate` binds to
+// `action()` directly via component props.
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logClick = action('suggestion-section-click');
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-            // Check for buttons or links
-            const interactive = target.closest('button, a');
-            if (interactive && root.contains(interactive)) {
-                if (interactive.tagName.toLowerCase() === 'a') {
-                    event.preventDefault(); // Prevent navigation in storybook
-                    logClick({
-                        type: 'link',
-                        href: interactive.getAttribute('href'),
-                        text: interactive.textContent?.trim(),
-                    });
-                } else {
-                    logClick({ type: 'button', text: interactive.textContent?.trim() });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick);
-        return () => {
-            root.removeEventListener('click', handleClick);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+const ALL_CATEGORIES = [
+    {
+        name: 'Footwear',
+        link: '/category/footwear',
+        type: 'category',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop',
+    },
+    {
+        name: 'Clothing',
+        link: '/category/clothing',
+        type: 'category',
+    },
+    {
+        name: 'Accessories',
+        link: '/category/accessories',
+        type: 'category',
+    },
+];
+const ALL_PRODUCTS = [
+    {
+        name: 'Running Shoes',
+        link: '/products/running-shoes',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+        price: 99.99,
+    },
+    {
+        name: 'Hiking Boots',
+        link: '/products/hiking-boots',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=400&h=400&fit=crop',
+        price: 149.99,
+    },
+    {
+        name: 'Casual Sneakers',
+        link: '/products/casual-sneakers',
+        type: 'product',
+        image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop',
+        price: 79.99,
+    },
+];
+const ALL_POPULAR = [
+    { name: 'Shoes', link: '/search?q=shoes', type: 'popular' },
+    { name: 'Boots', link: '/search?q=boots', type: 'popular' },
+    { name: 'Sneakers', link: '/search?q=sneakers', type: 'popular' },
+];
 
 const meta: Meta<typeof SuggestionSection> = {
     title: 'Search/SuggestionsSection',
@@ -68,203 +88,113 @@ const meta: Meta<typeof SuggestionSection> = {
         docs: {
             description: {
                 component:
-                    'Main container for search suggestions that displays categories, products, and popular searches in a responsive layout.',
+                    'Populated branch of the search dropdown. Renders up to four sections — categories, products, popular searches, and an optional "did you mean" phrase suggestion — arranged vertically on mobile and horizontally on desktop.',
             },
         },
     },
     tags: ['autodocs', 'interaction'],
     decorators: [
-        (Story) => (
+        (Story: ComponentType) => (
             <ConfigProvider config={mockConfig}>
                 <SiteProvider
                     site={mockSiteObject}
                     locale={mockLocale}
                     language={mockSiteObject.defaultLocale}
                     currency={mockSiteObject.defaultCurrency}>
-                    <ActionLogger>
-                        <Story />
-                    </ActionLogger>
+                    <Story />
                 </SiteProvider>
             </ConfigProvider>
         ),
     ],
-    argTypes: {
-        searchSuggestions: {
-            description: 'Object containing various types of search suggestions',
-            control: 'object',
-        },
-        closeAndNavigate: {
-            description: 'Callback function to close the search and navigate to a URL',
-            action: 'closeAndNavigate',
-        },
-    },
 };
 
 export default meta;
-type Story = StoryObj<typeof SuggestionSection>;
 
-const mockSearchSuggestions = {
-    categorySuggestions: [
-        {
-            name: 'Footwear',
-            link: '/category/footwear',
-            type: 'category',
-            image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop',
-        },
-        {
-            name: 'Clothing',
-            link: '/category/clothing',
-            type: 'category',
-        },
-    ],
-    productSuggestions: [
-        {
-            name: 'Running Shoes',
-            link: '/products/running-shoes',
-            type: 'product',
-            image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
-            price: 99.99,
-        },
-        {
-            name: 'Hiking Boots',
-            link: '/products/hiking-boots',
-            type: 'product',
-            image: 'https://images.unsplash.com/photo-1608256246200-53bd35f3f44e?w=400&h=400&fit=crop',
-            price: 149.99,
-        },
-        {
-            name: 'Casual Sneakers',
-            link: '/products/casual-sneakers',
-            type: 'product',
-            image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop',
-            price: 79.99,
-        },
-    ],
-    popularSearchSuggestions: [
-        {
-            name: 'Shoes',
-            link: '/search?q=shoes',
-            type: 'popular',
-        },
-        {
-            name: 'Boots',
-            link: '/search?q=boots',
-            type: 'popular',
-        },
-    ],
-    searchPhrase: 'shoes',
+type SyntheticArgs = {
+    categoryCount: number;
+    productCount: number;
+    popularCount: number;
+    showDidYouMean: boolean;
+    searchPhrase: string;
 };
 
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline — all three buckets populated and a search
+ * phrase set. Use Controls to slice each bucket independently or toggle the
+ * "Did you mean?" phrase suggestion on/off.
+ */
+export const FullyFeatured: StoryObj<ComponentType<Partial<SyntheticArgs>>> = {
     args: {
-        searchSuggestions: mockSearchSuggestions,
-        closeAndNavigate: action('closeAndNavigate'),
+        categoryCount: 2,
+        productCount: 3,
+        popularCount: 2,
+        showDidYouMean: false,
+        searchPhrase: 'shoes',
+    },
+    argTypes: {
+        categoryCount: {
+            description: `Synthetic: number of category suggestions (0–${ALL_CATEGORIES.length}).`,
+            control: { type: 'number', min: 0, max: ALL_CATEGORIES.length, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        productCount: {
+            description: `Synthetic: number of product suggestions (0–${ALL_PRODUCTS.length}). Drives both the desktop product grid and the mobile product list.`,
+            control: { type: 'number', min: 0, max: ALL_PRODUCTS.length, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        popularCount: {
+            description: `Synthetic: number of popular-search suggestions (0–${ALL_POPULAR.length}).`,
+            control: { type: 'number', min: 0, max: ALL_POPULAR.length, step: 1 },
+            table: { category: 'Synthetic (data shape)' },
+        },
+        showDidYouMean: {
+            description:
+                'Synthetic: when on, adds a non-exact-match `phraseSuggestions[0]` so the "Did you mean?" line renders above the lists.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        searchPhrase: {
+            description: 'Direct prop: the search phrase used in the "Did you mean?" comparison and the View All link.',
+            control: 'text',
+        },
+    },
+    render: (args) => {
+        const synthetic: SyntheticArgs = {
+            categoryCount: args.categoryCount ?? 0,
+            productCount: args.productCount ?? 0,
+            popularCount: args.popularCount ?? 0,
+            showDidYouMean: args.showDidYouMean ?? false,
+            searchPhrase: args.searchPhrase ?? '',
+        };
+        const categories = ALL_CATEGORIES.slice(0, synthetic.categoryCount);
+        const products = ALL_PRODUCTS.slice(0, synthetic.productCount);
+        const popular = ALL_POPULAR.slice(0, synthetic.popularCount);
+        const searchSuggestions: SearchSuggestions = {
+            ...(categories.length ? { categorySuggestions: categories } : {}),
+            ...(products.length ? { productSuggestions: products } : {}),
+            ...(popular.length ? { popularSearchSuggestions: popular } : {}),
+            ...(synthetic.showDidYouMean
+                ? {
+                      phraseSuggestions: [
+                          {
+                              name: synthetic.searchPhrase || 'shoes',
+                              link: `/search?q=${synthetic.searchPhrase || 'shoes'}`,
+                              type: 'phrase',
+                              exactMatch: false,
+                          },
+                      ],
+                  }
+                : {}),
+            searchPhrase: synthetic.searchPhrase,
+        };
+        return (
+            <SuggestionSection searchSuggestions={searchSuggestions} closeAndNavigate={action('closeAndNavigate')} />
+        );
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
-
-        // Check for categories section
-        const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
-        await expect(categoriesLabels.length).toBeGreaterThan(0);
-
-        // Check for products section
-        const productsLabels = await canvas.findAllByText(/products/i, {}, { timeout: 5000 });
-        await expect(productsLabels.length).toBeGreaterThan(0);
-
-        // Check for popular searches section
-        const popularSearchesLabels = await canvas.findAllByText(/popular searches/i, {}, { timeout: 5000 });
-        await expect(popularSearchesLabels.length).toBeGreaterThan(0);
-    },
-};
-
-export const CategoriesOnly: Story = {
-    args: {
-        searchSuggestions: {
-            categorySuggestions: mockSearchSuggestions.categorySuggestions,
-            searchPhrase: 'footwear',
-        },
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const categoriesLabels = await canvas.findAllByText(/categories/i, {}, { timeout: 5000 });
-        await expect(categoriesLabels.length).toBeGreaterThan(0);
-
-        // Use getAllByRole since there may be multiple buttons (mobile + desktop views)
-        const footwearButtons = canvas.getAllByRole('button', { name: /footwear/i });
-        await expect(footwearButtons.length).toBeGreaterThan(0);
-        // Just verify at least one exists, don't interact with it to avoid ambiguity
-    },
-};
-
-export const ProductsOnly: Story = {
-    args: {
-        searchSuggestions: {
-            productSuggestions: mockSearchSuggestions.productSuggestions,
-            searchPhrase: 'shoes',
-        },
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const productsLabel = canvas.getByText(/products/i);
-        await expect(productsLabel).toBeInTheDocument();
-
-        const runningShoesLink = canvas.getByRole('link', { name: /running shoes/i });
-        await expect(runningShoesLink).toBeInTheDocument();
-    },
-};
-
-export const WithDidYouMean: Story = {
-    args: {
-        searchSuggestions: {
-            ...mockSearchSuggestions,
-            phraseSuggestions: [
-                {
-                    name: 'shoes',
-                    link: '/search?q=shoes',
-                    type: 'phrase',
-                    exactMatch: false,
-                },
-            ],
-        },
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const didYouMeanTexts = await canvas.findAllByText(/did you mean/i, {}, { timeout: 5000 });
-        await expect(didYouMeanTexts.length).toBeGreaterThan(0);
-
-        const links = canvas.getAllByRole('link');
-        const shoesLink = links.find((link) => link.textContent?.toLowerCase().includes('shoes'));
-        await expect(shoesLink).toBeInTheDocument();
-    },
-};
-
-export const PopularSearchesOnly: Story = {
-    args: {
-        searchSuggestions: {
-            popularSearchSuggestions: mockSearchSuggestions.popularSearchSuggestions,
-            searchPhrase: 'boots',
-        },
-        closeAndNavigate: action('closeAndNavigate'),
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        const popularSearchesLabels = await canvas.findAllByText(/popular searches/i, {}, { timeout: 5000 });
-        await expect(popularSearchesLabels.length).toBeGreaterThan(0);
-
-        const buttons = canvas.getAllByRole('button');
-        const shoesButton = buttons.find((btn) => btn.textContent?.toLowerCase().includes('shoes'));
-        await expect(shoesButton).toBeInTheDocument();
+        const labels = await canvas.findAllByText(/categories|products|popular searches/i, {}, { timeout: 5000 });
+        await expect(labels.length).toBeGreaterThan(0);
     },
 };

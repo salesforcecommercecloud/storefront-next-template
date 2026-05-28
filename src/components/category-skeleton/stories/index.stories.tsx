@@ -18,6 +18,17 @@ import { ProductTileSkeleton, ProductTileSwatchesSkeleton } from '../index';
 import { expect } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 
+// ---------------------------------------------------------------------------
+// This file exports two PLP loading skeletons:
+//   - ProductTileSkeleton — the per-tile placeholder shown while a product
+//     hits are pending. No props, single appearance.
+//   - ProductTileSwatchesSkeleton — the per-tile swatch row, parameterized
+//     by `count` (drives the number of swatch dots shown).
+// Tile-in-grid is a distinct visual context and gets its own story.
+// Viewport variants are exposed via the global Storybook viewport toolbar
+// rather than via dedicated stories.
+// ---------------------------------------------------------------------------
+
 const meta: Meta<typeof ProductTileSkeleton> = {
     title: 'LOADING/Category Skeleton',
     component: ProductTileSkeleton,
@@ -27,7 +38,7 @@ const meta: Meta<typeof ProductTileSkeleton> = {
         docs: {
             description: {
                 component:
-                    'Skeleton loading state for product tiles in category pages. Includes placeholders for image, swatches, product name, and price.',
+                    'Skeleton placeholders shown while a Product Listing Page is fetching. Includes the per-tile skeleton (image, swatches, name, price) and the standalone swatch-row skeleton.',
             },
         },
     },
@@ -43,80 +54,45 @@ const meta: Meta<typeof ProductTileSkeleton> = {
 export default meta;
 type Story = StoryObj<typeof ProductTileSkeleton>;
 
+/**
+ * Default tile skeleton — image placeholder, two-swatch row, two-line name,
+ * price block. No props. Use the global viewport toolbar to verify
+ * mobile/tablet/desktop layouts.
+ */
 export const Default: Story = {
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
-
-        // Verify card structure is present (Card uses data-slot attributes)
         const card = canvasElement.querySelector('[data-slot="card"]');
         await expect(card).toBeInTheDocument();
-
-        // Verify header (image area) is present
         const header = canvasElement.querySelector('[data-slot="card-header"]');
         await expect(header).toBeInTheDocument();
     },
 };
 
-export const MobileView: Story = {
-    globals: {
-        viewport: 'mobile2',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const card = canvasElement.querySelector('[data-slot="card"]');
-        await expect(card).toBeInTheDocument();
-    },
-};
-
-export const TabletView: Story = {
-    globals: {
-        viewport: 'tablet',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const card = canvasElement.querySelector('[data-slot="card"]');
-        await expect(card).toBeInTheDocument();
-    },
-};
-
-export const DesktopView: Story = {
-    globals: {
-        viewport: 'desktop',
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const card = canvasElement.querySelector('[data-slot="card"]');
-        await expect(card).toBeInTheDocument();
-    },
-};
-
+/**
+ * Standalone swatches skeleton with a configurable count. Use the Controls
+ * panel to verify `count` from 1 (single dot) up through realistic merchant
+ * values (a six- or seven-color product). Subsumes the previous SwatchesOnly
+ * and ManySwatches stories.
+ */
 export const SwatchesOnly: StoryObj<typeof ProductTileSwatchesSkeleton> = {
     render: (args) => <ProductTileSwatchesSkeleton {...args} />,
     args: {
         count: 4,
     },
-    parameters: {
-        docs: {
-            description: {
-                story: 'Standalone swatches skeleton with configurable count.',
-            },
-        },
-    },
     argTypes: {
         count: {
-            description: 'Number of swatch skeletons to display',
-            control: { type: 'number', min: 1, max: 8 },
+            description: 'Number of swatch dots to render',
+            control: { type: 'number', min: 1, max: 8, step: 1 },
         },
     },
 };
 
-export const ManySwatches: StoryObj<typeof ProductTileSwatchesSkeleton> = {
-    render: (args) => <ProductTileSwatchesSkeleton {...args} />,
-    args: {
-        count: 5,
-    },
-};
-
+/**
+ * Tile-in-grid context — four skeleton tiles arranged in a 2-up / 4-up grid.
+ * Distinct from the single-tile `Default` story because it demonstrates the
+ * full PLP loading state, not just one card.
+ */
 export const Grid: Story = {
     render: () => (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -125,13 +101,6 @@ export const Grid: Story = {
             ))}
         </div>
     ),
-    parameters: {
-        docs: {
-            description: {
-                story: 'Multiple skeleton tiles in a grid layout, simulating a category page loading state.',
-            },
-        },
-    },
     decorators: [
         (Story) => (
             <div className="w-full max-w-4xl">
