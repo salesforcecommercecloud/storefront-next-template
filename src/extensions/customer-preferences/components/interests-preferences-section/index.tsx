@@ -105,22 +105,23 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
         }
     }, [isEditing, serverInterests, serverPreferences]);
 
-    // Watch the fetcher response directly so both arms of the action's
-    // discriminated union ({success: true} / {success: false, error}) are
-    // surfaced to the user. The shared `useFetcherEffect` only matches a
-    // string `error` field; our action returns `error` as an `ActionError`
-    // object ({code, message}), so failures would otherwise be silent.
-    // Fire on `loading + data` (action complete, revalidation in flight) as
-    // well as `idle + data` because parent-loader revalidation can unmount
-    // and remount this section before reaching `idle`.
+    // Fire on `loading + data` (action complete, revalidation in flight) as well as `idle + data`
+    // because parent-loader revalidation can unmount/remount this section before reaching `idle`.
+    // The `hasHandledResponseRef` ensures only one toast per submission cycle.
     const previousFetcherStateRef = useRef<typeof fetcher.state | undefined>(undefined);
+    const hasHandledResponseRef = useRef(false);
     useEffect(() => {
+        if (fetcher.state === 'submitting') {
+            hasHandledResponseRef.current = false;
+        }
+
         const previousState = previousFetcherStateRef.current;
         const stateChanged = previousState !== fetcher.state;
         const hasCompletedOperation =
             fetcher.state === 'idle' || (fetcher.state === 'loading' && fetcher.data !== undefined);
 
-        if (stateChanged && hasCompletedOperation && fetcher.data) {
+        if (stateChanged && hasCompletedOperation && fetcher.data && !hasHandledResponseRef.current) {
+            hasHandledResponseRef.current = true;
             if (fetcher.data.success === true) {
                 setServerInterests(fetcher.data.customerInterests.selectedInterestIds);
                 setServerPreferences(fetcher.data.customerPreferences.preferences);
