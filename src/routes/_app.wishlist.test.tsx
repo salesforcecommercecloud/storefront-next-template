@@ -17,6 +17,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { loader, shouldRevalidate } from './_app.wishlist';
 import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 // SCAPI clients are exercised by loadWishlistPageData; mock them so the loader
 // path can run without hitting the network.
@@ -243,12 +244,12 @@ describe('_app.wishlist shouldRevalidate', () => {
         }) as ShouldRevalidateArgs;
 
     test('returns false for wishlist-remove actions', () => {
-        expect(shouldRevalidate(buildArgs({ formAction: '/action/wishlist-remove' }))).toBe(false);
+        expect(shouldRevalidate(buildArgs({ formAction: resourceRoutes.wishlistRemove }))).toBe(false);
     });
 
     test('uses default behavior for non-wishlist-remove actions', () => {
         expect(
-            shouldRevalidate(buildArgs({ formAction: '/action/cart-item-add', defaultShouldRevalidate: true }))
+            shouldRevalidate(buildArgs({ formAction: resourceRoutes.cartItemAdd, defaultShouldRevalidate: true }))
         ).toBe(true);
     });
 
@@ -258,7 +259,7 @@ describe('_app.wishlist shouldRevalidate', () => {
 
     test('returns false when defaultShouldRevalidate is false but action is wishlist-remove', () => {
         expect(
-            shouldRevalidate(buildArgs({ formAction: '/action/wishlist-remove', defaultShouldRevalidate: false }))
+            shouldRevalidate(buildArgs({ formAction: resourceRoutes.wishlistRemove, defaultShouldRevalidate: false }))
         ).toBe(false);
     });
 });

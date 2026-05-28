@@ -48,6 +48,7 @@ import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-
 // Lazy load OTP modal for passwordless email editing
 const OtpModal = lazy(() => import('@/components/login/otp-modal').then((m) => ({ default: m.default })));
 import { UITarget } from '@/targets/ui-target';
+import { resourceRoutes } from '@/route-paths';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -366,7 +367,7 @@ function AccountDetailsContent({
 
         void otpRequestFetcher.submit(formData, {
             method: 'POST',
-            action: '/action/otp-request',
+            action: resourceRoutes.otpRequest,
         });
 
         // Open OTP modal (lazy load if first time)
@@ -387,7 +388,7 @@ function AccountDetailsContent({
 
         void otpRequestFetcher.submit(formData, {
             method: 'POST',
-            action: '/action/otp-request',
+            action: resourceRoutes.otpRequest,
         });
 
         setOtpModalLoaded(true);
@@ -420,7 +421,7 @@ function AccountDetailsContent({
 
             void otpRequestFetcher.submit(formDataForOtp, {
                 method: 'POST',
-                action: '/action/authorize-passwordless-email',
+                action: resourceRoutes.authorizePasswordlessEmail,
             });
 
             // Open OTP modal (lazy load if first time)
@@ -512,7 +513,9 @@ function AccountDetailsContent({
             void otpRequestFetcher.submit(formData, {
                 method: 'POST',
                 action:
-                    otpModalMode === 'reauthenticate' ? '/action/authorize-passwordless-email' : '/action/otp-request',
+                    otpModalMode === 'reauthenticate'
+                        ? resourceRoutes.authorizePasswordlessEmail
+                        : resourceRoutes.otpRequest,
             });
         }
         return Promise.resolve();
@@ -537,7 +540,8 @@ function AccountDetailsContent({
             // Use different endpoint based on mode:
             // - 'reauthenticate': Full authentication with new JWT (after email change)
             // - 'changeEmail' or 'verifyEmail': Just verify OTP (before email edit or for verification badge)
-            const action = otpModalMode === 'reauthenticate' ? '/action/verify-passwordless-otp' : '/action/otp-verify';
+            const action =
+                otpModalMode === 'reauthenticate' ? resourceRoutes.verifyPasswordlessOtp : resourceRoutes.otpVerify;
             const response = await fetch(action, {
                 method: 'POST',
                 body: formData,
@@ -628,7 +632,7 @@ function AccountDetailsContent({
 
             void passwordResetFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/request-password-reset',
+                action: resourceRoutes.requestPasswordReset,
             });
         }
     };

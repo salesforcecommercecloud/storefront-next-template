@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';
 import { getLoginModeHref } from './get-login-mode-href';
+import { routes } from '@/route-paths';
 
 interface StandardLoginFormProps {
     error?: string;
@@ -128,12 +129,12 @@ export default function StandardLoginForm({
             )}
 
             <div className="text-center space-y-2">
-                <Link to="/forgot-password" className="block text-sm text-primary hover:text-primary/80">
+                <Link to={routes.forgotPassword} className="block text-sm text-primary hover:text-primary/80">
                     {t('forgotPassword')}
                 </Link>
                 <p className="text-sm text-muted-foreground">
                     {t('noAccountQuestion')}
-                    <Link to="/signup" className="font-medium text-primary hover:underline">
+                    <Link to={routes.signup} className="font-medium text-primary hover:underline">
                         {t('signUp')}
                     </Link>
                 </p>

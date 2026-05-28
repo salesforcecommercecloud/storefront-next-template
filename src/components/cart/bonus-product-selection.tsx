@@ -29,6 +29,7 @@ import { toImageUrl } from '@/lib/images/dynamic-image';
 import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { getPriceData } from '@/components/product-price/utils';
+import { resourceRoutes } from '@/route-paths';
 
 interface BonusProductSelectionProps {
     bonusDiscountLineItem: ShopperBasketsV2.schemas['BonusDiscountLineItem'];
@@ -182,7 +183,7 @@ export default function BonusProductSelection({
 
             void addToCartFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
         }
     };

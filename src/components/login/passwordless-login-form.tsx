@@ -18,6 +18,7 @@ import { Form as RouterForm, useLocation } from 'react-router';
 import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import { Link } from '@/components/link';
+import { routes } from '@/route-paths';
 import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { useTranslation } from 'react-i18next';
@@ -140,7 +141,7 @@ export default function PasswordlessLoginForm({
             )}
 
             <div className="text-center">
-                <Link to="/forgot-password" className="text-sm text-primary hover:text-primary/80">
+                <Link to={routes.forgotPassword} className="text-sm text-primary hover:text-primary/80">
                     {t('forgotPassword')}
                 </Link>
             </div>

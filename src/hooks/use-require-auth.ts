@@ -18,6 +18,7 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/providers/auth';
 import { useToast } from '@/components/toast';
+import { routes } from '@/route-paths';
 
 export interface RequireAuthOptions {
     actionName: string;
@@ -86,8 +87,8 @@ export function useRequireAuth<T extends (...args: unknown[]) => Promise<unknown
                 return url.pathname + url.search;
             };
 
-            const loginUrl = baseAuthUrl('/login');
-            const signupUrl = baseAuthUrl('/signup');
+            const loginUrl = baseAuthUrl(routes.login);
+            const signupUrl = baseAuthUrl(routes.signup);
 
             // Show toast with Sign In and Sign Up buttons
             addToast(options.toastMessage || t('product:signInToContinue'), 'info', {

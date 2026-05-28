@@ -25,6 +25,7 @@ const mockSetSearchParams = vi.fn();
 type NavState = { state: 'idle' | 'loading'; location: { pathname: string; search: string } | undefined };
 let mockNavigationState: NavState = { state: 'idle', location: undefined };
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useSearchParams: () => [mockSearchParams, mockSetSearchParams],
     useNavigation: () => mockNavigationState,
 }));

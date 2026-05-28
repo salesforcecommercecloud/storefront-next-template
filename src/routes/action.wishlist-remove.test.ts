@@ -19,6 +19,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.wishlist-remove';
 import { createTestContext, expectStatus } from '@/lib/test-utils';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { resourceRoutes } from '@/route-paths';
 
 // Mock dependencies
 const mockGetAuth = vi.fn();
@@ -119,11 +120,11 @@ describe('action.wishlist-remove', () => {
             if (itemId) {
                 data.itemId = itemId;
             }
-            return createFormDataRequest('http://localhost/action/wishlist-remove', 'POST', data);
+            return createFormDataRequest(`http://localhost${resourceRoutes.wishlistRemove}`, 'POST', data);
         };
 
         test('should return error for non-POST requests', async () => {
-            const request = new Request('http://localhost/action/wishlist-remove', {
+            const request = new Request(`http://localhost${resourceRoutes.wishlistRemove}`, {
                 method: 'GET',
             });
             const args: ActionFunctionArgs = {

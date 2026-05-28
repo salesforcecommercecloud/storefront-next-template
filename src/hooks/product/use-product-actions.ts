@@ -19,6 +19,7 @@ import { useNavigate } from '@/hooks/use-navigate';
 import { useTranslation } from 'react-i18next';
 import type { ShopperProducts, ShopperBasketsV2 } from '@/scapi';
 import { useToast } from '@/components/toast';
+import { resourceRoutes } from '@/route-paths';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { usePickup } from '@/extensions/bopis/context/pickup-context';
 import { getStoreIdForBasketItem } from '@/extensions/bopis/lib/basket-utils';
@@ -506,7 +507,7 @@ export function useProductActions({
                 { productItem: JSON.stringify(productItem) },
                 {
                     method: 'POST',
-                    action: '/action/cart-item-add',
+                    action: resourceRoutes.cartItemAdd,
                 }
             );
 
@@ -595,7 +596,7 @@ export function useProductActions({
     const handleAddToWishlist = useMemo(
         () =>
             createProductActionHandler<{ productId: string }>({
-                actionRoute: '/action/wishlist-add',
+                actionRoute: resourceRoutes.wishlistAdd,
                 fetcher: wishlistFetcher,
                 errorMessage: t('product:failedToAddProductToWishlist'),
                 buildFormData: (params) => ({ productId: String(params.productId) }),
@@ -656,7 +657,7 @@ export function useProductActions({
                     { productItems: JSON.stringify(productItems) },
                     {
                         method: 'POST',
-                        action: '/action/cart-set-add',
+                        action: resourceRoutes.cartSetAdd,
                     }
                 );
 
@@ -726,7 +727,7 @@ export function useProductActions({
                     },
                     {
                         method: 'POST',
-                        action: '/action/cart-bundle-add',
+                        action: resourceRoutes.cartBundleAdd,
                     }
                 );
 
@@ -822,7 +823,7 @@ export function useProductActions({
                         { items: JSON.stringify(itemsToBeUpdated) },
                         {
                             method: 'PATCH',
-                            action: '/action/cart-bundle-update',
+                            action: resourceRoutes.cartBundleUpdate,
                         }
                     );
                 } else {
@@ -870,7 +871,7 @@ export function useProductActions({
                 updateFormData.append('quantity', quantity.toString());
                 await cartFetcher.submit(updateFormData, {
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 });
             }
             // Case 2: User is selecting a different variant that already exists in basket
@@ -881,7 +882,7 @@ export function useProductActions({
                 removeFormData.append('itemId', itemId);
                 await cartFetcher.submit(removeFormData, {
                     method: 'POST',
-                    action: '/action/cart-item-remove',
+                    action: resourceRoutes.cartItemRemove,
                 });
                 // Check if remove succeeded
                 if (cartFetcher.data?.success === false) {
@@ -896,7 +897,7 @@ export function useProductActions({
                 updateFormData.append('quantity', newQuantity.toString());
                 await cartFetcher.submit(updateFormData, {
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 });
 
                 // Check if update succeeded, if not, restore the removed item
@@ -913,7 +914,7 @@ export function useProductActions({
                     );
                     await cartFetcher.submit(restoreFormData, {
                         method: 'POST',
-                        action: '/action/cart-item-add',
+                        action: resourceRoutes.cartItemAdd,
                     });
                     throw new Error(t('product:failedToUpdateItemQuantity'));
                 }
@@ -927,7 +928,7 @@ export function useProductActions({
                 updateFormData.append('quantity', quantity.toString());
                 await cartFetcher.submit(updateFormData, {
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 });
             }
         } catch (error) {

@@ -28,6 +28,7 @@ import { hasUsableShopperSession } from '@/middlewares/auth.utils';
 import { buildUrlFromContext } from '@/lib/url.server';
 import { useTranslation } from 'react-i18next';
 import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
+import { resourceRoutes, routes } from '@/route-paths';
 
 /**
  * Public guest wishlist route. Registered shoppers with a usable session are
@@ -45,7 +46,7 @@ export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPag
 
     const session = getAuth(context);
     if (session.userType === 'registered' && hasUsableShopperSession(session)) {
-        throw redirect(buildUrlFromContext('/account/wishlist', context));
+        throw redirect(buildUrlFromContext(routes.accountWishlist, context));
     }
 
     return loadWishlistPageData(context);
@@ -57,7 +58,7 @@ export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPag
  * to avoid unnecessary refetches.
  */
 export function shouldRevalidate({ formAction, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
-    if (formAction === '/action/wishlist-remove') {
+    if (formAction === resourceRoutes.wishlistRemove) {
         return false;
     }
     return defaultShouldRevalidate;
@@ -87,7 +88,9 @@ export default function GuestWishlist({
             <Alert className="mb-5">
                 <AlertDescription>
                     {t('wishlist.guestKeepItemsBanner')}{' '}
-                    <Link to="/login?returnUrl=/wishlist" className="font-medium text-primary hover:underline">
+                    <Link
+                        to={`${routes.login}?returnUrl=${routes.wishlist}`}
+                        className="font-medium text-primary hover:underline">
                         {t('wishlist.guestKeepItemsBannerCta')}
                     </Link>
                 </AlertDescription>

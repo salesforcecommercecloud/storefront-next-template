@@ -33,6 +33,7 @@ import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { NavigationMenuLink } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { useSubCategory } from '@/components/navigation-menu/context';
+import { routes, routeHref } from '@/route-paths';
 
 interface MobileMenuContextType {
     isOpen: boolean;
@@ -73,7 +74,7 @@ function CategoryBanner({
 
     return (
         <NavigationMenuLink asChild>
-            <NavLink {...props} to={`/category/${category.id}`}>
+            <NavLink {...props} to={routeHref(routes.category, { categoryId: category.id })}>
                 {imageSrc ? (
                     <img
                         className="object-contain w-full max-w-full max-h-[512px]"
@@ -122,7 +123,7 @@ function MobileMenuCategory({
         subcategories?.map((subcategory) => (
             <li key={subcategory.id}>
                 <NavLink
-                    to={`/category/${subcategory.id}`}
+                    to={routeHref(routes.category, { categoryId: subcategory.id })}
                     onClick={onNavigate}
                     className={cn(
                         'block py-2 text-sm font-medium hover:opacity-70 transition-opacity',
@@ -140,7 +141,7 @@ function MobileMenuCategory({
         <li>
             <div className="flex items-center justify-between">
                 <NavLink
-                    to={`/category/${category.id}`}
+                    to={routeHref(routes.category, { categoryId: category.id })}
                     onClick={onNavigate}
                     className="flex-1 py-3 text-base font-medium hover:opacity-70 transition-opacity">
                     {category.name}
@@ -263,7 +264,7 @@ export default function ResponsiveNavigationMenu({
     // Handler for top-level category clicks
     const handleTopLevelClick = useCallback(
         (categoryId: string) => {
-            void navigate(`/category/${categoryId}`);
+            void navigate(routeHref(routes.category, { categoryId }));
         },
         [navigate]
     );

@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ShopperProducts, ShopperSearch } from '@/scapi';
 import { getBasePath } from '@/lib/utils';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { resourceRoutes } from '@/route-paths';
 
 /**
  * Union type for products from either Shopper Products API or Shopper Search API.
@@ -39,7 +40,7 @@ export type Recommendation = {
     recs?: ShopperSearch.schemas['ProductSearchHit'][];
 };
 
-const RESOURCE_PATH = '/resource/recommendations';
+const RESOURCE_PATH = resourceRoutes.recommendations;
 
 /**
  * Hook for client-driven recommendation fetches via the

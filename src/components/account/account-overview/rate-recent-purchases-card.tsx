@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import type { Order } from '@/components/account/order-list';
 import { useTranslation } from 'react-i18next';
 import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order/status';
+import { routes, routeHref } from '@/route-paths';
 
 const MAX_THUMBNAILS = 2;
 
@@ -43,7 +44,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
     const titleLine = buildProductTitleLine(order);
     const orderStatusConfig = getOrderStatusConfig(order.status);
     const statusLabel = orderStatusConfig ? t(orderStatusConfig.labelKey) : formatStatusFallbackLabel(order.status);
-    const orderDetailsUrl = `/account/orders/${order.orderNo}`;
+    const orderDetailsUrl = routeHref(routes.accountOrderDetail, { orderNo: order.orderNo });
 
     return (
         <Card className="py-0 rounded-none shadow-none">
@@ -66,7 +67,7 @@ export function RateRecentPurchasesCard({ order }: RateRecentPurchasesCardProps)
                                         {thumbs.map((item) => (
                                             <Link
                                                 key={item.productId}
-                                                to={`/product/${item.productId}`}
+                                                to={routeHref(routes.product, { productId: item.productId })}
                                                 className="relative block">
                                                 <div className="h-16 w-16 overflow-hidden rounded-none border border-border bg-muted">
                                                     {item.imageUrl ? (

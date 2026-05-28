@@ -25,6 +25,7 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider, type Site } from '@salesforce/storefront-next-runtime/site-context';
 import { mockSiteObject } from '@/test-utils/config';
 import LocaleSwitcher from './index';
+import { resourceRoutes } from '@/route-paths';
 
 const { t } = getTranslation();
 
@@ -187,7 +188,7 @@ describe('LocaleSwitcher', () => {
         expect(payload.locale).toBe('it-IT');
         expect(options).toEqual({
             method: 'POST',
-            action: '/action/set-site-context',
+            action: resourceRoutes.setSiteContext,
         });
     });
 

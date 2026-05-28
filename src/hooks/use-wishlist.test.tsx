@@ -23,6 +23,7 @@ import type { ShopperSearch } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
+import { resourceRoutes } from '@/route-paths';
 import { useWishlist } from './use-wishlist';
 
 // Mock dependencies
@@ -174,7 +175,7 @@ describe('useWishlist', () => {
             { productId: 'product-1' },
             {
                 method: 'POST',
-                action: '/action/wishlist-add',
+                action: resourceRoutes.wishlistAdd,
             }
         );
     });
@@ -202,7 +203,7 @@ describe('useWishlist', () => {
             { productId: 'product-1' },
             {
                 method: 'POST',
-                action: '/action/wishlist-remove',
+                action: resourceRoutes.wishlistRemove,
             }
         );
     });
@@ -347,7 +348,7 @@ describe('useWishlist', () => {
             { productId: 'variant-1' },
             {
                 method: 'POST',
-                action: '/action/wishlist-add',
+                action: resourceRoutes.wishlistAdd,
             }
         );
     });

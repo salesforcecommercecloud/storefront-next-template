@@ -44,6 +44,7 @@ import { Spinner } from '@/components/spinner';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { TurnstileWidget } from '@/components/security/turnstile-widget';
 import { getTurnstileSiteKey, getTurnstileMode, isTurnstileEnabled } from '@/lib/turnstile/utils';
+import { resourceRoutes } from '@/route-paths';
 
 const OtpModal = lazy(() => import('@/components/login/otp-modal'));
 const LoginModal = lazy(() => import('@/components/login/login-modal'));
@@ -90,7 +91,7 @@ export default function ContactInfo({
     const customerContactInfo = getContactInfoFromCustomer(customerProfile);
 
     const schema = useMemo(() => createContactInfoSchema(t), [t]);
-    const authorizePasswordlessEmailPath = useResolvedPath('/action/authorize-passwordless-email').pathname;
+    const authorizePasswordlessEmailPath = useResolvedPath(resourceRoutes.authorizePasswordlessEmail).pathname;
     const revalidator = useRevalidator();
     const passwordlessEmailFetcher = useFetcher<typeof authorizePasswordlessEmailAction>({
         key: 'contact-authorize-passwordless-email',

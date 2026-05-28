@@ -16,6 +16,7 @@
 import { useFetcher } from 'react-router';
 import { useCallback } from 'react';
 import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context/constants';
+import { resourceRoutes } from '@/route-paths';
 import type { action as updateShopperContextAction } from '@/routes/action.update-shopper-context';
 
 /**
@@ -44,7 +45,7 @@ export function useShopperContext() {
 
             await fetcher.submit(formData, {
                 method: 'PUT', // Always use PUT to update shopper context
-                action: `/action/${SHOPPER_CONTEXT_ACTION_NAME}`,
+                action: resourceRoutes.updateShopperContext,
             });
         },
         [fetcher]

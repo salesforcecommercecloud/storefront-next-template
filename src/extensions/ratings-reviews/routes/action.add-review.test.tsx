@@ -23,6 +23,7 @@ import { addReview } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import { expectStatus } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 const action = actionImpl as unknown as (args: { request: Request; context: unknown }) => ReturnType<typeof actionImpl>;
 
@@ -50,7 +51,7 @@ beforeEach(() => {
 describe('action.add-review — method validation', () => {
     test.each(['GET', 'PUT', 'DELETE', 'PATCH'])('returns 405 for %s', async (method) => {
         const response = await action({
-            request: new Request('http://localhost/action/add-review', { method }),
+            request: new Request(`http://localhost${resourceRoutes.addReview}`, { method }),
             context: mockContext,
         });
         expectStatus(response, 405);
@@ -62,7 +63,7 @@ describe('action.add-review — method validation', () => {
 describe('action.add-review — authentication', () => {
     test('returns 401 for guest users', async () => {
         vi.mocked(getAuth).mockReturnValue({ userType: 'guest', customerId: undefined } as ReturnType<typeof getAuth>);
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', validForm);
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', validForm);
         const response = await action({ request, context: mockContext });
         expectStatus(response, 401);
         expect(response.data.success).toBe(false);
@@ -78,7 +79,7 @@ describe('action.add-review — validation', () => {
         ['body too short', { ...validForm, body: 'too short' }],
         ['empty productId', { ...validForm, productId: '' }],
     ])('returns 400 for %s', async (_label, formFields) => {
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', formFields);
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', formFields);
         const response = await action({ request, context: mockContext });
         expectStatus(response, 400);
         expect(response.data.success).toBe(false);
@@ -86,7 +87,7 @@ describe('action.add-review — validation', () => {
     });
 
     test('returns 400 when photos JSON is malformed', async () => {
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', {
             ...validForm,
             photos: '{not-json',
         });
@@ -98,7 +99,7 @@ describe('action.add-review — validation', () => {
 
 describe('action.add-review — happy path', () => {
     test('returns 200 with constructed ReviewItem for a valid POST', async () => {
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', validForm);
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', validForm);
         const response = await action({ request, context: mockContext });
 
         expectStatus(response, 200);
@@ -123,7 +124,7 @@ describe('action.add-review — happy path', () => {
 
     test('parses photos JSON when present', async () => {
         const photos = [{ url: 'https://cdn.example.com/p1.jpg', alt: 'photo 1' }];
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', {
             ...validForm,
             photos: JSON.stringify(photos),
         });
@@ -137,7 +138,7 @@ describe('action.add-review — happy path', () => {
 
     test('rejects photos with non-https URLs', async () => {
         const photos = [{ url: 'javascript:alert(1)', alt: 'xss' }];
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', {
             ...validForm,
             photos: JSON.stringify(photos),
         });
@@ -148,7 +149,7 @@ describe('action.add-review — happy path', () => {
     });
 
     test('treats empty location as undefined', async () => {
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', {
             ...validForm,
             location: '',
         });
@@ -163,7 +164,7 @@ describe('action.add-review — happy path', () => {
 describe('action.add-review — internal failure', () => {
     test('returns 500 when addReview throws', async () => {
         vi.mocked(addReview).mockRejectedValueOnce(new Error('boom'));
-        const request = createFormDataRequest('http://localhost/action/add-review', 'POST', validForm);
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.addReview}`, 'POST', validForm);
         const response = await action({ request, context: mockContext });
         expectStatus(response, 500);
         expect(response.data.success).toBe(false);

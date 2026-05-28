@@ -23,6 +23,7 @@ import { SeoMeta } from '@/components/seo-meta';
 import { getLogger } from '@/lib/logger.server';
 import { useTranslation } from 'react-i18next';
 import { WishlistPageAnalytics } from '@/analytics/wishlist-page-analytics';
+import { resourceRoutes } from '@/route-paths';
 
 /**
  * Server-side loader. Delegates to `loadWishlistPageData` (shared with the
@@ -42,7 +43,7 @@ export async function loader({ context }: Route.LoaderArgs): Promise<WishlistPag
  * Disabled-item state is managed client-side to avoid unnecessary refetches.
  */
 export function shouldRevalidate({ formAction, defaultShouldRevalidate }: ShouldRevalidateFunctionArgs) {
-    if (formAction === '/action/wishlist-remove') {
+    if (formAction === resourceRoutes.wishlistRemove) {
         return false;
     }
     return defaultShouldRevalidate;

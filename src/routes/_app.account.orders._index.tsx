@@ -17,6 +17,7 @@
 import { type ReactElement, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Await, useLoaderData, redirect } from 'react-router';
+import { routes, routeHref } from '@/route-paths';
 import type { Route } from './+types/_app.account.orders._index';
 import { useNavigate } from '@/hooks/use-navigate';
 import { OrderListHeader, OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
@@ -92,7 +93,7 @@ export default function OrderListPage(): ReactElement {
 
     const handleViewDetails = (orderNo: string) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited
-        navigate(`/account/orders/${orderNo}`);
+        navigate(routeHref(routes.accountOrderDetail, { orderNo }));
     };
 
     return (

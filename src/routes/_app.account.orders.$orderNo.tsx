@@ -17,6 +17,7 @@ import { type ReactElement, Suspense } from 'react';
 import { Await, redirect, useLoaderData, useParams } from 'react-router';
 import type { Route } from './+types/_app.account.orders.$orderNo';
 import { Link } from '@/components/link';
+import { routes } from '@/route-paths';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -63,7 +64,7 @@ export function loader({ context, params }: Route.LoaderArgs): OrderDetailsPageL
 
     if (!orderNo) {
         logger.warn('OrderDetail: missing orderNo param, redirecting to order list');
-        throw redirect(buildUrlFromContext('/account/orders', context));
+        throw redirect(buildUrlFromContext(routes.accountOrders, context));
     }
 
     const { orderDataPromise } = fetchOrderWithProducts(context, orderNo);
@@ -90,7 +91,7 @@ function OrderNotFoundCard() {
                     {t('orders.orderNotFoundDescription')}
                 </Typography>
                 <Button asChild>
-                    <Link to="/account/orders">{t('orders.backToOrderHistory')}</Link>
+                    <Link to={routes.accountOrders}>{t('orders.backToOrderHistory')}</Link>
                 </Button>
             </CardContent>
         </Card>
@@ -120,13 +121,13 @@ export default function OrderDetailsPage(): ReactElement {
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to="/account">{t('myAccount')}</Link>
+                            <Link to={routes.account}>{t('myAccount')}</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to="/account/orders">{t('navigation.orderHistory')}</Link>
+                            <Link to={routes.accountOrders}>{t('navigation.orderHistory')}</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
@@ -136,7 +137,7 @@ export default function OrderDetailsPage(): ReactElement {
                 </BreadcrumbList>
             </Breadcrumb>
             <Link
-                to="/account/orders"
+                to={routes.accountOrders}
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-5">
                 <ChevronLeft className="size-3.5 shrink-0" aria-hidden />
                 {t('orders.backToOrderHistory')}

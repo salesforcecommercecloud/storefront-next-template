@@ -18,6 +18,7 @@ import type { Route } from './+types/action.set-site-context';
 import { siteContext, getSiteContextCookies, type SiteContext } from '@salesforce/storefront-next-runtime/site-context';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 /**
  * Unified server action for all site context changes (site, locale, currency).
@@ -71,7 +72,7 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
                 defaultLocale: site.defaultLocale,
                 defaultCurrency: site.defaultCurrency,
             });
-            return redirect('/', {
+            return redirect(routes.home, {
                 headers: [
                     ['Set-Cookie', siteCookieHeader],
                     ['Set-Cookie', localeCookieHeader],
@@ -97,7 +98,7 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
             }
 
             // Restrict redirect to same-origin relative paths to prevent open redirects
-            const redirectTo = pathname && pathname.startsWith('/') ? pathname : '/';
+            const redirectTo = pathname && pathname.startsWith('/') ? pathname : routes.home;
 
             const cookieHeader = await cookies.localeCookie.serialize(locale);
 

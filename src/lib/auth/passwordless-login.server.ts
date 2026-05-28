@@ -23,6 +23,7 @@ import {
     validateSlasCallbackToken,
 } from '@/lib/marketing/marketing-cloud.server';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { routes } from '@/route-paths';
 
 // Re-export for backwards compatibility with tests
 export { resetMarketingCloudTokenCache };
@@ -118,5 +119,5 @@ export function handlePasswordlessLanding({ request }: LoaderFunctionArgs) {
     params.set('email', email);
     if (redirectUrl) params.set('returnUrl', redirectUrl);
 
-    return redirect(`/login?${params.toString()}`);
+    return redirect(`${routes.login}?${params.toString()}`);
 }

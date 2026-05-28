@@ -17,6 +17,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { resourceRoutes } from '@/route-paths';
 import { XIcon } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -161,7 +162,7 @@ export function InterestsPreferencesSection({ initialData }: InterestsPreference
         formData.append('preferences', JSON.stringify(pendingPreferences));
         void fetcher.submit(formData, {
             method: 'PATCH',
-            action: '/action/customer-preferences-update',
+            action: resourceRoutes.customerPreferencesUpdate,
         });
     }, [fetcher, pendingInterests, pendingPreferences]);
 

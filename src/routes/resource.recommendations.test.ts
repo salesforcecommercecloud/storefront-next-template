@@ -16,6 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { RouterContextProvider } from 'react-router';
 import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import { resourceRoutes } from '@/route-paths';
 
 vi.mock('@/lib/product/recommendations.server', () => ({
     fetchProductRecommendations: vi.fn(),
@@ -35,7 +36,7 @@ const buildContext = (currency?: string): RouterContextProvider => {
 const ORIGIN = 'https://example.com';
 
 const buildUrl = (params: Record<string, string> = {}) => {
-    const url = new URL(`${ORIGIN}/resource/recommendations`);
+    const url = new URL(`${ORIGIN}${resourceRoutes.recommendations}`);
     for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
     return url.toString();
 };

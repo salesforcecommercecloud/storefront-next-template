@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
 import { type ForgotPasswordFormProps } from './types';
 import { useTranslation } from 'react-i18next';
+import { routes } from '@/route-paths';
 
 export function ForgotPasswordForm({ error }: ForgotPasswordFormProps) {
     const { t } = useTranslation('resetPassword');
@@ -49,7 +50,7 @@ export function ForgotPasswordForm({ error }: ForgotPasswordFormProps) {
 
             <div className="text-center">
                 <span className="text-sm text-muted-foreground">{t('or')}</span>
-                <Link to="/login" className="text-sm text-primary hover:text-primary/80">
+                <Link to={routes.login} className="text-sm text-primary hover:text-primary/80">
                     {t('goBackToLogin')}
                 </Link>
             </div>

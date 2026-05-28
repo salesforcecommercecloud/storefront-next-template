@@ -57,6 +57,7 @@ vi.mock('@/lib/logger.server', () => ({
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import { createActionArgs, expectStatus } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 describe('action.cart-item-add', () => {
     const emptyBasket = { basketId: 'test-basket-123', productItems: [] };
@@ -82,12 +83,12 @@ describe('action.cart-item-add', () => {
     test('adds a regular item to the basket', async () => {
         mockClients.shopperBasketsV2.addItemToBasket.mockResolvedValue({ data: updatedBasket });
 
-        const request = createFormDataRequest('http://localhost/action/cart-item-add', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.cartItemAdd}`, 'POST', {
             productItem: JSON.stringify({ productId: 'p-1', quantity: 1 }),
         });
 
         const result = await action(
-            createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-item-add' })
+            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartItemAdd })
         );
 
         expect(result.data.success).toBe(true);
@@ -103,7 +104,7 @@ describe('action.cart-item-add', () => {
         };
         vi.mocked(getBasket).mockResolvedValue({ current: basketWithPickup, snapshot: null } as any);
 
-        const request = createFormDataRequest('http://localhost/action/cart-item-add', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.cartItemAdd}`, 'POST', {
             productItem: JSON.stringify({
                 productId: 'p-1',
                 quantity: 1,
@@ -113,7 +114,7 @@ describe('action.cart-item-add', () => {
         });
 
         const result = await action(
-            createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-item-add' })
+            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartItemAdd })
         );
 
         expectStatus(result, 409);
@@ -131,7 +132,7 @@ describe('action.cart-item-add', () => {
         vi.mocked(getBasket).mockResolvedValue({ current: basketWithPickup, snapshot: null } as any);
         mockClients.shopperBasketsV2.addItemToBasket.mockResolvedValue({ data: updatedBasket });
 
-        const request = createFormDataRequest('http://localhost/action/cart-item-add', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.cartItemAdd}`, 'POST', {
             productItem: JSON.stringify({
                 productId: 'p-1',
                 quantity: 1,
@@ -141,7 +142,7 @@ describe('action.cart-item-add', () => {
         });
 
         const result = await action(
-            createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-item-add' })
+            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartItemAdd })
         );
 
         expect(result.data.success).toBe(true);

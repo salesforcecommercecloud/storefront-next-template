@@ -28,6 +28,7 @@ import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useOtpVerification } from '@/hooks/use-otp-verification';
+import { resourceRoutes } from '@/route-paths';
 
 interface OtpModalProps {
     isOpen: boolean;
@@ -41,7 +42,7 @@ interface OtpModalProps {
     onResendCode?: () => Promise<void>;
     otpLength?: number;
     initialError?: string;
-    verifyActionUrl?: string; // Custom action endpoint (defaults to /action/verify-passwordless-otp)
+    verifyActionUrl?: string; // Custom action endpoint (defaults to resourceRoutes.verifyPasswordlessOtp)
     onVerifyCode?: (code: string) => void; // Callback to handle OTP verification externally
     isRegistration?: boolean;
 }
@@ -72,14 +73,14 @@ export default function OtpModal({
     onResendCode,
     otpLength = 6,
     initialError,
-    verifyActionUrl = '/action/verify-passwordless-otp',
+    verifyActionUrl = resourceRoutes.verifyPasswordlessOtp,
     onVerifyCode,
     isRegistration = false,
 }: OtpModalProps): ReactElement {
     // Track if we've already called onSuccess to prevent infinite loops
     const hasCalledOnSuccessRef = useRef(false);
     const { t } = useTranslation('login');
-    const fetcherKey = verifyActionUrl === '/action/otp-verify' ? 'otp-email-verification' : 'otp-verification';
+    const fetcherKey = verifyActionUrl === resourceRoutes.otpVerify ? 'otp-email-verification' : 'otp-verification';
     const fetcher = useFetcher<typeof verifyPasswordlessOtpAction>({ key: fetcherKey });
     const [error, setError] = useState<string | null>(null);
     const [isVerifying, setIsVerifying] = useState(false);

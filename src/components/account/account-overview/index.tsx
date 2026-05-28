@@ -29,6 +29,7 @@ import { AccountHelp } from '@/components/account/account-help';
 import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import { UITarget } from '@/targets/ui-target';
 import { RateRecentPurchasesCard } from '@/components/account/account-overview/rate-recent-purchases-card';
+import { routes, routeHref } from '@/route-paths';
 
 type Customer = ShopperCustomers.schemas['Customer'];
 
@@ -94,22 +95,22 @@ export function QuickLinksSection(): ReactElement {
 
     const quickLinks: QuickLinkItem[] = [
         {
-            path: '/account',
+            path: routes.account,
             icon: User,
             label: t('navigation.accountDetails'),
         },
         {
-            path: '/account/addresses',
+            path: routes.accountAddresses,
             icon: MapPin,
             label: t('navigation.manageAddresses'),
         },
         {
-            path: '/account/payment-methods',
+            path: routes.accountPaymentMethods,
             icon: CreditCard,
             label: t('navigation.paymentMethods'),
         },
         {
-            path: '/account/orders',
+            path: routes.accountOrders,
             icon: Receipt,
             label: t('navigation.orderHistory'),
         },
@@ -187,7 +188,7 @@ function RecentOrdersListBlock({ result, onViewDetails }: RecentOrdersListBlockP
                             </p>
                         </div>
                         <Button variant="outline" asChild className="shrink-0 bg-secondary shadow-2xs">
-                            <Link to="/account/orders">{t('overview.recentOrders.viewAll')}</Link>
+                            <Link to={routes.accountOrders}>{t('overview.recentOrders.viewAll')}</Link>
                         </Button>
                     </div>
                 </CardContent>
@@ -209,7 +210,7 @@ export function AccountOverviewOrdersAwait({
 
     const handleViewDetails = (orderNo: string) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises -- navigate() result intentionally not awaited
-        navigate(`/account/orders/${orderNo}`);
+        navigate(routeHref(routes.accountOrderDetail, { orderNo }));
     };
 
     return (

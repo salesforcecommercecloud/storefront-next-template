@@ -27,6 +27,7 @@ import type {
     ShopperStores,
 } from '@/scapi';
 import { useProductActions } from './use-product-actions';
+import { resourceRoutes } from '@/route-paths';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as BasketModule from '@/providers/basket';
 const BasketProvider = BasketModule.default;
@@ -136,25 +137,25 @@ const wrapper = ({ children, basket }: { children: React.ReactNode; basket?: Sho
                 element: createTestProviders(children, basket),
             },
             {
-                path: '/action/cart-item-add',
+                path: resourceRoutes.cartItemAdd,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
             },
             {
-                path: '/action/cart-set-add',
+                path: resourceRoutes.cartSetAdd,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
             },
             {
-                path: '/action/cart-bundle-add',
+                path: resourceRoutes.cartBundleAdd,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
             },
             {
-                path: '/action/cart-item-update',
+                path: resourceRoutes.cartItemUpdate,
                 action: () => {
                     return Response.json({ success: true, basket });
                 },
@@ -2247,7 +2248,7 @@ describe('useProductActions', () => {
                             element: createTestProviders(children, undefined),
                         },
                         {
-                            path: '/action/cart-item-add',
+                            path: resourceRoutes.cartItemAdd,
                             action: () => Response.json({ success: true }),
                         },
                     ],

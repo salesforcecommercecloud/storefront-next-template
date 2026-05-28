@@ -57,6 +57,7 @@ vi.mock('@/lib/logger.server', () => ({
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import { createActionArgs, expectStatus } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 describe('action.cart-set-add', () => {
     const emptyBasket = { basketId: 'test-basket-123', productItems: [] };
@@ -85,14 +86,16 @@ describe('action.cart-set-add', () => {
     test('adds multiple regular items to the basket', async () => {
         mockClients.shopperBasketsV2.addItemToBasket.mockResolvedValue({ data: updatedBasket });
 
-        const request = createFormDataRequest('http://localhost/action/cart-set-add', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.cartSetAdd}`, 'POST', {
             productItems: JSON.stringify([
                 { productId: 'p-1', quantity: 1 },
                 { productId: 'p-2', quantity: 2 },
             ]),
         });
 
-        const result = await action(createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-set-add' }));
+        const result = await action(
+            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartSetAdd })
+        );
 
         expect(result.data.success).toBe(true);
         expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledTimes(1);
@@ -107,14 +110,16 @@ describe('action.cart-set-add', () => {
         };
         vi.mocked(getBasket).mockResolvedValue({ current: basketWithPickup, snapshot: null } as any);
 
-        const request = createFormDataRequest('http://localhost/action/cart-set-add', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.cartSetAdd}`, 'POST', {
             productItems: JSON.stringify([
                 { productId: 'p-1', quantity: 1, storeId: 'store-B', inventoryId: 'inv-B' },
                 { productId: 'p-2', quantity: 1, storeId: 'store-B', inventoryId: 'inv-B' },
             ]),
         });
 
-        const result = await action(createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-set-add' }));
+        const result = await action(
+            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartSetAdd })
+        );
 
         expectStatus(result, 409);
         expect(result.data.success).toBe(false);
@@ -131,14 +136,16 @@ describe('action.cart-set-add', () => {
         vi.mocked(getBasket).mockResolvedValue({ current: basketWithPickup, snapshot: null } as any);
         mockClients.shopperBasketsV2.addItemToBasket.mockResolvedValue({ data: updatedBasket });
 
-        const request = createFormDataRequest('http://localhost/action/cart-set-add', 'POST', {
+        const request = createFormDataRequest(`http://localhost${resourceRoutes.cartSetAdd}`, 'POST', {
             productItems: JSON.stringify([
                 { productId: 'p-1', quantity: 1, storeId: 'store-A', inventoryId: 'inv-A' },
                 { productId: 'p-2', quantity: 1, storeId: 'store-A', inventoryId: 'inv-A' },
             ]),
         });
 
-        const result = await action(createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-set-add' }));
+        const result = await action(
+            createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartSetAdd })
+        );
 
         expect(result.data.success).toBe(true);
         expect(mockClients.shopperBasketsV2.addItemToBasket).toHaveBeenCalledTimes(1);

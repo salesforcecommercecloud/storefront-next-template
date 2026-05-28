@@ -19,6 +19,7 @@ import { destroyAuth as destroyAuthServer, getAuth } from '@/middlewares/auth.se
 import { createApiClients } from '@/lib/api-clients.server';
 import { destroyBasket } from '@/middlewares/basket.server';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 /**
  * This server action is required for authentication, because logout must be handled server-side to properly invalidate
@@ -42,5 +43,5 @@ export async function action({ context }: Route.ActionArgs) {
     destroyAuthServer(context);
     destroyBasket(context);
     logger.info('Logout: session destroyed');
-    return redirect('/');
+    return redirect(routes.home);
 }

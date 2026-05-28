@@ -27,6 +27,7 @@ import { toImageUrl } from '@/lib/images/dynamic-image';
 import { useTranslation } from 'react-i18next';
 import heroImage from '/images/hero-01.webp';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { routes, routeHref } from '@/route-paths';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { loader } from './loaders';
@@ -118,7 +119,7 @@ export default function PopularCategory({
 
     return (
         <Link
-            to={`/category/${finalCategoryId}`}
+            to={routeHref(routes.category, { categoryId: finalCategoryId })}
             className={cn(
                 'block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 className

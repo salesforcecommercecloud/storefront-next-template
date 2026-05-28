@@ -30,6 +30,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getSubscriptions } from '@/lib/api/consent.server';
 import { getCustomer } from '@/lib/api/customer.server';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { resourceRoutes, routes } from '@/route-paths';
 
 // Logging
 import { getLogger } from '@/lib/logger.server';
@@ -67,7 +68,7 @@ export function loader(args: Route.LoaderArgs) {
         !customerId
     ) {
         logger.warn('Account: authentication validation failed, redirecting to login');
-        throw redirect(buildUrlFromContext('/login', args.context));
+        throw redirect(buildUrlFromContext(routes.login, args.context));
     }
 
     const customer = getCustomer(args.context, customerId);
@@ -84,7 +85,7 @@ export function shouldRevalidate({ defaultShouldRevalidate, formAction }: Should
     }
 
     // Defer revalidation for OTP email verification so modal can close and email edit form can open
-    if (formAction?.includes('/action/otp-request') || formAction?.includes('/action/otp-verify')) {
+    if (formAction?.includes(resourceRoutes.otpRequest) || formAction?.includes(resourceRoutes.otpVerify)) {
         return false;
     }
 
@@ -92,14 +93,14 @@ export function shouldRevalidate({ defaultShouldRevalidate, formAction }: Should
     // We cannot revalidate until the user completes the verify-passwordless call and is reauthenticated
     // with a new JWT scoped to the new email.
     if (
-        formAction?.includes('/action/authorize-passwordless-email') ||
-        formAction?.includes('/action/verify-passwordless-otp')
+        formAction?.includes(resourceRoutes.authorizePasswordlessEmail) ||
+        formAction?.includes(resourceRoutes.verifyPasswordlessOtp)
     ) {
         return false;
     }
 
     // Defer revalidation for password reset action - no need to refetch customer data
-    if (formAction?.includes('/action/request-password-reset')) {
+    if (formAction?.includes(resourceRoutes.requestPasswordReset)) {
         return false;
     }
 

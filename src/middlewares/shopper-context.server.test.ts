@@ -21,6 +21,7 @@ import { createShopperContext } from '@/lib/api/shopper-context.server';
 import { getAuth } from './auth.server';
 import { createCookie, getCookieConfig } from '@/lib/cookie-utils.server';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
+import { resourceRoutes } from '@/route-paths';
 
 vi.mock('@/lib/shopper-context/constants', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@/lib/shopper-context/constants')>();
@@ -814,7 +815,7 @@ describe('shopper-context.server', () => {
 
         test('should process shopper context when request URL is an action URL (e.g. POST to action route)', async () => {
             // Real-life action URL: POST to action route with product/quantity params and src for shopper context
-            const actionUrl = 'http://localhost:5173/action/cart-item-add?pid=701644606374M&quantity=1&src=email';
+            const actionUrl = `http://localhost:5173${resourceRoutes.cartItemAdd}?pid=701644606374M&quantity=1&src=email`;
             mockRequest = new Request(actionUrl, { method: 'POST' });
 
             const result = await shopperContextMiddleware(createMiddlewareArgs(mockRequest, mockContext), mockNext);

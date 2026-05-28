@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/toast';
 import { getLastFourDigits } from '@/lib/payment/payment-utils';
 import { UITarget } from '@/targets/ui-target';
+import { resourceRoutes } from '@/route-paths';
 
 export interface PaymentMethodsProps {
     customer: ShopperCustomers.schemas['Customer'] | null;
@@ -93,7 +94,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
 
     const handleAddSubmitForm = (formData: FormData) => {
         currentIntentRef.current = 'add';
-        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-add' });
+        void paymentFetcher.submit(formData, { method: 'POST', action: resourceRoutes.paymentMethodAdd });
     };
 
     const handleRemoveClick = (method: PaymentMethod) => {
@@ -110,7 +111,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
         currentIntentRef.current = 'delete';
         const formData = new FormData();
         formData.append('paymentInstrumentId', paymentInstrumentId);
-        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-remove' });
+        void paymentFetcher.submit(formData, { method: 'POST', action: resourceRoutes.paymentMethodRemove });
     };
 
     const handleSetDefault = (method: PaymentMethod) => {
@@ -118,7 +119,7 @@ export function PaymentMethods({ customer }: PaymentMethodsProps): ReactElement 
         currentIntentRef.current = 'setDefault';
         const formData = new FormData();
         formData.append('paymentInstrumentId', method.id);
-        void paymentFetcher.submit(formData, { method: 'POST', action: '/action/payment-method-set-default' });
+        void paymentFetcher.submit(formData, { method: 'POST', action: resourceRoutes.paymentMethodSetDefault });
     };
 
     useEffect(() => {

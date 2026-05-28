@@ -22,6 +22,7 @@ import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import type { action as postOrderRegisterAction } from '@/routes/action.post-order-register';
+import { resourceRoutes } from '@/route-paths';
 
 type PostOrderRegistrationProps = {
     email: string;
@@ -105,7 +106,7 @@ export function PostOrderRegistration({
                     </div>
                 )}
 
-                <fetcher.Form method="POST" action="/action/post-order-register">
+                <fetcher.Form method="POST" action={resourceRoutes.postOrderRegister}>
                     <div className="space-y-6">
                         <input type="hidden" name="email" value={email} />
                         <input type="hidden" name="firstName" value={firstName || ''} />

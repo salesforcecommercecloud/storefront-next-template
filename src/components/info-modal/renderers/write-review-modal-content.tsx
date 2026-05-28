@@ -16,6 +16,7 @@
 /** @sfdc-extension-file SFDC_EXT_RATINGS_REVIEWS */
 import { type ReactElement, useState, useCallback, useRef, useEffect } from 'react';
 import { useFetcher } from 'react-router';
+import { resourceRoutes } from '@/route-paths';
 import { useTranslation } from 'react-i18next';
 import { StarRating } from '@/components/product-ratings/star-rating';
 import { Button } from '@/components/ui/button';
@@ -158,7 +159,7 @@ export function WriteReviewModalContent({
             formData.append('body', reviewBodyTrimmed);
             if (location.trim()) formData.append('location', location.trim());
             if (recommend !== null) formData.append('recommend', String(recommend));
-            void fetcher.submit(formData, { method: 'POST', action: '/action/add-review' });
+            void fetcher.submit(formData, { method: 'POST', action: resourceRoutes.addReview });
         },
         [
             addReviewOptimistic,

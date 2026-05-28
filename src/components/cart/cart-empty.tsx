@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 
 import { useTranslation } from 'react-i18next';
+import { routes } from '@/route-paths';
 
 /**
  * EmptyCart component that displays when the cart has no items
@@ -64,7 +65,7 @@ export default function EmptyCart(): ReactElement {
 
                     {/* Action Button */}
                     <Button asChild>
-                        <Link to="/">{t('empty.continueShopping')}</Link>
+                        <Link to={routes.home}>{t('empty.continueShopping')}</Link>
                     </Button>
                 </div>
             </div>

@@ -29,6 +29,7 @@ import type {
     action as initiateRegistrationAction,
     InitiateRegistrationResponse,
 } from '@/routes/action.initiate-checkout-registration';
+import { resourceRoutes } from '@/route-paths';
 
 interface RegisterCustomerSelectionProps {
     /** Callback when checkbox state changes - receives boolean value */
@@ -136,7 +137,7 @@ export default function RegisterCustomerSelection({
 
             void registrationFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/initiate-checkout-registration',
+                action: resourceRoutes.initiateCheckoutRegistration,
             });
             if (turnstileEnabled) resetTurnstile();
         } else {
@@ -204,7 +205,7 @@ export default function RegisterCustomerSelection({
         return new Promise<void>((resolve, _reject) => {
             void registrationFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/initiate-checkout-registration',
+                action: resourceRoutes.initiateCheckoutRegistration,
             });
             if (turnstileEnabled) resetTurnstile();
 

@@ -21,6 +21,7 @@ import type { ActionResponse } from '@/routes/types/action-responses';
 
 // Hooks
 import { useCartQuantityUpdate } from './use-cart-quantity-update';
+import { resourceRoutes } from '@/route-paths';
 
 // Test utilities
 import { ConfigWrapper } from '@/test-utils/config';
@@ -345,7 +346,7 @@ describe('useCartQuantityUpdate', () => {
                 expect.any(FormData),
                 expect.objectContaining({
                     method: 'POST',
-                    action: '/action/cart-item-remove',
+                    action: resourceRoutes.cartItemRemove,
                 })
             );
         });
@@ -534,7 +535,7 @@ describe('useCartQuantityUpdate', () => {
                 expect.any(FormData),
                 expect.objectContaining({
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 })
             );
         });
@@ -610,7 +611,7 @@ describe('useCartQuantityUpdate', () => {
             expect(lastCall[1]).toEqual(
                 expect.objectContaining({
                     method: 'PATCH',
-                    action: '/action/cart-item-update',
+                    action: resourceRoutes.cartItemUpdate,
                 })
             );
         });

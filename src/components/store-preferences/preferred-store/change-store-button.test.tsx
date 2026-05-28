@@ -21,6 +21,7 @@ import ChangeStoreButton from './change-store-button';
 // Mock react-router
 const mockRevalidate = vi.fn();
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useRevalidator: () => ({
         revalidate: mockRevalidate,
     }),

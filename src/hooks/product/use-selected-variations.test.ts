@@ -22,6 +22,7 @@ import type { ShopperProducts } from '@/scapi';
 const mockUseSearchParams = vi.fn();
 const mockUseNavigation = vi.fn();
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useSearchParams: () => mockUseSearchParams(),
     useNavigation: () => mockUseNavigation(),
 }));

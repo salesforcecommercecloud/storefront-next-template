@@ -15,6 +15,7 @@
  */
 
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
+import { resourceRoutes } from '@/route-paths';
 import type { useToast } from '@/components/toast';
 import type { ActionError } from '@/lib/error-codes';
 /**
@@ -57,7 +58,7 @@ export interface ActionHandler {
  */
 export const actionRegistry: Record<string, ActionHandler> = {
     addToWishlist: {
-        actionRoute: '/action/wishlist-add',
+        actionRoute: resourceRoutes.wishlistAdd,
         buildFormData: (params) => {
             const formData = new FormData();
             if (params.productId) {

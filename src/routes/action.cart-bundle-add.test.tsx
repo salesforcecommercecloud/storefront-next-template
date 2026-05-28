@@ -65,6 +65,7 @@ vi.mock('@/lib/logger.server', () => ({
 
 import { createFormDataRequest } from '@/test-utils/request-helpers';
 import { createActionArgs, expectStatus } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 describe('action.cart-bundle-add', () => {
     const mockBasket = {
@@ -129,13 +130,13 @@ describe('action.cart-bundle-add', () => {
             mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
             mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
                 bundleItem: JSON.stringify(bundleItem),
                 childSelections: JSON.stringify(childSelections),
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(true);
@@ -161,13 +162,13 @@ describe('action.cart-bundle-add', () => {
             mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
             mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
                 bundleItem: JSON.stringify(bundleItem),
                 childSelections: JSON.stringify(childSelections),
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(true);
@@ -191,13 +192,13 @@ describe('action.cart-bundle-add', () => {
             mockClients.shopperBasketsV2.updateItemsInBasket.mockResolvedValue({ data: mockUpdatedBasket });
             mockClients.shopperBasketsV2.getBasket.mockResolvedValue({ data: mockUpdatedBasket });
 
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
                 bundleItem: JSON.stringify(bundleItem),
                 childSelections: JSON.stringify(childSelections),
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(true);
@@ -221,10 +222,10 @@ describe('action.cart-bundle-add', () => {
         });
 
         test('returns error when bundle data is missing', async () => {
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {});
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {});
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
             expect(result.data.success).toBe(false);
@@ -232,12 +233,12 @@ describe('action.cart-bundle-add', () => {
         });
 
         test('returns error for non-POST requests', async () => {
-            const request = new Request('http://localhost/action/cart-bundle-add', {
+            const request = new Request(`http://localhost${resourceRoutes.cartBundleAdd}`, {
                 method: 'GET',
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
             expectStatus(result, 405);
@@ -268,13 +269,13 @@ describe('action.cart-bundle-add', () => {
                 },
             ];
 
-            const request = createFormDataRequest('http://localhost/action/cart-bundle-add', 'POST', {
+            const request = createFormDataRequest(`http://localhost${resourceRoutes.cartBundleAdd}`, 'POST', {
                 bundleItem: JSON.stringify(bundleItem),
                 childSelections: JSON.stringify(childSelections),
             });
 
             const result = await action(
-                createActionArgs(request, {} as any, { unstable_pattern: '/action/cart-bundle-add' })
+                createActionArgs(request, {} as any, { unstable_pattern: resourceRoutes.cartBundleAdd })
             );
 
             expectStatus(result, 409);

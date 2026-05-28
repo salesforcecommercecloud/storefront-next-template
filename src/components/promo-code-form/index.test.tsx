@@ -22,6 +22,7 @@ import { Toaster } from '@/components/toast';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
+import { resourceRoutes } from '@/route-paths';
 
 const { t } = getTranslation();
 
@@ -59,11 +60,11 @@ const renderWithFetcherActions = ({
             ),
         },
         {
-            path: '/action/promo-code-add',
+            path: resourceRoutes.promoCodeAdd,
             action: addAction ?? (() => ({ success: true })),
         },
         {
-            path: '/action/promo-code-remove',
+            path: resourceRoutes.promoCodeRemove,
             action: removeAction ?? (() => ({ success: true })),
         },
     ];

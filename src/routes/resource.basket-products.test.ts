@@ -16,6 +16,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loader, shouldRevalidate } from './resource.basket-products';
 import { createLoaderArgs, createTestContext } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 import config from '@/config/server';
 
 // Mock getBasket
@@ -91,8 +92,8 @@ describe('resource.basket-products', () => {
     });
 
     const getLoaderArgs = () =>
-        createLoaderArgs(new Request('http://localhost/resource/basket-products'), mockContext, {
-            unstable_pattern: '/resource/basket-products',
+        createLoaderArgs(new Request(`http://localhost${resourceRoutes.basketProducts}`), mockContext, {
+            unstable_pattern: resourceRoutes.basketProducts,
         });
 
     describe('shouldRevalidate', () => {
@@ -112,7 +113,7 @@ describe('resource.basket-products', () => {
             expect(
                 shouldRevalidate({
                     ...baseArgs,
-                    formAction: '/action/cart-item-add',
+                    formAction: resourceRoutes.cartItemAdd,
                     actionResult: { success: true, basket: { basketId: 'basket-123' } },
                 })
             ).toBe(true);
@@ -124,7 +125,7 @@ describe('resource.basket-products', () => {
             expect(
                 shouldRevalidate({
                     ...baseArgs,
-                    formAction: '/action/wishlist-add',
+                    formAction: resourceRoutes.wishlistAdd,
                     actionResult: { success: true },
                 })
             ).toBe(false);
@@ -136,7 +137,7 @@ describe('resource.basket-products', () => {
             expect(
                 shouldRevalidate({
                     ...baseArgs,
-                    formAction: '/action/cart-item-add',
+                    formAction: resourceRoutes.cartItemAdd,
                     actionResult: { success: false, basket: {} },
                 })
             ).toBe(false);

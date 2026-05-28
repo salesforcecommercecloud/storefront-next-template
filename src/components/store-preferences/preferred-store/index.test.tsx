@@ -22,6 +22,7 @@ import PreferredStore from '.';
 
 // Mock react-router
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useLoaderData: vi.fn(),
     useNavigation: vi.fn(() => ({ state: 'idle' })),
 }));

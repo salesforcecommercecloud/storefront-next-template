@@ -30,6 +30,7 @@ import { fetchOrderWithProducts } from '@/lib/api/order.server';
 import { useBasketReset } from '@/providers/basket';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { routes } from '@/route-paths';
 import type {
     ShopperOrders,
     ShopperProducts,
@@ -165,7 +166,7 @@ export function ErrorBoundary() {
                             {errorMessage}
                         </Typography>
                         <Button asChild>
-                            <Link to="/">{t('confirmation.actions.continueShopping')}</Link>
+                            <Link to={routes.home}>{t('confirmation.actions.continueShopping')}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -556,10 +557,10 @@ function OrderConfirmationContent({
 
                 <div className="flex flex-col justify-center gap-4 pt-2 sm:flex-row">
                     <Button asChild size="lg">
-                        <Link to="/">{t('confirmation.actions.continueShopping')}</Link>
+                        <Link to={routes.home}>{t('confirmation.actions.continueShopping')}</Link>
                     </Button>
                     <Button asChild variant="outline" size="lg">
-                        <Link to="/account">{t('confirmation.actions.viewAccount')}</Link>
+                        <Link to={routes.account}>{t('confirmation.actions.viewAccount')}</Link>
                     </Button>
                 </div>
             </div>

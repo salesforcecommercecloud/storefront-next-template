@@ -21,6 +21,7 @@ import { NativeSelect } from '@/components/ui/native-select';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { buildUrl, resolvePrefix, stripPathPrefix, useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
+import { resourceRoutes } from '@/route-paths';
 
 export default function LocaleSwitcher(): ReactElement {
     const id = useId();
@@ -66,7 +67,7 @@ export default function LocaleSwitcher(): ReactElement {
         // with the new locale.
         await fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-site-context',
+            action: resourceRoutes.setSiteContext,
         });
         window.location.href = pathname;
     };

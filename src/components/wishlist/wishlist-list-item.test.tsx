@@ -21,6 +21,7 @@ import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { WishlistListItem } from './wishlist-list-item';
+import { resourceRoutes } from '@/route-paths';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { masterProduct, variantProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
@@ -351,7 +352,7 @@ describe('WishlistListItem', () => {
 
             expect(mockSubmit).toHaveBeenCalledWith(
                 { itemId: 'item-123' },
-                { method: 'POST', action: '/action/wishlist-remove' }
+                { method: 'POST', action: resourceRoutes.wishlistRemove }
             );
         });
 

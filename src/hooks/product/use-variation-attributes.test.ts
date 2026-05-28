@@ -30,6 +30,7 @@ import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 import type { ShopperProducts } from '@/scapi';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useLocation: vi.fn(),
 }));
 

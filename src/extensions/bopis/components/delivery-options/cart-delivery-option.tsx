@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { type ReactElement, useCallback, useEffect, useRef } from 'react';
+import { resourceRoutes } from '@/route-paths';
 import { useItemFetcher } from '@/hooks/use-item-fetcher';
 import type { ShopperProducts } from '@/scapi';
 import PickupOrDeliveryDropdown from './pickup-or-delivery-dropdown';
@@ -131,7 +132,7 @@ export default function CartDeliveryOption({ product }: CartDeliveryOptionProps)
         }
         void fetcher.submit(formData, {
             method: 'PATCH',
-            action: '/action/cart-item-update',
+            action: resourceRoutes.cartItemUpdate,
         });
     };
 

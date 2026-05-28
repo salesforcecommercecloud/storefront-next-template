@@ -35,6 +35,7 @@ import type { loader as basketProductsLoader } from '@/routes/resource.basket-pr
 import type { ProductsWithPromotionsMap } from '@/lib/cart/bonus-product-utils';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
 import { useBasketSnapshot, useBasketUpdater } from '@/providers/basket';
+import { resourceRoutes } from '@/route-paths';
 
 /**
  * A basket product item enriched with full product details (images, variations, etc.)
@@ -57,7 +58,7 @@ interface UseMiniCartDataResult {
 // sheet) and useMiniCartDataLoader (used for prefetch) attach to this key so they observe the same fetcher state
 // — a prefetch in flight is reused by the cart sheet rather than dispatched a second time.
 const MINI_CART_FETCHER_KEY = 'basket-products';
-const MINI_CART_RESOURCE_URL = '/resource/basket-products';
+const MINI_CART_RESOURCE_URL = resourceRoutes.basketProducts;
 
 /**
  * Imperative loader for the mini-cart resource. Returns a reference-stable callback that dispatches a load if

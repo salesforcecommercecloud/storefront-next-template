@@ -31,6 +31,7 @@ import {
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { trackingConsentToBoolean } from '@/types/tracking-consent';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 export interface AuthorizeIDPParams {
     hint: string;
@@ -181,7 +182,7 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
         if (error) {
             logger.error('SocialLogin: provider returned error', { error });
             const errorMessage = t('socialCallback:socialError');
-            return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+            return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
         }
 
         // Handle successful authorization with code
@@ -232,16 +233,16 @@ export async function handleSocialLoginLanding({ request, context }: LoaderFunct
             } else {
                 logger.error('SocialLogin: login failed', { error: result.error });
                 const errorMessage = t('errors:genericTryAgain');
-                return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+                return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
             }
         } else {
             logger.error('SocialLogin: missing authorization code');
             const errorMessage = t('errors:genericTryAgain');
-            return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+            return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
         }
     } catch (error) {
         logger.error('SocialLogin: landing handler failed', { error });
         const errorMessage = t('errors:genericTryAgain');
-        return redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
+        return redirect(`${routes.login}?error=${encodeURIComponent(errorMessage)}`);
     }
 }

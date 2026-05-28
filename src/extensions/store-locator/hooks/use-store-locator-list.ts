@@ -15,6 +15,7 @@
  */
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useFetcher } from 'react-router';
+import { resourceRoutes } from '@/route-paths';
 import { useStoreLocator } from '@/extensions/store-locator/providers/store-locator';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import type {
@@ -83,7 +84,7 @@ export function useStoreLocatorList() {
         if (canFetch) {
             setHasSearched(true);
             isSearchingRef.current = true;
-            void fetcher.load(`/resource/stores?${params.toString()}`);
+            void fetcher.load(`${resourceRoutes.stores}?${params.toString()}`);
             setShouldSearch(false);
         }
         setPage(1);
@@ -121,7 +122,7 @@ export function useStoreLocatorList() {
             // Submit to server action for cookie persistence
             const formData = new FormData();
             formData.set('storeInfo', info ? JSON.stringify(info) : '');
-            void storeFetcher.submit(formData, { method: 'POST', action: '/action/set-selected-store' });
+            void storeFetcher.submit(formData, { method: 'POST', action: resourceRoutes.setSelectedStore });
         },
         [setSelectedStoreInfoRaw, storeFetcher]
     );

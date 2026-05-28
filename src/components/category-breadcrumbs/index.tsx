@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from '@/components/link';
 import type { ShopperProducts } from '@/scapi';
 import { ChevronRight } from 'lucide-react';
+import { routes, routeHref } from '@/route-paths';
 
 type PathRecord = Required<ShopperProducts.schemas['Category']>['parentCategoryTree'][0];
 
@@ -32,14 +33,16 @@ export default function CategoryBreadcrumbs({
         <nav aria-label={t('breadcrumbs.label')} className="mb-6">
             <ol className="flex flex-wrap items-center text-sm font-normal leading-5 text-foreground">
                 <li key="home" className="flex items-center">
-                    <Link to="/" className="hover:underline">
+                    <Link to={routes.home} className="hover:underline">
                         {t('breadcrumbs.home')}
                     </Link>
                 </li>
                 {items.map((item) => (
                     <li key={item.id} className="flex items-center">
                         <ChevronRight className="mx-1 size-3" />
-                        <Link to={`/category/${item.id}`} className="hover:underline">
+                        <Link
+                            to={routeHref(routes.category, { categoryId: item.id ?? '' })}
+                            className="hover:underline">
                             {item.name}
                         </Link>
                     </li>

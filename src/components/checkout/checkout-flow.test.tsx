@@ -21,6 +21,7 @@ import { http, HttpResponse } from 'msw';
 import { mockAltSiteObject } from '@/test-utils/config';
 import { useCheckoutContext } from '@/hooks/use-checkout';
 import CheckoutFormPage from './checkout-form-page';
+import { resourceRoutes } from '@/route-paths';
 
 // Mock component prop interfaces
 interface MockComponentProps {
@@ -246,7 +247,7 @@ const server = setupServer(
     }),
 
     // Order placement
-    http.post('/action/place-order', () => {
+    http.post(resourceRoutes.placeOrder, () => {
         return HttpResponse.json({
             success: true,
             orderNo: 'ORDER-2024-001',
@@ -711,7 +712,7 @@ describe('Checkout Flow Integration Tests', () => {
                 return createErrorResponse();
             }
         }),
-        http.post('/action/place-order', () => {
+        http.post(resourceRoutes.placeOrder, () => {
             return HttpResponse.json({
                 success: true,
                 orderNo: 'ORDER-2024-001',
@@ -1514,7 +1515,7 @@ describe('Checkout Flow Integration Tests', () => {
 
             // 5. Order Placement
             const orderFormData = new URLSearchParams();
-            const orderResponse = await makeFormRequest('/action/place-order', orderFormData);
+            const orderResponse = await makeFormRequest(resourceRoutes.placeOrder, orderFormData);
             const orderData = await orderResponse.json();
             expect(orderData.success).toBe(true);
             expect(orderData.orderNo).toBe('ORDER-2024-001');
@@ -1795,7 +1796,7 @@ describe('Checkout Flow Integration Tests', () => {
                 }),
 
                 // Order placement for registered customer
-                http.post('/action/place-order', async ({ request }) => {
+                http.post(resourceRoutes.placeOrder, async ({ request }) => {
                     try {
                         const formData = await request.formData();
                         const customerId = formData.get('customerId') as string;
@@ -1858,7 +1859,7 @@ describe('Checkout Flow Integration Tests', () => {
             // 5. Order Placement (for registered customer)
             const orderData = new URLSearchParams();
             orderData.append('customerId', 'returning-customer-123');
-            const orderResponse = await makeFormRequest('/action/place-order', orderData);
+            const orderResponse = await makeFormRequest(resourceRoutes.placeOrder, orderData);
             const orderResult = await orderResponse.json();
             expect(orderResult.success).toBe(true);
             expect(orderResult.orderNo).toBe('ORDER-2024-REG-001');

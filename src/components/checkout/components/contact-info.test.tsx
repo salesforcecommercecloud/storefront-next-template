@@ -19,6 +19,7 @@ import { render, screen, waitFor, fireEvent, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import ContactInfo from './contact-info';
+import { resourceRoutes } from '@/route-paths';
 
 // Use real react-hook-form for integration tests
 vi.mock('@/providers/basket', () => ({ useBasket: vi.fn() }));
@@ -121,7 +122,7 @@ function renderWithRouter(ui: React.ReactElement) {
                 element: ui,
             },
             {
-                path: '/action/authorize-passwordless-email',
+                path: resourceRoutes.authorizePasswordlessEmail,
                 action: () => ({ success: false }), // avoid opening OTP modal so form interactions work
             },
         ],

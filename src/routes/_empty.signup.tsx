@@ -19,6 +19,7 @@ import type { Route } from './+types/_empty.signup';
 import { useNavigate } from '@/hooks/use-navigate';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
+import { resourceRoutes, routes } from '@/route-paths';
 // services
 import { registerCustomer } from '@/lib/api/auth/register.server';
 import {
@@ -69,7 +70,7 @@ export function loader({ request, context }: Route.LoaderArgs): SignupLoaderData
 
     // If the user is already registered and the OTP is not pending, redirect to the home page
     if (session.userType === 'registered' && !isOtpPending) {
-        return redirect('/');
+        return redirect(routes.home);
     }
 
     const config = getConfig(context);
@@ -237,7 +238,7 @@ export default function Signup({ loaderData }: { loaderData: SignupLoaderData })
             // For password registration, POST to the otp-request action to request a new OTP for email verification.
             const formData = new FormData();
             formData.append('email', email);
-            await resendCodeFetcher.submit(formData, { method: 'POST', action: '/action/otp-request' });
+            await resendCodeFetcher.submit(formData, { method: 'POST', action: resourceRoutes.otpRequest });
         } else {
             // For passwordless registration, POST to this URL so the route action runs and triggers the passwordless authorize API to send another OTP.
             const formData = new FormData();
@@ -272,7 +273,7 @@ export default function Signup({ loaderData }: { loaderData: SignupLoaderData })
                             <div className="text-center mt-6">
                                 <p className="text-sm text-muted-foreground">
                                     {t('haveAccountQuestion')}
-                                    <Link to="/login" className="font-medium text-primary hover:underline">
+                                    <Link to={routes.login} className="font-medium text-primary hover:underline">
                                         {t('signIn')}
                                     </Link>
                                 </p>
@@ -292,7 +293,9 @@ export default function Signup({ loaderData }: { loaderData: SignupLoaderData })
                         verifyActionUrl={
                             // otp-verify: email verification for password registrations
                             // verify-passwordless-otp: passwordless registration verification
-                            registrationMode === 'password' ? '/action/otp-verify' : '/action/verify-passwordless-otp'
+                            registrationMode === 'password'
+                                ? resourceRoutes.otpVerify
+                                : resourceRoutes.verifyPasswordlessOtp
                         }
                         onClose={() => {
                             if (isPasswordlessEnabled && registrationMode === 'passwordless') {

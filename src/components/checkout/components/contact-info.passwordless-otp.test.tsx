@@ -172,6 +172,7 @@ vi.mock('@salesforce/storefront-next-runtime/config', async () => {
 });
 
 import ContactInfo from './contact-info';
+import { resourceRoutes } from '@/route-paths';
 
 const createMockBasket = () => ({
     basketId: 'test-basket-123',
@@ -186,7 +187,7 @@ function renderWithRouter(ui: React.ReactElement) {
         [
             { path: '/', element: ui },
             {
-                path: '/action/authorize-passwordless-email',
+                path: resourceRoutes.authorizePasswordlessEmail,
                 action: () => ({ success: true, email: 'shopper@example.com' }),
             },
         ],

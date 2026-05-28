@@ -20,6 +20,7 @@ import type { FetcherWithComponents } from 'react-router';
 import * as ReactRouter from 'react-router';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useChangePickupStore } from './use-change-pickup-store';
+import { resourceRoutes } from '@/route-paths';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 // Mock useFetcher from react-router
@@ -98,7 +99,7 @@ describe('useChangePickupStore', () => {
 
             expect(options).toEqual({
                 method: 'PATCH',
-                action: '/action/cart-pickup-store-update',
+                action: resourceRoutes.cartPickupStoreUpdate,
             });
         });
 

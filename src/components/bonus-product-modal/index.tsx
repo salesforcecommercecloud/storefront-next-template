@@ -27,6 +27,7 @@ import ProductViewProvider, { useProductView } from '@/providers/product-view';
 import ImageGallery from '@/components/image-gallery';
 import ProductInfo from '@/components/product-view/product-info';
 import { computeInitialVariationValues } from '@/lib/product/initial-variation-values';
+import { resourceRoutes } from '@/route-paths';
 
 export interface BonusDiscountSlot {
     id: string;
@@ -195,7 +196,7 @@ export function BonusProductModal({
 
             void addToCartFetcher.submit(formData, {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps

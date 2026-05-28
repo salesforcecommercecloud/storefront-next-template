@@ -54,6 +54,7 @@ import type { BasketActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { UITarget } from '@/targets/ui-target';
+import { routes } from '@/route-paths';
 /**
  * Container component for MiniCartItem that handles remove functionality
  * Uses useFetcher to submit remove requests to the cart API
@@ -169,7 +170,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
      * Navigates to the full cart page
      */
     const handleSelectBonusProducts = useCallback(() => {
-        void navigate('/cart');
+        void navigate(routes.cart);
     }, [navigate]);
 
     const handleRemoveStart = useCallback((itemId: string) => {
@@ -320,7 +321,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                         className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 bg-primary text-sm font-semibold leading-5 text-primary-foreground font-sans rounded-none shadow-2xs"
                         size="lg">
                         <Link
-                            to="/checkout"
+                            to={routes.checkout}
                             aria-disabled={isCartUpdating}
                             className={isCartUpdating ? 'pointer-events-none opacity-60' : undefined}
                             onClick={(e) => {
@@ -353,7 +354,7 @@ const CartSheetPanel = function CartSheetPanel({ onClose }: { onClose: () => voi
                             variant="ghost"
                             className="flex self-stretch w-full h-10 px-8 py-2 justify-center items-center gap-2 text-sm font-semibold leading-5 text-foreground rounded-none"
                             size="lg">
-                            <Link to="/cart" onClick={onClose}>
+                            <Link to={routes.cart} onClick={onClose}>
                                 {tMiniCart('viewCart')}
                             </Link>
                         </Button>

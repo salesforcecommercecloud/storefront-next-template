@@ -31,6 +31,7 @@ import {
     useRouteLoaderData,
 } from 'react-router';
 import type { Route } from './+types/root';
+import { routes } from '@/route-paths';
 
 // Third-party libraries
 import { createInstance, type i18n } from 'i18next';
@@ -526,7 +527,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
 
     // Redirect maintenance errors before rendering.
     if (error && error.toString().includes('MAINTENANCE_ERROR')) {
-        return <Navigate to="/maintenance" replace />;
+        return <Navigate to={routes.maintenance} replace />;
     }
 
     let status: number | undefined;

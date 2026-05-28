@@ -16,6 +16,7 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useRecommenders, type Recommendation, type Product } from './use-recommenders';
+import { resourceRoutes } from '@/route-paths';
 import { mockAltSiteObject } from '@/test-utils/config';
 
 vi.mock('@salesforce/storefront-next-runtime/site-context', async (importOriginal) => {
@@ -81,7 +82,7 @@ describe('useRecommenders (rewired to /resource/recommendations)', () => {
             expect(mockFetch).toHaveBeenCalledTimes(1);
             const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
             const parsed = new URL(url, 'http://localhost');
-            expect(parsed.pathname).toMatch(/\/resource\/recommendations$/);
+            expect(parsed.pathname).toBe(resourceRoutes.recommendations);
             expect((init?.method ?? 'GET').toUpperCase()).toBe('GET');
             expect(parsed.searchParams.get('recommenderName')).toBe('home-new-arrivals');
             // Hook does NOT include cookieId/userId/clientIp/clientUserAgent — server stamps them.

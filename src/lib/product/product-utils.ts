@@ -35,6 +35,7 @@
 
 import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
+import { routes, routeHref } from '@/route-paths';
 
 /**
  * Type definition for swatch data used in color attribute selectors
@@ -197,7 +198,7 @@ export const createProductUrl = (
     variantPid: string | null = null
 ): string => {
     if (!productId) return '#';
-    const baseUrl = `/product/${productId}`;
+    const baseUrl = routeHref(routes.product, { productId });
     const params = new URLSearchParams();
     if (selectedAttributeValue) {
         params.set(attributeType, selectedAttributeValue);
@@ -329,7 +330,7 @@ export const getDecoratedVariationAttributes = (
             }
 
             // Build href for this variation
-            const href = `/product/${product.productId}?${searchParams.toString()}`;
+            const href = `${routeHref(routes.product, { productId: product.productId })}?${searchParams.toString()}`;
 
             // Find swatch image for this variation value
             const swatchImageGroup = findImageGroupBy(product.imageGroups || [], {

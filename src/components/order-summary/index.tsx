@@ -42,6 +42,7 @@ import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { UITarget } from '@/targets/ui-target';
 import type { CartInventoryValidationResult } from '@/lib/cart/inventory-validation';
 import { CartInventoryErrorBanner } from '@/components/cart/cart-inventory-error-banner';
+import { routes } from '@/route-paths';
 
 /**
  * Props for the OrderSummary component
@@ -135,7 +136,7 @@ function CartItemsSummary({
                         />
                         {/* Edit Cart link: navigates to cart page with optional callback */}
                         <Link
-                            to="/cart"
+                            to={routes.cart}
                             onClick={onEditCart}
                             className={buttonVariants({ variant: 'link', className: 'w-full justify-center' })}>
                             {t('items.editCart')}
@@ -418,7 +419,7 @@ export default function OrderSummary({
                         {inventoryValidation?.hasInventoryIssues ? (
                             <span>{t('checkout.continueToCheckout')}</span>
                         ) : (
-                            <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                            <Link to={routes.checkout}>{t('checkout.continueToCheckout')}</Link>
                         )}
                     </Button>
                     <UITarget targetId="sfcc.cart.payments.expressCheckout" />

@@ -38,6 +38,7 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockAltSiteObject, mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import SiteSwitcher from './index';
+import { resourceRoutes } from '@/route-paths';
 
 const site = mockSiteObject;
 const siteWithAlias = { ...site, alias: mockConfig.siteAliasMap?.[site.id] };
@@ -103,7 +104,7 @@ describe('SiteSwitcher', () => {
 
         expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
             method: 'POST',
-            action: '/action/set-site-context',
+            action: resourceRoutes.setSiteContext,
         });
 
         const formData = mockSubmit.mock.calls[0][0] as FormData;

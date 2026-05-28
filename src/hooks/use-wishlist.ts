@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import type { ShopperSearch } from '@/scapi';
 import { useToast } from '@/components/toast';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { resourceRoutes } from '@/route-paths';
 import type { action as wishlistAddAction } from '@/routes/action.wishlist-add';
 import type { action as wishlistRemoveAction } from '@/routes/action.wishlist-remove';
 
@@ -192,10 +193,10 @@ export const useWishlist = (options?: UseWishlistOptions) => {
             if (isInWishlist) {
                 pendingRemoveRef.current = { productId, surface };
                 // In this case, we have access to only the product id (not item id)
-                void removeFetcher.submit({ productId }, { method: 'POST', action: '/action/wishlist-remove' });
+                void removeFetcher.submit({ productId }, { method: 'POST', action: resourceRoutes.wishlistRemove });
             } else {
                 pendingAddRef.current = { productId, productName: product.productName || 'product', surface };
-                void addFetcher.submit({ productId }, { method: 'POST', action: '/action/wishlist-add' });
+                void addFetcher.submit({ productId }, { method: 'POST', action: resourceRoutes.wishlistAdd });
             }
         },
         [wishlistItems, addFetcher, removeFetcher, addToast, t]

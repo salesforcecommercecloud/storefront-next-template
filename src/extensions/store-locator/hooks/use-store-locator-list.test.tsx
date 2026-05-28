@@ -17,6 +17,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 
 import { useStoreLocatorList, type SearchStoresResult } from './use-store-locator-list';
+import { resourceRoutes } from '@/route-paths';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import type { ShopperStores } from '@/scapi';
 
@@ -37,6 +38,7 @@ const mockStoreFetcher = {
 
 let fetcherCallCount = 0;
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useFetcher: () => {
         fetcherCallCount++;
         // First call is the search fetcher, second is the store action fetcher
@@ -167,7 +169,7 @@ describe('useStoreLocatorList', () => {
         // Verify the form data and action
         const [formData, options] = mockStoreFetcher.submit.mock.calls[0];
         expect(formData.get('storeInfo')).toBe(JSON.stringify({ id: 'store1', name: 'Store 1', inventoryId: 'inv1' }));
-        expect(options).toEqual({ method: 'POST', action: '/action/set-selected-store' });
+        expect(options).toEqual({ method: 'POST', action: resourceRoutes.setSelectedStore });
     });
 
     test('submits empty storeInfo when clearing store', () => {

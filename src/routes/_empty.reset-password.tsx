@@ -25,6 +25,7 @@ import { buildUrlFromContext } from '@/lib/url.server';
 import { isPasswordValid } from '@/lib/utils';
 import { resetPasswordWithToken } from '@/middlewares/auth.server';
 import { getLogger } from '@/lib/logger.server';
+import { routes } from '@/route-paths';
 
 type ResetPasswordLoaderData = {
     token: string;
@@ -41,7 +42,7 @@ export function loader({ request, context }: Route.LoaderArgs): ResetPasswordLoa
     const email = url.searchParams.get('email');
 
     if (!token || !email) {
-        return redirect(buildUrlFromContext('/forgot-password', context));
+        return redirect(buildUrlFromContext(routes.forgotPassword, context));
     }
 
     return {
@@ -63,7 +64,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
 
     // Separate validation for token - critical security field
     if (!token) {
-        return redirect(buildUrlFromContext('/forgot-password', context));
+        return redirect(buildUrlFromContext(routes.forgotPassword, context));
     }
 
     if (!email || !newPassword || !confirmPassword) {
@@ -95,7 +96,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Re
         updateAuth(context, authResponse);
 
         // Password reset successful - redirect to login
-        return redirect(buildUrlFromContext('/login', context));
+        return redirect(buildUrlFromContext(routes.login, context));
     } catch (error) {
         logger.error('ResetPassword: failed', { error });
         const errorMessage = extractErrorMessage(error);

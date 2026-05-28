@@ -17,8 +17,7 @@ import { useFetcher } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 import { FETCHER_STATES } from '@/lib/fetcher-states';
-const addPromoCodeActionRoute = '/action/promo-code-add';
-const removePromoCodeActionRoute = '/action/promo-code-remove';
+import { resourceRoutes } from '@/route-paths';
 
 /**
  * Custom hook for managing promo code actions (apply and remove) using React Router fetchers.
@@ -77,7 +76,7 @@ export function usePromoCodeActions(basketId?: string) {
             },
             {
                 method: 'POST',
-                action: addPromoCodeActionRoute,
+                action: resourceRoutes.promoCodeAdd,
             }
         );
     };
@@ -105,7 +104,7 @@ export function usePromoCodeActions(basketId?: string) {
             },
             {
                 method: 'POST',
-                action: removePromoCodeActionRoute,
+                action: resourceRoutes.promoCodeRemove,
             }
         );
     };

@@ -32,6 +32,7 @@ vi.mock('@salesforce/storefront-next-runtime/design/react/core', () => ({
 }));
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useBlocker: vi.fn(),
 }));
 

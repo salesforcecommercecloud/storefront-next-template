@@ -24,9 +24,7 @@ import {
     CHECKOUT_ACTION_INTENTS,
     type CheckoutStep,
 } from '@/components/checkout/utils/checkout-context-types';
-
-// Place order uses a dedicated action route (excluded from site context prefix via /action/**)
-const placeOrderActionRoute = '/action/place-order';
+import { resourceRoutes } from '@/route-paths';
 
 /** Persists create-account intent across reloads (mirrors handleCreateAccountPreferenceChange). */
 const SESSION_SHOULD_CREATE_ACCOUNT = 'shouldCreateAccount';
@@ -433,7 +431,7 @@ export function useCheckoutActions(options?: {
         }
         void placeOrderFetcher.submit(formData, {
             method: 'post',
-            action: placeOrderActionRoute,
+            action: resourceRoutes.placeOrder,
         });
     };
 

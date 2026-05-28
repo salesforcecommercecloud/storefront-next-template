@@ -16,6 +16,7 @@
 import { useFetcher } from 'react-router';
 import { useFetcherEffect } from '@/hooks/use-fetcher-effect';
 import { createLogger } from '@/lib/logger';
+import { resourceRoutes } from '@/route-paths';
 import type {
     action as updateMarketingConsentAction,
     UpdateMarketingConsentResponse,
@@ -65,7 +66,7 @@ export function useUpdateMarketingConsent(
         if (updates.length === 0) return;
         void fetcher.submit({ updates } as unknown as FormData, {
             method: 'POST',
-            action: '/action/update-marketing-consent',
+            action: resourceRoutes.updateMarketingConsent,
             encType: 'application/json',
         });
     };

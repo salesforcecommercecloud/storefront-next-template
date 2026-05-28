@@ -50,6 +50,7 @@ import {
 } from '@/lib/product/product-utils';
 import { useCartInventoryValidation } from '@/lib/cart/inventory-validation';
 import { CartInventoryErrorBanner } from './cart-inventory-error-banner';
+import { routes } from '@/route-paths';
 
 const LazyBonusProductSelection = lazy(() => import('@/components/cart/bonus-product-selection'));
 const LazyBonusProductModal = lazy(() =>
@@ -276,7 +277,7 @@ export default function CartContent({
                                 {inventoryValidation.hasInventoryIssues ? (
                                     <span>{t('checkout.continueToCheckout')}</span>
                                 ) : (
-                                    <Link to="/checkout">{t('checkout.continueToCheckout')}</Link>
+                                    <Link to={routes.checkout}>{t('checkout.continueToCheckout')}</Link>
                                 )}
                             </Button>
                             <UITarget targetId="sfcc.cart.payments.expressCheckout" />

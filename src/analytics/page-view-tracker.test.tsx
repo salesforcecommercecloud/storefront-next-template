@@ -35,6 +35,7 @@ import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import { initializeEngagementAdapters } from '@/lib/adapters/engagement/register';
 import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { resourceRoutes } from '@/route-paths';
 
 const mockLogger = vi.hoisted(() => ({
     error: vi.fn(),
@@ -343,7 +344,7 @@ describe('PageViewTracker', () => {
                 },
             });
 
-            renderPageViewTracker('/action/cart-item-remove');
+            renderPageViewTracker(resourceRoutes.cartItemRemove);
 
             await waitForNoTracking();
         });

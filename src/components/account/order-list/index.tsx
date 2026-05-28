@@ -28,6 +28,7 @@ import {
 } from '@/components/account/order-list-item';
 import { getOffsetLimitPaginationState } from '@/lib/pagination-utils';
 import type { OrderStatusType } from '@/lib/order/status';
+import { routes } from '@/route-paths';
 
 /** Re-export for consumers. Single source of truth: @/lib/order/status */
 export type { OrderStatusType };
@@ -93,7 +94,7 @@ function OrderListEmpty({ message }: { message?: string }): ReactElement {
                         {message || t('orders.empty')}
                     </Typography>
                     <Button asChild>
-                        <Link to="/">{t('orders.continueShopping')}</Link>
+                        <Link to={routes.home}>{t('orders.continueShopping')}</Link>
                     </Button>
                 </div>
             </CardContent>
@@ -200,7 +201,7 @@ export function OrderListBody({
                     <nav aria-label={t('orders.paginationLabel')} className="ml-auto shrink-0 flex items-center gap-2">
                         {hasPrevious ? (
                             <Link
-                                to={`/account/orders?offset=${prevOffset}&limit=${safeLimit}`}
+                                to={`${routes.accountOrders}?offset=${prevOffset}&limit=${safeLimit}`}
                                 prefetch="intent"
                                 aria-label={t('orders.paginationPrevious')}
                                 className={buttonVariants({
@@ -225,7 +226,7 @@ export function OrderListBody({
                         )}
                         {hasNext ? (
                             <Link
-                                to={`/account/orders?offset=${nextOffset}&limit=${safeLimit}`}
+                                to={`${routes.accountOrders}?offset=${nextOffset}&limit=${safeLimit}`}
                                 prefetch="intent"
                                 aria-label={t('orders.paginationNext')}
                                 className={buttonVariants({

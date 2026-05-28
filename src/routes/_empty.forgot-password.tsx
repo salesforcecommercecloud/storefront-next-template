@@ -28,6 +28,7 @@ import { ForgotPasswordForm } from '@/components/forgot-password-form';
 // Lib
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { buildUrlFromContext } from '@/lib/url.server';
+import { routes } from '@/route-paths';
 
 // Middleware
 import { getAuth, getPasswordResetToken } from '@/middlewares/auth.server';
@@ -43,7 +44,7 @@ export function loader({ context }: Route.LoaderArgs): Response | void {
     // If user is already logged in as registered user, redirect to login page
     const session = getAuth(context);
     if (session.userType === 'registered') {
-        return redirect(buildUrlFromContext('/login', context));
+        return redirect(buildUrlFromContext(routes.login, context));
     }
 }
 
@@ -88,7 +89,7 @@ export default function ForgotPassword(): ReactElement {
 
                     <Card className="p-8 rounded-none shadow-none">
                         <div className="space-y-6">
-                            <Link to="/login">
+                            <Link to={routes.login}>
                                 <Button className="w-full cursor-pointer">{t('backToSignIn')}</Button>
                             </Link>
                         </div>

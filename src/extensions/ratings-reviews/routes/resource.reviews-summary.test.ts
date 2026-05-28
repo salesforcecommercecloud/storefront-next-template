@@ -36,6 +36,7 @@ vi.mock('@/lib/utils', () => ({
 import { loader as loaderImpl } from './resource.reviews-summary';
 import { getReviewsSummary } from '@/extensions/ratings-reviews/lib/api/reviews.server';
 import { expectStatus } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 
 const loader = loaderImpl as unknown as (args: { request: Request; context: unknown }) => ReturnType<typeof loaderImpl>;
 
@@ -55,7 +56,7 @@ describe('resource.reviews-summary loader', () => {
         vi.mocked(getReviewsSummary).mockResolvedValueOnce(mockSummary);
 
         const response = await loader({
-            request: new Request('http://localhost/resource/reviews-summary?productId=prod-123'),
+            request: new Request(`http://localhost${resourceRoutes.reviewsSummary}?productId=prod-123`),
             context: {},
         });
 
@@ -69,7 +70,7 @@ describe('resource.reviews-summary loader', () => {
         vi.mocked(getReviewsSummary).mockResolvedValueOnce(mockSummary);
 
         await loader({
-            request: new Request('http://localhost/resource/reviews-summary'),
+            request: new Request(`http://localhost${resourceRoutes.reviewsSummary}`),
             context: {},
         });
 
@@ -80,7 +81,7 @@ describe('resource.reviews-summary loader', () => {
         vi.mocked(getReviewsSummary).mockRejectedValueOnce(new Error('upstream down'));
 
         const response = await loader({
-            request: new Request('http://localhost/resource/reviews-summary?productId=prod-1'),
+            request: new Request(`http://localhost${resourceRoutes.reviewsSummary}?productId=prod-1`),
             context: {},
         });
 

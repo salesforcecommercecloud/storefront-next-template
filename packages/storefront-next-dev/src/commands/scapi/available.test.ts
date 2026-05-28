@@ -90,14 +90,14 @@ describe('scapi available command', () => {
 
     function setupCommand(): { cmd: Available; logSpy: ReturnType<typeof vi.spyOn> } {
         const cmd = new Available([], {} as never);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         Object.defineProperty(cmd, 'resolvedConfig', {
             get: () => ({ values: { shortCode: 'kv7kzm78', tenantId: 'zzpq_019' } }),
         });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         (cmd as any).getOAuthStrategy = vi.fn(() => ({ getToken: vi.fn() }));
         const logSpy = vi.spyOn(cmd, 'log').mockImplementation(() => {});
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         vi.spyOn(cmd as any, 'parse').mockResolvedValue({
             flags: {},
             args: {},
@@ -105,11 +105,11 @@ describe('scapi available command', () => {
             raw: [],
             metadata: {},
         });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         vi.spyOn(cmd as any, 'error').mockImplementation((...args: unknown[]) => {
             throw new Error(String(args[0]));
         });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         vi.spyOn(cmd as any, 'warn').mockImplementation(() => {});
         return { cmd, logSpy };
     }

@@ -18,6 +18,7 @@ import { type LoaderFunctionArgs, type ClientLoaderFunctionArgs, MemoryRouter } 
 import { createLoaderArgs } from '@/lib/test-utils';
 import { render, screen } from '@testing-library/react';
 import type React from 'react';
+import { resourceRoutes } from '@/route-paths';
 
 const mockUniversalServerLoader = vi.fn();
 const mockUniversalClientLoader = vi.fn();
@@ -522,7 +523,7 @@ describe('Checkout Route Components', () => {
             nextUrl: new URL('http://localhost/checkout'),
             nextParams: {},
             formMethod: 'POST' as const,
-            formAction: '/action/place-order',
+            formAction: resourceRoutes.placeOrder,
             formEncType: 'application/x-www-form-urlencoded' as const,
             text: undefined,
             formData: new FormData(),

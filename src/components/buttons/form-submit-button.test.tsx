@@ -23,6 +23,7 @@ const mockNavigation = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useNavigation: () => mockNavigation,
 }));
 

@@ -20,6 +20,7 @@ import type { ReactNode } from 'react';
 import CartDeliveryOption from './cart-delivery-option';
 import { DELIVERY_OPTIONS } from '@/extensions/bopis/constants';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { resourceRoutes } from '@/route-paths';
 import type { EnrichedProductItem } from '@/lib/product/product-utils';
 
 // Mock PickupOrDeliveryDropdown
@@ -308,7 +309,7 @@ describe('CartDeliveryOption', () => {
             expect(formData.get('deliveryOption')).toBe(DELIVERY_OPTIONS.DELIVERY);
             expect(mockFetcher.submit.mock.calls[0][1]).toEqual({
                 method: 'PATCH',
-                action: '/action/cart-item-update',
+                action: resourceRoutes.cartItemUpdate,
             });
         });
 

@@ -20,6 +20,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as ReactRouter from 'react-router';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { resourceRoutes } from '@/route-paths';
 import OtpModal from './otp-modal';
 
 const mockSubmit = vi.fn();
@@ -99,7 +100,7 @@ describe('OtpModal', () => {
 
             expect(mockSubmit).toHaveBeenCalledWith(
                 expect.any(FormData),
-                expect.objectContaining({ method: 'POST', action: '/action/verify-passwordless-otp' })
+                expect.objectContaining({ method: 'POST', action: resourceRoutes.verifyPasswordlessOtp })
             );
         });
 

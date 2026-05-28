@@ -26,6 +26,7 @@ import BonusProductSelection from './bonus-product-selection';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 import { mockLocale, mockSiteObject } from '@/test-utils/config';
+import { resourceRoutes } from '@/route-paths';
 
 const mockSite = mockSiteObject;
 
@@ -376,7 +377,7 @@ describe('BonusProductSelection', () => {
             // Variant should add directly to cart
             expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
             expect(props.onProductSelect).not.toHaveBeenCalled();
 
@@ -439,7 +440,7 @@ describe('BonusProductSelection', () => {
             // Should submit to fetcher
             expect(mockSubmit).toHaveBeenCalledWith(expect.any(FormData), {
                 method: 'POST',
-                action: '/action/bonus-product-add',
+                action: resourceRoutes.bonusProductAdd,
             });
 
             // Verify FormData contains correct bonusItems

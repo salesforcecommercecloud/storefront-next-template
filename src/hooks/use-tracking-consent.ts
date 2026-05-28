@@ -18,6 +18,7 @@ import { useFetcher } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 import { useAuth } from '@/providers/auth';
 import { TrackingConsent } from '@/types/tracking-consent';
+import { resourceRoutes } from '@/route-paths';
 
 /**
  * Hook for managing tracking consent functionality.
@@ -132,7 +133,7 @@ export function useTrackingConsent() {
                 { trackingConsent: consent },
                 {
                     method: 'POST',
-                    action: '/action/update-tracking-consent',
+                    action: resourceRoutes.updateTrackingConsent,
                 }
             );
         },

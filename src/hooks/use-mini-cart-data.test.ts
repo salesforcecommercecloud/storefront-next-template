@@ -15,6 +15,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { resourceRoutes } from '@/route-paths';
 import { useMiniCartData, useMiniCartDataLoader } from './use-mini-cart-data';
 import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
 import { findImageGroupBy } from '@/lib/product/image-groups-utils';
@@ -32,6 +33,7 @@ const mockFetcher = {
 };
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useFetcher: vi.fn(() => mockFetcher),
 }));
 
@@ -135,7 +137,7 @@ describe('useMiniCartData', () => {
         expect(result.current.productsById).toEqual({});
         expect(result.current.isLoading).toBe(true);
         expect(result.current.error).toBeNull();
-        expect(mockFetcher.load).toHaveBeenCalledWith('/resource/basket-products');
+        expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
     });
 
     describe('when no basketId is in the snapshot', () => {
@@ -197,7 +199,7 @@ describe('useMiniCartData', () => {
             mockSnapshot.totalItemCount = 1;
             rerender();
 
-            expect(mockFetcher.load).toHaveBeenCalledWith('/resource/basket-products');
+            expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
         });
     });
 
@@ -421,7 +423,7 @@ describe('useMiniCartDataLoader', () => {
             result.current();
         });
 
-        expect(mockFetcher.load).toHaveBeenCalledWith('/resource/basket-products');
+        expect(mockFetcher.load).toHaveBeenCalledWith(resourceRoutes.basketProducts);
     });
 
     it('skips dispatch when fetcher is in flight', () => {

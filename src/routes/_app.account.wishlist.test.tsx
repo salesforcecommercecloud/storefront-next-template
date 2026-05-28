@@ -20,6 +20,7 @@ import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { loader } from './_app.account.wishlist';
 import { fetchProductsForWishlist } from '@/lib/api/wishlist.server';
 import { createTestContext, UNSTABLE_PATTERN } from '@/lib/test-utils';
+import { resourceRoutes } from '@/route-paths';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
 const { t } = getTranslation();
@@ -812,7 +813,7 @@ describe('shouldRevalidate', () => {
         const { shouldRevalidate } = await import('./_app.account.wishlist');
 
         const result = shouldRevalidate({
-            formAction: '/action/wishlist-remove',
+            formAction: resourceRoutes.wishlistRemove,
             defaultShouldRevalidate: true,
             currentUrl: new URL('http://localhost/account/wishlist'),
             nextUrl: new URL('http://localhost/account/wishlist'),
@@ -828,7 +829,7 @@ describe('shouldRevalidate', () => {
         const { shouldRevalidate } = await import('./_app.account.wishlist');
 
         const result = shouldRevalidate({
-            formAction: '/action/cart-item-add',
+            formAction: resourceRoutes.cartItemAdd,
             defaultShouldRevalidate: true,
             currentUrl: new URL('http://localhost/account/wishlist'),
             nextUrl: new URL('http://localhost/account/wishlist'),
@@ -860,7 +861,7 @@ describe('shouldRevalidate', () => {
         const { shouldRevalidate } = await import('./_app.account.wishlist');
 
         const result = shouldRevalidate({
-            formAction: '/action/wishlist-remove',
+            formAction: resourceRoutes.wishlistRemove,
             defaultShouldRevalidate: false,
             currentUrl: new URL('http://localhost/account/wishlist'),
             nextUrl: new URL('http://localhost/account/wishlist'),

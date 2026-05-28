@@ -34,6 +34,7 @@ import {
 import type { ShopperProducts } from '@/scapi';
 import { NavLink } from '@/components/link';
 import { useSubCategory } from './context';
+import { routes, routeHref } from '@/route-paths';
 
 export type CategoryNavigationMenuListCtx = {
     level: number;
@@ -111,7 +112,9 @@ function CategoryNavigationMenuItemLeaf({
     }
     return (
         <NavigationMenuLink {...props} className={className ?? navigationMenuTriggerStyle()} asChild>
-            <NavLink to={`/category/${itemCtx.category.id}`}>{itemCtx.category.name}</NavLink>
+            <NavLink to={routeHref(routes.category, { categoryId: itemCtx.category.id })}>
+                {itemCtx.category.name}
+            </NavLink>
         </NavigationMenuLink>
     );
 }

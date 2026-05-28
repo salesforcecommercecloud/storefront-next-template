@@ -30,6 +30,7 @@ import InventoryMessage from '@/components/inventory-message';
 import ProductPrice from '@/components/product-price';
 import { Button } from '@/components/ui/button';
 import { useProductActions } from '@/hooks/product/use-product-actions';
+import { resourceRoutes } from '@/route-paths';
 
 // Lazy-load the modal so it only enters the bundle when a shopper actually opens it
 const CartItemModal = lazy(() =>
@@ -170,7 +171,10 @@ export function WishlistListItem({ product, wishlistItem, onRemove }: WishlistLi
 
     const handleRemove = () => {
         if (removeFetcher.state !== 'idle' || !wishlistItem.id) return;
-        void removeFetcher.submit({ itemId: wishlistItem.id }, { method: 'POST', action: '/action/wishlist-remove' });
+        void removeFetcher.submit(
+            { itemId: wishlistItem.id },
+            { method: 'POST', action: resourceRoutes.wishlistRemove }
+        );
     };
 
     const isRemoving = removeFetcher.state !== 'idle';

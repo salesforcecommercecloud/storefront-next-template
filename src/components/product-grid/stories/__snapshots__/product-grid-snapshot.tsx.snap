@@ -43,7 +43,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 1"
               class="block w-full h-full flex-1"
-              href="/product/PROD-1"
+              href="/product/:productId"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -92,7 +92,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 1"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-1"
+            href="/product/:productId"
             tabindex="-1"
           />
           <div
@@ -168,7 +168,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-1"
+            href="/product/:productId"
           >
             Product 1
           </a>
@@ -322,7 +322,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 2"
               class="block w-full h-full flex-1"
-              href="/product/PROD-2?color=BLACKWL"
+              href="/product/:productId?color=BLACKWL"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -371,7 +371,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 2"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-2?pid=750518703077M"
+            href="/product/:productId?pid=750518703077M"
             tabindex="-1"
           />
           <div
@@ -433,7 +433,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
               aria-current="true"
               aria-label="View Product 2 in Black"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-              href="/product/PROD-2?color=BLACKWL"
+              href="/product/:productId?color=BLACKWL"
               style="background-color: black;"
               tabindex="-1"
             />
@@ -449,7 +449,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-2?pid=750518703077M"
+            href="/product/:productId?pid=750518703077M"
           >
             Product 2
           </a>
@@ -603,7 +603,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 3"
               class="block w-full h-full flex-1"
-              href="/product/PROD-3?color=JJ908XX"
+              href="/product/:productId?color=JJ908XX"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -652,7 +652,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 3"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-3?pid=701642823919M"
+            href="/product/:productId?pid=701642823919M"
             tabindex="-1"
           />
           <div
@@ -713,7 +713,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 3 in Begonia Pink"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-              href="/product/PROD-3?color=JJ5QZXX"
+              href="/product/:productId?color=JJ5QZXX"
               tabindex="-1"
             >
               <img
@@ -727,7 +727,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
               aria-current="true"
               aria-label="View Product 3 in Grey Heather"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-              href="/product/PROD-3?color=JJ908XX"
+              href="/product/:productId?color=JJ908XX"
               tabindex="-1"
             >
               <img
@@ -749,7 +749,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-3?pid=701642823919M"
+            href="/product/:productId?pid=701642823919M"
           >
             Product 3
           </a>
@@ -912,7 +912,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 4"
               class="block w-full h-full flex-1"
-              href="/product/PROD-4?color=CHARCWL"
+              href="/product/:productId?color=CHARCWL"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -961,7 +961,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 4"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-4?pid=750518894461M"
+            href="/product/:productId?pid=750518894461M"
             tabindex="-1"
           />
           <div
@@ -1022,7 +1022,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 4 in Navy"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-              href="/product/PROD-4?color=NAVYWL"
+              href="/product/:productId?color=NAVYWL"
               style="background-color: navy;"
               tabindex="-1"
             >
@@ -1037,7 +1037,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
               aria-current="true"
               aria-label="View Product 4 in Charcoal"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-              href="/product/PROD-4?color=CHARCWL"
+              href="/product/:productId?color=CHARCWL"
               tabindex="-1"
             >
               <img
@@ -1059,7 +1059,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-4?pid=750518894461M"
+            href="/product/:productId?pid=750518894461M"
           >
             Product 4
           </a>
@@ -1207,7 +1207,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 5"
               class="block w-full h-full flex-1"
-              href="/product/PROD-5"
+              href="/product/:productId"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1256,7 +1256,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 5"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-5"
+            href="/product/:productId"
             tabindex="-1"
           />
           <div
@@ -1318,7 +1318,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-5"
+            href="/product/:productId"
           >
             Product 5
           </a>
@@ -1456,7 +1456,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 6"
               class="block w-full h-full flex-1"
-              href="/product/PROD-6"
+              href="/product/:productId"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1505,7 +1505,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 6"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-6"
+            href="/product/:productId"
             tabindex="-1"
           />
           <div
@@ -1581,7 +1581,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-6"
+            href="/product/:productId"
           >
             Product 6
           </a>
@@ -1735,7 +1735,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 7"
               class="block w-full h-full flex-1"
-              href="/product/PROD-7?color=BLACKWL"
+              href="/product/:productId?color=BLACKWL"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -1784,7 +1784,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 7"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-7?pid=750518703077M"
+            href="/product/:productId?pid=750518703077M"
             tabindex="-1"
           />
           <div
@@ -1846,7 +1846,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
               aria-current="true"
               aria-label="View Product 7 in Black"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-              href="/product/PROD-7?color=BLACKWL"
+              href="/product/:productId?color=BLACKWL"
               style="background-color: black;"
               tabindex="-1"
             />
@@ -1862,7 +1862,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-7?pid=750518703077M"
+            href="/product/:productId?pid=750518703077M"
           >
             Product 7
           </a>
@@ -2016,7 +2016,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 8"
               class="block w-full h-full flex-1"
-              href="/product/PROD-8?color=JJ908XX"
+              href="/product/:productId?color=JJ908XX"
             >
               <div
                 class="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
@@ -2065,7 +2065,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
           <a
             aria-label="View Product 8"
             class="absolute inset-0 z-[1] cursor-pointer"
-            href="/product/PROD-8?pid=701642823919M"
+            href="/product/:productId?pid=701642823919M"
             tabindex="-1"
           />
           <div
@@ -2126,7 +2126,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
             <a
               aria-label="View Product 8 in Begonia Pink"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 hover:ring-[3px] hover:ring-muted-hover"
-              href="/product/PROD-8?color=JJ5QZXX"
+              href="/product/:productId?color=JJ5QZXX"
               tabindex="-1"
             >
               <img
@@ -2140,7 +2140,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
               aria-current="true"
               aria-label="View Product 8 in Grey Heather"
               class="w-4 h-4 rounded-full transition-all cursor-pointer relative shrink-0 ring-[2px] ring-muted-hover ring-offset-[1px] ring-offset-foreground"
-              href="/product/PROD-8?color=JJ908XX"
+              href="/product/:productId?color=JJ908XX"
               tabindex="-1"
             >
               <img
@@ -2162,7 +2162,7 @@ exports[`ProductGrid stories snapshot > FullyFeatured story renders and matches 
         >
           <a
             class="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-none"
-            href="/product/PROD-8?pid=701642823919M"
+            href="/product/:productId?pid=701642823919M"
           >
             Product 8
           </a>

@@ -18,6 +18,7 @@ import type { Route } from './+types/action.place-order';
 import { getBasket, updateBasketResource, destroyBasket } from '@/middlewares/basket.server';
 import { getAuth } from '@/middlewares/auth.server';
 import { createApiClients } from '@/lib/api-clients.server';
+import { routes, routeHref } from '@/route-paths';
 import {
     calculateBasket,
     getBasketCurrency,
@@ -611,7 +612,10 @@ export async function action({ request, context }: Route.ActionArgs) {
 
         // Redirect to order confirmation page on success
         // Include account creation and auto-login status as query parameters if account was created
-        let orderConfirmationUrl = buildUrlFromContext(`/order-confirmation/${order.orderNo}`, context);
+        let orderConfirmationUrl = buildUrlFromContext(
+            routeHref(routes.orderConfirmation, { orderNo: order.orderNo }),
+            context
+        );
 
         if (registeredViaCheckout && order.customerInfo?.email) {
             // User registered during checkout - include this in query params for order confirmation

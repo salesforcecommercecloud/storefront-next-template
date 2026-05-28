@@ -30,6 +30,7 @@ import { useToast } from '@/components/toast';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
 
 // Constants
+import { resourceRoutes } from '@/route-paths';
 // Types
 import type { ActionResponse } from '@/routes/types/action-responses';
 import { useTranslation } from 'react-i18next';
@@ -175,7 +176,7 @@ export function useCartQuantityUpdate<TResponse extends { success?: boolean } = 
 
             void fetcher.submit(formData, {
                 method: 'PATCH',
-                action: '/action/cart-item-update',
+                action: resourceRoutes.cartItemUpdate,
             });
         }, effectiveDebounceDelay);
         // effectiveDebounceDelay: stable value, no need to recreate effect

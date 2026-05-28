@@ -25,6 +25,7 @@ import { formatCurrency } from '@/lib/currency';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { cn } from '@/lib/utils';
 import { formatStatusFallbackLabel, getOrderStatusConfig } from '@/lib/order/status';
+import { routes, routeHref } from '@/route-paths';
 
 const BADGE_BASE_CLASSES = 'shrink-0 font-semibold border-0 py-1 rounded-none w-fit';
 const ON_MUTED_CAPTION_CLASS = 'text-xs font-normal text-muted-foreground';
@@ -259,7 +260,7 @@ export function OrderListItem({
     const visibleProducts = productItems.slice(0, maxThumbnails);
     const overflowCount = productItems.length - maxThumbnails;
 
-    const orderDetailsUrl = `/account/orders/${order.orderNo}`;
+    const orderDetailsUrl = routeHref(routes.accountOrderDetail, { orderNo: order.orderNo });
 
     return (
         <Link

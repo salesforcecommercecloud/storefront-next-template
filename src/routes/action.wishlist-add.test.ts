@@ -19,6 +19,7 @@ import type { ActionFunctionArgs } from 'react-router';
 import { action } from './action.wishlist-add';
 import { createTestContext, expectStatus } from '@/lib/test-utils';
 import { createFormDataRequest } from '@/test-utils/request-helpers';
+import { resourceRoutes } from '@/route-paths';
 
 // Mock dependencies
 const mockGetAuth = vi.fn();
@@ -122,11 +123,11 @@ describe('action.wishlist-add', () => {
             if (productId) {
                 data.productId = productId;
             }
-            return createFormDataRequest('http://localhost/action/wishlist-add', 'POST', data);
+            return createFormDataRequest(`http://localhost${resourceRoutes.wishlistAdd}`, 'POST', data);
         };
 
         test('should return error for non-POST requests', async () => {
-            const request = new Request('http://localhost/action/wishlist-add', {
+            const request = new Request(`http://localhost${resourceRoutes.wishlistAdd}`, {
                 method: 'GET',
             });
             const args: ActionFunctionArgs = {

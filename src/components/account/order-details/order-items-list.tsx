@@ -29,6 +29,7 @@ import type { EnrichedProductItem } from '@/lib/product/product-utils';
 import type { ShopperOrders, ShopperProducts } from '@/scapi';
 import { getOrderLineReviewKey } from '@/components/account/order-details/order-line-review-key';
 import { UITarget } from '@/targets/ui-target';
+import { routes, routeHref } from '@/route-paths';
 // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 import { OrderLineReviewSlot } from '@/extensions/ratings-reviews/components/order-line-review-context';
 // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
@@ -84,7 +85,7 @@ export function OrderItemsList({
                     <li key={productKey} data-testid="order-item">
                         <div className="flex flex-col gap-4 rounded-none border border-muted-foreground/20 bg-card p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center">
                             <Link
-                                to={`/product/${item.productId}`}
+                                to={routeHref(routes.product, { productId: item.productId ?? '' })}
                                 className="flex-shrink-0 block"
                                 aria-label={
                                     productName
@@ -131,7 +132,9 @@ export function OrderItemsList({
                                         variant="default"
                                         size="sm"
                                         className="rounded-none bg-foreground text-background hover:bg-foreground/90 text-xs">
-                                        <Link to={`/product/${item.productId}`}>{t('orders.buyAgain')}</Link>
+                                        <Link to={routeHref(routes.product, { productId: item.productId })}>
+                                            {t('orders.buyAgain')}
+                                        </Link>
                                     </Button>
                                 )}
                             </div>

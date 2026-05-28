@@ -19,6 +19,7 @@ import { loader, action } from './resource.analytics-proxy';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { getAuth } from '@/middlewares/auth.server';
 import { mockAltSiteObject } from '@/test-utils/config';
+import { resourceRoutes } from '@/route-paths';
 
 vi.mock('@salesforce/storefront-next-runtime/config');
 vi.mock('@/middlewares/auth.server');
@@ -41,10 +42,10 @@ const ANALYTICS_URL = `${ACTIVE_DATA_HOST}/on/demandware.store/Sites-${mockAltSi
 function createArgs(method: string, targetUrl?: string) {
     const params = targetUrl ? `?url=${encodeURIComponent(targetUrl)}` : '';
     return {
-        request: new Request(`http://localhost/resource/analytics-proxy${params}`, { method }),
+        request: new Request(`http://localhost${resourceRoutes.analyticsProxy}${params}`, { method }),
         params: {},
         context: new RouterContextProvider(),
-        unstable_pattern: '/resource/analytics-proxy',
+        unstable_pattern: resourceRoutes.analyticsProxy,
     };
 }
 

@@ -19,6 +19,7 @@ import { redirect, useActionData } from 'react-router';
 import type { Route } from './+types/_empty.login';
 import { Link } from '@/components/link';
 import { Card } from '@/components/ui/card';
+import { routes } from '@/route-paths';
 import { SeoMeta } from '@/components/seo-meta';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
@@ -98,7 +99,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         customerId
     ) {
         logger.debug('Login: already authenticated, redirecting');
-        return redirect(buildUrlFromContext(returnUrl || '/', context));
+        return redirect(buildUrlFromContext(returnUrl || routes.home, context));
     }
 
     const passwordlessSent = url.searchParams.get('passwordless') === 'sent';
@@ -149,7 +150,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
             }
 
             logger.info('Login: passwordless verification succeeded');
-            const target = buildUrlFromContext(returnUrl || '/', context);
+            const target = buildUrlFromContext(returnUrl || routes.home, context);
             if (wishlistMergeResult) {
                 const { url: redirectUrl, setCookie } = appendWishlistMergeFlag(context, target, wishlistMergeResult);
                 return redirect(redirectUrl, { headers: { 'Set-Cookie': setCookie } });
@@ -275,7 +276,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
             const actionParams = url.searchParams.get('actionParams');
 
             // Construct redirectPath with all params encoded
-            let finalRedirectPath = redirectPath || returnUrl || '/';
+            let finalRedirectPath = redirectPath || returnUrl || routes.home;
             if (returnUrl && (pendingAction || actionParams)) {
                 const redirectParams = new URLSearchParams();
                 if (pendingAction) {
@@ -388,7 +389,7 @@ export async function action({ request, context }: Route.ActionArgs): Promise<Lo
                 return prepareRedirect(buildUrlFromContext(returnUrl, context));
             }
 
-            return prepareRedirect(buildUrlFromContext('/', context));
+            return prepareRedirect(buildUrlFromContext(routes.home, context));
         }
     } catch {
         return { success: false, error: genericError };
@@ -458,7 +459,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                             <h2 className="text-2xl font-semibold">{t('checkEmailTitle')}</h2>
                             <p className="text-sm text-muted-foreground">{t('checkEmailDescription', { email })}</p>
                             <Link
-                                to="/login"
+                                to={routes.login}
                                 className="inline-flex items-center text-sm text-primary hover:text-primary/80">
                                 {t('backToLogin')}
                             </Link>
@@ -548,7 +549,7 @@ export default function Login({ loaderData }: { loaderData: LoginLoaderData }): 
                 onSuccess={(_tokenResponse, meta) => {
                     // Redirect to return URL or home after successful login.
                     // Forward the wishlist merge flag so the destination route can render a toast.
-                    const target = returnUrl || '/';
+                    const target = returnUrl || routes.home;
                     if (meta?.wishlistMerge) {
                         const separator = target.includes('?') ? '&' : '?';
                         void navigate(`${target}${separator}wishlistMerge=${meta.wishlistMerge}`);

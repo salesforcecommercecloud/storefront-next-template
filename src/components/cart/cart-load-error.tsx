@@ -17,6 +17,7 @@ import type { ReactElement } from 'react';
 import { useAsyncError } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/components/link';
+import { routes } from '@/route-paths';
 import { NormalizedApiError } from '@/lib/api/normalized-api-error';
 
 /**
@@ -33,7 +34,7 @@ export function CartLoadError(): ReactElement {
     return (
         <div role="alert" className="section-container py-16 text-center">
             <p className="text-base text-muted-foreground">{t('loadError.message')}</p>
-            <Link to="/cart" reloadDocument className="mt-4 inline-block text-primary underline">
+            <Link to={routes.cart} reloadDocument className="mt-4 inline-block text-primary underline">
                 {t('loadError.retry')}
             </Link>
             {import.meta.env.DEV && error && (

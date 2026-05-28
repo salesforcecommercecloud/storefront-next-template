@@ -16,6 +16,7 @@
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router';
+import { resourceRoutes } from '@/route-paths';
 import type { SelectedStoreInfo } from '@/extensions/store-locator/stores/store-locator-store';
 import { useToast } from '@/components/toast';
 import type { action as cartPickupStoreUpdateAction } from '@/extensions/bopis/routes/action.cart-pickup-store-update';
@@ -76,7 +77,7 @@ export function useChangePickupStore() {
 
             await fetcher.submit(formData, {
                 method: 'PATCH',
-                action: '/action/cart-pickup-store-update',
+                action: resourceRoutes.cartPickupStoreUpdate,
             });
         },
         [fetcher, addToast, t]

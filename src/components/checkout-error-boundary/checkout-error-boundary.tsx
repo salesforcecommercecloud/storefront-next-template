@@ -22,12 +22,13 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Typography } from '@/components/typography';
 import { useTranslation, withTranslation, type WithTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
+import { routes } from '@/route-paths';
 
 function ReturnToCartButton() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     return (
-        <Button variant="outline" onClick={() => void navigate('/cart')}>
+        <Button variant="outline" onClick={() => void navigate(routes.cart)}>
             {t('checkout:errorBoundary.returnToCart')}
         </Button>
     );

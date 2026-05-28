@@ -19,6 +19,7 @@ import { useFetcher } from 'react-router';
 import { NativeSelect } from '@/components/ui/native-select';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { useToast } from '@/components/toast';
+import { resourceRoutes } from '@/route-paths';
 
 /**
  * Currency Switcher Component
@@ -50,7 +51,7 @@ export default function CurrencySwitcher(): ReactElement {
         // Submit to server action - React Router will automatically revalidate loaders
         void fetcher.submit(formData, {
             method: 'POST',
-            action: '/action/set-site-context',
+            action: resourceRoutes.setSiteContext,
         });
     };
 

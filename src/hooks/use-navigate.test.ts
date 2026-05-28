@@ -21,6 +21,7 @@ import { useNavigate } from './use-navigate';
 const mockRouterNavigate = vi.fn();
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     useNavigate: () => mockRouterNavigate,
 }));
 

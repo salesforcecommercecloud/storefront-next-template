@@ -24,6 +24,7 @@ vi.mock('@/hooks/use-analytics', () => ({
 }));
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,

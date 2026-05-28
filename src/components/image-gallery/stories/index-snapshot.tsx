@@ -17,6 +17,7 @@ import { vi, expect, test, describe, afterEach } from 'vitest';
 import type { IndexRouteProps } from 'react-router';
 
 vi.mock('react-router', () => ({
+    href: (path: string) => path,
     createContext: vi.fn().mockImplementation(() => ({})),
     useFetcher: () => ({
         data: null,

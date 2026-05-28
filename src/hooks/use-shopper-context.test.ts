@@ -17,7 +17,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useShopperContext } from './use-shopper-context';
-import { SHOPPER_CONTEXT_ACTION_NAME } from '@/lib/shopper-context/constants';
+import { resourceRoutes } from '@/route-paths';
 import type { UpdateShopperContextResponse } from '@/routes/action.update-shopper-context';
 // eslint-disable-next-line import/no-namespace -- vi.spyOn requires namespace import
 import * as ReactRouter from 'react-router';
@@ -92,7 +92,7 @@ describe('useShopperContext', () => {
             // Verify options
             expect(options).toEqual({
                 method: 'PUT',
-                action: `/action/${SHOPPER_CONTEXT_ACTION_NAME}`,
+                action: resourceRoutes.updateShopperContext,
             });
         });
 
@@ -202,7 +202,7 @@ describe('useShopperContext', () => {
             });
 
             const [, options] = mockSubmit.mock.calls[0];
-            expect(options.action).toBe(`/action/${SHOPPER_CONTEXT_ACTION_NAME}`);
+            expect(options.action).toBe(resourceRoutes.updateShopperContext);
         });
     });
 

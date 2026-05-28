@@ -19,6 +19,7 @@ import userEvent from '@testing-library/user-event';
 import { createRoutesStub } from 'react-router';
 import { PostOrderRegistration } from './post-order-registration';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
+import { resourceRoutes } from '@/route-paths';
 
 vi.mock('@/lib/logger.server', () => ({
     getLogger: vi.fn(() => ({
@@ -43,7 +44,7 @@ function renderComponent(props = defaultProps) {
             Component: () => <PostOrderRegistration {...props} />,
         },
         {
-            path: '/action/post-order-register',
+            path: resourceRoutes.postOrderRegister,
             action: () => ({ success: false }),
         },
     ]);
@@ -127,7 +128,7 @@ describe('PostOrderRegistration', () => {
         renderComponent();
 
         const form = screen.getByRole('button', { name: /create account/i }).closest('form');
-        expect(form).toHaveAttribute('action', '/action/post-order-register');
+        expect(form).toHaveAttribute('action', resourceRoutes.postOrderRegister);
     });
 
     it('includes hidden fields for firstName, lastName, and orderNo', () => {

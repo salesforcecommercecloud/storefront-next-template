@@ -22,6 +22,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import type React from 'react';
 import { WriteReviewModalContent } from './write-review-modal-content';
 import type { WriteReviewFormData } from '@/extensions/ratings-reviews/lib/api/reviews.server';
+import { resourceRoutes } from '@/route-paths';
 
 vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => ({
     useProductReviews: () => ({
@@ -62,7 +63,7 @@ const renderWithRouter = (component: React.ReactElement) => {
     const router = createMemoryRouter([
         { path: '/', element: component },
         {
-            path: '/action/add-review',
+            path: resourceRoutes.addReview,
             action: () => ({
                 success: true,
                 review: { id: 'review-1', authorName: 'Shopper 0001' },

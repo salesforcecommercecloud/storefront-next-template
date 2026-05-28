@@ -1238,7 +1238,7 @@ exports[`OrderSummary stories snapshot > WithBonusProductLine story renders and 
                             >
                               <a
                                 class="hover:text-primary block break-words"
-                                href="/RefArchGlobal/en-GB/product/TG508M"
+                                href="/RefArchGlobal/en-GB/product/:productId"
                                 title="Classic Fit Shirt"
                               >
                                 Classic Fit Shirt
@@ -1347,7 +1347,7 @@ exports[`OrderSummary stories snapshot > WithBonusProductLine story renders and 
                             >
                               <a
                                 class="hover:text-primary block break-words"
-                                href="/RefArchGlobal/en-GB/product/TG508M"
+                                href="/RefArchGlobal/en-GB/product/:productId"
                                 title="Red Tie"
                               >
                                 Red Tie
@@ -1450,7 +1450,7 @@ exports[`OrderSummary stories snapshot > WithBonusProductLine story renders and 
                             >
                               <a
                                 class="hover:text-primary block break-words"
-                                href="/RefArchGlobal/en-GB/product/TG508M"
+                                href="/RefArchGlobal/en-GB/product/:productId"
                                 title="Blue Tie"
                               >
                                 Blue Tie
@@ -2028,7 +2028,7 @@ exports[`OrderSummary stories snapshot > WithGiftLine story renders and matches 
                             >
                               <a
                                 class="hover:text-primary block break-words"
-                                href="/RefArchGlobal/en-GB/product/TG508M"
+                                href="/RefArchGlobal/en-GB/product/:productId"
                                 title="Solid Silk Tie"
                               >
                                 Solid Silk Tie
