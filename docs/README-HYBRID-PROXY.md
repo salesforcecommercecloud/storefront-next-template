@@ -283,6 +283,10 @@ SFRA expects URLs in the format `/s/{siteId}/{locale}/path`. If the locale in th
 
 The proxy decompresses `gzip`, `brotli`, and `deflate` responses before rewriting URLs. If SFCC uses a compression format other than these three, body rewriting is skipped and you may see SFCC origin URLs in the response.
 
+### SFRA `plugin_redirect` returns 200 with Location
+
+SFRA's `plugin_redirect` cartridge sometimes responds with HTTP 200 and a `Location` header instead of a proper 3xx redirect. Browsers only follow `Location` on 3xx responses, so without intervention the proxied page renders blank. The hybrid proxy detects this case (status 200 + non-empty `Location`) and converts the response into a 302 with the rewritten (localhost) `Location`, dropping the upstream body. `Set-Cookie` headers are preserved through the conversion so session continuity is maintained. This affects local development only. eCDN does not normalize 200 + Location responses in production — if this response shape reaches shoppers, fix the SFRA cartridge or add an eCDN worker rule.
+
 ### This plugin only runs in development mode
 
 The `hybridProxyPlugin` is wrapped in a `mode === 'development'` check in `vite.config.ts`. It is a no-op in production builds. The hybrid proxy must not be enabled in production.

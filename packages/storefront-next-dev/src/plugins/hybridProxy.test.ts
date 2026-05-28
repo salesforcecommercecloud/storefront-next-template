@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect } from 'vitest';
-import { shouldSkipProxy, rewriteCookieForLocalhost, rewriteLocationForProxy } from './hybridProxy';
+import { describe, it, expect, afterEach } from 'vitest';
+import http from 'http';
+import { AddressInfo } from 'net';
+import type { ViteDevServer } from 'vite';
+import { shouldSkipProxy, rewriteCookieForLocalhost, rewriteLocationForProxy, hybridProxyPlugin } from './hybridProxy';
 
 describe('shouldSkipProxy', () => {
     describe('Vite internals — always skip', () => {
@@ -121,6 +124,209 @@ describe('rewriteCookieForLocalhost', () => {
         expect(rewriteCookieForLocalhost('sid=xyz; SameSite=Lax')).toContain('SameSite=Lax');
         expect(rewriteCookieForLocalhost('sid=xyz; SameSite=Strict')).toContain('SameSite=Strict');
         expect(rewriteCookieForLocalhost('sid=xyz; SameSite=None; Secure')).toContain('SameSite=None');
+    });
+});
+
+/**
+ * Integration tests for the proxyRes handler. The plugin's response handling is too
+ * stateful to mock cleanly — http-proxy emits real events on real streams — so we
+ * boot a one-shot upstream HTTP server, point the plugin at it, and run the plugin's
+ * configureServer middleware as a real reverse proxy. Each test owns its lifecycle
+ * (kept under afterEach) so failures don't leak sockets between tests.
+ */
+describe('proxyRes handler — SFRA plugin_redirect 200+Location normalization', () => {
+    const servers: http.Server[] = [];
+
+    afterEach(async () => {
+        await Promise.all(servers.splice(0).map((s) => new Promise<void>((resolve) => s.close(() => resolve()))));
+    });
+
+    type ProxyContext = {
+        proxyUrl: string;
+        proxyHost: string;
+        upstreamUrl: string;
+    };
+
+    /**
+     * Boot an upstream HTTP server with `upstreamHandler`, then a proxy server backed
+     * by `hybridProxyPlugin` pointing at it. `routeMatcher` returns false for everything
+     * so the plugin always proxies — we're exercising the proxyRes path, not routing.
+     */
+    async function startProxy(
+        upstreamHandler: (req: http.IncomingMessage, res: http.ServerResponse, ctx: { upstreamUrl: string }) => void
+    ): Promise<ProxyContext> {
+        // Stand the upstream up first so we know its port before the handler runs
+        let upstreamUrl = '';
+        const upstream = http.createServer((req, res) => upstreamHandler(req, res, { upstreamUrl }));
+        servers.push(upstream);
+        await new Promise<void>((resolve) => upstream.listen(0, '127.0.0.1', resolve));
+        const upstreamPort = (upstream.address() as AddressInfo).port;
+        upstreamUrl = `http://127.0.0.1:${upstreamPort}`;
+
+        const plugin = hybridProxyPlugin({
+            enabled: true,
+            targetOrigin: upstreamUrl,
+            routingRules: '',
+            routeMatcher: () => false,
+            defaultSiteId: 'RefArchGlobal',
+            locale: 'en-GB',
+        });
+
+        // Mimic Vite's middleware registration so the plugin attaches its handler
+        let middleware: http.RequestListener | undefined;
+        const fakeServer = {
+            middlewares: {
+                use: (handler: http.RequestListener) => {
+                    middleware = handler;
+                },
+            },
+        } as unknown as ViteDevServer;
+        const configure = plugin.configureServer as (server: ViteDevServer) => void;
+        configure(fakeServer);
+        if (!middleware) throw new Error('hybridProxyPlugin did not register a middleware');
+
+        const proxy = http.createServer(middleware);
+        servers.push(proxy);
+        await new Promise<void>((resolve) => proxy.listen(0, '127.0.0.1', resolve));
+        const proxyPort = (proxy.address() as AddressInfo).port;
+        return {
+            proxyUrl: `http://127.0.0.1:${proxyPort}`,
+            proxyHost: `127.0.0.1:${proxyPort}`,
+            upstreamUrl,
+        };
+    }
+
+    /**
+     * Issue a request through the proxy without following redirects so we can assert
+     * on the 302 directly. Node's `http.request` with no redirect handling is enough.
+     */
+    function request(
+        url: string,
+        path: string
+    ): Promise<{ statusCode: number; headers: http.IncomingHttpHeaders; body: string }> {
+        return new Promise((resolve, reject) => {
+            const req = http.request(`${url}${path}`, { method: 'GET' }, (res) => {
+                const chunks: Buffer[] = [];
+                res.on('data', (c: Buffer) => chunks.push(c));
+                res.on('end', () =>
+                    resolve({
+                        statusCode: res.statusCode || 0,
+                        headers: res.headers,
+                        body: Buffer.concat(chunks).toString('utf8'),
+                    })
+                );
+            });
+            req.on('error', reject);
+            req.end();
+        });
+    }
+
+    it('converts upstream 200+Location into a 302 with localhost-rewritten Location', async () => {
+        // Upstream simulates SFRA plugin_redirect: 200 OK + Location header pointing at itself
+        const ctx = await startProxy((_req, res, { upstreamUrl }) => {
+            res.writeHead(200, {
+                'content-type': 'text/html',
+                location: `${upstreamUrl}/`,
+            });
+            res.end('<html>blank page that the browser would render</html>');
+        });
+
+        const response = await request(ctx.proxyUrl, '/cart');
+
+        expect(response.statusCode).toBe(302);
+        // Location must point at the proxy host, not the upstream
+        expect(response.headers.location).toContain(ctx.proxyHost);
+        expect(response.headers.location).not.toContain(new URL(ctx.upstreamUrl).host);
+        // 302 short-circuit body should be empty — the SFRA blank page was discarded
+        expect(response.body).toBe('');
+    });
+
+    it('preserves Set-Cookie headers when normalizing 200+Location → 302', async () => {
+        const ctx = await startProxy((_req, res, { upstreamUrl }) => {
+            res.writeHead(200, {
+                'content-type': 'text/html',
+                location: `${upstreamUrl}/`,
+                'set-cookie': ['dwsid=xyz; Domain=.salesforce.com; Path=/'],
+            });
+            res.end('blank');
+        });
+
+        const response = await request(ctx.proxyUrl, '/cart');
+
+        expect(response.statusCode).toBe(302);
+        const setCookie = response.headers['set-cookie'];
+        expect(setCookie).toBeDefined();
+        // Cookie rewrite still applied — sessions must survive the 200→302 conversion
+        expect((setCookie ?? []).join(';')).toContain('Domain=localhost');
+    });
+
+    it('leaves a plain 200 (no Location) on the body-rewrite path unchanged', async () => {
+        const ctx = await startProxy((_req, res) => {
+            res.writeHead(200, { 'content-type': 'text/html' });
+            res.end('<html><head></head><body>real page content</body></html>');
+        });
+
+        const response = await request(ctx.proxyUrl, '/cart');
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toContain('real page content');
+        expect(response.headers.location).toBeUndefined();
+    });
+
+    it('leaves a 3xx redirect alone (does not double-normalize)', async () => {
+        const ctx = await startProxy((_req, res, { upstreamUrl }) => {
+            res.writeHead(301, {
+                location: `${upstreamUrl}/elsewhere`,
+            });
+            res.end();
+        });
+
+        const response = await request(ctx.proxyUrl, '/cart');
+
+        // Status preserved as 301 — the 200→302 normalization must not touch real 3xx
+        expect(response.statusCode).toBe(301);
+        expect(response.headers.location).toContain(ctx.proxyHost);
+    });
+
+    it('does not convert 200+Location when Location points outside targetOrigin', async () => {
+        // 200+external-Location is not the plugin_redirect case — flow through unchanged
+        // so the proxy never coerces the browser to follow an arbitrary external URL.
+        const ctx = await startProxy((_req, res) => {
+            res.writeHead(200, {
+                'content-type': 'text/html',
+                location: 'https://example.com/elsewhere',
+            });
+            res.end('<html>body</html>');
+        });
+
+        const response = await request(ctx.proxyUrl, '/cart');
+
+        expect(response.statusCode).toBe(200);
+        expect(response.headers.location).toBe('https://example.com/elsewhere');
+        expect(response.body).toContain('body');
+    });
+
+    it('strips Set-Cookie when upstream returns 200+Location pointing at /404', async () => {
+        // SFRA `plugin_redirect` 200+Location aimed at the SFCC 404 page would otherwise
+        // forward SFRA's session-clear cookies to the browser as a "real" redirect —
+        // wiping the hybrid session over what is just a missing route. The safety-net
+        // gate must catch this shape so the cookie strip happens *before* the
+        // 200→302 normalization runs. The 302 still fires (so the shopper lands on
+        // the 404 page rather than on a blank-rendered 200 body), just without the
+        // session-clearing Set-Cookie.
+        const ctx = await startProxy((_req, res, { upstreamUrl }) => {
+            res.writeHead(200, {
+                'content-type': 'text/html',
+                location: `${upstreamUrl}/on/demandware.store/Sites-Site/default/404`,
+                'set-cookie': ['dwsid=; Domain=.salesforce.com; Path=/; Max-Age=0'],
+            });
+            res.end('blank');
+        });
+
+        const response = await request(ctx.proxyUrl, '/missing-route');
+
+        expect(response.statusCode).toBe(302);
+        expect(response.headers['set-cookie']).toBeUndefined();
     });
 });
 

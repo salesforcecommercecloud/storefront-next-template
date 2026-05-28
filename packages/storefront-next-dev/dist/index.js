@@ -2177,7 +2177,7 @@ function hybridProxyPlugin(options) {
 		const clientRes = res;
 		const locationHeader = proxyRes.headers.location;
 		const statusCode = proxyRes.statusCode || 200;
-		if (statusCode >= 300 && statusCode < 400 && typeof locationHeader === "string" && /\/404\b/.test(locationHeader)) {
+		if (typeof locationHeader === "string" && /\/404\b/.test(locationHeader) && (statusCode >= 300 && statusCode < 400 || statusCode === 200)) {
 			logger.warn(`⚠️  SFCC returned a redirect to 404 for ${req.url}. This usually means your HYBRID_ROUTING_RULES are missing a pattern for this path. Stripping Set-Cookie headers to prevent session cookie corruption. Fix: add a matching pattern to HYBRID_ROUTING_RULES (e.g., "^${req.url?.split("?")[0]}.*")`);
 			delete proxyRes.headers["set-cookie"];
 		}
@@ -2198,6 +2198,16 @@ function hybridProxyPlugin(options) {
 			if (result.kind === "rewritten") {
 				proxyRes.headers.location = result.url;
 				logger.debug(`Hybrid proxy location rewrite: ${truncateForLog(locationHeader)} → ${truncateForLog(result.url)}`);
+				if (statusCode === 200) {
+					proxyRes.resume();
+					const redirectHeaders = { location: result.url };
+					const setCookie = proxyRes.headers["set-cookie"];
+					if (setCookie) redirectHeaders["set-cookie"] = setCookie;
+					clientRes.writeHead(302, redirectHeaders);
+					clientRes.end();
+					logger.debug(`Hybrid proxy normalized 200+Location → 302 for ${req.url} (Location: ${truncateForLog(result.url)})`);
+					return;
+				}
 			} else if (result.kind === "malformed") logger.warn(`Hybrid proxy: invalid Location header: ${truncateForLog(locationHeader)}`);
 		}
 		const contentType = (proxyRes.headers["content-type"] || "").split(";")[0].trim();
