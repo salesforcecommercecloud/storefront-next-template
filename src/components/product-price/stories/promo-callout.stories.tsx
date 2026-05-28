@@ -17,39 +17,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import PromoCallout from '../promo-callout';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                logAction({ type: 'click', tag, label });
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof PromoCallout> = {
     title: 'Components/ProductPrice/PromoCallout',
@@ -58,13 +25,14 @@ const meta: Meta<typeof PromoCallout> = {
     parameters: {
         layout: 'centered',
     },
+    argTypes: {
+        className: { description: 'Additional classes for the wrapper div', control: 'text' },
+    },
     decorators: [
         (Story) => (
-            <ActionLogger>
-                <div className="p-4 border border-dashed">
-                    <Story />
-                </div>
-            </ActionLogger>
+            <div className="p-4 border border-dashed">
+                <Story />
+            </div>
         ),
     ],
 };
@@ -92,6 +60,11 @@ const mockProductWithHtmlPromo = {
     price: 100,
 } as any;
 
+/**
+ * At-rest state — plain-text callout message renders inside a styled
+ * `<span>`. Drive className from the Controls panel to verify wrapper
+ * styling overrides.
+ */
 export const Default: Story = {
     args: {
         product: mockProductWithPromo,
@@ -103,6 +76,11 @@ export const Default: Story = {
     },
 };
 
+/**
+ * HTML callout — `calloutMsg` contains HTML markup which is rendered via
+ * `dangerouslySetInnerHTML`. Distinct DOM (nested `<strong>` element)
+ * vs Default's flat text node, kept dedicated.
+ */
 export const HtmlContent: Story = {
     args: {
         product: mockProductWithHtmlPromo,

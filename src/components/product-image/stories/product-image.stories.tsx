@@ -21,48 +21,9 @@ import {
 } from '../../__mocks__/product-search-hit-data';
 import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig } from '@/test-utils/config';
 import DynamicImageProvider from '@/providers/dynamic-image';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
 
 const meta: Meta<typeof ProductImageContainer> = {
     title: 'Components/ProductImage',
@@ -74,13 +35,11 @@ const meta: Meta<typeof ProductImageContainer> = {
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>
-                <ActionLogger>
-                    <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
-                        <div className="w-64 h-64">
-                            <Story />
-                        </div>
-                    </DynamicImageProvider>
-                </ActionLogger>
+                <DynamicImageProvider value={{ widths: ['50vw', '50vw', '15vw'] }}>
+                    <div className="w-64 h-64">
+                        <Story />
+                    </div>
+                </DynamicImageProvider>
             </ConfigProvider>
         ),
     ],
@@ -129,6 +88,38 @@ export const CustomAspectRatio: Story = {
         const canvas = within(canvasElement);
         const image = canvas.getByRole('img');
         await expect(image).toBeInTheDocument();
-        // Aspect ratio is handled by CSS classes, we can check if image is present.
+    },
+};
+
+export const MissingImages: Story = {
+    args: {
+        product: {
+            ...mockStandardProductHit,
+            image: undefined,
+            imageGroups: [],
+        },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        // Component still renders the container with a link, but image src will be empty
+        const link = canvasElement.querySelector('a');
+        await expect(link).not.toBeNull();
+    },
+};
+
+export const WithNavigationArrows: Story = {
+    args: {
+        product: mockMasterProductHitWithMultipleVariants,
+        selectedColorValue: 'JJ5QZXX',
+        showNavigationArrows: true,
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const image = canvas.getByRole('img');
+        await expect(image).toBeInTheDocument();
+        // Navigation arrows render (visible on hover via CSS)
+        const arrows = canvasElement.querySelectorAll('button');
+        await expect(arrows.length).toBeGreaterThan(0);
     },
 };

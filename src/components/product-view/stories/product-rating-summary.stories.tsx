@@ -26,7 +26,7 @@ import { ProductRatingSummary } from '../product-rating-summary';
 
 const mockProduct = { id: 'storybook-product', name: 'Storybook Product' };
 
-function ProductRatingSummaryWrapper(): ReactElement {
+function ProductRatingSummaryWrapper({ interactive }: { interactive?: boolean }): ReactElement {
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={mockConfig}>
@@ -34,7 +34,7 @@ function ProductRatingSummaryWrapper(): ReactElement {
                 <ProductContentProvider>
                     <ProductReviewsProvider>
                         <div className="max-w-md">
-                            <ProductRatingSummary />
+                            <ProductRatingSummary interactive={interactive} />
                         </div>
                     </ProductReviewsProvider>
                 </ProductContentProvider>
@@ -61,10 +61,29 @@ const meta: Meta<typeof ProductRatingSummaryWrapper> = {
             },
         },
     },
+    argTypes: {
+        interactive: {
+            description:
+                'When false, disables hover popover and review-link interactions (used by ProductInfo when other components own the rating popover).',
+            control: 'boolean',
+        },
+    },
 };
 
 export default meta;
 
 type Story = StoryObj<typeof ProductRatingSummaryWrapper>;
 
-export const Default: Story = {};
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes the `interactive`
+ * prop, the only customization the component accepts. Review-count variations
+ * (0, 1, many reviews) are not driven from props or fixtures — they come from
+ * the `ProductReviewsProvider` adapter, which doesn't accept seed data. Adding
+ * a controlled provider is component-source work outside this PR's boundary,
+ * so review-count states stay covered by the customer-reviews-section stories.
+ */
+export const Playground: Story = {
+    args: {
+        interactive: true,
+    },
+};

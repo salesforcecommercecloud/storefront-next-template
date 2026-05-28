@@ -39,10 +39,55 @@ navigates to the PDP with the selected colour pre-seeded.
         productId: 'test-product-001',
         productName: 'Classic Cotton T-Shirt',
     },
+    argTypes: {
+        productId: {
+            description: 'SCAPI product id — passed to `CartItemModal` and used in the PDP URL',
+            control: 'text',
+        },
+        productName: {
+            description: 'Product name interpolated into the button’s `aria-label`',
+            control: 'text',
+        },
+        selectedColorValue: {
+            description: 'Pre-selected colour. When set, "Buy it Now" navigates to the PDP with `?color=<value>`',
+            control: 'text',
+        },
+        label: {
+            description: 'Custom button label. Defaults to the `product.quickAdd` locale key',
+            control: 'text',
+        },
+        initialVariantSelections: {
+            description: 'Full variant selections pre-seeded into the modal',
+            control: false,
+        },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof QuickAddButton>;
+
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes every leaf prop —
+ * `productId`, `productName`, `selectedColorValue`, `label`. The dedicated
+ * stories below remain bookmarked entry points for the most common variants.
+ * Note: clicking the button opens a lazy-loaded `CartItemModal`, which is
+ * verified by `ModalOpen` below.
+ */
+export const Playground: Story = {
+    args: {
+        productId: 'test-product-001',
+        productName: 'Classic Cotton T-Shirt',
+        selectedColorValue: 'navy',
+        label: 'Quick Add',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        const button = canvas.getByRole('button', { name: /quick add/i });
+        await expect(button).toBeInTheDocument();
+        await expect(button).toBeEnabled();
+    },
+};
 
 export const Default: Story = {
     play: async ({ canvasElement }) => {

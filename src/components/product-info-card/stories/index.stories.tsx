@@ -23,7 +23,7 @@ import ProductInfoCard from '../index';
 const meta: Meta<typeof ProductInfoCard> = {
     title: 'Components/ProductInfoCard',
     component: ProductInfoCard,
-    tags: ['autodocs'],
+    tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
     },
@@ -82,5 +82,38 @@ export const TitleOnly: Story = {
         const canvas = within(canvasElement);
 
         await expect(canvas.getByText('Free Returns')).toBeInTheDocument();
+    },
+};
+
+export const WithoutIcon: Story = {
+    args: {
+        title: 'Store Pickup Available',
+        description: 'Ready in 2 hours at your local store',
+        action: { label: 'Find Store', onClick: action('find store clicked') },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByText('Store Pickup Available')).toBeInTheDocument();
+        await expect(canvas.getByText('Ready in 2 hours at your local store')).toBeInTheDocument();
+        await expect(canvas.getByRole('button', { name: /find store/i })).toBeInTheDocument();
+    },
+};
+
+export const LongContent: Story = {
+    args: {
+        icon: <Truck className="h-5 w-5" />,
+        title: 'Free Standard Shipping on All Orders Over $50 Within the Continental United States',
+        description:
+            'Expedited and overnight shipping options are also available at checkout. International shipping rates vary by destination and package weight.',
+        action: { label: 'View Shipping Policy', onClick: action('shipping policy clicked') },
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+
+        await expect(canvas.getByText(/Free Standard Shipping/)).toBeInTheDocument();
+        await expect(canvas.getByText(/Expedited and overnight/)).toBeInTheDocument();
     },
 };

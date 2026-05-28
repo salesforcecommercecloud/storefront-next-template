@@ -35,7 +35,13 @@ const mockSummary: ReviewsSummaryData = {
     basedOnLabel: 'Based on 7 reviews',
 };
 
-function Wrapper(): ReactElement {
+/**
+ * `CustomerReviewsSection` takes no props — it pulls everything (product,
+ * review summary, AI summary, distribution, full reviews list, accordion
+ * expansion) from the surrounding providers. The harness below mirrors the
+ * production provider stack so the component renders as it would on a PDP.
+ */
+function CustomerReviewsSectionHarness(): ReactElement {
     const inRouter = useInRouterContext();
     const content = (
         <ConfigProvider config={mockConfig}>
@@ -57,23 +63,27 @@ function Wrapper(): ReactElement {
     return <RouterProvider router={router} />;
 }
 
-const meta: Meta<typeof Wrapper> = {
-    title: 'Components/CustomerReviewsSection/CustomerReviewsSection',
-    component: Wrapper,
+const meta: Meta<typeof CustomerReviewsSectionHarness> = {
+    title: 'Components/CustomerReviewsSection',
+    component: CustomerReviewsSectionHarness,
     tags: ['autodocs'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component:
-                    'Customer Reviews section: accordion with AI summary, star distribution, and lazy-loaded review cards.',
+                    'Customer Reviews accordion: collapsed at-rest with review-count line, AI summary box, and lazy-loaded review cards on expand. The component reads everything from `ProductReviewsProvider`, so this story has no Controls — vary the rendered state by changing the provider mock.',
             },
         },
     },
 };
 
 export default meta;
+type Story = StoryObj<typeof CustomerReviewsSectionHarness>;
 
-type Story = StoryObj<typeof Wrapper>;
-
+/**
+ * Default state — accordion collapsed, header showing the review-count
+ * line resolved from `reviewsSummary`. Click the trigger in the browser
+ * to expand and lazy-load the review cards.
+ */
 export const Default: Story = {};

@@ -61,6 +61,9 @@ const EXCLUDED_COMPONENTS = new Set([
     // Thin async wrapper (Suspense/Await) and barrel re-export, no visual rendering of their own
     'product-grid/deferred',
     'product-grid/index',
+    'product-recommendations/deferred',
+    // Barrel re-export — `customer-reviews-section.tsx` (the implementation) has its own story.
+    'ratings-reviews/components/customer-reviews-section/index',
     // Extension UITarget wrappers — thin Suspense/Await wrappers that pull deferred data
     // from `useRouteLoaderData`. Underlying section components have their own stories.
     'customer-preferences/components/target/preferences-target',

@@ -19,45 +19,15 @@ import ProductAccordion from '../product-accordion';
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { expect, within, userEvent } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
+type SyntheticArgs = {
+    longDescription: string;
+    shortDescription: string;
+    brand: string;
+    manufacturerName: string;
+    manufacturerSku: string;
+    showCareInstructions: boolean;
+};
 
 const meta: Meta<typeof ProductAccordion> = {
     title: 'Components/ProductView/ProductAccordion',
@@ -67,21 +37,87 @@ const meta: Meta<typeof ProductAccordion> = {
         chromatic: { modes: { desktop: allModes.desktop } },
         layout: 'padded',
     },
-    decorators: [
-        (Story) => (
-            <ActionLogger>
-                <Story />
-            </ActionLogger>
-        ),
-    ],
+    argTypes: {
+        product: { control: false },
+    },
 };
 
 export default meta;
-type Story = StoryObj<typeof ProductAccordion>;
+type StoryWithSynthetic = StoryObj<
+    React.ComponentType<Parameters<typeof ProductAccordion>[0] & Partial<SyntheticArgs>>
+>;
 
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline. Each product field that the accordion reads
+ * (long description, short description, brand, manufacturer name, manufacturer
+ * SKU) is exposed as a text Control. The `showCareInstructions` toggle controls
+ * whether `product.type.item` is set — without it, the component hides the
+ * Care Instructions section entirely.
+ */
+export const Playground: StoryWithSynthetic = {
     args: {
-        product: mockStandardProductOrderable.product,
+        longDescription:
+            'Premium grain deerskin leather lined with cashmere. Hand-stitched by master craftsmen in Italy with attention to every detail.',
+        shortDescription: mockStandardProductOrderable.product.shortDescription ?? '',
+        brand: 'Salesforce Apparel',
+        manufacturerName: 'Salesforce Apparel Co.',
+        manufacturerSku: 'SF-DEER-001',
+        showCareInstructions: true,
+    },
+    argTypes: {
+        longDescription: {
+            description: 'Synthetic: shown in Product Details when present (overrides shortDescription fallback)',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        shortDescription: {
+            description: 'Synthetic: shown in Product Details when longDescription is empty',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        brand: {
+            description: 'Synthetic: brand row in Product Details (empty hides the row)',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        manufacturerName: {
+            description: 'Synthetic: manufacturer row (empty hides the row)',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        manufacturerSku: {
+            description: 'Synthetic: SKU row (empty hides the row)',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        showCareInstructions: {
+            description: 'Synthetic: when true sets `product.type.item`, which renders the Care Instructions section',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+    },
+    render: (args) => {
+        const {
+            longDescription,
+            shortDescription,
+            brand,
+            manufacturerName,
+            manufacturerSku,
+            showCareInstructions,
+            ...componentProps
+        } = args;
+        const product = {
+            ...mockStandardProductOrderable.product,
+            longDescription: longDescription || undefined,
+            shortDescription: shortDescription || undefined,
+            brand: brand || undefined,
+            manufacturerName: manufacturerName || undefined,
+            manufacturerSku: manufacturerSku || undefined,
+            type: showCareInstructions
+                ? { ...(mockStandardProductOrderable.product.type ?? {}), item: true }
+                : { ...(mockStandardProductOrderable.product.type ?? {}), item: false },
+        };
+        return <ProductAccordion {...(componentProps as Parameters<typeof ProductAccordion>[0])} product={product} />;
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);

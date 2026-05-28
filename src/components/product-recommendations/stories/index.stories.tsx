@@ -20,53 +20,10 @@ import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
 
-const mockSite = mockSiteObject;
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
-import { action } from 'storybook/actions';
-
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
-
-        const logAction = action('interaction');
-
-        const handleClick = (event: Event) => {
-            const target = event.target as HTMLElement | null;
-            if (!target) return;
-
-            const interactiveElement = target.closest('button, a, [role="button"]');
-            if (interactiveElement) {
-                const label = interactiveElement.textContent?.trim().substring(0, 50) || 'unlabeled';
-                const tag = interactiveElement.tagName.toLowerCase();
-
-                if (label.match(/add to cart/i)) {
-                    action('add-to-cart')({ label });
-                } else if (label.match(/wishlist/i)) {
-                    action('wishlist')({ label });
-                } else {
-                    logAction({ type: 'click', tag, label });
-                }
-            }
-        };
-
-        root.addEventListener('click', handleClick, true);
-        return () => {
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
 const meta: Meta<typeof ProductRecommendations> = {
     title: 'Components/ProductRecommendations',
     component: ProductRecommendations,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     parameters: {
         layout: 'fullscreen',
         docs: {
@@ -88,26 +45,91 @@ a backing handler the carousel may render in its loading or empty state.
         },
     },
     decorators: [
-        (Story: React.ComponentType) => (
+        (Story) => (
             <ConfigProvider config={mockConfig}>
                 <SiteProvider
-                    site={mockSite}
+                    site={mockSiteObject}
                     locale={mockLocale}
                     language={mockSiteObject.defaultLocale}
                     currency={mockSiteObject.defaultCurrency}>
-                    <ActionLogger>
-                        <div className="p-8">
-                            <Story />
-                        </div>
-                    </ActionLogger>
+                    <div className="p-8">
+                        <Story />
+                    </div>
                 </SiteProvider>
             </ConfigProvider>
         ),
     ],
+    argTypes: {
+        recommender: {
+            description: 'Recommender configuration `{ name, title, type? }` — primary entry point',
+            control: false,
+        },
+        recommenderName: {
+            description: 'Page-Designer-friendly individual prop — alternative to `recommender.name`',
+            control: 'text',
+        },
+        recommenderTitle: {
+            description: 'Page-Designer-friendly individual prop — alternative to `recommender.title`',
+            control: 'text',
+        },
+        recommenderType: {
+            description: 'Page-Designer-friendly individual prop — `recommender` (default) or `zone`',
+            control: 'select',
+            options: ['recommender', 'zone'],
+        },
+        titleClassName: {
+            description: 'Optional `className` for the carousel title (e.g. smaller text on account overview)',
+            control: 'text',
+        },
+        subtitle: {
+            description: 'Optional subtitle displayed below the carousel title',
+            control: 'text',
+        },
+        shopAllText: {
+            description: 'Optional header link text (no URL — plain text only)',
+            control: 'text',
+        },
+        className: {
+            description: 'Optional `className` applied to the carousel wrapper',
+            control: 'text',
+        },
+        products: {
+            description: 'Optional product list — falls back to `useProduct()` context if omitted',
+            control: false,
+        },
+        args: {
+            description: 'Optional Einstein recommender arguments (e.g. `{ maxResults, categoryId }`)',
+            control: false,
+        },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof ProductRecommendations>;
+
+// No play functions: in Storybook the Einstein adapter never resolves (no real
+// HTTP fetch wired), so the component returns null. Snapshot + a11y coverage is
+// enough — adding presence-only plays would silently pass on the null render
+// (Pattern 6).
+
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes every leaf prop —
+ * `recommenderName`, `recommenderTitle`, `recommenderType`, `subtitle`,
+ * `shopAllText`, `titleClassName`, `className`. The `recommender` object,
+ * `products`, and `args` stay as fixtures (composite types). Toggle the text
+ * controls to see the loading skeleton title update live.
+ */
+export const Playground: Story = {
+    args: {
+        recommender: {
+            name: 'pdp-similar-items',
+            title: 'You May Also Like',
+            type: 'recommender',
+        },
+        subtitle: 'Hand-picked for you',
+        shopAllText: 'Shop All',
+    },
+};
 
 export const Default: Story = {
     args: {
@@ -116,39 +138,6 @@ export const Default: Story = {
             title: 'You May Also Like',
             type: 'recommender',
         },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // Component may show loading state, render content, or return null without real adapter
-        // This is expected behavior - component gracefully handles missing adapter
-        const title = canvas.queryByText('You May Also Like');
-        const loading = canvas.queryByTestId('product-recommendation-skeleton');
-        // If component rendered, verify it shows either title or loading state
-        if (title || loading) {
-            await expect(title || loading).toBeInTheDocument();
-        }
-        // If component returned null (no adapter), that's also valid behavior
-    },
-};
-
-export const WithCustomTitle: Story = {
-    args: {
-        recommender: {
-            name: 'pdp-similar-items',
-            title: 'Similar Products',
-            type: 'recommender',
-        },
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // Component may return null without real adapter - this is expected
-        const title = canvas.queryByText('Similar Products');
-        const loading = canvas.queryByTestId('product-recommendation-skeleton');
-        if (title || loading) {
-            await expect(title || loading).toBeInTheDocument();
-        }
     },
 };
 
@@ -160,15 +149,12 @@ export const ZoneType: Story = {
             type: 'zone',
         },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // Component may return null without real adapter - this is expected
-        const title = canvas.queryByText('Featured Products');
-        const loading = canvas.queryByTestId('product-recommendation-skeleton');
-        if (title || loading) {
-            await expect(title || loading).toBeInTheDocument();
-        }
+    parameters: {
+        docs: {
+            description: {
+                story: 'Demonstrates `type: "zone"` — uses `getZoneRecommendations` instead of `getRecommendations`. Distinct fetch path inside the component.',
+            },
+        },
     },
 };
 
@@ -186,15 +172,12 @@ export const WithProducts: Story = {
             },
         ],
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // Component may return null without real adapter - this is expected
-        const title = canvas.queryByText('You May Also Like');
-        const loading = canvas.queryByTestId('product-recommendation-skeleton');
-        if (title || loading) {
-            await expect(title || loading).toBeInTheDocument();
-        }
+    parameters: {
+        docs: {
+            description: {
+                story: 'Explicit `products` prop bypasses `useProduct()` context — used when the component lives outside a PDP.',
+            },
+        },
     },
 };
 
@@ -210,14 +193,11 @@ export const WithArgs: Story = {
             categoryId: 'mens-clothing',
         },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        // Component may return null without real adapter - this is expected
-        const title = canvas.queryByText('You May Also Like');
-        const loading = canvas.queryByTestId('product-recommendation-skeleton');
-        if (title || loading) {
-            await expect(title || loading).toBeInTheDocument();
-        }
+    parameters: {
+        docs: {
+            description: {
+                story: 'Demonstrates passing Einstein recommender `args` (e.g. `maxResults`, `categoryId`).',
+            },
+        },
     },
 };

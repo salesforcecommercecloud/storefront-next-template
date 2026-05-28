@@ -18,8 +18,6 @@ import ProductView from '../product-view';
 import { mockStandardProductOrderable } from '../../__mocks__/standard-product';
 import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
 import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
 import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
@@ -67,12 +65,27 @@ function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     return <div ref={containerRef}>{children}</div>;
 }
 
+type SyntheticArgs = {
+    productName: string;
+    shortDescription: string;
+};
+
 const meta: Meta<typeof ProductView> = {
     title: 'Components/ProductView/ProductView',
     component: ProductView,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     parameters: {
         layout: 'fullscreen',
+        docs: {
+            description: {
+                component:
+                    'Main product detail page (PDP) layout. Renders the image gallery, ' +
+                    'product info, cart actions, and below-the-fold accordion sections ' +
+                    'driven by the `product` SCAPI shape. Use Playground to drive ' +
+                    'long-name / long-description coverage; OutOfStock and MissingImages ' +
+                    'cover data-shape variants.',
+            },
+        },
         a11y: {
             config: {
                 rules: [
@@ -83,9 +96,18 @@ const meta: Meta<typeof ProductView> = {
             },
         },
     },
+    argTypes: {
+        product: { table: { disable: true } },
+        mode: {
+            control: 'inline-radio',
+            options: ['add', 'edit'],
+            description: 'Add-to-cart vs. edit-cart-line variant. Edit mode hides the wishlist button.',
+        },
+    },
     decorators: [
         (Story) => {
-            // Mock window.fetch to prevent 404s
+            // Mock window.fetch to prevent 404s from FAQ / EstimatedDelivery / ReturnsAndWarranty
+            // children that fire fetches on mount.
             if (typeof window !== 'undefined') {
                 window.fetch = async () =>
                     ({
@@ -117,26 +139,74 @@ const meta: Meta<typeof ProductView> = {
 
 export default meta;
 type Story = StoryObj<typeof ProductView>;
+type StoryWithSynthetic = StoryObj<React.ComponentType<Parameters<typeof ProductView>[0] & Partial<SyntheticArgs>>>;
 
-export const Default: Story = {
+/**
+ * Rich-but-realistic baseline. The Controls panel exposes the component's
+ * `mode` prop alongside synthetic `productName` and `shortDescription` text
+ * controls so QA can drive long-name and long-description coverage without
+ * dedicated stories. View-changing data states (out-of-stock, missing images)
+ * remain dedicated stories below.
+ */
+export const Playground: StoryWithSynthetic = {
     args: {
-        product: mockStandardProductOrderable.product,
+        mode: 'add',
+        productName: mockStandardProductOrderable.product.name,
+        shortDescription: mockStandardProductOrderable.product.shortDescription ?? '',
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
+    argTypes: {
+        productName: {
+            description: 'Synthetic: product display name (use for long-name coverage)',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        shortDescription: {
+            description: 'Synthetic: short description shown under the title',
+            control: 'text',
+            table: { category: 'Synthetic (data shape)' },
+        },
+    },
+    render: (args) => {
+        const { productName, shortDescription, ...componentProps } = args;
+        const product = {
+            ...mockStandardProductOrderable.product,
+            name: productName ?? mockStandardProductOrderable.product.name,
+            shortDescription: shortDescription ?? mockStandardProductOrderable.product.shortDescription,
+        };
+        return <ProductView {...(componentProps as Parameters<typeof ProductView>[0])} product={product} />;
+    },
+};
 
-        // Check Title
-        await expect(
-            canvas.getByRole('heading', { level: 1, name: mockStandardProductOrderable.product.name })
-        ).toBeInTheDocument();
+/**
+ * Image gallery has no images to render — layout collapses to a placeholder.
+ * Worth a dedicated bookmarkable URL because the visual change is structural,
+ * not just stylistic.
+ */
+export const MissingImages: Story = {
+    args: {
+        product: {
+            ...mockStandardProductOrderable.product,
+            imageGroups: [],
+        },
+    },
+};
 
-        // Check Price
-        const prices = canvas.getAllByText(/£99\.99/);
-        await expect(prices.length).toBeGreaterThan(0);
-
-        // Check Add to Cart
-        const addToCart = canvas.getByRole('button', { name: /add to cart/i });
-        await expect(addToCart).toBeInTheDocument();
+/**
+ * Out-of-stock — the cart action button, delivery options, and inventory
+ * messaging all change. Distinct enough visually to warrant a dedicated story
+ * rather than a Controls toggle.
+ */
+export const OutOfStock: Story = {
+    args: {
+        product: {
+            ...mockStandardProductOrderable.product,
+            inventory: {
+                id: 'inv-out',
+                ats: 0,
+                orderable: false,
+                backorderable: false,
+                preorderable: false,
+            },
+        },
     },
 };

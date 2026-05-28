@@ -173,3 +173,44 @@ export const PageDesignerMode: Story = {
         await expect(canvas.getByText('Page Designer Carousel')).toBeInTheDocument();
     },
 };
+
+export const WithSubtitle: Story = {
+    args: {
+        products,
+        title: 'Trending Now',
+        subtitle: 'Our most popular picks this week',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Trending Now')).toBeInTheDocument();
+        await expect(canvas.getByText('Our most popular picks this week')).toBeInTheDocument();
+    },
+};
+
+export const SingleProduct: Story = {
+    args: {
+        products: [products[0]],
+        title: 'Just For You',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('Just For You')).toBeInTheDocument();
+    },
+};
+
+export const WithShopAllLink: Story = {
+    args: {
+        products,
+        title: 'New Arrivals',
+        shopAllText: 'Shop All',
+        shopAllUrl: '/category/new-arrivals',
+    },
+    play: async ({ canvasElement }) => {
+        await waitForStorybookReady(canvasElement);
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText('New Arrivals')).toBeInTheDocument();
+        await expect(canvas.getByText('Shop All')).toBeInTheDocument();
+    },
+};
