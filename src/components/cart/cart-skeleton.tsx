@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -45,7 +45,13 @@ function CartEmptySkeleton(): ReactElement {
     );
 }
 
-export default function CartSkeleton({ productItemCount }: { productItemCount?: number }): ReactElement {
+export default function CartSkeleton({
+    productItemCount,
+    recommendationsSlot,
+}: {
+    productItemCount?: number;
+    recommendationsSlot?: ReactNode;
+}): ReactElement {
     if (!productItemCount) {
         return <CartEmptySkeleton />;
     }
@@ -172,6 +178,8 @@ export default function CartSkeleton({ productItemCount }: { productItemCount?: 
                         </Card>
                     </div>
                 </div>
+
+                {recommendationsSlot}
             </div>
 
             {/*

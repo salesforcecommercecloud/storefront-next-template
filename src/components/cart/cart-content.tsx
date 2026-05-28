@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useLayoutEffect, lazy, Suspense, type ReactElement } from 'react';
+import { useState, useLayoutEffect, lazy, Suspense, type ReactElement, type ReactNode } from 'react';
 
 // Commerce SDK
 import type { ShopperBasketsV2, ShopperProducts, ShopperPromotions } from '@/scapi';
-
-import { useDeferredRender } from '@/hooks/use-deferred-render';
 
 // Components
 import ProductItemsList from '@/components/product-items-list';
@@ -35,7 +33,6 @@ import { Label } from '@/components/ui/label';
 import { Typography } from '@/components/typography';
 import { useTranslation } from 'react-i18next';
 import { useBasketUpdater } from '@/providers/basket';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import CartPickup from '@/extensions/bopis/components/cart-pickup';
 import { getFirstPickupStore, filterPickupProductItems } from '@/extensions/bopis/lib/basket-utils';
@@ -63,53 +60,6 @@ const LazyCartItemAddToWishlistButton = lazy(() =>
         default: m.CartItemAddToWishlistButton,
     }))
 );
-// Recommendations are below the fold; lazy-load so ProductCarousel/ProductTile
-// don't ship in the cart route's initial bundle.
-const LazyProductRecommendations = lazy(() => import('@/components/product-recommendations'));
-
-/**
- * Defers mounting of the cart's below-the-fold recommendations until the
- * browser is idle. Until then, this component returns `null`, which keeps the
- * lazy chunk request, the Einstein fetch in `ProductRecommendations`, and the
- * `<Suspense>` reconciliation off the critical render path. This reduces TBT
- * on cart entry without changing what eventually renders.
- */
-function DeferredCartRecommendations({
-    productsByItemId,
-}: {
-    productsByItemId: Record<string, ShopperProducts.schemas['Product']>;
-}): ReactElement | null {
-    const { t } = useTranslation('product');
-    const shouldRender = useDeferredRender();
-
-    if (!shouldRender) {
-        return null;
-    }
-
-    // Pre-idle is `return null` above; post-idle uses `<Suspense fallback={null}>` for the brief window between the
-    // chunk request firing and `ProductRecommendations` mounting. We deliberately skip a `ProductRecommendationSkeleton`
-    // for that window: the block sits below cart items, summary, and bonus-discount carousels, so for any non-empty
-    // cart it's below the fold; the user cannot perceive layout shift for content outside the viewport. (Once mounted,
-    // `ProductRecommendations` itself renders `ProductRecommendationSkeleton` while its Einstein fetch is in-flight —
-    // suppressing the chunk-load fallback only avoids a redundant skeleton, not the inner one.)
-    return (
-        <Suspense fallback={null}>
-            <div className="mt-16 space-y-16">
-                <LazyProductRecommendations
-                    recommenderName={EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE}
-                    recommenderTitle={t('recommendations.youMightAlsoLike')}
-                    products={Object.values(productsByItemId)}
-                    className="max-w-none px-0"
-                />
-                <LazyProductRecommendations
-                    recommenderName={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}
-                    recommenderTitle={t('recommendations.recentlyViewed')}
-                    className="max-w-none px-0"
-                />
-            </div>
-        </Suspense>
-    );
-}
 
 /**
  * Props for the CartContent component
@@ -119,6 +69,7 @@ function DeferredCartRecommendations({
  * @property {Record<string, ShopperProducts.schemas['Product']>} [productsByItemId] - Item ID to product mapping
  * @property {Record<string, ShopperPromotions.schemas['Promotion']>} [promotions] - Promotion ID to promotion mapping
  * @property {string[]} [wishlistProductIds] - Product IDs in the shopper wishlist (from cart loader) for line-level wishlist state after refresh
+ * @property {ReactNode} [recommendationsSlot] - Below-the-fold recommendations region; the route owns recommender selection, i18n, and promise pinning
  */
 interface CartContentProps {
     basket: ShopperBasketsV2.schemas['Basket'] | undefined;
@@ -126,6 +77,7 @@ interface CartContentProps {
     bonusProductsById: Record<string, ShopperProducts.schemas['Product']>;
     promotions?: Record<string, ShopperPromotions.schemas['Promotion']>;
     wishlistProductIds?: readonly string[];
+    recommendationsSlot?: ReactNode;
 }
 
 /**
@@ -148,6 +100,7 @@ export default function CartContent({
     bonusProductsById,
     promotions,
     wishlistProductIds = [],
+    recommendationsSlot,
 }: CartContentProps): ReactElement {
     const { t } = useTranslation('cart');
 
@@ -423,7 +376,7 @@ export default function CartContent({
                     </Suspense>
                 )}
 
-                <DeferredCartRecommendations productsByItemId={productsByItemId} />
+                {recommendationsSlot}
 
                 {selectedBonusProduct &&
                     (() => {

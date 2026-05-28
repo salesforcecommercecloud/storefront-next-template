@@ -149,7 +149,7 @@ function maskUrl(url: string): string {
  *   to communicate the platform's request window. Example: `"15000"`. Unset or non-positive → no timeout.
  *   Misconfiguration (set but unparseable to a finite number) → no timeout.
  */
-function getMrtRequestTimeoutMs(): number | null {
+export function getMrtRequestTimeoutMs(): number | null {
     const raw = process.env.MRT_REQUEST_TIMEOUT;
     if (!raw) {
         return null;

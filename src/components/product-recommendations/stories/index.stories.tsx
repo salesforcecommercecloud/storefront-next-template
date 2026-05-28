@@ -25,7 +25,6 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 import { action } from 'storybook/actions';
-import RecommendersProvider from '@/providers/recommenders';
 
 function ActionLogger({ children }: { children: ReactNode }): ReactElement {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -82,8 +81,8 @@ The ProductRecommendations component displays product recommendation carousels u
 - Gracefully handles empty states and errors
 - Integrates with ProductCarousel for display
 
-**Note:** This component requires the RecommendersProvider to be set up with a properly configured adapter.
-In Storybook, the component may not display recommendations without a real adapter configuration.
+**Note:** In Storybook, the component fetches from the BFF route (/resource/recommendations); without
+a backing handler the carousel may render in its loading or empty state.
                 `,
             },
         },
@@ -96,13 +95,11 @@ In Storybook, the component may not display recommendations without a real adapt
                     locale={mockLocale}
                     language={mockSiteObject.defaultLocale}
                     currency={mockSiteObject.defaultCurrency}>
-                    <RecommendersProvider>
-                        <ActionLogger>
-                            <div className="p-8">
-                                <Story />
-                            </div>
-                        </ActionLogger>
-                    </RecommendersProvider>
+                    <ActionLogger>
+                        <div className="p-8">
+                            <Story />
+                        </div>
+                    </ActionLogger>
                 </SiteProvider>
             </ConfigProvider>
         ),

@@ -19,7 +19,6 @@ import { expect, within } from 'storybook/test';
 import { waitForStorybookReady } from '@storybook/test-utils';
 import { createMemoryRouter, RouterProvider, useInRouterContext } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
-import RecommendersProvider from '@/providers/recommenders';
 import {
     AccountOverview,
     AccountOverviewSkeleton,
@@ -30,8 +29,49 @@ import {
     AccountOverviewOrdersAwait,
     RecentOrdersSectionSkeleton,
 } from '../index';
+import ProductRecommendations from '@/components/product-recommendations';
+import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
+import { Card, CardContent } from '@/components/ui/card';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
+import { mockStandardProductHit } from '@/components/__mocks__/product-search-hit-data';
 import type { CustomerOrdersResult } from '@/lib/api/order.server';
 import heroNewArrivals from '/images/hero-02.webp';
+
+// Mock recommendations slot — stories pass a resolved promise so the slot
+// renders real product tiles instead of falling through to the client-data
+// fetch path (which would produce skeletons in the Storybook environment).
+const mockRecommendation = {
+    recoUUID: 'mock-uuid',
+    recommenderName: EINSTEIN_RECOMMENDERS.EMPTY_SEARCH_RESULTS_MOST_VIEWED,
+    recs: [{ ...mockStandardProductHit, id: 'mock-rec-1' }],
+} as unknown as Recommendation;
+
+const mockRecommendationsSlot = (
+    <Card className="py-0 rounded-none shadow-none">
+        <CardContent className="p-6">
+            <ProductRecommendations
+                recommenderName={EINSTEIN_RECOMMENDERS.EMPTY_SEARCH_RESULTS_MOST_VIEWED}
+                recommenderTitle="Curated for you"
+                titleClassName="text-lg font-semibold text-foreground tracking-tight"
+                subtitle="Hand-picked just for you"
+                className="max-w-none -mx-6 md:py-0"
+                data={Promise.resolve(mockRecommendation)}
+                fallback={
+                    <ProductRecommendationSkeleton title="Curated for you" className="max-w-none -mx-6 md:py-0" />
+                }
+            />
+        </CardContent>
+    </Card>
+);
+
+const mockRecommendationsSkeleton = (
+    <Card className="py-0 rounded-none shadow-none">
+        <CardContent className="p-6">
+            <ProductRecommendationSkeleton className="max-w-none -mx-6 md:py-0" />
+        </CardContent>
+    </Card>
+);
 
 const mockCustomer = {
     customerId: 'test-customer-123',
@@ -128,9 +168,7 @@ This component is typically rendered as the default view when users navigate to 
             const inRouter = useInRouterContext();
             const content = (
                 <AllProvidersWrapper>
-                    <RecommendersProvider>
-                        <Story />
-                    </RecommendersProvider>
+                    <Story />
                 </AllProvidersWrapper>
             );
             if (inRouter) return content;
@@ -150,6 +188,7 @@ export const Default: Story = {
     args: {
         customer: mockCustomer,
         ordersPromise: Promise.resolve(mockOrders),
+        recommendationsSlot: mockRecommendationsSlot,
     },
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
@@ -174,6 +213,7 @@ export const GuestUser: Story = {
     args: {
         customer: null,
         ordersPromise: Promise.resolve(emptyOrders),
+        recommendationsSlot: mockRecommendationsSlot,
     },
     parameters: {
         docs: {
@@ -196,6 +236,7 @@ export const GuestUser: Story = {
 export const WithoutOrders: Story = {
     args: {
         customer: mockCustomer,
+        recommendationsSlot: mockRecommendationsSlot,
     },
     parameters: {
         docs: {
@@ -363,7 +404,7 @@ export const QuickLinksSectionLoading: StoryObj<typeof QuickLinksSectionSkeleton
 
 // Full Skeleton Story
 export const LoadingSkeleton: StoryObj<typeof AccountOverviewSkeleton> = {
-    render: () => <AccountOverviewSkeleton />,
+    render: () => <AccountOverviewSkeleton recommendationsSlot={mockRecommendationsSkeleton} />,
     parameters: {
         docs: {
             description: {

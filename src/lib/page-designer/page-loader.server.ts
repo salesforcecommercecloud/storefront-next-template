@@ -75,6 +75,7 @@ function collectFromRegions(
                     {
                         componentData: comp,
                         context: ctx.context,
+                        request: ctx.request,
                     },
                     'loader'
                 );

@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, Suspense, useMemo } from 'react';
+import { type ReactElement, type ReactNode, Suspense } from 'react';
 import { Await } from 'react-router';
 import { Link } from '@/components/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import ProductRecommendations from '@/components/product-recommendations';
-import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
 import { OrderListBody, OrderListSkeleton } from '@/components/account/order-list';
 import { User, CreditCard, Receipt, MapPin } from 'lucide-react';
 import type { ShopperCustomers } from '@/scapi';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@/hooks/use-navigate';
-import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';
 import { AppDownloadSection } from '@/components/account/app-download-section';
 import { AccountHelp } from '@/components/account/account-help';
 import type { CustomerOrdersResult } from '@/lib/api/order.server';
@@ -52,6 +49,8 @@ export interface AccountOverviewProps {
     customer?: Customer | null;
     /** Deferred promise for the shopper's recent orders */
     ordersPromise?: Promise<CustomerOrdersResult>;
+    /** Slot for product recommendations (rendered below the orders section) */
+    recommendationsSlot?: ReactNode;
 }
 
 /**
@@ -158,56 +157,6 @@ export function QuickLinksSectionSkeleton(): ReactElement {
                         </div>
                     ))}
                 </div>
-            </CardContent>
-        </Card>
-    );
-}
-
-/**
- * Curated for You section with product recommendations
- * Uses Einstein recommendations to display personalized product suggestions
- */
-export function CuratedForYouSection(): ReactElement {
-    const { t } = useTranslation('account');
-
-    const curatedRecommender = useMemo(
-        () => ({
-            name: EINSTEIN_RECOMMENDERS.EMPTY_SEARCH_RESULTS_MOST_VIEWED,
-            title: t('overview.curatedForYou.title'),
-        }),
-        [t]
-    );
-
-    return (
-        <Card className="py-0 rounded-none shadow-none">
-            <CardContent className="p-6">
-                <Suspense
-                    fallback={
-                        <ProductRecommendationSkeleton
-                            title={t('overview.curatedForYou.title')}
-                            className="max-w-none -mx-6 md:py-0"
-                        />
-                    }>
-                    <ProductRecommendations
-                        recommender={curatedRecommender}
-                        titleClassName="text-lg font-semibold text-foreground tracking-tight"
-                        subtitle={t('overview.curatedForYou.subtitle')}
-                        className="max-w-none -mx-6 md:py-0"
-                    />
-                </Suspense>
-            </CardContent>
-        </Card>
-    );
-}
-
-/**
- * Skeleton for the Curated for You section
- */
-export function CuratedForYouSectionSkeleton(): ReactElement {
-    return (
-        <Card className="py-0 rounded-none shadow-none">
-            <CardContent className="p-6">
-                <ProductRecommendationSkeleton className="max-w-none -mx-6 md:py-0" />
             </CardContent>
         </Card>
     );
@@ -328,14 +277,14 @@ export function RecentOrdersSectionSkeleton(): ReactElement {
  * - Curated product recommendations (using Einstein)
  * - Quick Links to key account sections
  */
-export function AccountOverview({ customer, ordersPromise }: AccountOverviewProps): ReactElement {
+export function AccountOverview({ customer, ordersPromise, recommendationsSlot }: AccountOverviewProps): ReactElement {
     return (
         <div className="space-y-5">
             <WelcomeSection customer={customer} />
             <UITarget targetId="sfcc.myAccount.loyalty.summary" />
             {ordersPromise && <AccountOverviewOrdersAwait ordersPromise={ordersPromise} />}
             <UITarget targetId="sfcc.myAccount.reviews.pending" />
-            <CuratedForYouSection />
+            {recommendationsSlot}
             <AccountHelp />
             <AppDownloadSection />
             <QuickLinksSection />
@@ -391,12 +340,16 @@ export function AccountHelpSkeleton(): ReactElement {
 /**
  * Account overview skeleton for loading state
  */
-export function AccountOverviewSkeleton(): ReactElement {
+export function AccountOverviewSkeleton({
+    recommendationsSlot,
+}: {
+    recommendationsSlot?: ReactNode;
+} = {}): ReactElement {
     return (
         <div className="space-y-5">
             <WelcomeSectionSkeleton />
             <RecentOrdersSectionSkeleton />
-            <CuratedForYouSectionSkeleton />
+            {recommendationsSlot}
             <AccountHelpSkeleton />
             <AppDownloadSectionSkeleton />
             <QuickLinksSectionSkeleton />

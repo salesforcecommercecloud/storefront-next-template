@@ -84,7 +84,6 @@ import BasketProvider from '@/providers/basket';
 import { ComposeProviders } from '@/providers/compose-providers';
 import { CorrelationProvider } from '@/providers/correlation';
 import { correlationContext } from '@/lib/correlation';
-import RecommendersProvider from '@/providers/recommenders';
 
 // Components
 import { AppToaster } from '@/components/toast';
@@ -101,9 +100,6 @@ import { initI18next } from '@salesforce/storefront-next-runtime/i18n/client';
 import { PageViewTracker } from '@/analytics/page-view-tracker';
 import { initializeRegistry } from '@/lib/page-designer/static-registry';
 import { buildSeoMetaDescriptors } from '@/utils/seo';
-
-// Adapters
-import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
 
 // Assets
 import favicon from '/favicon.ico';
@@ -639,7 +635,6 @@ export default function App({
                 [SiteProvider, { site, locale, language: i18next.language, currency }],
                 [AuthProvider, { value: clientAuth }],
                 [BasketProvider, { snapshot: basketSnapshot }],
-                [RecommendersProvider, { adapterName: EINSTEIN_ADAPTER_NAME }],
                 [CorrelationProvider, { value: correlationId }],
                 // @sfdc-extension-block-start SFDC_EXT_STORE_LOCATOR
                 [StoreLocatorProvider, { selectedStoreInfo }],

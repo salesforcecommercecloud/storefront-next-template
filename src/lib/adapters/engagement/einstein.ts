@@ -19,53 +19,13 @@ import type {
     ConsentPreferences,
     EventSiteInfo,
 } from '@salesforce/storefront-next-runtime/events';
-import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
+import { hasConsent, type EngagementAdapter } from '@/lib/adapters';
 import type { ShopperProducts, ShopperBasketsV2, ShopperSearch } from '@/scapi';
-import type { Recommendation, RecommendersAdapter, Product } from '@/hooks/recommenders/use-recommenders';
+import { validateEinsteinConfig, type EinsteinConfig } from './einstein-config';
 
 export const EINSTEIN_ADAPTER_NAME = 'einstein' as const;
 
-/**
- * Einstein Recommender Name Constants
- *
- * These constants represent the recommender names configured in Business Manager
- * and can be used when calling the recommendations API.
- *
- * @example
- * ```tsx
- * import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein';
- *
- * <ProductRecommendations
- *   recommenderName={EINSTEIN_RECOMMENDERS.PDP_MIGHT_ALSO_LIKE}
- *   title="You May Also Like"
- * />
- * ```
- */
-export const EINSTEIN_RECOMMENDERS = {
-    /** Similar items modal shown when adding product to cart */
-    ADD_TO_CART_MODAL: 'pdp-similar-items',
-    /** Recently viewed products shown on cart page */
-    CART_RECENTLY_VIEWED: 'viewed-recently-einstein',
-    /** You may also like products shown on cart page */
-    CART_MAY_ALSO_LIKE: 'product-to-product-einstein',
-    /** Complete the set recommendations on PDP */
-    PDP_COMPLETE_SET: 'complete-the-set',
-    /** Similar items recommendations on PDP */
-    PDP_MIGHT_ALSO_LIKE: 'pdp-similar-items',
-    /** Recently viewed products shown on PDP */
-    PDP_RECENTLY_VIEWED: 'viewed-recently-einstein',
-    /** Top selling products for empty search results */
-    EMPTY_SEARCH_RESULTS_TOP_SELLERS: 'home-top-revenue-for-category',
-    /** Most viewed products for empty search results */
-    EMPTY_SEARCH_RESULTS_MOST_VIEWED: 'products-in-all-categories',
-} as const;
-
-/**
- * Type representing all valid Einstein recommender names
- */
-export type EinsteinRecommenderName = (typeof EINSTEIN_RECOMMENDERS)[keyof typeof EINSTEIN_RECOMMENDERS];
-
-const einteinEventToEndpointMap: Record<AnalyticsEvent['eventType'], string> = {
+const einsteinEventToEndpointMap: Record<AnalyticsEvent['eventType'], string> = {
     view_page: 'viewPage',
     view_product: 'viewProduct',
     view_search: 'viewSearch',
@@ -117,14 +77,6 @@ export type EinsteinProduct = {
     price?: number;
 };
 
-export type EinsteinConfig = EngagementAdapterConfig & {
-    siteId: string;
-    host: string;
-    einsteinId: string;
-    isProduction: boolean;
-    realm: string;
-};
-
 /**
  * Map analytics event types to Einstein activity endpoints
  *
@@ -135,7 +87,7 @@ export type EinsteinConfig = EngagementAdapterConfig & {
  * @returns The Einstein activity endpoint for the event type
  */
 function mapEventTypeToEinsteinEndpoint(eventType: AnalyticsEvent['eventType']): string | undefined {
-    return einteinEventToEndpointMap[eventType] || undefined;
+    return einsteinEventToEndpointMap[eventType] || undefined;
 }
 
 /**
@@ -368,191 +320,21 @@ function convertEventToEinsteinActivity(event: AnalyticsEvent, realm: string, is
     }
 }
 
-function validateEinsteinConfig(config: EinsteinConfig): { valid: boolean; errors: string[] } {
-    const errors: string[] = [];
-    if (!config.host || config.host.trim() === '') {
-        errors.push(`Missing required field: host`);
-    }
-    if (!config.einsteinId || config.einsteinId.trim() === '') {
-        errors.push(`Missing required field: einsteinId`);
-    }
-    if (!config.siteId || config.siteId.trim() === '') {
-        errors.push(`Missing required field: siteId`);
-    }
-    if (!config.realm || config.realm.trim() === '') {
-        errors.push(`Missing required field: realm`);
-    }
+/**
+ * Create an Einstein adapter that implements the EngagementAdapter interface for analytics events.
+ */
+export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter {
+    const { errors } = validateEinsteinConfig(config);
     if (!config.eventToggles) {
         errors.push(`Missing required field: eventToggles`);
     }
-    return { valid: errors.length === 0, errors };
-}
-
-/**
- * Get site identifier in realm-siteId format for Einstein API endpoints
- */
-function getSiteIdentifier(config: EinsteinConfig): string {
-    return config.realm ? `${config.realm}-${config.siteId}` : config.siteId;
-}
-
-/**
- * Utility to transform a product to Einstein product format
- *
- * This is the unified function for all product mapping to Einstein format.
- * Use this instead of inline mapping to ensure consistency.
- */
-function transformProductToEinsteinProduct(
-    product: Product | ShopperSearch.schemas['ProductSearchHit']
-): EinsteinProduct {
-    // Check if it's a ShopperSearch ProductSearchHit
-    if ('hitType' in product || 'productId' in product) {
-        // ProductSearchHit format - use productId for both id and sku
-        return {
-            id: product.productId as string,
-            sku: product.productId as string,
-        };
-    }
-
-    // Otherwise it's a ShopperProducts Product
-    const fullProduct = product;
-    return getProductMapping(fullProduct, fullProduct.price);
-}
-
-/**
- * Make an Einstein API request
- */
-async function einsteinFetch(
-    config: EinsteinConfig,
-    endpoint: string,
-    method: 'GET' | 'POST',
-    body?: Record<string, unknown>
-): Promise<Recommendation> {
-    const headers = {
-        'Content-Type': 'application/json',
-        'x-cq-client-id': config.einsteinId,
-    };
-
-    const url = `${config.host}/v3${endpoint}`;
-
-    try {
-        const response = await fetch(url, {
-            method,
-            headers,
-            ...(body && {
-                body: JSON.stringify(body),
-            }),
-        });
-
-        if (!response.ok) {
-            return {};
-        }
-
-        const responseJson = await response.json();
-
-        // Convert snake_case keys to camelCase
-        const camelCased = keysToCamel(responseJson);
-        return camelCased;
-    } catch {
-        return {};
-    }
-}
-
-/**
- * Get a list of available recommenders
- */
-async function getEinsteinRecommenders(config: EinsteinConfig): Promise<Recommendation> {
-    const siteIdentifier = getSiteIdentifier(config);
-    const endpoint = `/personalization/recommenders/${siteIdentifier}`;
-    return einsteinFetch(config, endpoint, 'GET');
-}
-
-/**
- * Get recommendations by recommender name
- *
- */
-async function getEinsteinRecommendations(
-    config: EinsteinConfig,
-    recommenderName: string,
-    products?: Product[],
-    args?: Record<string, unknown>
-): Promise<Recommendation> {
-    const siteIdentifier = getSiteIdentifier(config);
-    const endpoint = `/personalization/recs/${siteIdentifier}/${recommenderName}`;
-    const body: Record<string, unknown> = {
-        ...args,
-    };
-
-    if (products && products.length > 0) {
-        body.products = products.map(transformProductToEinsteinProduct);
-    }
-
-    return einsteinFetch(config, endpoint, 'POST', body);
-}
-
-/**
- * Get recommendations for a specific zone
- *
- */
-async function getEinsteinZoneRecommendations(
-    config: EinsteinConfig,
-    zoneName: string,
-    products?: Product[],
-    args?: Record<string, unknown>
-): Promise<Recommendation> {
-    const siteIdentifier = getSiteIdentifier(config);
-    const endpoint = `/personalization/${siteIdentifier}/zones/${zoneName}/recs`;
-    const body: Record<string, unknown> = {
-        ...args,
-    };
-
-    if (products && products.length > 0) {
-        body.products = products.map(transformProductToEinsteinProduct);
-    }
-
-    return einsteinFetch(config, endpoint, 'POST', body);
-}
-
-/**
- * Helper function to convert snake_case keys to camelCase
- */
-function keysToCamel(obj: unknown): Recommendation {
-    if (Array.isArray(obj)) {
-        return obj.map((item) => keysToCamel(item)) as Recommendation;
-    }
-
-    if (obj !== null && typeof obj === 'object') {
-        return Object.keys(obj).reduce(
-            (result, key) => {
-                const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-                result[camelKey] = keysToCamel((obj as Record<string, unknown>)[key]);
-                return result;
-            },
-            {} as Record<string, unknown>
-        ) as Recommendation;
-    }
-
-    return obj as Recommendation;
-}
-
-/**
- * Extended Einstein adapter type that implements both EngagementAdapter and RecommendersAdapter
- */
-export type EinsteinUnifiedAdapter = EngagementAdapter & RecommendersAdapter;
-
-/**
- * Create an Einstein adapter that implements both EngagementAdapter and RecommendersAdapter interfaces
- */
-export function createEinsteinAdapter(config: EinsteinConfig): EinsteinUnifiedAdapter {
-    const validConfig = validateEinsteinConfig(config);
-    if (!validConfig.valid) {
-        const errorMessage = `Einstein adapter configuration is invalid: ${validConfig.errors.join('; ')}`;
-        throw new Error(errorMessage, { cause: validConfig.errors });
+    if (errors.length > 0) {
+        throw new Error(`Einstein adapter configuration is invalid: ${errors.join('; ')}`, { cause: errors });
     }
 
     return {
         name: EINSTEIN_ADAPTER_NAME,
 
-        // EngagementAdapter methods
         sendEvent: async (
             event: AnalyticsEvent,
             _siteInfo?: EventSiteInfo,
@@ -580,12 +362,5 @@ export function createEinsteinAdapter(config: EinsteinConfig): EinsteinUnifiedAd
 
             return Promise.resolve({ success });
         },
-
-        // RecommendersAdapter methods
-        getRecommenders: () => getEinsteinRecommenders(config),
-        getRecommendations: (recommenderName, products, args) =>
-            getEinsteinRecommendations(config, recommenderName, products, args),
-        getZoneRecommendations: (zoneName, products, args) =>
-            getEinsteinZoneRecommendations(config, zoneName, products, args),
     };
 }

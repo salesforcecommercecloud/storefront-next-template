@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { useState, type ReactElement } from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
-import { useDeferredRender } from '@/hooks/use-deferred-render';
+import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
+import ProductRecommendations from '@/components/product-recommendations';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
 
 const { t } = getTranslation();
 
@@ -35,24 +36,8 @@ vi.mock('@/hooks/use-scapi-fetcher', () => ({
     })),
 }));
 
-// Mock the recommender data boundary only — let ProductRecommendations and
-// ProductCarousel render for real so we exercise the actual cart wiring.
-const mockGetRecommendations = vi.fn();
-const mockGetZoneRecommendations = vi.fn();
-const mockUseRecommenders = vi.fn();
-
-vi.mock('@/hooks/recommenders/use-recommenders', () => ({
-    useRecommenders: () => mockUseRecommenders(),
-}));
-
-vi.mock('@/providers/recommenders', () => ({
-    useRecommendersAdapter: () => ({
-        getRecommenders: vi.fn(),
-        getRecommendations: mockGetRecommendations,
-        getZoneRecommendations: mockGetZoneRecommendations,
-    }),
-}));
-
+// useDeferredRenderSequence is consumed transitively by the carousel's image-gallery; stub to `0`
+// to preserve the real hook's "no preloads until the first idle frame" contract.
 // @sfdc-extension-block-start SFDC_EXT_RATINGS_REVIEWS
 vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => ({
     ProductReviewsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -73,15 +58,7 @@ vi.mock('@/extensions/ratings-reviews/providers/product-reviews-context', () => 
 }));
 // @sfdc-extension-block-end SFDC_EXT_RATINGS_REVIEWS
 
-// Mock useDeferredRender so tests can drive pre-/post-idle phases deterministically.
-// Default `true` matches the post-idle behavior the existing test suite was written
-// against (and what users observe within ~16ms of paint), so legacy assertions remain valid.
-// useDeferredRenderSequence is co-located in the same module and is consumed transitively
-// by the carousel's image-gallery; stub to `0` to preserve the real hook's "no preloads
-// until the first idle frame" contract — passing `n` would silently allow eager preloads
-// to slip past tests that ought to fail when that contract regresses.
 vi.mock('@/hooks/use-deferred-render', () => ({
-    useDeferredRender: vi.fn(() => true),
     useDeferredRenderSequence: () => 0,
 }));
 
@@ -89,42 +66,6 @@ vi.mock('@/hooks/use-deferred-render', () => ({
 import CartContent from './cart-content';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import BasketProvider, { useBasket } from '@/providers/basket';
-
-// Utils
-const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
-    // Using createMemoryRouter in framework mode is fine
-    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
-    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
-    const router = createMemoryRouter(
-        [
-            {
-                path: '/cart',
-                element: (
-                    <AllProvidersWrapper>
-                        <CartContent {...props} />
-                    </AllProvidersWrapper>
-                ),
-            },
-        ],
-        { initialEntries: ['/cart'] }
-    );
-
-    return render(<RouterProvider router={router} />);
-};
-
-// Default useRecommenders state: enabled, no recommendations returned. With
-// `recs` empty, ProductRecommendations renders nothing — which is the expected
-// path when Einstein returns no results. Individual tests override this state
-// when they need the recommendation carousels rendered.
-const defaultRecommendersState = {
-    isLoading: false,
-    isEnabled: true,
-    recommendations: { recs: [], recommenderName: undefined as string | undefined },
-    error: null,
-    getRecommenders: vi.fn(),
-    getRecommendations: mockGetRecommendations,
-    getZoneRecommendations: mockGetZoneRecommendations,
-};
 
 // Minimum-viable enriched recommendations that ProductCarousel + ProductTile can render.
 const buildRecs = (productNames: string[]) =>
@@ -148,14 +89,61 @@ const buildRecs = (productNames: string[]) =>
         ],
     }));
 
+// Default empty recommendation promises — server resolved with no recs.
+const emptyRecsPromise = (): Promise<Recommendation> => Promise.resolve({});
+
+/**
+ * Build a recommendations slot the same way the cart route does — pinning is the route's concern,
+ * so tests pass the promises directly to <ProductRecommendations>.
+ */
+const buildRecommendationsSlot = ({
+    cartMayAlsoLikePromise = emptyRecsPromise(),
+    cartRecentlyViewedPromise = emptyRecsPromise(),
+}: {
+    cartMayAlsoLikePromise?: Promise<Recommendation>;
+    cartRecentlyViewedPromise?: Promise<Recommendation>;
+} = {}) => (
+    <div className="mt-16 space-y-16">
+        <ProductRecommendations
+            recommenderName={EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE}
+            recommenderTitle={t('product:recommendations.youMightAlsoLike')}
+            data={cartMayAlsoLikePromise}
+            className="max-w-none px-0"
+        />
+        <ProductRecommendations
+            recommenderName={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}
+            recommenderTitle={t('product:recommendations.recentlyViewed')}
+            data={cartRecentlyViewedPromise}
+            className="max-w-none px-0"
+        />
+    </div>
+);
+
+// Utils
+const renderCartContent = (props: React.ComponentProps<typeof CartContent>) => {
+    // Using createMemoryRouter in framework mode is fine
+    // because both framework and data routers share the same underlying architecture, so it provides a valid navigation context for hooks and <Link>.
+    // Even though it's listed under "data routers," it fully supports testing non-route components that rely on router behavior.
+    const router = createMemoryRouter(
+        [
+            {
+                path: '/cart',
+                element: (
+                    <AllProvidersWrapper>
+                        <CartContent {...props} />
+                    </AllProvidersWrapper>
+                ),
+            },
+        ],
+        { initialEntries: ['/cart'] }
+    );
+
+    return render(<RouterProvider router={router} />);
+};
+
 describe('CartContent', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUseRecommenders.mockReturnValue(defaultRecommendersState);
-        // Default to post-idle so existing assertions about lazy ProductRecommendations
-        // mounting / fetching keep passing. The `Defer cart recommendations until idle`
-        // block below opts in to the pre-idle phase explicitly.
-        vi.mocked(useDeferredRender).mockReturnValue(true);
     });
 
     const mockBasket = {
@@ -603,231 +591,77 @@ describe('CartContent', () => {
     });
 
     describe('Cart recommendations section', () => {
-        // ProductRecommendations is lazy-loaded on the cart route to keep it out
-        // of the initial bundle, so the carousel mounts asynchronously after the
-        // cart shell renders. Tests use findBy*/waitFor to await that hydration.
-        test('requests both cart Einstein recommenders, passing basket products to "may also like" only', async () => {
-            renderCartContent({
-                basket: mockBasket,
-                productsByItemId: mockProductMap,
-                bonusProductsById: mockBonusProductsById,
-            });
-
-            // Wait for the lazy ProductRecommendations chunks to mount and fire effects
-            await waitFor(() => {
-                const requestedRecommenderNames = mockGetRecommendations.mock.calls.map(([name]) => name);
-                expect(requestedRecommenderNames).toEqual(
-                    expect.arrayContaining(['product-to-product-einstein', 'viewed-recently-einstein'])
-                );
-            });
-
-            // "May also like" should receive the basket products as context
-            const mayAlsoLikeCall = mockGetRecommendations.mock.calls.find(
-                ([name]) => name === 'product-to-product-einstein'
-            );
-            const mayAlsoLikeProducts = mayAlsoLikeCall?.[1] as { id: string }[] | undefined;
-            expect(mayAlsoLikeProducts?.map((p) => p.id)).toEqual(['product-1', 'product-2']);
-
-            // "Recently viewed" should not receive any product context
-            const recentlyViewedCall = mockGetRecommendations.mock.calls.find(
-                ([name]) => name === 'viewed-recently-einstein'
-            );
-            expect(recentlyViewedCall?.[1]).toBeUndefined();
-        });
-
+        // CartContent renders the recommendations region from a `recommendationsSlot` ReactNode
+        // owned by the route. These tests construct the slot the same way `CartBody` does so
+        // they verify both the slot integration and that <ProductRecommendations data={…}>
+        // resolves the loader-provided promises end-to-end.
         test('renders the "you might also like" carousel with translated title and recommended products', async () => {
-            mockUseRecommenders.mockReturnValue({
-                ...defaultRecommendersState,
-                recommendations: {
-                    recommenderName: 'product-to-product-einstein',
-                    recs: buildRecs(['Recommended Shirt', 'Recommended Pants']),
-                },
-            });
-
             renderCartContent({
                 basket: mockBasket,
                 productsByItemId: mockProductMap,
                 bonusProductsById: mockBonusProductsById,
+                recommendationsSlot: buildRecommendationsSlot({
+                    cartMayAlsoLikePromise: Promise.resolve({
+                        recommenderName: 'product-to-product-einstein',
+                        recs: buildRecs(['Recommended Shirt', 'Recommended Pants']),
+                    }),
+                }),
             });
 
-            // Translated section title is shown to the shopper after lazy mount
             expect(await screen.findByText(t('product:recommendations.youMightAlsoLike'))).toBeInTheDocument();
-            // Both recommended product names render via the real ProductCarousel/ProductTile
             expect(screen.getByText('Recommended Shirt')).toBeInTheDocument();
             expect(screen.getByText('Recommended Pants')).toBeInTheDocument();
         });
 
         test('renders the "recently viewed" carousel with its translated title and product', async () => {
-            mockUseRecommenders.mockReturnValue({
-                ...defaultRecommendersState,
-                recommendations: {
-                    recommenderName: 'viewed-recently-einstein',
-                    recs: buildRecs(['Previously Viewed Hat']),
-                },
-            });
-
             renderCartContent({
                 basket: mockBasket,
                 productsByItemId: mockProductMap,
                 bonusProductsById: mockBonusProductsById,
+                recommendationsSlot: buildRecommendationsSlot({
+                    cartRecentlyViewedPromise: Promise.resolve({
+                        recommenderName: 'viewed-recently-einstein',
+                        recs: buildRecs(['Previously Viewed Hat']),
+                    }),
+                }),
             });
 
             expect(await screen.findByText(t('product:recommendations.recentlyViewed'))).toBeInTheDocument();
             expect(screen.getByText('Previously Viewed Hat')).toBeInTheDocument();
         });
 
-        test('renders nothing for either recommender when Einstein returns no results', async () => {
-            // defaultRecommendersState already returns recs: []
+        test('renders nothing for either recommender when the resolved recs arrays are empty', async () => {
             renderCartContent({
                 basket: mockBasket,
                 productsByItemId: mockProductMap,
                 bonusProductsById: mockBonusProductsById,
+                recommendationsSlot: buildRecommendationsSlot(),
             });
 
-            // Wait until the lazy chunks have had a chance to mount and request data,
-            // so the absence of titles reflects the empty-recs branch rather than
-            // pre-mount state.
+            // Allow Suspense boundaries to resolve their (empty) promises.
             await waitFor(() => {
-                expect(mockGetRecommendations).toHaveBeenCalled();
+                expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
             });
             expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
             expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
         });
 
-        test('does not request recommendations when the cart is empty', async () => {
+        test('renders nothing for either recommender when the cart is empty', async () => {
+            // Empty cart short-circuits to <CartEmpty />; the recommendations region never renders.
             renderCartContent({
                 basket: { ...mockBasket, productItems: [] },
                 productsByItemId: mockProductMap,
                 bonusProductsById: mockBonusProductsById,
-            });
-
-            // Empty cart short-circuits to <CartEmpty/>; lazy recommendations never mount.
-            // Wait a microtask flush to give any pending lazy import a chance to resolve.
-            await waitFor(() => {
-                expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
-            });
-            expect(mockGetRecommendations).not.toHaveBeenCalled();
-            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
-            expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
-        });
-    });
-
-    describe('Defer cart recommendations until idle', () => {
-        // Pre-idle phase: useDeferredRender returns false, so DeferredCartRecommendations
-        // returns null. This must keep the lazy ProductRecommendations chunk request, the
-        // Einstein fetch, and the Suspense reconciliation off the cart's critical render path.
-        // Post-idle phase: useDeferredRender returns true and the carousels mount as before.
-        test('pre-idle: renders no carousel and does not request Einstein recommendations', async () => {
-            vi.mocked(useDeferredRender).mockReturnValue(false);
-            mockUseRecommenders.mockReturnValue({
-                ...defaultRecommendersState,
-                recommendations: {
-                    recommenderName: 'product-to-product-einstein',
-                    recs: buildRecs(['Recommended Shirt']),
-                },
-            });
-
-            renderCartContent({
-                basket: mockBasket,
-                productsByItemId: mockProductMap,
-                bonusProductsById: mockBonusProductsById,
-            });
-
-            // Cart shell still renders normally
-            expect(screen.getByTestId('sf-cart-container')).toBeInTheDocument();
-
-            // No carousel titles visible — the wrapper short-circuits before mounting
-            // ProductRecommendations, so even non-empty recs do not surface.
-            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
-            expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
-
-            // Critical: no Einstein fetch fires while we're still in the pre-idle phase.
-            // Use a microtask flush so any (unintended) lazy mount would have a chance to fire.
-            await Promise.resolve();
-            expect(mockGetRecommendations).not.toHaveBeenCalled();
-            expect(mockGetZoneRecommendations).not.toHaveBeenCalled();
-        });
-
-        test('pre-idle then post-idle: same CartContent instance flips and mounts the carousels', async () => {
-            // Drive the hook from a stateful closure so a parent state change re-renders the
-            // SAME tree (not a remount via fresh router) while the hook's return value flips.
-            // This is what catches a hook regression that hard-codes `true`: a remount-based
-            // test would silently pass even if useDeferredRender were removed.
-            let idleReady = false;
-            let triggerRerender: (() => void) | undefined;
-            vi.mocked(useDeferredRender).mockImplementation(() => idleReady);
-
-            mockUseRecommenders.mockReturnValue({
-                ...defaultRecommendersState,
-                recommendations: {
-                    recommenderName: 'product-to-product-einstein',
-                    recs: buildRecs(['Post Idle Shirt']),
-                },
-            });
-
-            function IdleHarness(): ReactElement {
-                const [, setTick] = useState(0);
-                triggerRerender = () => setTick((n) => n + 1);
-                return (
-                    <CartContent
-                        basket={mockBasket}
-                        productsByItemId={mockProductMap}
-                        bonusProductsById={mockBonusProductsById}
-                    />
-                );
-            }
-
-            const router = createMemoryRouter(
-                [
-                    {
-                        path: '/cart',
-                        element: (
-                            <AllProvidersWrapper>
-                                <IdleHarness />
-                            </AllProvidersWrapper>
-                        ),
-                    },
-                ],
-                { initialEntries: ['/cart'] }
-            );
-            render(<RouterProvider router={router} />);
-
-            // Pre-idle: no fetch, no carousel.
-            expect(mockGetRecommendations).not.toHaveBeenCalled();
-            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
-
-            // Flip the hook and force a re-render of the SAME IdleHarness instance.
-            act(() => {
-                idleReady = true;
-                triggerRerender?.();
-            });
-
-            await waitFor(() => {
-                const requestedNames = mockGetRecommendations.mock.calls.map(([name]) => name);
-                expect(requestedNames).toEqual(
-                    expect.arrayContaining(['product-to-product-einstein', 'viewed-recently-einstein'])
-                );
-            });
-            expect(await screen.findByText(t('product:recommendations.youMightAlsoLike'))).toBeInTheDocument();
-            expect(screen.getByText('Post Idle Shirt')).toBeInTheDocument();
-        });
-
-        test('pre-idle: empty cart short-circuits before the deferred wrapper is reached', async () => {
-            // The deferred wrapper guards against unnecessary lazy chunk mounts on a populated
-            // cart; the empty-cart branch must still render <CartEmpty /> regardless of the
-            // hook's state and must not fetch recommendations.
-            vi.mocked(useDeferredRender).mockReturnValue(false);
-
-            renderCartContent({
-                basket: { ...mockBasket, productItems: [] },
-                productsByItemId: mockProductMap,
-                bonusProductsById: mockBonusProductsById,
+                // The slot is still passed (the route always builds it) — we just confirm
+                // CartContent doesn't render anything below CartEmpty.
+                recommendationsSlot: buildRecommendationsSlot(),
             });
 
             await waitFor(() => {
                 expect(screen.getByTestId('sf-cart-empty')).toBeInTheDocument();
             });
-            expect(mockGetRecommendations).not.toHaveBeenCalled();
+            expect(screen.queryByText(t('product:recommendations.youMightAlsoLike'))).not.toBeInTheDocument();
+            expect(screen.queryByText(t('product:recommendations.recentlyViewed'))).not.toBeInTheDocument();
         });
     });
 
@@ -959,6 +793,7 @@ describe('CartContent', () => {
                                         basket={basket}
                                         productsByItemId={mockProductMap}
                                         bonusProductsById={mockBonusProductsById}
+                                        recommendationsSlot={buildRecommendationsSlot()}
                                     />
                                 </BasketProvider>
                             </AllProvidersWrapper>

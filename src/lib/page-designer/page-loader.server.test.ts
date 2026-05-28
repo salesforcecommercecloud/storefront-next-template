@@ -234,7 +234,7 @@ describe('pageLoader', () => {
             await expect(result.componentData?.['footer-1']).resolves.toEqual(footerData);
         });
 
-        test('server loader receives componentData and context', async () => {
+        test('server loader receives componentData, context, and request', async () => {
             const expectedData = { loaded: true };
             mockedRegistry.hasLoaders.mockReturnValue(true);
             mockedRegistry.callLoader.mockReturnValue(Promise.resolve(expectedData));
@@ -254,6 +254,7 @@ describe('pageLoader', () => {
                 {
                     componentData: component,
                     context: TEST_CONTEXT,
+                    request: args.request,
                 },
                 'loader'
             );

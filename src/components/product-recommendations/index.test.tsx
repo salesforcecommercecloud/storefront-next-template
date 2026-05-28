@@ -18,6 +18,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { mockAltSiteObject } from '@/test-utils/config';
 import ProductRecommendations, { type RecommenderConfig } from './index';
+import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
 
 // Mock data
 const mockRecommendations = {
@@ -29,9 +30,6 @@ const mockRecommendations = {
             id: 'test-product-1',
             productId: 'test-product-1',
             productName: 'Test Product 1',
-            image_url: '/test1.jpg',
-            product_name: 'Test Product 1',
-            product_url: '/products/test1',
             price: 29.99,
             currency: mockAltSiteObject.defaultCurrency,
         },
@@ -39,9 +37,6 @@ const mockRecommendations = {
             id: 'test-product-2',
             productId: 'test-product-2',
             productName: 'Test Product 2',
-            image_url: '/test2.jpg',
-            product_name: 'Test Product 2',
-            product_url: '/products/test2',
             price: 39.99,
             currency: mockAltSiteObject.defaultCurrency,
         },
@@ -112,15 +107,6 @@ vi.mock('@/components/product/skeletons', () => ({
             <div>Loading...</div>
         </div>
     ),
-}));
-
-// Mock RecommendersProvider
-vi.mock('@/providers/recommenders', () => ({
-    useRecommendersAdapter: () => ({
-        getRecommenders: vi.fn(),
-        getRecommendations: mockGetRecommendations,
-        getZoneRecommendations: mockGetZoneRecommendations,
-    }),
 }));
 
 const renderComponent = (component: React.ReactElement) => {
@@ -259,6 +245,128 @@ describe('ProductRecommendations', () => {
             const { container } = renderComponent(<ProductRecommendations recommender={null as any} />);
 
             expect(container.firstChild).toBeNull();
+        });
+    });
+
+    describe('Dispatcher (data prop)', () => {
+        test('renders carousel from resolved data promise without calling useRecommenders', async () => {
+            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
+            mockUseRecommenders = useRecommenders as any;
+            mockUseRecommenders.mockClear();
+
+            const dataPromise: Promise<Recommendation> = Promise.resolve(mockRecommendations);
+
+            renderComponent(<ProductRecommendations recommender={mockRecommender} data={dataPromise} />);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
+                expect(screen.getByText('You May Also Like')).toBeInTheDocument();
+                expect(screen.getByTestId('product-count')).toHaveTextContent('2 products');
+            });
+
+            expect(mockUseRecommenders).not.toHaveBeenCalled();
+        });
+
+        test('uses provided fallback while data promise is pending', async () => {
+            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
+            mockUseRecommenders = useRecommenders as any;
+            mockUseRecommenders.mockClear();
+
+            // Never-resolving promise so the Suspense boundary stays in the fallback state
+            const dataPromise: Promise<Recommendation> = new Promise(() => {});
+
+            renderComponent(
+                <ProductRecommendations
+                    recommender={mockRecommender}
+                    data={dataPromise}
+                    fallback={<div data-testid="custom-fallback">loading…</div>}
+                />
+            );
+
+            expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
+            expect(mockUseRecommenders).not.toHaveBeenCalled();
+        });
+
+        test('renders nothing when data promise resolves with no recs', async () => {
+            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
+            mockUseRecommenders = useRecommenders as any;
+            mockUseRecommenders.mockClear();
+
+            const dataPromise: Promise<Recommendation> = Promise.resolve({ recs: [] });
+
+            const { container } = renderComponent(
+                <ProductRecommendations recommender={mockRecommender} data={dataPromise} />
+            );
+
+            await waitFor(() => {
+                expect(container.querySelector('[data-testid="product-carousel"]')).toBeNull();
+            });
+            expect(mockUseRecommenders).not.toHaveBeenCalled();
+        });
+
+        test('renders carousel from `data` alone, using server `displayMessage` as title (no recommender prop)', async () => {
+            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
+            mockUseRecommenders = useRecommenders as any;
+            mockUseRecommenders.mockClear();
+
+            // Server-provided `displayMessage` is enough — the static `recommender` config is not
+            // required when `data` carries the title source.
+            const dataPromise: Promise<Recommendation> = Promise.resolve({
+                ...mockRecommendations,
+                displayMessage: 'Server-Driven Title',
+            });
+
+            renderComponent(<ProductRecommendations data={dataPromise} />);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
+                expect(screen.getByText('Server-Driven Title')).toBeInTheDocument();
+                expect(screen.getByTestId('product-count')).toHaveTextContent('2 products');
+            });
+
+            expect(mockUseRecommenders).not.toHaveBeenCalled();
+        });
+
+        test('renders carousel with `recommenderTitle` alone (no `recommenderName`) when `data` is provided', async () => {
+            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
+            mockUseRecommenders = useRecommenders as any;
+            mockUseRecommenders.mockClear();
+
+            // Server response without `displayMessage` — the static `recommenderTitle` prop must
+            // fill in. This is the cart route's shape: it pins recs by name on the loader side and
+            // passes only the translated title string to the component.
+            const dataPromise: Promise<Recommendation> = Promise.resolve({
+                ...mockRecommendations,
+                displayMessage: undefined,
+            });
+
+            renderComponent(<ProductRecommendations recommenderTitle="You might also like" data={dataPromise} />);
+
+            await waitFor(() => {
+                expect(screen.getByTestId('product-carousel')).toBeInTheDocument();
+                expect(screen.getByText('You might also like')).toBeInTheDocument();
+            });
+
+            expect(mockUseRecommenders).not.toHaveBeenCalled();
+        });
+
+        test('renders nothing when neither `recommender` nor `displayMessage` provides a title', async () => {
+            const { useRecommenders } = await import('@/hooks/recommenders/use-recommenders');
+            mockUseRecommenders = useRecommenders as any;
+            mockUseRecommenders.mockClear();
+
+            // Fail-closed: without either source for a title we don't want a headless carousel.
+            const dataPromise: Promise<Recommendation> = Promise.resolve({
+                ...mockRecommendations,
+                displayMessage: undefined,
+            });
+
+            const { container } = renderComponent(<ProductRecommendations data={dataPromise} />);
+
+            await waitFor(() => {
+                expect(container.querySelector('[data-testid="product-carousel"]')).toBeNull();
+            });
+            expect(mockUseRecommenders).not.toHaveBeenCalled();
         });
     });
 

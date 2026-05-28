@@ -32,12 +32,18 @@ import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server'
 import { fetchWishlistInitialState } from '@/lib/wishlist/fetch-initial-state.server';
 import type { WishlistInitialState } from '@/lib/wishlist/state';
 import { WishlistProvider } from '@/providers/wishlist';
+import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
+import { EINSTEIN_RECOMMENDERS } from '@/lib/adapters/engagement/einstein-recommenders';
+import { siteContext } from '@salesforce/storefront-next-runtime/site-context';
+import type { Recommendation } from '@/hooks/recommenders/use-recommenders';
 
 // Components
 import CartSkeleton from '@/components/cart/cart-skeleton';
 import CartContent from '@/components/cart/cart-content';
 import { CartLoadError } from '@/components/cart/cart-load-error';
 import { SeoMeta } from '@/components/seo-meta';
+import DeferredProductRecommendations from '@/components/product-recommendations/deferred';
+import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
 import { buildCanonicalUrl } from '@/utils/canonical-url';
 import { useTranslation } from 'react-i18next';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
@@ -65,6 +71,8 @@ type CartPageData = {
     }>;
     wishlistProductIdsPromise: Promise<string[]>;
     wishlistInitialState: Promise<WishlistInitialState>;
+    cartMayAlsoLikePromise: Promise<Recommendation>;
+    cartRecentlyViewedPromise: Promise<Recommendation>;
     basketSnapshot: BasketSnapshot | null;
     pageUrl: string;
 };
@@ -82,6 +90,7 @@ type CartPageData = {
 export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => {
     const requestUrl = new URL(request.url);
     const pageUrl = buildCanonicalUrl(requestUrl.origin, requestUrl.pathname, requestUrl.search);
+    const currency = context.get(siteContext)?.currency;
 
     const basketDataPromise = (async () => {
         const basketResource = await getBasket(context, { ensureBasket: true });
@@ -113,10 +122,34 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
 
     const wishlistProductIdsPromise = fetchWishlistProductIdsForCart(context);
 
+    // CART_MAY_ALSO_LIKE wants products as input — chain off basketDataPromise so we get productsByItemId without
+    // awaiting it inline. If basketDataPromise itself rejects, the surrounding cart UI already shows CartLoadError,
+    // so we silently degrade here.
+    const cartMayAlsoLikePromise = basketDataPromise
+        .then(({ productsByItemId }) =>
+            fetchProductRecommendations(
+                { context, request },
+                {
+                    name: EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE,
+                    products: Object.values(productsByItemId),
+                    ...(currency ? { currency } : {}),
+                }
+            )
+        )
+        .catch((): Recommendation => ({}));
+
+    // CART_RECENTLY_VIEWED is identity-only (cookieId/userId), no product input — fire immediately.
+    const cartRecentlyViewedPromise = fetchProductRecommendations(
+        { context, request },
+        { name: EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED, ...(currency ? { currency } : {}) }
+    );
+
     return {
         basketDataPromise,
         wishlistProductIdsPromise,
         wishlistInitialState: fetchWishlistInitialState(context),
+        cartMayAlsoLikePromise,
+        cartRecentlyViewedPromise,
         basketSnapshot: getBasketSnapshot(context),
         pageUrl,
     };
@@ -141,6 +174,7 @@ export const loader = ({ context, request }: Route.LoaderArgs): CartPageData => 
  */
 export default function Cart(): ReactElement {
     const { t } = useTranslation('cart');
+    const { t: tProduct } = useTranslation('product');
     const pageData = useLoaderData<typeof loader>();
 
     // Pin the wishlist promise to its first reference for the lifetime of this component
@@ -158,6 +192,43 @@ export default function Cart(): ReactElement {
     // post-hydration optimistic state.
     const [pinnedWishlistInitialState] = useState(() => pageData.wishlistInitialState);
 
+    // Pin recommendation promises here (not in CartBody): if pinned downstream, the basket
+    // re-suspending would unmount CartBody and lose its useState pinning. Pinning at the route
+    // level keeps the rec promise references stable across cart revalidations.
+    const [pinnedMayAlsoLikePromise] = useState(() => pageData.cartMayAlsoLikePromise);
+    const [pinnedRecentlyViewedPromise] = useState(() => pageData.cartRecentlyViewedPromise);
+
+    // Reserve vertical space for the recommendation carousels while their promises (and the
+    // basket itself) are loading. The upper carousel can sit in the initial viewport on small
+    // carts (single line item), so a `null` fallback would cause CLS — render the same skeleton
+    // shape under the basket-loading skeleton (gate A) and under the rec Suspense fallbacks.
+    const mayAlsoLikeTitle = tProduct('recommendations.youMightAlsoLike');
+    const recentlyViewedTitle = tProduct('recommendations.recentlyViewed');
+    const recommendationsSkeleton = (
+        <div className="mt-16 space-y-16">
+            <ProductRecommendationSkeleton title={mayAlsoLikeTitle} className="max-w-none px-0" />
+            <ProductRecommendationSkeleton title={recentlyViewedTitle} className="max-w-none px-0" />
+        </div>
+    );
+    const recommendationsSlot = (
+        <div className="mt-16 space-y-16">
+            <DeferredProductRecommendations
+                recommenderName={EINSTEIN_RECOMMENDERS.CART_MAY_ALSO_LIKE}
+                recommenderTitle={mayAlsoLikeTitle}
+                data={pinnedMayAlsoLikePromise}
+                className="max-w-none px-0"
+                fallback={<ProductRecommendationSkeleton title={mayAlsoLikeTitle} className="max-w-none px-0" />}
+            />
+            <DeferredProductRecommendations
+                recommenderName={EINSTEIN_RECOMMENDERS.CART_RECENTLY_VIEWED}
+                recommenderTitle={recentlyViewedTitle}
+                data={pinnedRecentlyViewedPromise}
+                className="max-w-none px-0"
+                fallback={<ProductRecommendationSkeleton title={recentlyViewedTitle} className="max-w-none px-0" />}
+            />
+        </div>
+    );
+
     return (
         <WishlistProvider initialState={pinnedWishlistInitialState}>
             <SeoMeta
@@ -167,15 +238,38 @@ export default function Cart(): ReactElement {
                 })}
                 openGraph={{ type: 'website', url: pageData.pageUrl }}
             />
-            <Suspense fallback={<CartSkeleton productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0} />}>
+            <Suspense
+                fallback={
+                    <CartSkeleton
+                        productItemCount={pageData.basketSnapshot?.uniqueProductCount ?? 0}
+                        recommendationsSlot={recommendationsSkeleton}
+                    />
+                }>
                 <Await resolve={pageData.basketDataPromise} errorElement={<CartLoadError />}>
                     {(basketData) => (
-                        <Suspense fallback={<CartBody basketData={basketData} wishlistProductIds={[]} />}>
+                        <Suspense
+                            fallback={
+                                <CartBody
+                                    basketData={basketData}
+                                    wishlistProductIds={[]}
+                                    recommendationsSlot={recommendationsSlot}
+                                />
+                            }>
                             <Await
                                 resolve={pinnedWishlistPromise}
-                                errorElement={<CartBody basketData={basketData} wishlistProductIds={[]} />}>
+                                errorElement={
+                                    <CartBody
+                                        basketData={basketData}
+                                        wishlistProductIds={[]}
+                                        recommendationsSlot={recommendationsSlot}
+                                    />
+                                }>
                                 {(wishlistProductIds: string[]) => (
-                                    <CartBody basketData={basketData} wishlistProductIds={wishlistProductIds} />
+                                    <CartBody
+                                        basketData={basketData}
+                                        wishlistProductIds={wishlistProductIds}
+                                        recommendationsSlot={recommendationsSlot}
+                                    />
                                 )}
                             </Await>
                         </Suspense>
@@ -194,9 +288,11 @@ export default function Cart(): ReactElement {
 function CartBody({
     basketData,
     wishlistProductIds,
+    recommendationsSlot,
 }: {
     basketData: Awaited<CartPageData['basketDataPromise']>;
     wishlistProductIds: string[];
+    recommendationsSlot: ReactElement;
 }): ReactElement {
     const content = (
         <CartContent
@@ -205,6 +301,7 @@ function CartBody({
             bonusProductsById={basketData.bonusProductsById}
             promotions={basketData.promotions}
             wishlistProductIds={wishlistProductIds}
+            recommendationsSlot={recommendationsSlot}
         />
     );
 

@@ -728,11 +728,11 @@ export function fallback({ title = 'Loading...' }: Partial<MyComponentProps>) {
 
 // 4. Component loaders (if needed)
 export const loader = {
-    server: async ({ component, request }) => {
-        const data = await fetchMyData(component.data?.id);
+    server: async ({ componentData, context, request }) => {
+        const data = await fetchMyData(componentData?.id);
         return data;
     },
-    client: async ({ component, request }) => {
+    client: async ({ componentData, request }) => {
         // Client-side logic if needed
         return null;
     },

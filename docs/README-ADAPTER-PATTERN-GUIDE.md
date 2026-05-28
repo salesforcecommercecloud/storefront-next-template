@@ -1,21 +1,22 @@
 # Adapter Pattern Implementation Guide
 
-> A comprehensive guide for implementing the adapter pattern in your components, based on the product recommendations system.
+> A guide for implementing the adapter pattern in your components. The codebase uses the pattern in two places: **engagement** (analytics events — Einstein, Active Data) and **product content** (PDP modal content). This guide leads with engagement as the worked example.
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Why Use Adapters?](#why-use-adapters)
-3. [Architecture Overview](#architecture-overview)
-4. [Lazy Loading, Dynamic Import, and Bundle Size](#lazy-loading-dynamic-import-and-bundle-size)
-5. [Core Patterns](#core-patterns)
-6. [Step-by-Step Implementation](#step-by-step-implementation)
-7. [Product Recommendations Example](#product-recommendations-example)
-8. [Code Templates](#code-templates)
-9. [Testing Strategies](#testing-strategies)
-10. [Best Practices](#best-practices)
-11. [Common Pitfalls](#common-pitfalls)
-12. [Configuration Reference](#configuration-reference)
+2. [When NOT to Use the Adapter Pattern](#when-not-to-use-the-adapter-pattern)
+3. [Why Use Adapters?](#why-use-adapters)
+4. [Architecture Overview](#architecture-overview)
+5. [Lazy Loading, Dynamic Import, and Bundle Size](#lazy-loading-dynamic-import-and-bundle-size)
+6. [Core Patterns](#core-patterns)
+7. [Step-by-Step Implementation](#step-by-step-implementation)
+8. [Engagement Adapter Example](#engagement-adapter-example)
+9. [Code Templates](#code-templates)
+10. [Testing Strategies](#testing-strategies)
+11. [Best Practices](#best-practices)
+12. [Common Pitfalls](#common-pitfalls)
+13. [Configuration Reference](#configuration-reference)
 
 ---
 
@@ -27,27 +28,98 @@ The **Adapter Pattern** is a structural design pattern that allows objects with 
 
 Without adapters, your components would be tightly coupled to specific service implementations:
 
-```tsx
+```ts
 // ❌ Tight coupling - hard to swap services
 import { EinsteinAPI } from '@/lib/einstein';
 
-function ProductRecommendations() {
-    const recommendations = EinsteinAPI.getRecommendations();
-    // Component is locked to Einstein
+function trackPageView(event) {
+    EinsteinAPI.sendActivity(event);
+    // Caller is locked to Einstein
 }
 ```
 
-With adapters, components depend on interfaces, not concrete implementations:
+With adapters, callers depend on interfaces, not concrete implementations:
+
+```ts
+// ✅ Loose coupling - the mediator dispatches to whichever adapters are registered
+const mediator = getEventMediator(getAllAdapters);
+sendViewPageEvent(event, mediator, eventSiteInfo, consentPreferences);
+```
+
+---
+
+## When NOT to Use the Adapter Pattern
+
+The adapter pattern fits **client-side, in-browser** orchestration where the same caller may need to dispatch through different vendor SDKs. It is the wrong fit for server-side data fetching, where React Router loaders and the BFF give you a more direct path.
+
+### Server-rendered data: use loaders, not adapters
+
+Server-rendered data should flow through **route loaders** and a thin server-only orchestrator function. There is no client-side context, no provider, and no registry — the loader runs on the server, calls the orchestrator directly, and ships data to the route as a critical await or a deferred Promise.
+
+The canonical example is **product recommendations**:
+
+```ts
+// src/routes/_app.cart.tsx
+import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
+
+export async function loader({ context, request }: Route.LoaderArgs) {
+    // Non-critical: don't await, return the Promise so the carousel suspends.
+    const cartRecs = fetchProductRecommendations(
+        { context, request },
+        { name: 'cart-complete-the-set', currency: 'USD' }
+    );
+    return { cartRecs };
+}
+```
+
+The route component then renders the recommendations inside a `<Suspense>` boundary using `<Await>`:
 
 ```tsx
-// ✅ Loose coupling - easy to swap services
-import { useRecommenders } from '@/hooks/use-recommenders';
+<Suspense fallback={<ProductRecommendationSkeleton />}>
+    <Await resolve={cartRecs} errorElement={null}>
+        {(rec) => <ProductRecommendations data={rec} recommenderName="cart-complete-the-set" recommenderTitle="Complete the set" />}
+    </Await>
+</Suspense>
+```
 
-function ProductRecommendations() {
-    const { getRecommendations } = useRecommenders();
-    // Component works with any adapter (Einstein, Active Data, etc.)
+For Page Designer slots, the same orchestrator is called from the component-loader pattern (`loader.server` re-exported by the component module):
+
+```ts
+// src/components/product-recommendations/loader.ts
+import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
+
+export async function loader({ componentData, context, request }) {
+    const data = componentData.data ?? {};
+    const name = data.recommenderName;
+    if (!name) return {};
+    return fetchProductRecommendations(
+        { context, request },
+        {
+            name,
+            ...(data.currency ? { currency: data.currency } : {}),
+            ...(data.type ? { args: { type: data.type } } : {}),
+        }
+    );
 }
 ```
+
+A small client-driven `useRecommenders` hook still exists in `src/hooks/recommenders/use-recommenders.ts` for the rare case when a component needs to refetch in response to user action — but it calls the same `/resource/recommendations` BFF route under the hood. There is no `RecommendersAdapter`, `RecommendersProvider`, or recs-specific adapter registry.
+
+### Why this is not adapter territory
+
+- **Identity stays on the server.** Cookie ID, user ID, and client IP are stamped by the BFF — the browser never sees them. An adapter that ran in the browser would have to hand-roll this every call.
+- **One vendor, one path.** There is one server-side recommendations vendor at a time. The choice happens at deploy time via `appConfig`, not at runtime via a registry lookup.
+- **The shape returned to the carousel (`ProductSearchHit[]`) is the same shape used everywhere else.** No vendor type leaks past the orchestrator.
+
+If you find yourself reaching for the adapter pattern for server-loaded data, stop and write a `*.server.ts` orchestrator instead. See [Data Fetching](./README-DATA.md) and [Page Designer](./README-PAGE-DESIGNER.md).
+
+### When the adapter pattern still applies
+
+- **Engagement / analytics events.** `EngagementAdapter`s (Einstein, Active Data) run in the browser and dispatch the same `AnalyticsEvent` to multiple vendors simultaneously. Different merchants enable different combinations.
+- **Product content modals (PDP).** `ProductContentAdapter` provides optional methods for size guide, returns & warranty, BNPL, estimated delivery, etc. Each merchant plugs in their own implementation; the PDP renders whichever methods are present.
+- **Customer preferences.** Similar shape to product content — a registry of optional methods that the merchant can swap.
+
+The rule of thumb: if the work happens **in the browser**, can be **done by zero or many vendors at once**, and the choice is **per-merchant**, the adapter pattern fits. If the work happens **on the server**, has **exactly one path**, and is **selected at build time**, write a server orchestrator instead.
 
 ---
 
@@ -62,70 +134,88 @@ function ProductRecommendations() {
 5. **Configuration-Driven**: Change behavior via configuration, not code changes
 6. **Multiple Instances**: Run different adapters simultaneously (A/B testing, fallbacks)
 
-### Use Cases
+### Use Cases (in this codebase)
 
-- **Product Recommendations**: Einstein, Active Data, rule-based engines
-- **Payment Processing**: Stripe, PayPal, Apple Pay
-- **Analytics**: Google Analytics, Adobe Analytics, custom tracking
-- **Search**: Elasticsearch, Algolia, native search
-- **Shipping**: FedEx, UPS, USPS
-- **Authentication**: OAuth providers (Google, Facebook, Auth0)
+- **Engagement / analytics**: Einstein, Active Data — dispatched by the event mediator, run in parallel
+- **Product content modals**: Pluggable PDP content (size guide, BNPL, estimated delivery, …)
+- **Customer preferences**: Pluggable read/write of merchant-specific preference fields
+
+### Use Cases (general)
+
+- Payment processing (Stripe, PayPal, Apple Pay)
+- Auxiliary search (Algolia, native search)
+- Shipping rate quoting (FedEx, UPS, USPS)
+- Auth providers (Google, Facebook, Auth0)
 
 ---
 
 ## Architecture Overview
 
-The adapter pattern in this application consists of four key layers:
+The adapter pattern in this application consists of four key layers. The example below uses engagement (analytics) as the worked case:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     1. Component Layer                       │
-│  (ProductRecommendations, Payment, Analytics, etc.)         │
+│                     1. Caller Layer                          │
+│  (PageViewTracker, click handlers, view-recommender hooks)  │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                     2. Hook Layer                            │
-│  (useRecommenders, usePayment, useAnalytics)                │
-│  - Consumes context from provider                           │
-│  - Provides clean API to components                         │
+│                     2. Mediator / Hook Layer                 │
+│  (getEventMediator, sendViewPageEvent, useProductContent…)  │
+│  - Aggregates registered adapters                           │
+│  - Provides clean API to callers                            │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                     3. Provider Layer                        │
-│  (RecommendersProvider, PaymentProvider)                    │
+│                     3. Provider Layer (optional)             │
+│  (ProductContentProvider, CustomerPreferencesProvider)      │
 │  - Lazy-loads adapter from registry                         │
-│  - Manages adapter lifecycle                                │
 │  - Provides context to hooks                                │
+│  - Engagement adapters are read directly via getAllAdapters │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                     4. Adapter Layer                         │
 │  Registry + Adapter Implementations                          │
-│  - AdapterStore (global registry)                           │
-│  - EinsteinAdapter, ActiveDataAdapter, etc.                 │
-│  - Implements common interface                              │
+│  - Adapter store (per-domain Map)                           │
+│  - createEinsteinAdapter, createActiveDataAdapter, mocks    │
+│  - Each implements a domain-specific interface              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Data Flow
+### Data Flow (engagement)
 
 ```
-Component
+PageViewTracker
    ↓ (calls)
-Hook (useRecommenders)
-   ↓ (reads from)
-Context (RecommendersContext)
-   ↓ (provides)
-Provider (RecommendersProvider)
-   ↓ (fetches from)
-Registry (AdapterStore)
-   ↓ (returns)
-Adapter Instance (EinsteinAdapter)
-   ↓ (calls)
-External API (Einstein SCAPI)
+ensureAdaptersInitialized(config)            // lazy init
+   ↓ (registers via dynamic import)
+engagementAdapterStore                       // Map<string, EngagementAdapter>
+   ↓ (read by)
+getEventMediator(getAllAdapters)
+   ↓ (fan-out send)
+EinsteinAdapter.sendEvent / ActiveDataAdapter.sendEvent
+   ↓
+navigator.sendBeacon → Einstein / Active Data endpoint
+```
+
+### Data Flow (product content)
+
+```
+PDP modal component (e.g. SizeGuide)
+   ↓
+useProductContentAdapter()
+   ↓
+ProductContentContext
+   ↓
+ProductContentProvider (lazy registers via dynamic import)
+   ↓
+getProductContentAdapter('default')
+   ↓
+ProductContentAdapter implementation (mock or merchant-supplied)
 ```
 
 ---
@@ -144,7 +234,7 @@ Adapters use **lazy loading** and **dynamic imports** so that adapter code (and 
 
 Instead of top-level `import` (which pulls code into the main bundle), adapters use **dynamic `import()`** so the bundler emits a separate chunk that is loaded at runtime:
 
-```typescript
+```ts
 // ❌ Static import – adapter code is in the main bundle
 import { initializeEngagementAdapters } from '@/lib/adapters/engagement/register';
 
@@ -152,7 +242,7 @@ import { initializeEngagementAdapters } from '@/lib/adapters/engagement/register
 const { initializeEngagementAdapters } = await import('@/lib/adapters/engagement/register');
 ```
 
-- **Engagement adapters** (Einstein, Active Data): The `@/lib/adapters/engagement/register` module is loaded only when `ensureAdaptersInitialized()` runs (e.g. when a provider that needs engagement adapters first mounts). See `src/lib/adapters/engagement/initialize.ts`.
+- **Engagement adapters** (Einstein, Active Data): The `@/lib/adapters/engagement/register` module is loaded only when `ensureAdaptersInitialized()` runs (e.g. when `PageViewTracker` records its first view). See `src/lib/adapters/engagement/initialize.ts`.
 - **Product content adapter**: The product-content-mock module is loaded only when the Product Content provider mounts (e.g. on the PDP). Registration is done via `ensureProductContentAdapterRegistered()` in `src/lib/adapters/product-content/ensure-registered.ts`, which uses `await import('@/lib/adapters/product-content/mock')`.
 - **Customer preferences adapter**: The customer-preferences-mock module is loaded only when the Customer Preferences provider mounts. Registration is done via `ensureCustomerPreferencesAdapterRegistered()` in `src/lib/adapters/customer-preferences/ensure-registered.ts`, which uses `await import('@/lib/adapters/customer-preferences/mock')`.
 
@@ -160,15 +250,15 @@ const { initializeEngagementAdapters } = await import('@/lib/adapters/engagement
 
 | What | When it loads | Bundle impact |
 |------|----------------|----------------|
-| Engagement adapters (`@/lib/adapters/engagement/register`: Einstein, Active Data) | When `ensureAdaptersInitialized()` is first called (e.g. by a provider that uses engagement adapters) | Separate chunk; not in initial bundle |
+| Engagement adapters (`@/lib/adapters/engagement/register`: Einstein, Active Data) | When `ensureAdaptersInitialized()` is first called (e.g. by `PageViewTracker`) | Separate chunk; not in initial bundle |
 | Product content mock | When Product Content provider mounts (e.g. PDP) | Separate chunk; not in initial bundle |
 | Customer preferences mock | When Customer Preferences provider mounts | Separate chunk; not in initial bundle |
 
-Constants (e.g. adapter names) used by providers are kept in small shared modules (e.g. `product-content-store.ts`, `customer-preferences-store.ts`) so providers do not statically import the mock modules just to read a name; that would pull the mock into the main bundle and defeat lazy loading.
+Constants (e.g. adapter names) used by providers are kept in small shared modules (e.g. `product-content/store.ts`, `customer-preferences/store.ts`) so providers do not statically import the mock modules just to read a name; that would pull the mock into the main bundle and defeat lazy loading.
 
 ### Summary
 
-- **Lazy loading**: Adapter code runs and is registered only when needed (when the corresponding provider or initialization runs).
+- **Lazy loading**: Adapter code runs and is registered only when needed.
 - **Dynamic import**: `await import('...')` ensures adapter modules are in separate chunks and loaded at runtime.
 - **Bundle size**: Initial bundle stays smaller; adapter and mock code live in separate chunks that load on demand.
 
@@ -178,148 +268,112 @@ Constants (e.g. adapter names) used by providers are kept in small shared module
 
 ### 1. Adapter Pattern
 
-**Purpose**: Convert one interface into another interface that clients expect.
+**Purpose**: Convert one interface into another interface that callers expect.
 
-```typescript
-// Define the interface your components need
-interface RecommendersAdapter {
-    getRecommendations(context: RecommenderContext): Promise<Product[]>;
+```ts
+// Define the interface your callers need
+interface EngagementAdapter extends EventAdapter {
+    name: string;
+    sendEvent?: (event: AnalyticsEvent, siteInfo?: EventSiteInfo, consent?: ConsentPreferences) => Promise<unknown>;
 }
 
-// Implement adapters for different services
-class EinsteinAdapter implements RecommendersAdapter {
-    async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-        // Translate to Einstein API format
-        const einsteinData = await einsteinAPI.recommend(context.recommenderType);
-        // Translate Einstein response to your interface
-        return transformEinsteinProducts(einsteinData);
-    }
+// Implement adapters for different vendors
+function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter {
+    return {
+        name: 'einstein',
+        sendEvent: async (event) => {
+            // Translate event → Einstein activity → POST via sendBeacon
+        },
+    };
 }
 
-class ActiveDataAdapter implements RecommendersAdapter {
-    async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-        // Translate to Active Data API format
-        const activeDataResponse = await activeDataAPI.getRecommendations(context);
-        // Translate Active Data response to your interface
-        return transformActiveDataProducts(activeDataResponse);
-    }
+function createActiveDataAdapter(config: ActiveDataConfig): EngagementAdapter {
+    return {
+        name: 'active-data',
+        sendEvent: async (event) => {
+            // Translate event → Active Data tracking pixel → fetch
+        },
+    };
 }
 ```
 
 ### 2. Registry Pattern
 
-**Purpose**: Central location to register and retrieve adapter instances.
+**Purpose**: Central location to register and retrieve adapter instances. Each domain (engagement, product content, customer preferences) owns its own store and exposes a small functional API.
 
-```typescript
-// src/lib/adapters/adapter-store.ts
+```ts
+// src/lib/adapters/engagement/store.ts
 import type { EngagementAdapter } from './types';
 
-// Global engagement adapter store
-// The main purpose of this store is to store the instances of adapters that were created
 const engagementAdapterStore = new Map<string, EngagementAdapter>();
 
-/**
- * Add an engagement adapter to the adapter store
- */
 export function addAdapter(name: string, adapter: EngagementAdapter): void {
     engagementAdapterStore.set(name, adapter);
 }
 
-/**
- * Remove an engagement adapter from the adapter store
- */
 export function removeAdapter(name: string): void {
     engagementAdapterStore.delete(name);
 }
 
-/**
- * Get an engagement adapter from the adapter store
- */
 export function getAdapter(name: string): EngagementAdapter | undefined {
     return engagementAdapterStore.get(name);
 }
 
-/**
- * Get all engagement adapters from the adapter store
- */
 export function getAllAdapters(): EngagementAdapter[] {
     return Array.from(engagementAdapterStore.values());
 }
 ```
 
-**Note**: The current implementation uses a functional API with a type-specific store for `EngagementAdapter`. For a more generic approach that supports multiple adapter types, you could extend this pattern with a generic class-based store.
+The engagement store is intentionally type-specific (it holds `EngagementAdapter`s only). Product content and customer preferences each have their own analogous stores.
 
-### 3. Provider Pattern
+### 3. Provider Pattern (for adapters consumed by React components)
 
-**Purpose**: Inject dependencies via React Context, enabling lazy async initialization.
+**Purpose**: Inject the adapter via React Context, with lazy async initialization. Used for product content and customer preferences. (Engagement adapters do not need a provider — they are read directly via `getAllAdapters` from non-React code paths and from `PageViewTracker`.)
 
-```typescript
-// src/providers/recommenders.tsx
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
+```tsx
+// src/providers/product-content.tsx
+import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { getProductContentAdapter, PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME } from '@/lib/adapters/product-content/store';
+import { ensureProductContentAdapterRegistered } from '@/lib/adapters/product-content/ensure-registered';
+import type { ProductContentAdapter } from '@/lib/adapters/product-content/types';
 import type { AppConfig } from '@/types/config';
-import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
 
-const RecommendersContext = createContext<RecommendersAdapter | undefined>(undefined);
+const ProductContentContext = createContext<ProductContentAdapter | undefined>(undefined);
 
-type RecommendersProviderProps = {
-    children: ReactNode;
-    adapterName?: string;
-};
-
-export function RecommendersProvider({ 
-    children, 
-    adapterName = 'einstein' 
-}: RecommendersProviderProps) {
+export default function ProductContentProvider({
+    children,
+    adapterName = PRODUCT_CONTENT_DEFAULT_ADAPTER_NAME,
+}: PropsWithChildren<{ adapterName?: string }>) {
     const config = useConfig<AppConfig>();
-    const [adapter, setAdapter] = useState<RecommendersAdapter | undefined>(undefined);
+    const [adapter, setAdapter] = useState<ProductContentAdapter | undefined>(undefined);
 
     useEffect(() => {
-        // Ensure adapters are initialized before trying to get the adapter
         const initializeAdapter = async () => {
             try {
-                await ensureAdaptersInitialized(config);
-                // Get the adapter from the global registry after initialization
-                const initializedAdapter = getAdapter(adapterName) as RecommendersAdapter | undefined;
-                setAdapter(initializedAdapter);
+                await ensureProductContentAdapterRegistered(config);
+                setAdapter(getProductContentAdapter(adapterName));
             } catch (error) {
-                // Silently handle initialization errors - recommendations will simply not display
                 if (import.meta.env.DEV) {
-                    console.warn('Failed to initialize recommenders adapter:', error);
+                    console.warn('Failed to initialize product content adapter', error);
                 }
             }
         };
-
         void initializeAdapter();
     }, [config, adapterName]);
 
-    return (
-        <RecommendersContext.Provider value={adapter}>
-            {children}
-        </RecommendersContext.Provider>
-    );
+    return <ProductContentContext.Provider value={adapter}>{children}</ProductContentContext.Provider>;
 }
 
-/**
- * Hook to access the recommenders adapter from context
- * @returns The recommenders adapter, or undefined if not yet initialized or not available
- * Note: Returns undefined during async initialization. Components should handle this gracefully.
- */
-export function useRecommendersAdapter(): RecommendersAdapter | undefined {
-    const adapter = useContext(RecommendersContext);
-    // Return undefined if adapter is not yet initialized - this is expected during async initialization
-    // Components using this hook should check for undefined and handle gracefully
-    return adapter;
-}
+export const useProductContentAdapter = (): ProductContentAdapter | undefined =>
+    useContext(ProductContentContext);
 ```
 
 **Key Points**:
 - Uses `useState` + `useEffect` for async initialization (not `useMemo`)
-- Calls `ensureAdaptersInitialized()` to lazy-load adapters
-- Returns `undefined` instead of throwing errors (graceful degradation)
-- Supports configurable `adapterName` prop
+- Calls `ensureProductContentAdapterRegistered()` to lazy-load the implementation
+- Returns `undefined` instead of throwing (graceful degradation — components render conditionally)
+- Supports configurable `adapterName` so a merchant can ship multiple implementations
 
 ### 4. Strategy Pattern
 
@@ -331,10 +385,12 @@ The adapter itself acts as a strategy that can be swapped at runtime based on co
 
 **Purpose**: Create adapter instances based on configuration using factory functions.
 
-```typescript
-// src/adapters/einstein.ts
+```ts
+// src/lib/adapters/engagement/einstein.ts
 import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
-import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
+import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
+
+export const EINSTEIN_ADAPTER_NAME = 'einstein' as const;
 
 export type EinsteinConfig = EngagementAdapterConfig & {
     host: string;
@@ -343,27 +399,11 @@ export type EinsteinConfig = EngagementAdapterConfig & {
     realm: string;
 };
 
-/**
- * Create an Einstein adapter that implements both EngagementAdapter and RecommendersAdapter interfaces
- */
-export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter & RecommendersAdapter {
+export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter {
     return {
-        name: 'einstein',
-        
-        // EngagementAdapter methods
+        name: EINSTEIN_ADAPTER_NAME,
         sendEvent: async (event: AnalyticsEvent) => {
-            // Implementation for sending events
-        },
-        
-        // RecommendersAdapter methods
-        getRecommenders: async () => {
-            // Implementation for getting recommenders
-        },
-        getRecommendations: async (recommenderName, products, args) => {
-            // Implementation for getting recommendations
-        },
-        getZoneRecommendations: async (zoneName, products, args) => {
-            // Implementation for zone recommendations
+            // Translate AnalyticsEvent → Einstein activity payload, then POST via sendBeacon
         },
     };
 }
@@ -371,9 +411,8 @@ export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter
 
 **Key Points**:
 - Uses factory functions instead of classes
-- Returns object literals that implement interfaces
-- Single adapter can implement multiple interfaces
-- Configuration is passed at creation time
+- Returns object literals that implement the interface
+- Configuration is passed at creation time and validated up-front
 
 ---
 
@@ -381,16 +420,16 @@ export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter
 
 ### Step 1: Define Your Adapter Interface
 
-Create a TypeScript interface that defines the methods your components need.
+Create a TypeScript interface that defines the methods your callers need.
 
-**Location**: `src/lib/adapters/types.ts`
+**Location**: `src/lib/adapters/<domain>/types.ts`
 
-```typescript
+```ts
 /**
  * Generic adapter interface for [Your Feature]
  *
  * This interface defines the contract that all adapter implementations must follow.
- * Components depend on this interface, not on concrete implementations.
+ * Callers depend on this interface, not on concrete implementations.
  */
 export interface YourFeatureAdapter {
     /**
@@ -400,14 +439,10 @@ export interface YourFeatureAdapter {
      */
     yourMethod(params: YourParams): Promise<YourResult>;
 
-    /**
-     * Optional method for initialization
-     */
+    /** Optional method for initialization */
     initialize?(): Promise<void>;
 
-    /**
-     * Optional method for cleanup
-     */
+    /** Optional method for cleanup */
     dispose?(): Promise<void>;
 }
 
@@ -420,151 +455,75 @@ export interface YourFeatureAdapterConfig {
 }
 ```
 
-**Real Example (Product Recommendations)**:
+**Real Example (Engagement)**:
 
-```typescript
-// src/lib/adapters/types.ts
-import type { AnalyticsEvent, EventAdapter } from '@salesforce/storefront-next-runtime/events';
+```ts
+// src/lib/adapters/engagement/types.ts
+import type {
+    AnalyticsEvent,
+    ConsentCategory,
+    ConsentPreferences,
+    EventAdapter,
+    EventSiteInfo,
+} from '@salesforce/storefront-next-runtime/events';
 
-/**
- * Configuration for adapters
- */
 export type EngagementAdapterConfig = {
-    siteId: string;
+    siteId?: string;
+    consentCategory?: ConsentCategory;
     eventToggles: Record<AnalyticsEvent['eventType'], boolean>;
-    [key: string]: any;
+    [key: string]: unknown;
 };
 
-/**
- * Interface for engagement adapters
- */
 export interface EngagementAdapter extends EventAdapter {
     name: string;
-    sendEvent?: (event: AnalyticsEvent) => Promise<unknown>;
+    sendEvent?: (
+        event: AnalyticsEvent,
+        siteInfo?: EventSiteInfo,
+        consentPreferences?: ConsentPreferences
+    ) => Promise<unknown>;
     send?: (url: string, options?: RequestInit) => Promise<Response>;
-}
-
-// src/hooks/recommenders/use-recommenders.ts
-import type { ShopperProducts, ShopperSearch } from '@/scapi';
-
-/**
- * Union type for products from either Shopper Products API or Shopper Search API
- */
-export type Product = ShopperProducts.schemas['Product'] | ShopperSearch.schemas['ProductSearchHit'];
-
-/**
- * Recommendation response from Einstein
- */
-export type Recommendation = {
-    recoUUID?: string;
-    recommenderName?: string;
-    displayMessage?: string;
-    recs?: EnrichedRecommendation[];
-    recommenders?: RecommenderInfo[];
-};
-
-/**
- * Generic Recommenders Adapter Interface
- */
-export interface RecommendersAdapter {
-    /**
-     * Get a list of available recommenders
-     */
-    getRecommenders(): Promise<Recommendation>;
-
-    /**
-     * Get recommendations by recommender name
-     */
-    getRecommendations(
-        recommenderName: string,
-        products?: Product[],
-        args?: Record<string, unknown>
-    ): Promise<Recommendation>;
-
-    /**
-     * Get recommendations for a specific zone
-     */
-    getZoneRecommendations(
-        zoneName: string,
-        products?: Product[],
-        args?: Record<string, unknown>
-    ): Promise<Recommendation>;
 }
 ```
 
 ### Step 2: Create the Adapter Registry
 
-Create a global registry to store adapter instances.
+Create a per-domain store. Keep it small and functional — type-specific over generic.
 
-**Location**: `src/lib/adapters/adapter-store.ts`
+**Location**: `src/lib/adapters/<domain>/store.ts`
 
-```typescript
-/**
- * Copyright 2026 Salesforce, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+```ts
 import type { EngagementAdapter } from './types';
 
-// Global engagement adapter store
-// The main purpose of this store is to store the instances of adapters that were created
 const engagementAdapterStore = new Map<string, EngagementAdapter>();
 
-/**
- * Add an engagement adapter to the adapter store
- */
 export function addAdapter(name: string, adapter: EngagementAdapter): void {
     engagementAdapterStore.set(name, adapter);
 }
 
-/**
- * Remove an engagement adapter from the adapter store
- */
 export function removeAdapter(name: string): void {
     engagementAdapterStore.delete(name);
 }
 
-/**
- * Get an engagement adapter from the adapter store
- */
 export function getAdapter(name: string): EngagementAdapter | undefined {
     return engagementAdapterStore.get(name);
 }
 
-/**
- * Get all engagement adapters from the adapter store
- */
 export function getAllAdapters(): EngagementAdapter[] {
     return Array.from(engagementAdapterStore.values());
 }
 ```
 
-**Note**: The current implementation uses a functional API with a type-specific store. This keeps the API simple and type-safe. For a more generic approach, you could extend this with a generic class-based store.
-
 ### Step 3: Implement Your Adapters
 
 Create concrete implementations of your adapter interface for each service.
 
-**Location**: `src/adapters/[service-name].ts`
+**Location**: `src/lib/adapters/<domain>/<service-name>.ts`
 
 **Factory Function Pattern (Recommended)**:
 
-```typescript
-import type { YourFeatureAdapter, YourFeatureAdapterConfig } from '@/lib/adapters/engagement/types';
+```ts
+import type { YourFeatureAdapter, YourFeatureAdapterConfig } from './types';
 
-/**
- * Configuration for [Service Name] adapter
- */
 export type ServiceNameConfig = YourFeatureAdapterConfig & {
     apiKey: string;
     baseUrl: string;
@@ -578,27 +537,18 @@ export type ServiceNameConfig = YourFeatureAdapterConfig & {
  * The factory pattern allows for better testability and configuration validation.
  */
 export function createServiceNameAdapter(config: ServiceNameConfig): YourFeatureAdapter {
-    // Validate configuration
     if (!config.apiKey || !config.baseUrl) {
         throw new Error('[ServiceNameAdapter] Missing required configuration');
     }
 
     return {
-        async yourMethod(params: YourParams): Promise<YourResult> {
+        async yourMethod(params) {
             try {
-                // 1. Translate your params to service API format
                 const serviceParams = translateParams(params, config);
-
-                // 2. Call the service API
                 const serviceResponse = await callServiceAPI(serviceParams, config);
-
-                // 3. Translate service response to your interface
-                const result = translateResponse(serviceResponse);
-
-                return result;
+                return translateResponse(serviceResponse);
             } catch (error) {
                 console.error('[ServiceNameAdapter] Error in yourMethod:', error);
-                // Return empty/default value instead of throwing to prevent UI breakage
                 return getDefaultResult();
             }
         },
@@ -606,55 +556,17 @@ export function createServiceNameAdapter(config: ServiceNameConfig): YourFeature
 }
 
 // Helper functions (can be exported for testing)
-function translateParams(params: YourParams, config: ServiceNameConfig): ServiceAPIParams {
-    // Transform your params to service-specific format
-    return {
-        // ...service-specific mapping
-    };
-}
-
-async function callServiceAPI(params: ServiceAPIParams, config: ServiceNameConfig): Promise<ServiceAPIResponse> {
-    // Make the actual API call
-    const response = await fetch(`${config.baseUrl}/api/endpoint`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${config.apiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Service API error: ${response.status}`);
-    }
-
-    return await response.json();
-}
-
-function translateResponse(response: ServiceAPIResponse): YourResult {
-    // Transform service response to your interface
-    return {
-        // ...your interface mapping
-    };
-}
-
-function getDefaultResult(): YourResult {
-    // Return safe default value
-    return {
-        // ...default values
-    };
-}
+function translateParams(params: YourParams, config: ServiceNameConfig): ServiceAPIParams { /* … */ }
+async function callServiceAPI(params: ServiceAPIParams, config: ServiceNameConfig): Promise<ServiceAPIResponse> { /* … */ }
+function translateResponse(response: ServiceAPIResponse): YourResult { /* … */ }
+function getDefaultResult(): YourResult { /* … */ }
 ```
 
 **Class Pattern (Alternative)**:
 
-```typescript
+```ts
 export class ServiceNameAdapter implements YourFeatureAdapter {
-    private config: ServiceNameConfig;
-
-    constructor(config: ServiceNameConfig) {
-        this.config = config;
-    }
+    constructor(private config: ServiceNameConfig) {}
 
     async yourMethod(params: YourParams): Promise<YourResult> {
         // Same implementation as factory function
@@ -662,301 +574,78 @@ export class ServiceNameAdapter implements YourFeatureAdapter {
 }
 ```
 
-**Note**: The factory function pattern is preferred because it:
-- Allows for better configuration validation
-- Makes testing easier (can test helper functions independently)
-- Enables better tree-shaking
-- Supports object literal returns that implement interfaces
+**Why factory over class**: better config validation up-front, easier testing of helpers, better tree-shaking, and object literals compose more naturally with multiple interfaces.
 
-**Real Example (Einstein Adapter)**:
+### Step 4: Create Provider and Hook (for React-consumed adapters)
 
-```typescript
-// src/adapters/einstein.ts
-import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
-import type { RecommendersAdapter, Recommendation, Product } from '@/hooks/recommenders/use-recommenders';
-import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
-
-export const EINSTEIN_ADAPTER_NAME = 'einstein' as const;
-
-export type EinsteinConfig = EngagementAdapterConfig & {
-    host: string;
-    einsteinId: string;
-    isProduction: boolean;
-    realm: string;
-};
-
-/**
- * Create an Einstein adapter that implements both EngagementAdapter and RecommendersAdapter interfaces
- */
-export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter & RecommendersAdapter {
-    // Validate configuration
-    if (!config.host || !config.einsteinId || !config.realm) {
-        throw new Error('[EinsteinAdapter] Missing required configuration');
-    }
-
-    return {
-        name: EINSTEIN_ADAPTER_NAME,
-
-        // EngagementAdapter methods
-        sendEvent: async (event: AnalyticsEvent): Promise<unknown> => {
-            // Don't send events that are not enabled for this adapter
-            if (!config.eventToggles[event.eventType]) {
-                return Promise.resolve({});
-            }
-
-            // Map event type to Einstein endpoint and send
-            const endpoint = mapEventTypeToEinsteinEndpoint(event.eventType);
-            if (!endpoint) {
-                throw new Error('Unsupported event type in Einstein adapter');
-            }
-
-            const activity = convertEventToEinsteinActivity(event, config.realm, config.isProduction);
-            const targetEndpointUrl = `${config.host}/v3/activities/${config.realm}-${config.siteId}/${endpoint}?clientId=${config.einsteinId}`;
-            const payload = new Blob([JSON.stringify(activity)], { type: 'application/json' });
-
-            const success = navigator.sendBeacon(targetEndpointUrl, payload);
-            return Promise.resolve({ success });
-        },
-
-        // RecommendersAdapter methods
-        getRecommenders: async (): Promise<Recommendation> => {
-            // Implementation for getting available recommenders
-            // ...
-        },
-        
-        getRecommendations: async (
-            recommenderName: string,
-            products?: Product[],
-            args?: Record<string, unknown>
-        ): Promise<Recommendation> => {
-            // Implementation for getting recommendations
-            // ...
-        },
-        
-        getZoneRecommendations: async (
-            zoneName: string,
-            products?: Product[],
-            args?: Record<string, unknown>
-        ): Promise<Recommendation> => {
-            // Implementation for zone-based recommendations
-            // ...
-        },
-    };
-}
-```
-
-### Step 4: Create Provider and Hook
-
-Create a React Context provider and custom hook to inject the adapter into your components.
+For adapters consumed by React components, create a Context provider and a hook that exposes the adapter.
 
 **Location**: `src/providers/your-feature.tsx`
 
-```typescript
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
+```tsx
+import { createContext, useContext, useState, useEffect, type PropsWithChildren } from 'react';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { YourFeatureAdapter } from '@/lib/adapters/your-feature/types';
+import { getYourFeatureAdapter, YOUR_FEATURE_DEFAULT_ADAPTER_NAME } from '@/lib/adapters/your-feature/store';
+import { ensureYourFeatureAdapterRegistered } from '@/lib/adapters/your-feature/ensure-registered';
 import type { AppConfig } from '@/types/config';
-import type { YourFeatureAdapter } from '@/lib/adapters/engagement/types';
 
-/**
- * Context for YourFeature adapter
- */
 const YourFeatureContext = createContext<YourFeatureAdapter | undefined>(undefined);
 
-type YourFeatureProviderProps = {
-    children: ReactNode;
-    adapterName?: string;
-};
-
-/**
- * Provider component that supplies the YourFeature adapter to the component tree
- *
- * This provider lazy-loads the adapter from the global registry with async initialization.
- * The adapter should be registered during application initialization via ensureAdaptersInitialized().
- *
- * @example
- * ```tsx
- * function App() {
- *   return (
- *     <YourFeatureProvider>
- *       <YourComponent />
- *     </YourFeatureProvider>
- *   );
- * }
- * ```
- */
-export function YourFeatureProvider({ 
-    children, 
-    adapterName = 'yourFeature' 
-}: YourFeatureProviderProps) {
+export default function YourFeatureProvider({
+    children,
+    adapterName = YOUR_FEATURE_DEFAULT_ADAPTER_NAME,
+}: PropsWithChildren<{ adapterName?: string }>) {
     const config = useConfig<AppConfig>();
     const [adapter, setAdapter] = useState<YourFeatureAdapter | undefined>(undefined);
 
     useEffect(() => {
-        // Ensure adapters are initialized before trying to get the adapter
         const initializeAdapter = async () => {
             try {
-                await ensureAdaptersInitialized(config);
-                // Get the adapter from the global registry after initialization
-                const initializedAdapter = getAdapter(adapterName) as YourFeatureAdapter | undefined;
-                setAdapter(initializedAdapter);
+                await ensureYourFeatureAdapterRegistered(config);
+                setAdapter(getYourFeatureAdapter(adapterName));
             } catch (error) {
-                // Silently handle initialization errors - feature will simply not work
                 if (import.meta.env.DEV) {
                     console.warn('[YourFeatureProvider] Failed to initialize adapter:', error);
                 }
             }
         };
-
         void initializeAdapter();
     }, [config, adapterName]);
 
-    return (
-        <YourFeatureContext.Provider value={adapter}>
-            {children}
-        </YourFeatureContext.Provider>
-    );
+    return <YourFeatureContext.Provider value={adapter}>{children}</YourFeatureContext.Provider>;
 }
 
-/**
- * Hook to access the YourFeature adapter from context
- *
- * @returns The YourFeature adapter, or undefined if not yet initialized or not available
- * Note: Returns undefined during async initialization. Components should handle this gracefully.
- *
- * @example
- * ```tsx
- * function YourComponent() {
- *   const adapter = useYourFeatureAdapter();
- *   
- *   if (!adapter) {
- *     return <div>Loading...</div>;
- *   }
- *
- *   const handleAction = async () => {
- *     const result = await adapter.yourMethod(params);
- *   };
- * }
- * ```
- */
-export function useYourFeatureAdapter(): YourFeatureAdapter | undefined {
-    const adapter = useContext(YourFeatureContext);
-    // Return undefined if adapter is not yet initialized - this is expected during async initialization
-    // Components using this hook should check for undefined and handle gracefully
-    return adapter;
-}
+export const useYourFeatureAdapter = (): YourFeatureAdapter | undefined =>
+    useContext(YourFeatureContext);
 ```
 
-**Note**: For a higher-level hook that manages state internally, see the "Two-Layer Hook Pattern" section below.
-
-**Real Example (Recommenders Provider)**:
-
-```typescript
-// src/providers/recommenders.tsx
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
-import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
-import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
-import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-
-const RecommendersContext = createContext<RecommendersAdapter | undefined>(undefined);
-
-type RecommendersProviderProps = {
-    children: ReactNode;
-    adapterName?: string;
-};
-
-/**
- * Provider for recommendations adapter
- *
- * Retrieves the adapter from the global adapter registry (lazily initialized).
- * The adapter is expected to implement both EngagementAdapter (for analytics events)
- * and RecommendersAdapter (for fetching recommendations).
- *
- * Currently only Einstein adapter is supported, which is registered via
- * initializeEngagementAdapters() when adapters are initialized.
- */
-const RecommendersProvider = ({ 
-    children, 
-    adapterName = EINSTEIN_ADAPTER_NAME 
-}: RecommendersProviderProps) => {
-    const config = useConfig<AppConfig>();
-    const [adapter, setAdapter] = useState<RecommendersAdapter | undefined>(undefined);
-
-    useEffect(() => {
-        // Ensure adapters are initialized before trying to get the adapter
-        const initializeAdapter = async () => {
-            try {
-                await ensureAdaptersInitialized(config);
-                // Get the adapter from the global registry after initialization
-                const initializedAdapter = getAdapter(adapterName) as RecommendersAdapter | undefined;
-                setAdapter(initializedAdapter);
-            } catch (error) {
-                // Silently handle initialization errors - recommendations will simply not display
-                if (import.meta.env.DEV) {
-                    console.warn('Failed to initialize recommenders adapter:', error);
-                }
-            }
-        };
-
-        void initializeAdapter();
-    }, [config, adapterName]);
-
-    return <RecommendersContext.Provider value={adapter}>{children}</RecommendersContext.Provider>;
-};
-
-/**
- * Hook to access the recommenders adapter from context
- * @returns The recommenders adapter, or undefined if not yet initialized or not available
- * Note: Returns undefined during async initialization. Components should handle this gracefully.
- */
-export const useRecommendersAdapter = (): RecommendersAdapter | undefined => {
-    const adapter = useContext(RecommendersContext);
-    // Return undefined if adapter is not yet initialized - this is expected during async initialization
-    // Components using this hook should check for undefined and handle gracefully
-    return adapter;
-};
-
-export default RecommendersProvider;
-```
+For adapters consumed from non-React code paths (or from React components that simply iterate all registered adapters), skip the provider and call `getAllAdapters()` from the store directly. This is what `PageViewTracker` does for engagement.
 
 ### Step 5: Initialize Adapters
 
-Register your adapter instances during application startup using lazy initialization.
+Register adapter instances during application startup using **lazy** initialization. Code-load is dynamic so adapter modules stay out of the initial bundle.
 
-**Location**: `src/lib/adapters/engagement/initialize.ts` and `src/adapters/index.ts`
+**Location**: `src/lib/adapters/<domain>/initialize.ts` and `src/lib/adapters/<domain>/register.ts`
 
-**Lazy Initialization Pattern**:
-
-```typescript
+```ts
 // src/lib/adapters/engagement/initialize.ts
 import type { AppConfig } from '@/types/config';
-import { getAllAdapters } from './adapter-store';
+import { getAllAdapters } from './store';
 
 let adaptersInitializationPromise: Promise<void> | undefined;
 
 /**
  * Ensures engagement adapters are initialized.
  *
- * This function handles the lazy initialization of engagement adapters.
- * The function is idempotent - it's safe to call multiple times.
- * If initialization is already in progress, it returns the existing promise.
+ * Idempotent — safe to call multiple times.
+ * If initialization is already in progress, returns the existing promise.
  *
- * Adapter initialization code (Einstein, etc.) is dynamically imported to keep it out of the initial bundle.
- *
- * @param appConfig - The application configuration needed to initialize adapters
- * @returns Promise that resolves when adapters are initialized, or undefined on error
+ * Adapter initialization code is dynamically imported to keep it out of the initial bundle.
  */
 export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<void> {
-    // Early exit: check if adapters are already initialized
-    if (getAllAdapters().length > 0) {
-        return;
-    }
+    if (getAllAdapters().length > 0) return;
 
-    // If initialization is already in progress, wait for it
     if (adaptersInitializationPromise) {
         try {
             await adaptersInitializationPromise;
@@ -969,17 +658,10 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
         }
     }
 
-    // Start initialization with lazy loading
     adaptersInitializationPromise = (async () => {
-        // Dynamically import adapter initialization code to keep it out of initial bundle
         const { initializeEngagementAdapters } = await import('@/lib/adapters/engagement/register');
-
-        // Initialize adapters only if config is available
-        if (appConfig) {
-            initializeEngagementAdapters(appConfig);
-        }
+        if (appConfig) initializeEngagementAdapters(appConfig);
     })().catch((error) => {
-        // Clear promise on error to allow retry
         adaptersInitializationPromise = undefined;
         if (import.meta.env.DEV) {
             console.warn('Failed to initialize engagement adapters:', error);
@@ -997,24 +679,16 @@ export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<v
 
 **Adapter Registration**:
 
-```typescript
-// src/adapters/index.ts
+```ts
+// src/lib/adapters/engagement/register.ts
 import type { AppConfig } from '@/types/config';
+import { addAdapter } from './store';
 import { createEinsteinAdapter } from './einstein';
-import { addAdapter } from '@/lib/adapters';
 import { createActiveDataAdapter } from './active-data';
 
-/**
- * Initialize engagement adapters.
- *
- * Uses properties defined in appConfig.engagement.adapters to set up default adapters.
- *
- * This is the place to modify when adding new engagement adapters to the system.
- */
 export function initializeEngagementAdapters(appConfig: AppConfig) {
     const engagementAdapterConfigs = appConfig?.engagement?.adapters;
 
-    // Register default adapters
     if (engagementAdapterConfigs?.einstein?.enabled) {
         try {
             addAdapter(
@@ -1053,313 +727,45 @@ export function initializeEngagementAdapters(appConfig: AppConfig) {
 ```
 
 **Key Points**:
-- Uses lazy initialization with dynamic imports
-- Idempotent (safe to call multiple times)
+- Lazy: adapter code only loads when `ensureAdaptersInitialized` is first called
+- Idempotent: safe to call multiple times
 - Configuration-driven from `appConfig`
-- Handles errors gracefully without crashing
-- Keeps adapter code out of initial bundle
+- Errors are caught and logged; initialization failures must not crash the app
 
-### Step 6: Create Feature Hook (Two-Layer Pattern)
+### Step 6: Use the Adapter
 
-For better developer experience, create a high-level hook that manages state internally.
+For engagement, callers grab the mediator and dispatch:
 
-**Location**: `src/hooks/your-feature/use-your-feature.ts`
+```ts
+import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
+import { getAllAdapters } from '@/lib/adapters';
 
-```typescript
-import { useState, useCallback } from 'react';
-import { useYourFeatureAdapter } from '@/providers/your-feature';
+await ensureAdaptersInitialized(config);
+const { createEvent, getEventMediator, sendViewPageEvent } =
+    await import('@salesforce/storefront-next-runtime/events');
 
-export const useYourFeature = (isEnabled: boolean = true) => {
-    const adapter = useYourFeatureAdapter();
-    const [data, setData] = useState<YourResult | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
+const mediator = getEventMediator(getAllAdapters);
+if (!mediator) return;
 
-    const yourMethod = useCallback(async (params: YourParams) => {
-        if (!isEnabled || !adapter) return;
-
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const result = await adapter.yourMethod(params);
-            setData(result);
-            return result;
-        } catch (err) {
-            const error = err instanceof Error ? err : new Error('Unknown error');
-            setError(error);
-            console.error('[useYourFeature] Error:', error);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    }, [adapter, isEnabled]);
-
-    return {
-        data,
-        isLoading,
-        error,
-        isEnabled: isEnabled && !!adapter,
-        yourMethod,
-    };
-};
+const event = createEvent('view_page', { path, payload: { /* … */ } });
+sendViewPageEvent(event, mediator, eventSiteInfo, consentPreferences);
 ```
 
-### Step 7: Use in Components
-
-Now you can use your adapter in components via the high-level hook.
+For product content, components consume via the hook and render conditionally:
 
 ```tsx
-import { useYourFeature } from '@/hooks/your-feature/use-your-feature';
-
-export function YourComponent() {
-    const { yourMethod, data, isLoading, error } = useYourFeature();
-
-    const handleAction = async () => {
-        try {
-            await yourMethod({ /* params */ });
-        } catch (error) {
-            // Error is already handled by the hook
-        }
-    };
-
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
-    if (!data) return null;
-
-    return (
-        <div>
-            <button onClick={handleAction} disabled={isLoading}>
-                {isLoading ? 'Loading...' : 'Fetch Data'}
-            </button>
-            <div>{/* Render data */}</div>
-        </div>
-    );
+function SizeGuideButton() {
+    const adapter = useProductContentAdapter();
+    if (!adapter?.getSizeGuide) return null;
+    return <button onClick={() => /* call adapter.getSizeGuide(...) */}>Size guide</button>;
 }
 ```
-
-**Real Example (Product Recommendations Component)**:
-
-```tsx
-// src/components/product-recommendations/index.tsx
-import { useEffect, useRef, useMemo } from 'react';
-import { useRecommenders } from '@/hooks/recommenders/use-recommenders';
-import ProductCarousel from '@/components/product-carousel/carousel';
-import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
-
-export interface ProductRecommendationsProps {
-    recommenderName?: string;
-    recommenderTitle?: string;
-    recommenderType?: 'recommender' | 'zone';
-    products?: Product[];
-    args?: Record<string, unknown>;
-}
-
-export default function ProductRecommendations({
-    recommenderName,
-    recommenderTitle,
-    recommenderType = 'recommender',
-    products,
-    args,
-}: ProductRecommendationsProps) {
-    const { getRecommendations, getZoneRecommendations, recommendations, isLoading, error } = useRecommenders(true);
-
-    // Track the last fetch to prevent duplicate calls
-    const lastFetchRef = useRef<{
-        recommenderName: string;
-        recommenderType?: string;
-        productsKey?: string;
-        argsKey?: string;
-    } | null>(null);
-
-    // Create stable keys for dependency tracking
-    const productsKey = useMemo(() => {
-        if (!products || products.length === 0) return '';
-        return products.map((p) => p.id || p.productId || '').join(',');
-    }, [products]);
-
-    const argsKey = useMemo(() => {
-        if (!args) return '';
-        return JSON.stringify(args);
-    }, [args]);
-
-    // Fetch recommendations when component mounts or dependencies change
-    useEffect(() => {
-        if (!recommenderName) {
-            return;
-        }
-
-        // Skip if we've already fetched with these exact parameters
-        const lastFetch = lastFetchRef.current;
-        if (
-            lastFetch &&
-            lastFetch.recommenderName === recommenderName &&
-            lastFetch.recommenderType === recommenderType &&
-            lastFetch.productsKey === productsKey &&
-            lastFetch.argsKey === argsKey
-        ) {
-            return;
-        }
-
-        // Mark that we're fetching with these parameters
-        lastFetchRef.current = {
-            recommenderName,
-            recommenderType,
-            productsKey,
-            argsKey,
-        };
-
-        if (recommenderType === 'zone') {
-            void getZoneRecommendations(recommenderName, products, args);
-        } else {
-            void getRecommendations(recommenderName, products, args);
-        }
-    }, [recommenderName, recommenderType, productsKey, argsKey, getRecommendations, getZoneRecommendations]);
-
-    // Early return if no recommender configured
-    if (!recommenderName || !recommenderTitle) {
-        return null;
-    }
-
-    // Early return if error occurred
-    if (error) {
-        return null;
-    }
-
-    // Show loading state
-    if (isLoading) {
-        return (
-            <div>
-                <ProductRecommendationSkeleton title={recommenderTitle} />
-            </div>
-        );
-    }
-
-    // Only show recommendations if they match this recommender
-    const recommendationsMatch = recommendations?.recommenderName === recommenderName;
-    const productRecs = recommendationsMatch ? recommendations?.recs : undefined;
-
-    if (!productRecs || productRecs.length === 0) {
-        return null;
-    }
-
-    return (
-        <div>
-            <ProductCarousel 
-                products={productRecs} 
-                title={recommendations.displayMessage || recommenderTitle} 
-            />
-        </div>
-    );
-}
-```
-
-**Key Points**:
-- Uses high-level `useRecommenders` hook that manages state internally
-- Handles loading and error states automatically
-- Supports both recommender-based and zone-based recommendations
-- Prevents duplicate fetches with dependency tracking
-- Gracefully handles missing adapters (returns null instead of crashing)
 
 ---
 
-## Two-Layer Hook Pattern
+## Engagement Adapter Example
 
-The codebase uses a **two-layer hook pattern** that separates low-level adapter access from high-level feature logic:
-
-### Layer 1: Adapter Hook (Low-Level)
-
-Provides direct access to the adapter instance from context. Returns `undefined` if not initialized.
-
-```typescript
-// src/providers/your-feature.tsx
-export function useYourFeatureAdapter(): YourAdapter | undefined {
-    return useContext(YourFeatureContext);
-}
-```
-
-**Use when:**
-- You need direct access to adapter methods
-- You want to manage state yourself
-- You need fine-grained control over when methods are called
-
-### Layer 2: Feature Hook (High-Level)
-
-Provides a complete feature API with built-in state management, loading states, and error handling.
-
-```typescript
-// src/hooks/your-feature/use-your-feature.ts
-export const useYourFeature = (isEnabled: boolean = true) => {
-    const adapter = useYourFeatureAdapter();
-    const [data, setData] = useState<YourResult | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
-
-    const yourMethod = useCallback(async (params: YourParams) => {
-        if (!isEnabled || !adapter) return;
-
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const result = await adapter.yourMethod(params);
-            setData(result);
-            return result;
-        } catch (err) {
-            const error = err instanceof Error ? err : new Error('Unknown error');
-            setError(error);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    }, [adapter, isEnabled]);
-
-    return {
-        data,
-        isLoading,
-        error,
-        isEnabled: isEnabled && !!adapter,
-        yourMethod,
-    };
-};
-```
-
-**Use when:**
-- You want automatic state management
-- You need loading and error states
-- You want a simpler component API
-- You're building standard UI components
-
-### Benefits
-
-1. **Separation of Concerns**: Adapter access is separate from feature logic
-2. **Reusability**: Feature hooks can be used across multiple components
-3. **Testability**: Can test adapter hooks and feature hooks independently
-4. **Flexibility**: Components can choose the level of abstraction they need
-
----
-
-## Product Recommendations Example
-
-This section provides a detailed walkthrough of the product recommendations implementation.
-
-### Architecture
-
-```
-ProductRecommendations Component
-  ↓
-useRecommenders Hook
-  ↓
-RecommendersContext
-  ↓
-RecommendersProvider
-  ↓
-AdapterStore.get('recommenders')
-  ↓
-EinsteinAdapter | ActiveDataAdapter
-  ↓
-Einstein SCAPI | Active Data API
-```
+This section walks through the engagement (analytics) implementation end-to-end.
 
 ### File Structure
 
@@ -1367,99 +773,55 @@ Einstein SCAPI | Active Data API
 src/
 ├── lib/
 │   └── adapters/
-│       ├── types.ts                    # Adapter interfaces
-│       └── adapter-store.ts            # Global registry
-├── adapters/
-│   ├── einstein.ts                     # Einstein implementation
-│   └── active-data.ts                  # Active Data implementation
-├── providers/
-│   └── recommenders.tsx                # Provider + hooks
-├── hooks/
-│   └── use-recommenders.ts             # Re-export for convenience
-└── components/
-    └── product-recommendations/
-        ├── index.tsx                   # Main component
-        └── product-card.tsx            # Sub-component
+│       ├── index.ts                          # Re-exports engagement store + types + utils
+│       └── engagement/
+│           ├── types.ts                      # EngagementAdapter, EngagementAdapterConfig
+│           ├── store.ts                      # add/remove/get/getAll
+│           ├── initialize.ts                 # ensureAdaptersInitialized (lazy)
+│           ├── register.ts                   # initializeEngagementAdapters
+│           ├── einstein.ts                   # createEinsteinAdapter
+│           ├── active-data.ts                # createActiveDataAdapter
+│           ├── einstein-recommenders.ts      # EINSTEIN_RECOMMENDERS name constants
+│           └── utils.ts                      # buildConsentPreferences, hasConsent
+└── analytics/
+    └── page-view-tracker.tsx                 # primary caller
 ```
 
-### 1. Adapter Interfaces
+### 1. Adapter Interface
 
-```typescript
-// src/lib/adapters/types.ts
-import type { AnalyticsEvent, EventAdapter } from '@salesforce/storefront-next-runtime/events';
+```ts
+// src/lib/adapters/engagement/types.ts
+import type {
+    AnalyticsEvent,
+    ConsentCategory,
+    ConsentPreferences,
+    EventAdapter,
+    EventSiteInfo,
+} from '@salesforce/storefront-next-runtime/events';
 
-/**
- * Configuration for adapters
- */
 export type EngagementAdapterConfig = {
-    siteId: string;
+    siteId?: string;
+    consentCategory?: ConsentCategory;
     eventToggles: Record<AnalyticsEvent['eventType'], boolean>;
-    [key: string]: any;
+    [key: string]: unknown;
 };
 
-/**
- * Interface for engagement adapters
- */
 export interface EngagementAdapter extends EventAdapter {
     name: string;
-    sendEvent?: (event: AnalyticsEvent) => Promise<unknown>;
+    sendEvent?: (
+        event: AnalyticsEvent,
+        siteInfo?: EventSiteInfo,
+        consentPreferences?: ConsentPreferences
+    ) => Promise<unknown>;
     send?: (url: string, options?: RequestInit) => Promise<Response>;
-}
-
-// src/hooks/recommenders/use-recommenders.ts
-import type { ShopperProducts, ShopperSearch } from '@/scapi';
-
-/**
- * Union type for products from either Shopper Products API or Shopper Search API
- */
-export type Product = ShopperProducts.schemas['Product'] | ShopperSearch.schemas['ProductSearchHit'];
-
-/**
- * Recommendation response from Einstein
- */
-export type Recommendation = {
-    recoUUID?: string;
-    recommenderName?: string;
-    displayMessage?: string;
-    recs?: EnrichedRecommendation[];
-    recommenders?: RecommenderInfo[];
-};
-
-/**
- * Generic Recommenders Adapter Interface
- */
-export interface RecommendersAdapter {
-    /**
-     * Get a list of available recommenders
-     */
-    getRecommenders(): Promise<Recommendation>;
-
-    /**
-     * Get recommendations by recommender name
-     */
-    getRecommendations(
-        recommenderName: string,
-        products?: Product[],
-        args?: Record<string, unknown>
-    ): Promise<Recommendation>;
-
-    /**
-     * Get recommendations for a specific zone
-     */
-    getZoneRecommendations(
-        zoneName: string,
-        products?: Product[],
-        args?: Record<string, unknown>
-    ): Promise<Recommendation>;
 }
 ```
 
 ### 2. Einstein Adapter Implementation
 
-```typescript
-// src/adapters/einstein.ts
-import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
-import type { RecommendersAdapter, Recommendation, Product } from '@/hooks/recommenders/use-recommenders';
+```ts
+// src/lib/adapters/engagement/einstein.ts
+import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
 import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
 
 export const EINSTEIN_ADAPTER_NAME = 'einstein' as const;
@@ -1469,64 +831,27 @@ export type EinsteinConfig = EngagementAdapterConfig & {
     einsteinId: string;
     isProduction: boolean;
     realm: string;
+    siteId: string;
 };
 
-/**
- * Create an Einstein adapter that implements both EngagementAdapter and RecommendersAdapter interfaces
- */
-export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter & RecommendersAdapter {
-    // Validate configuration
+export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter {
     if (!config.host || !config.einsteinId || !config.realm) {
         throw new Error('[EinsteinAdapter] Missing required configuration');
     }
 
     return {
         name: EINSTEIN_ADAPTER_NAME,
+        sendEvent: async (event, siteInfo, consentPreferences) => {
+            if (!config.eventToggles[event.eventType]) return;
+            if (!hasConsent(consentPreferences, config.consentCategory)) return;
 
-        // EngagementAdapter methods
-        sendEvent: async (event: AnalyticsEvent): Promise<unknown> => {
-            // Don't send events that are not enabled for this adapter
-            if (!config.eventToggles[event.eventType]) {
-                return Promise.resolve({});
-            }
-
-            // Map event type to Einstein endpoint and send
             const endpoint = mapEventTypeToEinsteinEndpoint(event.eventType);
-            if (!endpoint) {
-                throw new Error('Unsupported event type in Einstein adapter');
-            }
+            if (!endpoint) throw new Error('Unsupported event type in Einstein adapter');
 
             const activity = convertEventToEinsteinActivity(event, config.realm, config.isProduction);
-            const targetEndpointUrl = `${config.host}/v3/activities/${config.realm}-${config.siteId}/${endpoint}?clientId=${config.einsteinId}`;
+            const url = `${config.host}/v3/activities/${config.realm}-${siteInfo?.siteId ?? config.siteId}/${endpoint}?clientId=${config.einsteinId}`;
             const payload = new Blob([JSON.stringify(activity)], { type: 'application/json' });
-
-            const success = navigator.sendBeacon(targetEndpointUrl, payload);
-            return Promise.resolve({ success });
-        },
-
-        // RecommendersAdapter methods
-        getRecommenders: async (): Promise<Recommendation> => {
-            // Implementation for getting available recommenders
-            // ...
-        },
-        
-        getRecommendations: async (
-            recommenderName: string,
-            products?: Product[],
-            args?: Record<string, unknown>
-        ): Promise<Recommendation> => {
-            // Implementation for getting recommendations
-            // Calls Einstein API and transforms response
-            // ...
-        },
-        
-        getZoneRecommendations: async (
-            zoneName: string,
-            products?: Product[],
-            args?: Record<string, unknown>
-        ): Promise<Recommendation> => {
-            // Implementation for zone-based recommendations
-            // ...
+            navigator.sendBeacon(url, payload);
         },
     };
 }
@@ -1534,1363 +859,94 @@ export function createEinsteinAdapter(config: EinsteinConfig): EngagementAdapter
 
 ### 3. Active Data Adapter Implementation
 
-```typescript
-// src/adapters/active-data.ts
-import type { EngagementAdapter, EngagementAdapterConfig } from '@/lib/adapters';
+```ts
+// src/lib/adapters/engagement/active-data.ts
+import { hasConsent, type EngagementAdapter, type EngagementAdapterConfig } from '@/lib/adapters';
 import type { AnalyticsEvent } from '@salesforce/storefront-next-runtime/events';
 
 export type ActiveDataConfig = EngagementAdapterConfig & {
     host: string;
+    siteId: string;
     locale: string;
     siteUUID?: string;
     sourceCode?: string;
     siteCurrency?: string;
 };
 
-/**
- * Create an Active Data adapter
- *
- * Alternative implementation using Active Data service for engagement tracking.
- */
 export function createActiveDataAdapter(config: ActiveDataConfig): EngagementAdapter {
-    // Validate configuration
     if (!config.host || !config.siteId) {
         throw new Error('[ActiveDataAdapter] Missing required configuration');
     }
 
     return {
         name: 'active-data',
-        
-        sendEvent: async (event: AnalyticsEvent): Promise<unknown> => {
-            // Don't send events that are not enabled for this adapter
-            if (!config.eventToggles[event.eventType]) {
-                return Promise.resolve({});
-            }
-
-            // Implementation for sending events to Active Data
-            // ...
+        sendEvent: async (event, _siteInfo, consentPreferences) => {
+            if (!config.eventToggles[event.eventType]) return;
+            if (!hasConsent(consentPreferences, config.consentCategory)) return;
+            // …translate event → Active Data tracking pixel; fire via fetch or sendBeacon…
         },
     };
 }
 ```
 
-### 4. Provider and Hooks
+### 4. Caller (PageViewTracker)
 
-**Provider (Low-Level Adapter Access)**:
+The engagement domain has no provider; callers ask the store directly.
 
-```typescript
-// src/providers/recommenders.tsx
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { RecommendersAdapter } from '@/hooks/recommenders/use-recommenders';
-import { getAdapter } from '@/lib/adapters';
-import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
-import { EINSTEIN_ADAPTER_NAME } from '@/lib/adapters/engagement/einstein';
+```tsx
+// src/analytics/page-view-tracker.tsx (excerpt)
+import { useEffect } from 'react';
+import { useLocation } from 'react-router';
 import { useConfig } from '@salesforce/storefront-next-runtime/config';
-import type { AppConfig } from '@/types/config';
-
-const RecommendersContext = createContext<RecommendersAdapter | undefined>(undefined);
-
-type RecommendersProviderProps = {
-    children: ReactNode;
-    adapterName?: string;
-};
-
-export function RecommendersProvider({ 
-    children, 
-    adapterName = EINSTEIN_ADAPTER_NAME 
-}: RecommendersProviderProps) {
-    const config = useConfig<AppConfig>();
-    const [adapter, setAdapter] = useState<RecommendersAdapter | undefined>(undefined);
-
-    useEffect(() => {
-        const initializeAdapter = async () => {
-            try {
-                await ensureAdaptersInitialized(config);
-                const initializedAdapter = getAdapter(adapterName) as RecommendersAdapter | undefined;
-                setAdapter(initializedAdapter);
-            } catch (error) {
-                if (import.meta.env.DEV) {
-                    console.warn('Failed to initialize recommenders adapter:', error);
-                }
-            }
-        };
-
-        void initializeAdapter();
-    }, [config, adapterName]);
-
-    return <RecommendersContext.Provider value={adapter}>{children}</RecommendersContext.Provider>;
-}
-
-/**
- * Hook to access the recommenders adapter from context
- * @returns The recommenders adapter, or undefined if not yet initialized
- */
-export function useRecommendersAdapter(): RecommendersAdapter | undefined {
-    return useContext(RecommendersContext);
-}
-```
-
-**High-Level Feature Hook**:
-
-```typescript
-// src/hooks/recommenders/use-recommenders.ts
-import { useState, useCallback } from 'react';
-import { useRecommendersAdapter } from '@/providers/recommenders';
-import type { Product, Recommendation } from './use-recommenders';
-
-export const useRecommenders = (isEnabled: boolean = true) => {
-    const adapter = useRecommendersAdapter();
-    const [isLoading, setIsLoading] = useState(false);
-    const [recommendations, setRecommendations] = useState<Recommendation>({});
-    const [error, setError] = useState<Error | null>(null);
-
-    const getRecommendations = useCallback(
-        async (recommenderName: string, products?: Product[], args?: Record<string, unknown>) => {
-            if (!isEnabled || !adapter) return;
-
-            setIsLoading(true);
-            setError(null);
-
-            try {
-                // Fetch recommendations from adapter
-                const reco = await adapter.getRecommendations(recommenderName, products, args);
-                
-                // Enrich with product details if needed
-                // ...
-                
-                setRecommendations(reco);
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error('Failed to fetch recommendations'));
-            } finally {
-                setIsLoading(false);
-            }
-        },
-        [adapter, isEnabled]
-    );
-
-    return {
-        isLoading,
-        isEnabled: isEnabled && !!adapter,
-        recommendations,
-        error,
-        getRecommendations,
-        getZoneRecommendations,
-        getRecommenders,
-    };
-};
-```
-
-### 5. Component Usage
-
-```tsx
-// src/components/product-recommendations/index.tsx
-import { useEffect, useRef, useMemo } from 'react';
-import { useRecommenders } from '@/hooks/recommenders/use-recommenders';
-import ProductCarousel from '@/components/product-carousel/carousel';
-import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
-
-export interface ProductRecommendationsProps {
-    recommenderName?: string;
-    recommenderTitle?: string;
-    recommenderType?: 'recommender' | 'zone';
-    products?: Product[];
-    args?: Record<string, unknown>;
-}
-
-export default function ProductRecommendations({
-    recommenderName,
-    recommenderTitle,
-    recommenderType = 'recommender',
-    products,
-    args,
-}: ProductRecommendationsProps) {
-    const { getRecommendations, getZoneRecommendations, recommendations, isLoading, error } = useRecommenders(true);
-
-    // Track the last fetch to prevent duplicate calls
-    const lastFetchRef = useRef<{
-        recommenderName: string;
-        recommenderType?: string;
-        productsKey?: string;
-        argsKey?: string;
-    } | null>(null);
-
-    // Create stable keys for dependency tracking
-    const productsKey = useMemo(() => {
-        if (!products || products.length === 0) return '';
-        return products.map((p) => p.id || p.productId || '').join(',');
-    }, [products]);
-
-    const argsKey = useMemo(() => {
-        if (!args) return '';
-        return JSON.stringify(args);
-    }, [args]);
-
-    // Fetch recommendations when component mounts or dependencies change
-    useEffect(() => {
-        if (!recommenderName) return;
-
-        // Skip if we've already fetched with these exact parameters
-        const lastFetch = lastFetchRef.current;
-        if (
-            lastFetch &&
-            lastFetch.recommenderName === recommenderName &&
-            lastFetch.recommenderType === recommenderType &&
-            lastFetch.productsKey === productsKey &&
-            lastFetch.argsKey === argsKey
-        ) {
-            return;
-        }
-
-        lastFetchRef.current = { recommenderName, recommenderType, productsKey, argsKey };
-
-        if (recommenderType === 'zone') {
-            void getZoneRecommendations(recommenderName, products, args);
-        } else {
-            void getRecommendations(recommenderName, products, args);
-        }
-    }, [recommenderName, recommenderType, productsKey, argsKey, getRecommendations, getZoneRecommendations]);
-
-    if (!recommenderName || !recommenderTitle) return null;
-    if (error) return null;
-    if (isLoading) return <ProductRecommendationSkeleton title={recommenderTitle} />;
-
-    const recommendationsMatch = recommendations?.recommenderName === recommenderName;
-    const productRecs = recommendationsMatch ? recommendations?.recs : undefined;
-
-    if (!productRecs || productRecs.length === 0) return null;
-
-    return (
-        <div>
-            <ProductCarousel 
-                products={productRecs} 
-                title={recommendations.displayMessage || recommenderTitle} 
-            />
-        </div>
-    );
-}
-```
-
-### 6. Initialization
-
-**Lazy Initialization Helper**:
-
-```typescript
-// src/lib/adapters/engagement/initialize.ts
-import type { AppConfig } from '@/types/config';
-import { getAllAdapters } from './adapter-store';
-
-let adaptersInitializationPromise: Promise<void> | undefined;
-
-/**
- * Ensures engagement adapters are initialized.
- *
- * This function handles the lazy initialization of engagement adapters.
- * The function is idempotent - it's safe to call multiple times.
- */
-export async function ensureAdaptersInitialized(appConfig: AppConfig): Promise<void> {
-    // Early exit: check if adapters are already initialized
-    if (getAllAdapters().length > 0) {
-        return;
-    }
-
-    // If initialization is already in progress, wait for it
-    if (adaptersInitializationPromise) {
-        try {
-            await adaptersInitializationPromise;
-            return;
-        } catch (error) {
-            if (import.meta.env.DEV) {
-                console.warn('Failed to initialize engagement adapters:', error);
-            }
-            return;
-        }
-    }
-
-    // Start initialization with lazy loading
-    adaptersInitializationPromise = (async () => {
-        // Dynamically import adapter initialization code to keep it out of initial bundle
-        const { initializeEngagementAdapters } = await import('@/lib/adapters/engagement/register');
-
-        if (appConfig) {
-            initializeEngagementAdapters(appConfig);
-        }
-    })();
-
-    await adaptersInitializationPromise;
-}
-```
-
-**Adapter Registration**:
-
-```typescript
-// src/adapters/index.ts
-import type { AppConfig } from '@/types/config';
-import { createEinsteinAdapter } from './einstein';
-import { addAdapter } from '@/lib/adapters';
-import { createActiveDataAdapter } from './active-data';
-
-/**
- * Initialize engagement adapters.
- *
- * Uses properties defined in appConfig.engagement.adapters to set up default adapters.
- */
-export function initializeEngagementAdapters(appConfig: AppConfig) {
-    const engagementAdapterConfigs = appConfig?.engagement?.adapters;
-
-    if (engagementAdapterConfigs?.einstein?.enabled) {
-        try {
-            addAdapter(
-                'einstein',
-                createEinsteinAdapter({
-                    host: engagementAdapterConfigs.einstein.host || '',
-                    einsteinId: engagementAdapterConfigs.einstein.einsteinId || '',
-                    realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || '',
-                    isProduction: engagementAdapterConfigs.einstein.isProduction || false,
-                    eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
-                })
-            );
-        } catch (error) {
-            console.warn('Failed to initialize Einstein adapter:', (error as Error).message);
-        }
-    }
-
-    if (engagementAdapterConfigs?.activeData?.enabled) {
-        try {
-            addAdapter(
-                'active-data',
-                createActiveDataAdapter({
-                    host: engagementAdapterConfigs.activeData.host || '',
-                    siteId: engagementAdapterConfigs.activeData.siteId || '',
-                    locale: engagementAdapterConfigs.activeData.locale || appConfig.site.locale,
-                    siteUUID: engagementAdapterConfigs.activeData.siteUUID || '',
-                    eventToggles: engagementAdapterConfigs.activeData.eventToggles || {},
-                })
-            );
-        } catch (error) {
-            console.warn('Failed to initialize Active Data adapter:', (error as Error).message);
-        }
-    }
-}
-```
-
-### 7. Configuration
-
-Configuration is driven by `appConfig` object, typically loaded from environment variables or configuration files:
-
-```typescript
-// appConfig structure
-{
-    engagement: {
-        adapters: {
-            einstein: {
-                enabled: true,
-                host: 'https://api.cquotient.com',
-                einsteinId: 'your-einstein-id',
-                realm: 'your-realm',
-                siteId: 'your-site-id',
-                isProduction: true,
-                eventToggles: {
-                    view_page: true,
-                    view_product: true,
-                    // ... other event types
-                },
-            },
-            activeData: {
-                enabled: false,
-                host: 'https://your-activedata-host.com',
-                siteId: 'your-site-id',
-                locale: 'en-GB',
-                siteUUID: 'your-site-uuid',
-                eventToggles: {
-                    // ... event toggles
-                },
-            },
-        },
-    },
-}
-```
-
-#### Multi-Site Considerations
-
-Engagement adapters are initialized once at application startup with static configuration. In a site context storefront, the current site and locale are passed dynamically at **event-send time** via `EventSiteInfo` (resolved from the site context middleware context). See [Site Context: Engagement Data](./README-MULTI-SITE.md#engagement-data--site-context) for how site context flows to adapters.
-
-#### Environment Variable Overrides
-
-Most engagement adapter settings are **protected paths** — they cannot be overridden via `PUBLIC__` environment variables at runtime. Attempting to set `PUBLIC__app__engagement__adapters__einstein__*` or `PUBLIC__app__engagement__adapters__dataCloud__*` will throw an error. To change these values, update `config.server.ts` and rebuild.
-
-The exceptions are Active Data's `host` and `siteUUID`, which **can** be overridden via environment variables:
-
-```bash
-PUBLIC__app__engagement__adapters__activeData__host=https://your-host.commercecloud.salesforce.com
-PUBLIC__app__engagement__adapters__activeData__siteUUID=your-site-uuid
-```
-
-This allows deploying the same build to different environments that point to different B2C Commerce instances without rebuilding.
-
----
-
-## Code Templates
-
-### Complete Adapter Implementation Template (Factory Function)
-
-```typescript
-// src/adapters/[service-name].ts
-import type { YourAdapter, YourAdapterConfig, Params, Result } from '@/lib/adapters/engagement/types';
-
-export type ServiceNameConfig = YourAdapterConfig & {
-    apiKey: string;
-    baseUrl: string;
-    // ... other service-specific config
-};
-
-/**
- * Create a [Service Name] adapter
- *
- * This factory function returns an object that implements YourAdapter.
- * The factory pattern allows for better testability and configuration validation.
- */
-export function createServiceNameAdapter(config: ServiceNameConfig): YourAdapter {
-    // Validate configuration
-    if (!config.apiKey || !config.baseUrl) {
-        throw new Error('[ServiceNameAdapter] Missing required configuration');
-    }
-
-    return {
-        async yourMethod(params: Params): Promise<Result> {
-            try {
-                // 1. Transform input
-                const serviceParams = transformInput(params, config);
-
-                // 2. Call external service
-                const serviceResponse = await callServiceAPI(serviceParams, config);
-
-                // 3. Transform output
-                const result = transformOutput(serviceResponse);
-
-                return result;
-            } catch (error) {
-                console.error('[ServiceNameAdapter] Error:', error);
-                // Return default value instead of throwing to prevent UI breakage
-                return getDefaultResult();
-            }
-        },
-    };
-}
-
-// Helper functions (can be exported for testing)
-function transformInput(params: Params, config: ServiceNameConfig): ServiceParams {
-    return {
-        // Map your interface to service API
-    };
-}
-
-async function callServiceAPI(params: ServiceParams, config: ServiceNameConfig): Promise<ServiceResponse> {
-    const response = await fetch(`${config.baseUrl}/api/endpoint`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${config.apiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Service API error: ${response.status}`);
-    }
-
-    return await response.json();
-}
-
-function transformOutput(response: ServiceResponse): Result {
-    return {
-        // Map service API to your interface
-    };
-}
-
-function getDefaultResult(): Result {
-    // Return safe default value
-    return {
-        // ...default values
-    };
-}
-```
-
-### Alternative: Class-Based Adapter Template
-
-```typescript
-// src/adapters/[service-name].ts
-import type { YourAdapter, Params, Result } from '@/lib/adapters/engagement/types';
-
-export type ServiceNameConfig = {
-    apiKey: string;
-    baseUrl: string;
-};
-
-/**
- * [Service Name] adapter implementation (class-based)
- */
-export class ServiceNameAdapter implements YourAdapter {
-    private config: ServiceNameConfig;
-
-    constructor(config: ServiceNameConfig) {
-        this.config = config;
-    }
-
-    async yourMethod(params: Params): Promise<Result> {
-        try {
-            // Implementation
-        } catch (error) {
-            console.error('[ServiceNameAdapter] Error:', error);
-            return getDefaultResult();
-        }
-    }
-}
-
-// Factory function wrapper
-export function createServiceNameAdapter(config: ServiceNameConfig): YourAdapter {
-    return new ServiceNameAdapter(config);
-}
-```
-
-### Provider Template
-
-```typescript
-// src/providers/your-feature.tsx
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { getAdapter } from '@/lib/adapters';
+import { useSite } from '@salesforce/storefront-next-runtime/site-context';
+import { useAuth } from '@/providers/auth';
+import { useTrackingConsent } from '@/hooks/use-tracking-consent';
 import { ensureAdaptersInitialized } from '@/lib/adapters/engagement/initialize';
-import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { getAllAdapters, buildConsentPreferences } from '@/lib/adapters';
 import type { AppConfig } from '@/types/config';
-import type { YourAdapter } from '@/lib/adapters/engagement/types';
 
-const YourFeatureContext = createContext<YourAdapter | undefined>(undefined);
-
-type YourFeatureProviderProps = {
-    children: ReactNode;
-    adapterName?: string;
-};
-
-export function YourFeatureProvider({ 
-    children, 
-    adapterName = 'yourFeature' 
-}: YourFeatureProviderProps) {
+export function PageViewTracker() {
+    const location = useLocation();
     const config = useConfig<AppConfig>();
-    const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
+    const auth = useAuth();
+    const { trackingConsent, isTrackingConsentEnabled } = useTrackingConsent();
+    const { site, language } = useSite();
 
     useEffect(() => {
-        const initializeAdapter = async () => {
-            try {
-                await ensureAdaptersInitialized(config);
-                const initializedAdapter = getAdapter(adapterName) as YourAdapter | undefined;
-                setAdapter(initializedAdapter);
-            } catch (error) {
-                if (import.meta.env.DEV) {
-                    console.warn('[YourFeatureProvider] Failed to initialize adapter:', error);
-                }
-            }
-        };
+        if (typeof window === 'undefined' || auth === undefined) return;
 
-        void initializeAdapter();
-    }, [config, adapterName]);
-
-    return (
-        <YourFeatureContext.Provider value={adapter}>
-            {children}
-        </YourFeatureContext.Provider>
-    );
-}
-
-/**
- * Hook to access the YourFeature adapter from context
- * @returns The YourFeature adapter, or undefined if not yet initialized
- */
-export function useYourFeatureAdapter(): YourAdapter | undefined {
-    return useContext(YourFeatureContext);
-}
-```
-
-### Component Template (Using High-Level Hook)
-
-```tsx
-// src/components/your-component/index.tsx
-import { useEffect, useRef, useMemo } from 'react';
-import { useYourFeature } from '@/hooks/your-feature/use-your-feature';
-import type { YourParams } from '@/lib/adapters/engagement/types';
-
-export function YourComponent({ params }: { params: YourParams }) {
-    const { yourMethod, data, isLoading, error } = useYourFeature();
-    const lastFetchRef = useRef<string | null>(null);
-
-    // Create stable key for dependency tracking
-    const paramsKey = useMemo(() => JSON.stringify(params), [params]);
-
-    useEffect(() => {
-        // Skip if we've already fetched with these exact parameters
-        if (lastFetchRef.current === paramsKey) {
-            return;
-        }
-
-        lastFetchRef.current = paramsKey;
-        void yourMethod(params);
-    }, [paramsKey, yourMethod, params]);
-
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
-    if (!data) return null;
-
-    return (
-        <div>
-            {/* Render your data */}
-        </div>
-    );
-}
-```
-
-### Component Template (Using Low-Level Adapter Hook)
-
-```tsx
-// src/components/your-component/index.tsx
-import { useEffect, useState } from 'react';
-import { useYourFeatureAdapter } from '@/providers/your-feature';
-import type { YourParams, YourResult } from '@/lib/adapters/engagement/types';
-
-export function YourComponent({ params }: { params: YourParams }) {
-    const adapter = useYourFeatureAdapter();
-    const [data, setData] = useState<YourResult | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
-
-    useEffect(() => {
-        if (!adapter) {
-            setLoading(false);
-            return;
-        }
-
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-
-            try {
-                const result = await adapter.yourMethod(params);
-                setData(result);
-            } catch (err) {
-                const error = err instanceof Error ? err : new Error('Unknown error');
-                setError(error);
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        void fetchData();
-    }, [adapter, params]);
-
-    if (!adapter) return <div>Initializing...</div>;
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
-    if (!data) return null;
-
-    return (
-        <div>
-            {/* Render your data */}
-        </div>
-    );
-}
-```
-
----
-
-## Testing Strategies
-
-### 1. Mock Adapter for Tests
-
-Create a mock adapter that implements your interface for testing.
-
-```typescript
-// src/adapters/__mocks__/mock-adapter.ts
-import type { YourAdapter, Params, Result } from '@/lib/adapters/engagement/types';
-
-export class MockAdapter implements YourAdapter {
-    private mockData: Result;
-    public calls: Params[] = [];
-
-    constructor(mockData: Result) {
-        this.mockData = mockData;
-    }
-
-    async yourMethod(params: Params): Promise<Result> {
-        // Record call for assertions
-        this.calls.push(params);
-
-        // Return mock data
-        return this.mockData;
-    }
-
-    // Helper to verify calls
-    getCallCount(): number {
-        return this.calls.length;
-    }
-
-    getLastCall(): Params | undefined {
-        return this.calls[this.calls.length - 1];
-    }
-}
-```
-
-### 2. Component Tests with Mock Adapter
-
-```tsx
-// src/components/your-component/__tests__/index.test.tsx
-import { render, screen, waitFor } from '@testing-library/react';
-import { YourComponent } from '../index';
-import { YourFeatureProvider } from '@/providers/your-feature';
-import { addAdapter } from '@/lib/adapters';
-import { MockAdapter } from '@/lib/adapters/__mocks__/mock-adapter';
-import { resetAdaptersInitialization } from '@/lib/adapters/engagement/initialize';
-
-// Mock the config
-vi.mock('@salesforce/storefront-next-runtime/config', () => ({
-    useConfig: () => ({
-        engagement: {
-            adapters: {
-                yourFeature: {
-                    enabled: true,
-                },
-            },
-        },
-    }),
-}));
-
-describe('YourComponent', () => {
-    beforeEach(() => {
-        // Reset initialization state
-        resetAdaptersInitialization();
-        
-        // Register mock adapter before each test
-        const mockAdapter = new MockAdapter({
-            // mock result data
-        });
-        addAdapter('yourFeature', mockAdapter);
-    });
-
-    afterEach(() => {
-        // Clean up after each test
-        // Note: The actual implementation doesn't have a clear() method
-        // You may need to implement cleanup in your tests
-    });
-
-    it('should render data from adapter', async () => {
-        render(
-            <YourFeatureProvider>
-                <YourComponent />
-            </YourFeatureProvider>
+        const consentPreferences = buildConsentPreferences(
+            trackingConsent,
+            config.engagement.analytics.trackingConsent?.consentCategories ?? [],
+            isTrackingConsentEnabled
         );
+        if (!consentPreferences || consentPreferences.length === 0) return;
 
-        // Wait for data to load
-        await waitFor(() => {
-            expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        });
-
-        // Assert rendered data
-        expect(screen.getByText('Expected Content')).toBeInTheDocument();
-    });
-
-    it('should handle errors gracefully', async () => {
-        // Register error-throwing mock adapter
-        const errorAdapter = new MockAdapter(null);
-        errorAdapter.yourMethod = async () => {
-            throw new Error('Service error');
-        };
-        addAdapter('yourFeature', errorAdapter);
-
-        render(
-            <YourFeatureProvider>
-                <YourComponent />
-            </YourFeatureProvider>
-        );
-
-        await waitFor(() => {
-            expect(screen.getByText(/error/i)).toBeInTheDocument();
-        });
-    });
-});
-```
-
-### 3. Adapter Implementation Tests
-
-```typescript
-// src/adapters/__tests__/einstein.test.ts
-import { createEinsteinAdapter } from '../einstein';
-import type { EinsteinConfig } from '../einstein';
-
-describe('EinsteinAdapter', () => {
-    let adapter: ReturnType<typeof createEinsteinAdapter>;
-    let config: EinsteinConfig;
-
-    beforeEach(() => {
-        config = {
-            host: 'https://api.test.com',
-            einsteinId: 'test-id',
-            realm: 'test-realm',
-            siteId: 'test-site',
-            isProduction: false,
-            eventToggles: {
-                view_page: true,
-                view_product: true,
-                // ... other event types
-            },
-        };
-        adapter = createEinsteinAdapter(config);
-    });
-
-    it('should create adapter with valid config', () => {
-        expect(adapter).toBeDefined();
-        expect(adapter.name).toBe('einstein');
-    });
-
-    it('should throw error with invalid config', () => {
-        expect(() => {
-            createEinsteinAdapter({
-                ...config,
-                host: '', // Missing required field
-            });
-        }).toThrow('[EinsteinAdapter] Missing required configuration');
-    });
-
-    it('should fetch recommendations', async () => {
-        // Mock the underlying API calls
-        // ...
-
-        const result = await adapter.getRecommendations('home-recommendations');
-
-        expect(result).toBeDefined();
-        // Assert result structure
-    });
-
-    it('should handle errors gracefully', async () => {
-        // Mock API to throw error
-        // ...
-
-        const result = await adapter.getRecommendations('home-recommendations');
-
-        // Should return safe default instead of throwing
-        expect(result).toBeDefined();
-    });
-});
-```
-
-### 4. Integration Tests
-
-```typescript
-// src/app/__tests__/integration.test.tsx
-import { render, screen, waitFor } from '@testing-library/react';
-import { App } from '../app';
-import { addAdapter } from '@/lib/adapters';
-import { createEinsteinAdapter } from '@/lib/adapters/engagement/einstein';
-import { resetAdaptersInitialization } from '@/lib/adapters/engagement/initialize';
-
-// Mock the config
-vi.mock('@salesforce/storefront-next-runtime/config', () => ({
-    useConfig: () => ({
-        engagement: {
-            adapters: {
-                einstein: {
-                    enabled: true,
-                    host: 'https://api.test.com',
-                    einsteinId: 'test-id',
-                    realm: 'test-realm',
-                    siteId: 'test-site',
-                    isProduction: false,
-                    eventToggles: {},
-                },
-            },
-        },
-    }),
-}));
-
-describe('App Integration', () => {
-    beforeAll(() => {
-        resetAdaptersInitialization();
-        
-        // Initialize real adapter (or mock if needed)
-        const adapter = createEinsteinAdapter({
-            host: 'https://api.test.com',
-            einsteinId: 'test-id',
-            realm: 'test-realm',
-            siteId: 'test-site',
-            isProduction: false,
-            eventToggles: {},
-        });
-        addAdapter('einstein', adapter);
-    });
-
-    it('should render app with recommendations', async () => {
-        render(<App />);
-
-        await waitFor(() => {
-            expect(screen.getByText('You May Also Like')).toBeInTheDocument();
-        });
-    });
-});
-```
-
----
-
-## Best Practices
-
-### 1. Interface Design
-
-✅ **DO:**
-- Keep interfaces focused and cohesive
-- Use descriptive method names
-- Include JSDoc comments
-- Design for the consumer (component), not the implementation
-- Make interfaces async by default (Promise return types)
-
-❌ **DON'T:**
-- Create "god interfaces" with too many methods
-- Expose implementation details
-- Use implementation-specific types in interfaces
-- Make breaking changes to interfaces without versioning
-
-```typescript
-// ✅ Good - focused interface
-interface RecommendersAdapter {
-    getRecommendations(context: RecommenderContext): Promise<Product[]>;
-}
-
-// ❌ Bad - mixed concerns
-interface RecommendersAdapter {
-    getRecommendations(context: RecommenderContext): Promise<Product[]>;
-    fetchEinsteinToken(): Promise<string>; // Implementation detail
-    handleShoppingCart(cart: Cart): void;  // Unrelated concern
-}
-```
-
-### 2. Error Handling
-
-✅ **DO:**
-- Return empty/default values for non-critical failures
-- Log errors with context
-- Provide fallback behavior
-- Use specific error types
-
-❌ **DON'T:**
-- Let adapter errors crash the UI
-- Swallow errors silently
-- Expose internal error details to users
-
-```typescript
-// ✅ Good - graceful degradation
-async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-    try {
-        const response = await this.callAPI(context);
-        return this.transformResponse(response);
-    } catch (error) {
-        console.error('[Adapter] Failed to fetch recommendations:', error);
-        // Return empty array so UI still renders
-        return [];
-    }
-}
-
-// ❌ Bad - throws and breaks UI
-async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-    const response = await this.callAPI(context); // Throws on error
-    return this.transformResponse(response);
-}
-```
-
-### 3. Lazy Initialization
-
-✅ **DO:**
-- Use `useState` + `useEffect` for async initialization
-- Use `ensureAdaptersInitialized()` for lazy loading
-- Initialize adapters once at app startup
-- Cache adapter instances with idempotent initialization
-
-❌ **DON'T:**
-- Use `useMemo` for async operations (it doesn't work)
-- Create adapter instances in render
-- Load adapters on every context read
-- Initialize in component effects without proper guards
-
-```typescript
-// ✅ Good - async lazy load with useState + useEffect
-export function YourFeatureProvider({ children }: { children: ReactNode }) {
-    const config = useConfig<AppConfig>();
-    const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
-
-    useEffect(() => {
-        const initializeAdapter = async () => {
-            try {
-                await ensureAdaptersInitialized(config);
-                const initializedAdapter = getAdapter('yourFeature') as YourAdapter | undefined;
-                setAdapter(initializedAdapter);
-            } catch (error) {
-                if (import.meta.env.DEV) {
-                    console.warn('Failed to initialize adapter:', error);
-                }
-            }
-        };
-
-        void initializeAdapter();
-    }, [config]);
-
-    return <Context.Provider value={adapter}>{children}</Context.Provider>;
-}
-
-// ❌ Bad - useMemo doesn't work for async operations
-export function YourFeatureProvider({ children }: { children: ReactNode }) {
-    const adapter = useMemo(() => {
-        // This won't work - useMemo can't handle async
-        return adapterStore.get<YourAdapter>('yourFeature');
-    }, []);
-    return <Context.Provider value={adapter}>{children}</Context.Provider>;
-}
-```
-
-### 4. Type Safety
-
-✅ **DO:**
-- Use TypeScript interfaces for all adapters
-- Validate adapter registration with generics
-- Type context providers properly
-
-❌ **DON'T:**
-- Use `any` types
-- Cast without validation
-- Skip type definitions
-
-```typescript
-// ✅ Good - type-safe
-export function useYourFeature(): YourAdapter {
-    const adapter = useContext(YourFeatureContext);
-    if (!adapter) {
-        throw new Error('useYourFeature must be used within YourFeatureProvider');
-    }
-    return adapter;
-}
-
-// ❌ Bad - unsafe
-export function useYourFeature() {
-    return useContext(YourFeatureContext) as any;
-}
-```
-
-### 5. Adapter Isolation
-
-✅ **DO:**
-- Keep adapters independent of each other
-- Use dependency injection for shared dependencies
-- Make adapters stateless when possible
-
-❌ **DON'T:**
-- Import other adapters directly
-- Share global state between adapters
-- Create tight coupling between adapters
-
-### 6. Configuration
-
-✅ **DO:**
-- Use `appConfig` object for configuration
-- Validate configuration at startup
-- Provide sensible defaults
-- Document all config options
-- Use configuration-driven initialization
-
-❌ **DON'T:**
-- Hardcode adapter selection
-- Load config in components
-- Use config without validation
-- Rely solely on environment variables
-
-```typescript
-// ✅ Good - configuration-driven with validation
-export function initializeEngagementAdapters(appConfig: AppConfig) {
-    const engagementAdapterConfigs = appConfig?.engagement?.adapters;
-
-    if (engagementAdapterConfigs?.einstein?.enabled) {
-        // Validate required fields
-        if (!engagementAdapterConfigs.einstein.host || !engagementAdapterConfigs.einstein.einsteinId) {
-            throw new Error('[EinsteinAdapter] Missing required configuration');
-        }
-
-        try {
-            addAdapter(
-                'einstein',
-                createEinsteinAdapter({
-                    host: engagementAdapterConfigs.einstein.host,
-                    einsteinId: engagementAdapterConfigs.einstein.einsteinId,
-                    realm: engagementAdapterConfigs.einstein.realm || '',
-                    siteId: engagementAdapterConfigs.einstein.siteId || '',
-                    isProduction: engagementAdapterConfigs.einstein.isProduction || false,
-                    eventToggles: engagementAdapterConfigs.einstein.eventToggles || {},
-                })
-            );
-        } catch (error) {
-            console.warn('Failed to initialize Einstein adapter:', (error as Error).message);
-        }
-    }
-}
-
-// ❌ Bad - no validation, hardcoded values
-function initializeAdapters() {
-    const adapter = createEinsteinAdapter({
-        host: 'https://api.example.com', // Hardcoded
-        einsteinId: 'test-id', // Hardcoded
-        // Missing validation
-    });
-    addAdapter('einstein', adapter);
-}
-```
-
-### 7. Documentation
-
-✅ **DO:**
-- Document adapter interfaces with JSDoc
-- Provide usage examples
-- Document error scenarios
-- Keep README up to date
-
-❌ **DON'T:**
-- Leave interfaces undocumented
-- Skip example code
-- Forget to update docs when changing interfaces
-
----
-
-## Common Pitfalls
-
-### 1. Creating Adapters in Render
-
-**Problem**: Creating adapter instances during component render causes unnecessary re-creation.
-
-```tsx
-// ❌ Bad - creates new instance on every render
-function YourComponent() {
-    const adapter = new ServiceAdapter(); // Don't do this!
-    // ...
-}
-```
-
-**Solution**: Use lazy initialization with `useState` + `useEffect` in providers.
-
-```tsx
-// ✅ Good - reuses single instance with async initialization
-export function YourFeatureProvider({ children }: { children: ReactNode }) {
-    const config = useConfig<AppConfig>();
-    const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
-
-    useEffect(() => {
-        const initializeAdapter = async () => {
+        const trackPageView = async () => {
             await ensureAdaptersInitialized(config);
-            const initializedAdapter = getAdapter('yourFeature') as YourAdapter | undefined;
-            setAdapter(initializedAdapter);
+            const { createEvent, getEventMediator, sendViewPageEvent } =
+                await import('@salesforce/storefront-next-runtime/events');
+
+            const mediator = getEventMediator(getAllAdapters);
+            if (!mediator) return;
+
+            const event = createEvent('view_page', {
+                path: location.pathname,
+                payload: { userType: auth.userType ?? 'guest', encUserId: auth.encUserId, usid: auth.usid },
+            });
+            sendViewPageEvent(event, mediator, { siteId: site.id, localeId: language }, consentPreferences);
         };
 
-        void initializeAdapter();
-    }, [config]);
+        void trackPageView();
+    }, [/* … */]);
 
-    return <Context.Provider value={adapter}>{children}</Context.Provider>;
+    return null;
 }
 ```
 
-### 2. Not Handling Adapter Absence
+### 5. Configuration
 
-**Problem**: Assuming adapter is always available leads to runtime errors.
-
-```typescript
-// ❌ Bad - crashes if adapter not registered
-export function useYourFeature() {
-    return useContext(YourFeatureContext)!; // Unsafe!
-}
-```
-
-**Solution**: Return `undefined` for graceful degradation, or check and provide helpful error messages.
-
-```typescript
-// ✅ Good - graceful degradation (recommended)
-export function useYourFeatureAdapter(): YourAdapter | undefined {
-    const adapter = useContext(YourFeatureContext);
-    // Return undefined if adapter is not yet initialized - this is expected during async initialization
-    // Components using this hook should check for undefined and handle gracefully
-    return adapter;
-}
-
-// ✅ Alternative - throws error (use when adapter is required)
-export function useYourFeature(): YourAdapter {
-    const adapter = useContext(YourFeatureContext);
-    if (!adapter) {
-        throw new Error(
-            'useYourFeature must be used within YourFeatureProvider. ' +
-            'Ensure the adapter is registered via ensureAdaptersInitialized().'
-        );
-    }
-    return adapter;
-}
-```
-
-### 3. Leaking Implementation Details
-
-**Problem**: Exposing service-specific details in the interface.
-
-```typescript
-// ❌ Bad - exposes Einstein-specific details
-interface RecommendersAdapter {
-    getEinsteinRecommendations(einsteinParams: EinsteinParams): Promise<Product[]>;
-}
-```
-
-**Solution**: Use generic, implementation-agnostic interfaces.
-
-```typescript
-// ✅ Good - generic interface
-interface RecommendersAdapter {
-    getRecommendations(context: RecommenderContext): Promise<Product[]>;
-}
-```
-
-### 4. Forgetting to Register Adapters
-
-**Problem**: Using hooks before adapters are registered causes errors.
-
-```typescript
-// ❌ Bad - adapter not registered yet
-function App() {
-    return (
-        <YourFeatureProvider> {/* Adapter not in store! */}
-            <YourComponent />
-        </YourFeatureProvider>
-    );
-}
-```
-
-**Solution**: Use lazy initialization with `ensureAdaptersInitialized()` which is called automatically by providers.
-
-```typescript
-// ✅ Good - lazy initialization in provider
-export function YourFeatureProvider({ children }: { children: ReactNode }) {
-    const config = useConfig<AppConfig>();
-    const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
-
-    useEffect(() => {
-        const initializeAdapter = async () => {
-            try {
-                // ensureAdaptersInitialized() handles registration automatically
-                await ensureAdaptersInitialized(config);
-                const initializedAdapter = getAdapter('yourFeature') as YourAdapter | undefined;
-                setAdapter(initializedAdapter);
-            } catch (error) {
-                if (import.meta.env.DEV) {
-                    console.warn('Failed to initialize adapter:', error);
-                }
-            }
-        };
-
-        void initializeAdapter();
-    }, [config]);
-
-    return <Context.Provider value={adapter}>{children}</Context.Provider>;
-}
-```
-
-### 5. Not Handling Async Errors
-
-**Problem**: Letting adapter errors propagate to UI causes crashes.
-
-```typescript
-// ❌ Bad - errors crash the UI
-async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-    const response = await fetch(url); // Throws on network error
-    return response.json();
-}
-```
-
-**Solution**: Catch and handle errors gracefully.
-
-```typescript
-// ✅ Good - handles errors
-async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('[Adapter] Error fetching recommendations:', error);
-        return []; // Graceful fallback
-    }
-}
-```
-
-### 6. Tight Coupling Between Adapters
-
-**Problem**: One adapter directly importing another creates tight coupling.
-
-```typescript
-// ❌ Bad - tight coupling
-import { EinsteinAdapter } from './einstein';
-
-class CompositeAdapter implements YourAdapter {
-    private einstein = new EinsteinAdapter(); // Direct dependency
-}
-```
-
-**Solution**: Use dependency injection.
-
-```typescript
-// ✅ Good - dependency injection
-class CompositeAdapter implements YourAdapter {
-    constructor(
-        private recommenders: RecommendersAdapter,
-        private engagement: EngagementAdapter
-    ) {}
-}
-
-// In initialization code
-const einstein = new EinsteinAdapter();
-const composite = new CompositeAdapter(einstein, einstein);
-```
-
-### 7. Missing Type Guards
-
-**Problem**: Not validating adapter responses can cause runtime errors.
-
-```typescript
-// ❌ Bad - assumes response shape
-async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-    const response = await this.api.call();
-    return response.hits.map(hit => ({ // Can crash if hits is undefined
-        productId: hit.productId,
-    }));
-}
-```
-
-**Solution**: Validate and provide defaults.
-
-```typescript
-// ✅ Good - validates response
-async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-    const response = await this.api.call();
-    return (response?.hits || []).map(hit => ({
-        productId: hit?.productId || '',
-        productName: hit?.productName || '',
-        price: hit?.price || 0,
-    }));
-}
-```
-
----
-
-## Configuration Reference
-
-### Configuration Structure
-
-Configuration is driven by the `appConfig` object, which is typically loaded from environment variables or configuration files:
-
-```typescript
+```ts
 // appConfig structure
 {
     engagement: {
@@ -2916,7 +972,610 @@ Configuration is driven by the `appConfig` object, which is typically loaded fro
                     checkout_step: true,
                     view_search_suggestion: true,
                     click_search_suggestion: true,
+                    wishlist_item_added: true,
+                    wishlist_item_removed: true,
+                    wishlist_viewed: true,
+                    wishlist_item_merged: true,
+                    wishlist_merged: true,
                 },
+            },
+            activeData: {
+                enabled: false,
+                host: 'https://your-activedata-host.com',
+                siteId: 'your-site-id',
+                locale: 'en-GB',
+                siteUUID: 'your-site-uuid',
+                eventToggles: { /* … */ },
+            },
+        },
+    },
+}
+```
+
+#### Multi-Site Considerations
+
+Engagement adapters are initialized once at application startup with static configuration. In a site-context storefront, the current site and locale are passed dynamically at **event-send time** via `EventSiteInfo` (resolved from the site context middleware context). See [Site Context: Engagement Data](./README-MULTI-SITE.md#engagement-data--site-context) for how site context flows to adapters.
+
+#### Environment Variable Overrides
+
+Most engagement adapter settings are **protected paths** — they cannot be overridden via `PUBLIC__` environment variables at runtime. Attempting to set `PUBLIC__app__engagement__adapters__einstein__*` or `PUBLIC__app__engagement__adapters__dataCloud__*` will throw an error. To change these values, update `config.server.ts` and rebuild.
+
+The exceptions are Active Data's `host` and `siteUUID`, which **can** be overridden via environment variables:
+
+```bash
+PUBLIC__app__engagement__adapters__activeData__host=https://your-host.commercecloud.salesforce.com
+PUBLIC__app__engagement__adapters__activeData__siteUUID=your-site-uuid
+```
+
+This allows deploying the same build to different environments that point to different B2C Commerce instances without rebuilding.
+
+---
+
+## Code Templates
+
+### Complete Adapter Implementation Template (Factory Function)
+
+```ts
+// src/lib/adapters/<domain>/<service-name>.ts
+import type { YourAdapter, YourAdapterConfig } from './types';
+
+export type ServiceNameConfig = YourAdapterConfig & {
+    apiKey: string;
+    baseUrl: string;
+    // ... other service-specific config
+};
+
+export function createServiceNameAdapter(config: ServiceNameConfig): YourAdapter {
+    if (!config.apiKey || !config.baseUrl) {
+        throw new Error('[ServiceNameAdapter] Missing required configuration');
+    }
+
+    return {
+        async yourMethod(params) {
+            try {
+                const serviceParams = transformInput(params, config);
+                const serviceResponse = await callServiceAPI(serviceParams, config);
+                return transformOutput(serviceResponse);
+            } catch (error) {
+                console.error('[ServiceNameAdapter] Error:', error);
+                return getDefaultResult();
+            }
+        },
+    };
+}
+
+function transformInput(params: YourParams, config: ServiceNameConfig): ServiceParams { /* … */ }
+
+async function callServiceAPI(params: ServiceParams, config: ServiceNameConfig): Promise<ServiceResponse> {
+    const response = await fetch(`${config.baseUrl}/api/endpoint`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+    });
+    if (!response.ok) throw new Error(`Service API error: ${response.status}`);
+    return await response.json();
+}
+
+function transformOutput(response: ServiceResponse): YourResult { /* … */ }
+function getDefaultResult(): YourResult { /* … */ }
+```
+
+### Provider Template
+
+```tsx
+// src/providers/your-feature.tsx
+import { createContext, useContext, useState, useEffect, type PropsWithChildren } from 'react';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import type { YourAdapter } from '@/lib/adapters/your-feature/types';
+import { getYourFeatureAdapter, YOUR_FEATURE_DEFAULT_ADAPTER_NAME } from '@/lib/adapters/your-feature/store';
+import { ensureYourFeatureAdapterRegistered } from '@/lib/adapters/your-feature/ensure-registered';
+import type { AppConfig } from '@/types/config';
+
+const YourFeatureContext = createContext<YourAdapter | undefined>(undefined);
+
+export default function YourFeatureProvider({
+    children,
+    adapterName = YOUR_FEATURE_DEFAULT_ADAPTER_NAME,
+}: PropsWithChildren<{ adapterName?: string }>) {
+    const config = useConfig<AppConfig>();
+    const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
+
+    useEffect(() => {
+        const initializeAdapter = async () => {
+            try {
+                await ensureYourFeatureAdapterRegistered(config);
+                setAdapter(getYourFeatureAdapter(adapterName));
+            } catch (error) {
+                if (import.meta.env.DEV) {
+                    console.warn('[YourFeatureProvider] Failed to initialize adapter:', error);
+                }
+            }
+        };
+        void initializeAdapter();
+    }, [config, adapterName]);
+
+    return <YourFeatureContext.Provider value={adapter}>{children}</YourFeatureContext.Provider>;
+}
+
+export const useYourFeatureAdapter = (): YourAdapter | undefined =>
+    useContext(YourFeatureContext);
+```
+
+### Component Template (using the adapter hook)
+
+```tsx
+// src/components/your-component/index.tsx
+import { useEffect, useState } from 'react';
+import { useYourFeatureAdapter } from '@/providers/your-feature';
+import type { YourParams, YourResult } from '@/lib/adapters/your-feature/types';
+
+export function YourComponent({ params }: { params: YourParams }) {
+    const adapter = useYourFeatureAdapter();
+    const [data, setData] = useState<YourResult | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+        if (!adapter) return;
+        let cancelled = false;
+        setLoading(true);
+        setError(null);
+
+        (async () => {
+            try {
+                const result = await adapter.yourMethod(params);
+                if (!cancelled) setData(result);
+            } catch (err) {
+                if (!cancelled) setError(err instanceof Error ? err : new Error('Unknown error'));
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [adapter, params]);
+
+    if (!adapter) return null;
+    if (loading) return <div>Loading…</div>;
+    if (error) return null;
+    if (!data) return null;
+
+    return <div>{/* render data */}</div>;
+}
+```
+
+---
+
+## Testing Strategies
+
+### 1. Mock Adapter for Tests
+
+Create a mock adapter that implements your interface for testing.
+
+```ts
+// src/lib/adapters/your-feature/__mocks__/mock-adapter.ts
+import type { YourAdapter, YourParams, YourResult } from '../types';
+
+export function createMockAdapter(mockData: YourResult): YourAdapter & { calls: YourParams[] } {
+    const calls: YourParams[] = [];
+    return {
+        calls,
+        async yourMethod(params) {
+            calls.push(params);
+            return mockData;
+        },
+    };
+}
+```
+
+### 2. Component Tests with Mock Adapter
+
+```tsx
+// src/components/your-component/index.test.tsx
+import { render, screen, waitFor } from '@testing-library/react';
+import { YourComponent } from './index';
+import YourFeatureProvider from '@/providers/your-feature';
+import { addAdapter } from '@/lib/adapters/your-feature/store';
+import { createMockAdapter } from '@/lib/adapters/your-feature/__mocks__/mock-adapter';
+
+vi.mock('@salesforce/storefront-next-runtime/config', () => ({
+    useConfig: () => ({ yourFeature: { adapter: { enabled: true } } }),
+}));
+
+describe('YourComponent', () => {
+    beforeEach(() => {
+        addAdapter('default', createMockAdapter({ /* mock result */ }));
+    });
+
+    it('renders data from adapter', async () => {
+        render(
+            <YourFeatureProvider>
+                <YourComponent params={{ /* … */ }} />
+            </YourFeatureProvider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Expected Content')).toBeInTheDocument();
+        });
+    });
+});
+```
+
+### 3. Adapter Implementation Tests
+
+```ts
+// src/lib/adapters/engagement/einstein.test.ts (excerpt)
+import { describe, it, expect, beforeEach } from 'vitest';
+import { createEinsteinAdapter, type EinsteinConfig } from './einstein';
+import type { EngagementAdapter } from '@/lib/adapters';
+
+describe('EinsteinAdapter', () => {
+    let adapter: EngagementAdapter;
+    let config: EinsteinConfig;
+
+    beforeEach(() => {
+        config = {
+            host: 'https://api.test.com',
+            einsteinId: 'test-id',
+            realm: 'test-realm',
+            siteId: 'test-site',
+            isProduction: false,
+            eventToggles: { view_page: true /* … */ } as never,
+        };
+        adapter = createEinsteinAdapter(config);
+    });
+
+    it('creates adapter with valid config', () => {
+        expect(adapter.name).toBe('einstein');
+    });
+
+    it('throws with invalid config', () => {
+        expect(() => createEinsteinAdapter({ ...config, host: '' })).toThrow(/Missing required configuration/);
+    });
+});
+```
+
+---
+
+## Best Practices
+
+### 1. Interface Design
+
+✅ **DO:**
+- Keep interfaces focused and cohesive
+- Use descriptive method names
+- Include JSDoc comments
+- Design for the consumer (caller), not the implementation
+- Make interfaces async by default (Promise return types)
+
+❌ **DON'T:**
+- Create "god interfaces" with too many methods
+- Expose implementation details
+- Use implementation-specific types in interfaces
+- Make breaking changes to interfaces without versioning
+
+```ts
+// ✅ Good - focused interface
+interface EngagementAdapter extends EventAdapter {
+    name: string;
+    sendEvent?: (event: AnalyticsEvent) => Promise<unknown>;
+}
+
+// ❌ Bad - mixed concerns
+interface EngagementAdapter {
+    sendEvent: (event: AnalyticsEvent) => Promise<unknown>;
+    fetchEinsteinToken(): Promise<string>; // Implementation detail
+    updateBasket(basket: Basket): void;    // Unrelated concern
+}
+```
+
+### 2. Error Handling
+
+✅ **DO:**
+- Return empty/default values for non-critical failures
+- Log errors with context
+- Provide fallback behavior
+- Use specific error types
+
+❌ **DON'T:**
+- Let adapter errors crash the UI
+- Swallow errors silently
+- Expose internal error details to users
+
+```ts
+// ✅ Good - graceful degradation
+async yourMethod(params: YourParams): Promise<YourResult> {
+    try {
+        return await this.callAPI(params);
+    } catch (error) {
+        console.error('[Adapter] Failed:', error);
+        return getDefaultResult();
+    }
+}
+
+// ❌ Bad - throws and breaks UI
+async yourMethod(params: YourParams): Promise<YourResult> {
+    return this.callAPI(params); // Throws on error
+}
+```
+
+### 3. Lazy Initialization
+
+✅ **DO:**
+- Use `useState` + `useEffect` for async initialization
+- Use `ensureAdaptersInitialized()` (or the per-domain equivalent) for lazy loading
+- Initialize adapters once at app startup
+- Cache adapter instances with idempotent initialization
+
+❌ **DON'T:**
+- Use `useMemo` for async operations (it can't be awaited)
+- Create adapter instances in render
+- Load adapters on every context read
+- Initialize in component effects without proper guards
+
+```tsx
+// ✅ Good - async lazy load with useState + useEffect
+export default function YourFeatureProvider({ children }: PropsWithChildren) {
+    const config = useConfig<AppConfig>();
+    const [adapter, setAdapter] = useState<YourAdapter | undefined>(undefined);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                await ensureYourFeatureAdapterRegistered(config);
+                setAdapter(getYourFeatureAdapter('default'));
+            } catch (error) {
+                if (import.meta.env.DEV) console.warn('Failed to initialize adapter:', error);
+            }
+        })();
+    }, [config]);
+
+    return <Context.Provider value={adapter}>{children}</Context.Provider>;
+}
+
+// ❌ Bad - useMemo can't await
+export default function YourFeatureProvider({ children }: PropsWithChildren) {
+    const adapter = useMemo(() => getYourFeatureAdapter('default'), []);
+    return <Context.Provider value={adapter}>{children}</Context.Provider>;
+}
+```
+
+### 4. Type Safety
+
+✅ **DO:**
+- Use TypeScript interfaces for all adapters
+- Type context providers properly
+- Cast only at registry boundaries where necessary
+
+❌ **DON'T:**
+- Use `any` types
+- Cast without validation
+- Skip type definitions
+
+### 5. Adapter Isolation
+
+✅ **DO:**
+- Keep adapters independent of each other
+- Use dependency injection for shared dependencies
+- Make adapters stateless when possible
+
+❌ **DON'T:**
+- Import other adapters directly
+- Share global state between adapters
+- Create tight coupling between adapters
+
+### 6. Configuration
+
+✅ **DO:**
+- Use `appConfig` for configuration
+- Validate configuration at startup
+- Provide sensible defaults
+- Document all config options
+- Use configuration-driven initialization
+
+❌ **DON'T:**
+- Hardcode adapter selection
+- Load config in components
+- Use config without validation
+- Rely solely on environment variables
+
+```ts
+// ✅ Good - configuration-driven with validation
+export function initializeEngagementAdapters(appConfig: AppConfig) {
+    const cfg = appConfig?.engagement?.adapters;
+
+    if (cfg?.einstein?.enabled) {
+        if (!cfg.einstein.host || !cfg.einstein.einsteinId) {
+            throw new Error('[EinsteinAdapter] Missing required configuration');
+        }
+        try {
+            addAdapter('einstein', createEinsteinAdapter({ /* … */ }));
+        } catch (error) {
+            console.warn('Failed to initialize Einstein adapter:', (error as Error).message);
+        }
+    }
+}
+
+// ❌ Bad - no validation, hardcoded values
+function initializeAdapters() {
+    addAdapter('einstein', createEinsteinAdapter({
+        host: 'https://api.example.com',
+        einsteinId: 'test-id',
+    } as never));
+}
+```
+
+### 7. Documentation
+
+✅ **DO:**
+- Document adapter interfaces with JSDoc
+- Provide usage examples
+- Document error scenarios
+- Keep this guide up to date when adding adapters
+
+❌ **DON'T:**
+- Leave interfaces undocumented
+- Skip example code
+- Forget to update docs when changing interfaces
+
+---
+
+## Common Pitfalls
+
+### 1. Creating Adapters in Render
+
+**Problem**: Creating adapter instances during component render causes unnecessary re-creation.
+
+```tsx
+// ❌ Bad - creates new instance on every render
+function YourComponent() {
+    const adapter = createServiceAdapter({ /* … */ }); // Don't do this!
+}
+```
+
+**Solution**: Register the adapter in the store at app initialization, then read it via the provider/hook.
+
+### 2. Not Handling Adapter Absence
+
+**Problem**: Assuming the adapter is always available leads to runtime errors.
+
+```ts
+// ❌ Bad - crashes if adapter not registered
+export function useYourFeature() {
+    return useContext(YourFeatureContext)!; // Unsafe!
+}
+```
+
+**Solution**: Return `undefined` for graceful degradation. Components check and render conditionally.
+
+```ts
+// ✅ Good - graceful degradation (recommended)
+export function useYourFeatureAdapter(): YourAdapter | undefined {
+    return useContext(YourFeatureContext);
+}
+```
+
+### 3. Leaking Implementation Details
+
+**Problem**: Exposing service-specific details in the interface.
+
+```ts
+// ❌ Bad - exposes Einstein-specific shape
+interface EngagementAdapter {
+    sendEinsteinActivity(activity: EinsteinActivity): Promise<unknown>;
+}
+```
+
+**Solution**: Use generic, implementation-agnostic interfaces.
+
+```ts
+// ✅ Good - generic interface
+interface EngagementAdapter {
+    sendEvent?: (event: AnalyticsEvent) => Promise<unknown>;
+}
+```
+
+### 4. Forgetting to Register Adapters
+
+**Problem**: Using hooks before adapters are registered causes silent no-ops or errors.
+
+**Solution**: Use lazy initialization (`ensureAdaptersInitialized`) which the provider calls automatically.
+
+### 5. Not Handling Async Errors
+
+**Problem**: Letting adapter errors propagate to UI causes crashes.
+
+```ts
+// ❌ Bad - errors crash the UI
+async yourMethod(params: YourParams): Promise<YourResult> {
+    const response = await fetch(url); // Throws on network error
+    return response.json();
+}
+```
+
+**Solution**: Catch and handle errors gracefully.
+
+```ts
+// ✅ Good - handles errors
+async yourMethod(params: YourParams): Promise<YourResult> {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('[Adapter] Error:', error);
+        return getDefaultResult();
+    }
+}
+```
+
+### 6. Tight Coupling Between Adapters
+
+**Problem**: One adapter directly importing another creates tight coupling.
+
+```ts
+// ❌ Bad - tight coupling
+import { createEinsteinAdapter } from './einstein';
+
+class CompositeAdapter {
+    private einstein = createEinsteinAdapter({ /* … */ });
+}
+```
+
+**Solution**: Use dependency injection.
+
+```ts
+// ✅ Good - dependency injection
+class CompositeAdapter implements EngagementAdapter {
+    constructor(private primary: EngagementAdapter, private fallback: EngagementAdapter) {}
+}
+```
+
+### 7. Missing Type Guards
+
+**Problem**: Not validating adapter responses can cause runtime errors.
+
+```ts
+// ❌ Bad - assumes response shape
+async yourMethod(params): Promise<Result[]> {
+    const response = await this.api.call();
+    return response.hits.map((hit) => ({ id: hit.id })); // crashes if hits is undefined
+}
+```
+
+**Solution**: Validate and provide defaults.
+
+```ts
+// ✅ Good - validates response
+async yourMethod(params): Promise<Result[]> {
+    const response = await this.api.call();
+    return (response?.hits ?? []).map((hit) => ({ id: hit?.id ?? '' }));
+}
+```
+
+---
+
+## Configuration Reference
+
+### Configuration Structure
+
+Configuration is driven by the `appConfig` object, typically loaded from environment variables or configuration files:
+
+```ts
+// appConfig structure
+{
+    engagement: {
+        adapters: {
+            einstein: {
+                enabled: true,
+                host: 'https://api.cquotient.com',
+                einsteinId: 'your-einstein-id',
+                realm: 'your-realm',
+                siteId: 'your-site-id',
+                isProduction: true,
+                eventToggles: { /* per-event-type booleans */ },
             },
             activeData: {
                 enabled: false,
@@ -2926,9 +1585,7 @@ Configuration is driven by the `appConfig` object, which is typically loaded fro
                 siteUUID: 'your-site-uuid',
                 sourceCode: 'your-source-code',
                 siteCurrency: 'USD',
-                eventToggles: {
-                    // ... event toggles
-                },
+                eventToggles: { /* per-event-type booleans */ },
             },
         },
     },
@@ -2937,7 +1594,7 @@ Configuration is driven by the `appConfig` object, which is typically loaded fro
 
 ### Environment Variables (Optional)
 
-While configuration is primarily driven by `appConfig`, you can use environment variables to populate it:
+While configuration is primarily driven by `appConfig`, you can populate it from environment variables:
 
 ```bash
 # Einstein Configuration
@@ -2954,18 +1611,17 @@ ACTIVE_DATA_LOCALE=en-GB
 ACTIVE_DATA_SITE_UUID=your-site-uuid
 ```
 
-### Initialization Flow
+### Initialization Flow (engagement)
 
 Adapters are initialized lazily when first needed:
 
-1. Component renders with `RecommendersProvider`
-2. Provider calls `ensureAdaptersInitialized(config)`
-3. Function checks if adapters are already initialized (idempotent)
-4. If not initialized, dynamically imports `initializeEngagementAdapters`
-5. `initializeEngagementAdapters` reads from `appConfig.engagement.adapters`
-6. Creates adapters using factory functions (`createEinsteinAdapter`, etc.)
-7. Registers adapters in the global store using `addAdapter()`
-8. Provider retrieves adapter from store and sets it in context
+1. `PageViewTracker` (or any other engagement caller) calls `ensureAdaptersInitialized(config)`
+2. The function checks if adapters are already initialized (idempotent)
+3. If not initialized, it dynamically imports `initializeEngagementAdapters` from `@/lib/adapters/engagement/register`
+4. `initializeEngagementAdapters` reads from `appConfig.engagement.adapters`
+5. Creates adapters using factory functions (`createEinsteinAdapter`, `createActiveDataAdapter`)
+6. Registers adapters in the engagement store using `addAdapter()`
+7. The caller retrieves all adapters via `getAllAdapters()` and dispatches through the event mediator
 
 ---
 
@@ -2973,81 +1629,59 @@ Adapters are initialized lazily when first needed:
 
 ### Multiple Adapter Instances
 
-You can register multiple instances of the same interface for different use cases:
+You can register multiple instances of the same interface for different use cases (e.g. one Active Data instance per region). Pick distinct names when registering:
 
-```typescript
-// Different adapters for different recommender types
-const pdpAdapter = new EinsteinAdapter({ recommenderType: 'pdp' });
-const homeAdapter = new EinsteinAdapter({ recommenderType: 'home' });
-
-adapterStore.register('recommenders:pdp', pdpAdapter);
-adapterStore.register('recommenders:home', homeAdapter);
-
-// Use specific adapter in component
-const pdpRecommenders = adapterStore.get<RecommendersAdapter>('recommenders:pdp');
+```ts
+addAdapter('active-data:us', createActiveDataAdapter({ /* US config */ }));
+addAdapter('active-data:eu', createActiveDataAdapter({ /* EU config */ }));
 ```
+
+`getAllAdapters()` returns all registered instances; consumers that want only one of them should look up by name with `getAdapter(name)`.
 
 ### Composite Adapters
 
 Combine multiple adapters to create fallback chains or aggregated results:
 
-```typescript
-class CompositeRecommendersAdapter implements RecommendersAdapter {
-    constructor(
-        private primary: RecommendersAdapter,
-        private fallback: RecommendersAdapter
-    ) {}
-
-    async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-        try {
-            // Try primary first
-            const results = await this.primary.getRecommendations(context);
-            if (results.length > 0) {
-                return results;
+```ts
+function createCompositeAdapter(primary: EngagementAdapter, fallback: EngagementAdapter): EngagementAdapter {
+    return {
+        name: 'composite',
+        sendEvent: async (event, siteInfo, consent) => {
+            try {
+                return await primary.sendEvent?.(event, siteInfo, consent);
+            } catch (error) {
+                console.warn('[Composite] Primary failed, using fallback');
+                return fallback.sendEvent?.(event, siteInfo, consent);
             }
-        } catch (error) {
-            console.warn('[CompositeAdapter] Primary failed, using fallback');
-        }
-
-        // Fallback
-        return this.fallback.getRecommendations(context);
-    }
+        },
+    };
 }
-
-// Initialize
-const einstein = new EinsteinAdapter();
-const activeData = new ActiveDataAdapter({ /* config */ });
-const composite = new CompositeRecommendersAdapter(einstein, activeData);
-adapterStore.register('recommenders', composite);
 ```
 
 ### Adapter Middleware
 
-Add cross-cutting concerns like logging, caching, or analytics:
+Add cross-cutting concerns like logging, caching, or analytics by wrapping an adapter:
 
-```typescript
-class LoggingAdapter implements RecommendersAdapter {
-    constructor(private wrapped: RecommendersAdapter) {}
-
-    async getRecommendations(context: RecommenderContext): Promise<Product[]> {
-        console.log('[LoggingAdapter] Fetching recommendations:', context);
-        const start = Date.now();
-
-        try {
-            const results = await this.wrapped.getRecommendations(context);
-            console.log(`[LoggingAdapter] Fetched ${results.length} products in ${Date.now() - start}ms`);
-            return results;
-        } catch (error) {
-            console.error('[LoggingAdapter] Error:', error);
-            throw error;
-        }
-    }
+```ts
+function withLogging(wrapped: EngagementAdapter): EngagementAdapter {
+    return {
+        ...wrapped,
+        name: `${wrapped.name}:logged`,
+        sendEvent: async (event, siteInfo, consent) => {
+            const start = Date.now();
+            try {
+                const result = await wrapped.sendEvent?.(event, siteInfo, consent);
+                console.log(`[${wrapped.name}] sent ${event.eventType} in ${Date.now() - start}ms`);
+                return result;
+            } catch (error) {
+                console.error(`[${wrapped.name}] error:`, error);
+                throw error;
+            }
+        },
+    };
 }
 
-// Wrap adapter with middleware
-const einstein = new EinsteinAdapter();
-const logged = new LoggingAdapter(einstein);
-adapterStore.register('recommenders', logged);
+addAdapter('einstein', withLogging(createEinsteinAdapter(config)));
 ```
 
 ---
@@ -3056,56 +1690,45 @@ adapterStore.register('recommenders', logged);
 
 The adapter pattern provides:
 
-1. **Decoupling**: Components don't depend on specific services
+1. **Decoupling**: Callers don't depend on specific vendor SDKs
 2. **Testability**: Easy to mock and test in isolation
 3. **Flexibility**: Swap implementations without code changes
-4. **Maintainability**: Changes to services don't affect components
+4. **Maintainability**: Vendor-side changes don't ripple into callers
 
 ### Key Takeaways
 
 - Define clean, focused interfaces
-- Use a functional API for the adapter store (or extend with generic class-based store)
-- Provide adapters via React Context with async initialization
-- Use `useState` + `useEffect` for async initialization (not `useMemo`)
-- Implement two-layer hook pattern: low-level adapter hook + high-level feature hook
+- Use a per-domain functional store (`engagement`, `product-content`, `customer-preferences`)
+- Provide adapters via React Context with async initialization (when consumed by React)
+- Use `useState` + `useEffect` for async init (not `useMemo`)
 - Use factory functions for adapter creation (preferred over classes)
-- Lazy-load adapters with `ensureAdaptersInitialized()` and dynamic imports
-- Return `undefined` for graceful degradation instead of throwing errors
+- Lazy-load adapters with `ensureAdaptersInitialized()` (or the per-domain equivalent) and dynamic imports
+- Return `undefined` for graceful degradation instead of throwing
 - Handle errors gracefully with default values
 - Use configuration-driven initialization from `appConfig`
 - Validate configuration at startup
-- Document interfaces and usage
-- Test with mock adapters
+- For server-rendered data (recommendations, etc.), prefer a `*.server.ts` orchestrator + route loader over an adapter
 
 ### Next Steps
 
-1. Identify features that could benefit from adapters
-2. Define your adapter interfaces
-3. Implement your first adapter using factory function pattern
-4. Create provider with async initialization
-5. Create two-layer hooks (adapter hook + feature hook)
-6. Register adapter via `initializeEngagementAdapters()` or similar
-7. Use high-level hook in components
+1. Identify features that benefit from adapters (the "in-browser, multi-vendor, per-merchant" rule of thumb)
+2. Define your adapter interface
+3. Implement your first adapter using a factory function
+4. Create a per-domain store
+5. Create a provider with async initialization (if consumed by React)
+6. Register the adapter via a `register.ts` module that's dynamically imported
+7. Use `getAllAdapters()` (engagement-style) or the hook (provider-style) in callers
 8. Write tests with mock adapters
 
 ---
 
 ## Additional Resources
 
-- [Product Recommendations Implementation](./src/components/product-recommendations/)
-- [Einstein Adapter](./src/adapters/einstein.ts)
-- [Adapter Store](./src/lib/adapters/adapter-store.ts)
-- [Adapter Types](./src/lib/adapters/types.ts)
-- [Recommenders Provider](./src/providers/recommenders.tsx)
-
----
-
-**Questions or Issues?**
-
-If you have questions about implementing adapters or encounter issues, please:
-1. Review the examples in this guide
-2. Check the existing adapter implementations
-3. Consult the test files for usage patterns
-4. Open an issue for bugs or unclear documentation
-
-Happy coding! 🚀
+- [Engagement adapters](../src/lib/adapters/engagement/) — Einstein and Active Data
+- [Product content adapter](../src/lib/adapters/product-content/) — PDP modal content
+- [PageViewTracker](../src/analytics/page-view-tracker.tsx) — primary engagement caller
+- [Server-rendered recommendations orchestrator](../src/lib/product/recommendations.server.ts)
+- [Recommendations BFF route](../src/routes/resource.recommendations.ts)
+- [Product Recommendations component (loader)](../src/components/product-recommendations/loader.ts)
+- [Data fetching guide](./README-DATA.md)
+- [Page Designer guide](./README-PAGE-DESIGNER.md)

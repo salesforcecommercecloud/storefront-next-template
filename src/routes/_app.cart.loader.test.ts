@@ -44,6 +44,10 @@ vi.mock('@/lib/wishlist/fetch-initial-state.server', () => ({
     ),
 }));
 
+vi.mock('@/lib/product/recommendations.server', () => ({
+    fetchProductRecommendations: vi.fn(),
+}));
+
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 vi.mock('@/extensions/bopis/lib/api/stores.server', () => ({
     fetchStoresForBasket: vi.fn(),
@@ -54,6 +58,7 @@ import { getBasket, getBasketSnapshot } from '@/middlewares/basket.server';
 import { fetchProductsInBasket } from '@/lib/cart/basket-products.server';
 import { fetchPromotionsForBasket } from '@/lib/cart/basket-promotions.server';
 import { fetchWishlistProductIdsForCart } from '@/lib/cart/cart-wishlist.server';
+import { fetchProductRecommendations } from '@/lib/product/recommendations.server';
 // @sfdc-extension-block-start SFDC_EXT_BOPIS
 import { fetchStoresForBasket } from '@/extensions/bopis/lib/api/stores.server';
 // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -87,6 +92,7 @@ describe('Cart route loader', () => {
         });
         vi.mocked(fetchPromotionsForBasket).mockResolvedValue({});
         vi.mocked(fetchWishlistProductIdsForCart).mockResolvedValue([]);
+        vi.mocked(fetchProductRecommendations).mockResolvedValue({ recs: [] });
         // @sfdc-extension-block-start SFDC_EXT_BOPIS
         vi.mocked(fetchStoresForBasket).mockResolvedValue(new Map());
         // @sfdc-extension-block-end SFDC_EXT_BOPIS
@@ -167,6 +173,43 @@ describe('Cart route loader', () => {
 
         await expect(result.basketDataPromise).rejects.toThrow(NormalizedApiError);
         await expect(result.basketDataPromise).rejects.toThrow('Network failure');
+    });
+
+    test('defers two recommendation promises and forwards request', async () => {
+        const result = loader(createLoaderArgs()) as any;
+
+        expect(result.cartMayAlsoLikePromise).toBeInstanceOf(Promise);
+        expect(result.cartRecentlyViewedPromise).toBeInstanceOf(Promise);
+
+        // CART_RECENTLY_VIEWED fires immediately (no basket dependency).
+        // CART_MAY_ALSO_LIKE chains off basketDataPromise — it only fires once that resolves.
+        await result.basketDataPromise;
+        await result.cartMayAlsoLikePromise;
+        await result.cartRecentlyViewedPromise;
+
+        const fetchEnriched = vi.mocked(fetchProductRecommendations);
+        expect(fetchEnriched).toHaveBeenCalledTimes(2);
+
+        const mayAlsoLikeCall = fetchEnriched.mock.calls.find(
+            ([, opts]) => (opts as { name: string }).name === 'product-to-product-einstein'
+        );
+        expect(mayAlsoLikeCall).toBeDefined();
+        const mayAlsoLikeOpts = mayAlsoLikeCall?.[1] as { products?: unknown[] } | undefined;
+        expect(mayAlsoLikeOpts?.products?.length).toBeGreaterThanOrEqual(1);
+
+        const recentlyViewedCall = fetchEnriched.mock.calls.find(
+            ([, opts]) => (opts as { name: string }).name === 'viewed-recently-einstein'
+        );
+        expect(recentlyViewedCall).toBeDefined();
+    });
+
+    test('cartMayAlsoLikePromise silently degrades when basketDataPromise rejects', async () => {
+        vi.mocked(getBasket).mockRejectedValue(new NormalizedApiError(new Error('basket down')));
+
+        const result = loader(createLoaderArgs()) as any;
+
+        await expect(result.basketDataPromise).rejects.toThrow();
+        await expect(result.cartMayAlsoLikePromise).resolves.toEqual({});
     });
 
     test('loader works with empty basket', async () => {

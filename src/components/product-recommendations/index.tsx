@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useRef, useMemo, type ReactElement } from 'react';
-import { useRecommenders, type Product } from '@/hooks/recommenders/use-recommenders';
+import { Suspense, useEffect, useRef, useMemo, type ReactElement, type ReactNode } from 'react';
+import { Await } from 'react-router';
+import { useRecommenders, type Product, type Recommendation } from '@/hooks/recommenders/use-recommenders';
 import ProductCarousel from '@/components/product-carousel/carousel';
 import { ProductRecommendationSkeleton } from '@/components/product/skeletons';
 import { useProduct } from '@/providers/product-context';
 import { useSite } from '@salesforce/storefront-next-runtime/site-context';
 import { Component } from '@/lib/decorators/component';
 import { AttributeDefinition } from '@/lib/decorators/attribute-definition';
+// eslint-disable-next-line react-refresh/only-export-components -- loader re-export is required for the static-registry AST plugin
+export { loader } from './loader';
 
 /**
  * Configuration for a single recommender
@@ -95,6 +98,14 @@ export interface ProductRecommendationsProps {
     shopAllText?: string;
     /** Optional className to apply to the carousel wrapper */
     className?: string;
+    /**
+     * Pre-fetched recommendation Promise (typically from a route loader).
+     * When provided, the component skips the client-side `useRecommenders`
+     * fetch path and renders inside a `<Suspense>` boundary using `<Await>`.
+     */
+    data?: Promise<Recommendation>;
+    /** Suspense fallback used while `data` is pending. Defaults to `null`. */
+    fallback?: ReactNode;
 }
 
 /**
@@ -116,35 +127,66 @@ export interface ProductRecommendationsProps {
  *
  * @returns JSX element representing the product recommendation carousel
  */
-export default function ProductRecommendations({
+export default function ProductRecommendations(props: ProductRecommendationsProps): ReactElement | null {
+    const recommender = useRecommenderConfig(props);
+
+    if (props.data) {
+        return (
+            <Suspense fallback={props.fallback ?? null}>
+                <Await resolve={props.data} errorElement={null}>
+                    {(rec: Recommendation) => (
+                        <ProductRecommendationsView
+                            recommender={recommender}
+                            recommendation={rec}
+                            isLoading={false}
+                            titleClassName={props.titleClassName}
+                            subtitle={props.subtitle}
+                            shopAllText={props.shopAllText}
+                            className={props.className}
+                        />
+                    )}
+                </Await>
+            </Suspense>
+        );
+    }
+
+    return <ProductRecommendationsClientData {...props} recommender={recommender} />;
+}
+
+function useRecommenderConfig({
     recommender: recommenderProp,
     recommenderName: recommenderNameProp,
     recommenderTitle: recommenderTitleProp,
     recommenderType: recommenderTypeProp,
+}: Pick<ProductRecommendationsProps, 'recommender' | 'recommenderName' | 'recommenderTitle' | 'recommenderType'>) {
+    return useMemo(() => {
+        if (recommenderProp) {
+            return recommenderProp;
+        }
+        if (recommenderNameProp || recommenderTitleProp) {
+            return {
+                name: recommenderNameProp ?? '',
+                title: recommenderTitleProp ?? '',
+                type: recommenderTypeProp || 'recommender',
+            } satisfies RecommenderConfig;
+        }
+        return null;
+    }, [recommenderProp, recommenderNameProp, recommenderTitleProp, recommenderTypeProp]);
+}
+
+function ProductRecommendationsClientData({
+    recommender,
     products: productsProp,
     args,
     titleClassName,
     subtitle,
     shopAllText,
     className,
-}: ProductRecommendationsProps): ReactElement | null {
+}: Omit<ProductRecommendationsProps, 'data' | 'fallback' | 'recommender'> & {
+    recommender: RecommenderConfig | null;
+}): ReactElement | null {
     const { getRecommendations, getZoneRecommendations, recommendations, isLoading, error } = useRecommenders(true);
     const { currency } = useSite();
-
-    // Construct recommender config from props (supports both object and individual props for Page Designer)
-    const recommender = useMemo(() => {
-        if (recommenderProp) {
-            return recommenderProp;
-        }
-        if (recommenderNameProp && recommenderTitleProp) {
-            return {
-                name: recommenderNameProp,
-                title: recommenderTitleProp,
-                type: recommenderTypeProp || 'recommender', // Default to 'recommender' if not specified
-            };
-        }
-        return null;
-    }, [recommenderProp, recommenderNameProp, recommenderTitleProp, recommenderTypeProp]);
 
     // Try to get product from context if available
     const productFromContext = useProduct();
@@ -226,42 +268,67 @@ export default function ProductRecommendations({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [recommenderName, recommenderType, productsKey, argsKey, currency, getRecommendations, getZoneRecommendations]);
 
-    // Early return if no recommender configured
-    if (!recommender || !recommender.name || !recommender.title) {
-        return null;
-    }
-
-    // Early return if error occurred
     if (error) {
         return null;
     }
 
-    // Show loading state
+    // Only show recommendations if they match this recommender — `useRecommenders` shares
+    // state between consumers, so we filter by recommenderName.
+    const matchedRecommendation = recommendations?.recommenderName === recommenderName ? recommendations : undefined;
+
+    return (
+        <ProductRecommendationsView
+            recommender={recommender}
+            recommendation={matchedRecommendation}
+            isLoading={isLoading}
+            titleClassName={titleClassName}
+            subtitle={subtitle}
+            shopAllText={shopAllText}
+            className={className}
+        />
+    );
+}
+
+type ProductRecommendationsViewProps = {
+    recommender: RecommenderConfig | null;
+    recommendation: Recommendation | undefined;
+    isLoading: boolean;
+} & Pick<ProductRecommendationsProps, 'titleClassName' | 'subtitle' | 'shopAllText' | 'className'>;
+
+function ProductRecommendationsView({
+    recommender,
+    recommendation,
+    isLoading,
+    titleClassName,
+    subtitle,
+    shopAllText,
+    className,
+}: ProductRecommendationsViewProps): ReactElement | null {
+    // The title can come either from the static recommender config (client/PD path) or from the server response's
+    // `displayMessage` (loader/BFF path). Fail closed when neither is present — we never want a headless carousel.
+    const title = recommendation?.displayMessage || recommender?.title;
+    if (!title) {
+        return null;
+    }
+
     if (isLoading) {
         return (
             <div>
-                <ProductRecommendationSkeleton title={recommender.title} />
+                <ProductRecommendationSkeleton title={title} />
             </div>
         );
     }
 
-    // Only show recommendations if they match this recommender
-    // This prevents showing wrong recommendations when multiple components share the same hook state
-    const recommendationsMatch = recommendations?.recommenderName === recommenderName;
-
-    // Don't render if no recommendations returned or if they don't match this recommender
-    const productRecs = recommendationsMatch ? recommendations?.recs : undefined;
-
+    const productRecs = recommendation?.recs;
     if (!productRecs || productRecs.length === 0) {
         return null;
     }
 
-    // Products are already in ProductSearchHit format from the hook enrichment
     return (
         <div>
             <ProductCarousel
                 products={productRecs}
-                title={recommendations.displayMessage || recommender.title}
+                title={title}
                 titleClassName={titleClassName}
                 subtitle={subtitle}
                 shopAllText={shopAllText}
