@@ -142,8 +142,14 @@ Horizontal card row for a single wishlist product.
         },
     },
     argTypes: {
-        onRemove: { action: 'remove' },
+        product: { table: { disable: true } },
+        wishlistItem: { table: { disable: true } },
+        onRemove: { table: { disable: true } },
     },
+    // Stories render outside the global StoryShell when consumed via
+    // composeStories from the snapshot harness, so the Config / Site / Basket
+    // providers have to be declared on the meta decorator to keep that path
+    // working. Interactive Storybook is fine either way.
     decorators: [
         (Story) => (
             <ConfigProvider config={mockConfig}>

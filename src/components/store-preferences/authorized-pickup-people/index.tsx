@@ -411,6 +411,9 @@ export default function AuthorizedPickupPeople(): ReactElement {
                                         <FormControl>
                                             <div className="w-full [&_[data-slot=native-select-wrapper]]:w-full">
                                                 <NativeSelect
+                                                    aria-label={t(
+                                                        'storePreferences.authorizedPickupPeople.modal.relationship'
+                                                    )}
                                                     value={field.value}
                                                     onChange={(e) => field.onChange(e.target.value)}
                                                     onBlur={field.onBlur}

@@ -208,7 +208,9 @@ export function AddPaymentMethodDialog({
                     </div>
 
                     <div className="pt-2">
-                        <Label className="text-sm font-medium mb-2 block">{t('paymentMethods.billingAddress')}</Label>
+                        <Label htmlFor="billing-address" className="text-sm font-medium mb-2 block">
+                            {t('paymentMethods.billingAddress')}
+                        </Label>
                         <div className="[&_[data-slot=native-select-wrapper]]:w-full">
                             <NativeSelect
                                 id="billing-address"

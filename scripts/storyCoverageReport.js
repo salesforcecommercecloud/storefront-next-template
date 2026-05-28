@@ -106,8 +106,12 @@ const EXCLUDED_COMPONENTS = new Set([
     // These are basically wrappers around other components, so no value in having storybook stories for them
     'checkout/components/checkout-skeletons',
     'customer-address-form/customer-address-fields',
+    // Barrel re-export — `form.tsx` (the real component) has its own story.
+    'customer-address-form/index',
     'customer-profile-form/form',
     'customer-profile-form/index',
+    // Barrel re-export — `payment-methods.tsx` (the real component) has its own story.
+    'payment-methods/index',
     'email-update-form/form',
     'email-update-form/index',
     'forgot-password-form/form',

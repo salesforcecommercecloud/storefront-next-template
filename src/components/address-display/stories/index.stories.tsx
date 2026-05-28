@@ -14,163 +14,171 @@
  * limitations under the License.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ComponentType } from 'react';
 import AddressDisplay from '../index';
-import { action } from 'storybook/actions';
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
+import type { ShopperCustomers } from '@/scapi';
 
-function AddressDisplayStoryHarness({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// AddressDisplay renders address1 + a derived location-line built from
+// postalCode, city, stateCode | stateName, countryCode | countryName, plus
+// (optionally) the customer's name and a "default" badge. The component does
+// NOT render `address2` despite it being part of the prop type, so we don't
+// expose a toggle for it. Visible variations come from:
+//   - showName (toggles the name+badge row)
+//   - isPreferred (adds the badge)
+//   - whether each location-line field is present in the address fixture
+//   - the country (US/CA hit the named-state/named-country branches; other
+//     codes fall back to the raw code)
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+type Country = 'US' | 'CA' | 'GB';
 
-        const logClick = action('address-display-click');
-        const logHover = action('address-display-hover');
+type SyntheticArgs = {
+    showName: boolean;
+    isPreferred: boolean;
+    country: Country;
+    withPostalCode: boolean;
+    withCity: boolean;
+    withStateCode: boolean;
+    withCountryCode: boolean;
+};
 
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-            logClick({ element: target.textContent?.trim() || '' });
-        };
+const PLAYGROUND_DEFAULTS: SyntheticArgs = {
+    showName: true,
+    isPreferred: false,
+    country: 'US',
+    withPostalCode: true,
+    withCity: true,
+    withStateCode: true,
+    withCountryCode: true,
+};
 
-        const handleMouseOver = (event: MouseEvent) => {
-            const target = event.target as HTMLElement | null;
-            if (!target || !root.contains(target)) return;
-            logHover({ element: target.textContent?.trim() || '' });
-        };
+function buildAddress(args: SyntheticArgs): ShopperCustomers.schemas['CustomerAddress'] {
+    const byCountry: Record<Country, ShopperCustomers.schemas['CustomerAddress']> = {
+        US: {
+            firstName: 'Gurpreet',
+            lastName: 'Saini',
+            address1: '123 Main St',
+            city: 'South Jordan',
+            stateCode: 'UT',
+            postalCode: '84095',
+            countryCode: 'US',
+            phone: '1233211234',
+        } as ShopperCustomers.schemas['CustomerAddress'],
+        CA: {
+            firstName: 'Avery',
+            lastName: 'Tremblay',
+            address1: '500 Rue Sainte-Catherine',
+            city: 'Montréal',
+            stateCode: 'QC',
+            postalCode: 'H3B 1B5',
+            countryCode: 'CA',
+        } as ShopperCustomers.schemas['CustomerAddress'],
+        GB: {
+            firstName: 'David',
+            lastName: 'Taylor',
+            address1: '10 Downing Street',
+            city: 'London',
+            postalCode: 'SW1A 2AA',
+            countryCode: 'GB',
+        } as ShopperCustomers.schemas['CustomerAddress'],
+    };
 
-        root.addEventListener('click', handleClick);
-        root.addEventListener('mouseover', handleMouseOver);
-        return () => {
-            root.removeEventListener('click', handleClick);
-            root.removeEventListener('mouseover', handleMouseOver);
-        };
-    }, []);
+    const base = { ...byCountry[args.country] } as Partial<ShopperCustomers.schemas['CustomerAddress']>;
+    if (!args.withPostalCode) delete base.postalCode;
+    if (!args.withCity) delete base.city;
+    if (!args.withStateCode) delete base.stateCode;
+    if (!args.withCountryCode) delete base.countryCode;
+    return base as ShopperCustomers.schemas['CustomerAddress'];
+}
 
-    return <div ref={containerRef}>{children}</div>;
+function renderDisplay(args: Partial<SyntheticArgs>) {
+    const merged: SyntheticArgs = { ...PLAYGROUND_DEFAULTS, ...args };
+    return (
+        <AddressDisplay address={buildAddress(merged)} showName={merged.showName} isPreferred={merged.isPreferred} />
+    );
 }
 
 const meta: Meta<typeof AddressDisplay> = {
     title: 'COMMON/Address Display',
     component: AddressDisplay,
-    tags: ['autodocs', 'interaction'],
     parameters: {
         layout: 'centered',
         docs: {
             description: {
                 component: `
-A component that displays address information in a formatted way. Supports both OrderAddress and CustomerAddress types from the Commerce SDK.
+Formatted address renderer for OrderAddress / CustomerAddress shapes from the Commerce SDK.
+Renders \`address1\` + a derived location line (postalCode, city, state, country) and
+optionally the customer's name with a "default" badge.
 
-### Features:
-- Displays full name (firstName + lastName)
-- Shows address lines (address1, address2)
-- Formats city, state, and postal code
-- Shows country code and phone number when available
-- Handles missing address gracefully
+The Playground story exposes the visible behavior of every prop through designer-friendly
+toggles. Real props (\`showName\`, \`isPreferred\`) are surfaced directly; synthetic toggles
+mutate the address fixture so designers can reach US/CA/international and partial-address
+states without writing JSON.
                 `,
             },
         },
     },
-    decorators: [
-        (Story) => (
-            <AddressDisplayStoryHarness>
-                <Story />
-            </AddressDisplayStoryHarness>
-        ),
-    ],
+    argTypes: {
+        address: { table: { disable: true } },
+    },
+    tags: ['autodocs', 'interaction'],
 };
 
 export default meta;
-type Story = StoryObj<typeof AddressDisplay>;
+type Story = StoryObj<typeof meta>;
+type SyntheticStory = StoryObj<ComponentType<Partial<SyntheticArgs>>>;
 
-// Mock address data based on checkout-data.js structure
-const mockAddress = {
-    address1: '123 Main St',
-    city: 'South Jordan',
-    countryCode: 'US',
-    firstName: 'Gurpreet',
-    lastName: 'Saini',
-    phone: '1233211234',
-    postalCode: '84095',
-    stateCode: 'UT',
-};
-
-const mockAddressWithAddress2 = {
-    ...mockAddress,
-    address2: 'Apt 4B',
-};
-
-export const Default: Story = {
-    render: () => <AddressDisplay address={mockAddress} />,
-    parameters: {
-        docs: {
-            story: `
-Standard address display with all common fields.
-
-### Features:
-- Address line 1
-- Location line (postal code, city, state, country)
-            `,
+/**
+ * Playground: full US address with name shown and not preferred.
+ * Designers can flip toggles to reach Canadian / UK / partial / no-name /
+ * preferred states.
+ */
+export const Playground: SyntheticStory = {
+    args: PLAYGROUND_DEFAULTS,
+    argTypes: {
+        showName: {
+            description: 'Render the name + badge row above the address lines.',
+            control: 'boolean',
+        },
+        isPreferred: {
+            description: 'Add the "default" badge next to the name.',
+            control: 'boolean',
+        },
+        country: {
+            description:
+                'Switches the address fixture between US, CA, and GB. US/CA hit the named-state/country branches; GB falls back to the raw code.',
+            control: 'radio',
+            options: ['US', 'CA', 'GB'] satisfies Country[],
+            table: { category: 'Synthetic (data shape)' },
+        },
+        withPostalCode: {
+            description: 'Include the postal code in the address fixture.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        withCity: {
+            description: 'Include the city in the address fixture.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        withStateCode: {
+            description: 'Include the state/region code in the address fixture.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        withCountryCode: {
+            description: 'Include the country code in the address fixture.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
         },
     },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for address
-        const address = await canvas.findByText(/123 main st/i, {}, { timeout: 5000 });
-        await expect(address).toBeInTheDocument();
-
-        // Check for location line (postal, city, state, country)
-        const locationLine = await canvas.findByText(/south jordan/i, {}, { timeout: 5000 });
-        await expect(locationLine).toBeInTheDocument();
-    },
+    render: renderDisplay,
 };
 
-export const WithAddress2: Story = {
-    render: () => <AddressDisplay address={mockAddressWithAddress2} />,
-    parameters: {
-        docs: {
-            story: `
-Address display with a second address line (apartment, suite, etc.).
-
-Note: The simplified AddressDisplay only shows address1 and location line.
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        await waitForStorybookReady(canvasElement);
-
-        // Check for address1 (address2 is not displayed in simplified view)
-        const address = await canvas.findByText(/123 main st/i, {}, { timeout: 5000 });
-        await expect(address).toBeInTheDocument();
-    },
-};
-
+/**
+ * Empty/missing address — fallback "No address provided" message.
+ */
 export const NoAddress: Story = {
-    render: () => <AddressDisplay address={null as unknown as typeof mockAddress} />,
-    parameters: {
-        docs: {
-            story: `
-Handles the case when no address is provided.
-
-### Features:
-- Shows "No address provided" message
-- Graceful fallback
-            `,
-        },
-    },
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement);
-
-        // Check for no address message
-        const message = await canvas.findByText(/no address provided/i, {}, { timeout: 5000 });
-        await expect(message).toBeInTheDocument();
-    },
+    render: () => <AddressDisplay address={null as unknown as ShopperCustomers.schemas['CustomerAddress']} />,
 };

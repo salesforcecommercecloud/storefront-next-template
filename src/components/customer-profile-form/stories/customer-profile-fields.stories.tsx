@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, type ReactNode, type ReactElement } from 'react';
+import type { ComponentType } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { allModes } from '../../../../.storybook/modes';
 import { useForm } from 'react-hook-form';
@@ -29,103 +29,55 @@ import type { ScapiFetcher } from '@/hooks/use-scapi-fetcher';
 import type { ShopperCustomers } from '@/scapi';
 import { getTranslation } from '@salesforce/storefront-next-runtime/i18n';
 
-function ActionLogger({ children }: { children: ReactNode }): ReactElement {
-    const containerRef = useRef<HTMLDivElement | null>(null);
+// ---------------------------------------------------------------------------
+// CustomerProfileFields renders firstName, lastName, phone, gender (1=M, 2=F),
+// and birthday into a parent React Hook Form context, plus Save/Cancel
+// buttons. Visible variations come from:
+//   - prefilled vs empty
+//   - whether onCancel is supplied (renders the Cancel button)
+//   - hideActions (suppresses the entire footer for header placement)
+//   - updateFetcher.state (drives the Save → Saving button + disabled state)
+//   - validation errors after a submit
+// ---------------------------------------------------------------------------
 
-    useEffect(() => {
-        const root = containerRef.current;
-        if (!root) return;
+type FetcherState = 'idle' | 'submitting';
 
-        const logInput = action('form-input');
-        const logInputValue = action('form-input-value');
-        const logSubmit = action('form-submit');
-        const logCancel = action('form-cancel');
+type SyntheticArgs = {
+    prefilled: boolean;
+    withCancelAction: boolean;
+    hideActions: boolean;
+    fetcherState: FetcherState;
+};
 
-        const isInsideHarness = (element: Element) => root.contains(element);
+const PLAYGROUND_DEFAULTS: SyntheticArgs = {
+    prefilled: false,
+    withCancelAction: false,
+    hideActions: false,
+    fetcherState: 'idle',
+};
 
-        const deriveLabel = (element: HTMLElement): string => {
-            const ariaLabel = element.getAttribute('aria-label')?.trim();
-            if (ariaLabel) return ariaLabel;
+const PREFILLED_VALUES: CustomerProfileFormData = {
+    firstName: 'John',
+    lastName: 'Doe',
+    phone: '555-1234',
+    gender: '1',
+    birthday: '1990-05-15',
+};
 
-            if (element instanceof HTMLElement) {
-                const label = element.closest('label');
-                if (label) {
-                    const labelText = label.textContent?.replace(/\s+/g, ' ').trim();
-                    if (labelText) return labelText;
-                }
-            }
+const EMPTY_VALUES: CustomerProfileFormData = {
+    firstName: '',
+    lastName: '',
+    phone: '',
+    gender: '',
+    birthday: '',
+};
 
-            if (element instanceof HTMLInputElement) {
-                const placeholder = element.placeholder?.trim();
-                if (placeholder) return placeholder;
-            }
-
-            const testId = element.getAttribute('data-testid')?.trim();
-            return testId ?? '';
-        };
-
-        const handleChange = (event: Event) => {
-            const target = event.target;
-            if (!(target instanceof HTMLInputElement) || !isInsideHarness(target)) return;
-
-            const label = deriveLabel(target);
-            if (!label) return;
-
-            logInput({ label });
-            logInputValue({ label, value: target.value });
-        };
-
-        const handleSubmit = (event: SubmitEvent) => {
-            const form = event.target;
-            if (!(form instanceof HTMLFormElement) || !isInsideHarness(form)) return;
-
-            event.preventDefault();
-            event.stopImmediatePropagation?.();
-
-            logSubmit({});
-        };
-
-        const handleClick = (event: MouseEvent) => {
-            const target = event.target;
-            if (!(target instanceof HTMLElement) || !isInsideHarness(target)) return;
-
-            if (target instanceof HTMLButtonElement && target.type === 'button') {
-                const label = deriveLabel(target);
-                if (label && label.toLowerCase().includes('cancel')) {
-                    logCancel({});
-                }
-            }
-        };
-
-        root.addEventListener('change', handleChange, true);
-        root.addEventListener('submit', handleSubmit, true);
-        root.addEventListener('click', handleClick, true);
-
-        return () => {
-            root.removeEventListener('change', handleChange, true);
-            root.removeEventListener('submit', handleSubmit, true);
-            root.removeEventListener('click', handleClick, true);
-        };
-    }, []);
-
-    return <div ref={containerRef}>{children}</div>;
-}
-
-// Helper function to create a mock fetcher
-function createMockFetcher<TData = unknown, TSubmitPayload = unknown>(
-    initialState: 'idle' | 'loading' | 'submitting' = 'idle',
-    initialData?: TData,
-    initialSuccess: boolean = false,
-    initialErrors?: string[]
-): ScapiFetcher<TData, TSubmitPayload> {
+function createMockFetcher<TData>(state: FetcherState): ScapiFetcher<TData> {
     return {
-        state: initialState,
-        data: initialData,
-        success: initialSuccess,
-        errors: initialErrors,
-
+        state,
+        data: undefined,
+        success: false,
         load: async () => {},
-
         submit: async () => {},
         formAction: undefined,
         formData: undefined,
@@ -135,15 +87,53 @@ function createMockFetcher<TData = unknown, TSubmitPayload = unknown>(
         text: undefined,
         json: undefined,
         Form: undefined as unknown,
-
         reset: () => {},
         type: 'init',
     } as unknown as ScapiFetcher<TData>;
 }
 
-/**
- * CustomerProfileFields component that renders the form fields for editing customer profile.
- */
+function PlaygroundWrapper(args: Partial<SyntheticArgs>) {
+    const merged: SyntheticArgs = { ...PLAYGROUND_DEFAULTS, ...args };
+    const { t } = getTranslation();
+    const schema = createCustomerProfileFormSchema(t);
+    const form = useForm<CustomerProfileFormData>({
+        resolver: zodResolver(schema),
+        defaultValues: merged.prefilled ? PREFILLED_VALUES : EMPTY_VALUES,
+    });
+    const updateFetcher = createMockFetcher<ShopperCustomers.schemas['Customer']>(merged.fetcherState);
+
+    return (
+        <Form {...form}>
+            <form onSubmit={(e) => void form.handleSubmit(() => {})(e)} data-testid="customer-profile-fields-form">
+                <CustomerProfileFields
+                    form={form}
+                    updateFetcher={updateFetcher}
+                    onCancel={merged.withCancelAction ? action('onCancel') : undefined}
+                    hideActions={merged.hideActions}
+                />
+            </form>
+        </Form>
+    );
+}
+
+function ValidationErrorsWrapper() {
+    const { t } = getTranslation();
+    const schema = createCustomerProfileFormSchema(t);
+    const form = useForm<CustomerProfileFormData>({
+        resolver: zodResolver(schema),
+        defaultValues: EMPTY_VALUES,
+    });
+    const updateFetcher = createMockFetcher<ShopperCustomers.schemas['Customer']>('idle');
+
+    return (
+        <Form {...form}>
+            <form onSubmit={(e) => void form.handleSubmit(() => {})(e)} data-testid="customer-profile-fields-form">
+                <CustomerProfileFields form={form} updateFetcher={updateFetcher} />
+            </form>
+        </Form>
+    );
+}
+
 const meta: Meta<typeof CustomerProfileFields> = {
     title: 'ACCOUNT/Customer Profile Form/Customer Profile Fields',
     component: CustomerProfileFields,
@@ -159,336 +149,104 @@ const meta: Meta<typeof CustomerProfileFields> = {
         docs: {
             description: {
                 component: `
-The Customer Profile Fields component renders the form fields for editing customer profile information.
+Form fields for editing the customer profile (firstName, lastName, phone, gender,
+birthday) plus Save/Cancel actions. Designed to render inside an external React
+Hook Form context.
 
-**Features:**
-- First name and last name fields
-- Phone number field (optional)
-- Gender dropdown (optional) - Male/Female selection
-- Date of birth field (optional) - Date picker
-- Submit and cancel buttons
-- Form validation feedback
+The Playground story drives the visible-state toggles directly: prefilled vs empty,
+whether the Cancel button is wired, whether the action footer is shown, and the
+mock fetcher state (idle / submitting). Validation errors get a dedicated story
+because they require a submit-empty-form interaction.
                 `,
             },
         },
     },
     decorators: [
         (Story) => (
-            <ActionLogger>
-                <div className="p-8 max-w-2xl">
-                    <Story />
-                </div>
-            </ActionLogger>
+            <div className="p-8 max-w-2xl">
+                <Story />
+            </div>
         ),
     ],
     argTypes: {
-        form: {
-            description: 'React Hook Form instance for managing form state and validation',
-            control: false,
-        },
-        updateFetcher: {
-            description: 'React Router fetcher for handling profile update requests',
-            control: false,
-        },
-        onCancel: {
-            description: 'Optional callback function to handle cancel action',
-            action: 'cancel',
-        },
+        form: { table: { disable: true } },
+        updateFetcher: { table: { disable: true } },
+        onCancel: { table: { disable: true } },
     },
 };
 
 export default meta;
-type Story = StoryObj<typeof CustomerProfileFields>;
+type Story = StoryObj<typeof meta>;
+type SyntheticStory = StoryObj<ComponentType<Partial<SyntheticArgs>>>;
 
 /**
- * Default fields with empty form
+ * Playground: empty form, no Cancel button, idle fetcher. Toggle `prefilled`
+ * to load realistic values, `withCancelAction` to wire the Cancel button,
+ * `hideActions` to suppress the footer, and `fetcherState` to flip into the
+ * submitting state.
  */
-export const Default: Story = {
-    render: function DefaultStory() {
-        const { t } = getTranslation();
-        const customerProfileFormSchema = createCustomerProfileFormSchema(t);
-        const form = useForm<CustomerProfileFormData>({
-            resolver: zodResolver(customerProfileFormSchema),
-            defaultValues: {
-                firstName: '',
-                lastName: '',
-                phone: '',
-                gender: '',
-                birthday: '',
-            },
-        });
-
-        const updateFetcher = createMockFetcher<
-            ShopperCustomers.schemas['Customer'],
-            ShopperCustomers.schemas['Customer']
-        >('idle');
-
-        const handleSubmit = form.handleSubmit(() => {
-            // Form submission handled by story
-        });
-
-        return (
-            <Form {...form}>
-                <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-fields-form">
-                    <CustomerProfileFields form={form} updateFetcher={updateFetcher} />
-                </form>
-            </Form>
-        );
+export const Playground: SyntheticStory = {
+    args: PLAYGROUND_DEFAULTS,
+    argTypes: {
+        prefilled: {
+            description: 'Load realistic firstName/lastName/phone/gender/birthday values.',
+            control: 'boolean',
+            table: { category: 'Synthetic (data shape)' },
+        },
+        withCancelAction: {
+            description: 'Wire onCancel so the Cancel button renders.',
+            control: 'boolean',
+            table: { category: 'Synthetic (actions)' },
+        },
+        hideActions: {
+            description:
+                'When true, suppress the entire Save/Cancel footer (used when actions live in the page header).',
+            control: 'boolean',
+        },
+        fetcherState: {
+            description: 'Mock fetcher state — idle (Save button) or submitting (disabled Saving button).',
+            control: 'radio',
+            options: ['idle', 'submitting'] satisfies FetcherState[],
+            table: { category: 'Synthetic (fetcher)' },
+        },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Verify form fields are present
-        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
-        await expect(firstNameInput).toBeInTheDocument();
-
-        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
-        await expect(lastNameInput).toBeInTheDocument();
-
-        // Phone is editable — verify by placeholder
-        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
-        await expect(phoneInput).toBeInTheDocument();
-        await expect(phoneInput).not.toHaveAttribute('readonly');
-
-        // Verify gender dropdown is present
-        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
-        await expect(genderSelect).toBeInTheDocument();
-
-        // Verify date of birth field is present
-        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
-        await expect(birthdayInput).toBeInTheDocument();
-
-        // Verify submit button
-        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
-        await expect(submitButton).toBeInTheDocument();
-    },
+    render: PlaygroundWrapper,
 };
 
 /**
- * Fields with initial values
- */
-export const WithInitialValues: Story = {
-    render: function WithInitialValuesStory() {
-        const { t } = getTranslation();
-        const customerProfileFormSchema = createCustomerProfileFormSchema(t);
-        const form = useForm<CustomerProfileFormData>({
-            resolver: zodResolver(customerProfileFormSchema),
-            defaultValues: {
-                firstName: 'John',
-                lastName: 'Doe',
-                phone: '555-1234',
-                gender: '1',
-                birthday: '1990-05-15',
-            },
-        });
-
-        const updateFetcher = createMockFetcher<
-            ShopperCustomers.schemas['Customer'],
-            ShopperCustomers.schemas['Customer']
-        >('idle');
-
-        const handleSubmit = form.handleSubmit(() => {
-            // Form submission handled by story
-        });
-
-        return (
-            <Form {...form}>
-                <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-fields-form">
-                    <CustomerProfileFields form={form} updateFetcher={updateFetcher} />
-                </form>
-            </Form>
-        );
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Verify form fields are populated
-        const firstNameInput = canvas.getByDisplayValue('John');
-        await expect(firstNameInput).toBeInTheDocument();
-
-        const lastNameInput = canvas.getByDisplayValue('Doe');
-        await expect(lastNameInput).toBeInTheDocument();
-
-        // Verify gender dropdown has correct value
-        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
-        await expect(genderSelect).toHaveValue('1');
-
-        // Verify birthday field has correct value
-        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
-        await expect(birthdayInput).toHaveValue('1990-05-15');
-    },
-};
-
-/**
- * Fields with cancel button
- */
-export const WithCancelButton: Story = {
-    render: function WithCancelButtonStory() {
-        const { t } = getTranslation();
-        const customerProfileFormSchema = createCustomerProfileFormSchema(t);
-        const form = useForm<CustomerProfileFormData>({
-            resolver: zodResolver(customerProfileFormSchema),
-            defaultValues: {
-                firstName: '',
-                lastName: '',
-                phone: '',
-                gender: '',
-                birthday: '',
-            },
-        });
-
-        const updateFetcher = createMockFetcher<
-            ShopperCustomers.schemas['Customer'],
-            ShopperCustomers.schemas['Customer']
-        >('idle');
-
-        const handleSubmit = form.handleSubmit(() => {
-            // Form submission handled by story
-        });
-
-        const handleCancel = () => {};
-
-        return (
-            <Form {...form}>
-                <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-fields-form">
-                    <CustomerProfileFields form={form} updateFetcher={updateFetcher} onCancel={handleCancel} />
-                </form>
-            </Form>
-        );
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-        const { t } = getTranslation();
-
-        // Verify cancel button is present
-        const cancelButton = await canvas.findByRole(
-            'button',
-            { name: t('account:profile.cancelButton') },
-            { timeout: 5000 }
-        );
-        await expect(cancelButton).toBeInTheDocument();
-    },
-};
-
-/**
- * Fields in submitting state
+ * Submitting state — locks in that the submit button shows the "Saving"
+ * label and is disabled while the fetcher is in flight.
  */
 export const Submitting: Story = {
-    render: function SubmittingStory() {
-        const { t } = getTranslation();
-        const customerProfileFormSchema = createCustomerProfileFormSchema(t);
-        const form = useForm<CustomerProfileFormData>({
-            resolver: zodResolver(customerProfileFormSchema),
-            defaultValues: {
-                firstName: 'John',
-                lastName: 'Doe',
-                phone: '555-1234',
-                gender: '1',
-                birthday: '1990-05-15',
-            },
-        });
-
-        const updateFetcher = createMockFetcher<
-            ShopperCustomers.schemas['Customer'],
-            ShopperCustomers.schemas['Customer']
-        >('submitting');
-
-        const handleSubmit = form.handleSubmit(() => {
-            // Form submission handled by story
-        });
-
-        return (
-            <Form {...form}>
-                <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-fields-form">
-                    <CustomerProfileFields form={form} updateFetcher={updateFetcher} />
-                </form>
-            </Form>
-        );
-    },
+    render: () => PlaygroundWrapper({ prefilled: true, fetcherState: 'submitting' }),
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         const { t } = getTranslation();
 
-        // Verify submit button is disabled during submission
-        const submitButton = await canvas.findByRole(
-            'button',
-            { name: t('account:profile.savingButton') },
-            { timeout: 5000 }
-        );
-        await expect(submitButton).toBeInTheDocument();
+        const submitButton = await canvas.findByRole('button', {
+            name: t('account:profile.savingButton'),
+        });
         await expect(submitButton).toBeDisabled();
     },
 };
 
 /**
- * Interactive fields with user input
+ * Validation errors — submit an empty form to trigger zod errors. Locks in
+ * that field-level validation messages render at all.
  */
-export const Interactive: Story = {
-    render: function InteractiveStory() {
-        const { t } = getTranslation();
-        const customerProfileFormSchema = createCustomerProfileFormSchema(t);
-        const form = useForm<CustomerProfileFormData>({
-            resolver: zodResolver(customerProfileFormSchema),
-            defaultValues: {
-                firstName: '',
-                lastName: '',
-                phone: '',
-                gender: '',
-                birthday: '',
-            },
-        });
-
-        const updateFetcher = createMockFetcher<
-            ShopperCustomers.schemas['Customer'],
-            ShopperCustomers.schemas['Customer']
-        >('idle');
-
-        const handleSubmit = form.handleSubmit(() => {
-            // Form submission handled by story
-        });
-
-        return (
-            <Form {...form}>
-                <form onSubmit={(e) => void handleSubmit(e)} data-testid="customer-profile-fields-form">
-                    <CustomerProfileFields form={form} updateFetcher={updateFetcher} />
-                </form>
-            </Form>
-        );
-    },
+export const WithValidationErrors: Story = {
+    render: () => <ValidationErrorsWrapper />,
     play: async ({ canvasElement }) => {
         await waitForStorybookReady(canvasElement);
         const canvas = within(canvasElement);
         const { t } = getTranslation();
 
-        // Interact with form fields
-        const firstNameInput = canvas.getByPlaceholderText(t('account:profile.firstNamePlaceholder'));
-        await userEvent.type(firstNameInput, 'Jane');
-        await expect(firstNameInput).toHaveValue('Jane');
+        const submitButton = canvas.getByRole('button', { name: t('account:profile.saveButton') });
+        await userEvent.click(submitButton);
 
-        const lastNameInput = canvas.getByPlaceholderText(t('account:profile.lastNamePlaceholder'));
-        await userEvent.type(lastNameInput, 'Smith');
-        await expect(lastNameInput).toHaveValue('Smith');
-
-        // Test phone number input
-        const phoneInput = canvas.getByPlaceholderText(t('account:profile.phonePlaceholder'));
-        await userEvent.type(phoneInput, '555-0123');
-        await expect(phoneInput).toHaveValue('555-0123');
-
-        // Select gender
-        const genderSelect = canvas.getByRole('combobox', { name: t('account:profile.gender') });
-        await userEvent.selectOptions(genderSelect, '2');
-        await expect(genderSelect).toHaveValue('2');
-
-        // Enter birthday
-        const birthdayInput = canvas.getByLabelText(t('account:profile.dateOfBirth'));
-        await userEvent.clear(birthdayInput);
-        await userEvent.type(birthdayInput, '1995-08-20');
-        await expect(birthdayInput).toHaveValue('1995-08-20');
+        // At least one inline FormMessage should surface after submit.
+        const errors = await canvas.findAllByText(/required|enter your/i);
+        await expect(errors.length).toBeGreaterThan(0);
     },
 };

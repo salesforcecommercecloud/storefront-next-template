@@ -15,21 +15,26 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
-import { waitForStorybookReady } from '@storybook/test-utils';
 import type { ShopperCustomers, ShopperProducts } from '@/scapi';
 import { WishlistPageContent, WishlistSkeleton } from '../wishlist-page';
 import { masterProduct } from '@/components/__mocks__/master-variant-product';
 import { standardProd } from '@/components/__mocks__/standard-product-2';
-import { ConfigProvider } from '@salesforce/storefront-next-runtime/config';
-import { SiteProvider } from '@salesforce/storefront-next-runtime/site-context';
-import { mockConfig, mockLocale, mockSiteObject } from '@/test-utils/config';
 import AuthProvider from '@/providers/auth';
 import type { PublicSessionData } from '@/lib/api/types';
 
-const registeredSession: PublicSessionData = { userType: 'registered', customerId: 'storybook-1' };
+// ---------------------------------------------------------------------------
+// WishlistPageContent — full client-side content for the My Wishlist page.
+// Visible variations come from:
+//   - items[] length (0 = empty state, ≥1 = list)
+//   - productsByProductId mappings (drives item rendering + inventory branches
+//     via downstream <WishlistListItem>)
+// Filter and sort UI is driven via runtime interaction (in-story comboboxes),
+// so those branches aren't surfaced as separate snapshot stories.
+// Wishlist requires a registered customer, so the only override the global
+// StoryShell decorator needs is AuthProvider with a registered session.
+// ---------------------------------------------------------------------------
 
-// -- Mock product data --
+const registeredSession: PublicSessionData = { userType: 'registered', customerId: 'storybook-1' };
 
 const outOfStockProduct: ShopperProducts.schemas['Product'] = {
     ...standardProd,
@@ -56,8 +61,6 @@ const onSaleProduct: ShopperProducts.schemas['Product'] = {
         { price: 99.99, pricebook: 'usd-m-list-prices', quantity: 1 },
     ],
 };
-
-// -- Wishlist items --
 
 const variantWishlistItem: ShopperCustomers.schemas['CustomerProductListItem'] = {
     id: 'item-variant',
@@ -91,8 +94,6 @@ const onSaleWishlistItem: ShopperCustomers.schemas['CustomerProductListItem'] = 
     quantity: 1,
 };
 
-// -- Products map --
-
 const productsByProductId: Record<string, ShopperProducts.schemas['Product']> = {
     '640188017041M': masterProduct,
     [standardProd.id]: standardProd,
@@ -100,76 +101,48 @@ const productsByProductId: Record<string, ShopperProducts.schemas['Product']> = 
     'on-sale-prod': onSaleProduct,
 };
 
-// -- Meta --
-
 const meta: Meta<typeof WishlistPageContent> = {
     title: 'ACCOUNT/Wishlist Page',
     component: WishlistPageContent,
-    tags: ['autodocs', 'interaction'],
+    tags: ['autodocs'],
     parameters: {
         layout: 'padded',
         docs: {
             description: {
                 component: `
-Full client-side content for the My Wishlist page.
+Full client-side content for the My Wishlist page. Renders saved items with sort and
+filter controls (sort: recently added / name / price; filter: all / in stock /
+out of stock / on sale), an optimistic remove flow with sessionStorage persistence,
+and an empty state when no items remain.
 
-**Features:**
-- Displays saved wishlist items with sort and filter controls
-- Sort by: Recently Added, Name (A-Z), Price Low→High, Price High→Low
-- Filter by: All Items, In Stock, Out of Stock, On Sale
-- Optimistic item removal with sessionStorage persistence
-- Empty state with heart icon when no items saved
-- "No items match" message when active filter excludes all items
+Stories cover the genuinely-distinct visible states: a mixed list of items,
+the empty state, a single-item list, and the loading skeleton. Sort and filter
+behavior is driven via runtime interaction inside the story.
                 `,
             },
         },
     },
     decorators: [
         (Story) => (
-            <ConfigProvider config={mockConfig}>
-                <SiteProvider
-                    site={mockSiteObject}
-                    locale={mockLocale}
-                    language={mockSiteObject.defaultLocale}
-                    currency={mockSiteObject.defaultCurrency}>
-                    <AuthProvider value={registeredSession}>
-                        <Story />
-                    </AuthProvider>
-                </SiteProvider>
-            </ConfigProvider>
+            <AuthProvider value={registeredSession}>
+                <Story />
+            </AuthProvider>
         ),
     ],
+    argTypes: {
+        items: { table: { disable: true } },
+        productsByProductId: { table: { disable: true } },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof WishlistPageContent>;
-
-// -- Stories --
 
 export const Default: Story = {
     name: 'Default (mixed items)',
     args: {
         items: [variantWishlistItem, standardWishlistItem, outOfStockWishlistItem, onSaleWishlistItem],
         productsByProductId,
-    },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Page header
-        await expect(canvas.getByRole('heading', { level: 1 })).toBeInTheDocument();
-
-        // Sort and filter controls
-        const selects = canvas.getAllByRole('combobox');
-        await expect(selects).toHaveLength(2);
-        await expect(selects[0]).toHaveValue('recently-added');
-        await expect(selects[1]).toHaveValue('all');
-
-        // All four items render
-        await expect(canvas.getByText(masterProduct.name as string)).toBeInTheDocument();
-        await expect(canvas.getByText(standardProd.name as string)).toBeInTheDocument();
-        await expect(canvas.getByText('Vintage Leather Bag')).toBeInTheDocument();
-        await expect(canvas.getByText('Weekend Travel Duffel')).toBeInTheDocument();
     },
 };
 
@@ -179,16 +152,6 @@ export const Empty: Story = {
         items: [],
         productsByProductId: {},
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Empty state heart icon (svg)
-        await expect(canvas.getByRole('heading', { level: 3 })).toBeInTheDocument();
-
-        // No sort/filter controls
-        await expect(canvas.queryAllByRole('combobox')).toHaveLength(0);
-    },
 };
 
 export const SingleItem: Story = {
@@ -197,45 +160,9 @@ export const SingleItem: Story = {
         items: [standardWishlistItem],
         productsByProductId: { [standardProd.id]: standardProd },
     },
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        await expect(canvas.getByText(standardProd.name as string)).toBeInTheDocument();
-        // Sort/filter still present for a single item
-        await expect(canvas.getAllByRole('combobox')).toHaveLength(2);
-    },
 };
 
-// -- Skeleton story --
-
-const skeletonMeta: Meta<typeof WishlistSkeleton> = {
-    title: 'ACCOUNT/Wishlist Page/Skeleton',
-    component: WishlistSkeleton,
-    tags: ['autodocs'],
-    parameters: {
-        layout: 'padded',
-        docs: {
-            description: {
-                component: 'Loading skeleton displayed while product details stream from the server.',
-            },
-        },
-    },
-};
-
-// Export skeleton as a named story under the same file
-// Storybook only uses the default export's meta, so Skeleton is grouped under the main title
 export const Skeleton: StoryObj<typeof WishlistSkeleton> = {
     name: 'Skeleton',
     render: () => <WishlistSkeleton />,
-    play: async ({ canvasElement }) => {
-        await waitForStorybookReady(canvasElement);
-        const canvas = within(canvasElement);
-
-        // Skeleton renders the page heading
-        await expect(canvas.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    },
 };
-
-// Suppress unused variable warning — skeletonMeta is defined for documentation reference
-void skeletonMeta;

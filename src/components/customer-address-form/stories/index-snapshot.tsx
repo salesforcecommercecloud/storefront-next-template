@@ -15,7 +15,7 @@
  */
 import { composeStories } from '@storybook/react-vite';
 
-import * as CustomerAddressFormStories from './index.stories';
+import * as CustomerAddressFormStories from './form.stories';
 import { expect, test, describe, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 const composed = composeStories(CustomerAddressFormStories);

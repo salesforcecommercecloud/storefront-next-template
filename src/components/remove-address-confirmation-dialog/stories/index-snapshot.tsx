@@ -80,7 +80,12 @@ afterEach(() => {
 
 describe('RemoveAddressConfirmationDialog stories snapshot', () => {
     for (const [storyName, Story] of Object.entries(composed)) {
-        test(`${storyName} story renders and matches snapshot`, () => {
+        // Stories that opt out via `parameters: { snapshot: false }` are skipped —
+        // typically because the visible DOM lives in a Radix portal that the
+        // harness's `container.firstChild` capture would record as null.
+        const optedOut = (Story as { parameters?: { snapshot?: boolean } }).parameters?.snapshot === false;
+        const testFn = optedOut ? test.skip : test;
+        testFn(`${storyName} story renders and matches snapshot`, () => {
             const { container } = render(<Story />);
             expect(container.firstChild).toMatchSnapshot();
         });
