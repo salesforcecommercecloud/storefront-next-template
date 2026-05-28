@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type ReactElement, useMemo, useState, useCallback } from 'react';
-import { Form, useLocation } from 'react-router';
+import { type ComponentType, type ReactElement, useMemo, useState, useCallback } from 'react';
+import { Form as RouterForm, useLocation } from 'react-router';
+import { buildUrl } from '@salesforce/storefront-next-runtime/site-context';
+import { useCurrentSiteAndLocaleRef } from '@/hooks/use-current-site-and-locale-ref';
 import { Link } from '@/components/link';
 import { Input } from '@/components/ui/input';
 import { FormSubmitButton } from '@/components/buttons/form-submit-button';
@@ -28,12 +30,18 @@ interface PasswordlessLoginFormProps {
     error?: string;
     isPasswordlessEnabled: boolean;
     redirectPath?: string;
+    /**
+     * Form component to render. Defaults to react-router's `Form`. Pass `fetcher.Form`
+     * from the LoginModal so submit state is observable via the parent's fetcher.
+     */
+    Form?: ComponentType<React.ComponentProps<typeof RouterForm>>;
 }
 
 export default function PasswordlessLoginForm({
     error,
     isPasswordlessEnabled,
     redirectPath,
+    Form = RouterForm,
 }: PasswordlessLoginFormProps): ReactElement {
     const location = useLocation();
     const { t } = useTranslation('login');
@@ -69,9 +77,17 @@ export default function PasswordlessLoginForm({
     const passwordModeHref = useMemo(() => {
         return getLoginModeHref(location.search, 'password');
     }, [location.search]);
+    // Submit to the site/locale-prefixed login route so this form works whether rendered
+    // standalone at /login or inside a modal on another page (e.g. checkout).
+    const { siteRef, localeRef } = useCurrentSiteAndLocaleRef();
+    const loginActionPath = buildUrl({
+        to: '/login',
+        urlConfig: config.url,
+        params: { siteId: siteRef, localeId: localeRef },
+    });
 
     return (
-        <Form method="post" className="space-y-6">
+        <Form method="post" action={loginActionPath} className="space-y-6">
             {error && (
                 <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded">
                     {error}

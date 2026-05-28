@@ -97,25 +97,13 @@ When email verification is **ON**, the login page shows passwordless login as th
 
 ## Checkout
 
-### Post-order registration (email verification OFF)
+For checkout login behavior, see [checkout-login.spec.md](../e2e/feature-specs/checkout/checkout-login.spec.md).
 
-When email verification is **disabled**, guest shoppers can create an account from the order confirmation page. The "Save my info" checkbox during checkout captures the shopper's intent — the registration card only appears on the confirmation page if the shopper opted in. On registration, order data (addresses, payment, phone) is saved to the new customer profile.
+### Post-order registration
 
-When email verification is **enabled**, this post-order registration path is not shown. Shoppers register via the passwordless flow before or after checkout.
+When email verification is **disabled**, the order confirmation page shows a registration card for guests who opted in via the "Save my info" checkbox during checkout. On registration, order data (addresses, payment, phone) is saved to the new profile.
 
-### Unverified shoppers at checkout (email verification ON)
-
-When email verification is enabled, the storefront passes `strict_verify=true` to the SLAS `/passwordless/login` endpoint during checkout. This causes SLAS to return HTTP 400 for shoppers whose email is registered but unverified, rather than returning HTTP 200 with no OTP delivery.
-
-The checkout response is handled as follows:
-
-| SLAS response | Checkout behavior |
-| --- | --- |
-| `200` | OTP modal is shown — shopper completes passwordless login |
-| `400` | Standard login modal is shown (covers unverified email case) |
-| `403` / `404` | Shopper is allowed to continue as guest |
-| `5xx` | Standard login modal is shown |
-| Other | Generic error |
+When email verification is **enabled**, the post-order registration card is not shown. Shoppers register via the passwordless flow before or after checkout.
 
 ## Troubleshooting
 

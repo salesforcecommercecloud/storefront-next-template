@@ -33,7 +33,13 @@ After(async (test: unknown) => {
     }
 });
 
-Scenario('Guest shopper should complete checkout and place order', async () => {
+// Temporarily skipped (W-22677587): the e2e MRT target's RefArchGlobal site
+// has no `RefArchGlobal-login-preferences` data-store entry, so login
+// preferences middleware falls back to `emailVerificationEnabled: false`. With
+// that fallback, the checkout-login design routes any email-blur to the
+// standard login modal, which blocks the "Continue to Shipping" click for a
+// guest. Re-enable once the data-store entry is seeded on the e2e target.
+xScenario('Guest shopper should complete checkout and place order', async () => {
     const productInfo = await apiCartSetupFlow.executeAndNavigateToCheckout(TEST_PRODUCT_CATEGORIES.MENS_JACKETS);
     expect(productInfo).to.not.be.undefined;
 

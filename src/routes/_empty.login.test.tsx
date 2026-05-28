@@ -1142,9 +1142,11 @@ describe('Login Route', () => {
         const renderWithAction = (loaderData: Parameters<typeof Login>[0]['loaderData']) => {
             const WrappedComponent = () => <Login loaderData={loaderData} />;
             const actionContext = { get: vi.fn(), set: vi.fn() } as any;
+            // Form submits to the site/locale-prefixed login path produced by buildUrl
+            // (StandardLoginForm resolves `/login` against the active site context).
             const Stub = createRoutesStub([
                 {
-                    path: '/',
+                    path: '/global/en-GB/login',
                     Component: WrappedComponent,
                     // Route-typed action needs cast for createRoutesStub's generic args
                     action: async ({ request }) =>
@@ -1157,7 +1159,7 @@ describe('Login Route', () => {
             ]);
             return render(
                 <AllProvidersWrapper>
-                    <Stub initialEntries={['/']} />
+                    <Stub initialEntries={['/global/en-GB/login']} />
                 </AllProvidersWrapper>
             );
         };

@@ -15,7 +15,7 @@
  */
 'use client';
 
-import { type ReactElement, useState, useEffect } from 'react';
+import { type ReactElement, useState, useEffect, useRef } from 'react';
 import { useFetcher } from 'react-router';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
@@ -67,6 +67,7 @@ export default function LoginModal({
 }: LoginModalProps): ReactElement {
     const { t } = useTranslation('login');
     const fetcher = useFetcher<typeof loginAction>();
+    const wasSubmittingRef = useRef(false);
     const [currentMode, setCurrentMode] = useState<'password' | 'passwordless'>(mode);
     const [showOTPModal, setShowOTPModal] = useState(false);
     const [otpEmail, setOtpEmail] = useState<string>('');
@@ -82,22 +83,37 @@ export default function LoginModal({
         }
     }, [isOpen, mode]);
 
-    // Handle action responses. The action only returns data for intermediate states
-    // (errors, OTP prompt) — successful login redirects via Response, so `fetcher.data`
-    // is never populated on success.
+    // The login action returns data only on intermediate outcomes (OTP prompt, error).
+    // On successful login the action returns a Response (redirect) and fetcher.data stays
+    // undefined.
     useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data) {
-            const data = fetcher.data;
-
-            if (data.showOTPForm && data.email) {
-                setOtpEmail(data.email);
-                setShowOTPModal(true);
-                setError(undefined);
-            } else if (data.error) {
-                setError(data.error);
-            }
+        const data = fetcher.data;
+        if (!data) return;
+        if (data.showOTPForm && data.email) {
+            setOtpEmail(data.email);
+            setShowOTPModal(true);
+            setError(undefined);
+        } else if (data.error) {
+            setError(data.error);
         }
-    }, [fetcher.state, fetcher.data]);
+    }, [fetcher.data]);
+
+    // Close the modal on successful submit. After a submit cycle (state went non-idle
+    // then back to idle) with no fetcher.data, the action redirected → success.
+    useEffect(() => {
+        if (fetcher.state !== 'idle') {
+            wasSubmittingRef.current = true;
+            return;
+        }
+        if (!wasSubmittingRef.current) return;
+        wasSubmittingRef.current = false;
+        if (fetcher.data) return;
+        if (onSuccess) {
+            onSuccess();
+        } else {
+            onOpenChange(false);
+        }
+    }, [fetcher.state, fetcher.data, onSuccess, onOpenChange]);
 
     const handleOtpSuccess = () => {
         setShowOTPModal(false);
@@ -132,6 +148,7 @@ export default function LoginModal({
                     error={error}
                     isPasswordlessEnabled={isPasswordlessEnabled}
                     redirectPath={returnUrl}
+                    Form={fetcher.Form}
                 />
             );
         }
@@ -144,6 +161,7 @@ export default function LoginModal({
                 actionParams={actionParams}
                 onCheckoutAsGuest={onCheckoutAsGuest}
                 initialEmail={initialEmail}
+                Form={fetcher.Form}
             />
         );
     };

@@ -15,6 +15,7 @@ exports[`StandardLoginForm stories snapshot > Default story renders and matches 
     Enter your credentials to access your account
   </p>
   <form
+    action="/login"
     class="space-y-6"
     method="post"
   >
@@ -118,6 +119,7 @@ exports[`StandardLoginForm stories snapshot > PasswordlessDisabled story renders
     Enter your credentials to access your account
   </p>
   <form
+    action="/login"
     class="space-y-6"
     method="post"
   >
@@ -211,6 +213,7 @@ exports[`StandardLoginForm stories snapshot > WithError story renders and matche
     Enter your credentials to access your account
   </p>
   <form
+    action="/login"
     class="space-y-6"
     method="post"
   >

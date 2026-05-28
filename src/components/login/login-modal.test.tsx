@@ -25,13 +25,14 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { AllProvidersWrapper } from '@/test-utils/context-provider';
 import LoginModal from './login-modal';
 
-// Mock fetcher
+// Mock fetcher. `Form` renders a passthrough <form> so the form children render
+// (the modal passes fetcher.Form down to the login form components).
 const mockFetcher = {
     data: null as any,
     state: 'idle' as 'idle' | 'submitting' | 'loading',
     submit: vi.fn(),
     load: vi.fn(),
-    Form: vi.fn(),
+    Form: ({ children, ...props }: React.ComponentProps<'form'>) => <form {...props}>{children}</form>,
 };
 
 // Helper to render with router context

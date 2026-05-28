@@ -33,7 +33,17 @@ vi.mock('@/lib/logger.server', () => ({
 }));
 vi.mock('@salesforce/storefront-next-runtime/config', async (importOriginal) => ({
     ...(await importOriginal<typeof import('@salesforce/storefront-next-runtime/config')>()),
-    getConfig: vi.fn(() => ({})),
+    getConfig: vi.fn(() => ({
+        features: {
+            passwordlessLogin: {
+                skipWhenEmailVerificationDisabled: true,
+            },
+        },
+    })),
+}));
+vi.mock('@salesforce/storefront-next-runtime/data-store', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@salesforce/storefront-next-runtime/data-store')>()),
+    getLoginPreferences: vi.fn(() => ({ emailVerificationEnabled: true })),
 }));
 vi.mock('@/lib/turnstile/enforce.server', () => ({
     enforceTurnstile: vi.fn(),
@@ -139,6 +149,50 @@ describe('action.authorize-passwordless-email', () => {
             userid: 'user@example.com',
             strictVerify: true,
         });
+    });
+
+    it('skips SLAS and returns requiresLogin when emailVerificationEnabled is false', async () => {
+        const { getLoginPreferences } = await import('@salesforce/storefront-next-runtime/data-store');
+        vi.mocked(getLoginPreferences).mockReturnValueOnce({ emailVerificationEnabled: false });
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        formData.append('strictVerify', 'true');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = response.data;
+
+        expect(result.success).toBe(false);
+        expect(result.requiresLogin).toBe(true);
+        expect(result.email).toBe('user@example.com');
+        expect(mockAuthorizePasswordless).not.toHaveBeenCalled();
+    });
+
+    it('still calls SLAS when pref is disabled but skipWhenEmailVerificationDisabled is false', async () => {
+        const { getLoginPreferences } = await import('@salesforce/storefront-next-runtime/data-store');
+        vi.mocked(getLoginPreferences).mockReturnValueOnce({ emailVerificationEnabled: false });
+        const { getConfig } = await import('@salesforce/storefront-next-runtime/config');
+        vi.mocked(getConfig).mockReturnValueOnce({
+            features: { passwordlessLogin: { skipWhenEmailVerificationDisabled: false } },
+        } as never);
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        formData.append('strictVerify', 'true');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = response.data;
+
+        expect(result).toEqual({ success: true, email: 'user@example.com' });
+        expect(mockAuthorizePasswordless).toHaveBeenCalledTimes(1);
     });
 
     it('forwards strictVerify=true to authorizePasswordless when caller sets it', async () => {
