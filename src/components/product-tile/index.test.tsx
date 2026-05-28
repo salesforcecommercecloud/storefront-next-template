@@ -259,6 +259,51 @@ describe('ProductTile — color swatches', () => {
         await Promise.resolve();
         expect(screen.queryByRole('group', { name: /available colou?rs/i })).not.toBeInTheDocument();
     });
+
+    test('renders swatches synthesized from variants when variationAttributes is omitted', async () => {
+        const productWithVariantsOnly: ShopperSearch.schemas['ProductSearchHit'] = {
+            productId: 'master-001',
+            productName: 'Trainer',
+            price: 129.99,
+            productType: { master: true },
+            representedProduct: { id: 'master-001-red' },
+            variants: [
+                { productId: 'master-001-red', variationValues: { color: 'RED', size: '10' } },
+                { productId: 'master-001-blu', variationValues: { color: 'BLU', size: '10' } },
+            ],
+            imageGroups: [
+                {
+                    viewType: 'swatch',
+                    images: [
+                        {
+                            link: 'https://example.com/swatch-red.jpg',
+                            disBaseLink: 'https://example.com/swatch-red.jpg',
+                            alt: 'Red swatch',
+                        },
+                    ],
+                    variationAttributes: [{ id: 'color', values: [{ value: 'RED' }] }],
+                },
+                {
+                    viewType: 'swatch',
+                    images: [
+                        {
+                            link: 'https://example.com/swatch-blu.jpg',
+                            disBaseLink: 'https://example.com/swatch-blu.jpg',
+                            alt: 'Blue swatch',
+                        },
+                    ],
+                    variationAttributes: [{ id: 'color', values: [{ value: 'BLU' }] }],
+                },
+            ],
+        };
+        renderTile({ product: productWithVariantsOnly });
+
+        const swatchRegion = await screen.findByRole('group', { name: /available colou?rs/i });
+        const swatchLinks = within(swatchRegion).getAllByRole('link');
+        expect(swatchLinks).toHaveLength(2);
+        expect(swatchLinks[0]).toHaveAttribute('href', '/global/en-GB/product/master-001?color=RED');
+        expect(swatchLinks[1]).toHaveAttribute('href', '/global/en-GB/product/master-001?color=BLU');
+    });
 });
 
 describe('ProductTile — quick-add pre-selection', () => {

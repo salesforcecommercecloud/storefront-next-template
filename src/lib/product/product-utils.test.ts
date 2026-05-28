@@ -15,10 +15,11 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { ShopperBasketsV2, ShopperProducts } from '@/scapi';
+import type { ShopperBasketsV2, ShopperProducts, ShopperSearch } from '@/scapi';
 import {
     getDisplayVariationValues,
     createProductUrl,
+    getDecoratedVariationAttributes,
     getImagesForColor,
     isProductBundle,
     isStandardProduct,
@@ -247,6 +248,124 @@ describe('product-utils', () => {
             const result = createProductUrl('12345', 'red', 'color', null);
 
             expect(result).toBe('/product/12345?color=red');
+        });
+    });
+
+    describe('getDecoratedVariationAttributes', () => {
+        const swatchImageGroup: ShopperProducts.schemas['ImageGroup'] = {
+            viewType: 'swatch',
+            images: [
+                {
+                    link: 'https://example.com/swatch-red.jpg',
+                    disBaseLink: 'https://example.com/swatch-red.jpg',
+                    alt: 'Red swatch',
+                },
+            ],
+            variationAttributes: [{ id: 'color', values: [{ value: 'RED' }] }],
+        };
+
+        it('decorates the existing variationAttributes when present (regression guard)', () => {
+            const product: ShopperSearch.schemas['ProductSearchHit'] = {
+                productId: 'M123',
+                variationAttributes: [
+                    {
+                        id: 'color',
+                        name: 'Colour',
+                        values: [{ value: 'RED', name: 'Red' }],
+                    },
+                ],
+                imageGroups: [swatchImageGroup],
+            };
+
+            const result = getDecoratedVariationAttributes(product);
+
+            expect(result).toEqual([
+                {
+                    id: 'color',
+                    name: 'Colour',
+                    values: [
+                        {
+                            value: 'RED',
+                            name: 'Red',
+                            href: '/product/M123?color=RED',
+                            swatch: swatchImageGroup.images[0],
+                        },
+                    ],
+                },
+            ]);
+        });
+
+        it('synthesizes variationAttributes from variants when the hit omits them', () => {
+            const product: ShopperSearch.schemas['ProductSearchHit'] = {
+                productId: 'M123',
+                variants: [
+                    { productId: 'V1', variationValues: { color: 'RED', size: '10' } },
+                    { productId: 'V2', variationValues: { color: 'BLU', size: '10' } },
+                    { productId: 'V3', variationValues: { color: 'RED', size: '11' } },
+                ],
+                imageGroups: [swatchImageGroup],
+            };
+
+            const result = getDecoratedVariationAttributes(product);
+
+            expect(result).toEqual([
+                {
+                    id: 'color',
+                    values: [
+                        {
+                            value: 'RED',
+                            name: 'RED',
+                            href: '/product/M123?color=RED',
+                            swatch: swatchImageGroup.images[0],
+                        },
+                        {
+                            value: 'BLU',
+                            name: 'BLU',
+                            href: '/product/M123?color=BLU',
+                            swatch: undefined,
+                        },
+                    ],
+                },
+                {
+                    id: 'size',
+                    values: [
+                        { value: '10', name: '10', href: '/product/M123?size=10', swatch: undefined },
+                        { value: '11', name: '11', href: '/product/M123?size=11', swatch: undefined },
+                    ],
+                },
+            ]);
+        });
+
+        it('returns the synthesized attribute without a swatch image when no matching imageGroup exists', () => {
+            const product: ShopperSearch.schemas['ProductSearchHit'] = {
+                productId: 'M123',
+                variants: [{ productId: 'V1', variationValues: { color: 'RED' } }],
+                imageGroups: [],
+            };
+
+            const result = getDecoratedVariationAttributes(product);
+
+            expect(result).toEqual([
+                {
+                    id: 'color',
+                    values: [
+                        {
+                            value: 'RED',
+                            name: 'RED',
+                            href: '/product/M123?color=RED',
+                            swatch: undefined,
+                        },
+                    ],
+                },
+            ]);
+        });
+
+        it('returns an empty array when neither variationAttributes nor variants are present', () => {
+            const product: ShopperSearch.schemas['ProductSearchHit'] = {
+                productId: 'M123',
+            };
+
+            expect(getDecoratedVariationAttributes(product)).toEqual([]);
         });
     });
 

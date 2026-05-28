@@ -257,9 +257,46 @@ export type DecoratedVariationAttributeValue = ShopperProducts.schemas['Variatio
 };
 
 /**
+ * Build a `VariationAttribute[]` from `variants[].variationValues` for hits whose top-level
+ * `variationAttributes` is omitted by SCAPI. Some data sets don't surface `variationAttributes`
+ * on search hits even with `expand=variations`; without this fallback the tile's swatch row
+ * never renders. The synthetic shape has no localized display name — those only exist on the
+ * missing `VariationAttribute` — so we set `name` to the raw value code. The swatch image
+ * (looked up via master `imageGroups`) is the dominant visual signal; the CSS background-color
+ * fallback in `swatches.tsx` only fires for the rare case where the value happens to be a
+ * CSS-named-color string (e.g. `red`).
+ */
+type SynthesizedVariationAttribute = ShopperProducts.schemas['VariationAttribute'] & {
+    values: ShopperProducts.schemas['VariationAttributeValue'][];
+};
+
+const synthesizeVariationAttributesFromVariants = (
+    variants: ShopperSearch.schemas['Variant'][]
+): ShopperProducts.schemas['VariationAttribute'][] =>
+    variants.reduce<SynthesizedVariationAttribute[]>((acc, { variationValues }) => {
+        if (!variationValues) return acc;
+        for (const [id, value] of Object.entries(variationValues)) {
+            if (!value) continue;
+            let attr = acc.find((a) => a.id === id);
+            if (!attr) {
+                attr = { id, values: [] };
+                acc.push(attr);
+            }
+            if (!attr.values.some((v) => v.value === value)) {
+                attr.values.push({ value, name: value });
+            }
+        }
+        return acc;
+    }, []);
+
+/**
  * Provided a product this function will return the variation attributes decorated with
  * `href` and `swatch` image for the given attribute values. This allows easier access
  * when creating components that commonly use this information.
+ *
+ * When the product hit lacks `variationAttributes` (some SCAPI data sets omit it on search
+ * hits), this synthesizes the list from `variants[].variationValues` so swatch derivation
+ * still works on PLP/search results.
  *
  * @param {ShopperProducts.schemas['Product']} product - The product to decorate attributes for
  * @param {object} [opts={}] - Options for decoration
@@ -273,11 +310,16 @@ export const getDecoratedVariationAttributes = (
 ): DecoratedVariationAttribute[] => {
     const { swatchViewType = 'swatch' } = opts;
 
-    if (!product?.variationAttributes) {
-        return [];
-    }
+    // `variationAttributes: []` falls through to the variants path — some SCAPI data sets emit
+    // an empty array on search hits the same way they omit the field, both signal "no attribute
+    // data on the hit" and require synthesis from `variants[].variationValues`.
+    const variationAttributes = product?.variationAttributes?.length
+        ? product.variationAttributes
+        : product?.variants?.length
+          ? synthesizeVariationAttributesFromVariants(product.variants)
+          : [];
 
-    return product.variationAttributes.map((variationAttribute) => ({
+    return variationAttributes.map((variationAttribute) => ({
         ...variationAttribute,
         values: (variationAttribute.values || []).map((value) => {
             // Create URL search params for this variation value
