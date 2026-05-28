@@ -118,26 +118,37 @@ export async function action({
 
         return data({ success: true, email }, { headers });
     } catch (error) {
-        // The flow for passwordless login from checkout should be:
-        //   200       -> OTP modal (success): show the OTP as we do today
-        //   400       -> Show standard login modal.
-        //   5xx       -> Show standard login modal
-        //   403 / 404 -> Allow the shopper to continue as guest
-        //   other     -> generic error
+        // SLAS response routing:
+        //   400 "email not verified" -> re-issue without strict_verify so SLAS dispatches the OTP;
+        //                               /passwordless/token will then verify and sign in atomically.
+        //                               Per SLAS contract, this status is only returned when the
+        //                               email verification site pref is enabled.
+        //   400 (other) | 5xx        -> standard login modal
+        //   403 | 404                -> continue as guest
+        //   other                    -> generic error
         if (error instanceof ApiError) {
-            if (error.status === 400 || error.status >= 500) {
-                if (error.status === 400 && /email not verified/i.test(extractErrorMessage(error))) {
-                    logger.warn('AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout', {
-                        tag: 'EmailNotVerifiedAtCheckout',
+            if (error.status === 400 && /email not verified/i.test(extractErrorMessage(error))) {
+                try {
+                    await authorizePasswordless(context, { userid: email, strictVerify: false });
+                    logger.info('AuthorizePasswordlessEmail: OTP sent (verify-email recovery)');
+                    return data({ success: true, email }, { headers });
+                } catch (recoveryError) {
+                    const recoveryMessage = recoveryError instanceof Error ? recoveryError.message : 'unknown error';
+                    const recoveryStatus = recoveryError instanceof ApiError ? recoveryError.status : undefined;
+                    logger.error('AuthorizePasswordlessEmail: verify-email recovery dispatch failed', {
                         email: redactEmailForLog(email),
-                        status: error.status,
+                        recoveryStatus,
+                        recoveryMessage,
                     });
-                } else {
-                    logger.info('AuthorizePasswordlessEmail: SLAS rejected, falling back to standard login', {
-                        email: redactEmailForLog(email),
-                        status: error.status,
-                    });
+                    return data({ success: false, requiresLogin: true, email }, { headers });
                 }
+            }
+
+            if (error.status === 400 || error.status >= 500) {
+                logger.warn('AuthorizePasswordlessEmail: SLAS rejected, falling back to standard login', {
+                    email: redactEmailForLog(email),
+                    status: error.status,
+                });
                 return data({ success: false, requiresLogin: true, email }, { headers });
             }
 

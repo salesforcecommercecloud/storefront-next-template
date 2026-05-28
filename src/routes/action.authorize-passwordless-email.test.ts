@@ -211,7 +211,7 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.error).toBeTruthy();
     });
 
-    it('returns requiresLogin for any SLAS 400 (covers strict_verify unverified-email rejection)', async () => {
+    it('dispatches OTP and returns success when SLAS 400 message indicates email not verified', async () => {
         const { ApiError } = await import('@/scapi');
         const apiError = new ApiError({
             status: 400,
@@ -222,12 +222,84 @@ describe('action.authorize-passwordless-email', () => {
             url: 'https://api.example.com/authorize-passwordless',
             method: 'POST',
         });
-        mockAuthorizePasswordless.mockRejectedValue(apiError);
+        mockAuthorizePasswordless.mockRejectedValueOnce(apiError).mockResolvedValueOnce(undefined);
         const { extractErrorMessage } = await import('@/lib/auth/error-handler');
         vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
 
         const formData = new FormData();
         formData.append('email', 'user@example.com');
+        formData.append('strictVerify', 'true');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+        const result = response.data;
+
+        expectStatus(response, 200);
+        expect(result).toEqual({ success: true, email: 'user@example.com' });
+        expect(mockAuthorizePasswordless).toHaveBeenCalledTimes(2);
+        expect(mockAuthorizePasswordless).toHaveBeenNthCalledWith(1, mockContext, {
+            userid: 'user@example.com',
+            strictVerify: true,
+        });
+        expect(mockAuthorizePasswordless).toHaveBeenNthCalledWith(2, mockContext, {
+            userid: 'user@example.com',
+            strictVerify: false,
+        });
+    });
+
+    it('does not emit an error log when the recovery dispatch succeeds', async () => {
+        const { ApiError } = await import('@/scapi');
+        const apiError = new ApiError({
+            status: 400,
+            statusText: 'Bad Request',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+            rawBody: '{"message":"Email not verified"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        mockAuthorizePasswordless.mockRejectedValueOnce(apiError).mockResolvedValueOnce(undefined);
+        const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        formData.append('strictVerify', 'true');
+        const request = new Request('http://localhost/action/authorize-passwordless-email', {
+            method: 'POST',
+            body: formData,
+        });
+
+        await action({ request, context: mockContext } as ActionFunctionArgs);
+
+        const recoveryErrorCalls = mockLogger.error.mock.calls.filter(
+            (call: unknown[]) => call[0] === 'AuthorizePasswordlessEmail: verify-email recovery dispatch failed'
+        );
+        expect(recoveryErrorCalls).toHaveLength(0);
+    });
+
+    it('falls back to requiresLogin when the recovery OTP dispatch also fails', async () => {
+        const { ApiError } = await import('@/scapi');
+        const probeError = new ApiError({
+            status: 400,
+            statusText: 'Bad Request',
+            headers: new Headers(),
+            body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+            rawBody: '{"message":"Email not verified"}',
+            url: 'https://api.example.com/authorize-passwordless',
+            method: 'POST',
+        });
+        const recoveryError = new Error('SLAS upstream timeout');
+        mockAuthorizePasswordless.mockRejectedValueOnce(probeError).mockRejectedValueOnce(recoveryError);
+        const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+        vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+        const formData = new FormData();
+        formData.append('email', 'user@example.com');
+        formData.append('strictVerify', 'true');
         const request = new Request('http://localhost/action/authorize-passwordless-email', {
             method: 'POST',
             body: formData,
@@ -240,45 +312,15 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.success).toBe(false);
         expect(result.requiresLogin).toBe(true);
         expect(result.email).toBe('user@example.com');
-        expect(result.error).toBeUndefined();
-    });
-
-    it('emits a warn log with tag "EmailNotVerifiedAtCheckout" when SLAS 400 message indicates email not verified', async () => {
-        const { ApiError } = await import('@/scapi');
-        const apiError = new ApiError({
-            status: 400,
-            statusText: 'Bad Request',
-            headers: new Headers(),
-            body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
-            rawBody: '{"message":"Email not verified"}',
-            url: 'https://api.example.com/authorize-passwordless',
-            method: 'POST',
-        });
-        mockAuthorizePasswordless.mockRejectedValue(apiError);
-        const { extractErrorMessage } = await import('@/lib/auth/error-handler');
-        vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
-
-        const formData = new FormData();
-        formData.append('email', 'user@example.com');
-        const request = new Request('http://localhost/action/authorize-passwordless-email', {
-            method: 'POST',
-            body: formData,
-        });
-
-        await action({ request, context: mockContext } as ActionFunctionArgs);
-
-        expect(mockLogger.warn).toHaveBeenCalledWith(
-            'AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout',
+        expect(mockAuthorizePasswordless).toHaveBeenCalledTimes(2);
+        expect(mockLogger.error).toHaveBeenCalledWith(
+            'AuthorizePasswordlessEmail: verify-email recovery dispatch failed',
             expect.objectContaining({
-                tag: 'EmailNotVerifiedAtCheckout',
                 email: expect.stringMatching(/^[a-f0-9]{8}@example\.com$/),
-                status: 400,
+                recoveryMessage: 'SLAS upstream timeout',
+                recoveryStatus: undefined,
             })
         );
-        const warnCall = mockLogger.warn.mock.calls.find(
-            (call: unknown[]) => call[0] === 'AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout'
-        );
-        expect(warnCall?.[1]?.email).not.toBe('user@example.com');
     });
 
     it('returns requiresLogin for SLAS 400 even when the error detail is not "email not verified"', async () => {
@@ -311,11 +353,6 @@ describe('action.authorize-passwordless-email', () => {
         expect(result.requiresLogin).toBe(true);
         expect(result.email).toBe('user@example.com');
         expect(result.error).toBeUndefined();
-        const warnCalls = mockLogger.warn.mock.calls;
-        const taggedCalls = warnCalls.filter(
-            (call: unknown[]) => call[0] === 'AuthorizePasswordlessEmail: EmailNotVerifiedAtCheckout'
-        );
-        expect(taggedCalls).toHaveLength(0);
     });
 
     it('treats SLAS 403 (not authorized for passwordless) as a guest path: success=false, no error, no requiresLogin', async () => {
@@ -463,12 +500,14 @@ describe('action.authorize-passwordless-email', () => {
                 status: 400,
                 statusText: 'Bad Request',
                 headers: new Headers(),
-                body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
-                rawBody: '{"message":"Email not verified"}',
+                body: { type: 'error', title: 'Bad Request', detail: 'Invalid request parameters' },
+                rawBody: '{"message":"Invalid request parameters"}',
                 url: 'https://api.example.com/authorize-passwordless',
                 method: 'POST',
             });
             mockAuthorizePasswordless.mockRejectedValue(apiError);
+            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+            vi.mocked(extractErrorMessage).mockReturnValue('Invalid request parameters');
 
             const formData = new FormData();
             formData.append('email', 'user@example.com');
@@ -481,6 +520,36 @@ describe('action.authorize-passwordless-email', () => {
 
             expectStatus(response, 200);
             expect(response.data.requiresLogin).toBe(true);
+            expect(getSetCookie(response)).toContain('cc-tv=1');
+        });
+
+        it('still sets cc-tv cookie on the email-not-verified recovery path (success after second authorize call)', async () => {
+            const { ApiError } = await import('@/scapi');
+            const apiError = new ApiError({
+                status: 400,
+                statusText: 'Bad Request',
+                headers: new Headers(),
+                body: { type: 'error', title: 'Bad Request', detail: 'Email not verified' },
+                rawBody: '{"message":"Email not verified"}',
+                url: 'https://api.example.com/authorize-passwordless',
+                method: 'POST',
+            });
+            mockAuthorizePasswordless.mockRejectedValueOnce(apiError).mockResolvedValueOnce(undefined);
+            const { extractErrorMessage } = await import('@/lib/auth/error-handler');
+            vi.mocked(extractErrorMessage).mockReturnValue('Email not verified');
+
+            const formData = new FormData();
+            formData.append('email', 'user@example.com');
+            formData.append('strictVerify', 'true');
+            const request = new Request('http://localhost/action/authorize-passwordless-email', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const response = await action({ request, context: mockContext } as ActionFunctionArgs);
+
+            expectStatus(response, 200);
+            expect(response.data).toEqual({ success: true, email: 'user@example.com' });
             expect(getSetCookie(response)).toContain('cc-tv=1');
         });
 
