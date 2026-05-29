@@ -45,40 +45,6 @@ interface ComponentModule<TProps, TFrameworkComponent = unknown> {
   [key: string]: unknown;
 }
 /**
- * Generic design metadata interface - framework agnostic.
- * Different frameworks can extend this with their specific metadata.
- */
-interface DesignMetadata {
-  /** Component identifier */
-  id?: string;
-  /** Component name for display */
-  name?: string;
-  /** Component group/category */
-  group?: string;
-  /** Component description */
-  description?: string;
-  /** Additional framework-specific metadata */
-  [key: string]: any;
-}
-/**
- * Internal registry entry for a component.
- * Framework agnostic - no specific component types.
- */
-interface Entry<TProps, TFrameworkComponent = unknown> {
-  /** Component identifier */
-  id: ComponentId;
-  /** Eagerly loaded component (if registered directly) */
-  raw: TFrameworkComponent | null;
-  /** Lazily loaded component (if discovered via dynamic import) */
-  lazy?: TFrameworkComponent;
-  /** Dynamic importer function */
-  import?: () => Promise<ComponentModule<TProps, TFrameworkComponent>>;
-  /** Fallback component for loading states */
-  fallback?: TFrameworkComponent;
-  /** Loader function names for external invocation */
-  loaderNames?: LoaderNames;
-}
-/**
  * Framework adapter interface.
  * Each framework implements this to provide framework-specific behavior.
  */
@@ -106,5 +72,5 @@ interface ComponentRegistryOptions<TProps, TFrameworkComponent> {
   adapter: FrameworkAdapter<TProps, TFrameworkComponent>;
 }
 //#endregion
-export { Entry as a, DesignMetadata as i, ComponentModule as n, FrameworkAdapter as o, ComponentRegistryOptions as r, LoaderNames as s, ComponentId as t };
+export { LoaderNames as a, FrameworkAdapter as i, ComponentModule as n, ComponentRegistryOptions as r, ComponentId as t };
 //# sourceMappingURL=types3.d.ts.map

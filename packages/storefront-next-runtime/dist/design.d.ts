@@ -1,4 +1,4 @@
-import { a as Entry, i as DesignMetadata, n as ComponentModule, o as FrameworkAdapter, r as ComponentRegistryOptions, s as LoaderNames, t as ComponentId } from "./types3.js";
+import { a as LoaderNames, n as ComponentModule, r as ComponentRegistryOptions, t as ComponentId } from "./types3.js";
 
 //#region src/design/registry/registry.d.ts
 
@@ -106,5 +106,5 @@ declare class ComponentRegistry<TProps, TFrameworkComponent = unknown> {
   private buildFromLoadedModule;
 }
 //#endregion
-export { ComponentId, ComponentModule, ComponentRegistry, ComponentRegistryOptions, DesignMetadata, Entry, FrameworkAdapter, LoaderNames };
+export { ComponentRegistry };
 //# sourceMappingURL=design.d.ts.map

@@ -2,8 +2,8 @@ import "./messaging-api.js";
 import { a as useDesignState, o as isComponentTypeAllowedInRegion } from "./DesignContext.js";
 import "./modeDetection.js";
 import "./PageDesignerProvider.js";
-import { n as useComponentContext, r as RegionContext } from "./ComponentContext.js";
-import { i as useNodeToTargetStore, n as useLabels, t as DesignFrame } from "./DesignFrame.js";
+import { t as RegionContext } from "./RegionContext.js";
+import { i as useLabels, n as useComponentContext, o as useNodeToTargetStore, r as DesignFrame } from "./ComponentContext.js";
 import React, { useCallback, useMemo } from "react";
 import { jsx } from "react/jsx-runtime";
 

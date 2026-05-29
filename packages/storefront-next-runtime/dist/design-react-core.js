@@ -1,6 +1,6 @@
 import "./modeDetection.js";
 import { n as usePageDesignerMode, t as PageDesignerProvider } from "./PageDesignerProvider.js";
-import { i as useRegionContext, n as useComponentContext, r as RegionContext, t as ComponentContext } from "./ComponentContext.js";
+import { n as useRegionContext } from "./RegionContext.js";
 import React, { lazy } from "react";
 import { Fragment, jsx } from "react/jsx-runtime";
 
@@ -100,5 +100,5 @@ function createReactAdapter() {
 }
 
 //#endregion
-export { ComponentContext, PageDesignerPageMetadataProvider, PageDesignerProvider, RegionContext, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useComponentContext, usePageDesignerMode, useRegionContext };
+export { PageDesignerPageMetadataProvider, PageDesignerProvider, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, usePageDesignerMode, useRegionContext };
 //# sourceMappingURL=design-react-core.js.map

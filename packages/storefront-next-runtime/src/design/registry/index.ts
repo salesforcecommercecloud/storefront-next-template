@@ -16,16 +16,5 @@
 
 /* ==================== Framework Agnostic Core Exports ==================== */
 
-// Core types and interfaces
-export type {
-    ComponentId,
-    LoaderNames,
-    ComponentModule,
-    DesignMetadata,
-    Entry,
-    FrameworkAdapter,
-    ComponentRegistryOptions,
-} from './types';
-
 // Core registry class
 export { ComponentRegistry } from './registry';

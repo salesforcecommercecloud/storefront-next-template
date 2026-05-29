@@ -89,5 +89,5 @@ type RegionDecoratorProps<TProps> = React.PropsWithChildren<{
   className?: string;
 } & TProps>;
 //#endregion
-export { RegionDesignMetadata as a, RegionDecoratorProps as i, ComponentDesignMetadata as n, DefaultComponentConstructor as r, ComponentDecoratorProps as t };
+export { RegionDesignMetadata as i, ComponentDesignMetadata as n, RegionDecoratorProps as r, ComponentDecoratorProps as t };
 //# sourceMappingURL=component.types.d.ts.map

@@ -1351,5 +1351,5 @@ async function resolvePage({ id, identifierType, aspectType, locale, defaultLoca
 }
 
 //#endregion
-export { ContentAssignmentResolvers, RequiredError, getPageFromManifest, parseExpression, processPage, resolveAttributeValues, resolveComponentDataBindings, resolveDynamicPageId, resolveExpression, resolvePage, rewriteMarkup, transformComponent, transformPage, transformRegion, validateRule };
+export { RequiredError, processPage, resolvePage, transformComponent, transformPage, transformRegion, validateRule };
 //# sourceMappingURL=design-data.js.map

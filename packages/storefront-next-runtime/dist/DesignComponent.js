@@ -2,8 +2,8 @@ import "./messaging-api.js";
 import { a as useDesignState, i as useThrottledCallback, r as useDesignContext, s as useComponentDiscovery } from "./DesignContext.js";
 import "./modeDetection.js";
 import "./PageDesignerProvider.js";
-import { i as useRegionContext, n as useComponentContext, t as ComponentContext } from "./ComponentContext.js";
-import { i as useNodeToTargetStore, r as useComponentType, t as DesignFrame } from "./DesignFrame.js";
+import { n as useRegionContext } from "./RegionContext.js";
+import { a as useComponentType, n as useComponentContext, o as useNodeToTargetStore, r as DesignFrame, t as ComponentContext } from "./ComponentContext.js";
 import React, { useCallback, useRef } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 

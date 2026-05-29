@@ -1,6 +1,6 @@
 import { r as ShopperExperience } from "./types2.js";
 import { S as ClientAcknowledgedEvent, l as EventPayload, r as ClientApi } from "./index.js";
-import { a as RegionDesignMetadata, i as RegionDecoratorProps, n as ComponentDesignMetadata, r as DefaultComponentConstructor, t as ComponentDecoratorProps } from "./component.types.js";
+import { i as RegionDesignMetadata, n as ComponentDesignMetadata, t as ComponentDecoratorProps } from "./component.types.js";
 import React from "react";
 
 //#region src/design/react/context/DesignContext.d.ts
@@ -51,5 +51,5 @@ type PageDecoratorProps<TProps> = React.PropsWithChildren<{
   designMetadata?: PageDesignMetadata;
 } & TProps>;
 //#endregion
-export { type ComponentDecoratorProps, type ComponentDesignMetadata, type DefaultComponentConstructor, type DesignContextType, type PageDecoratorProps, type PageDesignMetadata, type RegionDecoratorProps, type RegionDesignMetadata, useDesignContext };
+export { type ComponentDecoratorProps, type ComponentDesignMetadata, type PageDecoratorProps, type RegionDesignMetadata, useDesignContext };
 //# sourceMappingURL=design-react.d.ts.map

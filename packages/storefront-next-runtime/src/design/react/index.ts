@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 export { useDesignContext } from './context/DesignContext';
-export type { DesignContextType } from './context/DesignContext';
 
 // Components
-export type {
-    ComponentDecoratorProps,
-    RegionDecoratorProps,
-    ComponentDesignMetadata,
-    RegionDesignMetadata,
-    DefaultComponentConstructor,
-} from './core/component.types';
-export type { PageDecoratorProps, PageDesignMetadata } from './components/page.types';
+export type { ComponentDecoratorProps, ComponentDesignMetadata, RegionDesignMetadata } from './core/component.types';
+export type { PageDecoratorProps } from './components/page.types';

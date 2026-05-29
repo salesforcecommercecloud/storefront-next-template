@@ -1,9 +1,9 @@
 import { r as ShopperExperience } from "./types2.js";
-import { n as ComponentModule, o as FrameworkAdapter } from "./types3.js";
+import { i as FrameworkAdapter, n as ComponentModule } from "./types3.js";
 import { g as IsomorphicConfiguration } from "./index.js";
-import { i as RegionDecoratorProps, t as ComponentDecoratorProps } from "./component.types.js";
+import { r as RegionDecoratorProps, t as ComponentDecoratorProps } from "./component.types.js";
 import React$1 from "react";
-import * as react_jsx_runtime1 from "react/jsx-runtime";
+import * as react_jsx_runtime2 from "react/jsx-runtime";
 
 //#region src/design/react/core/PageDesignerProvider.d.ts
 type PageDesignerContextType = {
@@ -49,24 +49,14 @@ declare function PageDesignerPageMetadataProvider({
   children
 }: React.PropsWithChildren<{
   page: ShopperExperience.schemas['Page'];
-}>): react_jsx_runtime1.JSX.Element;
+}>): react_jsx_runtime2.JSX.Element;
 //#endregion
 //#region src/design/react/core/RegionContext.d.ts
 interface RegionContextType {
   regionId: string;
   contentLinkUuids: string[];
 }
-declare const RegionContext: React$1.Context<RegionContextType | null>;
 declare const useRegionContext: () => RegionContextType | null;
-//#endregion
-//#region src/design/react/core/ComponentContext.d.ts
-interface ComponentContextType {
-  componentId: string;
-  name?: string;
-  contentLinkUuid?: string;
-}
-declare const ComponentContext: React$1.Context<ComponentContextType | null>;
-declare const useComponentContext: () => ComponentContextType | null;
 //#endregion
 //#region src/design/react/core/ComponentDecorator.d.ts
 /**
@@ -111,5 +101,5 @@ declare class ReactAdapter<TProps> implements FrameworkAdapter<TProps, ReactDesi
  */
 declare function createReactAdapter<TProps>(): ReactAdapter<TProps>;
 //#endregion
-export { ComponentContext, PageDesignerPageMetadataProvider, PageDesignerProvider, type ReactComponentModule, type ReactDesignComponentType, RegionContext, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, useComponentContext, usePageDesignerMode, useRegionContext };
+export { PageDesignerPageMetadataProvider, PageDesignerProvider, type ReactDesignComponentType, createReactAdapter, createReactComponentDesignDecorator, createReactRegionDesignDecorator, usePageDesignerMode, useRegionContext };
 //# sourceMappingURL=design-react-core.d.ts.map
