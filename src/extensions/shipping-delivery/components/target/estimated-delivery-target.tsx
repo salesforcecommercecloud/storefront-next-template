@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 /** @sfdc-extension-file SFDC_EXT_SHIPPING_DELIVERY */
-import { Suspense, type ReactElement } from 'react';
+import { Suspense, lazy, type ReactElement } from 'react';
 import { Await } from 'react-router';
 import { useShippingDelivery } from '@/extensions/shipping-delivery/context/shipping-delivery-context';
-import EstimatedDelivery from '@/extensions/shipping-delivery/components/estimated-delivery';
+
+const EstimatedDelivery = lazy(() => import('@/extensions/shipping-delivery/components/estimated-delivery'));
 
 export default function EstimatedDeliveryTarget(): ReactElement | null {
     const ctx = useShippingDelivery();

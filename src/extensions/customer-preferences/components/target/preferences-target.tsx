@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 /** @sfdc-extension-file SFDC_EXT_CUSTOMER_PREFERENCES */
-import { Suspense, type ReactElement } from 'react';
+import { Suspense, lazy, type ReactElement } from 'react';
 import { Await } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    InterestsPreferencesSection,
-    InterestsPreferencesSectionSkeleton,
-} from '@/extensions/customer-preferences/components/interests-preferences-section';
+import { InterestsPreferencesSectionSkeleton } from '@/extensions/customer-preferences/components/interests-preferences-section/skeleton';
 import { useCustomerPreferences } from '@/extensions/customer-preferences/context/customer-preferences-context';
 import type { CustomerPreferencesData } from '@/extensions/customer-preferences/lib/api/customer-preferences.server';
+
+const InterestsPreferencesSection = lazy(() =>
+    import('@/extensions/customer-preferences/components/interests-preferences-section').then((m) => ({
+        default: m.InterestsPreferencesSection,
+    }))
+);
 
 /**
  * UITarget wrapper for the interests & preferences section on the account

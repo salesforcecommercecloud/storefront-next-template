@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Await } from 'react-router';
-import ReturnsAndWarranty from '@/extensions/product-content/components/returns-and-warranty';
 import { useProductContentData } from '@/extensions/product-content/context/product-content-data-context';
+
+const ReturnsAndWarranty = lazy(() => import('@/extensions/product-content/components/returns-and-warranty'));
 
 export default function ReturnsAndWarrantyTarget() {
     const ctx = useProductContentData();
